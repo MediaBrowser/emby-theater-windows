@@ -100,6 +100,9 @@
     <Reference Include="LibVlcWrapper">
       <HintPath>..\ThirdParty\Taygeta\LibVlcWrapper.dll</HintPath>
     </Reference>
+    <Reference Include="MediaBrowser.ApiInteraction">
+      <HintPath>..\packages\MediaBrowser.ApiClient.3.0.0.2-beta\lib\net45\MediaBrowser.ApiInteraction.dll</HintPath>
+    </Reference>
     <Reference Include="MediaBrowser.ClickOnce, Version=3.0.4802.19274, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\MediaBrowser.Common.Internal.3.0.1\lib\net45\MediaBrowser.ClickOnce.dll</HintPath>
@@ -142,6 +145,9 @@
     <Reference Include="protobuf-net, Version=2.0.0.621, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\protobuf-net.2.0.0.621\lib\net40\protobuf-net.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Text">
+      <HintPath>..\packages\ServiceStack.Text.3.9.37\lib\net35\ServiceStack.Text.dll</HintPath>
     </Reference>
     <Reference Include="SimpleInjector">
       <HintPath>..\packages\SimpleInjector.2.0.0-beta5\lib\net40-client\SimpleInjector.dll</HintPath>

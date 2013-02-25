@@ -19,18 +19,20 @@ namespace MediaBrowser.UI.Playback
     /// <summary>
     /// Class PlaybackManager
     /// </summary>
-    public class PlaybackManager : BaseManager<UIKernel>
+    public class PlaybackManager
     {
         private readonly ILogger _logger;
+
+        private readonly UIKernel Kernel;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PlaybackManager" /> class.
         /// </summary>
         /// <param name="kernel">The kernel.</param>
         public PlaybackManager(UIKernel kernel, ILogger logger)
-            : base(kernel)
         {
             _logger = logger;
+            Kernel = kernel;
         }
 
         #region PlaybackStarted Event

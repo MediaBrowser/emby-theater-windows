@@ -3,13 +3,11 @@ using MediaBrowser.ClickOnce;
 using MediaBrowser.Common.Extensions;
 using MediaBrowser.Common.IO;
 using MediaBrowser.Common.Kernel;
-using MediaBrowser.IsoMounter;
 using MediaBrowser.Logging.Nlog;
 using MediaBrowser.Model.Configuration;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Net;
-using MediaBrowser.Model.Updates;
 using MediaBrowser.Model.Weather;
 using MediaBrowser.UI.Controller;
 using MediaBrowser.UI.Controls;
@@ -34,7 +32,7 @@ namespace MediaBrowser.UI
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
-    public partial class App : Application, IApplicationHost
+    public partial class App : Application
     {
         /// <summary>
         /// Gets or sets a value indicating whether [last run at startup value].
@@ -69,12 +67,6 @@ namespace MediaBrowser.UI
         /// </summary>
         /// <value>The logger.</value>
         protected ILogger Logger { get; set; }
-
-        /// <summary>
-        /// Gets or sets the log file path.
-        /// </summary>
-        /// <value>The log file path.</value>
-        public string LogFilePath { get; private set; }
 
         /// <summary>
         /// Occurs when [property changed].
@@ -118,15 +110,10 @@ namespace MediaBrowser.UI
         }
 
         /// <summary>
-        /// The container
+        /// Gets or sets the composition root.
         /// </summary>
-        private SimpleInjector.Container _container = new SimpleInjector.Container();
-
-        /// <summary>
-        /// Gets or sets the iso manager.
-        /// </summary>
-        /// <value>The iso manager.</value>
-        private IIsoManager IsoManager { get; set; }
+        /// <value>The composition root.</value>
+        protected ApplicationHost CompositionRoot { get; set; }
         
         /// <summary>
         /// Gets the instance.
@@ -407,9 +394,9 @@ namespace MediaBrowser.UI
             // Without this the app will shutdown after the splash screen closes
             ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
-            RegisterResources();
+            CompositionRoot = new ApplicationHost(Logger);
 
-            Kernel = new UIKernel(this, Logger);
+            Kernel = CompositionRoot.Kernel;
 
             try
             {
@@ -556,6 +543,7 @@ namespace MediaBrowser.UI
             base.OnExit(e);
 
             Kernel.Dispose();
+            CompositionRoot.Dispose();
         }
 
         /// <summary>
@@ -933,6 +921,9 @@ namespace MediaBrowser.UI
             }
         }
 
+        /// <summary>
+        /// Restarts this instance.
+        /// </summary>
         public void Restart()
         {
             Dispatcher.Invoke(ReleaseMutex);
@@ -942,14 +933,7 @@ namespace MediaBrowser.UI
             System.Windows.Forms.Application.Restart();
 
             Dispatcher.Invoke(Shutdown);
-        }
-
-        public void ReloadLogger()
-        {
-            LogFilePath = Path.Combine(Kernel.ApplicationPaths.LogDirectoryPath, "Server-" + DateTime.Now.Ticks + ".log");
-
-            NlogManager.AddFileTarget(LogFilePath, Kernel.Configuration.EnableDebugLevelLogging);
-        }        
+        }       
         
         /// <summary>
         /// Gets the bitmap image.
@@ -993,106 +977,6 @@ namespace MediaBrowser.UI
 
             RenderOptions.SetBitmapScalingMode(bitmap, BitmapScalingMode.Fant);
             return bitmap;
-        }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether this instance can self update.
-        /// </summary>
-        /// <value><c>true</c> if this instance can self update; otherwise, <c>false</c>.</value>
-        public bool CanSelfUpdate
-        {
-            get { return ClickOnceHelper.IsNetworkDeployed; }
-        }
-
-        /// <summary>
-        /// Checks for update.
-        /// </summary>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <param name="progress">The progress.</param>
-        /// <returns>Task{CheckForUpdateResult}.</returns>
-        public Task<CheckForUpdateResult> CheckForApplicationUpdate(CancellationToken cancellationToken, IProgress<double> progress)
-        {
-            return new ApplicationUpdateCheck().CheckForApplicationUpdate(cancellationToken, progress);
-        }
-
-        /// <summary>
-        /// Registers resources that classes will depend on
-        /// </summary>
-        private void RegisterResources()
-        {
-            Register<IApplicationHost>(this);
-            Register(Logger);
-
-            IsoManager = new PismoIsoManager(Logger);
-
-            Register<IIsoManager>(IsoManager);
-        }
-
-        /// <summary>
-        /// Updates the application.
-        /// </summary>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <param name="progress">The progress.</param>
-        /// <returns>Task.</returns>
-        public Task UpdateApplication(CancellationToken cancellationToken, IProgress<double> progress)
-        {
-            return new ApplicationUpdater().UpdateApplication(cancellationToken, progress);
-        }
-
-        /// <summary>
-        /// Creates an instance of type and resolves all constructor dependancies
-        /// </summary>
-        /// <param name="type">The type.</param>
-        /// <returns>System.Object.</returns>
-        public object CreateInstance(Type type)
-        {
-            try
-            {
-                return _container.GetInstance(type);
-            }
-            catch
-            {
-                Logger.Error("Error creating {0}", type.Name);
-
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Registers the specified obj.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="obj">The obj.</param>
-        public void Register<T>(T obj)
-            where T : class
-        {
-            _container.RegisterSingle(obj);
-        }
-
-        /// <summary>
-        /// Resolves this instance.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns>``0.</returns>
-        public T Resolve<T>()
-        {
-            return (T)_container.GetRegistration(typeof(T), true).GetInstance();
-        }
-
-        /// <summary>
-        /// Resolves this instance.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns>``0.</returns>
-        public T TryResolve<T>()
-        {
-            var result = _container.GetRegistration(typeof(T), false);
-
-            if (result == null)
-            {
-                return default(T);
-            }
-            return (T)result.GetInstance();
         }
     }
 }

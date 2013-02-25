@@ -1,12 +1,13 @@
-﻿using MediaBrowser.Common.Kernel;
+﻿using MediaBrowser.Common.Implementations;
 using System.IO;
+using MediaBrowser.Common.Kernel;
 
 namespace MediaBrowser.UI.Configuration
 {
     /// <summary>
     /// Class UIApplicationPaths
     /// </summary>
-    public class UIApplicationPaths : BaseApplicationPaths
+    public class UIApplicationPaths : BaseApplicationPaths, IApplicationPaths
     {
         /// <summary>
         /// The _remote image cache path

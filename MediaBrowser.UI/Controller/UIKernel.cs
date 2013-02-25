@@ -3,6 +3,7 @@ using MediaBrowser.Common.Kernel;
 using MediaBrowser.Model.Connectivity;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Net;
+using MediaBrowser.Model.Serialization;
 using MediaBrowser.UI.Configuration;
 using MediaBrowser.UI.Playback;
 using System;
@@ -40,8 +41,8 @@ namespace MediaBrowser.UI.Controller
         /// <summary>
         /// Initializes a new instance of the <see cref="UIKernel" /> class.
         /// </summary>
-        public UIKernel(IApplicationHost appHost, ILogger logger)
-            : base(appHost, logger)
+        public UIKernel(IApplicationHost appHost, UIApplicationPaths appPaths, IXmlSerializer xmlSerializer, ILogger logger)
+            : base(appHost, appPaths, xmlSerializer, logger)
         {
             Instance = this;
         }
@@ -130,27 +131,14 @@ namespace MediaBrowser.UI.Controller
         /// <summary>
         /// Finds the parts.
         /// </summary>
-        /// <param name="allTypes">All types.</param>
-        protected override void FindParts(Type[] allTypes)
+        protected override void FindParts()
         {
             PlaybackManager = (PlaybackManager)ApplicationHost.CreateInstance(typeof(PlaybackManager));
             
-            base.FindParts(allTypes);
+            base.FindParts();
 
-            Themes = GetExports<BaseTheme>(allTypes);
-            MediaPlayers = GetExports<BaseMediaPlayer>(allTypes);
-        }
-
-        /// <summary>
-        /// Called when [composable parts loaded].
-        /// </summary>
-        /// <returns>Task.</returns>
-        protected override async Task OnComposablePartsLoaded()
-        {
-            await base.OnComposablePartsLoaded().ConfigureAwait(false);
-
-            // Once plugins have loaded give the api a reference to our protobuf serializer
-            DataSerializer.DynamicSerializer = ProtobufSerializer.TypeModel;
+            Themes = ApplicationHost.GetExports<BaseTheme>();
+            MediaPlayers = ApplicationHost.GetExports<BaseMediaPlayer>();
         }
 
         /// <summary>

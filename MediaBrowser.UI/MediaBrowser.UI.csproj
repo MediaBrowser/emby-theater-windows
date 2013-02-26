@@ -1377,7 +1377,26 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy "$(TargetPath)" "$(SolutionDir)\Nuget\dlls\" /y /d /r /i</PostBuildEvent>
+    <PostBuildEvent>xcopy "$(TargetPath)" "$(SolutionDir)\Nuget\dlls\" /y /d /r /i
+
+if $(ConfigurationName) == Release (
+mkdir "$(SolutionDir)..\Deploy\MBT\System"
+xcopy "$(TargetDir)$(TargetFileName)" "$(SolutionDir)..\Deploy\MBT\System\" /y
+xcopy "$(SolutionDir)..\Mediabrowser\Mediabrowser.Uninstaller\bin\Release\MediaBrowser.Uninstaller.exe.config" "$(SolutionDir)..\Deploy\MBT\System\" /y
+xcopy "$(SolutionDir)..\Mediabrowser\Mediabrowser.Uninstaller.Execute\bin\Release\MediaBrowser.Uninstaller.Execute.exe.config" "$(SolutionDir)..\Deploy\MBT\System\" /y
+xcopy "$(SolutionDir)..\Mediabrowser\Mediabrowser.Uninstaller\bin\Release\MediaBrowser.Uninstaller.exe" "$(SolutionDir)..\Deploy\MBT\System\" /y
+xcopy "$(SolutionDir)..\Mediabrowser\Mediabrowser.Uninstaller.Execute\bin\Release\MediaBrowser.Uninstaller.Execute.exe" "$(SolutionDir)..\Deploy\MBT\System\" /y
+
+xcopy "$(TargetDir)$(TargetFileName).config" "$(SolutionDir)..\Deploy\MBT\System\" /y
+
+xcopy "$(TargetDir)*.dll" "$(SolutionDir)..\Deploy\MBT\System" /y
+
+mkdir "$(SolutionDir)..\Deploy\MBT\System\CorePlugins"
+xcopy "$(TargetDir)CorePlugins" "$(SolutionDir)..\Deploy\MBT\System\CorePlugins" /y
+
+del "$(SolutionDir)..\Deploy\MBTheater.zip"
+"$(SolutionDir)7za" a -tzip "$(SolutionDir)..\Deploy\MBTheater.zip" "$(SolutionDir)..\Deploy\MBT\*"
+)</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

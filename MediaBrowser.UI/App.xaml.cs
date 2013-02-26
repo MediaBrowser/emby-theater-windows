@@ -2,8 +2,8 @@
 using MediaBrowser.ClickOnce;
 using MediaBrowser.Common.Extensions;
 using MediaBrowser.Common.IO;
+using MediaBrowser.Common.Implementations.Logging;
 using MediaBrowser.Common.Kernel;
-using MediaBrowser.Logging.Nlog;
 using MediaBrowser.Model.Configuration;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
@@ -394,8 +394,9 @@ namespace MediaBrowser.UI
             // Without this the app will shutdown after the splash screen closes
             ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
-            CompositionRoot = new ApplicationHost(Logger);
+            CompositionRoot = new ApplicationHost();
 
+            Logger = CompositionRoot.Logger;
             Kernel = CompositionRoot.Kernel;
 
             try

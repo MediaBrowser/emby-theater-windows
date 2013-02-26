@@ -99,7 +99,7 @@ namespace MediaBrowser.UI.Controller
 
             try
             {
-                await new PluginUpdater(Logger).UpdatePlugins().ConfigureAwait(false);
+                await new PluginUpdater(ApplicationHost, Logger).UpdatePlugins().ConfigureAwait(false);
             }
             catch (HttpException ex)
             {
@@ -124,7 +124,8 @@ namespace MediaBrowser.UI.Controller
                 ServerApiPort = Configuration.ServerApiPort,
                 ClientType = ClientType.Pc,
                 DeviceName = Environment.MachineName,
-                SerializationFormat = SerializationFormats.Json
+                SerializationFormat = SerializationFormats.Json,
+                JsonSerializer = ApplicationHost.Resolve<IJsonSerializer>()
             };
         }
 

@@ -1,4 +1,5 @@
 ﻿using MediaBrowser.Common.IO;
+using MediaBrowser.Common.Kernel;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Net;
 using MediaBrowser.Model.Plugins;
@@ -16,10 +17,23 @@ namespace MediaBrowser.UI.Controller
     /// </summary>
     public class PluginUpdater
     {
+        /// <summary>
+        /// The _logger
+        /// </summary>
         private readonly ILogger _logger;
+        /// <summary>
+        /// The _app host
+        /// </summary>
+        private readonly IApplicationHost _appHost;
 
-        public PluginUpdater(ILogger logger)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PluginUpdater" /> class.
+        /// </summary>
+        /// <param name="appHost">The app host.</param>
+        /// <param name="logger">The logger.</param>
+        public PluginUpdater(IApplicationHost appHost, ILogger logger)
         {
+            _appHost = appHost;
             _logger = logger;
         }
 
@@ -88,7 +102,7 @@ namespace MediaBrowser.UI.Controller
 
                 if (downloadPlugin)
                 {
-                    if (UIKernel.Instance.ApplicationVersion < Version.Parse(pluginInfo.MinimumRequiredUIVersion))
+                    if (_appHost.ApplicationVersion < Version.Parse(pluginInfo.MinimumRequiredUIVersion))
                     {
                         _logger.Warn("Can't download new version of {0} because the application needs to be updated first.", pluginInfo.Name);
                         continue;
@@ -133,7 +147,7 @@ namespace MediaBrowser.UI.Controller
 
             // Loop through the list of plugins that are on the server
             foreach (var pluginInfo in uiPlugins
-                .Where(p => UIKernel.Instance.ApplicationVersion >= Version.Parse(p.MinimumRequiredUIVersion)))
+                .Where(p => _appHost.ApplicationVersion >= Version.Parse(p.MinimumRequiredUIVersion)))
             {
                 // See if it is already installed in the UI
                 var path = Path.Combine(UIKernel.Instance.ApplicationPaths.PluginConfigurationsPath, pluginInfo.ConfigurationFileName);
@@ -153,7 +167,7 @@ namespace MediaBrowser.UI.Controller
 
                 if (download)
                 {
-                    if (UIKernel.Instance.ApplicationVersion < Version.Parse(pluginInfo.MinimumRequiredUIVersion))
+                    if (_appHost.ApplicationVersion < Version.Parse(pluginInfo.MinimumRequiredUIVersion))
                     {
                         _logger.Warn("Can't download updated configuration of {0} because the application needs to be updated first.", pluginInfo.Name);
                         continue;

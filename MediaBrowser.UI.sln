@@ -5,8 +5,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaBrowser.UI", "MediaBro
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaBrowser.Plugins.DefaultTheme", "MediaBrowser.Plugins.DefaultTheme\MediaBrowser.Plugins.DefaultTheme.csproj", "{6E892999-711D-4E24-8BAC-DACF5BFA783A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaBrowser.UI.Uninstall", "MediaBrowser.UI.Uninstall\MediaBrowser.UI.Uninstall.csproj", "{E4BE0659-4084-407B-B8A8-67802331CC9E}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaBrowser.UI.Controls", "MediaBrowser.UI.Controls\MediaBrowser.UI.Controls.csproj", "{1ADFE460-FD95-46FA-8871-CCCB4B62E2E8}"
 EndProject
 Global
@@ -43,16 +41,6 @@ Global
 		{6E892999-711D-4E24-8BAC-DACF5BFA783A}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{6E892999-711D-4E24-8BAC-DACF5BFA783A}.Release|x86.ActiveCfg = Release|Any CPU
 		{6E892999-711D-4E24-8BAC-DACF5BFA783A}.Release|x86.Build.0 = Release|Any CPU
-		{E4BE0659-4084-407B-B8A8-67802331CC9E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E4BE0659-4084-407B-B8A8-67802331CC9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E4BE0659-4084-407B-B8A8-67802331CC9E}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{E4BE0659-4084-407B-B8A8-67802331CC9E}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{E4BE0659-4084-407B-B8A8-67802331CC9E}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{E4BE0659-4084-407B-B8A8-67802331CC9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E4BE0659-4084-407B-B8A8-67802331CC9E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E4BE0659-4084-407B-B8A8-67802331CC9E}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{E4BE0659-4084-407B-B8A8-67802331CC9E}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{E4BE0659-4084-407B-B8A8-67802331CC9E}.Release|x86.ActiveCfg = Release|Any CPU
 		{1ADFE460-FD95-46FA-8871-CCCB4B62E2E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1ADFE460-FD95-46FA-8871-CCCB4B62E2E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1ADFE460-FD95-46FA-8871-CCCB4B62E2E8}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU

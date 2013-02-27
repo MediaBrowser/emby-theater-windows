@@ -1,8 +1,8 @@
 ﻿using MediaBrowser.ApiInteraction;
 using MediaBrowser.ClickOnce;
 using MediaBrowser.Common.Extensions;
-using MediaBrowser.Common.IO;
 using MediaBrowser.Common.Implementations.Logging;
+using MediaBrowser.Common.IO;
 using MediaBrowser.Common.Kernel;
 using MediaBrowser.Model.Configuration;
 using MediaBrowser.Model.Dto;
@@ -12,7 +12,6 @@ using MediaBrowser.Model.Weather;
 using MediaBrowser.UI.Controller;
 using MediaBrowser.UI.Controls;
 using MediaBrowser.UI.Pages;
-using MediaBrowser.UI.Uninstall;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -72,33 +71,6 @@ namespace MediaBrowser.UI
         /// Occurs when [property changed].
         /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
-
-        /// <summary>
-        /// Gets the name of the product.
-        /// </summary>
-        /// <value>The name of the product.</value>
-        protected string ProductName
-        {
-            get { return Globals.ProductName; }
-        }
-
-        /// <summary>
-        /// Gets the name of the publisher.
-        /// </summary>
-        /// <value>The name of the publisher.</value>
-        protected string PublisherName
-        {
-            get { return Globals.PublisherName; }
-        }
-
-        /// <summary>
-        /// Gets the name of the suite.
-        /// </summary>
-        /// <value>The name of the suite.</value>
-        protected string SuiteName
-        {
-            get { return Globals.SuiteName; }
-        }
 
         /// <summary>
         /// Gets the name of the uninstaller file.
@@ -436,7 +408,7 @@ namespace MediaBrowser.UI
         {
             Kernel.ConfigurationUpdated += Kernel_ConfigurationUpdated;
 
-            ConfigureClickOnceStartup();
+            ConfigureAutoRunAtStartup();
 
             PropertyChanged += AppPropertyChanged;
 
@@ -901,18 +873,18 @@ namespace MediaBrowser.UI
         {
             if (!LastRunAtStartupValue.HasValue || LastRunAtStartupValue.Value != Kernel.Configuration.RunAtStartup)
             {
-                ConfigureClickOnceStartup();
+                ConfigureAutoRunAtStartup();
             }
         }
 
         /// <summary>
         /// Configures the click once startup.
         /// </summary>
-        private void ConfigureClickOnceStartup()
+        private void ConfigureAutoRunAtStartup()
         {
             try
             {
-                ClickOnceHelper.ConfigureClickOnceStartupIfInstalled(PublisherName, ProductName, SuiteName, Kernel.Configuration.RunAtStartup, UninstallerFileName);
+                CompositionRoot.ConfigureAutoRunAtStartup(Kernel.Configuration.RunAtStartup);
 
                 LastRunAtStartupValue = Kernel.Configuration.RunAtStartup;
             }

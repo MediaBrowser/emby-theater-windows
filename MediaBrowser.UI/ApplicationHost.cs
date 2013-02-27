@@ -80,11 +80,9 @@ namespace MediaBrowser.UI
 
             Logger.Info("Version {0} initializing", ApplicationVersion);
 
-            var httpServer = ServerFactory.CreateServer(this, ProtobufSerializer, Logger, "Media Browser", "index.html");
+            RegisterResources(taskManager, networkManager, serverManager);
 
-            RegisterResources(taskManager, httpServer, networkManager, serverManager);
-
-            FindParts(taskManager, httpServer);
+            FindParts();
         }
 
         /// <summary>
@@ -108,40 +106,20 @@ namespace MediaBrowser.UI
         /// <summary>
         /// Registers resources that classes will depend on
         /// </summary>
-        private void RegisterResources(ITaskManager taskManager, IHttpServer httpServer, INetworkManager networkManager, IServerManager serverManager)
+        protected override void RegisterResources(ITaskManager taskManager, INetworkManager networkManager, IServerManager serverManager)
         {
+            base.RegisterResources(taskManager, networkManager, serverManager);
+
             RegisterSingleInstance<IKernel>(Kernel);
             RegisterSingleInstance(Kernel);
 
             RegisterSingleInstance<IApplicationHost>(this);
-            RegisterSingleInstance(LogManager);
-            RegisterSingleInstance(Logger);
 
-            RegisterSingleInstance(ApplicationPaths);
             RegisterSingleInstance(UIApplicationPaths);
-            RegisterSingleInstance(taskManager);
             RegisterSingleInstance<IIsoManager>(new PismoIsoManager(Logger));
-            RegisterSingleInstance<IHttpClient>(new HttpClientManager(ApplicationPaths, Logger));
-            RegisterSingleInstance<IWebSocketServer>(() => new AlchemyServer(Logger));
             RegisterSingleInstance(_jsonSerializer);
             RegisterSingleInstance(_xmlSerializer);
-            RegisterSingleInstance(ProtobufSerializer);
-            RegisterSingleInstance<IUdpServer>(new UdpServer(Logger), false);
-            RegisterSingleInstance(httpServer, false);
-
-            RegisterSingleInstance(networkManager);
-
-            RegisterSingleInstance(serverManager);
-        }
-
-        /// <summary>
-        /// Finds the parts.
-        /// </summary>
-        private void FindParts(ITaskManager taskManager, IHttpServer httpServer)
-        {
-            taskManager.AddTasks(GetExports<IScheduledTask>(false));
-
-            httpServer.Init(GetExports<IRestfulService>(false));
+            RegisterSingleInstance(ServerFactory.CreateServer(this, ProtobufSerializer, Logger, "Media Browser", "index.html"), false);
         }
 
         /// <summary>

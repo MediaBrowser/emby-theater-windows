@@ -1,14 +1,11 @@
 ﻿using MediaBrowser.ClickOnce;
 using MediaBrowser.Common.Implementations;
-using MediaBrowser.Common.Implementations.HttpClientManager;
 using MediaBrowser.Common.Implementations.HttpServer;
 using MediaBrowser.Common.Implementations.Logging;
 using MediaBrowser.Common.Implementations.NetworkManagement;
 using MediaBrowser.Common.Implementations.ScheduledTasks;
 using MediaBrowser.Common.Implementations.Serialization;
 using MediaBrowser.Common.Implementations.ServerManager;
-using MediaBrowser.Common.Implementations.Udp;
-using MediaBrowser.Common.Implementations.WebSocket;
 using MediaBrowser.Common.IO;
 using MediaBrowser.Common.Kernel;
 using MediaBrowser.Common.Net;
@@ -205,7 +202,7 @@ namespace MediaBrowser.UI
         /// </summary>
         public void Shutdown()
         {
-            App.Instance.Dispatcher.Invoke(App.Instance.Shutdown);
+            App.Instance.Shutdown();
         }
     }
 }

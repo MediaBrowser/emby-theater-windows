@@ -1,4 +1,5 @@
 ﻿using MediaBrowser.ApiInteraction;
+using MediaBrowser.Common.Implementations.Serialization;
 using MediaBrowser.Common.Kernel;
 using MediaBrowser.Model.Connectivity;
 using MediaBrowser.Model.Logging;
@@ -125,7 +126,8 @@ namespace MediaBrowser.UI.Controller
                 ClientType = ClientType.Pc,
                 DeviceName = Environment.MachineName,
                 SerializationFormat = SerializationFormats.Json,
-                JsonSerializer = ApplicationHost.Resolve<IJsonSerializer>()
+                JsonSerializer = ApplicationHost.Resolve<IJsonSerializer>(),
+                ProtobufSerializer = ApplicationHost.Resolve<IProtobufSerializer>()
             };
         }
 

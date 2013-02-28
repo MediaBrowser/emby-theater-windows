@@ -87,6 +87,7 @@
     <OutputPath>bin\x86\Release\</OutputPath>
   </PropertyGroup>
   <PropertyGroup />
+  <PropertyGroup />
   <PropertyGroup>
     <NoWin32Manifest>true</NoWin32Manifest>
   </PropertyGroup>
@@ -100,24 +101,29 @@
     <Reference Include="LibVlcWrapper">
       <HintPath>..\ThirdParty\Taygeta\LibVlcWrapper.dll</HintPath>
     </Reference>
-    <Reference Include="MediaBrowser.ApiInteraction, Version=3.0.4806.21046, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.ApiInteraction, Version=3.0.4807.33683, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.ApiClient.3.0.0.10-beta\lib\net45\MediaBrowser.ApiInteraction.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.ApiClient.3.0.0.18-beta\lib\net45\MediaBrowser.ApiInteraction.dll</HintPath>
     </Reference>
-    <Reference Include="MediaBrowser.ClickOnce">
-      <HintPath>..\packages\MediaBrowser.Common.Internal.3.0.15\lib\net45\MediaBrowser.ClickOnce.dll</HintPath>
+    <Reference Include="MediaBrowser.ClickOnce, Version=3.0.4806.33828, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\MediaBrowser.Common.Internal.3.0.16\lib\net45\MediaBrowser.ClickOnce.dll</HintPath>
     </Reference>
-    <Reference Include="MediaBrowser.Common">
-      <HintPath>..\packages\MediaBrowser.Common.3.0.15\lib\net45\MediaBrowser.Common.dll</HintPath>
+    <Reference Include="MediaBrowser.Common, Version=3.0.4807.25766, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.17\lib\net45\MediaBrowser.Common.dll</HintPath>
     </Reference>
-    <Reference Include="MediaBrowser.Common.Implementations">
-      <HintPath>..\packages\MediaBrowser.Common.Internal.3.0.15\lib\net45\MediaBrowser.Common.Implementations.dll</HintPath>
+    <Reference Include="MediaBrowser.Common.Implementations, Version=3.0.4806.33829, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\MediaBrowser.Common.Internal.3.0.16\lib\net45\MediaBrowser.Common.Implementations.dll</HintPath>
     </Reference>
-    <Reference Include="MediaBrowser.IsoMounter">
-      <HintPath>..\packages\MediaBrowser.Common.Internal.3.0.15\lib\net45\MediaBrowser.IsoMounter.dll</HintPath>
+    <Reference Include="MediaBrowser.IsoMounter, Version=3.0.4806.33829, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\MediaBrowser.Common.Internal.3.0.16\lib\net45\MediaBrowser.IsoMounter.dll</HintPath>
     </Reference>
-    <Reference Include="MediaBrowser.Model">
-      <HintPath>..\packages\MediaBrowser.Common.3.0.15\lib\net45\MediaBrowser.Model.dll</HintPath>
+    <Reference Include="MediaBrowser.Model, Version=3.0.4807.25765, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.17\lib\net45\MediaBrowser.Model.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Expression.Effects, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -133,8 +139,9 @@
     <Reference Include="NLog">
       <HintPath>..\packages\NLog.2.0.0.2000\lib\net40\NLog.dll</HintPath>
     </Reference>
-    <Reference Include="pfmclrapi">
-      <HintPath>..\packages\MediaBrowser.Common.Internal.3.0.15\lib\net45\pfmclrapi.dll</HintPath>
+    <Reference Include="pfmclrapi, Version=0.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\MediaBrowser.Common.Internal.3.0.16\lib\net45\pfmclrapi.dll</HintPath>
     </Reference>
     <Reference Include="protobuf-net, Version=2.0.0.621, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

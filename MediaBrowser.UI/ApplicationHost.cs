@@ -205,7 +205,7 @@ namespace MediaBrowser.UI
         /// </summary>
         public void Shutdown()
         {
-            App.Instance.Shutdown();
+            App.Instance.Dispatcher.Invoke(App.Instance.Shutdown);
         }
     }
 }

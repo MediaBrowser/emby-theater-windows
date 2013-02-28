@@ -1,25 +1,24 @@
 ﻿using MediaBrowser.ClickOnce;
-using MediaBrowser.Common.Implementations;
-using MediaBrowser.Common.Implementations.HttpClientManager;
-using MediaBrowser.Common.Implementations.HttpServer;
-using MediaBrowser.Common.Implementations.Logging;
-using MediaBrowser.Common.Implementations.NetworkManagement;
 using MediaBrowser.Common.Implementations.ScheduledTasks;
 using MediaBrowser.Common.Implementations.Serialization;
-using MediaBrowser.Common.Implementations.ServerManager;
-using MediaBrowser.Common.Implementations.Udp;
-using MediaBrowser.Common.Implementations.WebSocket;
 using MediaBrowser.Common.IO;
 using MediaBrowser.Common.Kernel;
 using MediaBrowser.Common.Net;
 using MediaBrowser.Common.ScheduledTasks;
 using MediaBrowser.IsoMounter;
+using MediaBrowser.Logging.Nlog;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Serialization;
 using MediaBrowser.Model.System;
 using MediaBrowser.Model.Updates;
+using MediaBrowser.Networking.HttpManager;
+using MediaBrowser.Networking.HttpServer;
+using MediaBrowser.Networking.Management;
+using MediaBrowser.Networking.Udp;
+using MediaBrowser.Networking.WebSocket;
 using MediaBrowser.UI.Configuration;
 using MediaBrowser.UI.Controller;
+using SimpleInjector;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -34,13 +33,56 @@ namespace MediaBrowser.UI
     /// <summary>
     /// Class CompositionRoot
     /// </summary>
-    public class ApplicationHost : BaseApplicationHost, IApplicationHost
+    public class ApplicationHost : IApplicationHost, IDisposable
     {
+        /// <summary>
+        /// Gets or sets the logger.
+        /// </summary>
+        /// <value>The logger.</value>
+        private ILogger Logger { get; set; }
+
+        /// <summary>
+        /// Gets or sets the log file path.
+        /// </summary>
+        /// <value>The log file path.</value>
+        public string LogFilePath { get; private set; }
+
+        /// <summary>
+        /// The container
+        /// </summary>
+        private readonly Container _container = new Container();
+
         /// <summary>
         /// Gets or sets the kernel.
         /// </summary>
         /// <value>The kernel.</value>
-        internal UIKernel Kernel { get; private set; }
+        public UIKernel Kernel { get; private set; }
+
+        private readonly List<string> _failedAssemblies = new List<string>();
+        /// <summary>
+        /// Gets assemblies that failed to load
+        /// </summary>
+        public IEnumerable<string> FailedAssemblies
+        {
+            get { return _failedAssemblies; }
+        }
+
+        /// <summary>
+        /// Gets all types within all running assemblies
+        /// </summary>
+        /// <value>All types.</value>
+        public Type[] AllTypes { get; private set; }
+
+        /// <summary>
+        /// Gets all concrete types.
+        /// </summary>
+        /// <value>All concrete types.</value>
+        public Type[] AllConcreteTypes { get; private set; }
+
+        /// <summary>
+        /// The disposable parts
+        /// </summary>
+        private readonly List<IDisposable> _disposableParts = new List<IDisposable>();
 
         /// <summary>
         /// The json serializer
@@ -53,81 +95,241 @@ namespace MediaBrowser.UI
         private readonly IXmlSerializer _xmlSerializer = new XmlSerializer();
 
         /// <summary>
-        /// Gets the server application paths.
+        /// The _application paths
         /// </summary>
-        /// <value>The server application paths.</value>
-        protected UIApplicationPaths UIApplicationPaths
-        {
-            get { return (UIApplicationPaths)ApplicationPaths; }
-        }
+        private readonly UIApplicationPaths _applicationPaths = new UIApplicationPaths();
 
+        /// <summary>
+        /// The _task manager
+        /// </summary>
+        private readonly ITaskManager _taskManager;
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="ApplicationHost" /> class.
         /// </summary>
         /// <param name="logger">The logger.</param>
-        public ApplicationHost()
-            : base()
+        public ApplicationHost(ILogger logger)
         {
-            Kernel = new UIKernel(this, UIApplicationPaths, _xmlSerializer, Logger);
+            Logger = logger;
 
-            var networkManager = new NetworkManager();
+            _taskManager = new TaskManager(_applicationPaths, _jsonSerializer, Logger);
 
-            var serverManager = new ServerManager(this, Kernel, networkManager, _jsonSerializer, Logger);
+            Kernel = new UIKernel(this, _applicationPaths, _xmlSerializer, Logger);
 
-            var taskManager = new TaskManager(ApplicationPaths, _jsonSerializer, Logger, serverManager);
-
-            LogManager.ReloadLogger(Kernel.Configuration.EnableDebugLevelLogging ? LogSeverity.Debug : LogSeverity.Info);
-
-            Logger.Info("Version {0} initializing", ApplicationVersion);
-
-            RegisterResources(taskManager, networkManager, serverManager);
+            RegisterResources();
 
             FindParts();
         }
 
         /// <summary>
-        /// Gets the application paths.
-        /// </summary>
-        /// <returns>IApplicationPaths.</returns>
-        protected override IApplicationPaths GetApplicationPaths()
-        {
-            return new UIApplicationPaths();
-        }
-
-        /// <summary>
-        /// Gets the log manager.
-        /// </summary>
-        /// <returns>ILogManager.</returns>
-        protected override ILogManager GetLogManager()
-        {
-            return new NlogManager(ApplicationPaths.LogDirectoryPath, "MBT");
-        }
-
-        /// <summary>
         /// Registers resources that classes will depend on
         /// </summary>
-        protected override void RegisterResources(ITaskManager taskManager, INetworkManager networkManager, IServerManager serverManager)
+        internal void RegisterResources()
         {
-            base.RegisterResources(taskManager, networkManager, serverManager);
+            DiscoverTypes();
 
             RegisterSingleInstance<IKernel>(Kernel);
             RegisterSingleInstance(Kernel);
-
+            
             RegisterSingleInstance<IApplicationHost>(this);
+            RegisterSingleInstance(Logger);
 
-            RegisterSingleInstance(UIApplicationPaths);
-            RegisterSingleInstance<IIsoManager>(new PismoIsoManager(Logger));
+            RegisterSingleInstance(_applicationPaths);
+            RegisterSingleInstance<IApplicationPaths>(_applicationPaths);
+            RegisterSingleInstance(_taskManager);
+            RegisterSingleInstance<IIsoManager>(() => new PismoIsoManager(Logger));
+            RegisterSingleInstance<IHttpClient>(() => new HttpManager(_applicationPaths, Logger));
+            RegisterSingleInstance<INetworkManager>(() => new NetworkManager());
+            RegisterSingleInstance<IWebSocketServer>(() => new AlchemyServer(Logger));
             RegisterSingleInstance(_jsonSerializer);
             RegisterSingleInstance(_xmlSerializer);
-            RegisterSingleInstance(ServerFactory.CreateServer(this, ProtobufSerializer, Logger, "Media Browser", "index.html"), false);
+            RegisterSingleInstance<IProtobufSerializer>(() => ProtobufSerializer);
+            Register(typeof(IUdpServer), typeof(UdpServer));
+            RegisterSingleInstance(() => ServerFactory.CreateServer(this, Kernel, ProtobufSerializer, Logger, "Media Browser", "index.html"));
+        }
+
+        /// <summary>
+        /// Discovers the types.
+        /// </summary>
+        private void DiscoverTypes()
+        {
+            _failedAssemblies.Clear();
+
+            AllTypes = GetComposablePartAssemblies().SelectMany(GetTypes).ToArray();
+
+            AllConcreteTypes = AllTypes.Where(t => t.IsClass && !t.IsAbstract && !t.IsInterface && !t.IsGenericType).ToArray();
+        }
+
+        /// <summary>
+        /// Finds the parts.
+        /// </summary>
+        private void FindParts()
+        {
+            _taskManager.AddTasks(GetExports<IScheduledTask>(false));
+        }
+
+        /// <summary>
+        /// Gets a list of types within an assembly
+        /// This will handle situations that would normally throw an exception - such as a type within the assembly that depends on some other non-existant reference
+        /// </summary>
+        /// <param name="assembly">The assembly.</param>
+        /// <returns>IEnumerable{Type}.</returns>
+        /// <exception cref="System.ArgumentNullException">assembly</exception>
+        private IEnumerable<Type> GetTypes(Assembly assembly)
+        {
+            if (assembly == null)
+            {
+                throw new ArgumentNullException("assembly");
+            }
+
+            try
+            {
+                return assembly.GetTypes();
+            }
+            catch (ReflectionTypeLoadException ex)
+            {
+                // If it fails we can still get a list of the Types it was able to resolve
+                return ex.Types.Where(t => t != null);
+            }
+        }
+
+        /// <summary>
+        /// The _protobuf serializer initialized
+        /// </summary>
+        private bool _protobufSerializerInitialized;
+        /// <summary>
+        /// The _protobuf serializer sync lock
+        /// </summary>
+        private object _protobufSerializerSyncLock = new object();
+        /// <summary>
+        /// Gets a dynamically compiled generated serializer that can serialize protocontracts without reflection
+        /// </summary>
+        private ProtobufSerializer _protobufSerializer;
+        /// <summary>
+        /// Gets the protobuf serializer.
+        /// </summary>
+        /// <value>The protobuf serializer.</value>
+        public ProtobufSerializer ProtobufSerializer
+        {
+            get
+            {
+                // Lazy load
+                LazyInitializer.EnsureInitialized(ref _protobufSerializer, ref _protobufSerializerInitialized, ref _protobufSerializerSyncLock, () => ProtobufSerializer.Create(AllTypes));
+                return _protobufSerializer;
+            }
+            private set
+            {
+                _protobufSerializer = value;
+                _protobufSerializerInitialized = value != null;
+            }
+        }
+
+        /// <summary>
+        /// Creates an instance of type and resolves all constructor dependancies
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns>System.Object.</returns>
+        public object CreateInstance(Type type)
+        {
+            try
+            {
+                return _container.GetInstance(type);
+            }
+            catch
+            {
+                Logger.Error("Error creating {0}", type.Name);
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Registers the specified obj.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="obj">The obj.</param>
+        public void RegisterSingleInstance<T>(T obj)
+            where T : class
+        {
+            _container.RegisterSingle(obj);
+        }
+
+        /// <summary>
+        /// Registers the specified func.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="func">The func.</param>
+        public void Register<T>(Func<T> func)
+            where T : class
+        {
+            _container.Register(func);
+        }
+
+        /// <summary>
+        /// Registers the single instance.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="func">The func.</param>
+        public void RegisterSingleInstance<T>(Func<T> func)
+            where T : class
+        {
+            _container.RegisterSingle(func);
+        }
+
+        /// <summary>
+        /// Resolves this instance.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns>``0.</returns>
+        public T Resolve<T>()
+        {
+            return (T)_container.GetRegistration(typeof(T), true).GetInstance();
+        }
+
+        /// <summary>
+        /// Resolves this instance.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns>``0.</returns>
+        public T TryResolve<T>()
+        {
+            var result = _container.GetRegistration(typeof(T), false);
+
+            if (result == null)
+            {
+                return default(T);
+            }
+            return (T)result.GetInstance();
+        }
+
+        /// <summary>
+        /// Registers the specified service type.
+        /// </summary>
+        /// <param name="serviceType">Type of the service.</param>
+        /// <param name="implementation">Type of the concrete.</param>
+        public void Register(Type serviceType, Type implementation)
+        {
+            _container.Register(serviceType, implementation);
         }
 
         /// <summary>
         /// Restarts this instance.
         /// </summary>
+        /// <exception cref="System.NotImplementedException"></exception>
         public void Restart()
         {
             App.Instance.Restart();
+        }
+
+        /// <summary>
+        /// Reloads the logger.
+        /// </summary>
+        /// <exception cref="System.NotImplementedException"></exception>
+        public void ReloadLogger()
+        {
+            LogFilePath = Path.Combine(Kernel.ApplicationPaths.LogDirectoryPath, "Server-" + DateTime.Now.Ticks + ".log");
+
+            NlogManager.AddFileTarget(LogFilePath, Kernel.Configuration.EnableDebugLevelLogging);
         }
 
         /// <summary>
@@ -153,10 +355,11 @@ namespace MediaBrowser.UI
         /// <summary>
         /// Updates the application.
         /// </summary>
+        /// <param name="package">The package that contains the update</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <param name="progress">The progress.</param>
         /// <returns>Task.</returns>
-        public Task UpdateApplication(CancellationToken cancellationToken, IProgress<double> progress)
+        public Task UpdateApplication(PackageVersionInfo package, CancellationToken cancellationToken, IProgress<double> progress)
         {
             return new ApplicationUpdater().UpdateApplication(cancellationToken, progress);
         }
@@ -165,12 +368,12 @@ namespace MediaBrowser.UI
         /// Gets the composable part assemblies.
         /// </summary>
         /// <returns>IEnumerable{Assembly}.</returns>
-        protected override IEnumerable<Assembly> GetComposablePartAssemblies()
+        private IEnumerable<Assembly> GetComposablePartAssemblies()
         {
             // Gets all plugin assemblies by first reading all bytes of the .dll and calling Assembly.Load against that
             // This will prevent the .dll file from getting locked, and allow us to replace it when needed
             foreach (var pluginAssembly in Directory
-                .EnumerateFiles(ApplicationPaths.PluginsPath, "*.dll", SearchOption.TopDirectoryOnly)
+                .EnumerateFiles(Kernel.ApplicationPaths.PluginsPath, "*.dll", SearchOption.TopDirectoryOnly)
                 .Select(LoadAssembly).Where(a => a != null))
             {
                 yield return pluginAssembly;
@@ -195,17 +398,73 @@ namespace MediaBrowser.UI
 
             // Common implementations
             yield return typeof(TaskManager).Assembly;
-
+            
             // Include composable parts in the running assembly
             yield return GetType().Assembly;
         }
 
         /// <summary>
-        /// Shuts down.
+        /// Loads the assembly.
         /// </summary>
-        public void Shutdown()
+        /// <param name="file">The file.</param>
+        /// <returns>Assembly.</returns>
+        private Assembly LoadAssembly(string file)
         {
-            App.Instance.Shutdown();
+            try
+            {
+                return Assembly.Load(File.ReadAllBytes((file)));
+            }
+            catch (Exception ex)
+            {
+                _failedAssemblies.Add(file);
+                Logger.ErrorException("Error loading assembly {0}", ex, file);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Gets the exports.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="allTypes">All types.</param>
+        /// <param name="manageLiftime">if set to <c>true</c> [manage liftime].</param>
+        /// <returns>IEnumerable{``0}.</returns>
+        public IEnumerable<T> GetExports<T>(bool manageLiftime = true)
+        {
+            var currentType = typeof(T);
+
+            Logger.Info("Composing instances of " + currentType.Name);
+
+            var parts = AllConcreteTypes.Where(currentType.IsAssignableFrom).Select(CreateInstance).Cast<T>().ToArray();
+
+            if (manageLiftime)
+            {
+                _disposableParts.AddRange(parts.OfType<IDisposable>());
+            }
+
+            return parts;
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources.
+        /// </summary>
+        /// <param name="dispose"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        protected virtual void Dispose(bool dispose)
+        {
+            foreach (var part in _disposableParts)
+            {
+                part.Dispose();
+            }
+
+            _disposableParts.Clear();
         }
     }
 }

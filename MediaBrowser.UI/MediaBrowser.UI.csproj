@@ -1365,9 +1365,9 @@ xcopy "$(SolutionDir)..\Mediabrowser\Mediabrowser.Uninstaller\bin\Release\MediaB
 xcopy "$(SolutionDir)..\Mediabrowser\Mediabrowser.Uninstaller.Execute\bin\Release\MediaBrowser.Uninstaller.Execute.exe.config" "$(SolutionDir)..\Deploy\MBT\System\" /y
 xcopy "$(SolutionDir)..\Mediabrowser\Mediabrowser.Uninstaller\bin\Release\MediaBrowser.Uninstaller.exe" "$(SolutionDir)..\Deploy\MBT\System\" /y
 xcopy "$(SolutionDir)..\Mediabrowser\Mediabrowser.Uninstaller.Execute\bin\Release\MediaBrowser.Uninstaller.Execute.exe" "$(SolutionDir)..\Deploy\MBT\System\" /y
-xcopy "$(SolutionDir)libvlc.dll" "$(SolutionDir)..\Deploy\MBT\System\" /y
-xcopy "$(SolutionDir)libvlccore.dll" "$(SolutionDir)..\Deploy\MBT\System\" /y
-xcopy "$(SolutionDir)plugins" "$(SolutionDir)..\Deploy\MBT\System\Plugins" /y
+xcopy "$(SolutionDir)Mediabrowser.Theater\libvlc.dll" "$(SolutionDir)..\Deploy\MBT\System\" /y
+xcopy "$(SolutionDir)Mediabrowser.Theater\libvlccore.dll" "$(SolutionDir)..\Deploy\MBT\System\" /y
+xcopy "$(SolutionDir)plugins\*.*" "$(SolutionDir)..\Deploy\MBT\System" /y
 
 xcopy "$(TargetDir)$(TargetFileName).config" "$(SolutionDir)..\Deploy\MBT\System\" /y
 

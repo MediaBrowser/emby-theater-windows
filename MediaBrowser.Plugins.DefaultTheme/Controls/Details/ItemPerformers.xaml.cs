@@ -56,7 +56,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
             private set
             {
                 _items = value;
-                //lstItems.ItemsSource = value;
+                lstItems.ItemsSource = value;
                 OnPropertyChanged("Items");
             }
         }

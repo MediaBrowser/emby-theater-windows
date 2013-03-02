@@ -312,11 +312,7 @@
     </DataTemplate>
 
     <DataTemplate x:Key="ItemPerformersTemplate" DataType="{x:Type ViewModels:DtoBaseItemViewModel}">
-        <Grid HorizontalAlignment="Left">
-
-            <TextBlock Text="{Binding Path=Item.Name}"></TextBlock>
-
-        </Grid>
+        <themecontrols:BaseItemTile DataContext="{Binding}"></themecontrols:BaseItemTile>
     </DataTemplate>
 
     <DataTemplate x:Key="ItemChaptersTemplate" DataType="{x:Type ViewModels:ChapterInfoDtoViewModel}">

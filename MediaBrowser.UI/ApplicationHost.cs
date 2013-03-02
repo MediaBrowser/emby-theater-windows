@@ -148,17 +148,6 @@ namespace MediaBrowser.UI
         }
 
         /// <summary>
-        /// Updates the application.
-        /// </summary>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <param name="progress">The progress.</param>
-        /// <returns>Task.</returns>
-        public Task UpdateApplication(CancellationToken cancellationToken, IProgress<double> progress)
-        {
-            return new ApplicationUpdater().UpdateApplication(cancellationToken, progress);
-        }
-
-        /// <summary>
         /// Gets the composable part assemblies.
         /// </summary>
         /// <returns>IEnumerable{Assembly}.</returns>
@@ -203,6 +192,18 @@ namespace MediaBrowser.UI
         public void Shutdown()
         {
             App.Instance.Shutdown();
+        }
+
+        /// <summary>
+        /// Updates the application.
+        /// </summary>
+        /// <param name="package">The package.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="progress">The progress.</param>
+        /// <returns>Task.</returns>
+        public Task UpdateApplication(PackageVersionInfo package, CancellationToken cancellationToken, IProgress<double> progress)
+        {
+            return Task.Run(() => { });
         }
     }
 }

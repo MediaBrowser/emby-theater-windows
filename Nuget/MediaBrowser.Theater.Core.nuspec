@@ -6,6 +6,7 @@
         <title>MediaBrowser.Theater.Core</title>
         <authors>Media Browser Team</authors>
         <owners />
+        <iconUrl>http://www.mb3admin.com/images/mb3icons1-1.png</iconUrl>
         <projectUrl>https://github.com/MediaBrowser/MediaBrowser.Theater</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>Contains components required to build plugins for Media Browser Theater.</description>

@@ -1,5 +1,4 @@
 ﻿using MediaBrowser.ApiInteraction;
-using MediaBrowser.Common.Implementations.Serialization;
 using MediaBrowser.Common.Kernel;
 using MediaBrowser.Model.Connectivity;
 using MediaBrowser.Model.Logging;
@@ -97,7 +96,7 @@ namespace MediaBrowser.UI.Controller
         protected override async Task OnConfigurationLoaded()
         {
             ReloadApiClient();
-
+            
             try
             {
                 await new PluginUpdater(ApplicationHost, Logger).UpdatePlugins().ConfigureAwait(false);

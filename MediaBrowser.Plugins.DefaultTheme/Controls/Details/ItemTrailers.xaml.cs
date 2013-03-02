@@ -49,7 +49,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
 
             try
             {
-                result = await UIKernel.Instance.ApiClient.GetLocalTrailersAsync(App.Instance.CurrentUser.Id, Item.Id);
+                result = await App.Instance.ApiClient.GetLocalTrailersAsync(App.Instance.CurrentUser.Id, Item.Id);
             }
             catch (HttpException)
             {

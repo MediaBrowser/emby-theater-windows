@@ -13,7 +13,7 @@ namespace MediaBrowser.UI.Configuration
         /// </summary>
         private string _remoteImageCachePath;
 
-#if (DEBUG)
+#if DEBUG
         /// <summary>
         /// Initializes a new instance of the <see cref="UIApplicationPaths" /> class.
         /// </summary>

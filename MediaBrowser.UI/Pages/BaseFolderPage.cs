@@ -158,7 +158,6 @@ namespace MediaBrowser.UI.Pages
                 ChildCount = _children.TotalRecordCount;
                 OnChildrenChanged();
 
-                DisplayChildren = DtoBaseItemViewModel.GetObservableItems(Children.Items, AveragePrimaryImageAspectRatio, DisplayPreferences);
             }
         }
 
@@ -342,6 +341,8 @@ namespace MediaBrowser.UI.Pages
                 DisplayPreferences.PrimaryImageWidth = Convert.ToInt32(DisplayPreferences.PrimaryImageHeight * GetAspectRatio(DisplayPreferences.PrimaryImageType));
             }
 
+            DisplayChildren = DtoBaseItemViewModel.GetObservableItems(Children.Items, AveragePrimaryImageAspectRatio);
+            
             NotifyDisplayPreferencesChanged();
         }
 
@@ -390,7 +391,9 @@ namespace MediaBrowser.UI.Pages
                 foreach (var child in DisplayChildren)
                 {
                     child.AveragePrimaryImageAspectRatio = AveragePrimaryImageAspectRatio;
-                    child.NotifyDisplayPreferencesChanged();
+                    child.ImageHeight = DisplayPreferences.PrimaryImageHeight;
+                    child.ImageType = DisplayPreferences.PrimaryImageType;
+                    child.ImageWidth = DisplayPreferences.PrimaryImageWidth;
                 }
             }
 

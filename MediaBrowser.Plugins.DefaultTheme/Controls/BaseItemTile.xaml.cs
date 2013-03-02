@@ -129,12 +129,17 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         /// </summary>
         private async void ReloadImage()
         {
-            mainGrid.Height = ViewModel.ParentDisplayPreferences.PrimaryImageHeight;
-            mainGrid.Width = ViewModel.ParentDisplayPreferences.PrimaryImageWidth;
+            if (ViewModel.ImageWidth.Equals(0) || ViewModel.ImageHeight.Equals(0))
+            {
+                return;
+            }
+
+            mainGrid.Height = ViewModel.ImageHeight;
+            mainGrid.Width = ViewModel.ImageWidth;
 
             if (Item.HasPrimaryImage)
             {
-                var url = ViewModel.GetImageUrl(ViewModel.ParentDisplayPreferences.PrimaryImageType);
+                var url = ViewModel.GetImageUrl(ViewModel.ImageType);
 
                 border.Background = null;
                 

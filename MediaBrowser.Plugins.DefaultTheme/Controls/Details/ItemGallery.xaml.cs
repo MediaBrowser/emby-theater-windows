@@ -109,7 +109,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
             {
                 for (var i = 0; i < item.BackdropCount; i++)
                 {
-                    images.Add(UIKernel.Instance.ApiClient.GetImageUrl(item, new ImageOptions
+                    images.Add(App.Instance.ApiClient.GetImageUrl(item, new ImageOptions
                     {
                         ImageType = ImageType.Backdrop,
                         ImageIndex = i
@@ -119,7 +119,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
 
             if (item.HasThumb)
             {
-                images.Add(UIKernel.Instance.ApiClient.GetImageUrl(item, new ImageOptions
+                images.Add(App.Instance.ApiClient.GetImageUrl(item, new ImageOptions
                 {
                     ImageType = ImageType.Thumb
                 }));
@@ -127,7 +127,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
 
             if (item.HasArtImage)
             {
-                images.Add(UIKernel.Instance.ApiClient.GetImageUrl(item, new ImageOptions
+                images.Add(App.Instance.ApiClient.GetImageUrl(item, new ImageOptions
                 {
                     ImageType = ImageType.Art
                 }));
@@ -135,7 +135,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
 
             if (item.HasDiscImage)
             {
-                images.Add(UIKernel.Instance.ApiClient.GetImageUrl(item, new ImageOptions
+                images.Add(App.Instance.ApiClient.GetImageUrl(item, new ImageOptions
                 {
                     ImageType = ImageType.Disc
                 }));
@@ -143,7 +143,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
 
             if (item.HasMenuImage)
             {
-                images.Add(UIKernel.Instance.ApiClient.GetImageUrl(item, new ImageOptions
+                images.Add(App.Instance.ApiClient.GetImageUrl(item, new ImageOptions
                 {
                     ImageType = ImageType.Menu
                 }));
@@ -151,7 +151,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
 
             if (item.HasBoxImage)
             {
-                images.Add(UIKernel.Instance.ApiClient.GetImageUrl(item, new ImageOptions
+                images.Add(App.Instance.ApiClient.GetImageUrl(item, new ImageOptions
                 {
                     ImageType = ImageType.Box
                 }));

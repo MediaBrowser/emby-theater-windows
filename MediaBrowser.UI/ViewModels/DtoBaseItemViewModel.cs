@@ -33,21 +33,56 @@ namespace MediaBrowser.UI.ViewModels
         }
 
         /// <summary>
-        /// The _parent display preferences
+        /// The _image height
         /// </summary>
-        private DisplayPreferences _parentDisplayPreferences;
+        private double _imageHeight;
         /// <summary>
-        /// Gets of sets the current DisplayPreferences
+        /// Gets or sets the height of the image.
         /// </summary>
-        /// <value>The parent display preferences.</value>
-        public DisplayPreferences ParentDisplayPreferences
+        /// <value>The height of the image.</value>
+        public double ImageHeight
         {
-            get { return _parentDisplayPreferences; }
-
+            get { return _imageHeight; }
             set
             {
-                _parentDisplayPreferences = value;
-                NotifyDisplayPreferencesChanged();
+                _imageHeight = value;
+                OnPropertyChanged("ImageHeight");
+            }
+        }
+
+        /// <summary>
+        /// The _image width
+        /// </summary>
+        private double _imageWidth;
+        /// <summary>
+        /// Gets or sets the width of the image.
+        /// </summary>
+        /// <value>The width of the image.</value>
+        public double ImageWidth
+        {
+            get { return _imageWidth; }
+            set
+            {
+                _imageWidth = value;
+                OnPropertyChanged("ImageWidth");
+            }
+        }
+
+        /// <summary>
+        /// The _image type
+        /// </summary>
+        private ImageType _imageType;
+        /// <summary>
+        /// Gets or sets the type of the image.
+        /// </summary>
+        /// <value>The type of the image.</value>
+        public ImageType ImageType
+        {
+            get { return _imageType; }
+            set
+            {
+                _imageType = value;
+                OnPropertyChanged("ImageType");
             }
         }
 
@@ -71,14 +106,6 @@ namespace MediaBrowser.UI.ViewModels
         }
 
         /// <summary>
-        /// Notifies the display preferences changed.
-        /// </summary>
-        public void NotifyDisplayPreferencesChanged()
-        {
-            OnPropertyChanged("DisplayPreferences");
-        }
-
-        /// <summary>
         /// Gets an image url that can be used to download an image from the api
         /// </summary>
         /// <param name="imageType">The type of image requested</param>
@@ -86,7 +113,7 @@ namespace MediaBrowser.UI.ViewModels
         /// <returns>System.String.</returns>
         public string GetImageUrl(ImageType imageType, int? imageIndex = null)
         {
-            var height = ParentDisplayPreferences.PrimaryImageHeight;
+            var height = ImageHeight;
 
             var averageAspectRatio = BaseFolderPage.GetAspectRatio(imageType, AveragePrimaryImageAspectRatio);
 
@@ -96,7 +123,7 @@ namespace MediaBrowser.UI.ViewModels
             {
                 ImageType = imageType,
                 ImageIndex = imageIndex,
-                Height = height
+                Height = Convert.ToInt32(height)
             };
 
             if (imageType == ImageType.Primary)
@@ -104,7 +131,7 @@ namespace MediaBrowser.UI.ViewModels
                 var currentAspectRatio = imageType == ImageType.Primary ? Item.PrimaryImageAspectRatio ?? width / height : width / height;
 
                 // Preserve the exact AR if it deviates from the average significantly
-                var preserveExactAspectRatio = Math.Abs(currentAspectRatio - averageAspectRatio) > .10;
+                var preserveExactAspectRatio = Math.Abs(currentAspectRatio - averageAspectRatio) > .15;
 
                 if (!preserveExactAspectRatio)
                 {
@@ -112,6 +139,10 @@ namespace MediaBrowser.UI.ViewModels
                 }
             }
 
+            if (Item.IsType("Person"))
+            {
+                return App.Instance.ApiClient.GetPersonImageUrl(Item, imageOptions);
+            }
             return App.Instance.ApiClient.GetImageUrl(Item, imageOptions);
         }
 
@@ -156,16 +187,15 @@ namespace MediaBrowser.UI.ViewModels
         {
             return GetObservableItems(items, GetAveragePrimaryImageAspectRatio(items));
         }
-        
+
         /// <summary>
         /// Gets the observable items.
         /// </summary>
         /// <param name="items">The items.</param>
         /// <param name="averagePrimaryImageAspectRatio">The average primary image aspect ratio.</param>
-        /// <param name="parentDisplayPreferences">The parent display preferences.</param>
         /// <returns>ObservableCollection{DtoBaseItemViewModel}.</returns>
         /// <exception cref="System.ArgumentNullException">items</exception>
-        public static ObservableCollection<DtoBaseItemViewModel> GetObservableItems(IEnumerable<BaseItemDto> items, double averagePrimaryImageAspectRatio, DisplayPreferences parentDisplayPreferences = null)
+        public static ObservableCollection<DtoBaseItemViewModel> GetObservableItems(IEnumerable<BaseItemDto> items, double averagePrimaryImageAspectRatio)
         {
             if (items == null)
             {
@@ -175,7 +205,6 @@ namespace MediaBrowser.UI.ViewModels
             return new ObservableCollection<DtoBaseItemViewModel>(items.Select(i => new DtoBaseItemViewModel
             {
                 Item = i,
-                ParentDisplayPreferences = parentDisplayPreferences,
                 AveragePrimaryImageAspectRatio = averagePrimaryImageAspectRatio
             }));
         }

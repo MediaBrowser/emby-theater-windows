@@ -1,4 +1,5 @@
 ﻿using MediaBrowser.Model.Dto;
+using MediaBrowser.Model.Entities;
 using MediaBrowser.UI;
 using MediaBrowser.UI.Controller;
 using MediaBrowser.UI.ViewModels;
@@ -37,6 +38,21 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
                 OnPropertyChanged("ItemsResult");
 
                 Items = DtoBaseItemViewModel.GetObservableItems(ItemsResult.Items);
+
+                double width = 300;
+                double height = 300;
+
+                if (Items.Count > 0)
+                {
+                    height = width / Items[0].AveragePrimaryImageAspectRatio;
+                }
+
+                foreach (var item in Items)
+                {
+                    item.ImageWidth = width;
+                    item.ImageHeight = height;
+                    item.ImageType = ImageType.Primary;
+                }
             }
         }
 
@@ -60,13 +76,18 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
                 OnPropertyChanged("Items");
             }
         }
-        
+
         /// <summary>
         /// Called when [item changed].
         /// </summary>
         protected override async void OnItemChanged()
         {
-            ItemsResult = await UIKernel.Instance.ApiClient.GetAllPeopleAsync(App.Instance.CurrentUser.Id, itemId: Item.Id);
+            ItemsResult = await App.Instance.ApiClient.GetAllPeopleAsync(new ItemsByNameQuery
+            {
+                ItemId = Item.Id,
+                UserId = App.Instance.CurrentUser.Id,
+                Fields = new[] { ItemFields.PrimaryImageAspectRatio }
+            });
         }
     }
 }

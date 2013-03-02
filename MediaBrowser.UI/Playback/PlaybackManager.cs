@@ -153,7 +153,7 @@ namespace MediaBrowser.UI.Playback
             {
                 try
                 {
-                    var intros = await UIKernel.Instance.ApiClient.GetIntrosAsync(firstItem.Id, App.Instance.CurrentUser.Id);
+                    var intros = await App.Instance.ApiClient.GetIntrosAsync(firstItem.Id, App.Instance.CurrentUser.Id);
 
                     options.Items.InsertRange(0, intros.Select(GetPlayableItem));
                 }

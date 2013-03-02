@@ -44,7 +44,7 @@ namespace MediaBrowser.UI.Controller
         public async Task<PluginUpdateResult> UpdatePlugins()
         {
             _logger.Info("Downloading list of installed plugins");
-            var allInstalledPlugins = await UIKernel.Instance.ApiClient.GetInstalledPluginsAsync().ConfigureAwait(false);
+            var allInstalledPlugins = await App.Instance.ApiClient.GetInstalledPluginsAsync().ConfigureAwait(false);
 
             var uiPlugins = allInstalledPlugins.Where(p => p.DownloadToUI).ToList();
 
@@ -207,7 +207,7 @@ namespace MediaBrowser.UI.Controller
             // First download to a MemoryStream. This way if the download is cut off, we won't be left with a partial file
             using (var memoryStream = new MemoryStream())
             {
-                var assemblyStream = await UIKernel.Instance.ApiClient.GetPluginAssemblyAsync(plugin).ConfigureAwait(false);
+                var assemblyStream = await App.Instance.ApiClient.GetPluginAssemblyAsync(plugin).ConfigureAwait(false);
 
                 await assemblyStream.CopyToAsync(memoryStream).ConfigureAwait(false);
 
@@ -231,7 +231,7 @@ namespace MediaBrowser.UI.Controller
             _logger.Info("Downloading {0} Configuration", pluginInfo.Name);
 
             // First download to a MemoryStream. This way if the download is cut off, we won't be left with a partial file
-            using (var stream = await UIKernel.Instance.ApiClient.GetPluginConfigurationFileAsync(pluginInfo.Id).ConfigureAwait(false))
+            using (var stream = await App.Instance.ApiClient.GetPluginConfigurationFileAsync(pluginInfo.Id).ConfigureAwait(false))
             {
                 using (var memoryStream = new MemoryStream())
                 {

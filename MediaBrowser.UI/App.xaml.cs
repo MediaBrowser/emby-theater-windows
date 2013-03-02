@@ -138,15 +138,15 @@ namespace MediaBrowser.UI
             {
                 _currentUser = value;
 
-                if (UIKernel.Instance.ApiClient != null)
+                if (ApiClient != null)
                 {
                     if (value == null)
                     {
-                        UIKernel.Instance.ApiClient.CurrentUserId = null;
+                        ApiClient.CurrentUserId = null;
                     }
                     else
                     {
-                        UIKernel.Instance.ApiClient.CurrentUserId = value.Id;
+                        ApiClient.CurrentUserId = value.Id;
                     }
                 }
 
@@ -811,7 +811,7 @@ namespace MediaBrowser.UI
 
                 try
                 {
-                    using (var httpStream = await UIKernel.Instance.ApiClient.GetImageStreamAsync(url + "&x=1"))
+                    using (var httpStream = await ApiClient.GetImageStreamAsync(url + "&x=1"))
                     {
                         return await GetRemoteBitmapAsync(httpStream, cachePath);
                     }

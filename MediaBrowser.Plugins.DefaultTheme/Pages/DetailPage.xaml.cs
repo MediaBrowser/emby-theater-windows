@@ -163,7 +163,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
             {
                 PrimaryImage.Visibility = Visibility.Visible;
 
-                primaryImageTask = App.Instance.GetRemoteBitmapAsync(UIKernel.Instance.ApiClient.GetImageUrl(Item, new ImageOptions
+                primaryImageTask = App.Instance.GetRemoteBitmapAsync(App.Instance.ApiClient.GetImageUrl(Item, new ImageOptions
                 {
                     ImageType = ImageType.Primary,
                     Quality = 100

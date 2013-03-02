@@ -642,7 +642,7 @@ namespace MediaBrowser.UI.Playback
 
             try
             {
-                await UIKernel.Instance.ApiClient.ReportPlaybackStartAsync(item.Id, App.Instance.CurrentUser.Id);
+                await App.Instance.ApiClient.ReportPlaybackStartAsync(item.Id, App.Instance.CurrentUser.Id);
             }
             catch (HttpException ex)
             {
@@ -667,7 +667,7 @@ namespace MediaBrowser.UI.Playback
 
             try
             {
-                await UIKernel.Instance.ApiClient.ReportPlaybackProgressAsync(item.Id, App.Instance.CurrentUser.Id, positionTicks);
+                await App.Instance.ApiClient.ReportPlaybackProgressAsync(item.Id, App.Instance.CurrentUser.Id, positionTicks);
             }
             catch (HttpException ex)
             {
@@ -692,7 +692,7 @@ namespace MediaBrowser.UI.Playback
 
             try
             {
-                await UIKernel.Instance.ApiClient.ReportPlaybackStoppedAsync(item.Id, App.Instance.CurrentUser.Id, positionTicks);
+                await App.Instance.ApiClient.ReportPlaybackStoppedAsync(item.Id, App.Instance.CurrentUser.Id, positionTicks);
             }
             catch (HttpException ex)
             {
@@ -710,7 +710,7 @@ namespace MediaBrowser.UI.Playback
 
             try
             {
-                await UIKernel.Instance.ApiClient.UpdatePlayedStatusAsync(idList.First(), App.Instance.CurrentUser.Id, true);
+                await App.Instance.ApiClient.UpdatePlayedStatusAsync(idList.First(), App.Instance.CurrentUser.Id, true);
             }
             catch (HttpException ex)
             {

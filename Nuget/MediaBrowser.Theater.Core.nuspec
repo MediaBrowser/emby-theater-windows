@@ -5,7 +5,7 @@
         <version>3.0.18</version>
         <title>MediaBrowser.Theater.Core</title>
         <authors>Media Browser Team</authors>
-        <owners />
+        <owners>scottisafool,Luke</owners>
         <iconUrl>http://www.mb3admin.com/images/mb3icons1-1.png</iconUrl>
         <projectUrl>https://github.com/MediaBrowser/MediaBrowser.Theater</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>

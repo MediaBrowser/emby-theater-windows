@@ -1,4 +1,5 @@
-﻿using MediaBrowser.ClickOnce;
+﻿using MediaBrowser.ApiInteraction;
+using MediaBrowser.ClickOnce;
 using MediaBrowser.Common.Implementations;
 using MediaBrowser.Common.Implementations.HttpServer;
 using MediaBrowser.Common.Implementations.Logging;
@@ -11,7 +12,9 @@ using MediaBrowser.Common.Kernel;
 using MediaBrowser.Common.Net;
 using MediaBrowser.Common.ScheduledTasks;
 using MediaBrowser.IsoMounter;
+using MediaBrowser.Model.Connectivity;
 using MediaBrowser.Model.Logging;
+using MediaBrowser.Model.Net;
 using MediaBrowser.Model.Serialization;
 using MediaBrowser.Model.System;
 using MediaBrowser.Model.Updates;
@@ -22,6 +25,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Cache;
+using System.Net.Http;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -39,6 +45,12 @@ namespace MediaBrowser.UI
         /// <value>The kernel.</value>
         internal UIKernel Kernel { get; private set; }
 
+        /// <summary>
+        /// Gets the API client.
+        /// </summary>
+        /// <value>The API client.</value>
+        public ApiClient ApiClient { get; private set; }
+        
         /// <summary>
         /// The json serializer
         /// </summary>
@@ -65,8 +77,25 @@ namespace MediaBrowser.UI
         public ApplicationHost()
             : base()
         {
+        }
+
+        public override async Task Init()
+        {
+            await base.Init().ConfigureAwait(false);
+
             Kernel = new UIKernel(this, UIApplicationPaths, _xmlSerializer, Logger);
 
+            ReloadApiClient();
+
+            try
+            {
+                await new PluginUpdater(this, Logger, ApplicationPaths, ApiClient).UpdatePlugins().ConfigureAwait(false);
+            }
+            catch (HttpException ex)
+            {
+                Logger.ErrorException("Error updating plugins from the server", ex);
+            }
+            
             var networkManager = new NetworkManager();
 
             var serverManager = new ServerManager(this, Kernel, networkManager, _jsonSerializer, Logger);
@@ -117,6 +146,27 @@ namespace MediaBrowser.UI
             RegisterSingleInstance(_jsonSerializer);
             RegisterSingleInstance(_xmlSerializer);
             RegisterSingleInstance(ServerFactory.CreateServer(this, ProtobufSerializer, Logger, "Media Browser", "index.html"), false);
+        }
+
+        /// <summary>
+        /// Disposes the current ApiClient and creates a new one
+        /// </summary>
+        private void ReloadApiClient()
+        {
+            ApiClient = new ApiClient(Logger, new AsyncHttpClient(new WebRequestHandler
+            {
+                AutomaticDecompression = DecompressionMethods.Deflate,
+                CachePolicy = new RequestCachePolicy(RequestCacheLevel.Revalidate)
+            }))
+            {
+                ServerHostName = Kernel.Configuration.ServerHostName,
+                ServerApiPort = Kernel.Configuration.ServerApiPort,
+                ClientType = ClientType.Pc,
+                DeviceName = Environment.MachineName,
+                SerializationFormat = SerializationFormats.Json,
+                JsonSerializer = _jsonSerializer,
+                ProtobufSerializer = ProtobufSerializer
+            };
         }
 
         /// <summary>

@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{B5ECE1FB-618E-420B-9A99-8E972D76920A}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MediaBrowser.UI</RootNamespace>
     <AssemblyName>MediaBrowser.UI</AssemblyName>
@@ -90,9 +90,7 @@
   <PropertyGroup />
   <PropertyGroup />
   <PropertyGroup />
-  <PropertyGroup>
-    <NoWin32Manifest>true</NoWin32Manifest>
-  </PropertyGroup>
+  <PropertyGroup />
   <ItemGroup>
     <Reference Include="Declarations">
       <HintPath>..\ThirdParty\Taygeta\Declarations.dll</HintPath>
@@ -107,25 +105,25 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\MediaBrowser.ApiClient.3.0.0.22-beta\lib\net45\MediaBrowser.ApiInteraction.dll</HintPath>
     </Reference>
-    <Reference Include="MediaBrowser.ClickOnce, Version=3.0.4808.39161, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.ClickOnce, Version=3.0.4810.4392, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.Internal.3.0.19\lib\net45\MediaBrowser.ClickOnce.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.Internal.3.0.25\lib\net45\MediaBrowser.ClickOnce.dll</HintPath>
     </Reference>
-    <Reference Include="MediaBrowser.Common, Version=3.0.4809.3926, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.Common, Version=3.0.4810.4392, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.3.0.22\lib\net45\MediaBrowser.Common.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.25\lib\net45\MediaBrowser.Common.dll</HintPath>
     </Reference>
-    <Reference Include="MediaBrowser.Common.Implementations, Version=3.0.4808.39162, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.Common.Implementations, Version=3.0.4810.4392, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.Internal.3.0.19\lib\net45\MediaBrowser.Common.Implementations.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.Internal.3.0.25\lib\net45\MediaBrowser.Common.Implementations.dll</HintPath>
     </Reference>
-    <Reference Include="MediaBrowser.IsoMounter, Version=3.0.4808.39162, Culture=neutral, processorArchitecture=x86">
+    <Reference Include="MediaBrowser.IsoMounter, Version=3.0.4810.4392, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.Internal.3.0.19\lib\net45\MediaBrowser.IsoMounter.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.Internal.3.0.25\lib\net45\MediaBrowser.IsoMounter.dll</HintPath>
     </Reference>
-    <Reference Include="MediaBrowser.Model, Version=3.0.4809.3925, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.Model, Version=3.0.4810.4391, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.3.0.22\lib\net45\MediaBrowser.Model.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.25\lib\net45\MediaBrowser.Model.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Expression.Effects, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -143,7 +141,7 @@
     </Reference>
     <Reference Include="pfmclrapi, Version=0.0.0.0, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.Internal.3.0.19\lib\net45\pfmclrapi.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.Internal.3.0.25\lib\net45\pfmclrapi.dll</HintPath>
     </Reference>
     <Reference Include="protobuf-net, Version=2.0.0.621, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Common.IO;
+﻿using MediaBrowser.ApiInteraction;
+using MediaBrowser.Common.IO;
 using MediaBrowser.Common.Kernel;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Net;
@@ -26,15 +27,20 @@ namespace MediaBrowser.UI.Controller
         /// </summary>
         private readonly IApplicationHost _appHost;
 
+        private readonly IApplicationPaths _appPaths;
+        private readonly ApiClient _apiClient;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="PluginUpdater" /> class.
         /// </summary>
         /// <param name="appHost">The app host.</param>
         /// <param name="logger">The logger.</param>
-        public PluginUpdater(IApplicationHost appHost, ILogger logger)
+        public PluginUpdater(IApplicationHost appHost, ILogger logger, IApplicationPaths appPaths, ApiClient apiClient)
         {
             _appHost = appHost;
             _logger = logger;
+            _appPaths = appPaths;
+            _apiClient = apiClient;
         }
 
         /// <summary>
@@ -44,7 +50,7 @@ namespace MediaBrowser.UI.Controller
         public async Task<PluginUpdateResult> UpdatePlugins()
         {
             _logger.Info("Downloading list of installed plugins");
-            var allInstalledPlugins = await App.Instance.ApiClient.GetInstalledPluginsAsync().ConfigureAwait(false);
+            var allInstalledPlugins = await _apiClient.GetInstalledPluginsAsync().ConfigureAwait(false);
 
             var uiPlugins = allInstalledPlugins.Where(p => p.DownloadToUI).ToList();
 
@@ -74,7 +80,7 @@ namespace MediaBrowser.UI.Controller
             foreach (var pluginInfo in uiPlugins)
             {
                 // See if it is already installed in the UI
-                var currentAssemblyPath = Path.Combine(UIKernel.Instance.ApplicationPaths.PluginsPath, pluginInfo.AssemblyFileName);
+                var currentAssemblyPath = Path.Combine(_appPaths.PluginsPath, pluginInfo.AssemblyFileName);
 
                 var isPluginInstalled = File.Exists(currentAssemblyPath);
 
@@ -150,7 +156,7 @@ namespace MediaBrowser.UI.Controller
                 .Where(p => _appHost.ApplicationVersion >= Version.Parse(p.MinimumRequiredUIVersion)))
             {
                 // See if it is already installed in the UI
-                var path = Path.Combine(UIKernel.Instance.ApplicationPaths.PluginConfigurationsPath, pluginInfo.ConfigurationFileName);
+                var path = Path.Combine(_appPaths.PluginConfigurationsPath, pluginInfo.ConfigurationFileName);
 
                 var download = false;
 
@@ -202,12 +208,12 @@ namespace MediaBrowser.UI.Controller
         {
             _logger.Info("Downloading {0} Plugin", plugin.Name);
 
-            var path = Path.Combine(UIKernel.Instance.ApplicationPaths.PluginsPath, plugin.AssemblyFileName);
+            var path = Path.Combine(_appPaths.PluginsPath, plugin.AssemblyFileName);
 
             // First download to a MemoryStream. This way if the download is cut off, we won't be left with a partial file
             using (var memoryStream = new MemoryStream())
             {
-                var assemblyStream = await App.Instance.ApiClient.GetPluginAssemblyAsync(plugin).ConfigureAwait(false);
+                var assemblyStream = await _apiClient.GetPluginAssemblyAsync(plugin).ConfigureAwait(false);
 
                 await assemblyStream.CopyToAsync(memoryStream).ConfigureAwait(false);
 
@@ -231,7 +237,7 @@ namespace MediaBrowser.UI.Controller
             _logger.Info("Downloading {0} Configuration", pluginInfo.Name);
 
             // First download to a MemoryStream. This way if the download is cut off, we won't be left with a partial file
-            using (var stream = await App.Instance.ApiClient.GetPluginConfigurationFileAsync(pluginInfo.Id).ConfigureAwait(false))
+            using (var stream = await _apiClient.GetPluginConfigurationFileAsync(pluginInfo.Id).ConfigureAwait(false))
             {
                 using (var memoryStream = new MemoryStream())
                 {
@@ -258,7 +264,7 @@ namespace MediaBrowser.UI.Controller
         {
             var deletedPlugins = new List<string>();
 
-            foreach (var plugin in Directory.EnumerateFiles(UIKernel.Instance.ApplicationPaths.PluginsPath, "*.dll", SearchOption.TopDirectoryOnly)
+            foreach (var plugin in Directory.EnumerateFiles(_appPaths.PluginsPath, "*.dll", SearchOption.TopDirectoryOnly)
                 .Select(Path.GetFileName)
                 .ToList())
             {

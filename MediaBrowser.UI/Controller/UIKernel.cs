@@ -1,17 +1,9 @@
-﻿using MediaBrowser.ApiInteraction;
-using MediaBrowser.Common.Kernel;
-using MediaBrowser.Model.Connectivity;
+﻿using MediaBrowser.Common.Kernel;
 using MediaBrowser.Model.Logging;
-using MediaBrowser.Model.Net;
 using MediaBrowser.Model.Serialization;
 using MediaBrowser.UI.Configuration;
 using MediaBrowser.UI.Playback;
-using System;
 using System.Collections.Generic;
-using System.Net;
-using System.Net.Cache;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace MediaBrowser.UI.Controller
 {
@@ -25,12 +17,6 @@ namespace MediaBrowser.UI.Controller
         /// </summary>
         /// <value>The instance.</value>
         public static UIKernel Instance { get; private set; }
-
-        /// <summary>
-        /// Gets the API client.
-        /// </summary>
-        /// <value>The API client.</value>
-        public ApiClient ApiClient { get; private set; }
 
         /// <summary>
         /// Gets the playback manager.
@@ -89,83 +75,14 @@ namespace MediaBrowser.UI.Controller
             }
         }
 
-        /// <summary>
-        /// Reload api client and update plugins after loading configuration
-        /// </summary>
-        /// <returns>Task.</returns>
-        protected override async Task OnConfigurationLoaded()
+        protected override async void ReloadInternal()
         {
-            ReloadApiClient();
-            
-            try
-            {
-                await new PluginUpdater(ApplicationHost, Logger).UpdatePlugins().ConfigureAwait(false);
-            }
-            catch (HttpException ex)
-            {
-                Logger.ErrorException("Error updating plugins from the server", ex);
-            }
-        }
+            base.ReloadInternal();
 
-        /// <summary>
-        /// Disposes the current ApiClient and creates a new one
-        /// </summary>
-        private void ReloadApiClient()
-        {
-            DisposeApiClient();
-
-            ApiClient = new ApiClient(Logger, new AsyncHttpClient(new WebRequestHandler
-            {
-                AutomaticDecompression = DecompressionMethods.Deflate,
-                CachePolicy = new RequestCachePolicy(RequestCacheLevel.Revalidate)
-            }))
-            {
-                ServerHostName = Configuration.ServerHostName,
-                ServerApiPort = Configuration.ServerApiPort,
-                ClientType = ClientType.Pc,
-                DeviceName = Environment.MachineName,
-                SerializationFormat = SerializationFormats.Json,
-                JsonSerializer = ApplicationHost.Resolve<IJsonSerializer>(),
-                ProtobufSerializer = ApplicationHost.Resolve<IProtobufSerializer>()
-            };
-        }
-
-        /// <summary>
-        /// Finds the parts.
-        /// </summary>
-        protected override void FindParts()
-        {
             PlaybackManager = (PlaybackManager)ApplicationHost.CreateInstance(typeof(PlaybackManager));
-            
-            base.FindParts();
 
             Themes = ApplicationHost.GetExports<BaseTheme>();
             MediaPlayers = ApplicationHost.GetExports<BaseMediaPlayer>();
-        }
-
-        /// <summary>
-        /// Disposes the current ApiClient
-        /// </summary>
-        private void DisposeApiClient()
-        {
-            if (ApiClient != null)
-            {
-                ApiClient.Dispose();
-            }
-        }
-
-        /// <summary>
-        /// Releases unmanaged and - optionally - managed resources.
-        /// </summary>
-        /// <param name="dispose"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-        protected override void Dispose(bool dispose)
-        {
-            if (dispose)
-            {
-                DisposeApiClient();
-            }
-
-            base.Dispose(dispose);
         }
     }
 }

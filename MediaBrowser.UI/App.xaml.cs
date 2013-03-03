@@ -1,5 +1,4 @@
 ﻿using MediaBrowser.ApiInteraction;
-using MediaBrowser.ClickOnce;
 using MediaBrowser.Common.Extensions;
 using MediaBrowser.Common.Implementations.Logging;
 using MediaBrowser.Common.IO;
@@ -105,7 +104,7 @@ namespace MediaBrowser.UI
         /// <value>The API client.</value>
         public ApiClient ApiClient
         {
-            get { return UIKernel.Instance.ApiClient; }
+            get { return CompositionRoot.ApiClient; }
         }
 
         /// <summary>
@@ -367,6 +366,7 @@ namespace MediaBrowser.UI
             ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
             CompositionRoot = new ApplicationHost();
+            await CompositionRoot.Init();
 
             Logger = CompositionRoot.Logger;
             Kernel = CompositionRoot.Kernel;
@@ -375,7 +375,7 @@ namespace MediaBrowser.UI
             {
                 var now = DateTime.UtcNow;
 
-                await Kernel.Init();
+                Kernel.Init();
 
                 Logger.Info("Kernel.Init completed in {0} seconds.", (DateTime.UtcNow - now).TotalSeconds);
 

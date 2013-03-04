@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Common;
+﻿using System;
+using MediaBrowser.Common;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Kernel;
 using MediaBrowser.Model.Logging;
@@ -17,6 +18,10 @@ namespace MediaBrowser.UI.Controller
         public UIKernel(IApplicationHost appHost, ILogManager logManager, IConfigurationManager configurationManager)
             : base(appHost, logManager, configurationManager)
         {
+            if (Instance != null)
+            {
+                throw new InvalidOperationException("Can only have one Kernel");
+            }
             Instance = this;
             _configurationManager = configurationManager;
         }

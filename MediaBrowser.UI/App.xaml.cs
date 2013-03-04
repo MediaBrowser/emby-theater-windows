@@ -356,6 +356,8 @@ namespace MediaBrowser.UI
 
                 await CompositionRoot.Init();
 
+                OnKernelLoaded();
+
                 InstantiateMainWindow().Show();
 
                 ShowApplicationWindow();

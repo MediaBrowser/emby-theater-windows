@@ -47,6 +47,23 @@ namespace MediaBrowser.UI
             get { return "MBT"; }
         }
 
+        protected UIKernel UIKernel
+        {
+            get { return (UIKernel) Kernel; }
+        }
+
+        public override async Task Init()
+        {
+            await base.Init().ConfigureAwait(false);
+
+            // For now until the ui has it's own startup wizard
+            if (IsFirstRun)
+            {
+                ConfigurationManager.CommonConfiguration.IsStartupWizardCompleted = true;
+                ConfigurationManager.SaveConfiguration();
+            }
+        }
+
         /// <summary>
         /// Registers resources that classes will depend on
         /// </summary>
@@ -66,6 +83,7 @@ namespace MediaBrowser.UI
             await base.RegisterResources().ConfigureAwait(false);
 
             RegisterSingleInstance<UIApplicationPaths>(ApplicationPaths);
+            RegisterSingleInstance(UIKernel);
 
             RegisterSingleInstance(UIConfigurationManager);
 

@@ -25,13 +25,18 @@ namespace MediaBrowser.UI.Playback
 
         private readonly UIKernel Kernel;
 
+        private readonly UIConfigurationManager _configurationManager;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="PlaybackManager" /> class.
         /// </summary>
         /// <param name="kernel">The kernel.</param>
-        public PlaybackManager(UIKernel kernel, ILogger logger)
+        /// <param name="logger">The logger.</param>
+        /// <param name="configurationManager">The configuration manager.</param>
+        public PlaybackManager(UIKernel kernel, ILogger logger, UIConfigurationManager configurationManager)
         {
             _logger = logger;
+            _configurationManager = configurationManager;
             Kernel = kernel;
         }
 
@@ -247,12 +252,12 @@ namespace MediaBrowser.UI.Playback
         /// <returns>BaseMediaPlayer.</returns>
         private Tuple<BaseMediaPlayer, PlayerConfiguration> GetConfiguredPlayer(List<BaseItemDto> items)
         {
-            if (UIKernel.Instance.Configuration.MediaPlayers == null)
+            if (_configurationManager.Configuration.MediaPlayers == null)
             {
                 return null;
             }
 
-            return UIKernel.Instance.Configuration.MediaPlayers.Where(p => IsConfiguredToPlay(p, items))
+            return _configurationManager.Configuration.MediaPlayers.Where(p => IsConfiguredToPlay(p, items))
                            .Select(p => new Tuple<BaseMediaPlayer, PlayerConfiguration>(UIKernel.Instance.MediaPlayers.FirstOrDefault(m => m.Name.Equals(p.PlayerName, StringComparison.OrdinalIgnoreCase)), p))
                            .FirstOrDefault(p => p.Item1 != null);
         }

@@ -186,14 +186,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
             tasks.Add(RefreshFavoriteItemsAsync());
 
             // In-Progress Items
-            if (Folder.ResumableItemCount > 0)
-            {
-                tasks.Add(RefreshResumableItemsAsync());
-            }
-            else
-            {
-                SetResumableItems(new BaseItemDto[] { });
-            }
+            tasks.Add(RefreshResumableItemsAsync());
 
             // Recently Added Items
             if (Folder.RecentlyAddedItemCount > 0)
@@ -206,14 +199,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
             }
 
             // Recently Played Items
-            if (Folder.RecentlyPlayedItemCount > 0)
-            {
-                tasks.Add(RefreshRecentlyPlayedItemsAsync());
-            }
-            else
-            {
-                SetRecentlyPlayedItems(new BaseItemDto[] { });
-            }
+            tasks.Add(RefreshRecentlyPlayedItemsAsync());
 
             tasks.Add(RefreshTopPicksAsync());
             tasks.Add(RefreshSpotlightItemsAsync());

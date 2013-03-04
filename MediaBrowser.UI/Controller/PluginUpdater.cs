@@ -1,6 +1,7 @@
 ﻿using MediaBrowser.ApiInteraction;
+using MediaBrowser.Common;
+using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.IO;
-using MediaBrowser.Common.Kernel;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Net;
 using MediaBrowser.Model.Plugins;

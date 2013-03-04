@@ -1,7 +1,7 @@
-﻿using MediaBrowser.Common.Kernel;
+﻿using MediaBrowser.Common;
+using MediaBrowser.Common.Configuration;
+using MediaBrowser.Common.Kernel;
 using MediaBrowser.Model.Logging;
-using MediaBrowser.Model.Serialization;
-using MediaBrowser.UI.Configuration;
 using MediaBrowser.UI.Playback;
 using System.Collections.Generic;
 
@@ -10,8 +10,17 @@ namespace MediaBrowser.UI.Controller
     /// <summary>
     /// This controls application logic as well as server interaction within the UI.
     /// </summary>
-    public class UIKernel : BaseKernel<UIApplicationConfiguration, UIApplicationPaths>
+    public class UIKernel : BaseKernel
     {
+        private IConfigurationManager _configurationManager;
+
+        public UIKernel(IApplicationHost appHost, ILogManager logManager, IConfigurationManager configurationManager)
+            : base(appHost, logManager, configurationManager)
+        {
+            Instance = this;
+            _configurationManager = configurationManager;
+        }
+
         /// <summary>
         /// Gets the instance.
         /// </summary>
@@ -23,15 +32,6 @@ namespace MediaBrowser.UI.Controller
         /// </summary>
         /// <value>The playback manager.</value>
         public PlaybackManager PlaybackManager { get; private set; }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UIKernel" /> class.
-        /// </summary>
-        public UIKernel(IApplicationHost appHost, UIApplicationPaths appPaths, IXmlSerializer xmlSerializer, ILogger logger)
-            : base(appHost, appPaths, xmlSerializer, logger)
-        {
-            Instance = this;
-        }
 
         /// <summary>
         /// Gets the media players.
@@ -71,11 +71,11 @@ namespace MediaBrowser.UI.Controller
         {
             get
             {
-                return "http://+:" + Configuration.HttpServerPortNumber + "/mediabrowserui/";
+                return "http://+:" + _configurationManager.CommonConfiguration.HttpServerPortNumber + "/mediabrowserui/";
             }
         }
 
-        protected override async void ReloadInternal()
+        protected override void ReloadInternal()
         {
             base.ReloadInternal();
 

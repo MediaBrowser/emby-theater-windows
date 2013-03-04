@@ -1,21 +1,13 @@
 ﻿using MediaBrowser.ApiInteraction;
-using MediaBrowser.ClickOnce;
+using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Implementations;
 using MediaBrowser.Common.Implementations.HttpServer;
-using MediaBrowser.Common.Implementations.Logging;
-using MediaBrowser.Common.Implementations.NetworkManagement;
 using MediaBrowser.Common.Implementations.ScheduledTasks;
-using MediaBrowser.Common.Implementations.Serialization;
-using MediaBrowser.Common.Implementations.ServerManager;
 using MediaBrowser.Common.IO;
 using MediaBrowser.Common.Kernel;
-using MediaBrowser.Common.Net;
-using MediaBrowser.Common.ScheduledTasks;
 using MediaBrowser.IsoMounter;
 using MediaBrowser.Model.Connectivity;
-using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Net;
-using MediaBrowser.Model.Serialization;
 using MediaBrowser.Model.System;
 using MediaBrowser.Model.Updates;
 using MediaBrowser.UI.Configuration;
@@ -37,54 +29,29 @@ namespace MediaBrowser.UI
     /// <summary>
     /// Class CompositionRoot
     /// </summary>
-    public class ApplicationHost : BaseApplicationHost, IApplicationHost
+    public class ApplicationHost : BaseApplicationHost<UIApplicationPaths>
     {
-        /// <summary>
-        /// Gets or sets the kernel.
-        /// </summary>
-        /// <value>The kernel.</value>
-        internal UIKernel Kernel { get; private set; }
-
         /// <summary>
         /// Gets the API client.
         /// </summary>
         /// <value>The API client.</value>
         public ApiClient ApiClient { get; private set; }
+
+        public UIConfigurationManager UIConfigurationManager
+        {
+            get { return (UIConfigurationManager)ConfigurationManager; }
+        }
         
-        /// <summary>
-        /// The json serializer
-        /// </summary>
-        private readonly IJsonSerializer _jsonSerializer = new JsonSerializer();
-
-        /// <summary>
-        /// The _XML serializer
-        /// </summary>
-        private readonly IXmlSerializer _xmlSerializer = new XmlSerializer();
-
-        /// <summary>
-        /// Gets the server application paths.
-        /// </summary>
-        /// <value>The server application paths.</value>
-        protected UIApplicationPaths UIApplicationPaths
+        protected override string LogFilePrefixName
         {
-            get { return (UIApplicationPaths)ApplicationPaths; }
+            get { return "MBT"; }
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApplicationHost" /> class.
+        /// Registers resources that classes will depend on
         /// </summary>
-        /// <param name="logger">The logger.</param>
-        public ApplicationHost()
-            : base()
+        protected override async Task RegisterResources()
         {
-        }
-
-        public override async Task Init()
-        {
-            await base.Init().ConfigureAwait(false);
-
-            Kernel = new UIKernel(this, UIApplicationPaths, _xmlSerializer, Logger);
-
             ReloadApiClient();
 
             try
@@ -96,56 +63,14 @@ namespace MediaBrowser.UI
                 Logger.ErrorException("Error updating plugins from the server", ex);
             }
             
-            var networkManager = new NetworkManager();
+            await base.RegisterResources().ConfigureAwait(false);
 
-            var serverManager = new ServerManager(this, Kernel, networkManager, _jsonSerializer, Logger);
+            RegisterSingleInstance<UIApplicationPaths>(ApplicationPaths);
 
-            var taskManager = new TaskManager(ApplicationPaths, _jsonSerializer, Logger, serverManager);
+            RegisterSingleInstance(UIConfigurationManager);
 
-            LogManager.ReloadLogger(Kernel.Configuration.EnableDebugLevelLogging ? LogSeverity.Debug : LogSeverity.Info);
-
-            Logger.Info("Version {0} initializing", ApplicationVersion);
-
-            RegisterResources(taskManager, networkManager, serverManager);
-
-            FindParts();
-        }
-
-        /// <summary>
-        /// Gets the application paths.
-        /// </summary>
-        /// <returns>IApplicationPaths.</returns>
-        protected override IApplicationPaths GetApplicationPaths()
-        {
-            return new UIApplicationPaths();
-        }
-
-        /// <summary>
-        /// Gets the log manager.
-        /// </summary>
-        /// <returns>ILogManager.</returns>
-        protected override ILogManager GetLogManager()
-        {
-            return new NlogManager(ApplicationPaths.LogDirectoryPath, "MBT");
-        }
-
-        /// <summary>
-        /// Registers resources that classes will depend on
-        /// </summary>
-        protected override void RegisterResources(ITaskManager taskManager, INetworkManager networkManager, IServerManager serverManager)
-        {
-            base.RegisterResources(taskManager, networkManager, serverManager);
-
-            RegisterSingleInstance<IKernel>(Kernel);
-            RegisterSingleInstance(Kernel);
-
-            RegisterSingleInstance<IApplicationHost>(this);
-
-            RegisterSingleInstance(UIApplicationPaths);
             RegisterSingleInstance<IIsoManager>(new PismoIsoManager(Logger));
-            RegisterSingleInstance(_jsonSerializer);
-            RegisterSingleInstance(_xmlSerializer);
-            RegisterSingleInstance(ServerFactory.CreateServer(this, ProtobufSerializer, Logger, "Media Browser", "index.html"), false);
+            RegisterSingleInstance(ServerFactory.CreateServer(this, ProtobufSerializer, Logger, "Media Browser Theater", "index.html"), false);
         }
 
         /// <summary>
@@ -159,12 +84,12 @@ namespace MediaBrowser.UI
                 CachePolicy = new RequestCachePolicy(RequestCacheLevel.Revalidate)
             }))
             {
-                ServerHostName = Kernel.Configuration.ServerHostName,
-                ServerApiPort = Kernel.Configuration.ServerApiPort,
+                ServerHostName = UIConfigurationManager.Configuration.ServerHostName,
+                ServerApiPort = UIConfigurationManager.Configuration.ServerApiPort,
                 ClientType = ClientType.Pc,
                 DeviceName = Environment.MachineName,
                 SerializationFormat = SerializationFormats.Json,
-                JsonSerializer = _jsonSerializer,
+                JsonSerializer = JsonSerializer,
                 ProtobufSerializer = ProtobufSerializer
             };
         }
@@ -172,7 +97,7 @@ namespace MediaBrowser.UI
         /// <summary>
         /// Restarts this instance.
         /// </summary>
-        public void Restart()
+        public override void Restart()
         {
             App.Instance.Restart();
         }
@@ -181,9 +106,9 @@ namespace MediaBrowser.UI
         /// Gets or sets a value indicating whether this instance can self update.
         /// </summary>
         /// <value><c>true</c> if this instance can self update; otherwise, <c>false</c>.</value>
-        public bool CanSelfUpdate
+        public override bool CanSelfUpdate
         {
-            get { return ClickOnceHelper.IsNetworkDeployed; }
+            get { return false; }
         }
 
         /// <summary>
@@ -192,9 +117,9 @@ namespace MediaBrowser.UI
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <param name="progress">The progress.</param>
         /// <returns>Task{CheckForUpdateResult}.</returns>
-        public Task<CheckForUpdateResult> CheckForApplicationUpdate(CancellationToken cancellationToken, IProgress<double> progress)
+        public override Task<CheckForUpdateResult> CheckForApplicationUpdate(CancellationToken cancellationToken, IProgress<double> progress)
         {
-            return new ApplicationUpdateCheck().CheckForApplicationUpdate(cancellationToken, progress);
+            return Task.FromResult(new CheckForUpdateResult{ });
         }
 
         /// <summary>
@@ -239,7 +164,7 @@ namespace MediaBrowser.UI
         /// <summary>
         /// Shuts down.
         /// </summary>
-        public void Shutdown()
+        public override void Shutdown()
         {
             App.Instance.Shutdown();
         }
@@ -251,9 +176,19 @@ namespace MediaBrowser.UI
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <param name="progress">The progress.</param>
         /// <returns>Task.</returns>
-        public Task UpdateApplication(PackageVersionInfo package, CancellationToken cancellationToken, IProgress<double> progress)
+        public override Task UpdateApplication(PackageVersionInfo package, CancellationToken cancellationToken, IProgress<double> progress)
         {
             return Task.Run(() => { });
+        }
+
+        protected override IConfigurationManager GetConfigurationManager()
+        {
+            return new UIConfigurationManager(ApplicationPaths, LogManager, XmlSerializer);
+        }
+
+        protected override IKernel GetKernel()
+        {
+            return new UIKernel(this, LogManager, ConfigurationManager);
         }
     }
 }

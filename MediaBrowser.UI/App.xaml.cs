@@ -8,6 +8,7 @@ using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Net;
 using MediaBrowser.Model.Weather;
+using MediaBrowser.UI.Configuration;
 using MediaBrowser.UI.Controller;
 using MediaBrowser.UI.Controls;
 using MediaBrowser.UI.Pages;
@@ -33,12 +34,6 @@ namespace MediaBrowser.UI
     public partial class App : Application
     {
         /// <summary>
-        /// Gets or sets a value indicating whether [last run at startup value].
-        /// </summary>
-        /// <value><c>null</c> if [last run at startup value] contains no value, <c>true</c> if [last run at startup value]; otherwise, <c>false</c>.</value>
-        private bool? LastRunAtStartupValue { get; set; }
-        
-        /// <summary>
         /// Gets or sets the clock timer.
         /// </summary>
         /// <value>The clock timer.</value>
@@ -53,12 +48,6 @@ namespace MediaBrowser.UI
         /// The single instance mutex
         /// </summary>
         private Mutex SingleInstanceMutex;
-
-        /// <summary>
-        /// Gets or sets the kernel.
-        /// </summary>
-        /// <value>The kernel.</value>
-        protected IKernel Kernel { get; set; }
 
         /// <summary>
         /// Gets or sets the logger.
@@ -243,7 +232,7 @@ namespace MediaBrowser.UI
         [STAThread]
         public static void Main()
         {
-            var application = new App(new NLogger("App"));
+            var application = new App();
             application.InitializeComponent();
 
             application.Run();
@@ -252,11 +241,8 @@ namespace MediaBrowser.UI
         /// <summary>
         /// Initializes a new instance of the <see cref="App" /> class.
         /// </summary>
-        /// <param name="logger">The logger.</param>
-        public App(ILogger logger)
+        public App()
         {
-            Logger = logger;
-
             InitializeComponent();
         }
 
@@ -278,7 +264,7 @@ namespace MediaBrowser.UI
         {
             var win = new MainWindow(Logger);
 
-            var config = UIKernel.Instance.Configuration;
+            var config = CompositionRoot.UIConfigurationManager.Configuration;
 
             // Restore window position/size
             if (config.WindowState.HasValue)
@@ -362,26 +348,13 @@ namespace MediaBrowser.UI
         /// </summary>
         protected async void LoadKernel()
         {
-            // Without this the app will shutdown after the splash screen closes
-            ShutdownMode = ShutdownMode.OnExplicitShutdown;
-
-            CompositionRoot = new ApplicationHost();
-            await CompositionRoot.Init();
-
-            Logger = CompositionRoot.Logger;
-            Kernel = CompositionRoot.Kernel;
-
             try
             {
-                var now = DateTime.UtcNow;
+                CompositionRoot = new ApplicationHost();
 
-                Kernel.Init();
+                Logger = CompositionRoot.LogManager.GetLogger("App");
 
-                Logger.Info("Kernel.Init completed in {0} seconds.", (DateTime.UtcNow - now).TotalSeconds);
-
-                ShutdownMode = System.Windows.ShutdownMode.OnLastWindowClose;
-
-                OnKernelLoaded();
+                await CompositionRoot.Init();
 
                 InstantiateMainWindow().Show();
 
@@ -406,10 +379,6 @@ namespace MediaBrowser.UI
         /// <returns>Task.</returns>
         protected void OnKernelLoaded()
         {
-            Kernel.ConfigurationUpdated += Kernel_ConfigurationUpdated;
-
-            ConfigureAutoRunAtStartup();
-
             PropertyChanged += AppPropertyChanged;
 
             // Update every 10 seconds
@@ -502,20 +471,19 @@ namespace MediaBrowser.UI
             if (win != null)
             {
                 // Save window position
-                var config = UIKernel.Instance.Configuration;
+                var config = CompositionRoot.UIConfigurationManager.Configuration;
                 config.WindowState = win.WindowState;
                 config.WindowTop = win.Top;
                 config.WindowLeft = win.Left;
                 config.WindowWidth = win.Width;
                 config.WindowHeight = win.Height;
-                UIKernel.Instance.SaveConfiguration();
+                CompositionRoot.UIConfigurationManager.SaveConfiguration();
             }
 
             ReleaseMutex();
 
             base.OnExit(e);
 
-            Kernel.Dispose();
             CompositionRoot.Dispose();
         }
 
@@ -579,8 +547,7 @@ namespace MediaBrowser.UI
         {
             try
             {
-                var b = Kernel;
-                //ServerConfiguration = await ApiClient.GetServerConfigurationAsync();
+                ServerConfiguration = await ApiClient.GetServerConfigurationAsync();
             }
             catch (HttpException ex)
             {
@@ -605,7 +572,7 @@ namespace MediaBrowser.UI
         /// <param name="page">The page.</param>
         public void Navigate(Page page)
         {
-            _remoteImageCache = new FileSystemRepository(UIKernel.Instance.ApplicationPaths.RemoteImageCachePath);
+            _remoteImageCache = new FileSystemRepository(CompositionRoot.Resolve<UIApplicationPaths>().RemoteImageCachePath);
 
             ApplicationWindow.Navigate(page);
         }
@@ -811,7 +778,7 @@ namespace MediaBrowser.UI
 
                 try
                 {
-                    using (var httpStream = await ApiClient.GetImageStreamAsync(url + "&x=1"))
+                    using (var httpStream = await ApiClient.GetImageStreamAsync(url))
                     {
                         return await GetRemoteBitmapAsync(httpStream, cachePath);
                     }
@@ -863,36 +830,6 @@ namespace MediaBrowser.UI
                 return bitmapImage;
             }
         }
-        
-        /// <summary>
-        /// Handles the ConfigurationUpdated event of the Kernel control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
-        void Kernel_ConfigurationUpdated(object sender, EventArgs e)
-        {
-            if (!LastRunAtStartupValue.HasValue || LastRunAtStartupValue.Value != Kernel.Configuration.RunAtStartup)
-            {
-                ConfigureAutoRunAtStartup();
-            }
-        }
-
-        /// <summary>
-        /// Configures the click once startup.
-        /// </summary>
-        private void ConfigureAutoRunAtStartup()
-        {
-            try
-            {
-                CompositionRoot.ConfigureAutoRunAtStartup(Kernel.Configuration.RunAtStartup);
-
-                LastRunAtStartupValue = Kernel.Configuration.RunAtStartup;
-            }
-            catch (Exception ex)
-            {
-                Logger.ErrorException("Error configuring ClickOnce", ex);
-            }
-        }
 
         /// <summary>
         /// Restarts this instance.
@@ -901,7 +838,7 @@ namespace MediaBrowser.UI
         {
             Dispatcher.Invoke(ReleaseMutex);
 
-            Kernel.Dispose();
+            CompositionRoot.Dispose();
 
             System.Windows.Forms.Application.Restart();
 

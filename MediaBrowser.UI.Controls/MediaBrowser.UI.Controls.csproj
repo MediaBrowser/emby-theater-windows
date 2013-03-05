@@ -53,6 +53,9 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\SharedVersion.cs">
+      <Link>Properties\SharedVersion.cs</Link>
+    </Compile>
     <Compile Include="BaseModalWindow.cs" />
     <Compile Include="BaseUserControl.cs" />
     <Compile Include="BaseWindow.cs" />

@@ -1402,7 +1402,7 @@ mkdir "$(SolutionDir)..\Deploy\MBT\System\CorePlugins"
 xcopy "$(TargetDir)CorePlugins" "$(SolutionDir)..\Deploy\MBT\System\CorePlugins" /y
 
 del "$(SolutionDir)..\Deploy\MBTheater.zip"
-"$(SolutionDir)7za" a -tzip "$(SolutionDir)..\Deploy\MBTheater.zip" "$(SolutionDir)..\Deploy\MBT\*"
+"$(SolutionDir)ThirdParty\7zip\7za" a -tzip "$(SolutionDir)..\Deploy\MBTheater.zip" "$(SolutionDir)..\Deploy\MBT\*"
 )</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,9 +1,6 @@
-﻿using System;
-using MediaBrowser.Common;
-using MediaBrowser.Common.Configuration;
-using MediaBrowser.Common.Kernel;
-using MediaBrowser.Model.Logging;
+﻿using MediaBrowser.Common;
 using MediaBrowser.UI.Playback;
+using System;
 using System.Collections.Generic;
 
 namespace MediaBrowser.UI.Controller
@@ -11,19 +8,18 @@ namespace MediaBrowser.UI.Controller
     /// <summary>
     /// This controls application logic as well as server interaction within the UI.
     /// </summary>
-    public class UIKernel : BaseKernel
+    public class UIKernel
     {
-        private IConfigurationManager _configurationManager;
+        private readonly IApplicationHost _appHost;
 
-        public UIKernel(IApplicationHost appHost, ILogManager logManager, IConfigurationManager configurationManager)
-            : base(appHost, logManager, configurationManager)
+        public UIKernel(IApplicationHost appHost)
         {
             if (Instance != null)
             {
                 throw new InvalidOperationException("Can only have one Kernel");
             }
             Instance = this;
-            _configurationManager = configurationManager;
+            _appHost = appHost;
         }
 
         /// <summary>
@@ -50,44 +46,12 @@ namespace MediaBrowser.UI.Controller
         /// <value>The themes.</value>
         public IEnumerable<BaseTheme> Themes { get; private set; }
 
-        /// <summary>
-        /// Gets the kernel context.
-        /// </summary>
-        /// <value>The kernel context.</value>
-        public override KernelContext KernelContext
+        public void Init()
         {
-            get { return KernelContext.Ui; }
-        }
+            PlaybackManager = (PlaybackManager)_appHost.CreateInstance(typeof(PlaybackManager));
 
-        /// <summary>
-        /// Gets the UDP server port number.
-        /// </summary>
-        /// <value>The UDP server port number.</value>
-        public override int UdpServerPortNumber
-        {
-            get { return 7360; }
-        }
-
-        /// <summary>
-        /// Give the UI a different url prefix so that they can share the same port, in case they are installed on the same machine.
-        /// </summary>
-        /// <value>The HTTP server URL prefix.</value>
-        public override string HttpServerUrlPrefix
-        {
-            get
-            {
-                return "http://+:" + _configurationManager.CommonConfiguration.HttpServerPortNumber + "/mediabrowserui/";
-            }
-        }
-
-        protected override void ReloadInternal()
-        {
-            base.ReloadInternal();
-
-            PlaybackManager = (PlaybackManager)ApplicationHost.CreateInstance(typeof(PlaybackManager));
-
-            Themes = ApplicationHost.GetExports<BaseTheme>();
-            MediaPlayers = ApplicationHost.GetExports<BaseMediaPlayer>();
+            Themes = _appHost.GetExports<BaseTheme>();
+            MediaPlayers = _appHost.GetExports<BaseMediaPlayer>();
         }
     }
 }

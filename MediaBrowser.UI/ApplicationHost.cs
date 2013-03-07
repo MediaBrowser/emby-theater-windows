@@ -1,10 +1,8 @@
 ﻿using MediaBrowser.ApiInteraction;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Implementations;
-using MediaBrowser.Common.Implementations.HttpServer;
 using MediaBrowser.Common.Implementations.ScheduledTasks;
 using MediaBrowser.Common.IO;
-using MediaBrowser.Common.Kernel;
 using MediaBrowser.IsoMounter;
 using MediaBrowser.Model.Connectivity;
 using MediaBrowser.Model.Net;
@@ -47,14 +45,13 @@ namespace MediaBrowser.UI
             get { return "MBT"; }
         }
 
-        protected UIKernel UIKernel
-        {
-            get { return (UIKernel) Kernel; }
-        }
+        protected UIKernel UIKernel { get; set; }
 
         public override async Task Init()
         {
             await base.Init().ConfigureAwait(false);
+
+            UIKernel.Init();
 
             // For now until the ui has it's own startup wizard
             if (IsFirstRun)
@@ -69,6 +66,8 @@ namespace MediaBrowser.UI
         /// </summary>
         protected override async Task RegisterResources()
         {
+            UIKernel = new UIKernel(this);
+
             ReloadApiClient();
 
             try
@@ -88,7 +87,6 @@ namespace MediaBrowser.UI
             RegisterSingleInstance(UIConfigurationManager);
 
             RegisterSingleInstance<IIsoManager>(new PismoIsoManager(Logger));
-            RegisterSingleInstance(ServerFactory.CreateServer(this, ProtobufSerializer, Logger, "Media Browser Theater", "index.html"), false);
         }
 
         /// <summary>
@@ -170,7 +168,7 @@ namespace MediaBrowser.UI
             yield return typeof(SystemInfo).Assembly;
 
             // Include composable parts in the Common assembly 
-            yield return typeof(IKernel).Assembly;
+            yield return typeof(IApplicationPaths).Assembly;
 
             // Common implementations
             yield return typeof(TaskManager).Assembly;
@@ -187,26 +185,9 @@ namespace MediaBrowser.UI
             App.Instance.Shutdown();
         }
 
-        /// <summary>
-        /// Updates the application.
-        /// </summary>
-        /// <param name="package">The package.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <param name="progress">The progress.</param>
-        /// <returns>Task.</returns>
-        public override Task UpdateApplication(PackageVersionInfo package, CancellationToken cancellationToken, IProgress<double> progress)
-        {
-            return Task.Run(() => { });
-        }
-
         protected override IConfigurationManager GetConfigurationManager()
         {
             return new UIConfigurationManager(ApplicationPaths, LogManager, XmlSerializer);
-        }
-
-        protected override IKernel GetKernel()
-        {
-            return new UIKernel(this, LogManager, ConfigurationManager);
         }
     }
 }

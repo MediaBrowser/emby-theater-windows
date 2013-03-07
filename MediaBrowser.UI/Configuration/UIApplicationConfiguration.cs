@@ -64,9 +64,6 @@ namespace MediaBrowser.UI.Configuration
         {
             ServerHostName = "localhost";
             ServerApiPort = 8096;
-
-            // Need a different default than the server
-            LegacyWebSocketPortNumber = 8946;
         }
     }
 }

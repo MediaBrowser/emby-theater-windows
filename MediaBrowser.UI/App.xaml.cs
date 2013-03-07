@@ -2,7 +2,6 @@
 using MediaBrowser.Common.Extensions;
 using MediaBrowser.Common.Implementations.Logging;
 using MediaBrowser.Common.IO;
-using MediaBrowser.Common.Kernel;
 using MediaBrowser.Model.Configuration;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;

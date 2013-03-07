@@ -1350,4 +1350,10 @@ del "$(SolutionDir)..\Deploy\MBTheater.zip"
   <Target Name="AfterBuild">
   </Target>
   -->
+  <Target Name="AfterBuild">
+    <GetAssemblyIdentity AssemblyFiles="$(TargetPath)">
+      <Output TaskParameter="Assemblies" ItemName="CurrentAssembly" />
+    </GetAssemblyIdentity>
+    <Exec Command="ren $(SolutionDir)..\Deploy\MBTheater.zip  MBTheater_%(CurrentAssembly.Version).zip" Condition="'$(ConfigurationName)' == 'Release'"/>
+  </Target>
 </Project>

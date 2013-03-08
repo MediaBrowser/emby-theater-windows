@@ -81,7 +81,7 @@ namespace MediaBrowser.UI
             
             await base.RegisterResources().ConfigureAwait(false);
 
-            RegisterSingleInstance<UIApplicationPaths>(ApplicationPaths);
+            RegisterSingleInstance(ApplicationPaths);
             RegisterSingleInstance(UIKernel);
 
             RegisterSingleInstance(UIConfigurationManager);
@@ -94,7 +94,9 @@ namespace MediaBrowser.UI
         /// </summary>
         private void ReloadApiClient()
         {
-            ApiClient = new ApiClient(Logger, new AsyncHttpClient(new WebRequestHandler
+            var logger = LogManager.GetLogger("ApiClient");
+
+            ApiClient = new ApiClient(logger, new AsyncHttpClient(logger, new WebRequestHandler
             {
                 AutomaticDecompression = DecompressionMethods.Deflate,
                 CachePolicy = new RequestCachePolicy(RequestCacheLevel.Revalidate)

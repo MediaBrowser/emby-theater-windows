@@ -276,7 +276,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         {
             var query = new ItemQuery
             {
-                Filters = new[] { ItemFilter.IsRecentlyPlayed },
                 ImageTypes = new[] { ImageType.Backdrop, ImageType.Thumb },
                 UserId = App.Instance.CurrentUser.Id,
                 ParentId = Folder.Id,

@@ -108,25 +108,25 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\MediaBrowser.ApiClient.3.0.0.22-beta\lib\net45\MediaBrowser.ApiInteraction.dll</HintPath>
     </Reference>
-    <Reference Include="MediaBrowser.Common, Version=3.0.4814.1033, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.Common, Version=3.0.4815.276, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.3.0.34\lib\net45\MediaBrowser.Common.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.35\lib\net45\MediaBrowser.Common.dll</HintPath>
     </Reference>
-    <Reference Include="MediaBrowser.Common.Implementations, Version=3.0.4814.1034, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.Common.Implementations, Version=3.0.4815.276, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.Internal.3.0.34\lib\net45\MediaBrowser.Common.Implementations.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.Internal.3.0.35\lib\net45\MediaBrowser.Common.Implementations.dll</HintPath>
     </Reference>
-    <Reference Include="MediaBrowser.IsoMounter, Version=3.0.4814.1034, Culture=neutral, processorArchitecture=x86">
+    <Reference Include="MediaBrowser.IsoMounter, Version=3.0.4815.276, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.Internal.3.0.34\lib\net45\MediaBrowser.IsoMounter.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.Internal.3.0.35\lib\net45\MediaBrowser.IsoMounter.dll</HintPath>
     </Reference>
-    <Reference Include="MediaBrowser.Model, Version=3.0.4814.1033, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.Model, Version=3.0.4815.276, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.3.0.34\lib\net45\MediaBrowser.Model.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.35\lib\net45\MediaBrowser.Model.dll</HintPath>
     </Reference>
     <Reference Include="Mediabrowser.PluginSecurity, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.Internal.3.0.34\lib\net45\Mediabrowser.PluginSecurity.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.Internal.3.0.35\lib\net45\Mediabrowser.PluginSecurity.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Expression.Effects, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -144,7 +144,7 @@
     </Reference>
     <Reference Include="pfmclrapi, Version=0.0.0.0, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.Internal.3.0.34\lib\net45\pfmclrapi.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.Internal.3.0.35\lib\net45\pfmclrapi.dll</HintPath>
     </Reference>
     <Reference Include="protobuf-net, Version=2.0.0.621, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -1354,6 +1354,6 @@ del "$(SolutionDir)..\Deploy\MBTheater.zip"
     <GetAssemblyIdentity AssemblyFiles="$(TargetPath)">
       <Output TaskParameter="Assemblies" ItemName="CurrentAssembly" />
     </GetAssemblyIdentity>
-    <Exec Command="ren $(SolutionDir)..\Deploy\MBTheater.zip  MBTheater_%(CurrentAssembly.Version).zip" Condition="'$(ConfigurationName)' == 'Release'"/>
+    <Exec Command="ren $(SolutionDir)..\Deploy\MBTheater.zip  MBTheater_%(CurrentAssembly.Version).zip" Condition="'$(ConfigurationName)' == 'Release'" />
   </Target>
 </Project>

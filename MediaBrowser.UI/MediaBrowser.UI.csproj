@@ -1318,6 +1318,7 @@
     <PostBuildEvent>if $(ConfigurationName) == Release (
 xcopy "$(TargetPath)" "$(SolutionDir)\Nuget\dlls\" /y /d /r /i
 
+rmdir "$(SolutionDir)..\Deploy\MBT\System" /s /q
 mkdir "$(SolutionDir)..\Deploy\MBT\System"
 xcopy "$(TargetDir)$(TargetFileName)" "$(SolutionDir)..\Deploy\MBT\System\" /y
 xcopy "$(SolutionDir)..\Mediabrowser\Mediabrowser.Uninstaller\bin\Release\MediaBrowser.Uninstaller.exe.config" "$(SolutionDir)..\Deploy\MBT\System\" /y
@@ -1352,6 +1353,6 @@ del "$(SolutionDir)..\Deploy\MBTheater.zip"
     <GetAssemblyIdentity AssemblyFiles="$(TargetPath)">
       <Output TaskParameter="Assemblies" ItemName="CurrentAssembly" />
     </GetAssemblyIdentity>
-    <Exec Command="ren $(SolutionDir)..\Deploy\MBTheater.zip  MBTheater_%(CurrentAssembly.Version).zip" Condition="'$(ConfigurationName)' == 'Release'" />
+    <Exec Command="copy $(SolutionDir)..\Deploy\MBTheater.zip  $(SolutionDir)..\Deploy\MBTheater_%(CurrentAssembly.Version).zip" Condition="'$(ConfigurationName)' == 'Release'" />
   </Target>
 </Project>

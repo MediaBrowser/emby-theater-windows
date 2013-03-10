@@ -1,6 +1,7 @@
 ﻿using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Net;
+using MediaBrowser.Model.Querying;
 using MediaBrowser.Plugins.DefaultTheme.Resources;
 using MediaBrowser.UI;
 using MediaBrowser.UI.Controls;

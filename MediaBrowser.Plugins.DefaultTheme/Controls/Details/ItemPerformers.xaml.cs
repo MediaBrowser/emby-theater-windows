@@ -1,7 +1,6 @@
-﻿using MediaBrowser.Model.Dto;
-using MediaBrowser.Model.Entities;
+﻿using MediaBrowser.Model.Entities;
+using MediaBrowser.Model.Querying;
 using MediaBrowser.UI;
-using MediaBrowser.UI.Controller;
 using MediaBrowser.UI.ViewModels;
 using System.Collections.ObjectModel;
 

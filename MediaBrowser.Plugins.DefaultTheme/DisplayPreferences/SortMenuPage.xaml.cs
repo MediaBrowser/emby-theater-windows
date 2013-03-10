@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using MediaBrowser.Model.Dto;
-using MediaBrowser.Model.Net;
+﻿using MediaBrowser.Model.Net;
+using MediaBrowser.Model.Querying;
 using MediaBrowser.UI;
 using MediaBrowser.UI.Controls;
 using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 

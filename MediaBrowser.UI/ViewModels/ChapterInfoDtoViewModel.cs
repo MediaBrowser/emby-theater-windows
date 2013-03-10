@@ -135,7 +135,7 @@ namespace MediaBrowser.UI.ViewModels
         {
             var options = ImageDownloadOptions ?? new ImageOptions { };
 
-            options.ImageType = ImageType.ChapterImage;
+            options.ImageType = ImageType.Chapter;
             options.ImageIndex = Item.Chapters.IndexOf(Chapter);
 
             try

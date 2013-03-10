@@ -1,4 +1,6 @@
-﻿using MediaBrowser.Model.Net;
+﻿using System.Collections.Generic;
+using MediaBrowser.Model.Dto;
+using MediaBrowser.Model.Net;
 using MediaBrowser.UI;
 using MediaBrowser.UI.Controls;
 using System;
@@ -12,6 +14,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
     /// </summary>
     public partial class SortMenuPage : BaseDisplayPreferencesPage
     {
+        private readonly Dictionary<string, string> _sortOptions = new Dictionary<string, string>();
+ 
         /// <summary>
         /// Initializes a new instance of the <see cref="SortMenuPage" /> class.
         /// </summary>
@@ -20,6 +24,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
             InitializeComponent();
 
             chkRemember.Click += chkRemember_Click;
+
+            _sortOptions["Name"] = ItemSortBy.SortName;
+            _sortOptions["CommunityRating"] = ItemSortBy.CommunityRating;
+            _sortOptions["Date Added"] = ItemSortBy.DateCreated;
+            _sortOptions["Runtime"] = ItemSortBy.Runtime;
+            _sortOptions["Year"] = ItemSortBy.ProductionYear;
         }
 
         /// <summary>
@@ -50,8 +60,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
 
             var currentValue = MainPage.SortBy ?? string.Empty;
 
-            foreach (var option in MainPage.Folder.SortOptions)
+            foreach (var option in _sortOptions.Keys)
             {
+                var optionValue = _sortOptions[option];
+
                 var radio = new ExtendedRadioButton { GroupName = "Options" };
 
                 radio.SetResourceReference(StyleProperty, "ViewMenuRadioButton");
@@ -68,10 +80,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
                 }
                 else
                 {
-                    radio.IsChecked = currentValue.Equals(option, StringComparison.OrdinalIgnoreCase);
+                    radio.IsChecked = currentValue.Equals(optionValue, StringComparison.OrdinalIgnoreCase);
                 }
 
-                radio.Tag = option;
+                radio.Tag = optionValue;
                 radio.Click += radio_Click;
 
                 pnlOptions.Children.Add(radio);

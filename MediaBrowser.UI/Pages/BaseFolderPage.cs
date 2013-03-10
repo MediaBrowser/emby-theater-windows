@@ -321,11 +321,13 @@ namespace MediaBrowser.UI.Pages
 
             if (DisplayPreferences.RememberSorting)
             {
-                SortBy = DisplayPreferences.SortBy ?? Folder.SortOptions.FirstOrDefault();
+                SortBy = DisplayPreferences.SortBy;
             }
-            else if (string.IsNullOrEmpty(SortBy))
+
+            // Default to SortName
+            if (string.IsNullOrEmpty(SortBy))
             {
-                SortBy = Folder.SortOptions.FirstOrDefault();
+                SortBy = ItemSortBy.SortName;
             }
         }
 
@@ -363,10 +365,13 @@ namespace MediaBrowser.UI.Pages
 
                 UserId = App.Instance.CurrentUser.Id,
 
-                IndexBy = IndexBy,
-
-                DynamicSortBy = SortBy
+                IndexBy = IndexBy
             };
+
+            if (!string.IsNullOrEmpty(SortBy))
+            {
+                query.SortBy = new[] { SortBy };
+            }
 
             try
             {

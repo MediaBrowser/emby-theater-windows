@@ -62,6 +62,14 @@ namespace MediaBrowser.UI
         }
 
         /// <summary>
+        /// The full path to our startmenu shortcut
+        /// </summary>
+        protected override string ProductShortcutPath
+        {
+            get { return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), "Media Browser Theater.lnk"); }
+        }
+
+        /// <summary>
         /// Registers resources that classes will depend on
         /// </summary>
         protected override async Task RegisterResources()

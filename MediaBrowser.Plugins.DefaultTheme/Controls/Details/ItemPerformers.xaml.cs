@@ -83,7 +83,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
         {
             ItemsResult = await App.Instance.ApiClient.GetAllPeopleAsync(new ItemsByNameQuery
             {
-                ItemId = Item.Id,
+                ParentId = Item.Id,
                 UserId = App.Instance.CurrentUser.Id,
                 Fields = new[] { ItemFields.PrimaryImageAspectRatio }
             });

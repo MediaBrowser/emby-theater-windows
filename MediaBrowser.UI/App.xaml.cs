@@ -621,7 +621,7 @@ namespace MediaBrowser.UI
         /// <param name="item">The item.</param>
         public void NavigateToItem(BaseItemDto item)
         {
-            if (item.IsRoot.HasValue && item.IsRoot.Value)
+            if (item.IsRoot)
             {
                 NavigateToHomePage();
             }

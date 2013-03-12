@@ -1327,6 +1327,8 @@ xcopy "$(TargetPath)" "$(SolutionDir)\Nuget\dlls\" /y /d /r /i
 
 rmdir "$(SolutionDir)..\Deploy\MBT\System" /s /q
 mkdir "$(SolutionDir)..\Deploy\MBT\System"
+rmdir "$(SolutionDir)..\Deploy\MBT\Pismo" /s /q
+mkdir "$(SolutionDir)..\Deploy\MBT\Pismo"
 xcopy "$(TargetDir)$(TargetFileName)" "$(SolutionDir)..\Deploy\MBT\System\" /y
 xcopy "$(SolutionDir)..\Mediabrowser\Mediabrowser.Uninstaller\bin\Release\MediaBrowser.Uninstaller.exe.config" "$(SolutionDir)..\Deploy\MBT\System\" /y
 xcopy "$(SolutionDir)..\Mediabrowser\Mediabrowser.Uninstaller.Execute\bin\Release\MediaBrowser.Uninstaller.Execute.exe.config" "$(SolutionDir)..\Deploy\MBT\System\" /y
@@ -1337,6 +1339,9 @@ xcopy "$(SolutionDir)Mediabrowser.UI\libvlccore.dll" "$(SolutionDir)..\Deploy\MB
 
 mkdir "$(SolutionDir)..\Deploy\MBT\System\plugins"
 xcopy "$(SolutionDir)Mediabrowser.UI\plugins" "$(SolutionDir)..\Deploy\MBT\System\plugins" /y /s
+
+//Pismo
+"$(SolutionDir)ThirdParty\7zip\7za" x  "$(SolutionDir)ThirdParty\Pismo-Install\pfm-168-mediabrowser-win.zip" -o"$(SolutionDir)..\Deploy\MBT\Pismo\" -y 
 
 xcopy "$(TargetDir)$(TargetFileName).config" "$(SolutionDir)..\Deploy\MBT\System\" /y
 

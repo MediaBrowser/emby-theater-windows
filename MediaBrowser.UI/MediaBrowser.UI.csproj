@@ -109,9 +109,9 @@
     <Reference Include="LibVlcWrapper">
       <HintPath>..\ThirdParty\Taygeta\LibVlcWrapper.dll</HintPath>
     </Reference>
-    <Reference Include="MediaBrowser.ApiInteraction, Version=3.0.4818.26554, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.ApiInteraction, Version=3.0.4820.208, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.ApiClient.3.0.0.44-beta\lib\net45\MediaBrowser.ApiInteraction.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.ApiClient.3.0.0.45-beta\lib\net45\MediaBrowser.ApiInteraction.dll</HintPath>
     </Reference>
     <Reference Include="MediaBrowser.Common, Version=3.0.4819.26381, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

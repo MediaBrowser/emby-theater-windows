@@ -1,4 +1,6 @@
-﻿using MediaBrowser.Model.Dto;
+﻿using System.Security.Cryptography;
+using System.Text;
+using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Net;
 using MediaBrowser.UI.Controls;
 using System;
@@ -99,11 +101,16 @@ namespace MediaBrowser.UI.Pages
         /// <returns>Task{AuthenticationResult}.</returns>
         protected async Task LoginUser(UserDto user, string password)
         {
-            await App.Instance.ApiClient.AuthenticateUserAsync(user.Id, password);
+            using (var provider = SHA1.Create())
+            {
+                var hash = provider.ComputeHash(Encoding.UTF8.GetBytes(password ?? string.Empty));
 
-            App.Instance.CurrentUser = user;
+                await App.Instance.ApiClient.AuthenticateUserAsync(user.Id, hash);
 
-            App.Instance.NavigateToHomePage();
+                App.Instance.CurrentUser = user;
+
+                App.Instance.NavigateToHomePage();
+            } 
         }
 
         /// <summary>
@@ -113,7 +120,7 @@ namespace MediaBrowser.UI.Pages
         /// <returns>Task{AuthenticationResult}.</returns>
         protected Task LoginUser(UserDto user)
         {
-            return LoginUser(user, null);
+            return LoginUser(user, string.Empty);
         }
     }
 }

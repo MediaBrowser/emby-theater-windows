@@ -23,7 +23,8 @@ namespace MediaBrowser.UI
 
         void HiddenWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            Title = _appHost.ApplicationVersion.ToString();
+            // Show the version number for now until we find a better place (in tools/settings area)
+            Title = "Media Browser " + _appHost.ApplicationVersion;
         }
     }
 }

@@ -105,23 +105,26 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         {
             ReloadImage();
 
-            var visibility = Item.HasPrimaryImage && !Item.IsType("Episode") ? Visibility.Collapsed : Visibility.Visible;
+            var nameVisibility = Item.HasPrimaryImage && !Item.IsType("Episode") ? Visibility.Collapsed : Visibility.Visible;
 
             if (Item.IsType("Person") || Item.IsType("IndexFolder"))
             {
-                visibility = Visibility.Visible;
+                nameVisibility = Visibility.Visible;
             }
 
-            txtName.Visibility = visibility;
+            txtName.Visibility = nameVisibility;
 
-            var name = Item.Name;
-
-            if (Item.IndexNumber.HasValue)
+            if (nameVisibility == Visibility.Visible)
             {
-                name = Item.IndexNumber + " - " + name;
-            }
+                var name = Item.Name;
 
-            txtName.Text = name;
+                if (Item.IndexNumber.HasValue)
+                {
+                    name = Item.IndexNumber + " - " + name;
+                }
+
+                txtName.Text = name;
+            }
         }
 
         /// <summary>

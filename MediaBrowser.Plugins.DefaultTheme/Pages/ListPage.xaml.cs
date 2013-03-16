@@ -1,4 +1,7 @@
-﻿using MediaBrowser.Model.Entities;
+﻿using System.Linq;
+using System.Windows.Controls;
+using MediaBrowser.Model.Dto;
+using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Net;
 using MediaBrowser.Plugins.DefaultTheme.DisplayPreferences;
 using MediaBrowser.Plugins.DefaultTheme.Resources;
@@ -123,17 +126,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
                 TxtName.Visibility = Visibility.Collapsed;
             }
 
-            if (!string.IsNullOrEmpty(Folder.Overview) || Folder.IsType("Series") || Folder.IsType("Season"))
-            {
-                sidebar.Visibility = Visibility.Collapsed;
-
-                //RefreshSidebar();
-            }
-            else
-            {
-                sidebar.Visibility = Visibility.Collapsed;
-            }
-
             await pageTitleTask;
         }
 
@@ -184,362 +176,217 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         }
 
         /// <summary>
-        /// Refreshes the sidebar.
-        /// </summary>
-        private void RefreshSidebar()
-        {
-            //if (Folder.BackdropCount > 0)
-            //{
-            //    //backdropImage.Source = App.Instance.GetBitmapImage(ApiClient.GetImageUrl(Folder.Id, Model.Entities.ImageType.Backdrop, width: 560, height: 315));
-            //    backdropImage.Visibility = Visibility.Visible;
-            //}
-            //else
-            //{
-            //    backdropImage.Source = null;
-            //    backdropImage.Visibility = Visibility.Collapsed;
-            //}
-        }
-
-        /// <summary>
         /// Handles current item selection changes
         /// </summary>
         protected override void OnCurrentItemChanged()
         {
             base.OnCurrentItemChanged();
 
-            // Name
-            /*if (CurrentItem != null)
+            if (CurrentItem == null)
             {
-                txtName.Visibility = CurrentItem.HasLogo ? Visibility.Collapsed : Visibility.Visible;
-                currentItemLogo.Visibility = CurrentItem.HasLogo ? Visibility.Visible : Visibility.Collapsed;
-
-                if (CurrentItem.HasLogo)
-                {
-                    var uri = ApiClient.GetImageUrl(CurrentItem.Id, ImageType.Logo, maxWidth: 400, maxHeight: 125);
-
-                    Dispatcher.InvokeAsync(() => currentItemLogo.Source = App.Instance.GetBitmapImage(new Uri(uri, UriKind.Absolute)));
-                }
-                else
-                {
-                    var name = CurrentItem.Name;
-
-                    if (!CurrentItem.IsType("Season") && CurrentItem.IndexNumber.HasValue)
-                    {
-                        name = CurrentItem.IndexNumber + " - " + name;
-                    }
-
-                    if (CurrentItem.IsType("Movie") && CurrentItem.ProductionYear.HasValue)
-                    {
-                        name += " (" + CurrentItem.ProductionYear + ")";
-                    }
-
-                    txtName.Text = name;
-                }
+                PnlItemInfo.Visibility = Visibility.Hidden;
             }
             else
             {
-                txtName.Visibility = Visibility.Collapsed;
-                currentItemLogo.Visibility = Visibility.Collapsed;
+                PnlItemInfo.Visibility = Visibility.Visible;
+                UpdateItemInfo(CurrentItem);
             }
-
-            // PremiereDate
-            if (CurrentItem != null && CurrentItem.PremiereDate.HasValue && !CurrentItem.IsType("Series"))
-            {
-                pnlPremiereDate.Visibility = Visibility.Visible;
-
-                var prefix = CurrentItem.IsType("Episode") ? "Aired" : CurrentItem.IsType("Series") ? "First Aired" : "Premiered";
-
-                txtPremiereDate.Text = string.Format("{0} {1}", prefix, CurrentItem.PremiereDate.Value.ToShortDateString());
-            }
-            else
-            {
-                pnlPremiereDate.Visibility = Visibility.Collapsed;
-            }
-
-            // Taglines
-            if (CurrentItem != null && CurrentItem.Taglines != null && CurrentItem.Taglines.Length > 0)
-            {
-                txtTagLine.Visibility = Visibility.Visible;
-                txtTagLine.Text = CurrentItem.Taglines[0];
-            }
-            else
-            {
-                txtTagLine.Visibility = Visibility.Collapsed;
-            }
-
-            // Genres
-            if (CurrentItem != null && CurrentItem.Genres != null && CurrentItem.Genres.Length > 0)
-            {
-                txtGenres.Visibility = Visibility.Visible;
-
-                // Try to keep them on one line by limiting to three
-                txtGenres.Text = string.Join(" / ", CurrentItem.Genres.Take(3));
-            }
-            else
-            {
-                txtGenres.Visibility = Visibility.Collapsed;
-            }
-
-            // Season Number
-            if (CurrentItem != null && CurrentItem.ParentIndexNumber.HasValue && CurrentItem.IsType("Episode"))
-            {
-                txtSeasonHeader.Visibility = Visibility.Visible;
-
-                txtSeasonHeader.Text = string.Format("Season {0}", CurrentItem.ParentIndexNumber);
-            }
-            else
-            {
-                txtSeasonHeader.Visibility = Visibility.Collapsed;
-            }
-
-            UpdateSeriesAirTime();
-            UpdateMiscellaneousFields();
-            UpdateCommunityRating();
-            UpdateVideoInfo();
-            UpdateAudioInfo();*/
         }
 
-        /// <summary>
-        /// Updates the series air time.
-        /// </summary>
-        private void UpdateSeriesAirTime()
+        private void UpdateItemInfo(BaseItemDto item)
         {
-            /*if (CurrentItem != null && CurrentItem.SeriesInfo != null)
-            {
-                var series = CurrentItem.SeriesInfo;
-
-                txtSeriesAirTime.Visibility = Visibility.Visible;
-
-                if (series.Status.HasValue && series.Status.Value == SeriesStatus.Ended)
-                {
-                    txtSeriesAirTime.Text = "Ended";
-                }
-                else
-                {
-                    string txt = "Airs";
-
-                    if (series.AirDays.Length > 0)
-                    {
-                        if (series.AirDays.Length == 7)
-                        {
-                            txt += " Everyday";
-                        }
-                        else
-                        {
-                            txt += " " + series.AirDays[0].ToString();
-                        }
-                    }
-
-                    if (CurrentItem.Studios != null && CurrentItem.Studios.Length > 0)
-                    {
-                        txt += " on " + CurrentItem.Studios[0].Name;
-                    }
-
-                    if (!string.IsNullOrEmpty(series.AirTime))
-                    {
-                        txt += " at " + series.AirTime;
-                    }
-
-                    txtSeriesAirTime.Text = txt;
-                }
-            }
-            else
-            {
-                txtSeriesAirTime.Visibility = Visibility.Collapsed;
-            }*/
+            UpdateCommunityRating(item);
+            UpdateOfficialRating(item);
+            UpdateRuntime(item);
+            UdpateDate(item);
+            UpdateVideoInfo(item);
+            UpdateAudioCodec(item);
+            UpdateAudioInfo(item);
         }
-
-        /// <summary>
-        /// Updates the miscellaneous fields.
-        /// </summary>
-        private void UpdateMiscellaneousFields()
+        private void UpdateOfficialRating(BaseItemDto item)
         {
-            /*if (CurrentItem == null)
+            if (!string.IsNullOrEmpty(item.OfficialRating))
             {
-                pnlRuntime.Visibility = Visibility.Collapsed;
-                pnlOfficialRating.Visibility = Visibility.Collapsed;
-            }
-            else
-            {
-                var runtimeTicks = CurrentItem.RunTimeTicks ?? 0;
-
-                // Runtime
-                if (runtimeTicks > 0)
-                {
-                    pnlRuntime.Visibility = Visibility.Visible;
-                    txtRuntime.Text = string.Format("{0} minutes", Convert.ToInt32(TimeSpan.FromTicks(runtimeTicks).TotalMinutes));
-                }
-                else
-                {
-                    pnlRuntime.Visibility = Visibility.Collapsed;
-                }
-
-                pnlOfficialRating.Visibility = string.IsNullOrEmpty(CurrentItem.OfficialRating) ? Visibility.Collapsed : Visibility.Visible;
+                TxtOfficialRating.Text = item.OfficialRating;
+                PnlOfficialRating.Visibility = Visibility.Visible;
+                return;
             }
 
-            // Show the parent panel only if one of the children is visible
-            pnlMisc.Visibility = pnlRuntime.Visibility == Visibility.Visible ||
-                                           pnlOfficialRating.Visibility == Visibility.Visible
-                                               ? Visibility.Visible
-                                               : Visibility.Collapsed;*/
+            PnlOfficialRating.Visibility = Visibility.Collapsed;
+        }
+        private void UpdateRuntime(BaseItemDto item)
+        {
+            if (item.RunTimeTicks.HasValue)
+            {
+                var minutes = Math.Round(TimeSpan.FromTicks(item.RunTimeTicks.Value).TotalMinutes);
+
+                TxtRuntime.Text = minutes < 2 ? minutes + " min" : minutes + " mins";
+                PnlRuntime.Visibility = Visibility.Visible;
+                return;
+            }
+
+            PnlRuntime.Visibility = Visibility.Collapsed;
+        }
+        private void UdpateDate(BaseItemDto item)
+        {
+            if (item.PremiereDate.HasValue && item.IsType("episode"))
+            {
+                TxtDate.Text = item.PremiereDate.Value.ToShortDateString();
+
+                PnlDate.Visibility = Visibility.Visible;
+                return;
+            }
+            if (item.ProductionYear.HasValue)
+            {
+                TxtDate.Text = item.ProductionYear.Value.ToString();
+                PnlDate.Visibility = Visibility.Visible;
+                return;
+            }
+
+            PnlDate.Visibility = Visibility.Collapsed;
+        }
+        private void UpdateVideoInfo(BaseItemDto item)
+        {
+            if (item.IsVideo)
+            {
+                if (item.MediaStreams != null)
+                {
+                    var videoStream = item.MediaStreams.FirstOrDefault(m => m.Type == MediaStreamType.Video);
+
+                    if (videoStream != null)
+                    {
+                        PnlVideoInfo.Visibility = Visibility.Visible;
+                        TxtResolution.Text = GetResolutionText(videoStream);
+
+                        return;
+                    }
+                }
+            }
+
+            PnlVideoInfo.Visibility = Visibility.Collapsed;
+        }
+        private void UpdateAudioInfo(BaseItemDto item)
+        {
+            if (item.IsVideo || item.IsAudio)
+            {
+                if (item.MediaStreams != null)
+                {
+                    var stream = item.MediaStreams.FirstOrDefault(m => m.Type == MediaStreamType.Audio);
+
+                    if (stream != null)
+                    {
+                        PnlAudioInfo.Visibility = Visibility.Visible;
+                        TxtAudioChannels.Text = (stream.Channels ?? 0) + "ch";
+
+                        return;
+                    }
+                }
+            }
+
+            PnlAudioInfo.Visibility = Visibility.Collapsed;
+        }
+        private void UpdateAudioCodec(BaseItemDto item)
+        {
+            if (item.IsAudio)
+            {
+                if (item.MediaStreams != null)
+                {
+                    var stream = item.MediaStreams.FirstOrDefault(m => m.Type == MediaStreamType.Audio);
+
+                    if (stream != null)
+                    {
+                        PnlAudioCodec.Visibility = Visibility.Visible;
+                        TxtAudioCodec.Text = stream.Codec ?? "Unknown video codec";
+
+                        return;
+                    }
+                }
+            }
+
+            PnlAudioCodec.Visibility = Visibility.Collapsed;
         }
 
         /// <summary>
         /// Updates the community rating.
         /// </summary>
-        private void UpdateCommunityRating()
+        private void UpdateCommunityRating(BaseItemDto item)
         {
-            /*// Community Rating
-            if (CurrentItem != null && CurrentItem.CommunityRating.HasValue)
+            if (!item.CommunityRating.HasValue)
             {
-                pnlRating.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                pnlRating.Visibility = Visibility.Collapsed;
+                PnlCommunityRating.Visibility = Visibility.Hidden;
                 return;
             }
 
-            var rating = CurrentItem.CommunityRating.Value;
+            PnlCommunityRating.Visibility = Visibility.Visible;
 
-            for (var i = 0; i < 10; i++)
+            var images = new[] { ImgCommunityRating1, ImgCommunityRating2, ImgCommunityRating3, ImgCommunityRating4, ImgCommunityRating5 };
+
+            var rating = item.CommunityRating.Value / 2;
+
+            for (var i = 0; i < 5; i++)
             {
+                var img = images[i];
+
                 if (rating < i - 1)
                 {
-                    TreeHelper.FindChild<Image>(this, "communityRatingImage" + i).SetResourceReference(Image.StyleProperty, "CommunityRatingImageEmpty");
+                    img.SetResourceReference(StyleProperty, "CommunityRatingImageEmpty");
                 }
                 else if (rating < i)
                 {
-                    TreeHelper.FindChild<Image>(this, "communityRatingImage" + i).SetResourceReference(Image.StyleProperty, "CommunityRatingImageHalf");
+                    img.SetResourceReference(StyleProperty, "CommunityRatingImageHalf");
                 }
                 else
                 {
-                    TreeHelper.FindChild<Image>(this, "communityRatingImage" + i).SetResourceReference(Image.StyleProperty, "CommunityRatingImageFull");
+                    img.SetResourceReference(StyleProperty, "CommunityRatingImageFull");
                 }
-            }*/
+            }
         }
 
         /// <summary>
-        /// Updates the video info.
+        /// Gets the resolution text.
         /// </summary>
-        private void UpdateVideoInfo()
+        /// <param name="info">The info.</param>
+        /// <returns>System.String.</returns>
+        private string GetResolutionText(MediaStream info)
         {
-            /*if (CurrentItem != null && CurrentItem.VideoInfo != null)
-            {
-                pnlVideoInfo.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                pnlVideoInfo.Visibility = Visibility.Collapsed;
-                return;
-            }
+            var height = info.Height ?? 0;
+            var width = info.Width ?? 0;
 
-            var videoInfo = CurrentItem.VideoInfo;
-
-            if (videoInfo.VideoType == VideoType.VideoFile)
+            if (height == 1080)
             {
-                txtVideoType.Text = Path.GetExtension(CurrentItem.Path).Replace(".", string.Empty).ToLower();
-            }
-            else
-            {
-                txtVideoType.Text = videoInfo.VideoType.ToString().ToLower();
-            }
-
-            txtVideoResolution.Text = GetResolutionText(videoInfo);
-            pnlVideoResolution.Visibility = string.IsNullOrEmpty(txtVideoResolution.Text) ? Visibility.Collapsed : Visibility.Visible;
-
-            if (!string.IsNullOrEmpty(videoInfo.Codec))
-            {
-                pnlVideoCodec.Visibility = Visibility.Visible;
-                txtVideoCodec.Text = videoInfo.Codec.ToLower();
-            }
-            else
-            {
-                pnlVideoCodec.Visibility = Visibility.Collapsed;
-            }
-
-            var audio = videoInfo.GetDefaultAudioStream();
-
-            if (audio == null || string.IsNullOrEmpty(audio.Codec))
-            {
-                pnlAudioCodec.Visibility = Visibility.Collapsed;
-            }
-            else
-            {
-                pnlAudioCodec.Visibility = Visibility.Visible;
-                txtAudioCodec.Text = audio.Codec.ToLower();
-            }*/
-        }
-
-        /// <summary>
-        /// Updates the audio info.
-        /// </summary>
-        private void UpdateAudioInfo()
-        {
-            /*if (CurrentItem != null && CurrentItem.AudioInfo != null)
-            {
-                pnlAudioInfo.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                pnlAudioInfo.Visibility = Visibility.Collapsed;
-                return;
-            }
-
-            var audioInfo = CurrentItem.AudioInfo;
-
-            txtAudioType.Text = Path.GetExtension(CurrentItem.Path).Replace(".", string.Empty).ToLower();
-
-            if (audioInfo.BitRate > 0)
-            {
-                pnlAudioBitrate.Visibility = Visibility.Visible;
-                txtAudioBitrate.Text = (audioInfo.BitRate / 1000).ToString() + "kbps";
-            }
-            else
-            {
-                pnlAudioBitrate.Visibility = Visibility.Collapsed;
-            }*/
-        }
-
-        /*private string GetResolutionText(VideoInfo info)
-        {
-            var scanType = info.ScanType ?? string.Empty;
-
-            if (info.Height == 1080)
-            {
-                if (scanType.Equals("progressive", StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(info.ScanType, "progressive", StringComparison.OrdinalIgnoreCase))
                 {
                     return "1080p";
                 }
-                if (scanType.Equals("interlaced", StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(info.ScanType, "interlaced", StringComparison.OrdinalIgnoreCase))
                 {
                     return "1080i";
                 }
             }
-            if (info.Height == 720)
+            if (height == 720)
             {
-                if (scanType.Equals("progressive", StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(info.ScanType, "progressive", StringComparison.OrdinalIgnoreCase))
                 {
                     return "720p";
                 }
-                if (scanType.Equals("interlaced", StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(info.ScanType, "interlaced", StringComparison.OrdinalIgnoreCase))
                 {
                     return "720i";
                 }
             }
-            if (info.Height == 480)
+            if (height == 480)
             {
-                if (scanType.Equals("progressive", StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(info.ScanType, "progressive", StringComparison.OrdinalIgnoreCase))
                 {
                     return "480p";
                 }
-                if (scanType.Equals("interlaced", StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(info.ScanType, "interlaced", StringComparison.OrdinalIgnoreCase))
                 {
                     return "480i";
                 }
             }
 
-            return info.Width == 0 || info.Height == 0 ? string.Empty : info.Width + "x" + info.Height;
-        }*/
+            return width == 0 || height == 0 ? string.Empty : width + "x" + height;
+        }
     }
 }

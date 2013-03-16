@@ -66,7 +66,7 @@ namespace MediaBrowser.UI
         /// </summary>
         protected override string ProductShortcutPath
         {
-            get { return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), "Media Browser Theater.lnk"); }
+            get { return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu),"Media Browser 3", "Media Browser Theater.lnk"); }
         }
 
         /// <summary>

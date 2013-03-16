@@ -251,7 +251,7 @@ namespace MediaBrowser.UI
         /// <returns>Window.</returns>
         protected Window InstantiateMainWindow()
         {
-            HiddenWindow = new HiddenWindow { };
+            HiddenWindow = new HiddenWindow(CompositionRoot);
 
             return HiddenWindow;
         }

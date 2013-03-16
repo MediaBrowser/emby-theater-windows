@@ -114,6 +114,7 @@ namespace MediaBrowser.UI
                 ServerApiPort = UIConfigurationManager.Configuration.ServerApiPort,
                 ClientType = ClientType.Pc,
                 DeviceName = Environment.MachineName,
+                DeviceId = Environment.MachineName,
                 SerializationFormat = SerializationFormats.Json,
                 JsonSerializer = JsonSerializer,
                 ProtobufSerializer = ProtobufSerializer

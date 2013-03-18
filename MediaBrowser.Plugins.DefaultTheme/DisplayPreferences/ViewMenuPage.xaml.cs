@@ -1,5 +1,6 @@
 ﻿using MediaBrowser.Model.Entities;
 using System.Windows;
+using MediaBrowser.UI.ViewModels;
 
 namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
 {
@@ -39,7 +40,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
         void radioThumbstrip_Click(object sender, RoutedEventArgs e)
         {
             MainPage.DisplayPreferences.ScrollDirection = ScrollDirection.Horizontal;
-            MainPage.DisplayPreferences.ViewType = ViewTypes.ThumbStrip;
+            MainPage.DisplayPreferences.ViewType = ViewTypes.Thumbstrip;
             MainPage.NotifyDisplayPreferencesChanged();
         }
 
@@ -88,7 +89,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
             radioCoverFlow.IsChecked = displayPreferences.ViewType == ViewTypes.CoverFlow;
             radioList.IsChecked = displayPreferences.ViewType == ViewTypes.List;
             radioPoster.IsChecked = displayPreferences.ViewType == ViewTypes.Poster;
-            radioThumbstrip.IsChecked = displayPreferences.ViewType == ViewTypes.ThumbStrip;
+            radioThumbstrip.IsChecked = displayPreferences.ViewType == ViewTypes.Thumbstrip;
         }
     }
 }

@@ -5,36 +5,10 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:Pages="clr-namespace:MediaBrowser.UI.Pages;assembly=MediaBrowser.UI"
       xmlns:controls="clr-namespace:MediaBrowser.UI.Controls;assembly=MediaBrowser.UI.Controls"
+                    xmlns:details="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Controls.Details"
                     mc:Ignorable="d" 
       d:DesignHeight="300" d:DesignWidth="300"
 	Title="ListPage">
-
-    <Page.Resources>
-        <ResourceDictionary>
-            <Style TargetType="Image" x:Key="CommunityRatingImage">
-                <Setter Property="Stretch" Value="Uniform"/>
-                <Setter Property="Height" Value="30" />
-            </Style>
-            <Style TargetType="Image" x:Key="CommunityRatingImageFull" BasedOn="{StaticResource CommunityRatingImage}">
-                <Setter Property="Source" Value="../Resources/Images/starFull.png" />
-            </Style>
-            <Style TargetType="Image" x:Key="CommunityRatingImageHalf" BasedOn="{StaticResource CommunityRatingImage}">
-                <Setter Property="Source" Value="../Resources/Images/starHalf.png" />
-            </Style>
-            <Style TargetType="Image" x:Key="CommunityRatingImageEmpty" BasedOn="{StaticResource CommunityRatingImage}">
-                <Setter Property="Source" Value="../Resources/Images/starEmpty.png" />
-            </Style>
-
-            <Style TargetType="Border" x:Key="MediaInfoSeparator">
-                <Setter Property="Height" Value="12" />
-                <Setter Property="Width" Value="12" />
-                <Setter Property="Background" Value="#cc3333" />
-                <Setter Property="Margin" Value="25 7 5 0" />
-                <Setter Property="VerticalAlignment" Value="Center" />
-            </Style>
-
-        </ResourceDictionary>
-    </Page.Resources>
 
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
@@ -58,45 +32,9 @@
             <controls:ExtendedListBox x:Name="lstItems" ItemsSource="{Binding Path=DisplayChildren,IsAsync=True,Mode=OneWay}" Style="{StaticResource ListPageListBoxStyle}" ItemContainerStyle="{StaticResource ListBoxItemStyle}" DataContext="{Binding Mode=OneWay}">
             </controls:ExtendedListBox>
         </Grid>
-        <Grid Grid.Row="3" HorizontalAlignment="Right" Margin="25">
-            <StackPanel Orientation="Horizontal" Name="PnlItemInfo" Visibility="Hidden">
-
-                <StackPanel Orientation="Horizontal" Name="PnlCommunityRating">
-                    <!--This textblock is just to make sure the panel always takes up the same amount of vertical space, so that content never moves due to height changes --> 
-                    <TextBlock Style="{StaticResource TextBlockStyle}" Visibility="Hidden" Text=" "></TextBlock>
-                    <Border Style="{StaticResource MediaInfoSeparator}"></Border>
-                    <Image x:Name="ImgCommunityRating1" Style="{StaticResource CommunityRatingImage}"></Image>
-                    <Image x:Name="ImgCommunityRating2" Style="{StaticResource CommunityRatingImage}"></Image>
-                    <Image x:Name="ImgCommunityRating3" Style="{StaticResource CommunityRatingImage}"></Image>
-                    <Image x:Name="ImgCommunityRating4" Style="{StaticResource CommunityRatingImage}"></Image>
-                    <Image x:Name="ImgCommunityRating5" Style="{StaticResource CommunityRatingImage}"></Image>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Name="PnlOfficialRating">
-                    <Border Style="{StaticResource MediaInfoSeparator}"></Border>
-                    <TextBlock Style="{StaticResource TextBlockStyle}" x:Name="TxtOfficialRating"></TextBlock>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Name="PnlRuntime">
-                    <Border Style="{StaticResource MediaInfoSeparator}"></Border>
-                    <TextBlock Style="{StaticResource TextBlockStyle}" x:Name="TxtRuntime"></TextBlock>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Name="PnlDate">
-                    <Border Style="{StaticResource MediaInfoSeparator}"></Border>
-                    <TextBlock Style="{StaticResource TextBlockStyle}" x:Name="TxtDate"></TextBlock>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Name="PnlVideoInfo">
-                    <Border Style="{StaticResource MediaInfoSeparator}"></Border>
-                    <TextBlock Style="{StaticResource TextBlockStyle}" x:Name="TxtResolution"></TextBlock>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Name="PnlAudioCodec">
-                    <Border Style="{StaticResource MediaInfoSeparator}"></Border>
-                    <TextBlock Style="{StaticResource TextBlockStyle}" x:Name="TxtAudioCodec"></TextBlock>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Name="PnlAudioInfo">
-                    <Border Style="{StaticResource MediaInfoSeparator}"></Border>
-                    <TextBlock Style="{StaticResource TextBlockStyle}" x:Name="TxtAudioChannels"></TextBlock>
-                </StackPanel>
-
-            </StackPanel>
+        <Grid Grid.Row="3" Margin="25">
+            <Image Name="ImgLogo" Height="40" Stretch="Uniform" HorizontalAlignment="Left"></Image>
+            <details:ItemInfoFooter x:Name="ItemInfoFooter" HorizontalAlignment="Right"></details:ItemInfoFooter>
         </Grid>
     </Grid>
 </Pages:BaseListPage>

@@ -1,0 +1,48 @@
+﻿<details:BaseDetailsControl x:Class="MediaBrowser.Plugins.DefaultTheme.Controls.Details.ItemInfoFooter"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                           xmlns:details="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Controls.Details"
+                                           mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    
+    <StackPanel Orientation="Horizontal" Name="PnlItemInfo" Visibility="Hidden">
+
+        <StackPanel Orientation="Horizontal" Name="PnlCommunityRating">
+            <!--This textblock is just to make sure the panel always takes up the same amount of vertical space, so that content never moves due to height changes -->
+            <TextBlock Style="{StaticResource TextBlockStyle}" Visibility="Hidden" Text=" "></TextBlock>
+            <Border Style="{StaticResource MediaInfoSeparator}"></Border>
+            <Image x:Name="ImgCommunityRating1" Style="{StaticResource CommunityRatingImage}"></Image>
+            <Image x:Name="ImgCommunityRating2" Style="{StaticResource CommunityRatingImage}"></Image>
+            <Image x:Name="ImgCommunityRating3" Style="{StaticResource CommunityRatingImage}"></Image>
+            <Image x:Name="ImgCommunityRating4" Style="{StaticResource CommunityRatingImage}"></Image>
+            <Image x:Name="ImgCommunityRating5" Style="{StaticResource CommunityRatingImage}"></Image>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Name="PnlOfficialRating">
+            <Border Style="{StaticResource MediaInfoSeparator}"></Border>
+            <TextBlock Style="{StaticResource TextBlockStyle}" x:Name="TxtOfficialRating"></TextBlock>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Name="PnlRuntime">
+            <Border Style="{StaticResource MediaInfoSeparator}"></Border>
+            <TextBlock Style="{StaticResource TextBlockStyle}" x:Name="TxtRuntime"></TextBlock>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Name="PnlDate">
+            <Border Style="{StaticResource MediaInfoSeparator}"></Border>
+            <TextBlock Style="{StaticResource TextBlockStyle}" x:Name="TxtDate"></TextBlock>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Name="PnlVideoInfo">
+            <Border Style="{StaticResource MediaInfoSeparator}"></Border>
+            <TextBlock Style="{StaticResource TextBlockStyle}" x:Name="TxtResolution"></TextBlock>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Name="PnlAudioCodec">
+            <Border Style="{StaticResource MediaInfoSeparator}"></Border>
+            <TextBlock Style="{StaticResource TextBlockStyle}" x:Name="TxtAudioCodec"></TextBlock>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Name="PnlAudioInfo">
+            <Border Style="{StaticResource MediaInfoSeparator}"></Border>
+            <TextBlock Style="{StaticResource TextBlockStyle}" x:Name="TxtAudioChannels"></TextBlock>
+        </StackPanel>
+
+    </StackPanel>
+</details:BaseDetailsControl>

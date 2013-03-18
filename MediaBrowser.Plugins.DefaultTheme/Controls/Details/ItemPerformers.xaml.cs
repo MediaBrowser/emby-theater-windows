@@ -50,7 +50,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
                 {
                     item.ImageWidth = width;
                     item.ImageHeight = height;
-                    item.ImageType = ImageType.Primary;
                 }
             }
         }

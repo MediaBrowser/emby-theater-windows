@@ -112,7 +112,7 @@ namespace MediaBrowser.UI
             {
                 ServerHostName = UIConfigurationManager.Configuration.ServerHostName,
                 ServerApiPort = UIConfigurationManager.Configuration.ServerApiPort,
-                ClientType = ClientType.Pc,
+                ClientType = "MediaBrowserTheater",
                 DeviceName = Environment.MachineName,
                 DeviceId = Environment.MachineName,
                 SerializationFormat = SerializationFormats.Json,

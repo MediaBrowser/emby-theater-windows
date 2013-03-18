@@ -1,4 +1,6 @@
-﻿using MediaBrowser.Model.Dto;
+﻿using System.Threading.Tasks;
+using MediaBrowser.Model.Dto;
+using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Net;
 using MediaBrowser.UI;
 using MediaBrowser.UI.Controls;
@@ -95,7 +97,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         /// <param name="e">The <see cref="PropertyChangedEventArgs" /> instance containing the event data.</param>
         void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            ReloadImage();
+            ReloadImage(Item);
         }
 
         /// <summary>
@@ -103,11 +105,13 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         /// </summary>
         private void OnItemChanged()
         {
-            ReloadImage();
+            var item = Item;
 
-            var nameVisibility = Item.HasPrimaryImage && !Item.IsType("Episode") ? Visibility.Collapsed : Visibility.Visible;
+            ReloadImage(item);
 
-            if (Item.IsType("Person") || Item.IsType("IndexFolder"))
+            var nameVisibility = !string.Equals(ViewModel.ViewType, ViewTypes.Thumbstrip, StringComparison.OrdinalIgnoreCase) && Item.HasPrimaryImage && !Item.IsType("Episode") ? Visibility.Collapsed : Visibility.Visible;
+
+            if (item.IsType("Person") || item.IsType("IndexFolder"))
             {
                 nameVisibility = Visibility.Visible;
             }
@@ -116,11 +120,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
 
             if (nameVisibility == Visibility.Visible)
             {
-                var name = Item.Name;
+                var name = item.Name;
 
                 if (Item.IndexNumber.HasValue)
                 {
-                    name = Item.IndexNumber + " - " + name;
+                    name = item.IndexNumber + " - " + name;
                 }
 
                 txtName.Text = name;
@@ -130,7 +134,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         /// <summary>
         /// Reloads the image.
         /// </summary>
-        private async void ReloadImage()
+        private async void ReloadImage(BaseItemDto item)
         {
             if (ViewModel.ImageWidth.Equals(0) || ViewModel.ImageHeight.Equals(0))
             {
@@ -140,22 +144,50 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
             mainGrid.Height = ViewModel.ImageHeight;
             mainGrid.Width = ViewModel.ImageWidth;
 
-            if (Item.HasPrimaryImage)
-            {
-                var url = ViewModel.GetImageUrl(ViewModel.ImageType);
+            await SetImageSource(item);
+        }
 
-                border.Background = null;
-                
-                try
+        private static readonly Task TrueTaskResult = Task.FromResult(true);
+
+        private Task SetImageSource(BaseItemDto item)
+        {
+            if (string.Equals(ViewModel.ViewType, ViewTypes.Thumbstrip, StringComparison.OrdinalIgnoreCase))
+            {
+                if (item.HasThumb)
                 {
-                    image.Source = await App.Instance.GetRemoteBitmapAsync(url);
+                    var url = ViewModel.GetImageUrl(ImageType.Thumb);
+
+                    return SetImage(url);
                 }
-                catch (HttpException)
+                if (item.BackdropCount > 0)
                 {
-                    SetDefaultImage();
+                    var url = ViewModel.GetImageUrl(ImageType.Backdrop);
+
+                    return SetImage(url);
                 }
             }
-            else
+
+            if (item.HasPrimaryImage)
+            {
+                var url = ViewModel.GetImageUrl(ImageType.Primary);
+
+                return SetImage(url);
+            }
+
+            SetDefaultImage();
+
+            return TrueTaskResult;
+        }
+
+        private async Task SetImage(string url)
+        {
+            border.Background = null;
+
+            try
+            {
+                image.Source = await App.Instance.GetRemoteBitmapAsync(url);
+            }
+            catch (HttpException)
             {
                 SetDefaultImage();
             }

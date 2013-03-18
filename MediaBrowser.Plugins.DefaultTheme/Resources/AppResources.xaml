@@ -15,7 +15,9 @@
             <Setter.Value>
                 <LinearGradientBrush SpreadMethod="Reflect" ColorInterpolationMode="SRgbLinearInterpolation" StartPoint="0,0" EndPoint="0,1" >
                     <GradientStop Color="#ff000000" Offset="0" />
-                    <GradientStop Color="#ff888888" Offset="1" />
+                    <GradientStop Color="#ff666666" Offset=".45" />
+                    <GradientStop Color="#ff666666" Offset=".55" />
+                    <GradientStop Color="#ff000000" Offset="1" />
                 </LinearGradientBrush>
             </Setter.Value>
         </Setter>
@@ -27,7 +29,7 @@
             <Setter.Value>
                 <LinearGradientBrush SpreadMethod="Reflect" ColorInterpolationMode="SRgbLinearInterpolation" StartPoint="0,0" EndPoint="0,1" >
                     <GradientStop Color="#ff000000" Offset="0" />
-                    <GradientStop Color="#ff888888" Offset="1" />
+                    <GradientStop Color="#ff666666" Offset="1" />
                 </LinearGradientBrush>
             </Setter.Value>
         </Setter>
@@ -45,6 +47,27 @@
     <!--Default font for h2 headers. Themes should override these as needed-->
     <Brush x:Key="Heading2Foreground">#ffffff</Brush>
 
+    <Style TargetType="Image" x:Key="CommunityRatingImage">
+        <Setter Property="Stretch" Value="Uniform"/>
+        <Setter Property="Height" Value="30" />
+    </Style>
+    <Style TargetType="Image" x:Key="CommunityRatingImageFull" BasedOn="{StaticResource CommunityRatingImage}">
+        <Setter Property="Source" Value="Images/starFull.png" />
+    </Style>
+    <Style TargetType="Image" x:Key="CommunityRatingImageHalf" BasedOn="{StaticResource CommunityRatingImage}">
+        <Setter Property="Source" Value="Images/starHalf.png" />
+    </Style>
+    <Style TargetType="Image" x:Key="CommunityRatingImageEmpty" BasedOn="{StaticResource CommunityRatingImage}">
+        <Setter Property="Source" Value="Images/starEmpty.png" />
+    </Style>
+
+    <Style TargetType="Border" x:Key="MediaInfoSeparator">
+        <Setter Property="Height" Value="12" />
+        <Setter Property="Width" Value="12" />
+        <Setter Property="Background" Value="#cc3333" />
+        <Setter Property="Margin" Value="25 7 5 0" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
     <DataTemplate DataType="{x:Type dto:UserDto}">
         <Grid HorizontalAlignment="Left">
             <Border Background="{Binding Converter={StaticResource MetroTileBackgroundConverter},Mode=OneWay}">
@@ -152,7 +175,7 @@
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
                         <Grid x:Name="ContentGrid">
-                            <Border x:Name="BdDropShadow" Margin="-15" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{DynamicResource SelectedItemHighlightColor}" SnapsToDevicePixels="true" CornerRadius="10" Visibility="Hidden">
+                            <Border x:Name="BdDropShadow" Margin="-12" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{DynamicResource SelectedItemHighlightColor}" SnapsToDevicePixels="true" CornerRadius="10" Visibility="Hidden">
                                 <Border.Effect>
                                     <BlurEffect Radius="10" KernelType="Gaussian"></BlurEffect>
                                 </Border.Effect>
@@ -369,7 +392,7 @@
     <!--List Page ListBox. -->
     <Style TargetType="controls:ExtendedListBox" x:Key="ListPageListBoxStyle" BasedOn="{StaticResource ListBoxStyle}">
         <Style.Triggers>
-            <DataTrigger Binding="{Binding Path=DisplayPreferences.ViewType,Mode=OneWay}" Value="Poster">
+            <DataTrigger Binding="{Binding Path=DisplayPreferences.ViewType}" Value="{x:Null}">
                 <Setter Property="ItemTemplate" Value="{StaticResource ListPageItemTemplate}"></Setter>
                 <Setter Property="ItemsPanel">
                     <Setter.Value>
@@ -380,7 +403,18 @@
                     </Setter.Value>
                 </Setter>
             </DataTrigger>
-            <DataTrigger Binding="{Binding Path=DisplayPreferences.ViewType,Mode=OneWay}" Value="CoverFlow">
+            <DataTrigger Binding="{Binding Path=DisplayPreferences.ViewType}" Value="Poster">
+                <Setter Property="ItemTemplate" Value="{StaticResource ListPageItemTemplate}"></Setter>
+                <Setter Property="ItemsPanel">
+                    <Setter.Value>
+                        <ItemsPanelTemplate>
+                            <controls:VirtualizingWrapPanel ItemHeight="{Binding Path=DisplayPreferences.PrimaryImageHeight,Mode=OneWay}" ItemWidth="{Binding Path=DisplayPreferences.PrimaryImageWidth,Mode=OneWay}" Orientation="{Binding WrapPanelOrientation}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="20 50 20 50">
+                            </controls:VirtualizingWrapPanel>
+                        </ItemsPanelTemplate>
+                    </Setter.Value>
+                </Setter>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Path=DisplayPreferences.ViewType}" Value="CoverFlow">
                 <Setter Property="ItemTemplate" Value="{StaticResource ListPageItemTemplate}"></Setter>
                 <Setter Property="ItemsPanel">
                     <Setter.Value>
@@ -390,7 +424,7 @@
                     </Setter.Value>
                 </Setter>
             </DataTrigger>
-            <DataTrigger Binding="{Binding Path=DisplayPreferences.ViewType,Mode=OneWay}" Value="ThumbStrip">
+            <DataTrigger Binding="{Binding Path=DisplayPreferences.ViewType}" Value="ThumbStrip">
                 <Setter Property="ItemTemplate" Value="{StaticResource ListPageItemTemplate}"></Setter>
                 <Setter Property="ItemsPanel">
                     <Setter.Value>

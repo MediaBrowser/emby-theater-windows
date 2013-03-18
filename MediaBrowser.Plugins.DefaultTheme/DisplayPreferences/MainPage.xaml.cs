@@ -1,5 +1,6 @@
 ﻿using MediaBrowser.Model.Entities;
 using System.Windows;
+using MediaBrowser.UI.ViewModels;
 
 namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
 {

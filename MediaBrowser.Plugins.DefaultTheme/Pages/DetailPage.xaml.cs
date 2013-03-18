@@ -149,6 +149,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
 
             RenderItem();
 
+            ItemInfoFooter.Item = Item;
+
             await pageTitleTask;
         }
 

@@ -71,21 +71,21 @@ namespace MediaBrowser.UI.ViewModels
         /// <summary>
         /// The _image type
         /// </summary>
-        private ImageType _imageType;
+        private string _viewType;
         /// <summary>
         /// Gets or sets the type of the image.
         /// </summary>
         /// <value>The type of the image.</value>
-        public ImageType ImageType
+        public string ViewType
         {
-            get { return _imageType; }
+            get { return _viewType; }
             set
             {
-                _imageType = value;
-                OnPropertyChanged("ImageType");
+                _viewType = value;
+                OnPropertyChanged("ViewType");
             }
         }
-
+        
         /// <summary>
         /// The _item
         /// </summary>
@@ -126,23 +126,21 @@ namespace MediaBrowser.UI.ViewModels
                 Height = Convert.ToInt32(height)
             };
 
-            if (imageType == ImageType.Primary)
+            var currentAspectRatio = imageType == ImageType.Primary ? Item.PrimaryImageAspectRatio ?? width / height : width / height;
+
+            // Preserve the exact AR if it deviates from the average significantly
+            var preserveExactAspectRatio = Math.Abs(currentAspectRatio - averageAspectRatio) > .15;
+
+            if (!preserveExactAspectRatio)
             {
-                var currentAspectRatio = imageType == ImageType.Primary ? Item.PrimaryImageAspectRatio ?? width / height : width / height;
-
-                // Preserve the exact AR if it deviates from the average significantly
-                var preserveExactAspectRatio = Math.Abs(currentAspectRatio - averageAspectRatio) > .15;
-
-                if (!preserveExactAspectRatio)
-                {
-                    imageOptions.Width = Convert.ToInt32(width);
-                }
+                imageOptions.Width = Convert.ToInt32(width);
             }
 
             if (Item.IsType("Person"))
             {
                 return App.Instance.ApiClient.GetPersonImageUrl(Item, imageOptions);
             }
+
             return App.Instance.ApiClient.GetImageUrl(Item, imageOptions);
         }
 

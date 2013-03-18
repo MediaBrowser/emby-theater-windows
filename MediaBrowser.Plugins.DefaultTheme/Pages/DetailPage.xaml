@@ -5,6 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:Pages="clr-namespace:MediaBrowser.UI.Pages;assembly=MediaBrowser.UI"
       xmlns:controls="clr-namespace:MediaBrowser.UI.Controls;assembly=MediaBrowser.UI.Controls"
+                      xmlns:details="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Controls.Details"
                       mc:Ignorable="d" 
       d:DesignHeight="300" d:DesignWidth="300"
 	 Title="DetailPage">
@@ -94,7 +95,8 @@
                 </Grid>
 
             </Grid>
-            <Grid Grid.Row="5" Height="50">
+            <Grid Grid.Row="5" HorizontalAlignment="Right" Margin="0 0 0 25">
+                <details:ItemInfoFooter x:Name="ItemInfoFooter"></details:ItemInfoFooter>
             </Grid>
         </Grid>
         <Grid Grid.Column="2" Width="50"></Grid>

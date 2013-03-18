@@ -10,6 +10,7 @@ using MediaBrowser.UI.Controls;
 using MediaBrowser.UI.Pages;
 using System;
 using System.Windows;
+using MediaBrowser.UI.ViewModels;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Pages
 {
@@ -40,13 +41,19 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
             }
         }
 
-        /// <summary>
-        /// If the page is using it's own image type and not honoring the DisplayPreferences setting, it should return it here
-        /// </summary>
-        /// <value>The type of the fixed image.</value>
-        protected override ImageType? FixedImageType
+        protected override ImageType PreferredImageType
         {
-            get { return ImageType.Primary; }
+            get
+            {
+                if (DisplayPreferences != null)
+                {
+                    if (DisplayPreferences.ViewType == ViewTypes.Thumbstrip)
+                    {
+                        return ImageType.Thumb;
+                    }
+                }
+                return base.PreferredImageType;
+            }
         }
 
         /// <summary>
@@ -178,215 +185,37 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         /// <summary>
         /// Handles current item selection changes
         /// </summary>
-        protected override void OnCurrentItemChanged()
+        protected override async void OnCurrentItemChanged()
         {
             base.OnCurrentItemChanged();
 
-            if (CurrentItem == null)
+            var item = CurrentItem;
+
+            if (item == null)
             {
-                PnlItemInfo.Visibility = Visibility.Hidden;
+                ItemInfoFooter.Visibility = Visibility.Hidden;
             }
             else
             {
-                PnlItemInfo.Visibility = Visibility.Visible;
-                UpdateItemInfo(CurrentItem);
-            }
-        }
-
-        private void UpdateItemInfo(BaseItemDto item)
-        {
-            UpdateCommunityRating(item);
-            UpdateOfficialRating(item);
-            UpdateRuntime(item);
-            UdpateDate(item);
-            UpdateVideoInfo(item);
-            UpdateAudioCodec(item);
-            UpdateAudioInfo(item);
-        }
-        private void UpdateOfficialRating(BaseItemDto item)
-        {
-            if (!string.IsNullOrEmpty(item.OfficialRating))
-            {
-                TxtOfficialRating.Text = item.OfficialRating;
-                PnlOfficialRating.Visibility = Visibility.Visible;
-                return;
+                ItemInfoFooter.Visibility = Visibility.Visible;
+                ItemInfoFooter.Item = item;
             }
 
-            PnlOfficialRating.Visibility = Visibility.Collapsed;
-        }
-        private void UpdateRuntime(BaseItemDto item)
-        {
-            if (item.RunTimeTicks.HasValue)
+            if (item != null && item.HasLogo)
             {
-                var minutes = Math.Round(TimeSpan.FromTicks(item.RunTimeTicks.Value).TotalMinutes);
-
-                TxtRuntime.Text = minutes < 2 ? minutes + " min" : minutes + " mins";
-                PnlRuntime.Visibility = Visibility.Visible;
-                return;
-            }
-
-            PnlRuntime.Visibility = Visibility.Collapsed;
-        }
-        private void UdpateDate(BaseItemDto item)
-        {
-            if (item.PremiereDate.HasValue && item.IsType("episode"))
-            {
-                TxtDate.Text = item.PremiereDate.Value.ToShortDateString();
-
-                PnlDate.Visibility = Visibility.Visible;
-                return;
-            }
-            if (item.ProductionYear.HasValue)
-            {
-                TxtDate.Text = item.ProductionYear.Value.ToString();
-                PnlDate.Visibility = Visibility.Visible;
-                return;
-            }
-
-            PnlDate.Visibility = Visibility.Collapsed;
-        }
-        private void UpdateVideoInfo(BaseItemDto item)
-        {
-            if (item.IsVideo)
-            {
-                if (item.MediaStreams != null)
-                {
-                    var videoStream = item.MediaStreams.FirstOrDefault(m => m.Type == MediaStreamType.Video);
-
-                    if (videoStream != null)
+                ImgLogo.Source =
+                    await App.Instance.GetRemoteBitmapAsync(App.Instance.ApiClient.GetImageUrl(item, new ImageOptions
                     {
-                        PnlVideoInfo.Visibility = Visibility.Visible;
-                        TxtResolution.Text = GetResolutionText(videoStream);
+                        MaxHeight = 100,
+                        ImageType = ImageType.Logo
+                    }));
 
-                        return;
-                    }
-                }
+                ImgLogo.Visibility = Visibility.Visible;
             }
-
-            PnlVideoInfo.Visibility = Visibility.Collapsed;
-        }
-        private void UpdateAudioInfo(BaseItemDto item)
-        {
-            if (item.IsVideo || item.IsAudio)
+            else
             {
-                if (item.MediaStreams != null)
-                {
-                    var stream = item.MediaStreams.FirstOrDefault(m => m.Type == MediaStreamType.Audio);
-
-                    if (stream != null)
-                    {
-                        PnlAudioInfo.Visibility = Visibility.Visible;
-                        TxtAudioChannels.Text = (stream.Channels ?? 0) + "ch";
-
-                        return;
-                    }
-                }
+                ImgLogo.Visibility = Visibility.Collapsed;
             }
-
-            PnlAudioInfo.Visibility = Visibility.Collapsed;
-        }
-        private void UpdateAudioCodec(BaseItemDto item)
-        {
-            if (item.IsAudio)
-            {
-                if (item.MediaStreams != null)
-                {
-                    var stream = item.MediaStreams.FirstOrDefault(m => m.Type == MediaStreamType.Audio);
-
-                    if (stream != null)
-                    {
-                        PnlAudioCodec.Visibility = Visibility.Visible;
-                        TxtAudioCodec.Text = stream.Codec ?? "Unknown video codec";
-
-                        return;
-                    }
-                }
-            }
-
-            PnlAudioCodec.Visibility = Visibility.Collapsed;
-        }
-
-        /// <summary>
-        /// Updates the community rating.
-        /// </summary>
-        private void UpdateCommunityRating(BaseItemDto item)
-        {
-            if (!item.CommunityRating.HasValue)
-            {
-                PnlCommunityRating.Visibility = Visibility.Hidden;
-                return;
-            }
-
-            PnlCommunityRating.Visibility = Visibility.Visible;
-
-            var images = new[] { ImgCommunityRating1, ImgCommunityRating2, ImgCommunityRating3, ImgCommunityRating4, ImgCommunityRating5 };
-
-            var rating = item.CommunityRating.Value / 2;
-
-            for (var i = 0; i < 5; i++)
-            {
-                var img = images[i];
-
-                if (rating < i - 1)
-                {
-                    img.SetResourceReference(StyleProperty, "CommunityRatingImageEmpty");
-                }
-                else if (rating < i)
-                {
-                    img.SetResourceReference(StyleProperty, "CommunityRatingImageHalf");
-                }
-                else
-                {
-                    img.SetResourceReference(StyleProperty, "CommunityRatingImageFull");
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets the resolution text.
-        /// </summary>
-        /// <param name="info">The info.</param>
-        /// <returns>System.String.</returns>
-        private string GetResolutionText(MediaStream info)
-        {
-            var height = info.Height ?? 0;
-            var width = info.Width ?? 0;
-
-            if (height == 1080)
-            {
-                if (string.Equals(info.ScanType, "progressive", StringComparison.OrdinalIgnoreCase))
-                {
-                    return "1080p";
-                }
-                if (string.Equals(info.ScanType, "interlaced", StringComparison.OrdinalIgnoreCase))
-                {
-                    return "1080i";
-                }
-            }
-            if (height == 720)
-            {
-                if (string.Equals(info.ScanType, "progressive", StringComparison.OrdinalIgnoreCase))
-                {
-                    return "720p";
-                }
-                if (string.Equals(info.ScanType, "interlaced", StringComparison.OrdinalIgnoreCase))
-                {
-                    return "720i";
-                }
-            }
-            if (height == 480)
-            {
-                if (string.Equals(info.ScanType, "progressive", StringComparison.OrdinalIgnoreCase))
-                {
-                    return "480p";
-                }
-                if (string.Equals(info.ScanType, "interlaced", StringComparison.OrdinalIgnoreCase))
-                {
-                    return "480i";
-                }
-            }
-
-            return width == 0 || height == 0 ? string.Empty : width + "x" + height;
         }
     }
 }

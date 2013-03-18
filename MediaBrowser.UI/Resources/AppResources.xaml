@@ -161,7 +161,6 @@
         <Setter Property="VirtualizingPanel.CacheLength" Value="2,2"/>
         <Setter Property="VirtualizingPanel.CacheLengthUnit" Value="Page"/>
         <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True"/>
-        <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling"/>
         <Setter Property="VirtualizingPanel.ScrollUnit" Value="Pixel"/>
         <Setter Property="IsSynchronizedWithCurrentItem" Value="True"/>
         <Setter Property="VirtualizingPanel.ScrollUnit" Value="Pixel"/>
@@ -264,7 +263,7 @@
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
                         <Grid x:Name="ContentGrid">
-                            <Border x:Name="BdDropShadow" Margin="-15" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{DynamicResource SelectedItemHighlightColor}" SnapsToDevicePixels="true" CornerRadius="10" Visibility="Hidden">
+                            <Border x:Name="BdDropShadow" Margin="-12" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{DynamicResource SelectedItemHighlightColor}" SnapsToDevicePixels="true" CornerRadius="10" Visibility="Hidden">
                                 <Border.Effect>
                                     <BlurEffect Radius="10" KernelType="Gaussian"></BlurEffect>
                                 </Border.Effect>
@@ -361,7 +360,7 @@
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
                         <Grid x:Name="ContentGrid">
-                            <Border x:Name="BdDropShadow" Margin="-15" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{DynamicResource SelectedItemHighlightColor}" SnapsToDevicePixels="true" CornerRadius="10" Visibility="Hidden">
+                            <Border x:Name="BdDropShadow" Margin="-12" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{DynamicResource SelectedItemHighlightColor}" SnapsToDevicePixels="true" CornerRadius="10" Visibility="Hidden">
                                 <Border.Effect>
                                     <BlurEffect Radius="10" KernelType="Gaussian"></BlurEffect>
                                 </Border.Effect>

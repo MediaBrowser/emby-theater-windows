@@ -129,12 +129,6 @@ namespace MediaBrowser.UI.Pages
             {
                 _displayPreferences = value;
 
-                // If the page is using it's own image type and not honoring the DisplayPreferences setting, set it now
-                if (_displayPreferences != null && FixedImageType.HasValue)
-                {
-                    _displayPreferences.PrimaryImageType = FixedImageType.Value;
-                }
-
                 NotifyDisplayPreferencesChanged();
             }
         }
@@ -198,15 +192,6 @@ namespace MediaBrowser.UI.Pages
                 _childCount = value;
                 OnPropertyChanged("ChildCount");
             }
-        }
-
-        /// <summary>
-        /// If the page is using it's own image type and not honoring the DisplayPreferences setting, it should return it here
-        /// </summary>
-        /// <value>The type of the fixed image.</value>
-        protected virtual ImageType? FixedImageType
-        {
-            get { return null; }
         }
 
         /// <summary>
@@ -340,12 +325,17 @@ namespace MediaBrowser.UI.Pages
 
             if (DisplayPreferences != null)
             {
-                DisplayPreferences.PrimaryImageWidth = Convert.ToInt32(DisplayPreferences.PrimaryImageHeight * GetAspectRatio(DisplayPreferences.PrimaryImageType));
+                DisplayPreferences.PrimaryImageWidth = Convert.ToInt32(DisplayPreferences.PrimaryImageHeight * GetAspectRatio(PreferredImageType));
             }
 
             DisplayChildren = DtoBaseItemViewModel.GetObservableItems(Children.Items, AveragePrimaryImageAspectRatio);
             
             NotifyDisplayPreferencesChanged();
+        }
+
+        protected virtual ImageType PreferredImageType
+        {
+            get { return ImageType.Primary; }
         }
 
         /// <summary>
@@ -398,8 +388,8 @@ namespace MediaBrowser.UI.Pages
                 {
                     child.AveragePrimaryImageAspectRatio = AveragePrimaryImageAspectRatio;
                     child.ImageHeight = DisplayPreferences.PrimaryImageHeight;
-                    child.ImageType = DisplayPreferences.PrimaryImageType;
                     child.ImageWidth = DisplayPreferences.PrimaryImageWidth;
+                    child.ViewType = DisplayPreferences.ViewType;
                 }
             }
 

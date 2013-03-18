@@ -214,7 +214,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
             }
             else
             {
-                ImgLogo.Visibility = Visibility.Collapsed;
+                // Just hide it so that it still takes up the same amount of space
+                ImgLogo.Visibility = Visibility.Hidden;
             }
         }
     }

@@ -32,8 +32,8 @@
             <controls:ExtendedListBox x:Name="lstItems" ItemsSource="{Binding Path=DisplayChildren,IsAsync=True,Mode=OneWay}" Style="{StaticResource ListPageListBoxStyle}" ItemContainerStyle="{StaticResource ListBoxItemStyle}" DataContext="{Binding Mode=OneWay}">
             </controls:ExtendedListBox>
         </Grid>
-        <Grid Grid.Row="3" Margin="25">
-            <Image Name="ImgLogo" Height="40" Stretch="Uniform" HorizontalAlignment="Left"></Image>
+        <Grid Grid.Row="3" Margin="25 25 25 20">
+            <Image Name="ImgLogo" Height="50" Stretch="Uniform" HorizontalAlignment="Left"></Image>
             <details:ItemInfoFooter x:Name="ItemInfoFooter" HorizontalAlignment="Right"></details:ItemInfoFooter>
         </Grid>
     </Grid>

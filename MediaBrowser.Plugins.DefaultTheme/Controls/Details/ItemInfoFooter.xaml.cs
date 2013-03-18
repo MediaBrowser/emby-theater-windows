@@ -42,6 +42,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
         /// <param name="item">The item.</param>
         private void UpdateItemInfo(BaseItemDto item)
         {
+            UpdatePersonalRating(item);
             UpdateCommunityRating(item);
             UpdateOfficialRating(item);
             UpdateRuntime(item);
@@ -50,6 +51,44 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
             UpdateAudioCodec(item);
             UpdateAudioInfo(item);
         }
+
+        private void UpdatePersonalRating(BaseItemDto item)
+        {
+            var userdata = item.UserData;
+
+            if (userdata != null)
+            {
+                if (userdata.Likes.HasValue || userdata.IsFavorite)
+                {
+                    PnlPersonalRating.Visibility = Visibility.Visible;
+              
+                    if (userdata.IsFavorite)
+                    {
+                        ImgFavorite.Visibility = Visibility.Visible;
+                        ImgLike.Visibility = Visibility.Collapsed;
+                        ImgDislike.Visibility = Visibility.Collapsed;
+                    }
+
+                    else if (userdata.Likes.HasValue && userdata.Likes.Value)
+                    {
+                        ImgFavorite.Visibility = Visibility.Collapsed;
+                        ImgLike.Visibility = Visibility.Visible;
+                        ImgDislike.Visibility = Visibility.Collapsed;
+                    }
+                    else if (userdata.Likes.HasValue && !userdata.Likes.Value)
+                    {
+                        ImgFavorite.Visibility = Visibility.Collapsed;
+                        ImgLike.Visibility = Visibility.Collapsed;
+                        ImgDislike.Visibility = Visibility.Visible;
+                    }
+
+                    return;
+                }
+            }
+
+            PnlPersonalRating.Visibility = Visibility.Hidden;
+        }
+
         /// <summary>
         /// Updates the official rating.
         /// </summary>
@@ -185,7 +224,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
         {
             if (!item.CommunityRating.HasValue)
             {
-                PnlCommunityRating.Visibility = Visibility.Hidden;
+                PnlCommunityRating.Visibility = Visibility.Collapsed;
                 return;
             }
 

@@ -9,9 +9,15 @@
     
     <StackPanel Orientation="Horizontal" Name="PnlItemInfo" Visibility="Hidden">
 
-        <StackPanel Orientation="Horizontal" Name="PnlCommunityRating">
+        <StackPanel Orientation="Horizontal" Name="PnlPersonalRating">
             <!--This textblock is just to make sure the panel always takes up the same amount of vertical space, so that content never moves due to height changes -->
             <TextBlock Style="{StaticResource TextBlockStyle}" Visibility="Hidden" Text=" "></TextBlock>
+            <Border Style="{StaticResource MediaInfoSeparator}"></Border>
+            <Image x:Name="ImgLike" Style="{StaticResource LikeImage}"></Image>
+            <Image x:Name="ImgDislike" Style="{StaticResource DislikeImage}"></Image>
+            <Image x:Name="ImgFavorite" Style="{StaticResource FavoriteImage}"></Image>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Name="PnlCommunityRating">
             <Border Style="{StaticResource MediaInfoSeparator}"></Border>
             <Image x:Name="ImgCommunityRating1" Style="{StaticResource CommunityRatingImage}"></Image>
             <Image x:Name="ImgCommunityRating2" Style="{StaticResource CommunityRatingImage}"></Image>

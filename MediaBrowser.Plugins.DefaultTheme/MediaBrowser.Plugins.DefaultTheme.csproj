@@ -355,6 +355,11 @@
   <ItemGroup>
     <Resource Include="Resources\Images\AudioDefault.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\dislike.png" />
+    <Resource Include="Resources\Images\favorite.png" />
+    <Resource Include="Resources\Images\like.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy "$(TargetPath)" "$(SolutionDir)\MediaBrowser.UI\CorePlugins\" /y</PostBuildEvent>

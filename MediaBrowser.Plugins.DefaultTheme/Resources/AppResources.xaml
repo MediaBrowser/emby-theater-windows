@@ -60,6 +60,15 @@
     <Style TargetType="Image" x:Key="CommunityRatingImageEmpty" BasedOn="{StaticResource CommunityRatingImage}">
         <Setter Property="Source" Value="Images/starEmpty.png" />
     </Style>
+    <Style TargetType="Image" x:Key="LikeImage" BasedOn="{StaticResource CommunityRatingImage}">
+        <Setter Property="Source" Value="Images/like.png" />
+    </Style>
+    <Style TargetType="Image" x:Key="DislikeImage" BasedOn="{StaticResource CommunityRatingImage}">
+        <Setter Property="Source" Value="Images/dislike.png" />
+    </Style>
+    <Style TargetType="Image" x:Key="FavoriteImage" BasedOn="{StaticResource CommunityRatingImage}">
+        <Setter Property="Source" Value="Images/favorite.png" />
+    </Style>
 
     <Style TargetType="Border" x:Key="MediaInfoSeparator">
         <Setter Property="Height" Value="12" />
@@ -424,7 +433,7 @@
                     </Setter.Value>
                 </Setter>
             </DataTrigger>
-            <DataTrigger Binding="{Binding Path=DisplayPreferences.ViewType}" Value="ThumbStrip">
+            <DataTrigger Binding="{Binding Path=DisplayPreferences.ViewType}" Value="Thumbstrip">
                 <Setter Property="ItemTemplate" Value="{StaticResource ListPageItemTemplate}"></Setter>
                 <Setter Property="ItemsPanel">
                     <Setter.Value>

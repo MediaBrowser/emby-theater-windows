@@ -33,8 +33,9 @@
             </controls:ExtendedListBox>
         </Grid>
         <Grid Grid.Row="3" Margin="25 25 25 20">
-            <Image Name="ImgLogo" Height="50" Stretch="Uniform" HorizontalAlignment="Left"></Image>
-            <details:ItemInfoFooter x:Name="ItemInfoFooter" HorizontalAlignment="Right"></details:ItemInfoFooter>
+            <Image Name="ImgLogo" Height="50" Stretch="Uniform" HorizontalAlignment="Left" VerticalAlignment="Bottom"></Image>
+            <Image Name="ImgDefaultLogo" Height="100" Stretch="Uniform" HorizontalAlignment="Left" VerticalAlignment="Bottom"></Image>
+            <details:ItemInfoFooter x:Name="ItemInfoFooter" HorizontalAlignment="Right" VerticalAlignment="Bottom" VerticalContentAlignment="Center" KeyboardNavigation.IsTabStop="False"></details:ItemInfoFooter>
         </Grid>
     </Grid>
 </Pages:BaseListPage>

@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Controls;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
@@ -133,7 +134,27 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
                 TxtName.Visibility = Visibility.Collapsed;
             }
 
+            UpdateClearArt(Folder);
+
             await pageTitleTask;
+        }
+
+        private async void UpdateClearArt(BaseItemDto item)
+        {
+            if (!item.HasArtImage && item.IsType("season"))
+            {
+                item = await App.Instance.ApiClient.GetItemAsync(item.SeriesId, App.Instance.CurrentUser.Id);
+            }
+            
+            if (item.HasArtImage)
+            {
+                ImgDefaultLogo.Source =
+                    await App.Instance.GetRemoteBitmapAsync(App.Instance.ApiClient.GetImageUrl(item, new ImageOptions
+                    {
+                        MaxHeight = 200,
+                        ImageType = ImageType.Art
+                    }));
+            }
         }
 
         /// <summary>
@@ -185,7 +206,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         /// <summary>
         /// Handles current item selection changes
         /// </summary>
-        protected override async void OnCurrentItemChanged()
+        protected override void OnCurrentItemChanged()
         {
             base.OnCurrentItemChanged();
 
@@ -201,21 +222,28 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
                 ItemInfoFooter.Item = item;
             }
 
+            UpdateLogo(item);
+        }
+
+        private async void UpdateLogo(BaseItemDto item)
+        {
             if (item != null && item.HasLogo)
             {
                 ImgLogo.Source =
                     await App.Instance.GetRemoteBitmapAsync(App.Instance.ApiClient.GetImageUrl(item, new ImageOptions
                     {
-                        MaxHeight = 100,
+                        MaxHeight = 50,
                         ImageType = ImageType.Logo
                     }));
 
                 ImgLogo.Visibility = Visibility.Visible;
+                ImgDefaultLogo.Visibility = Visibility.Hidden;
             }
             else
             {
                 // Just hide it so that it still takes up the same amount of space
                 ImgLogo.Visibility = Visibility.Hidden;
+                ImgDefaultLogo.Visibility = Visibility.Visible;
             }
         }
     }

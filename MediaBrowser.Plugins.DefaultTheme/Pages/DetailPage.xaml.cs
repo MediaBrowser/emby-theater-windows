@@ -151,7 +151,35 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
 
             ItemInfoFooter.Item = Item;
 
+            await UpdateLogo(Item);
+
             await pageTitleTask;
+        }
+
+        private async Task UpdateLogo(BaseItemDto item)
+        {
+            if (!item.HasArtImage && item.IsType("episode"))
+            {
+                item = await App.Instance.ApiClient.GetItemAsync(item.SeriesId, App.Instance.CurrentUser.Id);
+            }
+
+            // Hide it for movies, for now. It looks really tacky being right under the movie poster
+            // Creating extra spacing shrinks the poster too much
+            if (item.HasArtImage && !item.IsType("movie"))
+            {
+                ImgLogo.Visibility = Visibility.Visible;
+
+                ImgLogo.Source =
+                    await App.Instance.GetRemoteBitmapAsync(App.Instance.ApiClient.GetImageUrl(item, new ImageOptions
+                    {
+                        MaxHeight = 200,
+                        ImageType = ImageType.Art
+                    }));
+            }
+            else
+            {
+                ImgLogo.Visibility = Visibility.Collapsed;
+            }
         }
 
         /// <summary>

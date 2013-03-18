@@ -32,7 +32,7 @@
             <controls:ExtendedListBox x:Name="lstItems" ItemsSource="{Binding Path=DisplayChildren,IsAsync=True,Mode=OneWay}" Style="{StaticResource ListPageListBoxStyle}" ItemContainerStyle="{StaticResource ListBoxItemStyle}" DataContext="{Binding Mode=OneWay}">
             </controls:ExtendedListBox>
         </Grid>
-        <Grid Grid.Row="3" Margin="25 25 25 20">
+        <Grid Grid.Row="3" Margin="25 0 25 20">
             <Image Name="ImgLogo" Height="50" Stretch="Uniform" HorizontalAlignment="Left" VerticalAlignment="Bottom"></Image>
             <Image Name="ImgDefaultLogo" Height="100" Stretch="Uniform" HorizontalAlignment="Left" VerticalAlignment="Bottom"></Image>
             <details:ItemInfoFooter x:Name="ItemInfoFooter" HorizontalAlignment="Right" VerticalAlignment="Bottom" VerticalContentAlignment="Center" KeyboardNavigation.IsTabStop="False"></details:ItemInfoFooter>

@@ -406,7 +406,7 @@
                 <Setter Property="ItemsPanel">
                     <Setter.Value>
                         <ItemsPanelTemplate>
-                            <controls:VirtualizingWrapPanel ItemHeight="{Binding Path=DisplayPreferences.PrimaryImageHeight,Mode=OneWay}" ItemWidth="{Binding Path=DisplayPreferences.PrimaryImageWidth,Mode=OneWay}" Orientation="{Binding WrapPanelOrientation}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="20 50 20 50">
+                            <controls:VirtualizingWrapPanel ItemHeight="{Binding Path=DisplayPreferences.PrimaryImageHeight,Mode=OneWay}" ItemWidth="{Binding Path=DisplayPreferences.PrimaryImageWidth,Mode=OneWay}" Orientation="{Binding WrapPanelOrientation}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="30 30 30 30">
                             </controls:VirtualizingWrapPanel>
                         </ItemsPanelTemplate>
                     </Setter.Value>
@@ -417,7 +417,7 @@
                 <Setter Property="ItemsPanel">
                     <Setter.Value>
                         <ItemsPanelTemplate>
-                            <controls:VirtualizingWrapPanel ItemHeight="{Binding Path=DisplayPreferences.PrimaryImageHeight,Mode=OneWay}" ItemWidth="{Binding Path=DisplayPreferences.PrimaryImageWidth,Mode=OneWay}" Orientation="{Binding WrapPanelOrientation}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="20 50 20 50">
+                            <controls:VirtualizingWrapPanel ItemHeight="{Binding Path=DisplayPreferences.PrimaryImageHeight,Mode=OneWay}" ItemWidth="{Binding Path=DisplayPreferences.PrimaryImageWidth,Mode=OneWay}" Orientation="{Binding WrapPanelOrientation}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="30 30 30 30">
                             </controls:VirtualizingWrapPanel>
                         </ItemsPanelTemplate>
                     </Setter.Value>

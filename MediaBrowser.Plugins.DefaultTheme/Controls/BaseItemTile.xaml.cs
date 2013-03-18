@@ -109,7 +109,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
 
             ReloadImage(item);
 
-            var nameVisibility = !string.Equals(ViewModel.ViewType, ViewTypes.Thumbstrip, StringComparison.OrdinalIgnoreCase) && Item.HasPrimaryImage && !Item.IsType("Episode") ? Visibility.Collapsed : Visibility.Visible;
+            var nameVisibility = !string.Equals(ViewModel.ViewType, ViewTypes.Thumbstrip, StringComparison.OrdinalIgnoreCase) && Item.HasPrimaryImage && !Item.IsType("Episode") && !Item.IsType("Audio") ? Visibility.Collapsed : Visibility.Visible;
 
             if (item.IsType("Person") || item.IsType("IndexFolder"))
             {

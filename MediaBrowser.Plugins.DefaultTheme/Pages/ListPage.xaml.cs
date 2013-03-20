@@ -136,6 +136,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
 
             UpdateClearArt(Folder);
 
+            TxtOverview.Text = Folder.Overview ?? string.Empty;
+
             await pageTitleTask;
         }
 
@@ -223,8 +225,15 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
             }
 
             UpdateLogo(item);
+            UpdateTagline(item);
         }
 
+        private void UpdateTagline(BaseItemDto item)
+        {
+            TxtTagline.Text = item != null && item.Taglines != null && item.Taglines.Count > 0 ? item.Taglines[0] : string.Empty;
+            TxtGenres.Text = item != null && item.Genres != null ? string.Join(" / ", item.Genres.Take(3).ToArray()) : string.Empty;
+        }
+        
         private async void UpdateLogo(BaseItemDto item)
         {
             if (item != null && item.HasLogo)
@@ -245,6 +254,16 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
                 ImgLogo.Visibility = Visibility.Hidden;
                 ImgDefaultLogo.Visibility = Visibility.Visible;
             }
+        }
+
+        public override void NotifyDisplayPreferencesChanged()
+        {
+            base.NotifyDisplayPreferencesChanged();
+
+            PnlThumbstripInfo.Visibility = DisplayPreferences != null &&
+                                           DisplayPreferences.ViewType == ViewTypes.Thumbstrip
+                                               ? Visibility.Visible
+                                               : Visibility.Collapsed;
         }
     }
 }

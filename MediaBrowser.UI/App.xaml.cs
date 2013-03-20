@@ -823,6 +823,8 @@ namespace MediaBrowser.UI
                     CreateOptions = BitmapCreateOptions.DelayCreation
                 };
 
+                RenderOptions.SetBitmapScalingMode(bitmapImage, BitmapScalingMode.Fant);
+                
                 bitmapImage.BeginInit();
                 bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
                 bitmapImage.StreamSource = stream;

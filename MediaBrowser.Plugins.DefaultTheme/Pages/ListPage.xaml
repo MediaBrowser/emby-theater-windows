@@ -15,7 +15,9 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="auto"></RowDefinition>
         </Grid.RowDefinitions>
 
@@ -27,14 +29,33 @@
             <TextBlock Text="{Binding Path=ChildCount,Mode=OneWay}" Style="{StaticResource TextBlockStyle}"></TextBlock>
         </StackPanel>
 
-        <Grid Grid.Row="2">
+        <Grid Grid.Row="2" Margin="30 30 30 0" Visibility="Collapsed">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="400"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <TextBlock Name="TxtOverview" Style="{StaticResource TextBlockStyle}" MaxHeight="160" TextTrimming="CharacterEllipsis" Grid.Column="0"></TextBlock>
+            <Border Grid.Column="1"></Border>
+        </Grid>
+
+        <Grid Grid.Row="3">
 
             <controls:ExtendedListBox x:Name="lstItems" ItemsSource="{Binding Path=DisplayChildren,IsAsync=True,Mode=OneWay}" Style="{StaticResource ListPageListBoxStyle}" ItemContainerStyle="{StaticResource ListBoxItemStyle}" DataContext="{Binding Mode=OneWay}">
             </controls:ExtendedListBox>
         </Grid>
-        <Grid Grid.Row="3" Margin="25 0 25 20">
+
+        <Grid Grid.Row="4" Margin="0 0 0 100" Name="PnlThumbstripInfo">
+
+            <StackPanel Orientation="Vertical">
+                <TextBlock Style="{StaticResource TextBlockStyle}" Name="TxtGenres" Margin="300 0 300 0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" HorizontalAlignment="Center"></TextBlock>
+                <TextBlock Style="{StaticResource TextBlockStyle}" Name="TxtTagline" Margin="300 20 300 0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" HorizontalAlignment="Center"></TextBlock>
+            </StackPanel>
+        </Grid>
+        
+        <Grid Grid.Row="5" Margin="25 0 25 20">
             <Image Name="ImgLogo" Height="50" Stretch="Uniform" HorizontalAlignment="Left" VerticalAlignment="Bottom"></Image>
-            <Image Name="ImgDefaultLogo" Height="100" Stretch="Uniform" HorizontalAlignment="Left" VerticalAlignment="Bottom"></Image>
+            <Image Name="ImgDefaultLogo" Height="80" Stretch="Uniform" HorizontalAlignment="Left" VerticalAlignment="Bottom"></Image>
             <details:ItemInfoFooter x:Name="ItemInfoFooter" HorizontalAlignment="Right" VerticalAlignment="Bottom" VerticalContentAlignment="Center" KeyboardNavigation.IsTabStop="False"></details:ItemInfoFooter>
         </Grid>
     </Grid>

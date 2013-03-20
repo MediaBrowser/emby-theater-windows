@@ -116,7 +116,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
                 nameVisibility = Visibility.Visible;
             }
 
-            txtName.Visibility = nameVisibility;
+            TxtName.Visibility = nameVisibility;
 
             if (nameVisibility == Visibility.Visible)
             {
@@ -127,8 +127,25 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
                     name = item.IndexNumber + " - " + name;
                 }
 
-                txtName.Text = name;
+                TxtName.Text = name;
             }
+
+            var progressBarVisibility = Visibility.Collapsed;
+
+            if (item.CanResume && item.RunTimeTicks.HasValue)
+            {
+                progressBarVisibility = Visibility.Visible;
+
+                Progress.Maximum = item.RunTimeTicks.Value;
+                Progress.Value = item.UserData.PlaybackPositionTicks;
+            }
+
+            Progress.Visibility = progressBarVisibility;
+
+            OverlayGrid.Visibility = nameVisibility == Visibility.Visible ||
+                                     progressBarVisibility == Visibility.Visible
+                                         ? Visibility.Visible
+                                         : Visibility.Collapsed;
         }
 
         /// <summary>

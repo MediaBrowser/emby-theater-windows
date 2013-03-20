@@ -17,14 +17,14 @@
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <TextBlock Text="select profile >" Grid.Row="0" HorizontalAlignment="Left" Style="{StaticResource Heading2TextBlockStyle}" Margin="70 30 0 0"></TextBlock>
+        <TextBlock Text="select profile >" Grid.Row="0" HorizontalAlignment="Left" Style="{StaticResource Heading2TextBlockStyle}" Margin="50 30 0 0"></TextBlock>
 
         <controls:ExtendedScrollViewer Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalAlignment="Stretch" HorizontalAlignment="Center" CanContentScroll="True">
             <controls:ScrollingPanel CanHorizontallyScroll="True" CanVerticallyScroll="False">
                 <controls:ExtendedListBox x:Name="lstUsers" ScrollViewer.VerticalScrollBarVisibility="Disabled" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding Path=Users,IsAsync=True,Mode=OneWay}" Style="{StaticResource ListBoxStyle}" ItemContainerStyle="{StaticResource ListBoxItemStyle}">
                     <controls:ExtendedListBox.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <WrapPanel Orientation="Vertical" Margin="50" />
+                            <WrapPanel Orientation="Vertical" Margin="30" />
                         </ItemsPanelTemplate>
                     </controls:ExtendedListBox.ItemsPanel>
                 </controls:ExtendedListBox>

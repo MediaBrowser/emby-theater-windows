@@ -232,17 +232,19 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
 
             var images = new[] { ImgCommunityRating1, ImgCommunityRating2, ImgCommunityRating3, ImgCommunityRating4, ImgCommunityRating5 };
 
-            var rating = item.CommunityRating.Value / 2;
+            var rating = item.CommunityRating.Value;
 
             for (var i = 0; i < 5; i++)
             {
                 var img = images[i];
 
-                if (rating < i - 1)
+                var starValue = (i + 1)*2;
+
+                if (rating < starValue - 2)
                 {
                     img.SetResourceReference(StyleProperty, "CommunityRatingImageEmpty");
                 }
-                else if (rating < i)
+                else if (rating < starValue)
                 {
                     img.SetResourceReference(StyleProperty, "CommunityRatingImageHalf");
                 }

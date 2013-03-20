@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Common.Extensions;
+﻿using System.Windows.Media;
+using MediaBrowser.Common.Extensions;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Net;
@@ -87,6 +88,8 @@ namespace MediaBrowser.UI
             _logger = logger;
 
             InitializeComponent();
+
+            RenderOptions.SetBitmapScalingMode(this, BitmapScalingMode.Fant);
         }
 
         /// <summary>
@@ -265,7 +268,7 @@ namespace MediaBrowser.UI
 
                     CurrentBackdropIndex = index;
 
-                }, null, 5000, 5000);
+                }, null, 6000, 6000);
             }
         }
 

@@ -4,7 +4,6 @@ using MediaBrowser.Common.Implementations;
 using MediaBrowser.Common.Implementations.ScheduledTasks;
 using MediaBrowser.Common.IO;
 using MediaBrowser.IsoMounter;
-using MediaBrowser.Model.Connectivity;
 using MediaBrowser.Model.Net;
 using MediaBrowser.Model.System;
 using MediaBrowser.Model.Updates;
@@ -108,13 +107,9 @@ namespace MediaBrowser.UI
             {
                 AutomaticDecompression = DecompressionMethods.Deflate,
                 CachePolicy = new RequestCachePolicy(RequestCacheLevel.Revalidate)
-            }))
+
+            }), UIConfigurationManager.Configuration.ServerHostName, UIConfigurationManager.Configuration.ServerApiPort, "MediaBrowserTheater", Environment.MachineName, Environment.MachineName)
             {
-                ServerHostName = UIConfigurationManager.Configuration.ServerHostName,
-                ServerApiPort = UIConfigurationManager.Configuration.ServerApiPort,
-                ClientType = "MediaBrowserTheater",
-                DeviceName = Environment.MachineName,
-                DeviceId = Environment.MachineName,
                 SerializationFormat = SerializationFormats.Json,
                 JsonSerializer = JsonSerializer,
                 ProtobufSerializer = ProtobufSerializer

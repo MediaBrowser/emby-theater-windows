@@ -52,6 +52,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
                     {
                         return ImageType.Thumb;
                     }
+                    if (DisplayPreferences.ViewType == ViewTypes.List)
+                    {
+                        return ImageType.Thumb;
+                    }
                 }
                 return base.PreferredImageType;
             }

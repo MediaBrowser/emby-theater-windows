@@ -351,9 +351,12 @@ namespace MediaBrowser.UI.Pages
                 Fields = new[] {
                                  ItemFields.UserData,
                                  ItemFields.PrimaryImageAspectRatio,
+                                 ItemFields.DateCreated,
                                  ItemFields.MediaStreams,
                                  ItemFields.Taglines,
-                                 ItemFields.Genres
+                                 ItemFields.Genres,
+                                 ItemFields.SeriesInfo,
+                                 ItemFields.Overview
                              },
 
                 UserId = App.Instance.CurrentUser.Id,

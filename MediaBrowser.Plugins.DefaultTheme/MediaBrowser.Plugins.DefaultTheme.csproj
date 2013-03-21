@@ -82,6 +82,9 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\BaseItemListViewTile.xaml.cs">
+      <DependentUpon>BaseItemListViewTile.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\BaseItemTile.xaml.cs">
       <DependentUpon>BaseItemTile.xaml</DependentUpon>
     </Compile>
@@ -193,6 +196,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Controls\BaseItemListViewTile.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\BaseItemTile.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -319,9 +326,6 @@
     <Resource Include="Resources\Images\starHalf.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Images\Watched.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Resources\Images\DislikeOverlay.png" />
     <Resource Include="Resources\Images\FavoriteOverlay.png" />
     <Resource Include="Resources\Images\LikeOverlay.png" />
@@ -362,6 +366,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\played.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\new.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

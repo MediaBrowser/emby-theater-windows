@@ -165,26 +165,12 @@
                                                 </EasingDoubleKeyFrame.EasingFunction>
                                             </EasingDoubleKeyFrame>
                                         </DoubleAnimationUsingKeyFrames>
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)" Storyboard.TargetName="Bd">
-                                            <EasingDoubleKeyFrame KeyTime="0" Value="0">
-                                                <EasingDoubleKeyFrame.EasingFunction>
-                                                    <ExponentialEase EasingMode="EaseInOut"></ExponentialEase>
-                                                </EasingDoubleKeyFrame.EasingFunction>
-                                            </EasingDoubleKeyFrame>
-                                        </DoubleAnimationUsingKeyFrames>
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Effect).(DropShadowEffect.Opacity)" Storyboard.TargetName="BdDropShadow">
-                                            <EasingDoubleKeyFrame KeyTime="0" Value="1">
-                                                <EasingDoubleKeyFrame.EasingFunction>
-                                                    <ExponentialEase EasingMode="EaseInOut"></ExponentialEase>
-                                                </EasingDoubleKeyFrame.EasingFunction>
-                                            </EasingDoubleKeyFrame>
-                                        </DoubleAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
                         <Grid x:Name="ContentGrid">
-                            <Border x:Name="BdDropShadow" Margin="-12" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{DynamicResource SelectedItemHighlightColor}" SnapsToDevicePixels="true" CornerRadius="10" Visibility="Hidden">
+                            <Border x:Name="BdDropShadow" Margin="-11" BorderBrush="{DynamicResource SelectedItemHighlightColor}" BorderThickness="14" Background="Transparent" SnapsToDevicePixels="true" CornerRadius="5" Visibility="Hidden">
                                 <Border.Effect>
                                     <BlurEffect Radius="10" KernelType="Gaussian"></BlurEffect>
                                 </Border.Effect>
@@ -398,6 +384,10 @@
         <themecontrols:BaseItemTile DataContext="{Binding}"></themecontrols:BaseItemTile>
     </DataTemplate>
 
+    <DataTemplate x:Key="ListPageListViewItemTemplate" DataType="{x:Type ViewModels:DtoBaseItemViewModel}">
+        <themecontrols:BaseItemListViewTile DataContext="{Binding}"></themecontrols:BaseItemListViewTile>
+    </DataTemplate>
+
     <!--List Page ListBox. -->
     <Style TargetType="controls:ExtendedListBox" x:Key="ListPageListBoxStyle" BasedOn="{StaticResource ListBoxStyle}">
         <Style.Triggers>
@@ -444,7 +434,7 @@
                 </Setter>
             </DataTrigger>
             <DataTrigger Binding="{Binding Path=DisplayPreferences.ViewType}" Value="List">
-                <Setter Property="ItemTemplate" Value="{StaticResource ListPageItemTemplate}"></Setter>
+                <Setter Property="ItemTemplate" Value="{StaticResource ListPageListViewItemTemplate}"></Setter>
                 <Setter Property="ItemsPanel">
                     <Setter.Value>
                         <ItemsPanelTemplate>

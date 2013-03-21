@@ -109,7 +109,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
         {
             var displayPreferences = MainPage.DisplayPreferences;
 
-            btnScroll.Visibility = displayPreferences.ViewType == ViewTypes.Poster
+            btnScroll.Visibility = displayPreferences.ViewType == ViewTypes.Poster || string.IsNullOrEmpty(displayPreferences.ViewType)
                                        ? Visibility.Visible
                                        : Visibility.Collapsed;
 

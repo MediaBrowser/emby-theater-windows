@@ -4,13 +4,19 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:controls="clr-namespace:MediaBrowser.UI.Controls;assembly=MediaBrowser.UI.Controls"
-                          mc:Ignorable="d" 
+             mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
 
-    <Grid x:Name="mainGrid" HorizontalAlignment="Center">
-
-        <Border x:Name="border">
-            <Image x:Name="image" Stretch="Uniform"></Image>
+    <Grid x:Name="MainGrid" HorizontalAlignment="Center">
+        
+        <Border x:Name="ImageBorder" HorizontalAlignment="Stretch">
+            <Border.Background>
+                <LinearGradientBrush SpreadMethod="Reflect" ColorInterpolationMode="SRgbLinearInterpolation" StartPoint="0,0" EndPoint="0,1" >
+                    <GradientStop Color="#ffCBCBCB" Offset="0" />
+                    <GradientStop Color="#ff545358" Offset="1" />
+                </LinearGradientBrush>
+            </Border.Background>
+            <Image x:Name="ItemImage" Stretch="Uniform" HorizontalAlignment="Center"></Image>
         </Border>
 
         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Name="OverlayGrid">
@@ -25,8 +31,11 @@
                 <ColumnDefinition Width="*"></ColumnDefinition>
                 <ColumnDefinition Width="auto"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <TextBlock x:Name="TxtName" Margin="10 5 0 0" Foreground="White" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Style="{StaticResource TextBlockStyle}" Grid.Row="0" Grid.Column="0"></TextBlock>
-            <Image Source="../Resources/Images/played.png" Opacity=".9" Height="32" Grid.Column="1" Margin="10 5 10 0"></Image>
+            <TextBlock x:Name="TxtName" Margin="10 5 10 0" Foreground="White" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Style="{StaticResource TextBlockStyle}" Grid.Row="0" Grid.Column="0"></TextBlock>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10 10 10 0">
+                <Image Name="ImgNew" Source="../Resources/Images/new.png" Height="36"></Image>
+                <Image Name="ImgPlayed" Source="../Resources/Images/played.png" Height="36"></Image>
+            </StackPanel>
             <ProgressBar Name="Progress" Grid.Row="1" Maximum="100" Value="40" Margin="15 10 15 15" Foreground="#cc3333" Background="Black" BorderBrush="#666666" BorderThickness="1" Height="10" Opacity=".7" Grid.ColumnSpan="2"></ProgressBar>
         </Grid>
     </Grid>

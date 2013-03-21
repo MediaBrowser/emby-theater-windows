@@ -12,9 +12,9 @@ using System.Windows;
 namespace MediaBrowser.Plugins.DefaultTheme.Controls
 {
     /// <summary>
-    /// Interaction logic for BaseItemTile.xaml
+    /// Interaction logic for BaseItemListViewTile.xaml
     /// </summary>
-    public partial class BaseItemTile : BaseUserControl
+    public partial class BaseItemListViewTile : BaseUserControl
     {
         /// <summary>
         /// Gets the view model.
@@ -37,7 +37,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseItemTile" /> class.
         /// </summary>
-        public BaseItemTile()
+        public BaseItemListViewTile()
         {
             InitializeComponent();
 
@@ -108,65 +108,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
 
             ReloadImage(item);
 
-            var nameVisibility = !string.Equals(ViewModel.ViewType, ViewTypes.Thumbstrip, StringComparison.OrdinalIgnoreCase) && Item.HasPrimaryImage && !Item.IsType("Episode") && !Item.IsType("Audio") ? Visibility.Collapsed : Visibility.Visible;
-
-            if (item.IsType("Person") || item.IsType("IndexFolder"))
-            {
-                nameVisibility = Visibility.Visible;
-            }
-
-            TxtName.Visibility = nameVisibility;
-
-            if (nameVisibility == Visibility.Visible)
-            {
-                TxtName.Text = GetDisplayName(Item);
-            }
-
-            var progressBarVisibility = Visibility.Collapsed;
-
-            if (item.CanResume && item.RunTimeTicks.HasValue)
-            {
-                progressBarVisibility = Visibility.Visible;
-
-                Progress.Maximum = item.RunTimeTicks.Value;
-                Progress.Value = item.UserData.PlaybackPositionTicks;
-            }
-
-            Progress.Visibility = progressBarVisibility;
-
-            var playedVisibility = Visibility.Collapsed;
-            if (!item.CanResume && item.UserData != null && item.UserData.Played)
-            {
-                playedVisibility = Visibility.Visible;
-            }
-            ImgPlayed.Visibility = playedVisibility;
-
-            var newVisibility = Visibility.Collapsed;
-            if (item.DateCreated.HasValue && (DateTime.UtcNow - item.DateCreated.Value).TotalDays < 14)
-            {
-                newVisibility = Visibility.Visible;
-            }
-            ImgNew.Visibility = newVisibility;
-        
-
-            OverlayGrid.Visibility = nameVisibility == Visibility.Visible ||
-                                     playedVisibility == Visibility.Visible ||
-                                     newVisibility == Visibility.Visible ||
-                                     progressBarVisibility == Visibility.Visible
-                                         ? Visibility.Visible
-                                         : Visibility.Collapsed;
-        }
-
-        public static string GetDisplayName(BaseItemDto item)
-        {
-            var name = item.Name;
-
-            if (item.IndexNumber.HasValue)
-            {
-                name = item.IndexNumber + " - " + name;
-            }
-
-            return name;
+            TxtName.Text = BaseItemTile.GetDisplayName(item);
+            TxtOverview.Text = item.Overview;
         }
 
         /// <summary>
@@ -181,7 +124,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
 
             MainGrid.Height = ViewModel.ImageHeight;
 
-            MainGrid.Width = ViewModel.ImageWidth;
+            const int detailWidth = 800;
+
+            MainGrid.Width = ViewModel.ImageWidth + detailWidth;
+            MainGrid.ColumnDefinitions[1].Width = new GridLength(detailWidth);
 
             await SetImageSource(item);
         }
@@ -190,20 +136,17 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
 
         private Task SetImageSource(BaseItemDto item)
         {
-            if (string.Equals(ViewModel.ViewType, ViewTypes.Thumbstrip, StringComparison.OrdinalIgnoreCase))
+            if (item.BackdropCount > 0)
             {
-                if (item.HasThumb)
-                {
-                    var url = ViewModel.GetImageUrl(ImageType.Thumb);
+                var url = ViewModel.GetImageUrl(ImageType.Backdrop);
 
-                    return SetImage(url);
-                }
-                if (item.BackdropCount > 0)
-                {
-                    var url = ViewModel.GetImageUrl(ImageType.Backdrop);
+                return SetImage(url);
+            }
+            if (item.HasThumb)
+            {
+                var url = ViewModel.GetImageUrl(ImageType.Thumb);
 
-                    return SetImage(url);
-                }
+                return SetImage(url);
             }
             
             if (item.HasPrimaryImage)
@@ -220,8 +163,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
 
         private async Task SetImage(string url)
         {
-            ImageBorder.Background = null;
-
             try
             {
                 ItemImage.Source = await App.Instance.GetRemoteBitmapAsync(url);

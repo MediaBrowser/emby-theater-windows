@@ -41,7 +41,7 @@
 
         <Grid Grid.Row="3">
 
-            <controls:ExtendedListBox x:Name="lstItems" ItemsSource="{Binding Path=DisplayChildren,IsAsync=True,Mode=OneWay}" Style="{StaticResource ListPageListBoxStyle}" ItemContainerStyle="{StaticResource ListBoxItemStyle}" DataContext="{Binding Mode=OneWay}">
+            <controls:ExtendedListBox x:Name="lstItems" ItemsSource="{Binding Path=DisplayChildren,IsAsync=True,Mode=OneWay}" Style="{StaticResource ListPageListBoxStyle}" DataContext="{Binding Mode=OneWay}">
             </controls:ExtendedListBox>
         </Grid>
 

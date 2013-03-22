@@ -108,7 +108,7 @@ namespace MediaBrowser.UI
                 AutomaticDecompression = DecompressionMethods.Deflate,
                 CachePolicy = new RequestCachePolicy(RequestCacheLevel.Revalidate)
 
-            }), UIConfigurationManager.Configuration.ServerHostName, UIConfigurationManager.Configuration.ServerApiPort, "MediaBrowserTheater", Environment.MachineName, Environment.MachineName)
+            }), UIConfigurationManager.Configuration.ServerHostName, UIConfigurationManager.Configuration.ServerApiPort, "Media Browser Theater", Environment.MachineName, Environment.MachineName)
             {
                 SerializationFormat = SerializationFormats.Json,
                 JsonSerializer = JsonSerializer,

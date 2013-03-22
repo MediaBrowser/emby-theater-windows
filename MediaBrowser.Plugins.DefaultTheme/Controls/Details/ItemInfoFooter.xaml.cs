@@ -299,7 +299,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
                 }
             }
 
-            return width == 0 || height == 0 ? string.Empty : width + "x" + height;
+            return width == 0 || height == 0 ? string.Empty : width + "/" + height;
         }
     }
 }

@@ -47,6 +47,8 @@
     <!--Default font for h2 headers. Themes should override these as needed-->
     <Brush x:Key="Heading2Foreground">#ffffff</Brush>
 
+    <Brush x:Key="SelectedItemHighlightColor">SkyBlue</Brush>
+
     <Style TargetType="Image" x:Key="CommunityRatingImage">
         <Setter Property="Stretch" Value="Uniform"/>
         <Setter Property="Height" Value="30" />
@@ -189,6 +191,186 @@
         </Setter>
     </Style>
 
+    <!--Provides styling for a button that matches list box items. Themes should override this if they choose. -->
+    <!--Or, they may find it easier to just override SelectedItemHighlightColor to change the glow color. -->
+    <Style x:Key="BaseItemButtonStyle" TargetType="{x:Type Button}">
+        <Setter Property="SnapsToDevicePixels" Value="true"/>
+        <Setter Property="OverridesDefaultStyle" Value="true"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Margin" Value="0"/>
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Border x:Name="Bd" SnapsToDevicePixels="true" RenderTransformOrigin="0.5,0.5" Padding="3">
+                        <Border.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform/>
+                                <SkewTransform/>
+                                <RotateTransform/>
+                                <TranslateTransform/>
+                            </TransformGroup>
+                        </Border.RenderTransform>
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualStateGroup.Transitions>
+                                    <VisualTransition GeneratedDuration="0:0:0.25"/>
+                                </VisualStateGroup.Transitions>
+                                <VisualState x:Name="Normal"/>
+                                <VisualState x:Name="MouseOver">
+                                </VisualState>
+                                <VisualState x:Name="Disabled"/>
+                                <VisualState x:Name="Focused">
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)" Storyboard.TargetName="Bd">
+                                            <EasingDoubleKeyFrame KeyTime="0" Value="1.07">
+                                                <EasingDoubleKeyFrame.EasingFunction>
+                                                    <ExponentialEase EasingMode="EaseInOut"></ExponentialEase>
+                                                </EasingDoubleKeyFrame.EasingFunction>
+                                            </EasingDoubleKeyFrame>
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)" Storyboard.TargetName="Bd">
+                                            <EasingDoubleKeyFrame KeyTime="0" Value="1.07">
+                                                <EasingDoubleKeyFrame.EasingFunction>
+                                                    <ExponentialEase EasingMode="EaseInOut"></ExponentialEase>
+                                                </EasingDoubleKeyFrame.EasingFunction>
+                                            </EasingDoubleKeyFrame>
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)" Storyboard.TargetName="Bd">
+                                            <EasingDoubleKeyFrame KeyTime="0" Value="0">
+                                                <EasingDoubleKeyFrame.EasingFunction>
+                                                    <ExponentialEase EasingMode="EaseInOut"></ExponentialEase>
+                                                </EasingDoubleKeyFrame.EasingFunction>
+                                            </EasingDoubleKeyFrame>
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                        <Grid x:Name="ContentGrid">
+                            <Border x:Name="BdDropShadow" Margin="-11" BorderBrush="{DynamicResource SelectedItemHighlightColor}" BorderThickness="14" Background="Transparent" SnapsToDevicePixels="true" CornerRadius="5" Visibility="Hidden">
+                                <Border.Effect>
+                                    <BlurEffect Radius="10" KernelType="Gaussian"></BlurEffect>
+                                </Border.Effect>
+                            </Border>
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsFocused" Value="true">
+                            <Setter Property="Visibility" TargetName="BdDropShadow" Value="Visible"/>
+                            <Setter Property="Panel.ZIndex" Value="5"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!--Defines the styles for ListBoxItems. Themes should override this if they choose. -->
+    <Style x:Key="ListBoxItemStyle" TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource ListBoxItemStyle}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                    <Border x:Name="Bd" SnapsToDevicePixels="true" RenderTransformOrigin="0.5,0.5" Padding="3">
+                        <Grid x:Name="ContentGrid">
+                            <Border x:Name="BdDropShadow" Margin="-11" BorderBrush="{DynamicResource SelectedItemHighlightColor}" BorderThickness="16" Background="Transparent" SnapsToDevicePixels="true" CornerRadius="5" Visibility="Hidden">
+                                <Border.Effect>
+                                    <BlurEffect Radius="10" KernelType="Gaussian"></BlurEffect>
+                                </Border.Effect>
+                            </Border>
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsFocused" Value="true">
+                            <Setter Property="Visibility" TargetName="BdDropShadow" Value="Visible"/>
+                            <Setter Property="Panel.ZIndex" Value="5"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!--Defines the styles for ListBoxItems. Themes should override this if they choose. -->
+    <Style x:Key="AnimatedListBoxItemStyle" TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource ListBoxItemStyle}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                    <Border x:Name="Bd" SnapsToDevicePixels="true" RenderTransformOrigin="0.5,0.5" Padding="3">
+                        <Border.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform/>
+                                <SkewTransform/>
+                                <RotateTransform/>
+                                <TranslateTransform/>
+                            </TransformGroup>
+                        </Border.RenderTransform>
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="SelectionStates">
+                                <VisualState x:Name="Unselected"/>
+                                <VisualState x:Name="Selected">
+                                </VisualState>
+                                <VisualState x:Name="SelectedUnfocused"/>
+                            </VisualStateGroup>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualStateGroup.Transitions>
+                                    <VisualTransition GeneratedDuration="0:0:0.3"/>
+                                </VisualStateGroup.Transitions>
+                                <VisualState x:Name="Normal"/>
+                                <VisualState x:Name="MouseOver">
+                                </VisualState>
+                                <VisualState x:Name="Disabled"/>
+                                <VisualState x:Name="Focused">
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)" Storyboard.TargetName="Bd">
+                                            <EasingDoubleKeyFrame KeyTime="0" Value="1.07">
+                                                <EasingDoubleKeyFrame.EasingFunction>
+                                                    <ExponentialEase EasingMode="EaseInOut"></ExponentialEase>
+                                                </EasingDoubleKeyFrame.EasingFunction>
+                                            </EasingDoubleKeyFrame>
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)" Storyboard.TargetName="Bd">
+                                            <EasingDoubleKeyFrame KeyTime="0" Value="1.07">
+                                                <EasingDoubleKeyFrame.EasingFunction>
+                                                    <ExponentialEase EasingMode="EaseInOut"></ExponentialEase>
+                                                </EasingDoubleKeyFrame.EasingFunction>
+                                            </EasingDoubleKeyFrame>
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)" Storyboard.TargetName="Bd">
+                                            <EasingDoubleKeyFrame KeyTime="0" Value="0">
+                                                <EasingDoubleKeyFrame.EasingFunction>
+                                                    <ExponentialEase EasingMode="EaseInOut"></ExponentialEase>
+                                                </EasingDoubleKeyFrame.EasingFunction>
+                                            </EasingDoubleKeyFrame>
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                        <Grid x:Name="ContentGrid">
+                            <Border x:Name="BdDropShadow" Margin="-11" BorderBrush="{DynamicResource SelectedItemHighlightColor}" BorderThickness="14" Background="Transparent" SnapsToDevicePixels="true" CornerRadius="5" Visibility="Hidden">
+                                <Border.Effect>
+                                    <BlurEffect Radius="10" KernelType="Gaussian"></BlurEffect>
+                                </Border.Effect>
+                            </Border>
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsFocused" Value="true">
+                            <Setter Property="Visibility" TargetName="BdDropShadow" Value="Visible"/>
+                            <Setter Property="Panel.ZIndex" Value="5"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <!--Item logos. -->
     <Style TargetType="Image" x:Key="ItemLogo">
         <Setter Property="Margin" Value="0 10 0 0"/>
@@ -199,6 +381,15 @@
         <Setter Property="Stretch" Value="Uniform"/>
     </Style>
 
+    <Style TargetType="ProgressBar" x:Key="ResumeProgressBar">
+        <Setter Property="Foreground" Value="#cc3333"/>
+        <Setter Property="Background" Value="Black"/>
+        <Setter Property="BorderBrush" Value="#666666"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Height" Value="10"/>
+        <Setter Property="Opacity" Value=".7"/>
+    </Style>
+    
     <!--Override PageContentTemplate-->
     <ControlTemplate x:Key="PageContentTemplate">
 
@@ -393,6 +584,7 @@
         <Style.Triggers>
             <DataTrigger Binding="{Binding Path=DisplayPreferences.ViewType}" Value="{x:Null}">
                 <Setter Property="ItemTemplate" Value="{StaticResource ListPageItemTemplate}"></Setter>
+                <Setter Property="ItemContainerStyle" Value="{StaticResource AnimatedListBoxItemStyle}"></Setter>
                 <Setter Property="ItemsPanel">
                     <Setter.Value>
                         <ItemsPanelTemplate>
@@ -404,6 +596,7 @@
             </DataTrigger>
             <DataTrigger Binding="{Binding Path=DisplayPreferences.ViewType}" Value="Poster">
                 <Setter Property="ItemTemplate" Value="{StaticResource ListPageItemTemplate}"></Setter>
+                <Setter Property="ItemContainerStyle" Value="{StaticResource AnimatedListBoxItemStyle}"></Setter>
                 <Setter Property="ItemsPanel">
                     <Setter.Value>
                         <ItemsPanelTemplate>
@@ -415,6 +608,7 @@
             </DataTrigger>
             <DataTrigger Binding="{Binding Path=DisplayPreferences.ViewType}" Value="CoverFlow">
                 <Setter Property="ItemTemplate" Value="{StaticResource ListPageItemTemplate}"></Setter>
+                <Setter Property="ItemContainerStyle" Value="{StaticResource ListBoxItemStyle}"></Setter>
                 <Setter Property="ItemsPanel">
                     <Setter.Value>
                         <ItemsPanelTemplate>
@@ -425,6 +619,7 @@
             </DataTrigger>
             <DataTrigger Binding="{Binding Path=DisplayPreferences.ViewType}" Value="Thumbstrip">
                 <Setter Property="ItemTemplate" Value="{StaticResource ListPageItemTemplate}"></Setter>
+                <Setter Property="ItemContainerStyle" Value="{StaticResource AnimatedListBoxItemStyle}"></Setter>
                 <Setter Property="ItemsPanel">
                     <Setter.Value>
                         <ItemsPanelTemplate>
@@ -435,6 +630,7 @@
             </DataTrigger>
             <DataTrigger Binding="{Binding Path=DisplayPreferences.ViewType}" Value="List">
                 <Setter Property="ItemTemplate" Value="{StaticResource ListPageListViewItemTemplate}"></Setter>
+                <Setter Property="ItemContainerStyle" Value="{StaticResource ListBoxItemStyle}"></Setter>
                 <Setter Property="ItemsPanel">
                     <Setter.Value>
                         <ItemsPanelTemplate>

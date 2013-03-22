@@ -56,7 +56,7 @@
                 </Grid>
                 <TextBlock HorizontalAlignment="Left" Text="all media >" Grid.Row="0" Grid.Column="1" Style="{StaticResource Heading2TextBlockStyle}" Margin="90 30 0 0"></TextBlock>
 
-                <controls:ExtendedListBox x:Name="lstCollectionFolders" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" ItemsSource="{Binding Path=DisplayChildren,IsAsync=True,Mode=OneWay}" Style="{StaticResource ListBoxStyle}" ItemContainerStyle="{StaticResource ListBoxItemStyle}" Grid.Row="1" Grid.Column="1" AutoFocus="False" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource HomePageListBoxItemTemplate}">
+                <controls:ExtendedListBox x:Name="lstCollectionFolders" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" ItemsSource="{Binding Path=DisplayChildren,IsAsync=True,Mode=OneWay}" Style="{StaticResource ListBoxStyle}" ItemContainerStyle="{StaticResource AnimatedListBoxItemStyle}" Grid.Row="1" Grid.Column="1" AutoFocus="False" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource HomePageListBoxItemTemplate}">
                     <controls:ExtendedListBox.ItemsPanel>
                         <ItemsPanelTemplate>
                             <WrapPanel Orientation="Vertical" VerticalAlignment="Top" IsItemsHost="True" Margin="50 50 150 50" />

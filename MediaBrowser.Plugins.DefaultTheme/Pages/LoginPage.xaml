@@ -21,7 +21,7 @@
 
         <controls:ExtendedScrollViewer Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalAlignment="Stretch" HorizontalAlignment="Center" CanContentScroll="True">
             <controls:ScrollingPanel CanHorizontallyScroll="True" CanVerticallyScroll="False">
-                <controls:ExtendedListBox x:Name="lstUsers" ScrollViewer.VerticalScrollBarVisibility="Disabled" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding Path=Users,IsAsync=True,Mode=OneWay}" Style="{StaticResource ListBoxStyle}" ItemContainerStyle="{StaticResource ListBoxItemStyle}">
+                <controls:ExtendedListBox x:Name="lstUsers" ScrollViewer.VerticalScrollBarVisibility="Disabled" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding Path=Users,IsAsync=True,Mode=OneWay}" Style="{StaticResource ListBoxStyle}" ItemContainerStyle="{StaticResource AnimatedListBoxItemStyle}">
                     <controls:ExtendedListBox.ItemsPanel>
                         <ItemsPanelTemplate>
                             <WrapPanel Orientation="Vertical" Margin="30" />

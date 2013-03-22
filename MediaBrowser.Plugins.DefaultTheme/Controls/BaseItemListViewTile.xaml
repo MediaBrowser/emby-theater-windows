@@ -17,17 +17,19 @@
             <ColumnDefinition Width="auto"></ColumnDefinition>
         </Grid.ColumnDefinitions>
 
-        <Image x:Name="ItemImage" Stretch="Uniform" HorizontalAlignment="Center" Grid.Column="0" Margin="10 15"></Image>
+        <Image x:Name="ItemImage" Stretch="Uniform" HorizontalAlignment="Center" Margin="10 15" Grid.Column="0"></Image>
 
         <Grid Grid.Column="1" Name="DetailGrid" Margin="0 10 5 15" HorizontalAlignment="Left">
             
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"></RowDefinition>
                 <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="auto"></RowDefinition>
             </Grid.RowDefinitions>
 
             <TextBlock Name="TxtName" Style="{StaticResource TextBlockStyle}" Grid.Row="0"></TextBlock>
-            <TextBlock Name="TxtOverview" Style="{StaticResource SmallTextBlockStyle}" Grid.Row="1" Foreground="#cccccc" TextTrimming="CharacterEllipsis"></TextBlock>
+            <TextBlock Name="TxtOverview" Style="{StaticResource SmallTextBlockStyle}" Grid.Row="1" Foreground="#bbbbbb" TextTrimming="CharacterEllipsis"></TextBlock>
+            <ProgressBar Name="Progress" Grid.Row="2" Maximum="100" Value="40" Margin="0 5 15 0" Width="200" Height="12" Style="{StaticResource ResumeProgressBar}"></ProgressBar>
         </Grid>
     </Grid>
 </controls:BaseUserControl>

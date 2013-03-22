@@ -36,7 +36,7 @@
                 <Image Name="ImgNew" Source="../Resources/Images/new.png" Height="36"></Image>
                 <Image Name="ImgPlayed" Source="../Resources/Images/played.png" Height="36"></Image>
             </StackPanel>
-            <ProgressBar Name="Progress" Grid.Row="1" Maximum="100" Value="40" Margin="15 10 15 15" Foreground="#cc3333" Background="Black" BorderBrush="#666666" BorderThickness="1" Height="10" Opacity=".7" Grid.ColumnSpan="2"></ProgressBar>
+            <ProgressBar Name="Progress" Grid.Row="1" Maximum="100" Value="40" Margin="15 10 15 15" Grid.ColumnSpan="2" Style="{StaticResource ResumeProgressBar}"></ProgressBar>
         </Grid>
     </Grid>
 </controls:BaseUserControl>

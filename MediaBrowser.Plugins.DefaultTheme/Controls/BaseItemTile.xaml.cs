@@ -161,7 +161,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         {
             var name = item.Name;
 
-            if (item.IndexNumber.HasValue)
+            if (item.IndexNumber.HasValue && !item.IsType("season"))
             {
                 name = item.IndexNumber + " - " + name;
             }

@@ -1,7 +1,10 @@
-﻿using MediaBrowser.Model.Dto;
+﻿using System.Collections.Generic;
+using MediaBrowser.Model.Dto;
 using System;
 using System.Linq;
 using System.Windows;
+using MediaBrowser.UI.Controller;
+using MediaBrowser.UI.Playback;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
 {
@@ -104,6 +107,14 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
             }
     
             Overview.Text = Item.Overview;
+        }
+
+        public void ButtonClick(object sender, EventArgs e)
+        {
+            UIKernel.Instance.PlaybackManager.Play(new PlayOptions
+            {
+                Items = new List<BaseItemDto> { Item }
+            });
         }
     }
 }

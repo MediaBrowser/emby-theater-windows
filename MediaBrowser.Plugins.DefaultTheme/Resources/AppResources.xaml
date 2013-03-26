@@ -29,7 +29,9 @@
             <Setter.Value>
                 <LinearGradientBrush SpreadMethod="Reflect" ColorInterpolationMode="SRgbLinearInterpolation" StartPoint="0,0" EndPoint="0,1" >
                     <GradientStop Color="#ff000000" Offset="0" />
-                    <GradientStop Color="#ff666666" Offset="1" />
+                    <GradientStop Color="#ff666666" Offset=".45" />
+                    <GradientStop Color="#ff666666" Offset=".55" />
+                    <GradientStop Color="#ff000000" Offset="1" />
                 </LinearGradientBrush>
             </Setter.Value>
         </Setter>

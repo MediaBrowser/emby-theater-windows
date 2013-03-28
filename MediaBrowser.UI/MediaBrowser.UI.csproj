@@ -100,9 +100,6 @@
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Alchemy">
-      <HintPath>..\packages\Alchemy.2.2.1\lib\net40\Alchemy.dll</HintPath>
-    </Reference>
     <Reference Include="Declarations">
       <HintPath>..\ThirdParty\Taygeta\Declarations.dll</HintPath>
     </Reference>
@@ -112,9 +109,9 @@
     <Reference Include="LibVlcWrapper">
       <HintPath>..\ThirdParty\Taygeta\LibVlcWrapper.dll</HintPath>
     </Reference>
-    <Reference Include="MediaBrowser.ApiInteraction, Version=3.0.4835.33519, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.ApiInteraction, Version=3.0.4835.33605, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.ApiClient.3.0.0.64-beta\lib\net45\MediaBrowser.ApiInteraction.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.ApiClient.3.0.0.65-beta\lib\net45\MediaBrowser.ApiInteraction.dll</HintPath>
     </Reference>
     <Reference Include="MediaBrowser.Common, Version=3.0.4835.31058, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

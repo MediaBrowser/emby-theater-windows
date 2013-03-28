@@ -1,4 +1,5 @@
 ﻿using MediaBrowser.ApiInteraction;
+using MediaBrowser.ApiInteraction.WebSocket;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Implementations;
 using MediaBrowser.Common.Implementations.ScheduledTasks;

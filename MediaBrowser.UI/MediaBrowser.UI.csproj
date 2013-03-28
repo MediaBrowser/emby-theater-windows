@@ -100,6 +100,9 @@
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Alchemy">
+      <HintPath>..\packages\Alchemy.2.2.1\lib\net40\Alchemy.dll</HintPath>
+    </Reference>
     <Reference Include="Declarations">
       <HintPath>..\ThirdParty\Taygeta\Declarations.dll</HintPath>
     </Reference>
@@ -109,13 +112,13 @@
     <Reference Include="LibVlcWrapper">
       <HintPath>..\ThirdParty\Taygeta\LibVlcWrapper.dll</HintPath>
     </Reference>
-    <Reference Include="MediaBrowser.ApiInteraction, Version=3.0.4832.41220, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.ApiInteraction, Version=3.0.4835.33519, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.ApiClient.3.0.0.56-beta\lib\net45\MediaBrowser.ApiInteraction.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.ApiClient.3.0.0.64-beta\lib\net45\MediaBrowser.ApiInteraction.dll</HintPath>
     </Reference>
-    <Reference Include="MediaBrowser.Common, Version=3.0.4832.41061, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.Common, Version=3.0.4835.31058, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.3.0.61\lib\net45\MediaBrowser.Common.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.63\lib\net45\MediaBrowser.Common.dll</HintPath>
     </Reference>
     <Reference Include="MediaBrowser.Common.Implementations, Version=3.0.4827.22300, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -125,9 +128,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\MediaBrowser.IsoMounting.3.0.51\lib\net45\MediaBrowser.IsoMounter.dll</HintPath>
     </Reference>
-    <Reference Include="MediaBrowser.Model, Version=3.0.4832.41061, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.Model, Version=3.0.4835.31058, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.3.0.61\lib\net45\MediaBrowser.Model.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.63\lib\net45\MediaBrowser.Model.dll</HintPath>
     </Reference>
     <Reference Include="Mediabrowser.PluginSecurity, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -176,6 +179,9 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WebSocket4Net">
+      <HintPath>..\packages\WebSocket4Net.0.8\lib\net40\WebSocket4Net.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />

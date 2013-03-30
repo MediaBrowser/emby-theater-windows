@@ -188,6 +188,7 @@ namespace MediaBrowser.UI.Playback.NVlc
         /// <returns><c>true</c> if this instance can play the specified item; otherwise, <c>false</c>.</returns>
         public override bool CanPlay(BaseItemDto item)
         {
+            //return false;
             return item.IsVideo || item.IsAudio;
         }
 

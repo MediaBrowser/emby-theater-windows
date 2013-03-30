@@ -103,6 +103,10 @@
     <Reference Include="Declarations">
       <HintPath>..\ThirdParty\Taygeta\Declarations.dll</HintPath>
     </Reference>
+    <Reference Include="DirectShowLib-2005, Version=2.0.0.0, Culture=neutral, PublicKeyToken=67e7b740cdfc2d3f, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Playback\DirectShow\DirectShowLib-2005.dll</HintPath>
+    </Reference>
     <Reference Include="Implementation">
       <HintPath>..\ThirdParty\Taygeta\Implementation.dll</HintPath>
     </Reference>
@@ -132,6 +136,10 @@
     <Reference Include="Mediabrowser.PluginSecurity, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\MediaBrowser.Common.Internal.3.0.52\lib\net45\Mediabrowser.PluginSecurity.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.DirectX.AudioVideoPlayback, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Playback\DirectShow\Microsoft.DirectX.AudioVideoPlayback.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Expression.Effects, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -214,6 +222,28 @@
     </Compile>
     <Compile Include="Pages\BaseInternalPlayerPage.cs" />
     <Compile Include="Playback\BaseMediaPlayer.cs" />
+    <Compile Include="Playback\DirectShow\BDInfo\BDROM.cs" />
+    <Compile Include="Playback\DirectShow\BDInfo\LanguageCodes.cs" />
+    <Compile Include="Playback\DirectShow\BDInfo\TSCodecAC3.cs" />
+    <Compile Include="Playback\DirectShow\BDInfo\TSCodecAVC.cs" />
+    <Compile Include="Playback\DirectShow\BDInfo\TSCodecDTS.cs" />
+    <Compile Include="Playback\DirectShow\BDInfo\TSCodecDTSHD.cs" />
+    <Compile Include="Playback\DirectShow\BDInfo\TSCodecLPCM.cs" />
+    <Compile Include="Playback\DirectShow\BDInfo\TSCodecMPEG2.cs" />
+    <Compile Include="Playback\DirectShow\BDInfo\TSCodecTrueHD.cs" />
+    <Compile Include="Playback\DirectShow\BDInfo\TSCodecVC1.cs" />
+    <Compile Include="Playback\DirectShow\BDInfo\TSPlaylistFile.cs" />
+    <Compile Include="Playback\DirectShow\BDInfo\TSStream.cs" />
+    <Compile Include="Playback\DirectShow\BDInfo\TSStreamBuffer.cs" />
+    <Compile Include="Playback\DirectShow\BDInfo\TSStreamClip.cs" />
+    <Compile Include="Playback\DirectShow\BDInfo\TSStreamClipFile.cs" />
+    <Compile Include="Playback\DirectShow\BDInfo\TSStreamFile.cs" />
+    <Compile Include="Playback\DirectShow\DShowPlayer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Playback\DirectShow\InternalMediaPlayerDS.cs" />
+    <Compile Include="Playback\DirectShow\MadvrInterface.cs" />
+    <Compile Include="Playback\DirectShow\StringProcessing.cs" />
     <Compile Include="Playback\ExternalPlayer\BaseExternalPlayer.cs" />
     <Compile Include="Playback\ExternalPlayer\GenericExternalPlayer.cs" />
     <Compile Include="Playback\InternalPlayer\BaseInternalMediaPlayer.cs" />
@@ -422,9 +452,7 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Playback\DirectShow\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="libvlc.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -435,6 +463,140 @@
     <Content Include="CorePlugins\MediaBrowser.Plugins.DefaultTheme.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Playback\DirectShow\DirectShowLib-2005.dll" />
+    <Resource Include="Playback\DirectShow\Icons\Arrows\arrow_down.png" />
+    <Resource Include="Playback\DirectShow\Icons\Arrows\arrow_left.png" />
+    <Resource Include="Playback\DirectShow\Icons\Arrows\arrow_right.png" />
+    <Resource Include="Playback\DirectShow\Icons\Arrows\arrow_up.png" />
+    <Resource Include="Playback\DirectShow\Icons\Arrows\background.png" />
+    <Resource Include="Playback\DirectShow\Icons\Arrows\DefaultFolderBack.png" />
+    <Resource Include="Playback\DirectShow\Icons\Arrows\down.png" />
+    <Resource Include="Playback\DirectShow\Icons\Arrows\not-queued.png" />
+    <Resource Include="Playback\DirectShow\Icons\Arrows\progress-back.png" />
+    <Resource Include="Playback\DirectShow\Icons\Arrows\queued.png" />
+    <Resource Include="Playback\DirectShow\Icons\Arrows\up.png" />
+    <Resource Include="Playback\DirectShow\Icons\MediaInfo\1.33.png" />
+    <Resource Include="Playback\DirectShow\Icons\MediaInfo\1.66.png" />
+    <Resource Include="Playback\DirectShow\Icons\MediaInfo\1.78.png" />
+    <Resource Include="Playback\DirectShow\Icons\MediaInfo\1.85.png" />
+    <Resource Include="Playback\DirectShow\Icons\MediaInfo\1.png" />
+    <Resource Include="Playback\DirectShow\Icons\MediaInfo\1080.png" />
+    <Resource Include="Playback\DirectShow\Icons\MediaInfo\1080b.png" />
+    <Resource Include="Playback\DirectShow\Icons\MediaInfo\2.20.png" />
+    <Resource Include="Playback\DirectShow\Icons\MediaInfo\2.35.png" />
+    <Resource Include="Playback\DirectShow\Icons\MediaInfo\2.png" />
+    <Resource Include="Playback\DirectShow\Icons\MediaInfo\3.png" />
+    <Resource Include="Playback\DirectShow\Icons\MediaInfo\4.png" />
+    <Resource Include="Playback\DirectShow\Icons\MediaInfo\480.png" />
+    <Resource Include="Playback\DirectShow\Icons\MediaInfo\480b.png" />
+    <Resource Include="Playback\DirectShow\Icons\MediaInfo\5.png" />
+    <Resource Include="Playback\DirectShow\Icons\MediaInfo\540.png" />
+    <Resource Include="Playback\DirectShow\Icons\MediaInfo\540b.png" />
+    <Resource Include="Playback\DirectShow\Icons\MediaInfo\576.png" />
+    <Resource Include="Playback\DirectShow\Icons\MediaInfo\576b.png" />
+    <Resource Include="Playback\DirectShow\Icons\MediaInfo\6.png" />
+    <Resource Include="Playback\DirectShow\Icons\MediaInfo\720.png" />
+    <Resource Include="Playback\DirectShow\Icons\MediaInfo\720b.png" />
+    <Resource Include="Playback\DirectShow\Icons\MediaInfo\8.png" />
+    <Resource Include="Playback\DirectShow\Icons\MediaInfo\aac-blank.png" />
+    <Resource Include="Playback\DirectShow\Icons\MediaInfo\aac.png" />
+    <Resource Include="Playback\DirectShow\Icons\MediaInfo\br.png" />
+    <Resource Include="Playback\DirectShow\Icons\MediaInfo\cc.png" />
+    <Resource Include="Playback\DirectShow\Icons\MediaInfo\cc2.png" />
+    <Resource Include="Playback\DirectShow\Icons\MediaInfo\digital.png" />
+    <Resource Include="Playback\DirectShow\Icons\MediaInfo\digitalplus.png" />
+    <Resource Include="Playback\DirectShow\Icons\MediaInfo\divx.png" />
+    <Resource Include="Playback\DirectShow\Icons\MediaInfo\dts.png" />
+    <Resource Include="Playback\DirectShow\Icons\MediaInfo\dtshd.png" />
+    <Resource Include="Playback\DirectShow\Icons\MediaInfo\dtshdhr.png" />
+    <Resource Include="Playback\DirectShow\Icons\MediaInfo\dtshdma.png" />
+    <Resource Include="Playback\DirectShow\Icons\MediaInfo\dvd.png" />
+    <Resource Include="Playback\DirectShow\Icons\MediaInfo\flac.png" />
+    <Resource Include="Playback\DirectShow\Icons\MediaInfo\hd.png" />
+    <Resource Include="Playback\DirectShow\Icons\MediaInfo\hddvd.png" />
+    <Resource Include="Playback\DirectShow\Icons\MediaInfo\hdtv.png" />
+    <Resource Include="Playback\DirectShow\Icons\MediaInfo\mp3-alt.png" />
+    <Resource Include="Playback\DirectShow\Icons\MediaInfo\mp3.png" />
+    <Resource Include="Playback\DirectShow\Icons\MediaInfo\ogg.png" />
+    <Resource Include="Playback\DirectShow\Icons\MediaInfo\pcm.png" />
+    <Resource Include="Playback\DirectShow\Icons\MediaInfo\review.png" />
+    <Resource Include="Playback\DirectShow\Icons\MediaInfo\sd.png" />
+    <Resource Include="Playback\DirectShow\Icons\MediaInfo\sdb.png" />
+    <Resource Include="Playback\DirectShow\Icons\MediaInfo\surround.png" />
+    <Resource Include="Playback\DirectShow\Icons\MediaInfo\TrueHD.png" />
+    <Resource Include="Playback\DirectShow\Icons\MediaInfo\watched.png" />
+    <Resource Include="Playback\DirectShow\Icons\MediaInfo\xvid.png" />
+    <Resource Include="Playback\DirectShow\Icons\Media\back.png" />
+    <Resource Include="Playback\DirectShow\Icons\Media\osd-back-info.png" />
+    <Resource Include="Playback\DirectShow\Icons\Media\osd-back-mute.png" />
+    <Resource Include="Playback\DirectShow\Icons\Media\osd-back-volume.png" />
+    <Resource Include="Playback\DirectShow\Icons\Media\osd-back-weatherclock.png" />
+    <Resource Include="Playback\DirectShow\Icons\Media\osd-back.png" />
+    <Resource Include="Playback\DirectShow\Icons\Media\osdback-small.png" />
+    <Resource Include="Playback\DirectShow\Icons\Media\osdback.png" />
+    <Resource Include="Playback\DirectShow\Icons\Media\panel-overlay.png" />
+    <Resource Include="Playback\DirectShow\Icons\Media\panel-overlay2.png" />
+    <Resource Include="Playback\DirectShow\Icons\Media\panel_menu-diffuse.png" />
+    <Resource Include="Playback\DirectShow\Icons\Media\panel_menu.png" />
+    <Resource Include="Playback\DirectShow\Icons\Media\settings-panel-categories.png" />
+    <Resource Include="Playback\DirectShow\Icons\Media\settings-panel.png" />
+    <Resource Include="Playback\DirectShow\Icons\Media\views_panel.png" />
+    <Resource Include="Playback\DirectShow\Icons\Media\views_panel_shadow.png" />
+    <Resource Include="Playback\DirectShow\Icons\Media\wall_panel.png" />
+    <Resource Include="Playback\DirectShow\Icons\Media\weather_panel.png" />
+    <Resource Include="Playback\DirectShow\Icons\Media\weather_panel_sel.png" />
+    <Resource Include="Playback\DirectShow\Icons\Ratings\IT\T.png" />
+    <Resource Include="Playback\DirectShow\Icons\Ratings\IT\VM14.png" />
+    <Resource Include="Playback\DirectShow\Icons\Ratings\IT\VM18.png" />
+    <Resource Include="Playback\DirectShow\Icons\Ratings\UK\12.png" />
+    <Resource Include="Playback\DirectShow\Icons\Ratings\UK\12a.png" />
+    <Resource Include="Playback\DirectShow\Icons\Ratings\UK\15.png" />
+    <Resource Include="Playback\DirectShow\Icons\Ratings\UK\18.png" />
+    <Resource Include="Playback\DirectShow\Icons\Ratings\UK\pg.png" />
+    <Resource Include="Playback\DirectShow\Icons\Ratings\UK\r18.png" />
+    <Resource Include="Playback\DirectShow\Icons\Ratings\UK\u.png" />
+    <Resource Include="Playback\DirectShow\Icons\Ratings\UK\uc.png" />
+    <Resource Include="Playback\DirectShow\Icons\Ratings\USA\G.png" />
+    <Resource Include="Playback\DirectShow\Icons\Ratings\USA\NC-17.png" />
+    <Resource Include="Playback\DirectShow\Icons\Ratings\USA\PG-13.png" />
+    <Resource Include="Playback\DirectShow\Icons\Ratings\USA\PG.png" />
+    <Resource Include="Playback\DirectShow\Icons\Ratings\USA\R.png" />
+    <Resource Include="Playback\DirectShow\Icons\Transport\dvd-fo.png" />
+    <Resource Include="Playback\DirectShow\Icons\Transport\dvd-nofo.png" />
+    <Resource Include="Playback\DirectShow\Icons\Transport\fast-forward-fo.png" />
+    <Resource Include="Playback\DirectShow\Icons\Transport\fast-forward-nofo.png" />
+    <Resource Include="Playback\DirectShow\Icons\Transport\fast-forward-on-fo.png" />
+    <Resource Include="Playback\DirectShow\Icons\Transport\fast-forward-on-nofo.png" />
+    <Resource Include="Playback\DirectShow\Icons\Transport\info-fo.png" />
+    <Resource Include="Playback\DirectShow\Icons\Transport\info-nofo.png" />
+    <Resource Include="Playback\DirectShow\Icons\Transport\next-fo.png" />
+    <Resource Include="Playback\DirectShow\Icons\Transport\next-nofo.png" />
+    <Resource Include="Playback\DirectShow\Icons\Transport\orb_fo.png" />
+    <Resource Include="Playback\DirectShow\Icons\Transport\orb_nofo.png" />
+    <Resource Include="Playback\DirectShow\Icons\Transport\osd-back.png" />
+    <Resource Include="Playback\DirectShow\Icons\Transport\pause-fo.png" />
+    <Resource Include="Playback\DirectShow\Icons\Transport\pause-nofo.png" />
+    <Resource Include="Playback\DirectShow\Icons\Transport\play-fo.png" />
+    <Resource Include="Playback\DirectShow\Icons\Transport\play-nofo.png" />
+    <Resource Include="Playback\DirectShow\Icons\Transport\playlists-fo.png" />
+    <Resource Include="Playback\DirectShow\Icons\Transport\playlists-nofo.png" />
+    <Resource Include="Playback\DirectShow\Icons\Transport\previous-fo.png" />
+    <Resource Include="Playback\DirectShow\Icons\Transport\previous-nofo.png" />
+    <Resource Include="Playback\DirectShow\Icons\Transport\rewind-fo.png" />
+    <Resource Include="Playback\DirectShow\Icons\Transport\rewind-nofo.png" />
+    <Resource Include="Playback\DirectShow\Icons\Transport\rewind-on-fo.png" />
+    <Resource Include="Playback\DirectShow\Icons\Transport\rewind-on-nofo.png" />
+    <Resource Include="Playback\DirectShow\Icons\Transport\stop-fo.png" />
+    <Resource Include="Playback\DirectShow\Icons\Transport\stop-nofo.png" />
+    <Resource Include="Playback\DirectShow\Icons\Transport\subtitles-fo.png" />
+    <Resource Include="Playback\DirectShow\Icons\Transport\subtitles-nofo.png" />
+    <Resource Include="Playback\DirectShow\Icons\Transport\video-settings-fo.png" />
+    <Resource Include="Playback\DirectShow\Icons\Transport\video-settings-nofo.png" />
+    <Resource Include="Playback\DirectShow\Icons\Transport\viz-settings-fo.png" />
+    <Resource Include="Playback\DirectShow\Icons\Transport\viz-settings-nofo.png" />
+    <Resource Include="Playback\DirectShow\Icons\Transport\zoom-fo.png" />
+    <Resource Include="Playback\DirectShow\Icons\Transport\zoom-nofo.png" />
+    <Content Include="Playback\DirectShow\Microsoft.DirectX.AudioVideoPlayback.dll" />
     <Content Include="plugins\3dnow\libmemcpy3dn_plugin.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

@@ -221,22 +221,6 @@
     </Compile>
     <Compile Include="Pages\BaseInternalPlayerPage.cs" />
     <Compile Include="Playback\BaseMediaPlayer.cs" />
-    <Compile Include="Playback\DirectShow\BDInfo\BDROM.cs" />
-    <Compile Include="Playback\DirectShow\BDInfo\LanguageCodes.cs" />
-    <Compile Include="Playback\DirectShow\BDInfo\TSCodecAC3.cs" />
-    <Compile Include="Playback\DirectShow\BDInfo\TSCodecAVC.cs" />
-    <Compile Include="Playback\DirectShow\BDInfo\TSCodecDTS.cs" />
-    <Compile Include="Playback\DirectShow\BDInfo\TSCodecDTSHD.cs" />
-    <Compile Include="Playback\DirectShow\BDInfo\TSCodecLPCM.cs" />
-    <Compile Include="Playback\DirectShow\BDInfo\TSCodecMPEG2.cs" />
-    <Compile Include="Playback\DirectShow\BDInfo\TSCodecTrueHD.cs" />
-    <Compile Include="Playback\DirectShow\BDInfo\TSCodecVC1.cs" />
-    <Compile Include="Playback\DirectShow\BDInfo\TSPlaylistFile.cs" />
-    <Compile Include="Playback\DirectShow\BDInfo\TSStream.cs" />
-    <Compile Include="Playback\DirectShow\BDInfo\TSStreamBuffer.cs" />
-    <Compile Include="Playback\DirectShow\BDInfo\TSStreamClip.cs" />
-    <Compile Include="Playback\DirectShow\BDInfo\TSStreamClipFile.cs" />
-    <Compile Include="Playback\DirectShow\BDInfo\TSStreamFile.cs" />
     <Compile Include="Playback\DirectShow\DShowPlayer.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -92,11 +92,6 @@ namespace MediaBrowser.UI.Playback.DirectShow
         public Uri m_sourceUri;
         private string DriveLetter;
 
-
-        private BDInfo.BDROM BRDisc;
-        private List<BDInfo.TSPlaylistFile> ValidPlaylists = new List<BDInfo.TSPlaylistFile>();
-
-
         #region TransportBar
         private IntPtr iPlayFocusTransportBar;
         private IntPtr iPauseFocusTransportBar;
@@ -150,8 +145,6 @@ namespace MediaBrowser.UI.Playback.DirectShow
         private int PlaylistWidth;
         private int PlaylistStart = -1;
         private int SelectedPlaylistNumber = -1;
-        private BDInfo.TSPlaylistFile SelectedPlaylist = null;
-        private BDInfo.TSPlaylistFile MainTitlePlaylist = null;
 
         //Main Menu
         private IntPtr PlayerMenu;
@@ -2335,15 +2328,15 @@ namespace MediaBrowser.UI.Playback.DirectShow
                             PlayerMenuIsShowing = false;
                             SelectedPlayerMenuNumber = -1;
 
-                            Uri path;
-                            string DiscPath = DriveLetter + ":\\BDMV\\PLAYLIST";
-                            string FileName = Path.Combine(DiscPath, SelectedPlaylist.Name);
-                            if (Uri.TryCreate(FileName, UriKind.RelativeOrAbsolute, out path))
-                            {
-                                m_sourceUri = path;
-                                HasVideo = false;
-                                Play();
-                            }
+                            //Uri path;
+                            //string DiscPath = DriveLetter + ":\\BDMV\\PLAYLIST";
+                            //string FileName = Path.Combine(DiscPath, SelectedPlaylist.Name);
+                            //if (Uri.TryCreate(FileName, UriKind.RelativeOrAbsolute, out path))
+                            //{
+                            //    m_sourceUri = path;
+                            //    HasVideo = false;
+                            //    Play();
+                            //}
                             return;
                         }
                         else if (AudioMenuIsShowing == true)
@@ -2645,208 +2638,135 @@ namespace MediaBrowser.UI.Playback.DirectShow
 
         public void ShowPlaylistMenu(MovieInfo media, string NextorPrevious)
         {
-            if (ValidPlaylists.Count < 1)
-            {
-                #region Scan BluRay
-                m_pControl.Pause();
-                m_state = PlaybackState.Paused;
-                string fileSource = m_sourceUri.OriginalString;
-                DriveLetter = fileSource.Substring(0, 1);
-                if (Directory.Exists(DriveLetter + ":\\BDMV"))
-                {
-                    DiscIsBluRay = true;
-                    //Scan disc in new thread
-                    ThreadStart threadScanBluRay = ScanBluRayDisc;
-                    ScanBluRayThread = new Thread(threadScanBluRay);
-                    ScanBluRayThread.Start();
-                }
-                #endregion
+            ////Setup Popup Menu
+            //List<string> pListNames = new List<string>();
+            //List<string> pListNames2 = new List<string>();
+            //string MainTitle = GetPlaylist();
+            //foreach (BDInfo.TSPlaylistFile p in ValidPlaylists)
+            //{
+            //    if (p.Name.ToLower() == MainTitle.ToLower())
+            //    {
+            //        pListNames.Add("Main Title");
+            //        MainTitlePlaylist = p;
+            //        break;
+            //    }
+            //}
 
-                //Show Please Wait Message
-                string Text = "Scanning Playlists";
-                DrawInfoBarText(Text, Color.White, Color.Transparent);
-                iSettingsMenuFocusTransportBarIsShowing = true;
-                MadvrInterface.ShowMadVrBitmap("iSettingsMenuFocusTransportBar", iSettingsMenuFocusTransportBar, 0, posyTB, 0, ImagePriority, madvr);
-                MadvrInterface.ShowMadVrBitmap("ChapterText", iText, 0, posyTB, 0, InfoBarTextPriority, madvr);
-                Thread.Sleep(1000);
+            //foreach (BDInfo.TSPlaylistFile p in ValidPlaylists)
+            //{
+            //    if (MovieRunTime(p) != "0" && MovieRunTime(p) != "1")
+            //    {
+            //        if (!string.IsNullOrEmpty(media.runtime))
+            //        {
+            //            int PlaylistRuntime = Convert.ToInt16(MovieRunTime(p));
+            //            int ImdbRuntime = Convert.ToInt16(media.runtime);
+            //            if (PlaylistRuntime > ImdbRuntime * .75)
+            //            {
+            //                pListNames2.Add(p.Name.Remove(p.Name.IndexOf(".")) + " - " + MovieRunTime(p).PadLeft(3, ' ') + " minutes");
+            //            }
+            //        }
+            //        else
+            //        {
+            //            pListNames2.Add(p.Name.Remove(p.Name.IndexOf(".")) + " - " + MovieRunTime(p).PadLeft(3, ' ') + " minutes");
+            //        }
+            //    }
+            //}
+            //pListNames2.Sort();
 
-                while (ScanBluRayThread.IsAlive)
-                {
-                    if (ScanBluRayThread.IsAlive)
-                    {
-                        Text = "Scanning Playlists.";
-                        DrawInfoBarText(Text, Color.White, Color.Transparent);
-                        iNextFocusChapterTransportBarIsShowing = true;
-                        iSettingsMenuFocusTransportBarIsShowing = true;
-                        MadvrInterface.ShowMadVrBitmap("iSettingsMenuFocusTransportBar", iSettingsMenuFocusTransportBar, 0, posyTB, 0, ImagePriority, madvr);
-                        MadvrInterface.ShowMadVrBitmap("ChapterText", iText, 0, posyTB, 0, InfoBarTextPriority, madvr);
-                        Thread.Sleep(1000);
-                    }
-                    if (ScanBluRayThread.IsAlive)
-                    {
-                        Text = "Scanning Playlists..";
-                        DrawInfoBarText(Text, Color.White, Color.Transparent);
-                        iNextFocusChapterTransportBarIsShowing = true;
-                        iSettingsMenuFocusTransportBarIsShowing = true;
-                        MadvrInterface.ShowMadVrBitmap("iSettingsMenuFocusTransportBar", iSettingsMenuFocusTransportBar, 0, posyTB, 0, ImagePriority, madvr);
-                        MadvrInterface.ShowMadVrBitmap("ChapterText", iText, 0, posyTB, 0, InfoBarTextPriority, madvr);
-                        Thread.Sleep(1000);
-                    }
-                    if (ScanBluRayThread.IsAlive)
-                    {
-                        Text = "Scanning Playlists...";
-                        DrawInfoBarText(Text, Color.White, Color.Transparent);
-                        iNextFocusChapterTransportBarIsShowing = true;
-                        iSettingsMenuFocusTransportBarIsShowing = true;
-                        MadvrInterface.ShowMadVrBitmap("iSettingsMenuFocusTransportBar", iSettingsMenuFocusTransportBar, 0, posyTB, 0, ImagePriority, madvr);
-                        MadvrInterface.ShowMadVrBitmap("ChapterText", iText, 0, posyTB, 0, InfoBarTextPriority, madvr);
-                        Thread.Sleep(1000);
-                    }
-                    if (ScanBluRayThread.IsAlive)
-                    {
-                        Text = "Scanning Playlists";
-                        DrawInfoBarText(Text, Color.White, Color.Transparent);
-                        iNextFocusChapterTransportBarIsShowing = true;
-                        iSettingsMenuFocusTransportBarIsShowing = true;
-                        MadvrInterface.ShowMadVrBitmap("iSettingsMenuFocusTransportBar", iSettingsMenuFocusTransportBar, 0, posyTB, 0, ImagePriority, madvr);
-                        MadvrInterface.ShowMadVrBitmap("ChapterText", iText, 0, posyTB, 0, InfoBarTextPriority, madvr);
-                        Thread.Sleep(1000);
-                    }
-                }
-                ClearTransportBar();
-                MadvrInterface.ShowMadVrBitmap("iSettingsMenuFocusPlayTransportBar", iSettingsMenuFocusPlayTransportBar, 0, posyTB, 0, ImagePriority, madvr);
-                iSettingsMenuFocusPlayTransportBarIsShowing = true;
-            }
+            //foreach (string p in pListNames2)
+            //{
+            //    pListNames.Add(p);
+            //}
 
-            //Setup Popup Menu
-            List<string> pListNames = new List<string>();
-            List<string> pListNames2 = new List<string>();
-            string MainTitle = GetPlaylist();
-            foreach (BDInfo.TSPlaylistFile p in ValidPlaylists)
-            {
-                if (p.Name.ToLower() == MainTitle.ToLower())
-                {
-                    pListNames.Add("Main Title");
-                    MainTitlePlaylist = p;
-                    break;
-                }
-            }
+            //string SelectedPlayListText = "";
+            //if (SelectedPlaylistNumber == -1)
+            //{
+            //    SelectedPlayListText = pListNames[0];
+            //    SelectedPlaylistNumber = 0;
+            //    PlaylistStart = 0;
+            //    string pText = SelectedPlayListText.Substring(0, 5);
+            //    if (MainTitlePlaylist != null && MainTitlePlaylist.Name.StartsWith(pText))
+            //    {
+            //        SelectedPlaylist = MainTitlePlaylist;
+            //    }
+            //    else
+            //    {
+            //        foreach (BDInfo.TSPlaylistFile p in ValidPlaylists)
+            //        {
+            //            if (p.Name.StartsWith(pText))
+            //            {
+            //                SelectedPlaylist = p;
+            //                break;
+            //            }
+            //        }
+            //    }
+            //}
+            //else if (NextorPrevious == "Next")
+            //{
+            //    if (SelectedPlaylistNumber < pListNames.Count - 1)
+            //    {
+            //        SelectedPlaylistNumber++;
+            //    }
+            //    if (SelectedPlaylistNumber > PlaylistStart + 7)
+            //    {
+            //        PlaylistStart = SelectedPlaylistNumber - 7;
+            //    }
+            //    if (SelectedPlaylistNumber < pListNames.Count)
+            //    {
+            //        SelectedPlayListText = pListNames[SelectedPlaylistNumber];
+            //        string pText = SelectedPlayListText.Substring(0, 5);
+            //        if (MainTitlePlaylist != null && MainTitlePlaylist.Name.StartsWith(pText))
+            //        {
+            //            SelectedPlaylist = MainTitlePlaylist;
+            //        }
+            //        else
+            //        {
+            //            foreach (BDInfo.TSPlaylistFile p in ValidPlaylists)
+            //            {
+            //                if (p.Name.StartsWith(pText))
+            //                {
+            //                    SelectedPlaylist = p;
+            //                    break;
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
+            //else if (NextorPrevious == "Previous")
+            //{
+            //    SelectedPlaylistNumber--;
+            //    if (SelectedPlaylistNumber < PlaylistStart)
+            //    {
+            //        PlaylistStart = SelectedPlaylistNumber;
+            //    }
+            //    if (SelectedPlaylistNumber > -1)
+            //    {
+            //        SelectedPlayListText = pListNames[SelectedPlaylistNumber];
+            //        string pText = SelectedPlayListText.Substring(0, 5);
+            //        if (MainTitlePlaylist != null && MainTitlePlaylist.Name.StartsWith(pText))
+            //        {
+            //            SelectedPlaylist = MainTitlePlaylist;
+            //        }
+            //        else
+            //        {
+            //            foreach (BDInfo.TSPlaylistFile p in ValidPlaylists)
+            //            {
+            //                if (p.Name.StartsWith(pText))
+            //                {
+            //                    SelectedPlaylist = p;
+            //                    break;
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
 
-            foreach (BDInfo.TSPlaylistFile p in ValidPlaylists)
-            {
-                if (MovieRunTime(p) != "0" && MovieRunTime(p) != "1")
-                {
-                    if (!string.IsNullOrEmpty(media.runtime))
-                    {
-                        int PlaylistRuntime = Convert.ToInt16(MovieRunTime(p));
-                        int ImdbRuntime = Convert.ToInt16(media.runtime);
-                        if (PlaylistRuntime > ImdbRuntime * .75)
-                        {
-                            pListNames2.Add(p.Name.Remove(p.Name.IndexOf(".")) + " - " + MovieRunTime(p).PadLeft(3, ' ') + " minutes");
-                        }
-                    }
-                    else
-                    {
-                        pListNames2.Add(p.Name.Remove(p.Name.IndexOf(".")) + " - " + MovieRunTime(p).PadLeft(3, ' ') + " minutes");
-                    }
-                }
-            }
-            pListNames2.Sort();
+            //int bmpWidth = (int)(690 * ScaleRatio);
+            //int bmpHeight = (int)(1080 * ScaleRatio);
+            //DrawPlaylist(pListNames, SelectedPlayListText, PlaylistStart, Color.White, Color.Transparent, bmpWidth, bmpHeight);
 
-            foreach (string p in pListNames2)
-            {
-                pListNames.Add(p);
-            }
-
-            string SelectedPlayListText = "";
-            if (SelectedPlaylistNumber == -1)
-            {
-                SelectedPlayListText = pListNames[0];
-                SelectedPlaylistNumber = 0;
-                PlaylistStart = 0;
-                string pText = SelectedPlayListText.Substring(0, 5);
-                if (MainTitlePlaylist != null && MainTitlePlaylist.Name.StartsWith(pText))
-                {
-                    SelectedPlaylist = MainTitlePlaylist;
-                }
-                else
-                {
-                    foreach (BDInfo.TSPlaylistFile p in ValidPlaylists)
-                    {
-                        if (p.Name.StartsWith(pText))
-                        {
-                            SelectedPlaylist = p;
-                            break;
-                        }
-                    }
-                }
-            }
-            else if (NextorPrevious == "Next")
-            {
-                if (SelectedPlaylistNumber < pListNames.Count - 1)
-                {
-                    SelectedPlaylistNumber++;
-                }
-                if (SelectedPlaylistNumber > PlaylistStart + 7)
-                {
-                    PlaylistStart = SelectedPlaylistNumber - 7;
-                }
-                if (SelectedPlaylistNumber < pListNames.Count)
-                {
-                    SelectedPlayListText = pListNames[SelectedPlaylistNumber];
-                    string pText = SelectedPlayListText.Substring(0, 5);
-                    if (MainTitlePlaylist != null && MainTitlePlaylist.Name.StartsWith(pText))
-                    {
-                        SelectedPlaylist = MainTitlePlaylist;
-                    }
-                    else
-                    {
-                        foreach (BDInfo.TSPlaylistFile p in ValidPlaylists)
-                        {
-                            if (p.Name.StartsWith(pText))
-                            {
-                                SelectedPlaylist = p;
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-            else if (NextorPrevious == "Previous")
-            {
-                SelectedPlaylistNumber--;
-                if (SelectedPlaylistNumber < PlaylistStart)
-                {
-                    PlaylistStart = SelectedPlaylistNumber;
-                }
-                if (SelectedPlaylistNumber > -1)
-                {
-                    SelectedPlayListText = pListNames[SelectedPlaylistNumber];
-                    string pText = SelectedPlayListText.Substring(0, 5);
-                    if (MainTitlePlaylist != null && MainTitlePlaylist.Name.StartsWith(pText))
-                    {
-                        SelectedPlaylist = MainTitlePlaylist;
-                    }
-                    else
-                    {
-                        foreach (BDInfo.TSPlaylistFile p in ValidPlaylists)
-                        {
-                            if (p.Name.StartsWith(pText))
-                            {
-                                SelectedPlaylist = p;
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-
-            int bmpWidth = (int)(690 * ScaleRatio);
-            int bmpHeight = (int)(1080 * ScaleRatio);
-            DrawPlaylist(pListNames, SelectedPlayListText, PlaylistStart, Color.White, Color.Transparent, bmpWidth, bmpHeight);
-
-            MadvrInterface.ShowMadVrBitmap("Playlists", Playlists, 0, 0, 0, TimePriority + 1, madvr);
-            PlaylistsIsShowing = true;
+            //MadvrInterface.ShowMadVrBitmap("Playlists", Playlists, 0, 0, 0, TimePriority + 1, madvr);
+            //PlaylistsIsShowing = true;
         }
 
         public void ShowChapterMenu(string NextorPrevious)
@@ -5776,349 +5696,6 @@ namespace MediaBrowser.UI.Playback.DirectShow
 
         [DllImport("user32.dll")]
         public static extern IntPtr GetForegroundWindow();
-
-        #region BluRay Methods
-
-        private void ScanBluRayDisc()
-        {
-            BRDisc = new BDInfo.BDROM(DriveLetter + ":");
-            BRDisc.Scan();
-            GetValidPlaylists();
-        }
-
-        private List<BDInfo.TSPlaylistFile> GetValidPlaylists()
-        {
-            List<string> m2tsList = new List<string>();
-            List<string> CommonM2tsList = new List<string>();
-
-            //Get Common M2TS Files
-            foreach (BDInfo.TSPlaylistFile p in BRDisc.PlaylistFiles.Values)
-            {
-                for (int i = 0; i < p.StreamClips.Count; i++)
-                {
-                    BDInfo.TSStreamClip m2tsFile = p.StreamClips[i];
-                    if (!m2tsList.Contains(m2tsFile.Name))
-                    {
-                        m2tsList.Add(m2tsFile.Name);
-                    }
-                    else
-                    {
-                        CommonM2tsList.Add(m2tsFile.Name);
-                    }
-                }
-            }
-
-            //Get Playlists with Common M2TS Files
-            //ToolBox.MeedioUtils.LogEntry("[BluRayUtils] - Number of playlist files on Blu-Ray: " + BRDisc.PlaylistFiles.Count.ToString());
-            foreach (BDInfo.TSPlaylistFile p in BRDisc.PlaylistFiles.Values)
-            {
-                int m = 0;
-                for (int i = 0; i < p.StreamClips.Count; i++)
-                {
-                    BDInfo.TSStreamClip m2tsFile = p.StreamClips[i];
-                    if (CommonM2tsList.Contains(m2tsFile.Name))
-                    {
-                        m++;
-                    }
-                }
-                if (m >= p.StreamClips.Count - 1)
-                {
-                    ValidPlaylists.Add(p);
-                }
-            }
-            if (ValidPlaylists.Count < 1)
-            {
-                foreach (BDInfo.TSPlaylistFile p in BRDisc.PlaylistFiles.Values)
-                {
-                    ValidPlaylists.Add(p);
-                }
-            }
-            return ValidPlaylists;
-        }
-
-        private static bool DuplicateM2TS(BDInfo.TSPlaylistFile Playlist)
-        {
-            List<string> m2tsList = new List<string>();
-            for (int i = 0; i < Playlist.StreamClips.Count; i++)
-            {
-                BDInfo.TSStreamClip m2tsFile = Playlist.StreamClips[i];
-                if (!m2tsList.Contains(m2tsFile.Name))
-                {
-                    m2tsList.Add(m2tsFile.Name);
-                }
-                else
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        private BDInfo.TSPlaylistFile LongestPlayList(string IMDbRuntime)
-        {
-            double runTimeFloor = 0;
-            double runTimeCeiling = 0;
-            if (IMDbRuntime != "")
-            {
-                runTimeFloor = (((Convert.ToDouble(IMDbRuntime)) * 60) * .8);  //setfloor to 80% of runtime
-                runTimeCeiling = (((Convert.ToDouble(IMDbRuntime)) * 60) * 1.5);  // set ceiling to 150% of runtime
-            }
-            else
-            {
-                runTimeFloor = (30 * .8);  //setfloor to 80% 30 minutes
-                runTimeCeiling = (240 * 60);  // set ceiling to 4 hours
-            }
-
-            BDInfo.TSPlaylistFile PlayList = null;
-            double LongestTime = 0;
-            double PlayTime = 0;
-            foreach (BDInfo.TSPlaylistFile p in ValidPlaylists) // BRDisc.PlaylistFiles.Values)
-            {
-                PlayTime = p.TotalLength;
-                if (PlayTime > LongestTime)
-                {
-                    if (PlayTime >= runTimeFloor && PlayTime <= runTimeCeiling)
-                    {
-                        LongestTime = PlayTime;
-                        PlayList = p;
-                    }
-                }
-            }
-            return PlayList;
-        }
-
-        private static List<string> PlayListFiles(BDInfo.TSPlaylistFile PlayList)
-        {
-            List<string> StreamList = new List<string>();
-            foreach (BDInfo.TSStreamClip sc in PlayList.StreamClips)
-            {
-                if (!StreamList.Contains(sc.Name))
-                {
-                    StreamList.Add((sc.StreamFile).Name);
-                }
-            }
-            return StreamList;
-        }
-
-        private static List<string> AudioCodecs(BDInfo.TSPlaylistFile PlayList)
-        {
-            List<string> AudioStreamList = new List<string>();
-            foreach (BDInfo.TSAudioStream s in PlayList.AudioStreams)
-            {
-                if (!AudioStreamList.Contains(s.CodecShortName))
-                {
-                    AudioStreamList.Add(s.CodecShortName);
-                }
-            }
-            return AudioStreamList;
-        }
-
-        private static List<string> AudioCodecsAndLanguage(BDInfo.TSPlaylistFile PlayList)
-        {
-            List<string> AudioStreamList = new List<string>();
-            foreach (BDInfo.TSAudioStream s in PlayList.AudioStreams)
-            {
-                if (!AudioStreamList.Contains(s.CodecShortName + ", " + s.LanguageCode.ToString().ToLower()))
-                {
-                    AudioStreamList.Add(s.CodecShortName + ", " + s.LanguageCode.ToString().ToLower());                    
-                }
-            }
-            return AudioStreamList;
-        }
-
-        private static List<string> AudioLanguagesFullName(BDInfo.TSPlaylistFile PlayList)
-        {
-            List<string> LanguageList = new List<string>();
-            foreach (BDInfo.TSAudioStream s in PlayList.AudioStreams)
-            {
-                if (!LanguageList.Contains(s.LanguageName))
-                {
-                    LanguageList.Add(s.LanguageName);
-                }
-            }
-            return LanguageList;
-        }
-
-        private static List<string> AudioLanguagesShortName(BDInfo.TSPlaylistFile PlayList)
-        {
-            List<string> LanguageList = new List<string>();
-            foreach (BDInfo.TSAudioStream s in PlayList.AudioStreams)
-            {
-                if (!LanguageList.Contains(s.LanguageCode))
-                {
-                    LanguageList.Add(s.LanguageCode);
-                }
-            }
-            return LanguageList;
-        }
-
-        private static List<string> VideoCodecs(BDInfo.TSPlaylistFile PlayList)
-        {
-            List<string> VideoStreamList = new List<string>();
-            foreach (BDInfo.TSVideoStream s in PlayList.VideoStreams)
-            {
-                if (!VideoStreamList.Contains(s.CodecShortName))
-                {
-                    VideoStreamList.Add(s.CodecShortName);
-                }
-            }
-            return VideoStreamList;
-        }
-
-        private static List<string> SubTitleLanguages(BDInfo.TSPlaylistFile PlayList)
-        {
-            List<string> StreamList = new List<string>();
-            foreach (BDInfo.TSGraphicsStream s in PlayList.GraphicsStreams)
-            {
-                if (!StreamList.Contains(s.LanguageCode))
-                {
-                    StreamList.Add(s.LanguageCode);
-                }
-            }
-            return StreamList;
-        }
-
-        private static int TotalChapters(BDInfo.TSPlaylistFile PlayList)
-        {
-            int chapters = PlayList.Chapters.Count;
-            return chapters;
-        }
-
-        private static string MovieRunTime(BDInfo.TSPlaylistFile PlayList)
-        {
-            double RTime = (PlayList.TotalLength) / 60;
-            String RunTime = Math.Round(RTime, 0).ToString();
-            return RunTime;
-        }
-
-        private static string MovieRunTimeSeconds(BDInfo.TSPlaylistFile PlayList)
-        {
-            double RTime = PlayList.TotalLength;
-            String RunTime = Math.Round(RTime, 0).ToString();
-            return RunTime;
-        }
-
-        private string VolumeName()
-        {
-            string vName = BRDisc.GetVolumeLabel(BRDisc.DirectoryRoot);
-            return vName;
-        }
-
-        private static string GetVolumeLabel(string drive)
-        {
-            string isoLabel = new System.IO.DriveInfo(drive).VolumeLabel;
-            return isoLabel;
-        }
-
-        private string GetPlaylist()
-        {
-            string file = DriveLetter + ":\\disc.inf";
-            if (File.Exists(file))
-            {
-                string plist = "";
-                StreamReader sr = new StreamReader(file);
-                string filecontent = sr.ReadToEnd();
-                Match match1 = GetRegExMatch(filecontent, _PLPattern);
-                plist = GetMatchValue(match1, "playlist", false);
-
-                if (!string.IsNullOrEmpty(plist))
-                {
-                    plist = plist.PadLeft(5, '0') + ".mpls";
-                    return plist;
-                }
-            }
-            return "";
-        }
-
-        private string _PLPattern = @"playlists=(?<playlist>.*)";
-
-        private static Match GetRegExMatch(string input, string pattern)
-        {
-            Regex regEx = new Regex(pattern, RegexOptions.IgnoreCase | RegexOptions.Singleline);
-            return regEx.Match(input);
-        }
-
-        private static string GetRegExString(string input, string pattern)
-        {
-            Match match;
-            Regex regEx = new Regex(pattern, RegexOptions.IgnoreCase | RegexOptions.Singleline);
-            match = regEx.Match(input);
-            if (match != null && match.Value != null)
-                return match.Value.Trim();
-
-            return "";
-        }
-
-        private static string GetMatchValue(Match match, string groupName, bool cleanUpHTML)
-        {
-            if (match != null
-                && match.Groups[groupName] != null
-                && match.Groups[groupName].Value != null)
-            {
-                string value = match.Groups[groupName].Value;
-                if (value.Length > 9)
-                {
-                    value = value.Remove(9);
-                }
-                return value.Trim();
-            }
-            return "";
-        }
-
-        public class Media
-        {
-            public string FPS = "";
-            public string VolumeLabel = "";
-            public string DiscType = "";
-            public string MediaType = "";
-            public string Title = "";
-            public string SortTitle = "";
-            public string Studio = "";
-            public string Director = "";
-            public string LeadPerformers = "";
-            public string MPAARating = "";
-            public string ReleaseDateRaw = "";
-            public string Year = "";
-            public string[] Actors;
-            public string Genre = "";
-            public string DataProvider = "";
-            public string wmid_dvd = "";
-            public string dv_id = "";
-            public string PosterPath = "";
-            public string FanartPath = "";
-            public string IMDbID = "";
-            public string TMDbID = "";
-            public string TvdbID = "";
-            public string NetflixID = "";
-            public string DVDID = "";
-            public string ContentId = "";
-            public string ContentIdType = "";
-            public string ISAN = "";
-            public string EAN = "";
-            public string UPC = "";
-            public string GTIN = "";
-            public string MediaFormat = "";
-            public string TitleNoIllegalCharacters = "";
-            public string SourceFile = "";
-            public string SourceFolder = "";
-            public string DestinationFolder = "";
-            public string DestinationFile = "";
-            public string DirectorySafeName = "";
-            public string FileSafeName = "";
-            public string TemporaryISOFile = "";
-            public string RunTime = "";
-            public int DiscNumber = 0;
-            public int FirstEpisodeNumberOnDisc;
-            public int LastEpisodeNumberOnDisc;
-            public string SeriesName = "";
-            public int SeasonNumber = 0;
-            public BDInfo.TSPlaylistFile Playlist;
-            public BDInfo.TSPlaylistFile PlaylistExtendedCut;
-            public bool UseExtendedCut = false;
-            public bool OriginalPlaylistFound = false;
-        }
-
-        #endregion
 
         #endregion
 

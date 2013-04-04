@@ -78,15 +78,6 @@ namespace MediaBrowser.UI
 
             ReloadApiClient();
 
-            try
-            {
-                await new PluginUpdater(this, Logger, ApplicationPaths, ApiClient).UpdatePlugins().ConfigureAwait(false);
-            }
-            catch (HttpException ex)
-            {
-                Logger.ErrorException("Error updating plugins from the server", ex);
-            }
-            
             await base.RegisterResources().ConfigureAwait(false);
 
             RegisterSingleInstance(ApplicationPaths);

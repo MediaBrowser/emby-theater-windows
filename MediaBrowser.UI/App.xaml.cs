@@ -1,4 +1,5 @@
-﻿using MediaBrowser.ApiInteraction;
+﻿using System.Collections.Concurrent;
+using MediaBrowser.ApiInteraction;
 using MediaBrowser.Common.Extensions;
 using MediaBrowser.Common.Implementations.Logging;
 using MediaBrowser.Common.IO;
@@ -736,6 +737,21 @@ namespace MediaBrowser.UI
         }
 
         /// <summary>
+        /// The _locks
+        /// </summary>
+        private readonly ConcurrentDictionary<string, SemaphoreSlim> _imageFileLocks = new ConcurrentDictionary<string, SemaphoreSlim>();
+
+        /// <summary>
+        /// Gets the lock.
+        /// </summary>
+        /// <param name="filename">The filename.</param>
+        /// <returns>System.Object.</returns>
+        private SemaphoreSlim GetImageFileLock(string filename)
+        {
+            return _imageFileLocks.GetOrAdd(filename, key => new SemaphoreSlim(1, 1));
+        }
+        
+        /// <summary>
         /// Gets the remote image async.
         /// </summary>
         /// <param name="url">The URL.</param>
@@ -754,26 +770,41 @@ namespace MediaBrowser.UI
             {
                 var cachePath = _remoteImageCache.GetResourcePath(url.GetMD5().ToString());
 
-                await _remoteImageCache.WaitForLockAsync(cachePath).ConfigureAwait(false);
-
-                var releaseLock = true;
                 try
                 {
-                    using (var stream = new FileStream(cachePath, FileMode.Open, FileAccess.Read, FileShare.Read, StreamDefaults.DefaultFileStreamBufferSize, true))
+                    using (var stream = new FileStream(cachePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, StreamDefaults.DefaultFileStreamBufferSize, true))
                     {
-                        return await GetRemoteBitmapAsync(stream).ConfigureAwait(false);
+                        return await GetBitmapImageAsync(stream).ConfigureAwait(false);
                     }
                 }
                 catch (FileNotFoundException)
                 {
-                    // Doesn't exist. No biggie
+                    // Cache file doesn't exist. No biggie.
+                }
+
+                var semaphore = GetImageFileLock(cachePath);
+                await semaphore.WaitAsync().ConfigureAwait(false);
+
+                var releaseLock = true;
+
+                // Look in the cache again
+                try
+                {
+                    using (var stream = new FileStream(cachePath, FileMode.Open, FileAccess.Read, FileShare.Read, StreamDefaults.DefaultFileStreamBufferSize, true))
+                    {
+                        return await GetBitmapImageAsync(stream).ConfigureAwait(false);
+                    }
+                }
+                catch (FileNotFoundException)
+                {
+                    // Cache file doesn't exist. No biggie.
                     releaseLock = false;
                 }
                 finally
                 {
                     if (releaseLock)
                     {
-                        _remoteImageCache.ReleaseLock(cachePath);
+                        semaphore.Release();
                     }
                 }
 
@@ -781,12 +812,12 @@ namespace MediaBrowser.UI
                 {
                     using (var httpStream = await ApiClient.GetImageStreamAsync(url))
                     {
-                        return await GetRemoteBitmapAsync(httpStream, cachePath);
+                        return await GetBitmapImageAsync(httpStream, cachePath);
                     }
                 }
                 finally
                 {
-                    _remoteImageCache.ReleaseLock(cachePath);
+                    semaphore.Release();
                 }
             });
         }
@@ -797,7 +828,7 @@ namespace MediaBrowser.UI
         /// <param name="sourceStream">The source stream.</param>
         /// <param name="cachePath">The cache path.</param>
         /// <returns>Task{BitmapImage}.</returns>
-        private async Task<BitmapImage> GetRemoteBitmapAsync(Stream sourceStream, string cachePath = null)
+        private async Task<BitmapImage> GetBitmapImageAsync(Stream sourceStream, string cachePath = null)
         {
             byte[] bytes;
 

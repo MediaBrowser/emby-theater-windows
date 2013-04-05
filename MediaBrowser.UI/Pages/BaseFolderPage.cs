@@ -97,7 +97,6 @@ namespace MediaBrowser.UI.Pages
                 _folder = value;
                 OnPropertyChanged("Folder");
                 OnFolderChanged();
-                ReloadChildren();
             }
         }
 
@@ -293,11 +292,11 @@ namespace MediaBrowser.UI.Pages
         /// <summary>
         /// Gets called anytime the Folder gets refreshed
         /// </summary>
-        protected virtual void OnFolderChanged()
+        protected virtual async Task OnFolderChanged()
         {
             SetBackdrops(Folder);
 
-            DisplayPreferences = Folder.DisplayPreferences;
+            DisplayPreferences = await App.Instance.ApiClient.GetDisplayPreferencesAsync(Folder.DisplayPreferencesId);
 
             if (DisplayPreferences.RememberIndexing)
             {
@@ -314,6 +313,8 @@ namespace MediaBrowser.UI.Pages
             {
                 SortBy = ItemSortBy.SortName;
             }
+
+            await ReloadChildren();
         }
 
         /// <summary>
@@ -421,7 +422,7 @@ namespace MediaBrowser.UI.Pages
                 {
                     try
                     {
-                        await App.Instance.ApiClient.UpdateDisplayPreferencesAsync(App.Instance.CurrentUser.Id, Folder.Id, DisplayPreferences);
+                        await App.Instance.ApiClient.UpdateDisplayPreferencesAsync(DisplayPreferences);
                     }
                     catch
                     {
@@ -455,7 +456,7 @@ namespace MediaBrowser.UI.Pages
                 {
                     try
                     {
-                        await App.Instance.ApiClient.UpdateDisplayPreferencesAsync(App.Instance.CurrentUser.Id, Folder.Id, DisplayPreferences);
+                        await App.Instance.ApiClient.UpdateDisplayPreferencesAsync(DisplayPreferences);
                     }
                     catch
                     {
@@ -483,7 +484,7 @@ namespace MediaBrowser.UI.Pages
                 DisplayPreferences.IndexBy = IndexBy;
             }
 
-            await App.Instance.ApiClient.UpdateDisplayPreferencesAsync(App.Instance.CurrentUser.Id, Folder.Id, DisplayPreferences);
+            await App.Instance.ApiClient.UpdateDisplayPreferencesAsync(DisplayPreferences);
         }
 
         /// <summary>
@@ -500,7 +501,7 @@ namespace MediaBrowser.UI.Pages
                 DisplayPreferences.SortBy = SortBy;
             }
 
-            await App.Instance.ApiClient.UpdateDisplayPreferencesAsync(App.Instance.CurrentUser.Id, Folder.Id, DisplayPreferences);
+            await App.Instance.ApiClient.UpdateDisplayPreferencesAsync(DisplayPreferences);
         }
     }
 }

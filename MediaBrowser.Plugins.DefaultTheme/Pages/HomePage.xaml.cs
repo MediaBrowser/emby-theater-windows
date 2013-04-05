@@ -169,11 +169,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         /// <summary>
         /// Gets called anytime the Folder gets refreshed
         /// </summary>
-        protected override void OnFolderChanged()
+        protected override async Task OnFolderChanged()
         {
-            base.OnFolderChanged();
+            await base.OnFolderChanged();
 
-            Task.Run(() => RefreshSpecialItems());
+            await RefreshSpecialItems();
         }
 
         /// <summary>

@@ -120,9 +120,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         /// <summary>
         /// Gets called anytime the Folder gets refreshed
         /// </summary>
-        protected override async void OnFolderChanged()
+        protected override async Task OnFolderChanged()
         {
-            base.OnFolderChanged();
+            await base.OnFolderChanged();
 
             var pageTitleTask = AppResources.Instance.SetPageTitle(Folder);
 
@@ -201,7 +201,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
 
             try
             {
-                await App.Instance.ApiClient.UpdateDisplayPreferencesAsync(App.Instance.CurrentUser.Id, Folder.Id, DisplayPreferences);
+                await App.Instance.ApiClient.UpdateDisplayPreferencesAsync(DisplayPreferences);
             }
             catch (HttpException)
             {

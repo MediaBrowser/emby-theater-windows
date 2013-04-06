@@ -13,6 +13,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using MediaBrowser.UI.Extensions;
+using System.Windows.Interop;
+using System.Runtime.InteropServices;
+using System.ComponentModel;
 
 namespace MediaBrowser.UI
 {
@@ -22,10 +25,17 @@ namespace MediaBrowser.UI
     public partial class MainWindow : BaseWindow, IDisposable
     {
         /// <summary>
-        /// Gets or sets the mouse idle timer.
+        /// Gets or sets the system activity timer.
         /// </summary>
-        /// <value>The mouse idle timer.</value>
-        private Timer MouseIdleTimer { get; set; }
+        private Timer ActivityTimer { get; set; }
+        /// <summary>
+        /// Threshold for time beteen input events to register as activity
+        /// </summary>
+        TimeSpan ActivityThreshold = TimeSpan.FromTicks(1);
+        /// <summary>
+        /// Threshold between input events before mouse fades
+        /// </summary>
+        TimeSpan MouseFadeThreshold = TimeSpan.FromMilliseconds(3000);        
         /// <summary>
         /// Gets or sets the backdrop timer.
         /// </summary>
@@ -70,11 +80,34 @@ namespace MediaBrowser.UI
             set
             {
                 _isMouseIdle = value;
-
                 Dispatcher.InvokeAsync(() => Cursor = value ? Cursors.None : Cursors.Arrow);
-
                 OnPropertyChanged("IsMouseIdle");
             }
+        }
+
+        /// <summary>
+        /// Checks windows to see if hold long since the last input event
+        /// eg. Mouse and keyboard
+        /// </summary>
+        /// <returns>Timespan of how long since last event</returns>
+        public static TimeSpan GetLastInput()
+        {
+            var plii = new LASTINPUTINFO();
+            plii.cbSize = (uint)Marshal.SizeOf(plii);
+
+            if (GetLastInputInfo(ref plii))
+                return TimeSpan.FromMilliseconds(Environment.TickCount - plii.dwTime);
+            else
+                throw new Win32Exception(Marshal.GetLastWin32Error());
+        }
+
+        [DllImport("user32.dll", SetLastError = true)]
+        static extern bool GetLastInputInfo(ref LASTINPUTINFO plii);
+
+        private struct LASTINPUTINFO
+        {
+            public uint cbSize;
+            public uint dwTime;
         }
 
         private readonly ILogger _logger;
@@ -88,8 +121,23 @@ namespace MediaBrowser.UI
             _logger = logger;
 
             InitializeComponent();
-
+            
+            ActivityTimer = new Timer(ActivityCallback, null, 100, 100);
+            
             RenderOptions.SetBitmapScalingMode(this, BitmapScalingMode.Fant);
+        }
+        
+        private void ActivityCallback(object state)
+        {
+            var lastTime = GetLastInput();
+            if (lastTime > MouseFadeThreshold)// Order is important here.
+            {
+                IsMouseIdle = true;
+            }
+            else if (lastTime > ActivityThreshold)
+            {
+                IsMouseIdle = false;
+            }
         }
 
         /// <summary>
@@ -100,7 +148,7 @@ namespace MediaBrowser.UI
             base.OnLoaded();
 
             DragBar.MouseDown += DragableGridMouseDown;
-
+            
             DataContext = App.Instance;
         }
 
@@ -282,18 +330,17 @@ namespace MediaBrowser.UI
                 BackdropTimer.Dispose();
             }
         }
-
         /// <summary>
-        /// Disposes the mouse idle timer.
+        /// Disposes the Activity Timer
         /// </summary>
-        public void DisposeMouseIdleTimer()
+        public void DisposeActivityTimer()
         {
-            if (MouseIdleTimer != null)
+            if (ActivityTimer != null)
             {
-                MouseIdleTimer.Dispose();
+                ActivityTimer.Dispose();
             }
         }
-
+        
         /// <summary>
         /// Clears the backdrops.
         /// </summary>
@@ -349,76 +396,14 @@ namespace MediaBrowser.UI
 
             NavigateForward();
         }
-
-        /// <summary>
-        /// Shows the control bar then starts a timer to hide it
-        /// </summary>
-        private void StartMouseIdleTimer()
-        {
-            IsMouseIdle = false;
-
-            const int duration = 4000;
-
-            // Start the timer if it's null, otherwise reset it
-            if (MouseIdleTimer == null)
-            {
-                MouseIdleTimer = new Timer(MouseIdleTimerCallback, null, duration, Timeout.Infinite);
-            }
-            else
-            {
-                MouseIdleTimer.Change(duration, Timeout.Infinite);
-            }
-        }
-
-        /// <summary>
-        /// This is the Timer callback method to hide the control bar
-        /// </summary>
-        /// <param name="stateInfo">The state info.</param>
-        private void MouseIdleTimerCallback(object stateInfo)
-        {
-            IsMouseIdle = true;
-
-            if (MouseIdleTimer != null)
-            {
-                MouseIdleTimer.Dispose();
-                MouseIdleTimer = null;
-            }
-        }
-
-        /// <summary>
-        /// The _last mouse move point
-        /// </summary>
-        private Point _lastMouseMovePoint;
-
-        /// <summary>
-        /// Handles OnMouseMove to show the control box
-        /// </summary>
-        /// <param name="e">The <see cref="T:System.Windows.Input.MouseEventArgs" /> that contains the event data.</param>
-        protected override void OnMouseMove(MouseEventArgs e)
-        {
-            base.OnMouseMove(e);
-
-            // Store the last position for comparison purposes
-            // Even if the mouse is not moving this event will fire as elements are showing and hiding
-            var pos = e.GetPosition(this);
-
-            if (pos == _lastMouseMovePoint)
-            {
-                return;
-            }
-
-            _lastMouseMovePoint = pos;
-
-            StartMouseIdleTimer();
-        }
-
+        
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         public void Dispose()
         {
             DisposeBackdropTimer();
-            DisposeMouseIdleTimer();
+            DisposeActivityTimer();
         }
 
         /// <summary>

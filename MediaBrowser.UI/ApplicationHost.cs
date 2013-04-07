@@ -102,9 +102,7 @@ namespace MediaBrowser.UI
 
             }), UIConfigurationManager.Configuration.ServerHostName, UIConfigurationManager.Configuration.ServerApiPort, "Media Browser Theater", Environment.MachineName, Environment.MachineName)
             {
-                SerializationFormat = SerializationFormats.Json,
-                JsonSerializer = JsonSerializer,
-                ProtobufSerializer = ProtobufSerializer
+                JsonSerializer = JsonSerializer
             };
         }
 

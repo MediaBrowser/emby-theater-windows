@@ -243,7 +243,7 @@ namespace MediaBrowser.UI
         /// </summary>
         public App()
         {
-            InitializeComponent();
+            InitializeComponent();            
         }
 
         /// <summary>

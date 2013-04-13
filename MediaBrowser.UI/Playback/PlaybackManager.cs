@@ -148,7 +148,7 @@ namespace MediaBrowser.UI.Playback
         {
             if (options.Shuffle)
             {
-                options.Items = options.Items.Shuffle().ToList();
+                options.Items = options.Items.OrderBy(i => new Guid()).ToList();
             }
 
             var firstItem = options.Items[0];

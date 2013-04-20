@@ -13,17 +13,6 @@
         </Style.Triggers>
     </Style>
 
-    <Style TargetType="Button" x:Key="BackButton" BasedOn="{StaticResource NavBarButton}">
-        <Setter Property="ToolTip" Value="Back"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate>
-                    <Image x:Name="img" Source="..\Resources\Images\NavBar\BackButton.png" Stretch="None" />
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
     <Style TargetType="Button" x:Key="VolumeUpButton" BasedOn="{StaticResource NavBarButton}">
         <Setter Property="ToolTip" Value="Increase Volume"/>
         <Setter Property="Template">

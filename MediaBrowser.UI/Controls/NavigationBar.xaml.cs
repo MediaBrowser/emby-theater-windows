@@ -43,7 +43,6 @@ namespace MediaBrowser.UI.Controls
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         void NavigationBar_Loaded(object sender, RoutedEventArgs e)
         {
-            BackButton.Click += BtnApplicationBackClick;
             MuteButton.Click += MuteButton_Click;
 
             VolumeDownButton.PreviewMouseDown += VolumeDownButton_Click;
@@ -267,17 +266,7 @@ namespace MediaBrowser.UI.Controls
                 PreviousChapterButton.Visibility = canSeekChapters ? Visibility.Visible : Visibility.Collapsed;
             });
         }
-
-        /// <summary>
-        /// BTNs the application back click.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
-        void BtnApplicationBackClick(object sender, RoutedEventArgs e)
-        {
-            App.Instance.ApplicationWindow.NavigateBack();
-        }
-
+                
         /// <summary>
         /// The is position slider dragging
         /// </summary>

@@ -401,12 +401,26 @@
                 <RowDefinition Height="auto"></RowDefinition>
                 <RowDefinition Height="*"></RowDefinition>
             </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
 
-            <StackPanel x:Name="PageTitlePanel" Grid.Row="0" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="30 0 0 0">
+            <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="30 0 0 0">
+
+                <Button x:Name="BackButton" Style="{StaticResource ImageButton}" Click="BtnApplicationBackClick">
+                    <Image Source="..\Resources\Images\BackButton.png" />
+                </Button>
+
             </StackPanel>
 
-            <StackPanel x:Name="HeaderContent" Orientation="Horizontal" Panel.ZIndex="3" Grid.Row="0" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0 10 30 0">
+            <StackPanel x:Name="PageTitlePanel" Grid.Row="0" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="30 0 0 0">
 
+            </StackPanel>
+
+            <StackPanel x:Name="HeaderContent" Orientation="Horizontal" Grid.Column="2" Panel.ZIndex="3" Grid.Row="0" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0 10 30 0">
+                
                 <Button x:Name="NowPlayingButton" Style="{StaticResource ImageButton}" Margin="0 0 40 0" Visibility="Collapsed" Click="NowPlaying_Click">
                     <Image Source="..\Resources\Images\NowPlayingButton.png" />
                 </Button>
@@ -452,7 +466,7 @@
                         <Image Source="{Binding Path=CurrentWeather,Converter={StaticResource WeatherImageConverter},Mode=OneWay}"></Image>
                     </Button>
                 </StackPanel>
-
+                
                 <!--Display Clock-->
                 <TextBlock Style="{StaticResource Heading2TextBlockStyle}">
                     <TextBlock.Text>
@@ -467,7 +481,7 @@
             </StackPanel>
 
             <!--Add the frame to hold the pages. The UI core expects this to appear somewhere within the template.-->
-            <controls:TransitionFrame x:Name="PageFrame" Grid.Row="1">
+            <controls:TransitionFrame x:Name="PageFrame" Grid.Row="1" Grid.ColumnSpan="3">
                 <controls:TransitionFrame.TransitionAnimation>
                     <DoubleAnimation Duration="0:0:0.35" >
                         <DoubleAnimation.EasingFunction>

@@ -369,9 +369,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Images\NavBar\BackButton.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Resources\Images\NavBar\MuteButton.png" />
   </ItemGroup>
   <ItemGroup>

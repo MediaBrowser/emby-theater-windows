@@ -372,6 +372,9 @@
   <ItemGroup>
     <Resource Include="Resources\Images\new.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\BackButton.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy "$(TargetPath)" "$(SolutionDir)\MediaBrowser.UI\CorePlugins\" /y</PostBuildEvent>

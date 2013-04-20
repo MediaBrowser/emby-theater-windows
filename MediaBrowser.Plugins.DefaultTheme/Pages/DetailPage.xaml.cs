@@ -33,7 +33,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
             BtnPerformers.Click += BtnPerformers_Click;
             BtnTrailers.Click += BtnTrailers_Click;
             BtnSpecialFeatures.Click += BtnSpecialFeatures_Click;
-            BtnGallery.Click += BtnGallery_Click;
+            BtnGallery.Click += BtnGallery_Click;            
         }
 
         /// <summary>

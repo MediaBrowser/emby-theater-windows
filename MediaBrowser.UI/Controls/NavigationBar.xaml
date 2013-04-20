@@ -35,9 +35,6 @@
 
             </Grid>
 
-            <StackPanel Style="{StaticResource NavBarGridLeftPanel}" Grid.Row="1">
-                <Button x:Name="BackButton" Style="{StaticResource BackButton}"></Button>
-            </StackPanel>
             <StackPanel Style="{StaticResource NavBarGridCenterPanel}" Grid.Row="1">
                 <Button x:Name="PreviousChapterButton" Style="{StaticResource PreviousChapterButton}" Visibility="Collapsed"></Button>
                 <Button x:Name="PlayButton" Style="{StaticResource PlayButton}" Visibility="Collapsed"></Button>

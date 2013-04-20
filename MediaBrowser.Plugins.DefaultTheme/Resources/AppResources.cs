@@ -35,6 +35,17 @@ namespace MediaBrowser.Plugins.DefaultTheme.Resources
             UIKernel.Instance.PlaybackManager.PlaybackCompleted += PlaybackManager_PlaybackCompleted;
         }
 
+
+        /// <summary>
+        /// BTNs the application back click.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        void BtnApplicationBackClick(object sender, RoutedEventArgs e)
+        {
+            App.Instance.ApplicationWindow.NavigateBack();
+        }
+
         /// <summary>
         /// Handles the Click event of the NowPlayingButton control.
         /// </summary>
@@ -87,6 +98,18 @@ namespace MediaBrowser.Plugins.DefaultTheme.Resources
         void SettingsButtonClick(object sender, RoutedEventArgs e)
         {
             App.Instance.NavigateToSettingsPage();
+        }
+
+        /// <summary>
+        /// Get the Back Button.
+        /// </summary>
+        /// <value>The view button.</value>
+        public Button BackButton
+        {
+            get
+            {
+                return TreeHelper.FindChild<Button>(App.Instance.ApplicationWindow, "BackButton");
+            }
         }
 
         /// <summary>

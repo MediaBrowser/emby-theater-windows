@@ -76,10 +76,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
                 PnlPremiereDate.Visibility = Visibility.Collapsed;
             }
 
-            if (!string.IsNullOrEmpty(Item.Artist))
+            var artists = Item.Artists == null ? string.Empty : string.Join(",", Item.Artists);
+
+            if (!string.IsNullOrEmpty(artists))
             {
                 PnlArtist.Visibility = Visibility.Visible;
-                Artist.Text = Item.Artist;
+                Artist.Text = artists;
             }
             else
             {
@@ -89,7 +91,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
             if (!string.IsNullOrEmpty(Item.Album))
             {
                 PnlAlbum.Visibility = Visibility.Visible;
-                Album.Text = Item.Artist;
+                Album.Text = artists;
             }
             else
             {
@@ -99,7 +101,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
             if (!string.IsNullOrEmpty(Item.AlbumArtist))
             {
                 PnlAlbumArtist.Visibility = Visibility.Visible;
-                AlbumArtist.Text = Item.Artist;
+                AlbumArtist.Text = artists;
             }
             else
             {

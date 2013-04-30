@@ -80,7 +80,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
         /// </summary>
         protected override async void OnItemChanged()
         {
-            ItemsResult = await App.Instance.ApiClient.GetAllPeopleAsync(new ItemsByNameQuery
+            ItemsResult = await App.Instance.ApiClient.GetPeopleAsync(new PersonsQuery
             {
                 ParentId = Item.Id,
                 UserId = App.Instance.CurrentUser.Id,

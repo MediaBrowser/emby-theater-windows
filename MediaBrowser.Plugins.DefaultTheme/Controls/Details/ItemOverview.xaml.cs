@@ -53,12 +53,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
                 PnlGenres.Visibility = Visibility.Collapsed;
             }
 
-            if (Item.Studios != null && Item.Studios.Count > 0)
+            if (Item.Studios != null && Item.Studios.Length > 0)
             {
                 PnlStudios.Visibility = Visibility.Visible;
 
-                Studios.Text = string.Join(" / ", Item.Studios.Take(3).ToArray());
-                StudiosLabel.Text = Item.Studios.Count > 1 ? "studios" : "studio";
+                Studios.Text = string.Join(" / ", Item.Studios.Select(i => i.Name).Take(3).ToArray());
+                StudiosLabel.Text = Item.Studios.Length > 1 ? "studios" : "studio";
             }
             else
             {

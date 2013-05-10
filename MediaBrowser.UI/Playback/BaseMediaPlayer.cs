@@ -667,7 +667,7 @@ namespace MediaBrowser.UI.Playback
 
             try
             {
-                await App.Instance.ApiClient.ReportPlaybackProgressAsync(item.Id, App.Instance.CurrentUser.Id, positionTicks);
+                await App.Instance.ApiClient.ReportPlaybackProgressAsync(item.Id, App.Instance.CurrentUser.Id, positionTicks, PlayState == PlayState.Paused);
             }
             catch (HttpException ex)
             {

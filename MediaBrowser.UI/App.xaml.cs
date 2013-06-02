@@ -9,6 +9,7 @@ using MediaBrowser.Model.Configuration;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Net;
+using MediaBrowser.Model.System;
 using MediaBrowser.Model.Weather;
 using MediaBrowser.UI.Configuration;
 using MediaBrowser.UI.Controller;
@@ -76,7 +77,7 @@ namespace MediaBrowser.UI
         /// </summary>
         /// <value>The composition root.</value>
         protected ApplicationHost CompositionRoot { get; set; }
-        
+
         /// <summary>
         /// Gets the instance.
         /// </summary>
@@ -248,7 +249,7 @@ namespace MediaBrowser.UI
             var appPaths = new UIApplicationPaths();
 
             var updateArchive = Path.Combine(appPaths.TempUpdatePath, Constants.MbTheaterPkgName + ".zip");
-            
+
             if (File.Exists(updateArchive))
             {
                 // Update is there - execute update
@@ -275,7 +276,7 @@ namespace MediaBrowser.UI
         /// </summary>
         public App()
         {
-            InitializeComponent();            
+            InitializeComponent();
         }
 
         /// <summary>
@@ -415,9 +416,11 @@ namespace MediaBrowser.UI
         {
             var foundServer = false;
 
+            SystemInfo systemInfo;
+
             try
             {
-                await ApiClient.GetSystemInfoAsync().ConfigureAwait(false);
+                systemInfo = await ApiClient.GetSystemInfoAsync().ConfigureAwait(false);
 
                 foundServer = true;
             }
@@ -437,7 +440,7 @@ namespace MediaBrowser.UI
                     ApiClient.ServerHostName = parts[0];
                     ApiClient.ServerApiPort = address.Port;
 
-                    await ApiClient.GetSystemInfoAsync().ConfigureAwait(false);
+                    systemInfo = await ApiClient.GetSystemInfoAsync().ConfigureAwait(false);
 
                     foundServer = true;
                 }
@@ -453,6 +456,8 @@ namespace MediaBrowser.UI
             }
             else
             {
+                // Open web socket
+
                 await LogoutUser();
             }
         }
@@ -534,7 +539,7 @@ namespace MediaBrowser.UI
             // Try to shut down gracefully
             Shutdown();
         }
-        
+
         /// <summary>
         /// Raises the <see cref="E:System.Windows.Application.Exit" /> event.
         /// </summary>
@@ -577,7 +582,7 @@ namespace MediaBrowser.UI
             _singleInstanceMutex.Dispose();
             _singleInstanceMutex = null;
         }
-        
+
         /// <summary>
         /// Apps the property changed.
         /// </summary>
@@ -823,7 +828,7 @@ namespace MediaBrowser.UI
         {
             return _imageFileLocks.GetOrAdd(filename, key => new SemaphoreSlim(1, 1));
         }
-        
+
         /// <summary>
         /// Gets the remote image async.
         /// </summary>
@@ -841,12 +846,9 @@ namespace MediaBrowser.UI
 
             if (File.Exists(cachePath))
             {
-                using (var stream = new FileStream(cachePath, FileMode.Open, FileAccess.Read, FileShare.Read))
-                {
-                    return GetCachedBitmapImageAsync(stream);
-                }
+                return GetCachedBitmapImageAsync(cachePath);
             }
-            
+
             return await Task.Run(async () =>
             {
                 var semaphore = GetImageFileLock(cachePath);
@@ -857,10 +859,7 @@ namespace MediaBrowser.UI
                 {
                     semaphore.Release();
 
-                    using (var stream = new FileStream(cachePath, FileMode.Open, FileAccess.Read, FileShare.Read))
-                    {
-                        return GetCachedBitmapImageAsync(stream);
-                    }
+                    return GetCachedBitmapImageAsync(cachePath);
                 }
 
                 try
@@ -886,56 +885,32 @@ namespace MediaBrowser.UI
         /// <returns>Task{BitmapImage}.</returns>
         private async Task<BitmapImage> GetBitmapImageAsync(Stream sourceStream, string cachePath)
         {
-            using (var ms = new MemoryStream())
+            using (var fileStream = new FileStream(cachePath, FileMode.Create, FileAccess.Write, FileShare.Read, StreamDefaults.DefaultFileStreamBufferSize, true))
             {
-                await sourceStream.CopyToAsync(ms).ConfigureAwait(false);
-
-                ms.Position = 0;
-
-                if (!string.IsNullOrEmpty(cachePath))
-                {
-                    using (var fileStream = new FileStream(cachePath, FileMode.Create, FileAccess.Write, FileShare.Read, StreamDefaults.DefaultFileStreamBufferSize, true))
-                    {
-                        await ms.CopyToAsync(fileStream).ConfigureAwait(false);
-                    }
-
-                    ms.Position = 0;
-                }
-
-                var bitmapImage = new BitmapImage
-                {
-                    CreateOptions = BitmapCreateOptions.DelayCreation
-                };
-
-                RenderOptions.SetBitmapScalingMode(bitmapImage, BitmapScalingMode.Fant);
-
-                bitmapImage.BeginInit();
-                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                bitmapImage.StreamSource = ms;
-                bitmapImage.EndInit();
-                bitmapImage.Freeze();
-                return bitmapImage;
+                await sourceStream.CopyToAsync(fileStream).ConfigureAwait(false);
             }
+
+            return GetCachedBitmapImageAsync(cachePath);
         }
 
         /// <summary>
         /// Gets the cached bitmap image async.
         /// </summary>
-        /// <param name="sourceStream">The source stream.</param>
         /// <param name="cachePath">The cache path.</param>
         /// <returns>BitmapImage.</returns>
-        private BitmapImage GetCachedBitmapImageAsync(FileStream sourceStream, string cachePath = null)
+        private BitmapImage GetCachedBitmapImageAsync(string cachePath)
         {
             var bitmapImage = new BitmapImage
             {
-                CreateOptions = BitmapCreateOptions.DelayCreation
+                CreateOptions = BitmapCreateOptions.DelayCreation,
+                CacheOption = BitmapCacheOption.Default,
+                UriCachePolicy = new RequestCachePolicy(RequestCacheLevel.CacheIfAvailable)
             };
 
             RenderOptions.SetBitmapScalingMode(bitmapImage, BitmapScalingMode.Fant);
 
             bitmapImage.BeginInit();
-            bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-            bitmapImage.StreamSource = sourceStream;
+            bitmapImage.UriSource = new Uri(cachePath);
             bitmapImage.EndInit();
             bitmapImage.Freeze();
             return bitmapImage;
@@ -953,8 +928,8 @@ namespace MediaBrowser.UI
             System.Windows.Forms.Application.Restart();
 
             Dispatcher.Invoke(Shutdown);
-        }       
-        
+        }
+
         /// <summary>
         /// Gets the bitmap image.
         /// </summary>

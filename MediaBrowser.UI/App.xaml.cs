@@ -1,8 +1,10 @@
 ﻿using System.Collections.Concurrent;
 using MediaBrowser.ApiInteraction;
+using MediaBrowser.Common.Constants;
 using MediaBrowser.Common.Extensions;
 using MediaBrowser.Common.Implementations.Logging;
 using MediaBrowser.Common.IO;
+using MediaBrowser.Common.Implementations.Updates;
 using MediaBrowser.Model.Configuration;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
@@ -47,7 +49,7 @@ namespace MediaBrowser.UI
         /// <summary>
         /// The single instance mutex
         /// </summary>
-        private Mutex SingleInstanceMutex;
+        private static Mutex _singleInstanceMutex;
 
         /// <summary>
         /// Gets or sets the logger.
@@ -232,8 +234,38 @@ namespace MediaBrowser.UI
         [STAThread]
         public static void Main()
         {
+            bool createdNew;
+
+            _singleInstanceMutex = new Mutex(true, @"Local\" + typeof(App).Assembly.GetName().Name, out createdNew);
+
+            if (!createdNew)
+            {
+                _singleInstanceMutex = null;
+                return;
+            }
+
+            // Look for the existence of an update archive
+            var appPaths = new UIApplicationPaths();
+
+            var updateArchive = Path.Combine(appPaths.TempUpdatePath, Constants.MbTheaterPkgName + ".zip");
+            
+            if (File.Exists(updateArchive))
+            {
+                // Update is there - execute update
+                try
+                {
+                    new ApplicationUpdater().UpdateApplication(MBApplication.MBTheater, appPaths, updateArchive);
+
+                    // And just let the app exit so it can update
+                    return;
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(string.Format("Error attempting to update application.\n\n{0}\n\n{1}", e.GetType().Name, e.Message));
+                }
+            }
+
             var application = new App();
-            application.InitializeComponent();
 
             application.Run();
         }
@@ -362,7 +394,7 @@ namespace MediaBrowser.UI
 
                 ShowApplicationWindow();
 
-                await ApplicationWindow.LoadInitialUI().ConfigureAwait(false);
+                await LoadInitialPresentation().ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -372,6 +404,56 @@ namespace MediaBrowser.UI
 
                 // Shutdown the app with an error code
                 Shutdown(1);
+            }
+        }
+
+        /// <summary>
+        /// Loads the initial presentation.
+        /// </summary>
+        /// <returns>Task.</returns>
+        private async Task LoadInitialPresentation()
+        {
+            var foundServer = false;
+
+            try
+            {
+                await ApiClient.GetSystemInfoAsync().ConfigureAwait(false);
+
+                foundServer = true;
+            }
+            catch (HttpException ex)
+            {
+                Logger.ErrorException("Error connecting to server using saved connection information. Host: {0}, Port {1}", ex, ApiClient.ServerHostName, ApiClient.ServerApiPort);
+            }
+
+            if (!foundServer)
+            {
+                try
+                {
+                    var address = await new ServerLocator().FindServer().ConfigureAwait(false);
+
+                    var parts = address.ToString().Split(':');
+
+                    ApiClient.ServerHostName = parts[0];
+                    ApiClient.ServerApiPort = address.Port;
+
+                    await ApiClient.GetSystemInfoAsync().ConfigureAwait(false);
+
+                    foundServer = true;
+                }
+                catch (Exception ex)
+                {
+                    Logger.ErrorException("Error attempting to locate server.", ex);
+                }
+            }
+
+            if (!foundServer)
+            {
+                // Show connection wizard
+            }
+            else
+            {
+                await LogoutUser();
             }
         }
 
@@ -403,15 +485,6 @@ namespace MediaBrowser.UI
         /// <param name="e">A <see cref="T:System.Windows.StartupEventArgs" /> that contains the event data.</param>
         protected override void OnStartup(StartupEventArgs e)
         {
-            bool createdNew;
-            SingleInstanceMutex = new Mutex(true, @"Local\" + GetType().Assembly.GetName().Name, out createdNew);
-            if (!createdNew)
-            {
-                SingleInstanceMutex = null;
-                Shutdown();
-                return;
-            }
-
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             LoadKernel();
 
@@ -494,15 +567,15 @@ namespace MediaBrowser.UI
         /// </summary>
         private void ReleaseMutex()
         {
-            if (SingleInstanceMutex == null)
+            if (_singleInstanceMutex == null)
             {
                 return;
             }
 
-            SingleInstanceMutex.ReleaseMutex();
-            SingleInstanceMutex.Close();
-            SingleInstanceMutex.Dispose();
-            SingleInstanceMutex = null;
+            _singleInstanceMutex.ReleaseMutex();
+            _singleInstanceMutex.Close();
+            _singleInstanceMutex.Dispose();
+            _singleInstanceMutex = null;
         }
         
         /// <summary>

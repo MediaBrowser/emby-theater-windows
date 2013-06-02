@@ -1,4 +1,5 @@
 ﻿using System.Windows.Media;
+using MediaBrowser.ApiInteraction;
 using MediaBrowser.Common.Extensions;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
@@ -153,15 +154,6 @@ namespace MediaBrowser.UI
         }
 
         /// <summary>
-        /// Loads the initial UI.
-        /// </summary>
-        /// <returns>Task.</returns>
-        internal Task LoadInitialUI()
-        {
-            return LoadInitialPage();
-        }
-
-        /// <summary>
         /// Called when [backdrop index changed].
         /// </summary>
         private async void OnBackdropIndexChanged()
@@ -199,15 +191,6 @@ namespace MediaBrowser.UI
                     BackdropContainer.Content = new FrameworkElement();
                 }
             }
-        }
-
-        /// <summary>
-        /// Loads the initial page.
-        /// </summary>
-        /// <returns>Task.</returns>
-        private Task LoadInitialPage()
-        {
-            return App.Instance.LogoutUser();
         }
 
         /// <summary>

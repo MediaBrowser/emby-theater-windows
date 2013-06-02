@@ -25,12 +25,6 @@
                     <TextBlock Style="{StaticResource TextBlockStyle}" VerticalAlignment="Center" Margin="10 0 0 0">Sort Menu</TextBlock>
                 </StackPanel>
             </controls:ExtendedButton>
-            <controls:ExtendedButton x:Name="IndexMenuButton" Style="{StaticResource ViewMenuButton}">
-                <StackPanel Orientation="Horizontal">
-                    <Image Source="..\Resources\Images\ViewMenu\Index.png" Stretch="None" />
-                    <TextBlock Style="{StaticResource TextBlockStyle}" VerticalAlignment="Center" Margin="10 0 0 0">Index Menu</TextBlock>
-                </StackPanel>
-            </controls:ExtendedButton>
             <controls:ExtendedButton x:Name="btnIncrease" Style="{StaticResource ViewMenuButton}">
                 <StackPanel Orientation="Horizontal">
                     <Image Source="..\Resources\Images\ViewMenu\Increase.png" Stretch="None" />

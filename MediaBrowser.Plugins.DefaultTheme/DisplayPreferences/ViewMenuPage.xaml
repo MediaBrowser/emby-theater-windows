@@ -13,9 +13,6 @@
         <StackPanel Orientation="Vertical">
 
             <TextBlock Style="{StaticResource Heading2TextBlockStyle}">Select View</TextBlock>
-            <controls:ExtendedRadioButton x:Name="radioCoverFlow" GroupName="View" Style="{StaticResource ViewMenuRadioButton}">
-                <TextBlock Style="{StaticResource TextBlockStyle}">Cover Flow</TextBlock>
-            </controls:ExtendedRadioButton>
             <controls:ExtendedRadioButton x:Name="radioList" GroupName="View" Style="{StaticResource ViewMenuRadioButton}">
                 <TextBlock Style="{StaticResource TextBlockStyle}">List</TextBlock>
             </controls:ExtendedRadioButton>

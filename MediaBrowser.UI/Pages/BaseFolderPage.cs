@@ -45,24 +45,6 @@ namespace MediaBrowser.UI.Pages
         }
 
         /// <summary>
-        /// The _index by
-        /// </summary>
-        private string _indexBy;
-        /// <summary>
-        /// Gets or sets the name of the current index function
-        /// </summary>
-        /// <value>The index by.</value>
-        public string IndexBy
-        {
-            get { return _indexBy; }
-            private set
-            {
-                _indexBy = value;
-                OnPropertyChanged("IndexBy");
-            }
-        }
-
-        /// <summary>
         /// The _sort by
         /// </summary>
         private string _sortBy;
@@ -298,11 +280,6 @@ namespace MediaBrowser.UI.Pages
 
             DisplayPreferences = await App.Instance.ApiClient.GetDisplayPreferencesAsync(Folder.DisplayPreferencesId);
 
-            if (DisplayPreferences.RememberIndexing)
-            {
-                IndexBy = DisplayPreferences.IndexBy;
-            }
-
             if (DisplayPreferences.RememberSorting)
             {
                 SortBy = DisplayPreferences.SortBy;
@@ -360,9 +337,7 @@ namespace MediaBrowser.UI.Pages
                                  ItemFields.Overview
                              },
 
-                UserId = App.Instance.CurrentUser.Id,
-
-                IndexBy = IndexBy
+                UserId = App.Instance.CurrentUser.Id
             };
 
             if (!string.IsNullOrEmpty(SortBy))
@@ -434,57 +409,6 @@ namespace MediaBrowser.UI.Pages
             tasks.Add(ReloadChildren());
 
             await Task.WhenAll(tasks);
-        }
-
-        /// <summary>
-        /// Changes the index option on the page
-        /// </summary>
-        /// <param name="option">The option.</param>
-        /// <returns>Task.</returns>
-        public async Task UpdateIndexOption(string option)
-        {
-            var tasks = new List<Task>();
-
-            IndexBy = option;
-
-            if (DisplayPreferences.RememberIndexing)
-            {
-                DisplayPreferences.IndexBy = option;
-                NotifyDisplayPreferencesChanged();
-
-                tasks.Add(Task.Run(async () =>
-                {
-                    try
-                    {
-                        await App.Instance.ApiClient.UpdateDisplayPreferencesAsync(DisplayPreferences);
-                    }
-                    catch
-                    {
-                        App.Instance.ShowDefaultErrorMessage();
-                    }
-                }));
-            }
-
-            tasks.Add(ReloadChildren());
-
-            await Task.WhenAll(tasks);
-        }
-
-        /// <summary>
-        /// Updates the index of the remember.
-        /// </summary>
-        /// <param name="remember">if set to <c>true</c> [remember].</param>
-        /// <returns>Task.</returns>
-        public async Task UpdateRememberIndex(bool remember)
-        {
-            DisplayPreferences.RememberIndexing = remember;
-
-            if (remember)
-            {
-                DisplayPreferences.IndexBy = IndexBy;
-            }
-
-            await App.Instance.ApiClient.UpdateDisplayPreferencesAsync(DisplayPreferences);
         }
 
         /// <summary>

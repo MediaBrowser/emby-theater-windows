@@ -126,9 +126,6 @@
     <Compile Include="DisplayPreferences\DisplayPreferencesMenu.xaml.cs">
       <DependentUpon>DisplayPreferencesMenu.xaml</DependentUpon>
     </Compile>
-    <Compile Include="DisplayPreferences\IndexMenuPage.xaml.cs">
-      <DependentUpon>IndexMenuPage.xaml</DependentUpon>
-    </Compile>
     <Compile Include="DisplayPreferences\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
@@ -249,10 +246,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="DisplayPreferences\DisplayPreferencesMenu.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="DisplayPreferences\IndexMenuPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

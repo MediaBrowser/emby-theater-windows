@@ -21,17 +21,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
             btnDecrease.Click += btnDecrease_Click;
             ViewMenuButton.Click += ViewMenuButton_Click;
             SortMenuButton.Click += SortMenuButton_Click;
-            IndexMenuButton.Click += IndexMenuButton_Click;
-        }
-
-        /// <summary>
-        /// Handles the Click event of the IndexMenuButton control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
-        void IndexMenuButton_Click(object sender, RoutedEventArgs e)
-        {
-            DisplayPreferencesWindow.NavigateToIndexMenu();
         }
 
         /// <summary>

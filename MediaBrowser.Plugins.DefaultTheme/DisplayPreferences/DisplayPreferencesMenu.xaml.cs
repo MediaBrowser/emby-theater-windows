@@ -74,14 +74,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
         }
 
         /// <summary>
-        /// Navigates to index menu.
-        /// </summary>
-        public void NavigateToIndexMenu()
-        {
-            PageFrame.NavigateWithTransition(new IndexMenuPage { DisplayPreferencesWindow = this });
-        }
-
-        /// <summary>
         /// Navigates to sort menu.
         /// </summary>
         public void NavigateToSortMenu()

@@ -757,54 +757,36 @@ namespace MediaBrowser.UI
         /// <param name="url">The URL.</param>
         /// <returns>Task{BitmapImage}.</returns>
         /// <exception cref="System.ArgumentNullException">url</exception>
-        public Task<BitmapImage> GetRemoteBitmapAsync(string url)
+        public async Task<BitmapImage> GetRemoteBitmapAsync(string url)
         {
             if (string.IsNullOrEmpty(url))
             {
                 throw new ArgumentNullException("url");
             }
 
-            Logger.Info("Image url: " + url);
+            var cachePath = _remoteImageCache.GetResourcePath(url.GetMD5().ToString());
 
-            return Task.Run(async () =>
+            if (File.Exists(cachePath))
             {
-                var cachePath = _remoteImageCache.GetResourcePath(url.GetMD5().ToString());
-
-                try
+                using (var stream = new FileStream(cachePath, FileMode.Open, FileAccess.Read, FileShare.Read))
                 {
-                    using (var stream = new FileStream(cachePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, StreamDefaults.DefaultFileStreamBufferSize, true))
-                    {
-                        return await GetBitmapImageAsync(stream).ConfigureAwait(false);
-                    }
+                    return GetCachedBitmapImageAsync(stream);
                 }
-                catch (FileNotFoundException)
-                {
-                    // Cache file doesn't exist. No biggie.
-                }
-
+            }
+            
+            return await Task.Run(async () =>
+            {
                 var semaphore = GetImageFileLock(cachePath);
                 await semaphore.WaitAsync().ConfigureAwait(false);
 
-                var releaseLock = true;
-
                 // Look in the cache again
-                try
+                if (File.Exists(cachePath))
                 {
-                    using (var stream = new FileStream(cachePath, FileMode.Open, FileAccess.Read, FileShare.Read, StreamDefaults.DefaultFileStreamBufferSize, true))
+                    semaphore.Release();
+
+                    using (var stream = new FileStream(cachePath, FileMode.Open, FileAccess.Read, FileShare.Read))
                     {
-                        return await GetBitmapImageAsync(stream).ConfigureAwait(false);
-                    }
-                }
-                catch (FileNotFoundException)
-                {
-                    // Cache file doesn't exist. No biggie.
-                    releaseLock = false;
-                }
-                finally
-                {
-                    if (releaseLock)
-                    {
-                        semaphore.Release();
+                        return GetCachedBitmapImageAsync(stream);
                     }
                 }
 
@@ -819,7 +801,8 @@ namespace MediaBrowser.UI
                 {
                     semaphore.Release();
                 }
-            });
+
+            }).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -828,41 +811,61 @@ namespace MediaBrowser.UI
         /// <param name="sourceStream">The source stream.</param>
         /// <param name="cachePath">The cache path.</param>
         /// <returns>Task{BitmapImage}.</returns>
-        private async Task<BitmapImage> GetBitmapImageAsync(Stream sourceStream, string cachePath = null)
+        private async Task<BitmapImage> GetBitmapImageAsync(Stream sourceStream, string cachePath)
         {
-            byte[] bytes;
-
             using (var ms = new MemoryStream())
             {
                 await sourceStream.CopyToAsync(ms).ConfigureAwait(false);
 
-                bytes = ms.ToArray();
-            }
+                ms.Position = 0;
 
-            if (!string.IsNullOrEmpty(cachePath))
-            {
-                using (var fileStream = new FileStream(cachePath, FileMode.Create, FileAccess.Write, FileShare.Read, StreamDefaults.DefaultFileStreamBufferSize, true))
+                if (!string.IsNullOrEmpty(cachePath))
                 {
-                    await fileStream.WriteAsync(bytes, 0, bytes.Length).ConfigureAwait(false);
-                }
-            }
+                    using (var fileStream = new FileStream(cachePath, FileMode.Create, FileAccess.Write, FileShare.Read, StreamDefaults.DefaultFileStreamBufferSize, true))
+                    {
+                        await ms.CopyToAsync(fileStream).ConfigureAwait(false);
+                    }
 
-            using (Stream stream = new MemoryStream(bytes))
-            {
+                    ms.Position = 0;
+                }
+
                 var bitmapImage = new BitmapImage
                 {
                     CreateOptions = BitmapCreateOptions.DelayCreation
                 };
 
                 RenderOptions.SetBitmapScalingMode(bitmapImage, BitmapScalingMode.Fant);
-                
+
                 bitmapImage.BeginInit();
                 bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                bitmapImage.StreamSource = stream;
+                bitmapImage.StreamSource = ms;
                 bitmapImage.EndInit();
                 bitmapImage.Freeze();
                 return bitmapImage;
             }
+        }
+
+        /// <summary>
+        /// Gets the cached bitmap image async.
+        /// </summary>
+        /// <param name="sourceStream">The source stream.</param>
+        /// <param name="cachePath">The cache path.</param>
+        /// <returns>BitmapImage.</returns>
+        private BitmapImage GetCachedBitmapImageAsync(FileStream sourceStream, string cachePath = null)
+        {
+            var bitmapImage = new BitmapImage
+            {
+                CreateOptions = BitmapCreateOptions.DelayCreation
+            };
+
+            RenderOptions.SetBitmapScalingMode(bitmapImage, BitmapScalingMode.Fant);
+
+            bitmapImage.BeginInit();
+            bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+            bitmapImage.StreamSource = sourceStream;
+            bitmapImage.EndInit();
+            bitmapImage.Freeze();
+            return bitmapImage;
         }
 
         /// <summary>

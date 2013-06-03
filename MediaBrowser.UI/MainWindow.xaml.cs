@@ -1,22 +1,18 @@
-﻿using System.Windows.Media;
-using MediaBrowser.ApiInteraction;
-using MediaBrowser.Common.Extensions;
-using MediaBrowser.Model.Dto;
+﻿using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Net;
 using MediaBrowser.UI.Controller;
 using MediaBrowser.UI.Controls;
+using MediaBrowser.UI.Extensions;
 using System;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using MediaBrowser.UI.Extensions;
-using System.Windows.Interop;
-using System.Runtime.InteropServices;
-using System.ComponentModel;
+using System.Windows.Media;
 
 namespace MediaBrowser.UI
 {

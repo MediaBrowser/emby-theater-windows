@@ -4,6 +4,7 @@ using MediaBrowser.Common.Implementations;
 using MediaBrowser.Common.Implementations.ScheduledTasks;
 using MediaBrowser.Common.IO;
 using MediaBrowser.IsoMounter;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.System;
 using MediaBrowser.Model.Updates;
 using MediaBrowser.UI.Configuration;
@@ -31,7 +32,7 @@ namespace MediaBrowser.UI
         /// Gets the API client.
         /// </summary>
         /// <value>The API client.</value>
-        public ApiClient ApiClient { get; private set; }
+        public IApiClient ApiClient { get; private set; }
 
         public UIConfigurationManager UIConfigurationManager
         {

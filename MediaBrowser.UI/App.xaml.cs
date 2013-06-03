@@ -1,10 +1,9 @@
-﻿using System.Collections.Concurrent;
-using MediaBrowser.ApiInteraction;
+﻿using MediaBrowser.ApiInteraction;
 using MediaBrowser.Common.Constants;
 using MediaBrowser.Common.Extensions;
-using MediaBrowser.Common.Implementations.Logging;
-using MediaBrowser.Common.IO;
 using MediaBrowser.Common.Implementations.Updates;
+using MediaBrowser.Common.IO;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Configuration;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
@@ -17,6 +16,7 @@ using MediaBrowser.UI.Controls;
 using MediaBrowser.UI.Pages;
 using Microsoft.Win32;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -94,7 +94,7 @@ namespace MediaBrowser.UI
         /// Gets the API client.
         /// </summary>
         /// <value>The API client.</value>
-        public ApiClient ApiClient
+        public IApiClient ApiClient
         {
             get { return CompositionRoot.ApiClient; }
         }
@@ -846,7 +846,7 @@ namespace MediaBrowser.UI
 
             if (File.Exists(cachePath))
             {
-                return GetCachedBitmapImageAsync(cachePath);
+                return GetCachedBitmapImage(cachePath);
             }
 
             return await Task.Run(async () =>
@@ -859,7 +859,7 @@ namespace MediaBrowser.UI
                 {
                     semaphore.Release();
 
-                    return GetCachedBitmapImageAsync(cachePath);
+                    return GetCachedBitmapImage(cachePath);
                 }
 
                 try
@@ -890,15 +890,15 @@ namespace MediaBrowser.UI
                 await sourceStream.CopyToAsync(fileStream).ConfigureAwait(false);
             }
 
-            return GetCachedBitmapImageAsync(cachePath);
+            return GetCachedBitmapImage(cachePath);
         }
 
         /// <summary>
-        /// Gets the cached bitmap image async.
+        /// Gets the cached bitmap image.
         /// </summary>
         /// <param name="cachePath">The cache path.</param>
         /// <returns>BitmapImage.</returns>
-        private BitmapImage GetCachedBitmapImageAsync(string cachePath)
+        private BitmapImage GetCachedBitmapImage(string cachePath)
         {
             var bitmapImage = new BitmapImage
             {

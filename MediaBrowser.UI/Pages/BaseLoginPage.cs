@@ -50,7 +50,7 @@ namespace MediaBrowser.UI.Pages
 
             try
             {
-                Users = await App.Instance.ApiClient.GetAllUsersAsync();
+                Users = await App.Instance.ApiClient.GetUsersAsync();
             }
             catch (HttpException)
             {

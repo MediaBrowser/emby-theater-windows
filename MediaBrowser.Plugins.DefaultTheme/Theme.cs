@@ -44,14 +44,6 @@ namespace MediaBrowser.Plugins.DefaultTheme
         }
 
         /// <summary>
-        /// Displays the weather.
-        /// </summary>
-        public override void DisplayWeather()
-        {
-            App.Instance.Navigate(new WeatherPage());
-        }
-
-        /// <summary>
         /// Gets the login page.
         /// </summary>
         /// <returns>Page.</returns>

@@ -51,10 +51,5 @@ namespace MediaBrowser.UI.Controller
         public virtual void Dispose()
         {
         }
-
-        /// <summary>
-        /// Displays the weather.
-        /// </summary>
-        public abstract void DisplayWeather();
     }
 }

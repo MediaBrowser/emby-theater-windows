@@ -129,8 +129,8 @@ namespace MediaBrowser.UI.Pages
             private set
             {
                 _children = value;
-                OnPropertyChanged("Children");
                 ChildCount = _children.TotalRecordCount;
+                OnPropertyChanged("Children");
                 OnChildrenChanged();
 
             }

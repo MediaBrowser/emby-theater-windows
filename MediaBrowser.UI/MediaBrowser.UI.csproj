@@ -113,13 +113,13 @@
     <Reference Include="LibVlcWrapper">
       <HintPath>..\ThirdParty\Taygeta\LibVlcWrapper.dll</HintPath>
     </Reference>
-    <Reference Include="MediaBrowser.ApiInteraction, Version=3.0.4901.38575, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.ApiInteraction, Version=3.0.4902.38143, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.ApiClient.3.0.0.117\lib\net45\MediaBrowser.ApiInteraction.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.ApiClient.3.0.0.119\lib\net45\MediaBrowser.ApiInteraction.dll</HintPath>
     </Reference>
-    <Reference Include="MediaBrowser.Common, Version=3.0.4901.38284, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.Common, Version=3.0.4902.37842, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.3.0.112\lib\net45\MediaBrowser.Common.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.113\lib\net45\MediaBrowser.Common.dll</HintPath>
     </Reference>
     <Reference Include="MediaBrowser.Common.Implementations">
       <HintPath>..\packages\MediaBrowser.Common.Internal.3.0.108\lib\net45\MediaBrowser.Common.Implementations.dll</HintPath>
@@ -128,9 +128,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\MediaBrowser.IsoMounting.3.0.51\lib\net45\MediaBrowser.IsoMounter.dll</HintPath>
     </Reference>
-    <Reference Include="MediaBrowser.Model, Version=3.0.4901.38283, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.Model, Version=3.0.4902.37842, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.3.0.112\lib\net45\MediaBrowser.Model.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.113\lib\net45\MediaBrowser.Model.dll</HintPath>
     </Reference>
     <Reference Include="Mediabrowser.PluginSecurity">
       <HintPath>..\packages\MediaBrowser.Common.Internal.3.0.108\lib\net45\Mediabrowser.PluginSecurity.dll</HintPath>
@@ -248,8 +248,6 @@
     <Compile Include="Converters\LastSeenTextConverter.cs" />
     <Compile Include="Converters\MetroTileBackgroundConverter.cs" />
     <Compile Include="Converters\WatchedVisibilityConverter.cs" />
-    <Compile Include="Converters\WeatherTemperatureConverter.cs" />
-    <Compile Include="Converters\WeatherVisibilityConverter.cs" />
     <Compile Include="Controller\UIKernel.cs" />
     <Compile Include="Pages\BaseDetailPage.cs" />
     <Compile Include="Pages\BaseFolderPage.cs" />

@@ -110,7 +110,7 @@ namespace MediaBrowser.UI.Pages
                 App.Instance.CurrentUser = user;
 
                 App.Instance.NavigateToHomePage();
-            } 
+            }
         }
 
         /// <summary>

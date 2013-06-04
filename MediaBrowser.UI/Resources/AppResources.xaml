@@ -18,13 +18,13 @@
     <System:Double x:Key="SmallFontSize">20</System:Double>
 
     <!--Default font for h1 headers. Themes should override these as needed-->
-    <System:Double x:Key="Heading1FontSize">68</System:Double>
+    <System:Double x:Key="Heading1FontSize">60</System:Double>
     <FontFamily x:Key="Heading1FontFamily">Segoe UI, Lucida Sans Unicode, Verdana</FontFamily>
     <FontWeight x:Key="Heading1FontWeight">Thin</FontWeight>
     <Brush x:Key="Heading1Foreground">#333</Brush>
 
     <!--Default font for h2 headers. Themes should override these as needed-->
-    <System:Double x:Key="Heading2FontSize">42</System:Double>
+    <System:Double x:Key="Heading2FontSize">36</System:Double>
     <FontFamily x:Key="Heading2FontFamily">Segoe UI, Lucida Sans Unicode, Verdana</FontFamily>
     <FontWeight x:Key="Heading2FontWeight">Normal</FontWeight>
     <Brush x:Key="Heading2Foreground">#333</Brush>
@@ -32,9 +32,7 @@
     <!--Define all the standard converters here in one place-->
     <converters:DateTimeToStringConverter x:Key="DateTimeToStringConverter"></converters:DateTimeToStringConverter>
     <converters:UserImageConverter x:Key="UserImageConverter"></converters:UserImageConverter>
-    <converters:WeatherTemperatureConverter x:Key="WeatherTemperatureConverter"></converters:WeatherTemperatureConverter>
     <converters:LastSeenTextConverter x:Key="LastSeenTextConverter"></converters:LastSeenTextConverter>
-    <converters:WeatherVisibilityConverter x:Key="WeatherVisibilityConverter"></converters:WeatherVisibilityConverter>
     <converters:CurrentUserVisibilityConverter x:Key="CurrentUserVisibilityConverter"></converters:CurrentUserVisibilityConverter>
     <converters:BaseItemImageVisibilityConverter x:Key="BaseItemImageVisibilityConverter"></converters:BaseItemImageVisibilityConverter>
     <converters:WatchedVisibilityConverter x:Key="WatchedVisibilityConverter"></converters:WatchedVisibilityConverter>
@@ -54,7 +52,7 @@
         <Setter Property="NavigationUIVisibility" Value="Hidden"/>
         <Setter Property="KeyboardNavigation.IsTabStop" Value="false"/>
     </Style>
-    
+
     <!--Default Frame style. -->
     <Style TargetType="ContentControl">
         <Setter Property="KeyboardNavigation.IsTabStop" Value="false"/>
@@ -129,16 +127,16 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsKeyboardFocused" Value="true">
-                            <Setter TargetName="Border" Property="Background" Value="Gray" />
+                            <Setter TargetName="Border" Property="Background" Value="#666666" />
                         </Trigger>
                         <Trigger Property="IsFocused" Value="true">
-                            <Setter TargetName="Border" Property="Background" Value="Gray" />
+                            <Setter TargetName="Border" Property="Background" Value="#666666" />
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="true">
-                            <Setter TargetName="Border" Property="Background" Value="Gray" />
+                            <Setter TargetName="Border" Property="Background" Value="#666666" />
                         </Trigger>
                         <Trigger Property="IsPressed" Value="true">
-                            <Setter TargetName="Border" Property="Background" Value="Gray" />
+                            <Setter TargetName="Border" Property="Background" Value="#666666" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="false">
                             <Setter TargetName="Border" Property="Opacity" Value=".2" />

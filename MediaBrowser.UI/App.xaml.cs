@@ -9,7 +9,6 @@ using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Net;
 using MediaBrowser.Model.System;
-using MediaBrowser.Model.Weather;
 using MediaBrowser.UI.Configuration;
 using MediaBrowser.UI.Controller;
 using MediaBrowser.UI.Controls;
@@ -41,11 +40,6 @@ namespace MediaBrowser.UI
         /// </summary>
         /// <value>The clock timer.</value>
         private Timer ClockTimer { get; set; }
-        /// <summary>
-        /// Gets or sets the server configuration timer.
-        /// </summary>
-        /// <value>The server configuration timer.</value>
-        private Timer ServerConfigurationTimer { get; set; }
 
         /// <summary>
         /// The single instance mutex
@@ -131,38 +125,10 @@ namespace MediaBrowser.UI
 
                 if (ApiClient != null)
                 {
-                    if (value == null)
-                    {
-                        ApiClient.CurrentUserId = null;
-                    }
-                    else
-                    {
-                        ApiClient.CurrentUserId = value.Id;
-                    }
+                    ApiClient.CurrentUserId = value == null ? null : value.Id;
                 }
 
                 OnPropertyChanged("CurrentUser");
-            }
-        }
-
-        /// <summary>
-        /// The _server configuration
-        /// </summary>
-        private ServerConfiguration _serverConfiguration;
-        /// <summary>
-        /// Gets or sets the server configuration.
-        /// </summary>
-        /// <value>The server configuration.</value>
-        public ServerConfiguration ServerConfiguration
-        {
-            get
-            {
-                return _serverConfiguration;
-            }
-            set
-            {
-                _serverConfiguration = value;
-                OnPropertyChanged("ServerConfiguration");
             }
         }
 
@@ -184,27 +150,6 @@ namespace MediaBrowser.UI
             {
                 _currentTime = value;
                 OnPropertyChanged("CurrentTime");
-            }
-        }
-
-        /// <summary>
-        /// The _current weather
-        /// </summary>
-        private WeatherInfo _currentWeather;
-        /// <summary>
-        /// Gets the current weather.
-        /// </summary>
-        /// <value>The current weather.</value>
-        public WeatherInfo CurrentWeather
-        {
-            get
-            {
-                return _currentWeather;
-            }
-            private set
-            {
-                _currentWeather = value;
-                OnPropertyChanged("CurrentWeather");
             }
         }
 
@@ -468,13 +413,8 @@ namespace MediaBrowser.UI
         /// <returns>Task.</returns>
         protected void OnKernelLoaded()
         {
-            PropertyChanged += AppPropertyChanged;
-
             // Update every 10 seconds
             ClockTimer = new Timer(ClockTimerCallback, null, 0, 10000);
-
-            // Update every 30 minutes
-            ServerConfigurationTimer = new Timer(ServerConfigurationTimerCallback, null, 0, 1800000);
 
             CurrentTheme = UIKernel.Instance.Themes.First();
 
@@ -584,55 +524,12 @@ namespace MediaBrowser.UI
         }
 
         /// <summary>
-        /// Apps the property changed.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="e">The <see cref="PropertyChangedEventArgs" /> instance containing the event data.</param>
-        async void AppPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName.Equals("ServerConfiguration"))
-            {
-                if (string.IsNullOrEmpty(ServerConfiguration.WeatherLocation))
-                {
-                    CurrentWeather = null;
-                }
-                else
-                {
-                    try
-                    {
-                        CurrentWeather = await ApiClient.GetWeatherInfoAsync(ServerConfiguration.WeatherLocation);
-                    }
-                    catch (HttpException ex)
-                    {
-                        Logger.ErrorException("Error downloading weather information", ex);
-                    }
-                }
-            }
-        }
-
-        /// <summary>
         /// Clocks the timer callback.
         /// </summary>
         /// <param name="stateInfo">The state info.</param>
         private void ClockTimerCallback(object stateInfo)
         {
             CurrentTime = DateTime.Now;
-        }
-
-        /// <summary>
-        /// Servers the configuration timer callback.
-        /// </summary>
-        /// <param name="stateInfo">The state info.</param>
-        private async void ServerConfigurationTimerCallback(object stateInfo)
-        {
-            try
-            {
-                ServerConfiguration = await ApiClient.GetServerConfigurationAsync();
-            }
-            catch (HttpException ex)
-            {
-                Logger.ErrorException("Error refreshing server configuration", ex);
-            }
         }
 
         /// <summary>
@@ -712,14 +609,6 @@ namespace MediaBrowser.UI
             {
                 Navigate(CurrentTheme.GetDetailPage(item));
             }
-        }
-
-        /// <summary>
-        /// Displays the weather.
-        /// </summary>
-        public void DisplayWeather()
-        {
-            CurrentTheme.DisplayWeather();
         }
 
         /// <summary>

@@ -21,9 +21,9 @@
             <RowDefinition Height="auto"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <TextBlock x:Name="TxtName" Style="{StaticResource TextBlockStyle}" Margin="30 0 0 0" Grid.Row="0"></TextBlock>
+        <TextBlock x:Name="TxtName" Style="{StaticResource TextBlockStyle}" Margin="25 0 0 0" Grid.Row="0"></TextBlock>
 
-        <StackPanel Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Left" Margin="30 0 0 0">
+        <StackPanel Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Left" Margin="25 0 0 0">
             <TextBlock x:Name="currentItemIndex" Style="{StaticResource TextBlockStyle}"></TextBlock>
             <TextBlock x:Name="currentItemIndexDivider" Text="|" Style="{StaticResource TextBlockStyle}"></TextBlock>
             <TextBlock Text="{Binding Path=ChildCount,Mode=OneWay}" Style="{StaticResource TextBlockStyle}"></TextBlock>

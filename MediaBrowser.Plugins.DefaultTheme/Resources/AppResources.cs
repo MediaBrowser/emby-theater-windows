@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.Dto;
+﻿using System.Windows.Media;
+using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Net;
 using MediaBrowser.UI;
 using MediaBrowser.UI.Controller;
@@ -8,6 +9,8 @@ using MediaBrowser.UI.Playback.InternalPlayer;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using ColorConverter = System.Drawing.ColorConverter;
+using Image = System.Windows.Controls.Image;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Resources
 {
@@ -81,16 +84,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Resources
         }
 
         /// <summary>
-        /// Weathers the button click.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
-        void WeatherButtonClick(object sender, RoutedEventArgs e)
-        {
-            App.Instance.DisplayWeather();
-        }
-
-        /// <summary>
         /// Settingses the button click.
         /// </summary>
         /// <param name="sender">The sender.</param>
@@ -159,16 +152,26 @@ namespace MediaBrowser.Plugins.DefaultTheme.Resources
                 return TreeHelper.FindChild<StackPanel>(App.Instance.ApplicationWindow, "HeaderContent");
             }
         }
-        
+
         /// <summary>
         /// Sets the default page title.
         /// </summary>
         public void SetDefaultPageTitle()
         {
-            var img = new Image { };
-            img.SetResourceReference(Image.StyleProperty, "MBLogoImageWhite");
+            var panel = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
 
-            SetPageTitle(img);
+            var text = new TextBlock();
+            text.Text = "media";
+            text.SetResourceReference(TextBlock.StyleProperty, "Heading2TextBlockStyle");
+            panel.Children.Add(text);
+
+            text = new TextBlock();
+            text.Text = "browser";
+            text.SetResourceReference(TextBlock.StyleProperty, "Heading2TextBlockStyle");
+            text.Foreground = new SolidColorBrush(Color.FromRgb(82, 181, 75));
+            panel.Children.Add(text);
+
+            SetPageTitle(panel);
         }
 
         /// <summary>
@@ -225,7 +228,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Resources
         /// <param name="title">The title.</param>
         public void SetPageTitle(string title)
         {
-            var textblock = new TextBlock { Text = title, Margin = new Thickness(0, 10, 0, 0) };
+            var textblock = new TextBlock { Text = title, Margin = new Thickness(0, 5, 0, 0) };
             textblock.SetResourceReference(TextBlock.StyleProperty, "Heading2TextBlockStyle");
 
             SetPageTitle(textblock);

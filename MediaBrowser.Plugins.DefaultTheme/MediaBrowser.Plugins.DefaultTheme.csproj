@@ -38,13 +38,13 @@
     <RunPostBuildEvent>Always</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MediaBrowser.Common, Version=3.0.4901.38284, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.Common, Version=3.0.4902.37842, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.3.0.112\lib\net45\MediaBrowser.Common.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.113\lib\net45\MediaBrowser.Common.dll</HintPath>
     </Reference>
-    <Reference Include="MediaBrowser.Model, Version=3.0.4901.38283, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.Model, Version=3.0.4902.37842, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.3.0.112\lib\net45\MediaBrowser.Model.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.113\lib\net45\MediaBrowser.Model.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Expression.Effects, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -151,11 +151,7 @@
     <Compile Include="Pages\LoginPage.xaml.cs">
       <DependentUpon>LoginPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\WeatherPage.xaml.cs">
-      <DependentUpon>WeatherPage.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Resources\AppResources.cs" />
-    <Compile Include="Converters\WeatherImageConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -282,10 +278,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Pages\WeatherPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Properties\DesignTimeResources.xaml" Condition="'$(DesignTime)'=='true' OR ('$(SolutionPath)'!='' AND Exists('$(SolutionPath)') AND '$(BuildingInsideVisualStudio)'!='true' AND '$(BuildingInsideExpressionBlend)'!='true')">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -299,11 +291,6 @@
   <ItemGroup>
     <Resource Include="Resources\Images\CurrentUserDefault.png" />
     <Resource Include="Resources\Images\UserLoginDefault.png" />
-    <Resource Include="Resources\Images\Weather\Overcast.png" />
-    <Resource Include="Resources\Images\Weather\Rain.png" />
-    <Resource Include="Resources\Images\Weather\Snow.png" />
-    <Resource Include="Resources\Images\Weather\Sunny.png" />
-    <Resource Include="Resources\Images\Weather\Thunder.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\SettingsButton.png" />
@@ -323,10 +310,6 @@
     <Resource Include="Resources\Images\DislikeOverlay.png" />
     <Resource Include="Resources\Images\FavoriteOverlay.png" />
     <Resource Include="Resources\Images\LikeOverlay.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Images\Weather\Cloudy.png" />
-    <Resource Include="Resources\Images\Weather\PartlyCloudy.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\ViewButton.png" />

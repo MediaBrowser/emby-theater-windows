@@ -5,7 +5,7 @@ using Implementation;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
-using MediaBrowser.UI.Configuration;
+using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.UI.Playback.InternalPlayer;
 using System;
 using System.Collections.Generic;

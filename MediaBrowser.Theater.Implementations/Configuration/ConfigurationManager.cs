@@ -2,19 +2,20 @@
 using MediaBrowser.Common.Implementations.Configuration;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Serialization;
+using MediaBrowser.Theater.Interfaces.Configuration;
 using System;
 
-namespace MediaBrowser.UI.Configuration
+namespace MediaBrowser.Theater.Implementations.Configuration
 {
-    public class UIConfigurationManager : BaseConfigurationManager
+    public class ConfigurationManager : BaseConfigurationManager
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="UIConfigurationManager" /> class.
+        /// Initializes a new instance of the <see cref="ConfigurationManager" /> class.
         /// </summary>
         /// <param name="applicationPaths">The application paths.</param>
         /// <param name="logManager">The log manager.</param>
         /// <param name="xmlSerializer">The XML serializer.</param>
-        public UIConfigurationManager(IApplicationPaths applicationPaths, ILogManager logManager, IXmlSerializer xmlSerializer)
+        public ConfigurationManager(IApplicationPaths applicationPaths, ILogManager logManager, IXmlSerializer xmlSerializer)
             : base(applicationPaths, logManager, xmlSerializer)
         {
         }
@@ -25,25 +26,25 @@ namespace MediaBrowser.UI.Configuration
         /// <value>The type of the configuration.</value>
         protected override Type ConfigurationType
         {
-            get { return typeof(UIApplicationConfiguration); }
+            get { return typeof(ApplicationConfiguration); }
         }
 
         /// <summary>
         /// Gets the application paths.
         /// </summary>
         /// <value>The application paths.</value>
-        public UIApplicationPaths ApplicationPaths
+        public ApplicationPaths ApplicationPaths
         {
-            get { return (UIApplicationPaths)CommonApplicationPaths; }
+            get { return (ApplicationPaths)CommonApplicationPaths; }
         }
 
         /// <summary>
         /// Gets the configuration.
         /// </summary>
         /// <value>The configuration.</value>
-        public UIApplicationConfiguration Configuration
+        public ApplicationConfiguration Configuration
         {
-            get { return (UIApplicationConfiguration)CommonConfiguration; }
+            get { return (ApplicationConfiguration)CommonConfiguration; }
         }
     }
 }

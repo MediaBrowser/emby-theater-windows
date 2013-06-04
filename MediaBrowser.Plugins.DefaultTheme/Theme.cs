@@ -1,8 +1,6 @@
-﻿using MediaBrowser.Model.Dto;
-using MediaBrowser.Plugins.DefaultTheme.Pages;
+﻿using MediaBrowser.Plugins.DefaultTheme.Pages;
 using MediaBrowser.Plugins.DefaultTheme.Resources;
-using MediaBrowser.UI;
-using MediaBrowser.UI.Controller;
+using MediaBrowser.Theater.Interfaces.Theming;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
@@ -12,62 +10,36 @@ namespace MediaBrowser.Plugins.DefaultTheme
     /// <summary>
     /// Class Theme
     /// </summary>
-    class Theme : BaseTheme
+    class Theme : ITheme
     {
-        /// <summary>
-        /// Gets the detail page.
-        /// </summary>
-        /// <param name="item">The item.</param>
-        /// <returns>Page.</returns>
-        public override Page GetDetailPage(BaseItemDto item)
+        public IEnumerable<ResourceDictionary> GetGlobalResources()
         {
-            return new DetailPage(item.Id);
+            return new[] { new AppResources() };
         }
 
-        /// <summary>
-        /// Gets the list page.
-        /// </summary>
-        /// <param name="item">The item.</param>
-        /// <returns>Page.</returns>
-        public override Page GetListPage(BaseItemDto item)
-        {
-            return new ListPage(item.Id);
-        }
-
-        /// <summary>
-        /// Gets the home page.
-        /// </summary>
-        /// <returns>Page.</returns>
-        public override Page GetHomePage()
-        {
-            return new HomePage();
-        }
-
-        /// <summary>
-        /// Gets the login page.
-        /// </summary>
-        /// <returns>Page.</returns>
-        public override Page GetLoginPage()
+        public Page GetLoginPage()
         {
             return new LoginPage();
         }
 
-        /// <summary>
-        /// Gets the internal player page.
-        /// </summary>
-        /// <returns>Page.</returns>
-        public override Page GetInternalPlayerPage()
+        public Page GetInternalPlayerPage()
         {
             return new InternalPlayerPage();
         }
 
-        /// <summary>
-        /// Gets the global resources.
-        /// </summary>
-        /// <returns>IEnumerable{ResourceDictionary}.</returns>
-        public override IEnumerable<ResourceDictionary> GetGlobalResources()
+        public Page GetHomePage()
         {
-            return new[] { new AppResources() };
+            return new HomePage();
+        }
+
+        public Page GetItemPage(string id, string type, string name, bool isFolder)
+        {
+            if (isFolder)
+            {
+                return new ListPage(id);
+            }
+
+            return new DetailPage(id);
         }
     }
 }

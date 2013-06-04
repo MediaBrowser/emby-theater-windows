@@ -1,12 +1,12 @@
 ﻿using MediaBrowser.Model.Configuration;
 using System.Windows;
 
-namespace MediaBrowser.UI.Configuration
+namespace MediaBrowser.Theater.Interfaces.Configuration
 {
     /// <summary>
     /// This is the UI's device configuration that applies regardless of which user is logged in.
     /// </summary>
-    public class UIApplicationConfiguration : BaseApplicationConfiguration
+    public class ApplicationConfiguration : BaseApplicationConfiguration
     {
         /// <summary>
         /// Gets or sets the server host name (myserver or 192.168.x.x)
@@ -57,9 +57,9 @@ namespace MediaBrowser.UI.Configuration
         public double? WindowHeight { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="UIApplicationConfiguration" /> class.
+        /// Initializes a new instance of the <see cref="ApplicationConfiguration" /> class.
         /// </summary>
-        public UIApplicationConfiguration()
+        public ApplicationConfiguration()
             : base()
         {
             ServerHostName = "localhost";

@@ -1,4 +1,5 @@
-﻿using MediaBrowser.UI.Playback.InternalPlayer;
+﻿using MediaBrowser.Theater.Interfaces.Configuration;
+using MediaBrowser.UI.Playback.InternalPlayer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,6 @@ using System.Collections;
 using System.Windows.Interop;
 using System.Threading;
 using MediaBrowser.Model.Dto;
-using MediaBrowser.UI.Configuration;
 
 namespace MediaBrowser.UI.Playback.DirectShow
 {

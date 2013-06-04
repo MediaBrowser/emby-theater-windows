@@ -9,7 +9,8 @@ using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Net;
 using MediaBrowser.Model.System;
-using MediaBrowser.UI.Configuration;
+using MediaBrowser.Theater.Implementations.Configuration;
+using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.UI.Controller;
 using MediaBrowser.UI.Controls;
 using MediaBrowser.UI.Pages;
@@ -154,27 +155,6 @@ namespace MediaBrowser.UI
         }
 
         /// <summary>
-        /// The _current theme
-        /// </summary>
-        private BaseTheme _currentTheme;
-        /// <summary>
-        /// Gets the current theme.
-        /// </summary>
-        /// <value>The current theme.</value>
-        public BaseTheme CurrentTheme
-        {
-            get
-            {
-                return _currentTheme;
-            }
-            private set
-            {
-                _currentTheme = value;
-                OnPropertyChanged("CurrentTheme");
-            }
-        }
-
-        /// <summary>
         /// Defines the entry point of the application.
         /// </summary>
         [STAThread]
@@ -191,7 +171,7 @@ namespace MediaBrowser.UI
             }
 
             // Look for the existence of an update archive
-            var appPaths = new UIApplicationPaths();
+            var appPaths = new ApplicationPaths();
 
             var updateArchive = Path.Combine(appPaths.TempUpdatePath, Constants.MbTheaterPkgName + ".zip");
 
@@ -416,9 +396,9 @@ namespace MediaBrowser.UI
             // Update every 10 seconds
             ClockTimer = new Timer(ClockTimerCallback, null, 0, 10000);
 
-            CurrentTheme = UIKernel.Instance.Themes.First();
+            CompositionRoot.ThemeManager.SetCurrentTheme(CompositionRoot.ThemeManager.Themes.First());
 
-            foreach (var resource in CurrentTheme.GetGlobalResources())
+            foreach (var resource in CompositionRoot.ThemeManager.CurrentTheme.GetGlobalResources())
             {
                 Resources.MergedDictionaries.Add(resource);
             }
@@ -540,7 +520,7 @@ namespace MediaBrowser.UI
         {
             CurrentUser = null;
 
-            await Dispatcher.InvokeAsync(() => Navigate(CurrentTheme.GetLoginPage()));
+            await Dispatcher.InvokeAsync(() => Navigate(CompositionRoot.ThemeManager.CurrentTheme.GetLoginPage()));
         }
 
         /// <summary>
@@ -549,7 +529,7 @@ namespace MediaBrowser.UI
         /// <param name="page">The page.</param>
         public void Navigate(Page page)
         {
-            _remoteImageCache = new FileSystemRepository(CompositionRoot.Resolve<UIApplicationPaths>().RemoteImageCachePath);
+            _remoteImageCache = new FileSystemRepository(Path.Combine(CompositionRoot.UIConfigurationManager.ApplicationPaths.CachePath, "remote-images"));
 
             ApplicationWindow.Navigate(page);
         }
@@ -567,7 +547,7 @@ namespace MediaBrowser.UI
         /// </summary>
         public void NavigateToInternalPlayerPage()
         {
-            Navigate(CurrentTheme.GetInternalPlayerPage());
+            Navigate(CompositionRoot.ThemeManager.CurrentTheme.GetInternalPlayerPage());
         }
 
         /// <summary>
@@ -601,13 +581,9 @@ namespace MediaBrowser.UI
             {
                 NavigateToHomePage();
             }
-            else if (item.IsFolder)
-            {
-                Navigate(CurrentTheme.GetListPage(item));
-            }
             else
             {
-                Navigate(CurrentTheme.GetDetailPage(item));
+                Navigate(CompositionRoot.ThemeManager.CurrentTheme.GetItemPage(item.Id, item.Type, item.Name, item.IsFolder));
             }
         }
 
@@ -616,7 +592,7 @@ namespace MediaBrowser.UI
         /// </summary>
         public void NavigateToHomePage()
         {
-            Navigate(CurrentTheme.GetHomePage());
+            Navigate(CompositionRoot.ThemeManager.CurrentTheme.GetHomePage());
         }
 
         /// <summary>

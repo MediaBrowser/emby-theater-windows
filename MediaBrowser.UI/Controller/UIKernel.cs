@@ -1,4 +1,5 @@
 ﻿using MediaBrowser.Common;
+using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.UI.Playback;
 using System;
 using System.Collections.Generic;
@@ -40,17 +41,10 @@ namespace MediaBrowser.UI.Controller
         /// <value>The media players.</value>
         public IEnumerable<BaseMediaPlayer> MediaPlayers { get; private set; }
 
-        /// <summary>
-        /// Gets the list of currently loaded themes
-        /// </summary>
-        /// <value>The themes.</value>
-        public IEnumerable<BaseTheme> Themes { get; private set; }
-
         public void Init()
         {
             PlaybackManager = (PlaybackManager)_appHost.CreateInstance(typeof(PlaybackManager));
-
-            Themes = _appHost.GetExports<BaseTheme>();
+                                                             
             MediaPlayers = _appHost.GetExports<BaseMediaPlayer>();
         }
     }

@@ -1,6 +1,6 @@
 ﻿using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
-using MediaBrowser.UI.Configuration;
+using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.UI.UserInput;
 using System;
 using System.Collections.Generic;

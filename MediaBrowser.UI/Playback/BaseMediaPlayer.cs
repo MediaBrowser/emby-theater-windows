@@ -2,7 +2,7 @@
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Net;
-using MediaBrowser.UI.Configuration;
+using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.UI.Controller;
 using System;
 using System.Collections.Generic;

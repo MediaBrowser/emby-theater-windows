@@ -3,12 +3,12 @@ using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Net;
 using MediaBrowser.UI.Controller;
 using MediaBrowser.UI.Controls;
-using MediaBrowser.UI.Extensions;
 using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -28,11 +28,11 @@ namespace MediaBrowser.UI
         /// <summary>
         /// Threshold for time beteen input events to register as activity
         /// </summary>
-        TimeSpan ActivityThreshold = TimeSpan.FromTicks(1);
+        private readonly TimeSpan _activityThreshold = TimeSpan.FromTicks(1);
         /// <summary>
         /// Threshold between input events before mouse fades
         /// </summary>
-        TimeSpan MouseFadeThreshold = TimeSpan.FromMilliseconds(3000);        
+        private readonly TimeSpan _mouseFadeThreshold = TimeSpan.FromMilliseconds(3000);        
         /// <summary>
         /// Gets or sets the backdrop timer.
         /// </summary>
@@ -127,11 +127,11 @@ namespace MediaBrowser.UI
         private void ActivityCallback(object state)
         {
             var lastTime = GetLastInput();
-            if (lastTime > MouseFadeThreshold)// Order is important here.
+            if (lastTime > _mouseFadeThreshold)// Order is important here.
             {
                 IsMouseIdle = true;
             }
-            else if (lastTime > ActivityThreshold)
+            else if (lastTime > _activityThreshold)
             {
                 IsMouseIdle = false;
             }
@@ -402,7 +402,11 @@ namespace MediaBrowser.UI
 
             mainGrid.Children.Add(control);
 
-            Dispatcher.InvokeWithDelay(() => mainGrid.Children.Remove(control), 5000);
+            Dispatcher.InvokeAsync(async () =>
+            {
+                await Task.Delay(5000);
+                mainGrid.Children.Remove(control);
+            });
         }
 
         /// <summary>
@@ -422,7 +426,11 @@ namespace MediaBrowser.UI
 
             mainGrid.Children.Add(control);
 
-            Dispatcher.InvokeWithDelay(() => mainGrid.Children.Remove(control), 5000);
+            Dispatcher.InvokeAsync(async () =>
+            {
+                await Task.Delay(5000);
+                mainGrid.Children.Remove(control);
+            });
         }
 
         /// <summary>

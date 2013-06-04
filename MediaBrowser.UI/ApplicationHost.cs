@@ -7,7 +7,9 @@ using MediaBrowser.IsoMounter;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.System;
 using MediaBrowser.Model.Updates;
-using MediaBrowser.UI.Configuration;
+using MediaBrowser.Theater.Implementations.Configuration;
+using MediaBrowser.Theater.Implementations.Theming;
+using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.UI.Controller;
 using System;
 using System.Collections.Generic;
@@ -26,7 +28,7 @@ namespace MediaBrowser.UI
     /// <summary>
     /// Class CompositionRoot
     /// </summary>
-    public class ApplicationHost : BaseApplicationHost<UIApplicationPaths>
+    public class ApplicationHost : BaseApplicationHost<ApplicationPaths>
     {
         /// <summary>
         /// Gets the API client.
@@ -34,9 +36,11 @@ namespace MediaBrowser.UI
         /// <value>The API client.</value>
         public IApiClient ApiClient { get; private set; }
 
-        public UIConfigurationManager UIConfigurationManager
+        public IThemeManager ThemeManager { get; private set; }
+
+        public ConfigurationManager UIConfigurationManager
         {
-            get { return (UIConfigurationManager)ConfigurationManager; }
+            get { return (ConfigurationManager)ConfigurationManager; }
         }
         
         protected override string LogFilePrefixName
@@ -85,6 +89,19 @@ namespace MediaBrowser.UI
             RegisterSingleInstance(UIConfigurationManager);
 
             RegisterSingleInstance<IIsoManager>(new PismoIsoManager(Logger));
+
+            ThemeManager = new ThemeManager();
+            RegisterSingleInstance(ThemeManager);
+        }
+
+        /// <summary>
+        /// Finds the parts.
+        /// </summary>
+        protected override void FindParts()
+        {
+            base.FindParts();
+
+            ThemeManager.AddParts(GetExports<ITheme>());
         }
 
         /// <summary>
@@ -182,7 +199,7 @@ namespace MediaBrowser.UI
 
         protected override IConfigurationManager GetConfigurationManager()
         {
-            return new UIConfigurationManager(ApplicationPaths, LogManager, XmlSerializer);
+            return new ConfigurationManager(ApplicationPaths, LogManager, XmlSerializer);
         }
     }
 }

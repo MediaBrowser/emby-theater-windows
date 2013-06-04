@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using MediaBrowser.Model.Dto;
-using MediaBrowser.UI.Configuration;
+using MediaBrowser.Theater.Interfaces.Configuration;
 using System;
 
 namespace MediaBrowser.UI.Playback

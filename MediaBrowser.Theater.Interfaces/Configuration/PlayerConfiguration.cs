@@ -1,6 +1,6 @@
 ﻿using MediaBrowser.Model.Entities;
 
-namespace MediaBrowser.UI.Configuration
+namespace MediaBrowser.Theater.Interfaces.Configuration
 {
     /// <summary>
     /// Class PlayerConfiguration

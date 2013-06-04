@@ -4,7 +4,8 @@ using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Net;
-using MediaBrowser.UI.Configuration;
+using MediaBrowser.Theater.Implementations.Configuration;
+using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.UI.Controller;
 using MediaBrowser.UI.Playback.InternalPlayer;
 using System;
@@ -24,7 +25,7 @@ namespace MediaBrowser.UI.Playback
 
         private readonly UIKernel Kernel;
 
-        private readonly UIConfigurationManager _configurationManager;
+        private readonly ConfigurationManager _configurationManager;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PlaybackManager" /> class.
@@ -32,7 +33,7 @@ namespace MediaBrowser.UI.Playback
         /// <param name="kernel">The kernel.</param>
         /// <param name="logger">The logger.</param>
         /// <param name="configurationManager">The configuration manager.</param>
-        public PlaybackManager(UIKernel kernel, ILogger logger, UIConfigurationManager configurationManager)
+        public PlaybackManager(UIKernel kernel, ILogger logger, ConfigurationManager configurationManager)
         {
             _logger = logger;
             _configurationManager = configurationManager;

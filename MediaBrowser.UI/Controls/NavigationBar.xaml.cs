@@ -1,9 +1,8 @@
-﻿using MediaBrowser.UI.Controller;
-using MediaBrowser.UI.Playback;
-using MediaBrowser.UI.Playback.InternalPlayer;
+﻿using MediaBrowser.Theater.Interfaces.Playback;
 using System;
 using System.Threading;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 
@@ -12,13 +11,15 @@ namespace MediaBrowser.UI.Controls
     /// <summary>
     /// Interaction logic for NavigationBar.xaml
     /// </summary>
-    public partial class NavigationBar : BaseUserControl
+    public partial class NavigationBar : UserControl
     {
+        public IPlaybackManager PlaybackManager { get; set; }
+
         /// <summary>
         /// Gets or sets the current player.
         /// </summary>
         /// <value>The current player.</value>
-        private BaseMediaPlayer CurrentPlayer { get; set; }
+        private IMediaPlayer CurrentPlayer { get; set; }
 
         /// <summary>
         /// Gets or sets the current position timer.
@@ -55,8 +56,8 @@ namespace MediaBrowser.UI.Controls
             NextChapterButton.Click += NextChapterButton_Click;
             PreviousChapterButton.Click += PreviousChapterButton_Click;
 
-            UIKernel.Instance.PlaybackManager.PlaybackStarted += PlaybackManager_PlaybackStarted;
-            UIKernel.Instance.PlaybackManager.PlaybackCompleted += PlaybackManager_PlaybackCompleted;
+            PlaybackManager.PlaybackStarted += PlaybackManager_PlaybackStarted;
+            PlaybackManager.PlaybackCompleted += PlaybackManager_PlaybackCompleted;
 
             CurrentPositionSlider.PreviewMouseUp += CurrentPositionSlider_PreviewMouseUp;
         }
@@ -68,7 +69,7 @@ namespace MediaBrowser.UI.Controls
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         async void PreviousChapterButton_Click(object sender, RoutedEventArgs e)
         {
-            await CurrentPlayer.GoToPreviousChapter();
+            //await CurrentPlayer.GoToPreviousChapter();
         }
 
         /// <summary>
@@ -78,7 +79,7 @@ namespace MediaBrowser.UI.Controls
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         async void NextChapterButton_Click(object sender, RoutedEventArgs e)
         {
-            await CurrentPlayer.GoToNextChapter();
+            //await CurrentPlayer.GoToNextChapter();
         }
 
         /// <summary>
@@ -115,7 +116,7 @@ namespace MediaBrowser.UI.Controls
         /// Handles the PlaybackCompleted event of the PlaybackManager control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="PlaybackEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">The <see cref="PlaybackStartEventArgs" /> instance containing the event data.</param>
         void PlaybackManager_PlaybackCompleted(object sender, PlaybackStopEventArgs e)
         {
             if (e.Player == CurrentPlayer)
@@ -138,9 +139,9 @@ namespace MediaBrowser.UI.Controls
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
-        void VolumeUpButton_Click(object sender, RoutedEventArgs e)
+        async void VolumeUpButton_Click(object sender, RoutedEventArgs e)
         {
-            CurrentPlayer.Volume += 3;
+            await CurrentPlayer.SetVolume(CurrentPlayer.Volume + 3);
         }
 
         /// <summary>
@@ -148,9 +149,9 @@ namespace MediaBrowser.UI.Controls
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
-        void VolumeDownButton_Click(object sender, RoutedEventArgs e)
+        async void VolumeDownButton_Click(object sender, RoutedEventArgs e)
         {
-            CurrentPlayer.Volume -= 3;
+            await CurrentPlayer.SetVolume(CurrentPlayer.Volume - 3);
         }
 
         /// <summary>
@@ -158,11 +159,18 @@ namespace MediaBrowser.UI.Controls
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
-        void MuteButton_Click(object sender, RoutedEventArgs e)
+        async void MuteButton_Click(object sender, RoutedEventArgs e)
         {
-            if (CurrentPlayer.CanMute)
+            if (CurrentPlayer.CanControlVolume)
             {
-                CurrentPlayer.Mute = !CurrentPlayer.Mute;
+                if (CurrentPlayer.IsMuted)
+                {
+                    await CurrentPlayer.Mute();
+                }
+                else
+                {
+                    await CurrentPlayer.UnMute();
+                }
             }
         }
 
@@ -170,10 +178,10 @@ namespace MediaBrowser.UI.Controls
         /// Handles the PlaybackStarted event of the PlaybackManager control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="PlaybackEventArgs" /> instance containing the event data.</param>
-        void PlaybackManager_PlaybackStarted(object sender, PlaybackEventArgs e)
+        /// <param name="e">The <see cref="PlaybackStartEventArgs" /> instance containing the event data.</param>
+        void PlaybackManager_PlaybackStarted(object sender, PlaybackStartEventArgs e)
         {
-            if (e.Player is BaseInternalMediaPlayer)
+            if (e.Player is IInternalMediaPlayer)
             {
                 CurrentPlayer = e.Player;
                 CurrentPlayer.PlayStateChanged += CurrentPlayer_PlayStateChanged;
@@ -245,15 +253,15 @@ namespace MediaBrowser.UI.Controls
         /// Resets the button visibilities.
         /// </summary>
         /// <param name="player">The player.</param>
-        private void ResetButtonVisibilities(BaseMediaPlayer player)
+        private async void ResetButtonVisibilities(IMediaPlayer player)
         {
-            Dispatcher.Invoke(() =>
+            await Dispatcher.InvokeAsync(() =>
             {
                 PlayButton.Visibility = player != null && player.PlayState == PlayState.Paused ? Visibility.Visible : Visibility.Collapsed;
                 PauseButton.Visibility = player != null && player.CanPause && player.PlayState == PlayState.Playing ? Visibility.Visible : Visibility.Collapsed;
 
                 StopButton.Visibility = player != null ? Visibility.Visible : Visibility.Collapsed;
-                MuteButton.Visibility = player != null && player.CanMute ? Visibility.Visible : Visibility.Collapsed;
+                MuteButton.Visibility = player != null && player.CanControlVolume ? Visibility.Visible : Visibility.Collapsed;
                 VolumeUpButton.Visibility = player != null && player.CanControlVolume ? Visibility.Visible : Visibility.Collapsed;
                 VolumeDownButton.Visibility = player != null && player.CanControlVolume ? Visibility.Visible : Visibility.Collapsed;
 

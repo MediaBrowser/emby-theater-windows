@@ -2,27 +2,27 @@
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Net;
 using MediaBrowser.UI;
-using MediaBrowser.UI.Controls;
 using MediaBrowser.UI.ViewModels;
 using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Controls
 {
     /// <summary>
     /// Interaction logic for BaseItemTile.xaml
     /// </summary>
-    public partial class BaseItemTile : BaseUserControl
+    public partial class BaseItemTile : UserControl
     {
         /// <summary>
         /// Gets the view model.
         /// </summary>
         /// <value>The view model.</value>
-        public DtoBaseItemViewModel ViewModel
+        public BaseItemDtoViewModel ViewModel
         {
-            get { return DataContext as DtoBaseItemViewModel; }
+            get { return DataContext as BaseItemDtoViewModel; }
         }
 
         /// <summary>
@@ -224,7 +224,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
 
             try
             {
-                ItemImage.Source = await App.Instance.GetRemoteBitmapAsync(url);
+                ItemImage.Source = await ViewModel.ImageManager.GetRemoteBitmapAsync(url);
             }
             catch (HttpException)
             {
@@ -241,13 +241,13 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
             {
                 var imageUri = new Uri("../Resources/Images/AudioDefault.png", UriKind.Relative);
 
-                ItemImage.Source = App.Instance.GetBitmapImage(imageUri);
+                ItemImage.Source = ViewModel.ImageManager.GetBitmapImage(imageUri);
             }
             else
             {
                 var imageUri = new Uri("../Resources/Images/VideoDefault.png", UriKind.Relative);
 
-                ItemImage.Source = App.Instance.GetBitmapImage(imageUri);
+                ItemImage.Source = ViewModel.ImageManager.GetBitmapImage(imageUri);
             }
         }
     }

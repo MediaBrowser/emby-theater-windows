@@ -1,4 +1,6 @@
-﻿using MediaBrowser.Model.Dto;
+﻿using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Dto;
+using MediaBrowser.Theater.Interfaces.Presentation;
 using System;
 using System.Threading;
 using System.Windows;
@@ -14,9 +16,14 @@ namespace MediaBrowser.UI.ViewModels
     {
         private int RotationPeriodMs { get; set; }
 
-        public ItemCollectionViewModel(int rotationPeriodMs = 10000, int rotationDevaiationMs = 2000)
+        public IApiClient ApiClient { get; private set; }
+        public IImageManager ImageManager { get; private set; }
+        
+        public ItemCollectionViewModel(IApiClient apiClient, IImageManager imageManager, int rotationPeriodMs = 10000, int rotationDevaiationMs = 2000)
             : base()
         {
+            ImageManager = imageManager;
+            ApiClient = apiClient;
             if (rotationDevaiationMs > 0)
             {
                 rotationPeriodMs += new Random(Guid.NewGuid().GetHashCode()).Next(0 - rotationDevaiationMs, rotationDevaiationMs);

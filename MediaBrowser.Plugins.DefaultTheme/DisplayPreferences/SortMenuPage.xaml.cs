@@ -49,50 +49,50 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
             }
         }
 
-        /// <summary>
-        /// Called when [loaded].
-        /// </summary>
-        protected override void OnLoaded()
-        {
-            chkRemember.IsChecked = MainPage.DisplayPreferences.RememberSorting;
+        ///// <summary>
+        ///// Called when [loaded].
+        ///// </summary>
+        //protected override void OnLoaded()
+        //{
+        //    chkRemember.IsChecked = MainPage.DisplayPreferences.RememberSorting;
             
-            var index = 0;
+        //    var index = 0;
 
-            var currentValue = MainPage.SortBy ?? string.Empty;
+        //    var currentValue = MainPage.SortBy ?? string.Empty;
 
-            foreach (var option in _sortOptions.Keys)
-            {
-                var optionValue = _sortOptions[option];
+        //    foreach (var option in _sortOptions.Keys)
+        //    {
+        //        var optionValue = _sortOptions[option];
 
-                var radio = new ExtendedRadioButton { GroupName = "Options" };
+        //        var radio = new ExtendedRadioButton { GroupName = "Options" };
 
-                radio.SetResourceReference(StyleProperty, "ViewMenuRadioButton");
+        //        radio.SetResourceReference(StyleProperty, "ViewMenuRadioButton");
 
-                var textblock = new TextBlock { Text = option };
+        //        var textblock = new TextBlock { Text = option };
 
-                textblock.SetResourceReference(StyleProperty, "TextBlockStyle");
+        //        textblock.SetResourceReference(StyleProperty, "TextBlockStyle");
 
-                radio.Content = textblock;
+        //        radio.Content = textblock;
 
-                if (string.IsNullOrEmpty(MainPage.DisplayPreferences.SortBy))
-                {
-                    radio.IsChecked = index == 0;
-                }
-                else
-                {
-                    radio.IsChecked = currentValue.Equals(optionValue, StringComparison.OrdinalIgnoreCase);
-                }
+        //        if (string.IsNullOrEmpty(MainPage.DisplayPreferences.SortBy))
+        //        {
+        //            radio.IsChecked = index == 0;
+        //        }
+        //        else
+        //        {
+        //            radio.IsChecked = currentValue.Equals(optionValue, StringComparison.OrdinalIgnoreCase);
+        //        }
 
-                radio.Tag = optionValue;
-                radio.Click += radio_Click;
+        //        radio.Tag = optionValue;
+        //        radio.Click += radio_Click;
 
-                pnlOptions.Children.Add(radio);
+        //        pnlOptions.Children.Add(radio);
 
-                index++;
-            }
+        //        index++;
+        //    }
 
-            base.OnLoaded();
-        }
+        //    base.OnLoaded();
+        //}
 
         /// <summary>
         /// Handles the Click event of the radio control.

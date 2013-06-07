@@ -1,8 +1,9 @@
-﻿using MediaBrowser.Model.Dto;
+﻿using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Net;
+using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.UI;
-using MediaBrowser.UI.Controller;
 using MediaBrowser.UI.Controls;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,12 +17,17 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
     /// </summary>
     public partial class ItemGallery : BaseDetailsControl
     {
+        private readonly IApiClient _apiClient;
+        private readonly IImageManager _imageManager;
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="ItemGallery" /> class.
         /// </summary>
-        public ItemGallery()
+        public ItemGallery(IApiClient apiClient, IImageManager imageManager)
             : base()
         {
+            _apiClient = apiClient;
+            _imageManager = imageManager;
             InitializeComponent();
             lstItems.ItemInvoked += lstItems_ItemInvoked;
         }
@@ -70,7 +76,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
         /// </summary>
         protected override async void OnItemChanged()
         {
-            ImageUrls = GetImages(Item);
+            ImageUrls = GetImages(Item, _apiClient);
 
             var tasks = ImageUrls.Select(GetImage);
 
@@ -88,7 +94,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
         {
             try
             {
-                return await App.Instance.GetRemoteBitmapAsync(url);
+                return await _imageManager.GetRemoteBitmapAsync(url);
             }
             catch (HttpException)
             {
@@ -101,7 +107,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
         /// </summary>
         /// <param name="item">The item.</param>
         /// <returns>List{System.String}.</returns>
-        internal static List<string> GetImages(BaseItemDto item)
+        internal static List<string> GetImages(BaseItemDto item, IApiClient apiClient)
         {
             var images = new List<string> { };
 
@@ -109,7 +115,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
             {
                 for (var i = 0; i < item.BackdropCount; i++)
                 {
-                    images.Add(App.Instance.ApiClient.GetImageUrl(item, new ImageOptions
+                    images.Add(apiClient.GetImageUrl(item, new ImageOptions
                     {
                         ImageType = ImageType.Backdrop,
                         ImageIndex = i
@@ -119,7 +125,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
 
             if (item.HasThumb)
             {
-                images.Add(App.Instance.ApiClient.GetImageUrl(item, new ImageOptions
+                images.Add(apiClient.GetImageUrl(item, new ImageOptions
                 {
                     ImageType = ImageType.Thumb
                 }));
@@ -127,7 +133,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
 
             if (item.HasArtImage)
             {
-                images.Add(App.Instance.ApiClient.GetImageUrl(item, new ImageOptions
+                images.Add(apiClient.GetImageUrl(item, new ImageOptions
                 {
                     ImageType = ImageType.Art
                 }));
@@ -135,7 +141,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
 
             if (item.HasDiscImage)
             {
-                images.Add(App.Instance.ApiClient.GetImageUrl(item, new ImageOptions
+                images.Add(apiClient.GetImageUrl(item, new ImageOptions
                 {
                     ImageType = ImageType.Disc
                 }));
@@ -143,7 +149,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
 
             if (item.HasMenuImage)
             {
-                images.Add(App.Instance.ApiClient.GetImageUrl(item, new ImageOptions
+                images.Add(apiClient.GetImageUrl(item, new ImageOptions
                 {
                     ImageType = ImageType.Menu
                 }));
@@ -151,7 +157,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
 
             if (item.HasBoxImage)
             {
-                images.Add(App.Instance.ApiClient.GetImageUrl(item, new ImageOptions
+                images.Add(apiClient.GetImageUrl(item, new ImageOptions
                 {
                     ImageType = ImageType.Box
                 }));

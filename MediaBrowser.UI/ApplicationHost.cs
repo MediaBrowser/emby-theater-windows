@@ -1,16 +1,27 @@
-﻿using MediaBrowser.ApiInteraction;
+﻿using System.Windows.Controls;
+using System.Windows.Threading;
+using MediaBrowser.ApiInteraction;
 using MediaBrowser.Common.Configuration;
+using MediaBrowser.Common.Events;
 using MediaBrowser.Common.Implementations;
 using MediaBrowser.Common.Implementations.ScheduledTasks;
 using MediaBrowser.Common.IO;
 using MediaBrowser.IsoMounter;
 using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Dto;
+using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.System;
 using MediaBrowser.Model.Updates;
 using MediaBrowser.Theater.Implementations.Configuration;
+using MediaBrowser.Theater.Implementations.Playback;
+using MediaBrowser.Theater.Implementations.Presentation;
+using MediaBrowser.Theater.Implementations.Session;
 using MediaBrowser.Theater.Implementations.Theming;
+using MediaBrowser.Theater.Interfaces.Navigation;
+using MediaBrowser.Theater.Interfaces.Playback;
+using MediaBrowser.Theater.Interfaces.Presentation;
+using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.Theming;
-using MediaBrowser.UI.Controller;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -22,13 +33,15 @@ using System.Net.Http;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
+using MediaBrowser.UI.Pages;
 
 namespace MediaBrowser.UI
 {
     /// <summary>
     /// Class CompositionRoot
     /// </summary>
-    public class ApplicationHost : BaseApplicationHost<ApplicationPaths>
+    internal class ApplicationHost : BaseApplicationHost<ApplicationPaths>
     {
         /// <summary>
         /// Gets the API client.
@@ -37,24 +50,25 @@ namespace MediaBrowser.UI
         public IApiClient ApiClient { get; private set; }
 
         public IThemeManager ThemeManager { get; private set; }
+        public IPlaybackManager PlaybackManager { get; private set; }
+        public IImageManager ImageManager { get; private set; }
+        public INavigationService NavigationService { get; private set; }
+        public ISessionManager SessionManager { get; private set; }
+        public IApplicationWindow ApplicationWindow { get; private set; }
 
-        public ConfigurationManager UIConfigurationManager
+        public ConfigurationManager TheaterConfigurationManager
         {
             get { return (ConfigurationManager)ConfigurationManager; }
         }
-        
+
         protected override string LogFilePrefixName
         {
             get { return "MBT"; }
         }
 
-        protected UIKernel UIKernel { get; set; }
-
         public override async Task Init()
         {
             await base.Init().ConfigureAwait(false);
-
-            UIKernel.Init();
 
             // For now until the ui has it's own startup wizard
             if (IsFirstRun)
@@ -69,7 +83,7 @@ namespace MediaBrowser.UI
         /// </summary>
         protected override string ProductShortcutPath
         {
-            get { return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu),"Media Browser 3", "Media Browser Theater.lnk"); }
+            get { return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), "Media Browser 3", "Media Browser Theater.lnk"); }
         }
 
         /// <summary>
@@ -77,21 +91,36 @@ namespace MediaBrowser.UI
         /// </summary>
         protected override async Task RegisterResources()
         {
-            UIKernel = new UIKernel(this);
-
             ReloadApiClient();
 
             await base.RegisterResources().ConfigureAwait(false);
 
-            RegisterSingleInstance(ApplicationPaths);
-            RegisterSingleInstance(UIKernel);
+            ApplicationWindow = new TheaterApplicationWindow(Logger);
+            RegisterSingleInstance(ApplicationWindow);
 
-            RegisterSingleInstance(UIConfigurationManager);
+            RegisterSingleInstance(ApplicationPaths);
+
+            RegisterSingleInstance(TheaterConfigurationManager);
 
             RegisterSingleInstance<IIsoManager>(new PismoIsoManager(Logger));
 
             ThemeManager = new ThemeManager();
             RegisterSingleInstance(ThemeManager);
+
+            PlaybackManager = new PlaybackManager(TheaterConfigurationManager, Logger, ApiClient);
+            RegisterSingleInstance(PlaybackManager);
+
+            ImageManager = new ImageManager(ApiClient, ApplicationPaths);
+            RegisterSingleInstance(ImageManager);
+
+            NavigationService = new NavigationService(ThemeManager, Logger);
+            RegisterSingleInstance(NavigationService);
+
+            SessionManager = new SessionManager(NavigationService, ApiClient, Logger);
+            RegisterSingleInstance(SessionManager);
+
+            RegisterSingleInstance(ApiClient);
+
         }
 
         /// <summary>
@@ -116,7 +145,7 @@ namespace MediaBrowser.UI
                 AutomaticDecompression = DecompressionMethods.Deflate,
                 CachePolicy = new RequestCachePolicy(RequestCacheLevel.Revalidate)
 
-            }), UIConfigurationManager.Configuration.ServerHostName, UIConfigurationManager.Configuration.ServerApiPort, "Media Browser Theater", Environment.MachineName, Environment.MachineName)
+            }), TheaterConfigurationManager.Configuration.ServerHostName, TheaterConfigurationManager.Configuration.ServerApiPort, "Media Browser Theater", Environment.MachineName, Environment.MachineName)
             {
                 JsonSerializer = JsonSerializer
             };
@@ -147,7 +176,7 @@ namespace MediaBrowser.UI
         /// <returns>Task{CheckForUpdateResult}.</returns>
         public override Task<CheckForUpdateResult> CheckForApplicationUpdate(CancellationToken cancellationToken, IProgress<double> progress)
         {
-            return Task.FromResult(new CheckForUpdateResult{ });
+            return Task.FromResult(new CheckForUpdateResult { });
         }
 
         /// <summary>
@@ -202,4 +231,116 @@ namespace MediaBrowser.UI
             return new ConfigurationManager(ApplicationPaths, LogManager, XmlSerializer);
         }
     }
+
+    internal class TheaterApplicationWindow : IApplicationWindow
+    {
+        private ILogger _logger;
+
+        public TheaterApplicationWindow(ILogger logger)
+        {
+            _logger = logger;
+        }
+
+        public Window Window
+        {
+            get { return App.Instance.ApplicationWindow; }
+        }
+
+        public void ClearBackdrops()
+        {
+            App.Instance.ApplicationWindow.ClearBackdrops();
+        }
+
+        public void SetBackdrops(BaseItemDto item)
+        {
+            App.Instance.ApplicationWindow.SetBackdrops(item);
+        }
+
+        public void SetBackdrops(IEnumerable<string> paths)
+        {
+            App.Instance.ApplicationWindow.SetBackdrops(paths.ToArray());
+        }
+
+        internal void OnWindowLoaded()
+        {
+            EventHelper.FireEventIfNotNull(WindowLoaded, null, EventArgs.Empty, _logger);
+        }
+
+        public event EventHandler<EventArgs> WindowLoaded;
+    }
+
+    internal class NavigationService : INavigationService
+    {
+        private readonly IThemeManager _themeManager;
+        private readonly ILogger _logger;
+
+        public NavigationService(IThemeManager themeManager, ILogger logger)
+        {
+            _themeManager = themeManager;
+            _logger = logger;
+        }
+
+        /// <summary>
+        /// Navigates the specified page.
+        /// </summary>
+        /// <param name="page">The page.</param>
+        public DispatcherOperation Navigate(Page page)
+        {
+            return App.Instance.ApplicationWindow.Navigate(page);
+        }
+
+        /// <summary>
+        /// Navigates to settings page.
+        /// </summary>
+        public DispatcherOperation NavigateToSettingsPage()
+        {
+            return Navigate(new SettingsPage());
+        }
+
+        public DispatcherOperation NavigateToLoginPage()
+        {
+            return App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(() => Navigate(_themeManager.CurrentTheme.GetLoginPage()));
+        }
+
+        /// <summary>
+        /// Navigates to internal player page.
+        /// </summary>
+        public DispatcherOperation NavigateToInternalPlayerPage()
+        {
+            return Navigate(_themeManager.CurrentTheme.GetInternalPlayerPage());
+        }
+
+        /// <summary>
+        /// Navigates to home page.
+        /// </summary>
+        public DispatcherOperation NavigateToHomePage(BaseItemDto rootItem)
+        {
+            return Navigate(_themeManager.CurrentTheme.GetHomePage(rootItem));
+        }
+
+        /// <summary>
+        /// Navigates to item.
+        /// </summary>
+        public DispatcherOperation NavigateToItem(BaseItemDto item, string context)
+        {
+            return Navigate(_themeManager.CurrentTheme.GetItemPage(item, context));
+        }
+
+        /// <summary>
+        /// Navigates the back.
+        /// </summary>
+        public DispatcherOperation NavigateBack()
+        {
+            return App.Instance.ApplicationWindow.NavigateBack();
+        }
+
+        /// <summary>
+        /// Navigates the forward.
+        /// </summary>
+        public DispatcherOperation NavigateForward()
+        {
+            return App.Instance.ApplicationWindow.NavigateForward();
+        }
+    }
+
 }

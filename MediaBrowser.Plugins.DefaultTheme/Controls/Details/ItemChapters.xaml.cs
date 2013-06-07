@@ -1,7 +1,7 @@
-﻿using MediaBrowser.Model.Dto;
-using MediaBrowser.UI.Controller;
+﻿using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Dto;
+using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.UI.Controls;
-using MediaBrowser.UI.Playback;
 using MediaBrowser.UI.ViewModels;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,11 +14,16 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
     /// </summary>
     public partial class ItemChapters : BaseDetailsControl
     {
+        private readonly IApiClient _apiClient;
+        private readonly IImageManager _imageManager;
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="ItemChapters" /> class.
         /// </summary>
-        public ItemChapters()
+        public ItemChapters(IApiClient apiClient, IImageManager imageManager)
         {
+            _apiClient = apiClient;
+            _imageManager = imageManager;
             InitializeComponent();
 
             lstItems.ItemInvoked += lstItems_ItemInvoked;
@@ -33,11 +38,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
         {
             var chapterViewModel = (ChapterInfoDtoViewModel) e.Argument;
 
-            UIKernel.Instance.PlaybackManager.Play(new PlayOptions
-            {
-                Items = new List<BaseItemDto> { Item },
-                StartPositionTicks = chapterViewModel.Chapter.StartPositionTicks
-            });
+            //UIKernel.Instance.PlaybackManager.Play(new PlayOptions
+            //{
+            //    Items = new List<BaseItemDto> { Item },
+            //    StartPositionTicks = chapterViewModel.Chapter.StartPositionTicks
+            //});
         }
 
         /// <summary>
@@ -51,7 +56,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
 
             var chapters = Item.Chapters ?? new List<ChapterInfoDto> { };
 
-            lstItems.ItemsSource = new ObservableCollection<ChapterInfoDtoViewModel>(chapters.Select(i => new ChapterInfoDtoViewModel
+            lstItems.ItemsSource = new ObservableCollection<ChapterInfoDtoViewModel>(chapters.Select(i => new ChapterInfoDtoViewModel(_apiClient, _imageManager)
             {
                 Item = Item,
                 Chapter = i,

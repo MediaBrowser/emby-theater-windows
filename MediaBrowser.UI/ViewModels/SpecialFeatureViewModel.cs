@@ -1,6 +1,8 @@
-﻿using MediaBrowser.Model.Dto;
+﻿using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Net;
+using MediaBrowser.Theater.Interfaces.Presentation;
 using System;
 using System.Windows.Media.Imaging;
 
@@ -16,6 +18,23 @@ namespace MediaBrowser.UI.ViewModels
         /// </summary>
         /// <value>The image download options.</value>
         public ImageOptions ImageDownloadOptions { get; set; }
+
+        /// <summary>
+        /// Gets the API client.
+        /// </summary>
+        /// <value>The API client.</value>
+        public IApiClient ApiClient { get; private set; }
+        /// <summary>
+        /// Gets the image manager.
+        /// </summary>
+        /// <value>The image manager.</value>
+        public IImageManager ImageManager { get; private set; }
+
+        public SpecialFeatureViewModel(IApiClient apiClient, IImageManager imageManager)
+        {
+            ApiClient = apiClient;
+            ImageManager = imageManager;
+        }
 
         /// <summary>
         /// The _image width
@@ -54,7 +73,7 @@ namespace MediaBrowser.UI.ViewModels
                 OnPropertyChanged("ImageHeight");
             }
         }
-        
+
         /// <summary>
         /// The _item
         /// </summary>
@@ -125,7 +144,7 @@ namespace MediaBrowser.UI.ViewModels
 
             try
             {
-                Image = await App.Instance.GetRemoteBitmapAsync(App.Instance.ApiClient.GetImageUrl(Item, options));
+                Image = await ImageManager.GetRemoteBitmapAsync(ApiClient.GetImageUrl(Item, options));
             }
             catch (HttpException)
             {

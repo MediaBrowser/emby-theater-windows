@@ -1,31 +1,33 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using System.Windows.Controls;
+﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Net;
-using MediaBrowser.Plugins.DefaultTheme.DisplayPreferences;
+using MediaBrowser.Model.Querying;
 using MediaBrowser.Plugins.DefaultTheme.Resources;
+using MediaBrowser.Theater.Interfaces.Navigation;
+using MediaBrowser.Theater.Interfaces.Presentation;
+using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.UI;
 using MediaBrowser.UI.Controls;
 using MediaBrowser.UI.Pages;
-using System;
-using System.Windows;
 using MediaBrowser.UI.ViewModels;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Pages
 {
     /// <summary>
     /// Interaction logic for ListPage.xaml
     /// </summary>
-    public partial class ListPage : BaseListPage
+    public partial class ListPage : BaseItemsPage
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ListPage" /> class.
         /// </summary>
-        /// <param name="itemId">The item id.</param>
-        public ListPage(string itemId)
-            : base(itemId)
+        public ListPage(BaseItemDto parent, string displayPreferencesId, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IApplicationWindow applicationWindow, INavigationService navigationManager)
+            : base(parent, displayPreferencesId, apiClient, imageManager, sessionManager, applicationWindow, navigationManager)
         {
             InitializeComponent();
         }
@@ -42,37 +44,21 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
             }
         }
 
-        protected override ImageType PreferredImageType
+        protected override void OnInitialized(EventArgs e)
         {
-            get
-            {
-                if (DisplayPreferences != null)
-                {
-                    if (DisplayPreferences.ViewType == ViewTypes.Thumbstrip)
-                    {
-                        return ImageType.Thumb;
-                    }
-                    if (DisplayPreferences.ViewType == ViewTypes.List)
-                    {
-                        return ImageType.Thumb;
-                    }
-                }
-                return base.PreferredImageType;
-            }
+            base.OnInitialized(e);
+
+            Loaded += ListPage_Loaded;
+            Unloaded += ListPage_Unloaded;
         }
 
-        /// <summary>
-        /// Called when [loaded].
-        /// </summary>
-        protected override async void OnLoaded()
+        async void ListPage_Loaded(object sender, RoutedEventArgs e)
         {
-            base.OnLoaded();
-
-            if (Folder != null)
+            if (ParentItem != null)
             {
                 ShowViewButton();
 
-                await AppResources.Instance.SetPageTitle(Folder);
+                await AppResources.Instance.SetPageTitle(ParentItem);
             }
             else
             {
@@ -80,13 +66,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
             }
         }
 
-        /// <summary>
-        /// Called when [unloaded].
-        /// </summary>
-        protected override void OnUnloaded()
+        void ListPage_Unloaded(object sender, RoutedEventArgs e)
         {
-            base.OnUnloaded();
-
             HideViewButton();
         }
 
@@ -94,11 +75,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         /// Called when [property changed].
         /// </summary>
         /// <param name="name">The name.</param>
-        public override void OnPropertyChanged(string name)
+        protected override void OnPropertyChanged(string name)
         {
             base.OnPropertyChanged(name);
 
-            if (name.Equals("CurrentItemIndex", StringComparison.OrdinalIgnoreCase))
+            if (name.Equals("CurrentItemIndex"))
             {
                 UpdateCurrentItemIndex();
             }
@@ -117,30 +98,55 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
             currentItemIndexDivider.Visibility = index == -1 ? Visibility.Collapsed : Visibility.Visible;
         }
 
-        /// <summary>
-        /// Gets called anytime the Folder gets refreshed
-        /// </summary>
-        protected override async Task OnFolderChanged()
+        protected override Task<ItemsResult> GetItemsAsync()
         {
-            await base.OnFolderChanged();
+            var query = new ItemQuery
+            {
+                ParentId = ParentItem.Id,
 
-            var pageTitleTask = AppResources.Instance.SetPageTitle(Folder);
+                Fields = new[] {
+                                 ItemFields.UserData,
+                                 ItemFields.PrimaryImageAspectRatio,
+                                 ItemFields.DateCreated,
+                                 ItemFields.MediaStreams,
+                                 ItemFields.Taglines,
+                                 ItemFields.Genres,
+                                 ItemFields.SeriesInfo,
+                                 ItemFields.Overview,
+                                 ItemFields.DisplayPreferencesId
+                             },
+
+                UserId = SessionManager.CurrentUser.Id
+            };
+
+            query.SortBy = !string.IsNullOrEmpty(DisplayPreferences.SortBy) ? new[] { DisplayPreferences.SortBy } : new[] { ItemSortBy.SortName };
+
+            query.SortOrder = DisplayPreferences.SortOrder;
+
+            return ApiClient.GetItemsAsync(query);
+        }
+
+        protected override async void OnParentItemChanged()
+        {
+            base.OnParentItemChanged();
+
+            var pageTitleTask = AppResources.Instance.SetPageTitle(ParentItem);
 
             ShowViewButton();
 
-            if (Folder.IsType("Season"))
+            if (ParentItem.IsType("Season"))
             {
                 TxtName.Visibility = Visibility.Visible;
-                TxtName.Text = Folder.Name;
+                TxtName.Text = ParentItem.Name;
             }
             else
             {
                 TxtName.Visibility = Visibility.Collapsed;
             }
 
-            UpdateClearArt(Folder);
+            UpdateClearArt(ParentItem);
 
-            TxtOverview.Text = Folder.Overview ?? string.Empty;
+            TxtOverview.Text = ParentItem.Overview ?? string.Empty;
 
             await pageTitleTask;
         }
@@ -149,13 +155,13 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         {
             if (!item.HasArtImage && item.IsType("season"))
             {
-                item = await App.Instance.ApiClient.GetItemAsync(item.SeriesId, App.Instance.CurrentUser.Id);
+                item = await ApiClient.GetItemAsync(item.SeriesId, SessionManager.CurrentUser.Id);
             }
             
             if (item.HasArtImage)
             {
                 ImgDefaultLogo.Source =
-                    await App.Instance.GetRemoteBitmapAsync(App.Instance.ApiClient.GetImageUrl(item, new ImageOptions
+                    await ImageManager.GetRemoteBitmapAsync(ApiClient.GetImageUrl(item, new ImageOptions
                     {
                         MaxHeight = 200,
                         ImageType = ImageType.Art
@@ -191,22 +197,22 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         async void ViewButton_Click(object sender, RoutedEventArgs e)
         {
-            var menu = new DisplayPreferencesMenu
-            {
-                FolderId = Folder.Id,
-                MainPage = this
-            };
+            //var menu = new DisplayPreferencesMenu
+            //{
+            //    FolderId = ParentItem.Id,
+            //    MainPage = this
+            //};
 
-            menu.ShowModal(this.GetWindow());
+            //menu.ShowModal(this.GetWindow());
 
-            try
-            {
-                await App.Instance.ApiClient.UpdateDisplayPreferencesAsync(DisplayPreferences);
-            }
-            catch (HttpException)
-            {
-                App.Instance.ShowDefaultErrorMessage();
-            }
+            //try
+            //{
+            //    await ApiClient.UpdateDisplayPreferencesAsync(DisplayPreferences);
+            //}
+            //catch (HttpException)
+            //{
+            //    App.Instance.ShowDefaultErrorMessage();
+            //}
         }
 
         /// <summary>
@@ -243,7 +249,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
             if (item != null && item.HasLogo)
             {
                 ImgLogo.Source =
-                    await App.Instance.GetRemoteBitmapAsync(App.Instance.ApiClient.GetImageUrl(item, new ImageOptions
+                    await ImageManager.GetRemoteBitmapAsync(ApiClient.GetImageUrl(item, new ImageOptions
                     {
                         MaxHeight = 50,
                         ImageType = ImageType.Logo
@@ -260,14 +266,21 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
             }
         }
 
-        public override void NotifyDisplayPreferencesChanged()
+        protected override void OnDisplayPreferencesChanged()
         {
-            base.NotifyDisplayPreferencesChanged();
+            base.OnDisplayPreferencesChanged();
 
             PnlThumbstripInfo.Visibility = DisplayPreferences != null &&
                                            DisplayPreferences.ViewType == ViewTypes.Thumbstrip
                                                ? Visibility.Visible
                                                : Visibility.Collapsed;
+        }
+
+        protected override void OnItemsChanged()
+        {
+            base.OnItemsChanged();
+
+            TxtItemCount.Text = ListItems.Count.ToString();
         }
     }
 }

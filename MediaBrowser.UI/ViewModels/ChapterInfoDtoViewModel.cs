@@ -1,9 +1,11 @@
-﻿using MediaBrowser.Model.Dto;
+﻿using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Net;
 using System;
 using System.Linq;
 using System.Windows.Media.Imaging;
+using MediaBrowser.Theater.Interfaces.Presentation;
 
 namespace MediaBrowser.UI.ViewModels
 {
@@ -18,6 +20,17 @@ namespace MediaBrowser.UI.ViewModels
         /// <value>The image download options.</value>
         public ImageOptions ImageDownloadOptions { get; set; }
 
+        /// <summary>
+        /// Gets the API client.
+        /// </summary>
+        /// <value>The API client.</value>
+        public IApiClient ApiClient { get; private set; }
+        /// <summary>
+        /// Gets the image manager.
+        /// </summary>
+        /// <value>The image manager.</value>
+        public IImageManager ImageManager { get; private set; }
+        
         /// <summary>
         /// The _image width
         /// </summary>
@@ -114,6 +127,13 @@ namespace MediaBrowser.UI.ViewModels
         /// The _image
         /// </summary>
         private BitmapImage _image;
+
+        public ChapterInfoDtoViewModel(IApiClient apiClient, IImageManager imageManager)
+        {
+            ImageManager = imageManager;
+            ApiClient = apiClient;
+        }
+
         /// <summary>
         /// Gets the image.
         /// </summary>
@@ -140,7 +160,7 @@ namespace MediaBrowser.UI.ViewModels
 
             try
             {
-                Image = await App.Instance.GetRemoteBitmapAsync(App.Instance.ApiClient.GetImageUrl(Item, options));
+                Image = await ImageManager.GetRemoteBitmapAsync(ApiClient.GetImageUrl(Item, options));
             }
             catch (HttpException)
             {

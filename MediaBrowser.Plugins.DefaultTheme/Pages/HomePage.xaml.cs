@@ -1,36 +1,38 @@
-﻿using MediaBrowser.Model.Dto;
+﻿using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Net;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Plugins.DefaultTheme.Resources;
-using MediaBrowser.UI;
+using MediaBrowser.Theater.Interfaces.Navigation;
+using MediaBrowser.Theater.Interfaces.Presentation;
+using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.UI.Controls;
 using MediaBrowser.UI.Pages;
 using MediaBrowser.UI.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Pages
 {
     /// <summary>
     /// Interaction logic for HomePage.xaml
     /// </summary>
-    public partial class HomePage : BaseHomePage
+    public partial class HomePage : BaseItemsPage
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="HomePage" /> class.
-        /// </summary>
-        public HomePage()
-        {
-            InitializeComponent();
-
-            lstCollectionFolders.ItemInvoked += lstCollectionFolders_ItemInvoked;
-        }
-
         /// <summary>
         /// The _favorite items
         /// </summary>
         private ItemCollectionViewModel _favoriteItems;
+
+        public HomePage(BaseItemDto parent, string displayPreferencesId, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IApplicationWindow applicationWindow, INavigationService navigationManager)
+            : base(parent, displayPreferencesId, apiClient, imageManager, sessionManager, applicationWindow, navigationManager)
+        {
+            InitializeComponent();
+        }
+
         /// <summary>
         /// Gets or sets the favorite items.
         /// </summary>
@@ -141,37 +143,32 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
             }
         }
 
-        /// <summary>
-        /// LSTs the collection folders_ item invoked.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="e">The e.</param>
-        void lstCollectionFolders_ItemInvoked(object sender, ItemEventArgs<object> e)
+        protected override void OnInitialized(EventArgs e)
         {
-            var model = e.Argument as DtoBaseItemViewModel;
+            Loaded += HomePage_Loaded;
 
-            if (model != null)
+            base.OnInitialized(e);
+        }
+
+        void HomePage_Loaded(object sender, RoutedEventArgs e)
+        {
+            AppResources.Instance.SetDefaultPageTitle();
+
+            var parent = ParentItem;
+
+            if (parent == null)
             {
-                App.Instance.NavigateToItem(model.Item);
+                ApplicationWindow.ClearBackdrops();
+            }
+            else
+            {
+                ApplicationWindow.SetBackdrops(parent);
             }
         }
 
-        /// <summary>
-        /// Called when [loaded].
-        /// </summary>
-        protected override void OnLoaded()
+        protected override async void OnParentItemChanged()
         {
-            base.OnLoaded();
-
-            AppResources.Instance.SetDefaultPageTitle();
-        }
-
-        /// <summary>
-        /// Gets called anytime the Folder gets refreshed
-        /// </summary>
-        protected override async Task OnFolderChanged()
-        {
-            await base.OnFolderChanged();
+            base.OnParentItemChanged();
 
             await RefreshSpecialItems();
         }
@@ -182,15 +179,16 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         /// <returns>Task.</returns>
         private async Task RefreshSpecialItems()
         {
-            var tasks = new List<Task>();
-
-            tasks.Add(RefreshFavoriteItemsAsync());
+            var tasks = new List<Task>
+                {
+                    RefreshFavoriteItemsAsync(), 
+                    RefreshResumableItemsAsync()
+                };
 
             // In-Progress Items
-            tasks.Add(RefreshResumableItemsAsync());
 
             // Recently Added Items
-            if (Folder.RecentlyAddedItemCount > 0)
+            if (ParentItem.RecentlyAddedItemCount > 0)
             {
                 tasks.Add(RefreshRecentlyAddedItemsAsync());
             }
@@ -218,8 +216,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
             {
                 Filters = new[] { ItemFilter.IsFavorite },
                 ImageTypes = new[] { ImageType.Backdrop, ImageType.Thumb },
-                UserId = App.Instance.CurrentUser.Id,
-                ParentId = Folder.Id,
+                UserId = SessionManager.CurrentUser.Id,
+                ParentId = ParentItem.Id,
                 Limit = 10,
                 SortBy = new[] { ItemSortBy.Random },
                 Recursive = true
@@ -227,7 +225,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
 
             try
             {
-                var result = await App.Instance.ApiClient.GetItemsAsync(query).ConfigureAwait(false);
+                var result = await ApiClient.GetItemsAsync(query).ConfigureAwait(false);
 
                 SetFavoriteItems(result.Items);
             }
@@ -248,8 +246,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
             {
                 Filters = new[] { ItemFilter.IsResumable },
                 ImageTypes = new[] { ImageType.Backdrop, ImageType.Thumb },
-                UserId = App.Instance.CurrentUser.Id,
-                ParentId = Folder.Id,
+                UserId = SessionManager.CurrentUser.Id,
+                ParentId = ParentItem.Id,
                 Limit = 10,
                 SortBy = new[] { ItemSortBy.DatePlayed },
                 SortOrder = SortOrder.Descending,
@@ -258,7 +256,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
 
             try
             {
-                var result = await App.Instance.ApiClient.GetItemsAsync(query).ConfigureAwait(false);
+                var result = await ApiClient.GetItemsAsync(query).ConfigureAwait(false);
 
                 SetResumableItems(result.Items);
             }
@@ -278,8 +276,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
             var query = new ItemQuery
             {
                 ImageTypes = new[] { ImageType.Backdrop, ImageType.Thumb },
-                UserId = App.Instance.CurrentUser.Id,
-                ParentId = Folder.Id,
+                UserId = SessionManager.CurrentUser.Id,
+                ParentId = ParentItem.Id,
                 Limit = 10,
                 SortBy = new[] { ItemSortBy.DatePlayed },
                 SortOrder = SortOrder.Descending,
@@ -288,7 +286,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
 
             try
             {
-                var result = await App.Instance.ApiClient.GetItemsAsync(query).ConfigureAwait(false);
+                var result = await ApiClient.GetItemsAsync(query).ConfigureAwait(false);
                 SetRecentlyPlayedItems(result.Items);
             }
             catch (HttpException)
@@ -308,8 +306,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
             {
                 Filters = new[] { ItemFilter.IsRecentlyAdded, ItemFilter.IsNotFolder },
                 ImageTypes = new[] { ImageType.Backdrop, ImageType.Thumb },
-                UserId = App.Instance.CurrentUser.Id,
-                ParentId = Folder.Id,
+                UserId = SessionManager.CurrentUser.Id,
+                ParentId = ParentItem.Id,
                 Limit = 10,
                 SortBy = new[] { ItemSortBy.DateCreated },
                 SortOrder = SortOrder.Descending,
@@ -318,7 +316,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
 
             try
             {
-                var result = await App.Instance.ApiClient.GetItemsAsync(query).ConfigureAwait(false);
+                var result = await ApiClient.GetItemsAsync(query).ConfigureAwait(false);
                 SetRecentlyAddedItems(result.Items);
             }
             catch (HttpException)
@@ -338,8 +336,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
             {
                 ImageTypes = new[] { ImageType.Backdrop, ImageType.Thumb },
                 Filters = new[] { ItemFilter.IsRecentlyAdded, ItemFilter.IsNotFolder },
-                UserId = App.Instance.CurrentUser.Id,
-                ParentId = Folder.Id,
+                UserId = SessionManager.CurrentUser.Id,
+                ParentId = ParentItem.Id,
                 Limit = 10,
                 SortBy = new[] { ItemSortBy.Random },
                 SortOrder = SortOrder.Descending,
@@ -348,9 +346,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
 
             try
             {
-                var result = await App.Instance.ApiClient.GetItemsAsync(query).ConfigureAwait(false);
+                var result = await ApiClient.GetItemsAsync(query).ConfigureAwait(false);
 
-                TopPicks = new ItemCollectionViewModel { Items = result.Items, Name = "Top Picks" };
+                TopPicks = new ItemCollectionViewModel(ApiClient, ImageManager) { Items = result.Items, Name = "Top Picks" };
             }
             catch (HttpException)
             {
@@ -369,8 +367,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
             {
                 ImageTypes = new[] { ImageType.Backdrop },
                 ExcludeItemTypes = new[] { "Season" },
-                UserId = App.Instance.CurrentUser.Id,
-                ParentId = Folder.Id,
+                UserId = SessionManager.CurrentUser.Id,
+                ParentId = ParentItem.Id,
                 Limit = 10,
                 SortBy = new[] { ItemSortBy.Random },
                 Recursive = true
@@ -378,9 +376,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
 
             try
             {
-                var result = await App.Instance.ApiClient.GetItemsAsync(query).ConfigureAwait(false);
+                var result = await ApiClient.GetItemsAsync(query).ConfigureAwait(false);
 
-                SpotlightItems = new ItemCollectionViewModel(rotationPeriodMs: 6000, rotationDevaiationMs: 1000) { Items = result.Items };
+                SpotlightItems = new ItemCollectionViewModel(ApiClient, ImageManager, rotationPeriodMs: 6000, rotationDevaiationMs: 1000) { Items = result.Items };
             }
             catch (HttpException)
             {
@@ -395,7 +393,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         /// <param name="items">The items.</param>
         private void SetFavoriteItems(BaseItemDto[] items)
         {
-            FavoriteItems = new ItemCollectionViewModel { Items = items, Name = "Favorites" };
+            FavoriteItems = new ItemCollectionViewModel(ApiClient, ImageManager) { Items = items, Name = "Favorites" };
         }
 
         /// <summary>
@@ -404,7 +402,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         /// <param name="items">The items.</param>
         private void SetResumableItems(BaseItemDto[] items)
         {
-            ResumableItems = new ItemCollectionViewModel { Items = items, Name = "Resume" };
+            ResumableItems = new ItemCollectionViewModel(ApiClient, ImageManager) { Items = items, Name = "Resume" };
         }
 
         /// <summary>
@@ -413,7 +411,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         /// <param name="items">The items.</param>
         private void SetRecentlyPlayedItems(BaseItemDto[] items)
         {
-            RecentlyPlayedItems = new ItemCollectionViewModel { Items = items, Name = "Recently Played" };
+            RecentlyPlayedItems = new ItemCollectionViewModel(ApiClient, ImageManager) { Items = items, Name = "Recently Played" };
         }
 
         /// <summary>
@@ -422,7 +420,40 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         /// <param name="items">The items.</param>
         private void SetRecentlyAddedItems(BaseItemDto[] items)
         {
-            RecentlyAddedItems = new ItemCollectionViewModel { Items = items, Name = "Recently Added" };
+            RecentlyAddedItems = new ItemCollectionViewModel(ApiClient, ImageManager) { Items = items, Name = "Recently Added" };
+        }
+
+        protected override ExtendedListBox ItemsList
+        {
+            get { return lstCollectionFolders; }
+        }
+
+        protected override Task<ItemsResult> GetItemsAsync()
+        {
+            var query = new ItemQuery
+            {
+                ParentId = ParentItem.Id,
+
+                Fields = new[] {
+                                 ItemFields.UserData,
+                                 ItemFields.PrimaryImageAspectRatio,
+                                 ItemFields.DateCreated,
+                                 ItemFields.MediaStreams,
+                                 ItemFields.Taglines,
+                                 ItemFields.Genres,
+                                 ItemFields.SeriesInfo,
+                                 ItemFields.Overview,
+                                 ItemFields.DisplayPreferencesId
+                             },
+
+                UserId = SessionManager.CurrentUser.Id
+            };
+
+            query.SortBy = !string.IsNullOrEmpty(DisplayPreferences.SortBy) ? new[] { DisplayPreferences.SortBy } : new[] { ItemSortBy.SortName };
+
+            query.SortOrder = DisplayPreferences.SortOrder;
+
+            return ApiClient.GetItemsAsync(query);
         }
     }
 }

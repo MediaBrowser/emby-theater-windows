@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -7,13 +8,23 @@ namespace MediaBrowser.UI.Controls
     /// <summary>
     /// Interaction logic for NotificationMessage.xaml
     /// </summary>
-    public partial class NotificationMessage : BaseUserControl
+    public partial class NotificationMessage : UserControl, INotifyPropertyChanged
     {
         public NotificationMessage()
         {
             InitializeComponent();
         }
 
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public virtual void OnPropertyChanged(string name)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(name));
+            }
+        }
+        
         public UIElement TextContent
         {
             set

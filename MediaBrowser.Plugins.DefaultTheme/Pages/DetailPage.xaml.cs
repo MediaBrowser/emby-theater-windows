@@ -1,10 +1,11 @@
-﻿using MediaBrowser.Model.Dto;
+﻿using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Net;
 using MediaBrowser.Plugins.DefaultTheme.Controls.Details;
 using MediaBrowser.Plugins.DefaultTheme.Resources;
-using MediaBrowser.UI;
-using MediaBrowser.UI.Controller;
+using MediaBrowser.Theater.Interfaces.Presentation;
+using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.UI.Pages;
 using System.Threading.Tasks;
 using System.Windows;
@@ -18,13 +19,16 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
     /// </summary>
     public partial class DetailPage : BaseDetailPage
     {
+        private readonly IImageManager _imageManager;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="DetailPage" /> class.
         /// </summary>
         /// <param name="itemId">The item id.</param>
-        public DetailPage(string itemId)
-            : base(itemId)
+        public DetailPage(string itemId, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IApplicationWindow appWindow)
+            : base(itemId, apiClient, sessionManager, appWindow)
         {
+            _imageManager = imageManager;
             InitializeComponent();
 
             BtnOverview.Click += BtnOverview_Click;
@@ -44,7 +48,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         void BtnGallery_Click(object sender, RoutedEventArgs e)
         {
             PrimaryImageGrid.Visibility = Visibility.Collapsed;
-            ShowDetailControl(BtnGallery, new ItemGallery { });
+            ShowDetailControl(BtnGallery, new ItemGallery(ApiClient, _imageManager) { });
         }
 
         /// <summary>
@@ -55,7 +59,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         void BtnSpecialFeatures_Click(object sender, RoutedEventArgs e)
         {
             PrimaryImageGrid.Visibility = Visibility.Collapsed;
-            ShowDetailControl(BtnSpecialFeatures, new ItemSpecialFeatures { });
+            ShowDetailControl(BtnSpecialFeatures, new ItemSpecialFeatures(ApiClient, _imageManager, SessionManager) { });
         }
 
         /// <summary>
@@ -66,7 +70,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         void BtnTrailers_Click(object sender, RoutedEventArgs e)
         {
             PrimaryImageGrid.Visibility = Visibility.Collapsed;
-            ShowDetailControl(BtnTrailers, new ItemTrailers { });
+            ShowDetailControl(BtnTrailers, new ItemTrailers(ApiClient, _imageManager, SessionManager) { });
         }
 
         /// <summary>
@@ -88,7 +92,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         void BtnChapters_Click(object sender, RoutedEventArgs e)
         {
             PrimaryImageGrid.Visibility = Visibility.Collapsed;
-            ShowDetailControl(BtnChapters, new ItemChapters { });
+            ShowDetailControl(BtnChapters, new ItemChapters(ApiClient, _imageManager) { });
         }
 
         /// <summary>
@@ -110,31 +114,21 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         void BtnPerformers_Click(object sender, RoutedEventArgs e)
         {
             PrimaryImageGrid.Visibility = Visibility.Collapsed;
-            ShowDetailControl(BtnPerformers, new ItemPerformers { });
+            ShowDetailControl(BtnPerformers, new ItemPerformers(ApiClient, _imageManager, SessionManager) { });
         }
 
-        /// <summary>
-        /// Handles the Click event of the BtnQueue control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
-        void BtnQueue_Click(object sender, RoutedEventArgs e)
-        {
-            Queue();
-        }
+        ///// <summary>
+        ///// Called when [loaded].
+        ///// </summary>
+        //protected override async void OnLoaded()
+        //{
+        //    base.OnLoaded();
 
-        /// <summary>
-        /// Called when [loaded].
-        /// </summary>
-        protected override async void OnLoaded()
-        {
-            base.OnLoaded();
-
-            if (Item != null)
-            {
-                await AppResources.Instance.SetPageTitle(Item);
-            }
-        }
+        //    if (Item != null)
+        //    {
+        //        await AppResources.Instance.SetPageTitle(Item);
+        //    }
+        //}
 
         /// <summary>
         /// Called when [item changed].
@@ -160,7 +154,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         {
             if (!item.HasArtImage && item.IsType("episode"))
             {
-                item = await App.Instance.ApiClient.GetItemAsync(item.SeriesId, App.Instance.CurrentUser.Id);
+                item = await ApiClient.GetItemAsync(item.SeriesId, SessionManager.CurrentUser.Id);
             }
 
             // Hide it for movies, for now. It looks really tacky being right under the movie poster
@@ -170,7 +164,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
                 ImgLogo.Visibility = Visibility.Visible;
 
                 ImgLogo.Source =
-                    await App.Instance.GetRemoteBitmapAsync(App.Instance.ApiClient.GetImageUrl(item, new ImageOptions
+                    await _imageManager.GetRemoteBitmapAsync(ApiClient.GetImageUrl(item, new ImageOptions
                     {
                         MaxHeight = 200,
                         ImageType = ImageType.Art
@@ -193,7 +187,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
             {
                 PrimaryImage.Visibility = Visibility.Visible;
 
-                primaryImageTask = App.Instance.GetRemoteBitmapAsync(App.Instance.ApiClient.GetImageUrl(Item, new ImageOptions
+                primaryImageTask = _imageManager.GetRemoteBitmapAsync(ApiClient.GetImageUrl(Item, new ImageOptions
                 {
                     ImageType = ImageType.Primary,
                     Quality = 100
@@ -237,7 +231,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
                 Tagline.Visibility = Visibility.Collapsed;
             }
 
-            BtnGallery.Visibility = ItemGallery.GetImages(Item).Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+            BtnGallery.Visibility = ItemGallery.GetImages(Item, ApiClient).Count > 0 ? Visibility.Visible : Visibility.Collapsed;
             BtnTrailers.Visibility = Item.HasTrailer ? Visibility.Visible : Visibility.Collapsed;
             BtnSpecialFeatures.Visibility = Item.SpecialFeatureCount > 0 ? Visibility.Visible : Visibility.Collapsed;
             BtnPerformers.Visibility = Item.People != null && Item.People.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
@@ -271,7 +265,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            Play();
+            //await UIKernel.Instance.PlaybackManager.Play(new PlayOptions
+            //{
+            //    Items = new List<BaseItemDto> { Item }
+            //});
         }
 
         /// <summary>
@@ -281,7 +278,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         private async void Button_Click_2(object sender, RoutedEventArgs e)
         {
-            await UIKernel.Instance.PlaybackManager.StopAllPlayback();
+            //await UIKernel.Instance.PlaybackManager.StopAllPlayback();
         }
 
         /// <summary>

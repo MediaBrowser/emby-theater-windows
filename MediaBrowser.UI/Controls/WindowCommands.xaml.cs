@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using MediaBrowser.Common;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace MediaBrowser.UI.Controls
@@ -14,8 +15,10 @@ namespace MediaBrowser.UI.Controls
         /// <value>The parent window.</value>
         public Window ParentWindow
         {
-            get { return TreeHelper.TryFindParent<Window>(this); }
+            get { return this.TryFindParent<Window>(); }
         }
+
+        public IApplicationHost ApplicationHost { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WindowCommands" /> class.
@@ -76,7 +79,7 @@ namespace MediaBrowser.UI.Controls
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         void CloseApplicationButtonClick(object sender, RoutedEventArgs e)
         {
-            App.Instance.Shutdown();
+            ApplicationHost.Shutdown();
         }
     }
 }

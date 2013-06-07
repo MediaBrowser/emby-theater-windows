@@ -20,7 +20,6 @@ namespace MediaBrowser.UI.ViewModels
             {
                 _item = value;
                 OnPropertyChanged("Item");
-                OnPropertyChanged("Image");
             }
         }
     }

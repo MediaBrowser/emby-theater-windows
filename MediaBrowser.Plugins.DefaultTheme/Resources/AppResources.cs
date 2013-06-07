@@ -1,15 +1,20 @@
-﻿using System.Windows.Media;
+﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
+using MediaBrowser.Model.Entities;
+using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Net;
-using MediaBrowser.UI;
-using MediaBrowser.UI.Controller;
+using MediaBrowser.Theater.Interfaces.Navigation;
+using MediaBrowser.Theater.Interfaces.Playback;
+using MediaBrowser.Theater.Interfaces.Presentation;
+using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.UI.Controls;
-using MediaBrowser.UI.Playback;
-using MediaBrowser.UI.Playback.InternalPlayer;
+using System;
+using System.Globalization;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using ColorConverter = System.Drawing.ColorConverter;
+using System.Windows.Media;
 using Image = System.Windows.Controls.Image;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Resources
@@ -25,28 +30,179 @@ namespace MediaBrowser.Plugins.DefaultTheme.Resources
         /// <value>The instance.</value>
         public static AppResources Instance { get; private set; }
 
+        private readonly IPlaybackManager _playbackManager;
+        private readonly IApiClient _apiClient;
+        private readonly IImageManager _imageManager;
+
+        private readonly INavigationService _navService;
+        private readonly IApplicationWindow _appWindow;
+        private readonly ISessionManager _sessionManager;
+
+        private Timer ClockTimer { get; set; }
+
+        private readonly ILogger _logger;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="AppResources" /> class.
         /// </summary>
-        public AppResources()
+        public AppResources(IPlaybackManager playbackManager, IImageManager imageManager, IApiClient apiClient, IApplicationWindow appWindow, INavigationService navService, ISessionManager sessionManager, ILogger logger)
         {
+            _playbackManager = playbackManager;
+            _imageManager = imageManager;
+            _apiClient = apiClient;
+            _appWindow = appWindow;
+            _navService = navService;
+            _sessionManager = sessionManager;
+            _logger = logger;
+
             InitializeComponent();
 
             Instance = this;
 
-            UIKernel.Instance.PlaybackManager.PlaybackStarted += PlaybackManager_PlaybackStarted;
-            UIKernel.Instance.PlaybackManager.PlaybackCompleted += PlaybackManager_PlaybackCompleted;
+            _playbackManager.PlaybackStarted += PlaybackManager_PlaybackStarted;
+            _playbackManager.PlaybackCompleted += PlaybackManager_PlaybackCompleted;
+
+            _appWindow.WindowLoaded += _appWindow_WindowLoaded;
         }
 
+        /// <summary>
+        /// Handles the WindowLoaded event of the _appWindow control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        void _appWindow_WindowLoaded(object sender, EventArgs e)
+        {
+            _sessionManager.UserLoggedOut += sessionManager_UserLoggedOut;
+            _sessionManager.UserLoggedIn += sessionManager_UserLoggedIn;
+
+            ClockTimer = new Timer(ClockTimerCallback, null, 0, 10000);
+        }
+
+        /// <summary>
+        /// Handles the UserLoggedIn event of the sessionManager control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        async void sessionManager_UserLoggedIn(object sender, EventArgs e)
+        {
+            await _appWindow.Window.Dispatcher.InvokeAsync(async () =>
+            {
+                var panel = TreeHelper.FindChild<Button>(_appWindow.Window, "CurrentUserButton");
+
+                panel.Visibility = Visibility.Visible;
+
+                await UpdateUserImage(_sessionManager.CurrentUser);
+
+            });
+        }
+
+        /// <summary>
+        /// Updates the user image.
+        /// </summary>
+        /// <param name="user">The user.</param>
+        /// <returns>Task.</returns>
+        private async Task UpdateUserImage(UserDto user)
+        {
+            var panel = TreeHelper.FindChild<Button>(_appWindow.Window, "CurrentUserButton");
+
+            var image = (Image)panel.Content;
+
+            if (user.HasPrimaryImage)
+            {
+                var imageUrl = _apiClient.GetUserImageUrl(user, new ImageOptions
+                {
+                    ImageType = ImageType.Primary,
+                    MaxHeight = 48,
+                    Quality = 100
+                });
+
+                try
+                {
+                    var img = await _imageManager.GetRemoteBitmapAsync(imageUrl);
+
+                    image.Source = img;
+                    image.SetResourceReference(Image.StyleProperty, "CustomUserImage");
+                }
+                catch (Exception ex)
+                {
+                    _logger.ErrorException("Error getting user image", ex);
+
+                    SetDefaultUserImage(image);
+                }
+            }
+            else
+            {
+                SetDefaultUserImage(image);
+            }
+        }
+
+        /// <summary>
+        /// Sets the default user image.
+        /// </summary>
+        /// <param name="image">The image.</param>
+        private void SetDefaultUserImage(Image image)
+        {
+            image.Source = _imageManager.GetBitmapImage(new Uri("..\\Resources\\Images\\CurrentUserDefault.png", UriKind.Relative));
+            image.SetResourceReference(Image.StyleProperty, "DefaultUserImage");
+        }
+
+        /// <summary>
+        /// Handles the UserLoggedOut event of the sessionManager control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        async void sessionManager_UserLoggedOut(object sender, EventArgs e)
+        {
+            await _appWindow.Window.Dispatcher.InvokeAsync(() =>
+            {
+                var panel = TreeHelper.FindChild<Button>(_appWindow.Window, "CurrentUserButton");
+
+                panel.Visibility = Visibility.Collapsed;
+            });
+        }
+
+        /// <summary>
+        /// Clocks the timer callback.
+        /// </summary>
+        /// <param name="stateInfo">The state info.</param>
+        private async void ClockTimerCallback(object stateInfo)
+        {
+            await _appWindow.Window.Dispatcher.InvokeAsync(() =>
+            {
+                var left = TreeHelper.FindChild<TextBlock>(_appWindow.Window, "CurrentTimeLeft");
+                var right = TreeHelper.FindChild<TextBlock>(_appWindow.Window, "CurrentTimeRight");
+
+                if (left == null || right == null)
+                {
+                    return;
+                }
+
+                var now = DateTime.Now;
+
+                left.Text = now.ToString("h:mm");
+
+                if (CultureInfo.CurrentCulture.Name.Equals("en-US", StringComparison.OrdinalIgnoreCase))
+                {
+                    var time = now.ToString("t");
+                    var values = time.Split(' ');
+                    right.Text = values[values.Length - 1].ToLower();
+                }
+                else
+                {
+                    right.Text = string.Empty;
+                }
+
+            });
+        }
 
         /// <summary>
         /// BTNs the application back click.
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
-        void BtnApplicationBackClick(object sender, RoutedEventArgs e)
+        async void BtnApplicationBackClick(object sender, RoutedEventArgs e)
         {
-            App.Instance.ApplicationWindow.NavigateBack();
+            await _navService.NavigateBack();
         }
 
         /// <summary>
@@ -54,9 +210,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Resources
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
-        void NowPlaying_Click(object sender, RoutedEventArgs e)
+        async void NowPlaying_Click(object sender, RoutedEventArgs e)
         {
-            App.Instance.NavigateToInternalPlayerPage();
+            await _navService.NavigateToInternalPlayerPage();
         }
 
         /// <summary>
@@ -65,21 +221,21 @@ namespace MediaBrowser.Plugins.DefaultTheme.Resources
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="PlaybackStopEventArgs" /> instance containing the event data.</param>
         /// <exception cref="System.NotImplementedException"></exception>
-        void PlaybackManager_PlaybackCompleted(object sender, PlaybackStopEventArgs e)
+        async void PlaybackManager_PlaybackCompleted(object sender, PlaybackStopEventArgs e)
         {
-            App.Instance.ApplicationWindow.Dispatcher.Invoke(() => NowPlayingButton.Visibility = Visibility.Collapsed);
+            await _appWindow.Window.Dispatcher.InvokeAsync(() => NowPlayingButton.Visibility = Visibility.Collapsed);
         }
 
         /// <summary>
         /// Handles the PlaybackStarted event of the PlaybackManager control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="PlaybackEventArgs" /> instance containing the event data.</param>
-        void PlaybackManager_PlaybackStarted(object sender, PlaybackEventArgs e)
+        /// <param name="e">The <see cref="PlaybackStartEventArgs" /> instance containing the event data.</param>
+        async void PlaybackManager_PlaybackStarted(object sender, PlaybackStartEventArgs e)
         {
-            if (e.Player is BaseInternalMediaPlayer)
+            if (e.Player is IInternalMediaPlayer)
             {
-                App.Instance.ApplicationWindow.Dispatcher.Invoke(() => NowPlayingButton.Visibility = Visibility.Visible);
+                await _appWindow.Window.Dispatcher.InvokeAsync(() => NowPlayingButton.Visibility = Visibility.Visible);
             }
         }
 
@@ -88,9 +244,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Resources
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
-        void SettingsButtonClick(object sender, RoutedEventArgs e)
+        async void SettingsButtonClick(object sender, RoutedEventArgs e)
         {
-            App.Instance.NavigateToSettingsPage();
+            await _navService.NavigateToSettingsPage();
         }
 
         /// <summary>
@@ -101,7 +257,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Resources
         {
             get
             {
-                return TreeHelper.FindChild<Button>(App.Instance.ApplicationWindow, "BackButton");
+                return TreeHelper.FindChild<Button>(_appWindow.Window, "BackButton");
             }
         }
 
@@ -113,7 +269,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Resources
         {
             get
             {
-                return TreeHelper.FindChild<Button>(App.Instance.ApplicationWindow, "ViewButton");
+                return TreeHelper.FindChild<Button>(_appWindow.Window, "ViewButton");
             }
         }
 
@@ -125,7 +281,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Resources
         {
             get
             {
-                return TreeHelper.FindChild<Button>(App.Instance.ApplicationWindow, "NowPlayingButton");
+                return TreeHelper.FindChild<Button>(_appWindow.Window, "NowPlayingButton");
             }
         }
 
@@ -137,7 +293,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Resources
         {
             get
             {
-                return TreeHelper.FindChild<StackPanel>(App.Instance.ApplicationWindow, "PageTitlePanel");
+                return TreeHelper.FindChild<StackPanel>(_appWindow.Window, "PageTitlePanel");
             }
         }
 
@@ -149,7 +305,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Resources
         {
             get
             {
-                return TreeHelper.FindChild<StackPanel>(App.Instance.ApplicationWindow, "HeaderContent");
+                return TreeHelper.FindChild<StackPanel>(_appWindow.Window, "HeaderContent");
             }
         }
 
@@ -190,14 +346,14 @@ namespace MediaBrowser.Plugins.DefaultTheme.Resources
         {
             if (item.HasLogo || !string.IsNullOrEmpty(item.ParentLogoItemId))
             {
-                var url = App.Instance.ApiClient.GetLogoImageUrl(item, new ImageOptions
-                    {
-                        Quality = 100
-                    });
+                var url = _apiClient.GetLogoImageUrl(item, new ImageOptions
+                {
+                    Quality = 100
+                });
 
                 try
                 {
-                    var image = await App.Instance.GetRemoteImageAsync(url);
+                    var image = await _imageManager.GetRemoteImageAsync(url);
 
                     image.SetResourceReference(Image.StyleProperty, "ItemLogo");
                     SetPageTitle(image);

@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Plugins.DefaultTheme.Resources;
+﻿using System;
+using MediaBrowser.Plugins.DefaultTheme.Resources;
 using MediaBrowser.UI.Pages;
 using System.Windows;
 
@@ -17,25 +18,27 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
             InitializeComponent();
         }
 
-        /// <summary>
-        /// Called when [loaded].
-        /// </summary>
-        protected override void OnLoaded()
-        {
-            base.OnLoaded();
+        //protected override void OnInitialized(EventArgs e)
+        //{
+        //    base.OnInitialized(e);
 
-            AppResources.Instance.ClearPageTitle();
-            AppResources.Instance.HeaderContent.Visibility = Visibility.Collapsed;
-        }
+        //    Unloaded += InternalPlayerPage_Unloaded;
+        //}
 
-        /// <summary>
-        /// Called when [unloaded].
-        /// </summary>
-        protected override void OnUnloaded()
-        {
-            base.OnUnloaded();
+        //void InternalPlayerPage_Unloaded(object sender, RoutedEventArgs e)
+        //{
+        //    AppResources.Instance.HeaderContent.Visibility = Visibility.Visible;
+        //}
 
-            AppResources.Instance.HeaderContent.Visibility = Visibility.Visible;
-        }
+        ///// <summary>
+        ///// Called when [loaded].
+        ///// </summary>
+        //protected override void OnLoaded()
+        //{
+        //    base.OnLoaded();
+
+        //    AppResources.Instance.ClearPageTitle();
+        //    AppResources.Instance.HeaderContent.Visibility = Visibility.Collapsed;
+        //}
     }
 }

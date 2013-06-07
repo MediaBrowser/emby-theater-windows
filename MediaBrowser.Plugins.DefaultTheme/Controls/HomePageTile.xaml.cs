@@ -2,25 +2,25 @@
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Net;
 using MediaBrowser.UI;
-using MediaBrowser.UI.Controls;
 using MediaBrowser.UI.ViewModels;
 using System;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Controls
 {
     /// <summary>
     /// Interaction logic for BaseItemTile.xaml
     /// </summary>
-    public partial class HomePageTile : BaseUserControl
+    public partial class HomePageTile : UserControl
     {
         /// <summary>
         /// Gets the view model.
         /// </summary>
         /// <value>The view model.</value>
-        public DtoBaseItemViewModel ViewModel
+        public BaseItemDtoViewModel ViewModel
         {
-            get { return DataContext as DtoBaseItemViewModel; }
+            get { return DataContext as BaseItemDtoViewModel; }
         }
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         {
             if (Item.HasPrimaryImage)
             {
-                var url = App.Instance.ApiClient.GetImageUrl(Item, new ImageOptions
+                var url = ViewModel.ApiClient.GetImageUrl(Item, new ImageOptions
                 {
                     ImageType = ImageType.Primary,
                     Height = 225
@@ -77,7 +77,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
             }
             else if (Item.BackdropCount > 0)
             {
-                var url = App.Instance.ApiClient.GetImageUrl(Item, new ImageOptions
+                var url = ViewModel.ApiClient.GetImageUrl(Item, new ImageOptions
                 {
                     ImageType = ImageType.Backdrop,
                     Height = 225,
@@ -88,7 +88,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
             }
             else if (Item.HasThumb)
             {
-                var url = App.Instance.ApiClient.GetImageUrl(Item, new ImageOptions
+                var url = ViewModel.ApiClient.GetImageUrl(Item, new ImageOptions
                 {
                     ImageType = ImageType.Thumb,
                     Height = 225,
@@ -111,7 +111,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         {
             try
             {
-                image.Source = await App.Instance.GetRemoteBitmapAsync(url);
+                image.Source = await ViewModel.ImageManager.GetRemoteBitmapAsync(url);
             }
             catch (HttpException)
             {
@@ -122,7 +122,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         private void SetDefaultImage()
         {
             var imageUri = new Uri("../Resources/Images/VideoDefault.png", UriKind.Relative);
-            image.Source = App.Instance.GetBitmapImage(imageUri);
+            image.Source = ViewModel.ImageManager.GetBitmapImage(imageUri);
         }
     }
 }

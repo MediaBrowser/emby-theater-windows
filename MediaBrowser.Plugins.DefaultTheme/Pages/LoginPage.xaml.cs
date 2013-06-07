@@ -1,6 +1,11 @@
-﻿using MediaBrowser.Plugins.DefaultTheme.Resources;
+﻿using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Plugins.DefaultTheme.Resources;
+using MediaBrowser.Theater.Interfaces.Navigation;
+using MediaBrowser.Theater.Interfaces.Presentation;
+using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.UI.Controls;
 using MediaBrowser.UI.Pages;
+using System.Windows;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Pages
 {
@@ -12,8 +17,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         /// <summary>
         /// Initializes a new instance of the <see cref="LoginPage" /> class.
         /// </summary>
-        public LoginPage()
-            : base()
+        public LoginPage(IApiClient apiClient, IImageManager imageManager, INavigationService navService, ISessionManager sessionManager, IApplicationWindow appWindow)
+            : base(apiClient, imageManager, navService, sessionManager, appWindow)
         {
             InitializeComponent();
         }
@@ -30,13 +35,15 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
             }
         }
 
-        /// <summary>
-        /// Called when [loaded].
-        /// </summary>
-        protected override void OnLoaded()
+        protected override void OnInitialized(System.EventArgs e)
         {
-            base.OnLoaded();
+            base.OnInitialized(e);
 
+            Loaded += LoginPage_Loaded;
+        }
+
+        void LoginPage_Loaded(object sender, RoutedEventArgs e)
+        {
             AppResources.Instance.SetDefaultPageTitle();
         }
     }

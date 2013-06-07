@@ -13,7 +13,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
         /// Gets or sets the main page.
         /// </summary>
         /// <value>The main page.</value>
-        public BaseListPage MainPage { get; set; }
+        public BaseItemsPage MainPage { get; set; }
         /// <summary>
         /// Gets or sets the folder id.
         /// </summary>

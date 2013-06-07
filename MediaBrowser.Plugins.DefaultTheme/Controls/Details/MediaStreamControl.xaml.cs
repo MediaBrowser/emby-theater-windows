@@ -1,6 +1,6 @@
 ﻿using MediaBrowser.Model.Entities;
-using MediaBrowser.UI.Controls;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Windows.Controls;
@@ -10,10 +10,20 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
     /// <summary>
     /// Interaction logic for MediaStreamControl.xaml
     /// </summary>
-    public partial class MediaStreamControl : BaseUserControl
+    public partial class MediaStreamControl : UserControl, INotifyPropertyChanged
     {
         private static readonly CultureInfo UsCulture = new CultureInfo("en-US");
 
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public virtual void OnPropertyChanged(string name)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(name));
+            }
+        }
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="MediaStreamControl" /> class.
         /// </summary>

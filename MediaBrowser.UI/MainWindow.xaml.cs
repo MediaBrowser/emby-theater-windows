@@ -1,7 +1,11 @@
-﻿using MediaBrowser.Model.Dto;
+﻿using System.Windows.Threading;
+using MediaBrowser.Common;
+using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Net;
-using MediaBrowser.UI.Controller;
+using MediaBrowser.Theater.Interfaces.Playback;
+using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.UI.Controls;
 using System;
 using System.ComponentModel;
@@ -94,8 +98,8 @@ namespace MediaBrowser.UI
 
             if (GetLastInputInfo(ref plii))
                 return TimeSpan.FromMilliseconds(Environment.TickCount - plii.dwTime);
-            else
-                throw new Win32Exception(Marshal.GetLastWin32Error());
+
+            throw new Win32Exception(Marshal.GetLastWin32Error());
         }
 
         [DllImport("user32.dll", SetLastError = true)]
@@ -108,17 +112,30 @@ namespace MediaBrowser.UI
         }
 
         private readonly ILogger _logger;
+        private readonly IPlaybackManager _playbackManager;
+        private readonly IApiClient _apiClient;
+        private readonly IImageManager _imageManager;
+        private readonly IApplicationHost _appHost;
+        private readonly IApplicationWindow _appWindow;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MainWindow" /> class.
         /// </summary>
-        public MainWindow(ILogger logger)
+        public MainWindow(ILogger logger, IPlaybackManager playbackManager, IApiClient apiClient, IImageManager imageManager, IApplicationHost appHost, IApplicationWindow appWindow)
             : base()
         {
             _logger = logger;
+            _playbackManager = playbackManager;
+            _apiClient = apiClient;
+            _imageManager = imageManager;
+            _appHost = appHost;
+            _appWindow = appWindow;
 
             InitializeComponent();
-            
+
+            NavigationBar.PlaybackManager = playbackManager;
+            WindowCommands.ApplicationHost = _appHost;
+
             ActivityTimer = new Timer(ActivityCallback, null, 100, 100);
             
             RenderOptions.SetBitmapScalingMode(this, BitmapScalingMode.Fant);
@@ -127,6 +144,7 @@ namespace MediaBrowser.UI
         private void ActivityCallback(object state)
         {
             var lastTime = GetLastInput();
+
             if (lastTime > _mouseFadeThreshold)// Order is important here.
             {
                 IsMouseIdle = true;
@@ -144,9 +162,11 @@ namespace MediaBrowser.UI
         {
             base.OnLoaded();
 
-            DragBar.MouseDown += DragableGridMouseDown;
-            
             DataContext = App.Instance;
+
+            DragBar.MouseDown += DragableGridMouseDown;
+
+            ((TheaterApplicationWindow) _appWindow).OnWindowLoaded();
         }
 
         /// <summary>
@@ -169,7 +189,7 @@ namespace MediaBrowser.UI
 
             try
             {
-                var bitmap = await App.Instance.GetRemoteBitmapAsync(CurrentBackdrops[currentBackdropIndex]);
+                var bitmap = await _imageManager.GetRemoteBitmapAsync(CurrentBackdrops[currentBackdropIndex]);
 
                 var img = new Image
                 {
@@ -223,20 +243,20 @@ namespace MediaBrowser.UI
         /// Navigates the specified page.
         /// </summary>
         /// <param name="page">The page.</param>
-        internal void Navigate(Page page)
+        internal DispatcherOperation Navigate(Page page)
         {
             _logger.Info("Navigating to " + page.GetType().Name);
             
-            Dispatcher.InvokeAsync(() => PageFrame.NavigateWithTransition(page));
+            return Dispatcher.InvokeAsync(() => PageFrame.NavigateWithTransition(page));
         }
 
         /// <summary>
         /// Sets the backdrop based on a BaseItemDto
         /// </summary>
         /// <param name="item">The item.</param>
-        public void SetBackdrops(BaseItemDto item)
+        internal void SetBackdrops(BaseItemDto item)
         {
-            var urls = App.Instance.ApiClient.GetBackdropImageUrls(item, new ImageOptions
+            var urls = _apiClient.GetBackdropImageUrls(item, new ImageOptions
             {
                 MaxWidth = Convert.ToInt32(SystemParameters.VirtualScreenWidth),
                 MaxHeight = Convert.ToInt32(SystemParameters.VirtualScreenHeight)
@@ -249,7 +269,7 @@ namespace MediaBrowser.UI
         /// Sets the backdrop based on a list of image files
         /// </summary>
         /// <param name="backdrops">The backdrops.</param>
-        public void SetBackdrops(string[] backdrops)
+        internal void SetBackdrops(string[] backdrops)
         {
             // Don't reload the same backdrops
             if (CurrentBackdrops != null && backdrops.SequenceEqual(CurrentBackdrops))
@@ -276,12 +296,12 @@ namespace MediaBrowser.UI
             CurrentBackdropIndex = 0;
 
             // We only need the timer if there's more than one backdrop
-            if (backdrops != null && backdrops.Length > 1)
+            if (backdrops.Length > 1)
             {
                 BackdropTimer = new Timer(state =>
                 {
                     // Don't display backdrops during video playback
-                    if (UIKernel.Instance.PlaybackManager.ActivePlayers.Any(p => p.CurrentMedia.IsVideo))
+                    if (_playbackManager.MediaPlayers.Any(p => p.CurrentMedia.IsVideo))
                     {
                         return;
                     }
@@ -323,7 +343,7 @@ namespace MediaBrowser.UI
         /// <summary>
         /// Clears the backdrops.
         /// </summary>
-        public void ClearBackdrops()
+        internal void ClearBackdrops()
         {
             SetBackdrops(new string[] { });
         }
@@ -331,9 +351,9 @@ namespace MediaBrowser.UI
         /// <summary>
         /// Navigates the back.
         /// </summary>
-        public void NavigateBack()
+        internal DispatcherOperation NavigateBack()
         {
-            Dispatcher.InvokeAsync(() =>
+            return Dispatcher.InvokeAsync(() =>
             {
                 if (PageFrame.NavigationService.CanGoBack)
                 {
@@ -345,9 +365,9 @@ namespace MediaBrowser.UI
         /// <summary>
         /// Navigates the forward.
         /// </summary>
-        public void NavigateForward()
+        internal DispatcherOperation NavigateForward()
         {
-            Dispatcher.InvokeAsync(() =>
+            return Dispatcher.InvokeAsync(() =>
             {
                 if (PageFrame.NavigationService.CanGoForward)
                 {

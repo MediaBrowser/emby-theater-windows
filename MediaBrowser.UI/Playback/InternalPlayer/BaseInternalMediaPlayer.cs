@@ -1,6 +1,7 @@
 ﻿using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Interfaces.Configuration;
+using MediaBrowser.Theater.Interfaces.Playback;
 using System.Collections.Generic;
 using System.Windows;
 
@@ -26,9 +27,9 @@ namespace MediaBrowser.UI.Playback.InternalPlayer
         /// <param name="items">The items.</param>
         /// <param name="options">The options.</param>
         /// <param name="playerConfiguration">The player configuration.</param>
-        protected override void PlayInternal(List<BaseItemDto> items, PlayOptions options, PlayerConfiguration playerConfiguration)
+        protected override async void PlayInternal(List<BaseItemDto> items, PlayOptions options, PlayerConfiguration playerConfiguration)
         {
-            App.Instance.ApplicationWindow.Dispatcher.Invoke(() =>
+            await App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(() =>
             {
                 App.Instance.ApplicationWindow.BackdropContainer.Visibility = Visibility.Collapsed;
                 App.Instance.ApplicationWindow.WindowBackgroundContent.SetResourceReference(FrameworkElement.StyleProperty, "WindowBackgroundContentDuringPlayback");
@@ -40,9 +41,9 @@ namespace MediaBrowser.UI.Playback.InternalPlayer
         /// <summary>
         /// Called when [player stopped internal].
         /// </summary>
-        protected override void OnPlayerStoppedInternal()
+        protected override async void OnPlayerStoppedInternal()
         {
-            App.Instance.ApplicationWindow.Dispatcher.Invoke(() =>
+            await App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(() =>
             {
                 App.Instance.ApplicationWindow.BackdropContainer.Visibility = Visibility.Visible;
                 App.Instance.ApplicationWindow.WindowBackgroundContent.SetResourceReference(FrameworkElement.StyleProperty, "WindowBackgroundContent");

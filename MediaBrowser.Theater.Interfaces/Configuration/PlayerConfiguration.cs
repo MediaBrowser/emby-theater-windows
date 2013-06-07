@@ -48,5 +48,13 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
         /// </summary>
         /// <value>The args.</value>
         public string Args { get; set; }
+
+        public PlayerConfiguration()
+        {
+            ItemTypes = new string[] {};
+            FileExtensions = new string[] { };
+            VideoTypes = new VideoType[] { };
+            VideoFormats = new VideoFormat[] { };
+        }
     }
 }

@@ -3,8 +3,7 @@ using MediaBrowser.Model.Dto;
 using System;
 using System.Linq;
 using System.Windows;
-using MediaBrowser.UI.Controller;
-using MediaBrowser.UI.Playback;
+using MediaBrowser.Theater.Interfaces.Playback;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
 {
@@ -113,10 +112,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
 
         public void ButtonClick(object sender, EventArgs e)
         {
-            UIKernel.Instance.PlaybackManager.Play(new PlayOptions
-            {
-                Items = new List<BaseItemDto> { Item }
-            });
+            //UIKernel.Instance.PlaybackManager.Play(new PlayOptions
+            //{
+            //    Items = new List<BaseItemDto> { Item }
+            //});
         }
     }
 }

@@ -64,6 +64,8 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
         {
             ServerHostName = "localhost";
             ServerApiPort = 8096;
+
+            MediaPlayers = new PlayerConfiguration[] { };
         }
     }
 }

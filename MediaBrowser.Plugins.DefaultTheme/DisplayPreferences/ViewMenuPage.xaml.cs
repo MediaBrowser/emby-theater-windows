@@ -21,15 +21,15 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
             radioThumbstrip.Click += radioThumbstrip_Click;
         }
 
-        /// <summary>
-        /// Called when [loaded].
-        /// </summary>
-        protected override void OnLoaded()
-        {
-            base.OnLoaded();
+        ///// <summary>
+        ///// Called when [loaded].
+        ///// </summary>
+        //protected override void OnLoaded()
+        //{
+        //    base.OnLoaded();
 
-            UpdateFields();
-        }
+        //    UpdateFields();
+        //}
 
         /// <summary>
         /// Handles the Click event of the radioThumbstrip control.

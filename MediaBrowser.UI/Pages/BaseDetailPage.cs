@@ -1,17 +1,26 @@
-﻿using MediaBrowser.Model.Dto;
+﻿using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Net;
-using MediaBrowser.UI.Controller;
-using MediaBrowser.UI.Playback;
-using System.Collections.Generic;
+using MediaBrowser.Theater.Interfaces.Presentation;
+using MediaBrowser.Theater.Interfaces.Session;
+using System;
+using System.ComponentModel;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 
 namespace MediaBrowser.UI.Pages
 {
     /// <summary>
     /// Provides a base class for detail pages
     /// </summary>
-    public abstract class BaseDetailPage : BasePage
+    public abstract class BaseDetailPage : Page, INotifyPropertyChanged
     {
+        protected IApiClient ApiClient { get; private set; }
+        protected ISessionManager SessionManager { get; private set; }
+        protected IApplicationWindow ApplicationWindow { get; private set; }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
         /// <summary>
         /// The _item id
         /// </summary>
@@ -81,9 +90,13 @@ namespace MediaBrowser.UI.Pages
         /// Initializes a new instance of the <see cref="BaseDetailPage" /> class.
         /// </summary>
         /// <param name="itemId">The item id.</param>
-        protected BaseDetailPage(string itemId)
+        /// <param name="apiClient">The API client.</param>
+        protected BaseDetailPage(string itemId, IApiClient apiClient, ISessionManager sessionManager, IApplicationWindow applicationWindow)
             : base()
         {
+            ApplicationWindow = applicationWindow;
+            SessionManager = sessionManager;
+            ApiClient = apiClient;
             ItemId = itemId;
         }
 
@@ -91,9 +104,12 @@ namespace MediaBrowser.UI.Pages
         /// Called when [property changed].
         /// </summary>
         /// <param name="name">The name.</param>
-        public async override void OnPropertyChanged(string name)
+        public async void OnPropertyChanged(string name)
         {
-            base.OnPropertyChanged(name);
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(name));
+            }
 
             // Reload the item when the itemId changes
             if (name.Equals("ItemId"))
@@ -110,7 +126,7 @@ namespace MediaBrowser.UI.Pages
         {
             try
             {
-                Item = await App.Instance.ApiClient.GetItemAsync(ItemId, App.Instance.CurrentUser.Id);
+                Item = await ApiClient.GetItemAsync(ItemId, SessionManager.CurrentUser.Id);
             }
             catch (HttpException)
             {
@@ -118,42 +134,19 @@ namespace MediaBrowser.UI.Pages
             }
         }
 
+        protected override void OnInitialized(EventArgs e)
+        {
+            base.OnInitialized(e);
+
+            DataContext = this;
+        }
+
         /// <summary>
         /// Called when [item changed].
         /// </summary>
         protected virtual void OnItemChanged()
         {
-            SetBackdrops(Item);
-        }
-
-        /// <summary>
-        /// Plays this instance.
-        /// </summary>
-        public async void Play()
-        {
-            await UIKernel.Instance.PlaybackManager.Play(new PlayOptions
-            {
-                Items = new List<BaseItemDto> { Item }
-            });
-        }
-
-        /// <summary>
-        /// Resumes this instance.
-        /// </summary>
-        public async void Resume()
-        {
-            await UIKernel.Instance.PlaybackManager.Play(new PlayOptions
-            {
-                Items = new List<BaseItemDto> { Item },
-                Resume = true
-            });
-        }
-
-        /// <summary>
-        /// Queues this instance.
-        /// </summary>
-        public void Queue()
-        {
+            ApplicationWindow.SetBackdrops(Item);
         }
     }
 }

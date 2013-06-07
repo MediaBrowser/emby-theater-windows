@@ -31,21 +31,10 @@ namespace MediaBrowser.UI.Controls
         }
 
         /// <summary>
-        /// The _auto focus
-        /// </summary>
-        private bool _autoFocus = true;
-        /// <summary>
         /// Gets or sets a value indicating if the first list item should be auto-focused on load
         /// </summary>
         /// <value><c>true</c> if [auto focus]; otherwise, <c>false</c>.</value>
-        public bool AutoFocus
-        {
-            get { return _autoFocus; }
-            set
-            {
-                _autoFocus = value;
-            }
-        }
+        public bool AutoFocus { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ExtendedListBox" /> class.
@@ -53,6 +42,7 @@ namespace MediaBrowser.UI.Controls
         public ExtendedListBox()
             : base()
         {
+            AutoFocus = false;
             ItemContainerGenerator.StatusChanged += ItemContainerGeneratorStatusChanged;
         }
 
@@ -198,7 +188,7 @@ namespace MediaBrowser.UI.Controls
             {
                 var listBoxItem = dep as ListBoxItem;
 
-                if (!listBoxItem.IsFocused)
+                if (listBoxItem != null && !listBoxItem.IsFocused)
                 {
                     listBoxItem.Focus();
                 }
@@ -230,11 +220,11 @@ namespace MediaBrowser.UI.Controls
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
-        void ItemContainerGeneratorStatusChanged(object sender, EventArgs e)
+        async void ItemContainerGeneratorStatusChanged(object sender, EventArgs e)
         {
             if (ItemContainerGenerator.Status == GeneratorStatus.ContainersGenerated && AutoFocus)
             {
-                Dispatcher.InvokeAsync(OnContainersGenerated);
+                await Dispatcher.InvokeAsync(OnContainersGenerated);
             }
         }
 

@@ -4,7 +4,6 @@
                     xmlns:ee="http://schemas.microsoft.com/expression/2010/effects"
                     xmlns:ViewModels="clr-namespace:MediaBrowser.UI.ViewModels;assembly=MediaBrowser.UI"
                     xmlns:controls="clr-namespace:MediaBrowser.UI.Controls;assembly=MediaBrowser.UI.Controls"
-                    xmlns:dto="clr-namespace:MediaBrowser.Model.Dto;assembly=MediaBrowser.Model"
                     x:Class="MediaBrowser.Plugins.DefaultTheme.Resources.AppResources">
 
     <Style TargetType="Grid" x:Key="WindowBackgroundContent">
@@ -46,7 +45,7 @@
     <!--Default font for h2 headers. Themes should override these as needed-->
     <Brush x:Key="Heading2Foreground">#eeeeee</Brush>
 
-    <Brush x:Key="SelectedItemHighlightColor">SkyBlue</Brush>
+    <Brush x:Key="SelectedItemHighlightColor">WhiteSmoke</Brush>
 
     <Style TargetType="Image" x:Key="CommunityRatingImage">
         <Setter Property="Stretch" Value="Uniform"/>
@@ -78,39 +77,12 @@
         <Setter Property="Margin" Value="25 7 5 0" />
         <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
-    <DataTemplate DataType="{x:Type dto:UserDto}">
-        <Grid HorizontalAlignment="Left">
-            <Border Background="{Binding Converter={StaticResource MetroTileBackgroundConverter},Mode=OneWay}">
-                <Image Stretch="Uniform" Width="300" Height="300">
-                    <Image.Style>
-                        <Style TargetType="{x:Type Image}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding HasPrimaryImage}" Value="true">
-                                    <Setter Property="Image.Source" Value="{Binding Converter={StaticResource UserImageConverter}, ConverterParameter='0,0,0,0',Mode=OneWay}" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding HasPrimaryImage}" Value="false">
-                                    <Setter Property="Image.Source" Value="../Resources/Images/UserLoginDefault.png" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Image.Style>
-                </Image>
-            </Border>
 
-            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
-                <Grid.Background>
-                    <SolidColorBrush Color="#A6000000"></SolidColorBrush>
-                </Grid.Background>
-                <StackPanel Orientation="Vertical" Margin="10 5 0 10">
-                    <TextBlock Foreground="White" Text="{Binding Name,Mode=OneWay}" Style="{StaticResource TextBlockStyle}"></TextBlock>
-                    <TextBlock Foreground="White" Text="{Binding Converter={StaticResource LastSeenTextConverter},Mode=OneWay}" Style="{StaticResource SmallTextBlockStyle}"></TextBlock>
-                </StackPanel>
-            </Grid>
-
-        </Grid>
+    <DataTemplate DataType="{x:Type ViewModels:UserDtoViewModel}">
+        <themecontrols:UserTile DataContext="{Binding Mode=OneWay}"></themecontrols:UserTile>
     </DataTemplate>
 
-    <DataTemplate x:Key="HomePageListBoxItemTemplate" DataType="{x:Type ViewModels:DtoBaseItemViewModel}">
+    <DataTemplate x:Key="HomePageListBoxItemTemplate" DataType="{x:Type ViewModels:BaseItemDtoViewModel}">
         <themecontrols:HomePageTile DataContext="{Binding Mode=OneWay}"></themecontrols:HomePageTile>
     </DataTemplate>
 
@@ -171,7 +143,7 @@
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
                         <Grid x:Name="ContentGrid">
-                            <Border x:Name="BdDropShadow" Margin="-11" BorderBrush="{DynamicResource SelectedItemHighlightColor}" BorderThickness="14" Background="Transparent" SnapsToDevicePixels="true" CornerRadius="5" Visibility="Hidden">
+                            <Border x:Name="BdDropShadow" Margin="-11" BorderBrush="{DynamicResource SelectedItemHighlightColor}" BorderThickness="14" Background="Transparent" SnapsToDevicePixels="true" CornerRadius="1" Visibility="Hidden">
                                 <Border.Effect>
                                     <BlurEffect Radius="10" KernelType="Gaussian"></BlurEffect>
                                 </Border.Effect>
@@ -249,7 +221,7 @@
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
                         <Grid x:Name="ContentGrid">
-                            <Border x:Name="BdDropShadow" Margin="-11" BorderBrush="{DynamicResource SelectedItemHighlightColor}" BorderThickness="14" Background="Transparent" SnapsToDevicePixels="true" CornerRadius="5" Visibility="Hidden">
+                            <Border x:Name="BdDropShadow" Margin="-11" BorderBrush="{DynamicResource SelectedItemHighlightColor}" BorderThickness="14" Background="Transparent" SnapsToDevicePixels="true" CornerRadius="1" Visibility="Hidden">
                                 <Border.Effect>
                                     <BlurEffect Radius="10" KernelType="Gaussian"></BlurEffect>
                                 </Border.Effect>
@@ -275,7 +247,7 @@
                 <ControlTemplate TargetType="{x:Type ListBoxItem}">
                     <Border x:Name="Bd" SnapsToDevicePixels="true" RenderTransformOrigin="0.5,0.5" Padding="3">
                         <Grid x:Name="ContentGrid">
-                            <Border x:Name="BdDropShadow" Margin="-11" BorderBrush="{DynamicResource SelectedItemHighlightColor}" BorderThickness="16" Background="Transparent" SnapsToDevicePixels="true" CornerRadius="5" Visibility="Hidden">
+                            <Border x:Name="BdDropShadow" Margin="-11" BorderBrush="{DynamicResource SelectedItemHighlightColor}" BorderThickness="16" Background="Transparent" SnapsToDevicePixels="true" CornerRadius="1" Visibility="Hidden">
                                 <Border.Effect>
                                     <BlurEffect Radius="10" KernelType="Gaussian"></BlurEffect>
                                 </Border.Effect>
@@ -351,7 +323,7 @@
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
                         <Grid x:Name="ContentGrid">
-                            <Border x:Name="BdDropShadow" Margin="-11" BorderBrush="{DynamicResource SelectedItemHighlightColor}" BorderThickness="14" Background="Transparent" SnapsToDevicePixels="true" CornerRadius="5" Visibility="Hidden">
+                            <Border x:Name="BdDropShadow" Margin="-11" BorderBrush="{DynamicResource SelectedItemHighlightColor}" BorderThickness="14" Background="Transparent" SnapsToDevicePixels="true" CornerRadius="1" Visibility="Hidden">
                                 <Border.Effect>
                                     <BlurEffect Radius="10" KernelType="Gaussian"></BlurEffect>
                                 </Border.Effect>
@@ -388,7 +360,14 @@
         <Setter Property="Height" Value="10"/>
         <Setter Property="Opacity" Value=".7"/>
     </Style>
-    
+
+    <Style TargetType="Image" x:Key="CustomUserImage">
+        <Setter Property="Height" Value="40"/>
+    </Style>
+
+    <Style TargetType="Image" x:Key="DefaultUserImage">
+    </Style>
+
     <!--Override PageContentTemplate-->
     <ControlTemplate x:Key="PageContentTemplate">
 
@@ -408,53 +387,33 @@
             </StackPanel>
 
             <StackPanel x:Name="HeaderContent" Orientation="Horizontal" Grid.Column="1" Panel.ZIndex="3" Grid.Row="0" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0 10 30 0">
-                
-                <Button x:Name="NowPlayingButton" Style="{StaticResource ImageButton}" Margin="0 0 40 0" Visibility="Collapsed" Click="NowPlaying_Click">
+
+                <Button x:Name="NowPlayingButton" Style="{StaticResource ImageButton}" Margin="0 0 30 0" Visibility="Collapsed" Click="NowPlaying_Click">
                     <Image Source="..\Resources\Images\NowPlayingButton.png" />
                 </Button>
 
-                <Button x:Name="ViewButton" Style="{StaticResource ImageButton}" Margin="0 0 40 0" Visibility="Collapsed">
+                <Button x:Name="ViewButton" Style="{StaticResource ImageButton}" Margin="0 0 30 0" Visibility="Collapsed">
                     <Image Source="..\Resources\Images\ViewButton.png" />
                 </Button>
 
-                <Button Style="{StaticResource ImageButton}" Margin="0 0 40 0">
+                <Button Style="{StaticResource ImageButton}" Margin="0 0 30 0">
                     <Image Source="..\Resources\Images\SearchButton.png" />
                 </Button>
 
-                <Button Style="{StaticResource ImageButton}" Margin="0 0 50 0" Click="SettingsButtonClick">
+                <Button Style="{StaticResource ImageButton}" Margin="0 0 30 0" Click="SettingsButtonClick">
                     <Image Source="..\Resources\Images\SettingsButton.png" />
                 </Button>
 
                 <!--Display CurrentUser-->
-                <StackPanel Orientation="Horizontal" Margin="0 0 50 0" Visibility="{Binding CurrentUser,Converter={StaticResource CurrentUserVisibilityConverter}}">
-                    <Button Style="{StaticResource ImageButton}">
-                        <Image Height="64">
-                            <Image.Style>
-                                <Style TargetType="{x:Type Image}">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding CurrentUser.HasPrimaryImage}" Value="true">
-                                            <Setter Property="Image.Source" Value="{Binding CurrentUser,Converter={StaticResource UserImageConverter}, ConverterParameter='0,0,0,0'}" />
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding CurrentUser.HasPrimaryImage}" Value="false">
-                                            <Setter Property="Image.Source" Value="Images\CurrentUserDefault.png" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Image.Style>
-                        </Image>
-                    </Button>
-                </StackPanel>
+                <Button x:Name="CurrentUserButton" Margin="0 0 30 0" Visibility="Collapsed" Style="{StaticResource ImageButton}">
+                    <Image x:Name="CurrentUserImage" Stretch="Uniform">
+                    </Image>
+                </Button>
 
                 <!--Display Clock-->
-                <TextBlock Style="{StaticResource Heading2TextBlockStyle}">
-                    <TextBlock.Text>
-                        <Binding Path="CurrentTime" Converter="{StaticResource DateTimeToStringConverter}" ConverterParameter="h:mm" />
-                    </TextBlock.Text>
+                <TextBlock x:Name="CurrentTimeLeft"  Style="{StaticResource Heading2TextBlockStyle}">
                 </TextBlock>
-                <TextBlock Style="{StaticResource Heading2TextBlockStyle}" Foreground="#52B54B">
-                    <TextBlock.Text>
-                        <Binding Path="CurrentTime" Converter="{StaticResource DateTimeToStringConverter}" ConverterParameter="timesuffixlower" />
-                    </TextBlock.Text>
+                <TextBlock x:Name="CurrentTimeRight" Style="{StaticResource Heading2TextBlockStyle}" Foreground="#52B54B">
                 </TextBlock>
             </StackPanel>
 
@@ -514,7 +473,7 @@
         </Grid>
     </DataTemplate>
 
-    <DataTemplate x:Key="ItemPerformersTemplate" DataType="{x:Type ViewModels:DtoBaseItemViewModel}">
+    <DataTemplate x:Key="ItemPerformersTemplate" DataType="{x:Type ViewModels:BaseItemDtoViewModel}">
         <themecontrols:BaseItemTile DataContext="{Binding}"></themecontrols:BaseItemTile>
     </DataTemplate>
 
@@ -565,11 +524,11 @@
         </Image>
     </DataTemplate>
 
-    <DataTemplate x:Key="ListPageItemTemplate" DataType="{x:Type ViewModels:DtoBaseItemViewModel}">
+    <DataTemplate x:Key="ListPageItemTemplate" DataType="{x:Type ViewModels:BaseItemDtoViewModel}">
         <themecontrols:BaseItemTile DataContext="{Binding}"></themecontrols:BaseItemTile>
     </DataTemplate>
 
-    <DataTemplate x:Key="ListPageListViewItemTemplate" DataType="{x:Type ViewModels:DtoBaseItemViewModel}">
+    <DataTemplate x:Key="ListPageListViewItemTemplate" DataType="{x:Type ViewModels:BaseItemDtoViewModel}">
         <themecontrols:BaseItemListViewTile DataContext="{Binding}"></themecontrols:BaseItemListViewTile>
     </DataTemplate>
 

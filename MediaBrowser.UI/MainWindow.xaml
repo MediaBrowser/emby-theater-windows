@@ -24,7 +24,6 @@
         <!--This allows the user to drag the window.-->
         <Grid x:Name="DragBar" Style="{StaticResource DragBar}"></Grid>
 
-        <!--This allows the user to drag the window.-->
         <controls:WindowCommands x:Name="WindowCommands" Style="{StaticResource WindowCommands}"></controls:WindowCommands>
 
         <Grid x:Name="WindowBackgroundContent" Style="{StaticResource WindowBackgroundContent}">
@@ -46,7 +45,7 @@
         <!--Themes will supply this template to outline the window structure.-->
         <ContentControl x:Name="PageContent" Template="{StaticResource PageContentTemplate}"></ContentControl>
         
-        <controls:NavigationBar></controls:NavigationBar>
+        <controls:NavigationBar x:Name="NavigationBar"></controls:NavigationBar>
 
         <Grid.LayoutTransform>
             <ScaleTransform ScaleX="{Binding Path=ApplicationWindow.ContentScale}" ScaleY="{Binding Path=ApplicationWindow.ContentScale}" CenterX="0" CenterY="0" />

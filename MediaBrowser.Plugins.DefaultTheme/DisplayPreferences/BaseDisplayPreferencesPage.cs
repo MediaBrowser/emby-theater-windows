@@ -1,11 +1,12 @@
-﻿using MediaBrowser.UI.Pages;
+﻿using System.Windows.Controls;
+using MediaBrowser.UI.Pages;
 
 namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
 {
     /// <summary>
     /// Class BaseDisplayPreferencesPage
     /// </summary>
-    public class BaseDisplayPreferencesPage : BasePage
+    public class BaseDisplayPreferencesPage : Page
     {
         /// <summary>
         /// Gets or sets the display preferences window.
@@ -17,7 +18,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
         /// Gets the main page.
         /// </summary>
         /// <value>The main page.</value>
-        protected BaseListPage MainPage
+        protected BaseItemsPage MainPage
         {
             get { return DisplayPreferencesWindow.MainPage; }
         }

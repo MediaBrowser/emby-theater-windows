@@ -57,7 +57,6 @@
       <Link>Properties\SharedVersion.cs</Link>
     </Compile>
     <Compile Include="BaseModalWindow.cs" />
-    <Compile Include="BaseUserControl.cs" />
     <Compile Include="BaseWindow.cs" />
     <Compile Include="ExtendedButton.cs" />
     <Compile Include="ExtendedCheckbox.cs" />

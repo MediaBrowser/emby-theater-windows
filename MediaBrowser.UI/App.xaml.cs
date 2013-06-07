@@ -1,33 +1,18 @@
 ﻿using MediaBrowser.ApiInteraction;
 using MediaBrowser.Common.Constants;
-using MediaBrowser.Common.Extensions;
 using MediaBrowser.Common.Implementations.Updates;
-using MediaBrowser.Common.IO;
-using MediaBrowser.Model.ApiClient;
-using MediaBrowser.Model.Configuration;
-using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Net;
 using MediaBrowser.Model.System;
 using MediaBrowser.Theater.Implementations.Configuration;
-using MediaBrowser.Theater.Interfaces.Theming;
-using MediaBrowser.UI.Controller;
 using MediaBrowser.UI.Controls;
-using MediaBrowser.UI.Pages;
 using Microsoft.Win32;
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Net.Cache;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 
 namespace MediaBrowser.UI
 {
@@ -37,12 +22,6 @@ namespace MediaBrowser.UI
     public partial class App : Application
     {
         /// <summary>
-        /// Gets or sets the clock timer.
-        /// </summary>
-        /// <value>The clock timer.</value>
-        private Timer ClockTimer { get; set; }
-
-        /// <summary>
         /// The single instance mutex
         /// </summary>
         private static Mutex _singleInstanceMutex;
@@ -51,27 +30,13 @@ namespace MediaBrowser.UI
         /// Gets or sets the logger.
         /// </summary>
         /// <value>The logger.</value>
-        protected ILogger Logger { get; set; }
-
-        /// <summary>
-        /// Occurs when [property changed].
-        /// </summary>
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        /// <summary>
-        /// Gets the name of the uninstaller file.
-        /// </summary>
-        /// <value>The name of the uninstaller file.</value>
-        protected string UninstallerFileName
-        {
-            get { return "MediaBrowser.UI.Uninstall.exe"; }
-        }
+        private ILogger _logger;
 
         /// <summary>
         /// Gets or sets the composition root.
         /// </summary>
         /// <value>The composition root.</value>
-        protected ApplicationHost CompositionRoot { get; set; }
+        private ApplicationHost _compositionRoot;
 
         /// <summary>
         /// Gets the instance.
@@ -86,15 +51,6 @@ namespace MediaBrowser.UI
         }
 
         /// <summary>
-        /// Gets the API client.
-        /// </summary>
-        /// <value>The API client.</value>
-        public IApiClient ApiClient
-        {
-            get { return CompositionRoot.ApiClient; }
-        }
-
-        /// <summary>
         /// Gets the application window.
         /// </summary>
         /// <value>The application window.</value>
@@ -104,55 +60,7 @@ namespace MediaBrowser.UI
         /// Gets the hidden window.
         /// </summary>
         /// <value>The hidden window.</value>
-        public HiddenWindow HiddenWindow { get; private set; }
-
-        /// <summary>
-        /// The _current user
-        /// </summary>
-        private UserDto _currentUser;
-        /// <summary>
-        /// Gets or sets the current user.
-        /// </summary>
-        /// <value>The current user.</value>
-        public UserDto CurrentUser
-        {
-            get
-            {
-                return _currentUser;
-            }
-            set
-            {
-                _currentUser = value;
-
-                if (ApiClient != null)
-                {
-                    ApiClient.CurrentUserId = value == null ? null : value.Id;
-                }
-
-                OnPropertyChanged("CurrentUser");
-            }
-        }
-
-        /// <summary>
-        /// The _current time
-        /// </summary>
-        private DateTime _currentTime = DateTime.Now;
-        /// <summary>
-        /// Gets the current time.
-        /// </summary>
-        /// <value>The current time.</value>
-        public DateTime CurrentTime
-        {
-            get
-            {
-                return _currentTime;
-            }
-            private set
-            {
-                _currentTime = value;
-                OnPropertyChanged("CurrentTime");
-            }
-        }
+        private HiddenWindow HiddenWindow { get; set; }
 
         /// <summary>
         /// Defines the entry point of the application.
@@ -205,24 +113,13 @@ namespace MediaBrowser.UI
         }
 
         /// <summary>
-        /// Instantiates the main window.
-        /// </summary>
-        /// <returns>Window.</returns>
-        protected Window InstantiateMainWindow()
-        {
-            HiddenWindow = new HiddenWindow(CompositionRoot);
-
-            return HiddenWindow;
-        }
-
-        /// <summary>
         /// Shows the application window.
         /// </summary>
         private void ShowApplicationWindow()
         {
-            var win = new MainWindow(Logger);
+            var win = new MainWindow(_logger, _compositionRoot.PlaybackManager, _compositionRoot.ApiClient, _compositionRoot.ImageManager, _compositionRoot, _compositionRoot.ApplicationWindow);
 
-            var config = CompositionRoot.UIConfigurationManager.Configuration;
+            var config = _compositionRoot.TheaterConfigurationManager.Configuration;
 
             // Restore window position/size
             if (config.WindowState.HasValue)
@@ -308,15 +205,16 @@ namespace MediaBrowser.UI
         {
             try
             {
-                CompositionRoot = new ApplicationHost();
+                _compositionRoot = new ApplicationHost();
 
-                Logger = CompositionRoot.LogManager.GetLogger("App");
+                _logger = _compositionRoot.LogManager.GetLogger("App");
 
-                await CompositionRoot.Init();
+                await _compositionRoot.Init();
 
-                OnKernelLoaded();
+                _compositionRoot.ThemeManager.SetCurrentTheme(_compositionRoot.ThemeManager.Themes.First());
 
-                InstantiateMainWindow().Show();
+                HiddenWindow = new HiddenWindow(_compositionRoot);
+                HiddenWindow.Show();
 
                 ShowApplicationWindow();
 
@@ -324,7 +222,7 @@ namespace MediaBrowser.UI
             }
             catch (Exception ex)
             {
-                Logger.ErrorException("Error launching application", ex);
+                _logger.ErrorException("Error launching application", ex);
 
                 MessageBox.Show("There was an error launching Media Browser: " + ex.Message);
 
@@ -345,13 +243,13 @@ namespace MediaBrowser.UI
 
             try
             {
-                systemInfo = await ApiClient.GetSystemInfoAsync().ConfigureAwait(false);
+                systemInfo = await _compositionRoot.ApiClient.GetSystemInfoAsync().ConfigureAwait(false);
 
                 foundServer = true;
             }
             catch (HttpException ex)
             {
-                Logger.ErrorException("Error connecting to server using saved connection information. Host: {0}, Port {1}", ex, ApiClient.ServerHostName, ApiClient.ServerApiPort);
+                _logger.ErrorException("Error connecting to server using saved connection information. Host: {0}, Port {1}", ex, _compositionRoot.ApiClient.ServerHostName, _compositionRoot.ApiClient.ServerApiPort);
             }
 
             if (!foundServer)
@@ -362,16 +260,16 @@ namespace MediaBrowser.UI
 
                     var parts = address.ToString().Split(':');
 
-                    ApiClient.ServerHostName = parts[0];
-                    ApiClient.ServerApiPort = address.Port;
+                    _compositionRoot.ApiClient.ServerHostName = parts[0];
+                    _compositionRoot.ApiClient.ServerApiPort = address.Port;
 
-                    systemInfo = await ApiClient.GetSystemInfoAsync().ConfigureAwait(false);
+                    systemInfo = await _compositionRoot.ApiClient.GetSystemInfoAsync().ConfigureAwait(false);
 
                     foundServer = true;
                 }
                 catch (Exception ex)
                 {
-                    Logger.ErrorException("Error attempting to locate server.", ex);
+                    _logger.ErrorException("Error attempting to locate server.", ex);
                 }
             }
 
@@ -383,24 +281,7 @@ namespace MediaBrowser.UI
             {
                 // Open web socket
 
-                await LogoutUser();
-            }
-        }
-
-        /// <summary>
-        /// Called when [kernel loaded].
-        /// </summary>
-        /// <returns>Task.</returns>
-        protected void OnKernelLoaded()
-        {
-            // Update every 10 seconds
-            ClockTimer = new Timer(ClockTimerCallback, null, 0, 10000);
-
-            CompositionRoot.ThemeManager.SetCurrentTheme(CompositionRoot.ThemeManager.Themes.First());
-
-            foreach (var resource in CompositionRoot.ThemeManager.CurrentTheme.GetGlobalResources())
-            {
-                Resources.MergedDictionaries.Add(resource);
+                await _compositionRoot.SessionManager.Logout();
             }
         }
 
@@ -425,28 +306,9 @@ namespace MediaBrowser.UI
         {
             var exception = (Exception)e.ExceptionObject;
 
-            Logger.ErrorException("UnhandledException", exception);
+            _logger.ErrorException("UnhandledException", exception);
 
             MessageBox.Show("Unhandled exception: " + exception.Message);
-        }
-
-        /// <summary>
-        /// Called when [property changed].
-        /// </summary>
-        /// <param name="info">The info.</param>
-        public void OnPropertyChanged(String info)
-        {
-            if (PropertyChanged != null)
-            {
-                try
-                {
-                    PropertyChanged(this, new PropertyChangedEventArgs(info));
-                }
-                catch (Exception ex)
-                {
-                    Logger.ErrorException("Error in event handler", ex);
-                }
-            }
         }
 
         /// <summary>
@@ -471,20 +333,20 @@ namespace MediaBrowser.UI
             if (win != null)
             {
                 // Save window position
-                var config = CompositionRoot.UIConfigurationManager.Configuration;
+                var config = _compositionRoot.TheaterConfigurationManager.Configuration;
                 config.WindowState = win.WindowState;
                 config.WindowTop = win.Top;
                 config.WindowLeft = win.Left;
                 config.WindowWidth = win.Width;
                 config.WindowHeight = win.Height;
-                CompositionRoot.UIConfigurationManager.SaveConfiguration();
+                _compositionRoot.TheaterConfigurationManager.SaveConfiguration();
             }
 
             ReleaseMutex();
 
             base.OnExit(e);
 
-            CompositionRoot.Dispose();
+            _compositionRoot.Dispose();
         }
 
         /// <summary>
@@ -501,98 +363,6 @@ namespace MediaBrowser.UI
             _singleInstanceMutex.Close();
             _singleInstanceMutex.Dispose();
             _singleInstanceMutex = null;
-        }
-
-        /// <summary>
-        /// Clocks the timer callback.
-        /// </summary>
-        /// <param name="stateInfo">The state info.</param>
-        private void ClockTimerCallback(object stateInfo)
-        {
-            CurrentTime = DateTime.Now;
-        }
-
-        /// <summary>
-        /// Logouts the user.
-        /// </summary>
-        /// <returns>Task.</returns>
-        public async Task LogoutUser()
-        {
-            CurrentUser = null;
-
-            await Dispatcher.InvokeAsync(() => Navigate(CompositionRoot.ThemeManager.CurrentTheme.GetLoginPage()));
-        }
-
-        /// <summary>
-        /// Navigates the specified page.
-        /// </summary>
-        /// <param name="page">The page.</param>
-        public void Navigate(Page page)
-        {
-            _remoteImageCache = new FileSystemRepository(Path.Combine(CompositionRoot.UIConfigurationManager.ApplicationPaths.CachePath, "remote-images"));
-
-            ApplicationWindow.Navigate(page);
-        }
-
-        /// <summary>
-        /// Navigates to settings page.
-        /// </summary>
-        public void NavigateToSettingsPage()
-        {
-            Navigate(new SettingsPage());
-        }
-
-        /// <summary>
-        /// Navigates to internal player page.
-        /// </summary>
-        public void NavigateToInternalPlayerPage()
-        {
-            Navigate(CompositionRoot.ThemeManager.CurrentTheme.GetInternalPlayerPage());
-        }
-
-        /// <summary>
-        /// Navigates to image viewer.
-        /// </summary>
-        /// <param name="imageUrl">The image URL.</param>
-        /// <param name="caption">The caption.</param>
-        public void OpenImageViewer(Uri imageUrl, string caption)
-        {
-            var tuple = new Tuple<Uri, string>(imageUrl, caption);
-
-            OpenImageViewer(new[] { tuple });
-        }
-
-        /// <summary>
-        /// Navigates to image viewer.
-        /// </summary>
-        /// <param name="images">The images.</param>
-        public void OpenImageViewer(IEnumerable<Tuple<Uri, string>> images)
-        {
-            new ImageViewerWindow(images).ShowModal(ApplicationWindow);
-        }
-
-        /// <summary>
-        /// Navigates to item.
-        /// </summary>
-        /// <param name="item">The item.</param>
-        public void NavigateToItem(BaseItemDto item)
-        {
-            if (item.IsRoot)
-            {
-                NavigateToHomePage();
-            }
-            else
-            {
-                Navigate(CompositionRoot.ThemeManager.CurrentTheme.GetItemPage(item.Id, item.Type, item.Name, item.IsFolder));
-            }
-        }
-
-        /// <summary>
-        /// Navigates to home page.
-        /// </summary>
-        public void NavigateToHomePage()
-        {
-            Navigate(CompositionRoot.ThemeManager.CurrentTheme.GetHomePage());
         }
 
         /// <summary>
@@ -663,180 +433,18 @@ namespace MediaBrowser.UI
         }
 
         /// <summary>
-        /// The _remote image cache
-        /// </summary>
-        private FileSystemRepository _remoteImageCache;
-
-        /// <summary>
-        /// Gets the remote image async.
-        /// </summary>
-        /// <param name="url">The URL.</param>
-        /// <returns>Task{Image}.</returns>
-        public async Task<Image> GetRemoteImageAsync(string url)
-        {
-            var bitmap = await GetRemoteBitmapAsync(url);
-
-            return new Image { Source = bitmap };
-        }
-
-        /// <summary>
-        /// The _locks
-        /// </summary>
-        private readonly ConcurrentDictionary<string, SemaphoreSlim> _imageFileLocks = new ConcurrentDictionary<string, SemaphoreSlim>();
-
-        /// <summary>
-        /// Gets the lock.
-        /// </summary>
-        /// <param name="filename">The filename.</param>
-        /// <returns>System.Object.</returns>
-        private SemaphoreSlim GetImageFileLock(string filename)
-        {
-            return _imageFileLocks.GetOrAdd(filename, key => new SemaphoreSlim(1, 1));
-        }
-
-        /// <summary>
-        /// Gets the remote image async.
-        /// </summary>
-        /// <param name="url">The URL.</param>
-        /// <returns>Task{BitmapImage}.</returns>
-        /// <exception cref="System.ArgumentNullException">url</exception>
-        public async Task<BitmapImage> GetRemoteBitmapAsync(string url)
-        {
-            if (string.IsNullOrEmpty(url))
-            {
-                throw new ArgumentNullException("url");
-            }
-
-            var cachePath = _remoteImageCache.GetResourcePath(url.GetMD5().ToString());
-
-            if (File.Exists(cachePath))
-            {
-                return GetCachedBitmapImage(cachePath);
-            }
-
-            return await Task.Run(async () =>
-            {
-                var semaphore = GetImageFileLock(cachePath);
-                await semaphore.WaitAsync().ConfigureAwait(false);
-
-                // Look in the cache again
-                if (File.Exists(cachePath))
-                {
-                    semaphore.Release();
-
-                    return GetCachedBitmapImage(cachePath);
-                }
-
-                try
-                {
-                    using (var httpStream = await ApiClient.GetImageStreamAsync(url))
-                    {
-                        return await GetBitmapImageAsync(httpStream, cachePath);
-                    }
-                }
-                finally
-                {
-                    semaphore.Release();
-                }
-
-            }).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Gets the image async.
-        /// </summary>
-        /// <param name="sourceStream">The source stream.</param>
-        /// <param name="cachePath">The cache path.</param>
-        /// <returns>Task{BitmapImage}.</returns>
-        private async Task<BitmapImage> GetBitmapImageAsync(Stream sourceStream, string cachePath)
-        {
-            using (var fileStream = new FileStream(cachePath, FileMode.Create, FileAccess.Write, FileShare.Read, StreamDefaults.DefaultFileStreamBufferSize, true))
-            {
-                await sourceStream.CopyToAsync(fileStream).ConfigureAwait(false);
-            }
-
-            return GetCachedBitmapImage(cachePath);
-        }
-
-        /// <summary>
-        /// Gets the cached bitmap image.
-        /// </summary>
-        /// <param name="cachePath">The cache path.</param>
-        /// <returns>BitmapImage.</returns>
-        private BitmapImage GetCachedBitmapImage(string cachePath)
-        {
-            var bitmapImage = new BitmapImage
-            {
-                CreateOptions = BitmapCreateOptions.DelayCreation,
-                CacheOption = BitmapCacheOption.Default,
-                UriCachePolicy = new RequestCachePolicy(RequestCacheLevel.CacheIfAvailable)
-            };
-
-            RenderOptions.SetBitmapScalingMode(bitmapImage, BitmapScalingMode.Fant);
-
-            bitmapImage.BeginInit();
-            bitmapImage.UriSource = new Uri(cachePath);
-            bitmapImage.EndInit();
-            bitmapImage.Freeze();
-            return bitmapImage;
-        }
-
-        /// <summary>
         /// Restarts this instance.
         /// </summary>
         public void Restart()
         {
             Dispatcher.Invoke(ReleaseMutex);
 
-            CompositionRoot.Dispose();
+            _compositionRoot.Dispose();
 
             System.Windows.Forms.Application.Restart();
 
             Dispatcher.Invoke(Shutdown);
         }
 
-        /// <summary>
-        /// Gets the bitmap image.
-        /// </summary>
-        /// <param name="uri">The URI.</param>
-        /// <returns>BitmapImage.</returns>
-        /// <exception cref="System.ArgumentNullException">uri</exception>
-        public BitmapImage GetBitmapImage(string uri)
-        {
-            if (string.IsNullOrEmpty(uri))
-            {
-                throw new ArgumentNullException("uri");
-            }
-
-            return GetBitmapImage(new Uri(uri));
-        }
-
-        /// <summary>
-        /// Gets the bitmap image.
-        /// </summary>
-        /// <param name="uri">The URI.</param>
-        /// <returns>BitmapImage.</returns>
-        /// <exception cref="System.ArgumentNullException">uri</exception>
-        public BitmapImage GetBitmapImage(Uri uri)
-        {
-            if (uri == null)
-            {
-                throw new ArgumentNullException("uri");
-            }
-
-            var bitmap = new BitmapImage
-            {
-                CreateOptions = BitmapCreateOptions.DelayCreation,
-                CacheOption = BitmapCacheOption.OnDemand,
-                UriCachePolicy = new RequestCachePolicy(RequestCacheLevel.CacheIfAvailable)
-            };
-
-            bitmap.BeginInit();
-            bitmap.UriSource = uri;
-            bitmap.EndInit();
-
-            RenderOptions.SetBitmapScalingMode(bitmap, BitmapScalingMode.Fant);
-            return bitmap;
-        }
     }
 }

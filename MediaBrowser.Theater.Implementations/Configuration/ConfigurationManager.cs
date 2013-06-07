@@ -7,7 +7,7 @@ using System;
 
 namespace MediaBrowser.Theater.Implementations.Configuration
 {
-    public class ConfigurationManager : BaseConfigurationManager
+    public class ConfigurationManager : BaseConfigurationManager, ITheaterConfigurationManager
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ConfigurationManager" /> class.

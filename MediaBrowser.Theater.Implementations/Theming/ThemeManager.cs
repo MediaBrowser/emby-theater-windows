@@ -1,10 +1,14 @@
 ﻿using MediaBrowser.Theater.Interfaces.Theming;
+using System;
 using System.Collections.Generic;
+using System.Windows;
 
 namespace MediaBrowser.Theater.Implementations.Theming
 {
     public class ThemeManager : IThemeManager
     {
+        public event EventHandler<EventArgs> ThemeLoaded;
+
         public void AddParts(IEnumerable<ITheme> themes)
         {
             _themes.AddRange(themes);
@@ -25,6 +29,11 @@ namespace MediaBrowser.Theater.Implementations.Theming
         public void SetCurrentTheme(ITheme theme)
         {
             _currentTheme = theme;
+
+            foreach (var resource in _currentTheme.GetGlobalResources())
+            {
+                Application.Current.Resources.MergedDictionaries.Add(resource);
+            }
         }
     }
 }

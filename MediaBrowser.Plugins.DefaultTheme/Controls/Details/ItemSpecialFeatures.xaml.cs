@@ -1,11 +1,12 @@
-﻿using MediaBrowser.Model.Dto;
+﻿using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Net;
+using MediaBrowser.Theater.Interfaces;
+using MediaBrowser.Theater.Interfaces.Presentation;
+using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.UI;
-using MediaBrowser.UI.Controller;
 using MediaBrowser.UI.Controls;
-using MediaBrowser.UI.Playback;
 using MediaBrowser.UI.ViewModels;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
@@ -15,11 +16,18 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
     /// </summary>
     public partial class ItemSpecialFeatures : BaseDetailsControl
     {
+        private readonly IApiClient _apiClient;
+        private readonly IImageManager _imageManager;
+        private readonly ISessionManager _sessionManager;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ItemSpecialFeatures" /> class.
         /// </summary>
-        public ItemSpecialFeatures()
+        public ItemSpecialFeatures(IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager)
         {
+            _apiClient = apiClient;
+            _imageManager = imageManager;
+            _sessionManager = sessionManager;
             InitializeComponent();
 
             lstItems.ItemInvoked += lstItems_ItemInvoked;
@@ -34,10 +42,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
         {
             var viewModel = (SpecialFeatureViewModel) e.Argument;
 
-            UIKernel.Instance.PlaybackManager.Play(new PlayOptions
-            {
-                Items = new List<BaseItemDto> { viewModel.Item }
-            });
+            //UIKernel.Instance.PlaybackManager.Play(new PlayOptions
+            //{
+            //    Items = new List<BaseItemDto> { viewModel.Item }
+            //});
         }
 
         /// <summary>
@@ -49,7 +57,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
 
             try
             {
-                result = await App.Instance.ApiClient.GetSpecialFeaturesAsync(App.Instance.CurrentUser.Id, Item.Id);
+                result = await _apiClient.GetSpecialFeaturesAsync(_sessionManager.CurrentUser.Id, Item.Id);
             }
             catch (HttpException)
             {
@@ -61,11 +69,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
             var resultItems = result ?? new BaseItemDto[] { };
 
             const int height = 297;
-            var aspectRatio = DtoBaseItemViewModel.GetAveragePrimaryImageAspectRatio(resultItems);
+            var aspectRatio = BaseItemDtoViewModel.GetAveragePrimaryImageAspectRatio(resultItems);
 
-            var width = aspectRatio == 0 ? 528 : height * aspectRatio;
+            var width = aspectRatio.Equals(0) ? 528 : height * aspectRatio;
 
-            lstItems.ItemsSource = resultItems.Select(i => new SpecialFeatureViewModel
+            lstItems.ItemsSource = resultItems.Select(i => new SpecialFeatureViewModel(_apiClient, _imageManager)
             {
                 Item = i,
                 ImageHeight = height,

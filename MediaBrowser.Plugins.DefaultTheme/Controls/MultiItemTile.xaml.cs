@@ -2,7 +2,6 @@
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Net;
 using MediaBrowser.UI;
-using MediaBrowser.UI.Controls;
 using MediaBrowser.UI.ViewModels;
 using Microsoft.Expression.Media.Effects;
 using System;
@@ -16,7 +15,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
     /// <summary>
     /// Interaction logic for MultiItemTile.xaml
     /// </summary>
-    public partial class MultiItemTile : BaseUserControl
+    public partial class MultiItemTile : UserControl
     {
         /// <summary>
         /// The _image width
@@ -57,7 +56,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         /// <summary>
         /// The _effects
         /// </summary>
-        TransitionEffect[] _effects = new TransitionEffect[]
+        readonly TransitionEffect[] _effects = new TransitionEffect[]
 			{ 
 				new BlindsTransitionEffect { Orientation = BlindOrientation.Horizontal },
 				new BlindsTransitionEffect { Orientation = BlindOrientation.Vertical },
@@ -79,7 +78,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         /// Gets the collection.
         /// </summary>
         /// <value>The collection.</value>
-        public ItemCollectionViewModel Collection
+        public ItemCollectionViewModel ViewModel
         {
             get { return DataContext as ItemCollectionViewModel; }
         }
@@ -107,14 +106,14 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         {
             OnCurrentItemChanged();
 
-            if (Collection != null)
+            if (ViewModel != null)
             {
-                Collection.PropertyChanged += Collection_PropertyChanged;
+                ViewModel.PropertyChanged += Collection_PropertyChanged;
             }
         }
 
         /// <summary>
-        /// Handles the PropertyChanged event of the Collection control.
+        /// Handles the PropertyChanged event of the ViewModel control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="PropertyChangedEventArgs" /> instance containing the event data.</param>
@@ -131,7 +130,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         /// </summary>
         private async void OnCurrentItemChanged()
         {
-            if (Collection == null)
+            if (ViewModel == null)
             {
                 // Setting this to null doesn't seem to clear out the content
                 transitionControl.Content = new FrameworkElement();
@@ -139,13 +138,13 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
                 return;
             }
 
-            var currentItem = Collection.CurrentItem;
+            var currentItem = ViewModel.CurrentItem;
 
             if (currentItem == null)
             {
                 // Setting this to null doesn't seem to clear out the content
                 transitionControl.Content = new FrameworkElement();
-                txtName.Text = Collection.Name;
+                txtName.Text = ViewModel.Name;
                 return;
             }
 
@@ -162,8 +161,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
             {
                 try
                 {
-                    img.Source = await App.Instance.GetRemoteBitmapAsync(url);
-                    txtName.Text = Collection.Name ?? currentItem.Name;
+                    img.Source = await ViewModel.ImageManager.GetRemoteBitmapAsync(url);
+                    txtName.Text = ViewModel.Name ?? currentItem.Name;
                 }
                 catch (HttpException)
                 {
@@ -185,7 +184,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
             {
                 if (item.BackdropCount > 0)
                 {
-                    return App.Instance.ApiClient.GetImageUrl(item, new ImageOptions
+                    return ViewModel.ApiClient.GetImageUrl(item, new ImageOptions
                     {
                         ImageType = ImageType.Backdrop,
                         Height = ImageHeight,
@@ -195,7 +194,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
 
                 if (item.HasThumb)
                 {
-                    return App.Instance.ApiClient.GetImageUrl(item, new ImageOptions
+                    return ViewModel.ApiClient.GetImageUrl(item, new ImageOptions
                     {
                         ImageType = ImageType.Thumb,
                         Height = ImageHeight,
@@ -205,7 +204,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
                 
                 if (item.HasPrimaryImage)
                 {
-                    return App.Instance.ApiClient.GetImageUrl(item, new ImageOptions
+                    return ViewModel.ApiClient.GetImageUrl(item, new ImageOptions
                     {
                         ImageType = ImageType.Primary,
                         Height = ImageHeight

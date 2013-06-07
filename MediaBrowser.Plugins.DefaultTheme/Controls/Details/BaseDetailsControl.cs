@@ -1,12 +1,13 @@
 ﻿using MediaBrowser.Model.Dto;
-using MediaBrowser.UI.Controls;
+using System.ComponentModel;
+using System.Windows.Controls;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
 {
     /// <summary>
     /// Class BaseDetailsControl
     /// </summary>
-    public abstract class BaseDetailsControl : BaseUserControl
+    public abstract class BaseDetailsControl : UserControl, INotifyPropertyChanged
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseDetailsControl" /> class.
@@ -16,6 +17,16 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
             DataContext = this;
         }
 
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public virtual void OnPropertyChanged(string name)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(name));
+            }
+        }
+        
         /// <summary>
         /// The _item
         /// </summary>

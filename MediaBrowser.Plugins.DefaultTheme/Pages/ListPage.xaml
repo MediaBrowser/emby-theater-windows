@@ -1,9 +1,9 @@
-﻿<Pages:BaseListPage x:Class="MediaBrowser.Plugins.DefaultTheme.Pages.ListPage"
+﻿<pages:BaseItemsPage x:Class="MediaBrowser.Plugins.DefaultTheme.Pages.ListPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:Pages="clr-namespace:MediaBrowser.UI.Pages;assembly=MediaBrowser.UI"
+      xmlns:pages="clr-namespace:MediaBrowser.UI.Pages;assembly=MediaBrowser.UI"
       xmlns:controls="clr-namespace:MediaBrowser.UI.Controls;assembly=MediaBrowser.UI.Controls"
                     xmlns:details="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Controls.Details"
                     mc:Ignorable="d" 
@@ -26,7 +26,7 @@
         <StackPanel Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Left" Margin="25 0 0 0">
             <TextBlock x:Name="currentItemIndex" Style="{StaticResource TextBlockStyle}"></TextBlock>
             <TextBlock x:Name="currentItemIndexDivider" Text="|" Style="{StaticResource TextBlockStyle}"></TextBlock>
-            <TextBlock Text="{Binding Path=ChildCount,Mode=OneWay}" Style="{StaticResource TextBlockStyle}"></TextBlock>
+            <TextBlock x:Name="TxtItemCount" Style="{StaticResource TextBlockStyle}"></TextBlock>
         </StackPanel>
 
         <Grid Grid.Row="2" Margin="30 30 30 0" Visibility="Collapsed">
@@ -41,7 +41,7 @@
 
         <Grid Grid.Row="3">
 
-            <controls:ExtendedListBox x:Name="lstItems" ItemsSource="{Binding Path=DisplayChildren,IsAsync=True,Mode=OneWay}" Style="{StaticResource ListPageListBoxStyle}" DataContext="{Binding Mode=OneWay}">
+            <controls:ExtendedListBox x:Name="lstItems" Style="{StaticResource ListPageListBoxStyle}">
             </controls:ExtendedListBox>
         </Grid>
 
@@ -59,4 +59,4 @@
             <details:ItemInfoFooter x:Name="ItemInfoFooter" HorizontalAlignment="Right" VerticalAlignment="Bottom" VerticalContentAlignment="Center" KeyboardNavigation.IsTabStop="False"></details:ItemInfoFooter>
         </Grid>
     </Grid>
-</Pages:BaseListPage>
+</pages:BaseItemsPage>

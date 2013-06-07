@@ -1,4 +1,4 @@
-﻿<controls:BaseUserControl x:Class="MediaBrowser.Plugins.DefaultTheme.Controls.MultiItemTile"
+﻿<UserControl x:Class="MediaBrowser.Plugins.DefaultTheme.Controls.MultiItemTile"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -27,4 +27,4 @@
             <TextBlock x:Name="txtName" Margin="10 5 0 10" Foreground="White" TextWrapping="Wrap"></TextBlock>
         </Grid>
     </Grid>
-</controls:BaseUserControl>
+</UserControl>

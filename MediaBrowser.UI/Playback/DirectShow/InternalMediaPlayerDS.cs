@@ -1,4 +1,5 @@
 ﻿using MediaBrowser.Theater.Interfaces.Configuration;
+using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.UI.Playback.InternalPlayer;
 using System;
 using System.Collections.Generic;

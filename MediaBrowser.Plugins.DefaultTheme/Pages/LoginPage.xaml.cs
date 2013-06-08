@@ -3,8 +3,9 @@ using MediaBrowser.Plugins.DefaultTheme.Resources;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
-using MediaBrowser.UI.Controls;
-using MediaBrowser.UI.Pages;
+using MediaBrowser.Theater.Interfaces.Theming;
+using MediaBrowser.Theater.Presentation.Controls;
+using MediaBrowser.Theater.Presentation.Pages;
 using System.Windows;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Pages
@@ -17,8 +18,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         /// <summary>
         /// Initializes a new instance of the <see cref="LoginPage" /> class.
         /// </summary>
-        public LoginPage(IApiClient apiClient, IImageManager imageManager, INavigationService navService, ISessionManager sessionManager, IApplicationWindow appWindow)
-            : base(apiClient, imageManager, navService, sessionManager, appWindow)
+        public LoginPage(IApiClient apiClient, IImageManager imageManager, INavigationService navService, ISessionManager sessionManager, IApplicationWindow appWindow, IThemeManager themeManager)
+            : base(apiClient, imageManager, navService, sessionManager, appWindow, themeManager)
         {
             InitializeComponent();
         }

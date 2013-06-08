@@ -7,7 +7,7 @@ using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
-using MediaBrowser.UI.Controls;
+using MediaBrowser.Theater.Presentation.Controls;
 using System;
 using System.Globalization;
 using System.Threading;

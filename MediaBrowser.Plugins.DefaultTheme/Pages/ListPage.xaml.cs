@@ -8,10 +8,10 @@ using MediaBrowser.Plugins.DefaultTheme.Resources;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
-using MediaBrowser.UI;
-using MediaBrowser.UI.Controls;
-using MediaBrowser.UI.Pages;
-using MediaBrowser.UI.ViewModels;
+using MediaBrowser.Theater.Interfaces.Theming;
+using MediaBrowser.Theater.Presentation.Controls;
+using MediaBrowser.Theater.Presentation.Pages;
+using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -27,8 +27,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         /// <summary>
         /// Initializes a new instance of the <see cref="ListPage" /> class.
         /// </summary>
-        public ListPage(BaseItemDto parent, string displayPreferencesId, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IApplicationWindow applicationWindow, INavigationService navigationManager)
-            : base(parent, displayPreferencesId, apiClient, imageManager, sessionManager, applicationWindow, navigationManager)
+        public ListPage(BaseItemDto parent, string displayPreferencesId, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IApplicationWindow applicationWindow, INavigationService navigationManager, IThemeManager themeManager)
+            : base(parent, displayPreferencesId, apiClient, imageManager, sessionManager, applicationWindow, navigationManager, themeManager)
         {
             InitializeComponent();
         }
@@ -211,7 +211,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
             }
             catch (HttpException)
             {
-                App.Instance.ShowDefaultErrorMessage();
+                ThemeManager.CurrentTheme.ShowDefaultErrorMessage();
             }
         }
 

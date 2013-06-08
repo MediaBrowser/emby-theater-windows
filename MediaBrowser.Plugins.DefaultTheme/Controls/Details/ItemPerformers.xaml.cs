@@ -1,10 +1,8 @@
 ﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Querying;
-using MediaBrowser.Theater.Interfaces;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
-using MediaBrowser.UI;
-using MediaBrowser.UI.ViewModels;
+using MediaBrowser.Theater.Presentation.ViewModels;
 using System.Collections.ObjectModel;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details

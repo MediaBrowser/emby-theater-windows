@@ -3,21 +3,21 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:controls="clr-namespace:MediaBrowser.UI.Controls;assembly=MediaBrowser.UI.Controls"
-                          mc:Ignorable="d" 
+             xmlns:controls2="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
+             mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid x:Name="mainGrid" HorizontalAlignment="Left">
 
         <Border Background="{Binding Converter={StaticResource MetroTileBackgroundConverter}}">
-            <controls:TransitionControl x:Name="transitionControl">
-                <controls:TransitionControl.TransitionAnimation>
+            <controls2:TransitionControl x:Name="transitionControl">
+                <controls2:TransitionControl.TransitionAnimation>
                     <DoubleAnimation Duration="0:0:1" >
                         <DoubleAnimation.EasingFunction>
                             <ExponentialEase EasingMode="EaseInOut"></ExponentialEase>
                         </DoubleAnimation.EasingFunction>
                     </DoubleAnimation>
-                </controls:TransitionControl.TransitionAnimation>
-            </controls:TransitionControl>
+                </controls2:TransitionControl.TransitionAnimation>
+            </controls2:TransitionControl>
         </Border>
 
         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Bottom">

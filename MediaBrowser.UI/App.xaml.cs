@@ -5,7 +5,6 @@ using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Net;
 using MediaBrowser.Model.System;
 using MediaBrowser.Theater.Implementations.Configuration;
-using MediaBrowser.UI.Controls;
 using Microsoft.Win32;
 using System;
 using System.IO;
@@ -363,73 +362,6 @@ namespace MediaBrowser.UI
             _singleInstanceMutex.Close();
             _singleInstanceMutex.Dispose();
             _singleInstanceMutex = null;
-        }
-
-        /// <summary>
-        /// Shows a notification message that will disappear on it's own
-        /// </summary>
-        /// <param name="text">The text.</param>
-        /// <param name="caption">The caption.</param>
-        /// <param name="icon">The icon.</param>
-        public void ShowNotificationMessage(string text, string caption = null, MessageBoxIcon icon = MessageBoxIcon.None)
-        {
-            ApplicationWindow.ShowModalMessage(text, caption: caption, icon: icon);
-        }
-
-        /// <summary>
-        /// Shows a notification message that will disappear on it's own
-        /// </summary>
-        /// <param name="text">The text.</param>
-        /// <param name="caption">The caption.</param>
-        /// <param name="icon">The icon.</param>
-        public void ShowNotificationMessage(UIElement text, string caption = null, MessageBoxIcon icon = MessageBoxIcon.None)
-        {
-            ApplicationWindow.ShowModalMessage(text, caption: caption, icon: icon);
-        }
-
-        /// <summary>
-        /// Shows a modal message box and asynchronously returns a MessageBoxResult
-        /// </summary>
-        /// <param name="text">The text.</param>
-        /// <param name="caption">The caption.</param>
-        /// <param name="button">The button.</param>
-        /// <param name="icon">The icon.</param>
-        /// <returns>MessageBoxResult.</returns>
-        public MessageBoxResult ShowModalMessage(string text, string caption = null, MessageBoxButton button = MessageBoxButton.OK, MessageBoxIcon icon = MessageBoxIcon.None)
-        {
-            return ApplicationWindow.ShowModalMessage(text, caption: caption, button: button, icon: icon);
-        }
-
-        /// <summary>
-        /// Shows a modal message box and asynchronously returns a MessageBoxResult
-        /// </summary>
-        /// <param name="text">The text.</param>
-        /// <param name="caption">The caption.</param>
-        /// <param name="button">The button.</param>
-        /// <param name="icon">The icon.</param>
-        /// <returns>MessageBoxResult.</returns>
-        public MessageBoxResult ShowModalMessage(UIElement text, string caption = null, MessageBoxButton button = MessageBoxButton.OK, MessageBoxIcon icon = MessageBoxIcon.None)
-        {
-            return ApplicationWindow.ShowModalMessage(text, caption: caption, button: button, icon: icon);
-        }
-
-        /// <summary>
-        /// Shows the error message.
-        /// </summary>
-        /// <param name="message">The message.</param>
-        /// <param name="caption">The caption.</param>
-        public void ShowErrorMessage(string message, string caption = null)
-        {
-            caption = caption ?? "Error";
-            ShowModalMessage(message, caption: caption, button: MessageBoxButton.OK, icon: MessageBoxIcon.Error);
-        }
-
-        /// <summary>
-        /// Shows the default error message.
-        /// </summary>
-        public void ShowDefaultErrorMessage()
-        {
-            ShowErrorMessage("There was an error processing the request", "Error");
         }
 
         /// <summary>

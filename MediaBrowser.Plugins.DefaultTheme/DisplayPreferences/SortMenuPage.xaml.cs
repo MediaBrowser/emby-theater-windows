@@ -1,5 +1,5 @@
 ﻿using MediaBrowser.Model.Querying;
-using MediaBrowser.UI.Controls;
+using MediaBrowser.Theater.Presentation.Controls;
 using System;
 using System.Collections.Generic;
 using System.Windows;

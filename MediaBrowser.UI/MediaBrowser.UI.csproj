@@ -202,25 +202,10 @@
     <Compile Include="ImageViewerWindow.xaml.cs">
       <DependentUpon>ImageViewerWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\BaseInternalPlayerPage.cs" />
-    <Compile Include="Pages\BaseItemsPage.cs" />
     <Compile Include="UserInput\KeyboardListener.cs" />
-    <Compile Include="ViewModels\BaseItemPersonViewModel.cs" />
-    <Compile Include="ViewModels\BaseViewModel.cs" />
     <Compile Include="Controls\WindowCommands.xaml.cs">
       <DependentUpon>WindowCommands.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Converters\MetroTileBackgroundConverter.cs" />
-    <Compile Include="Converters\WatchedVisibilityConverter.cs" />
-    <Compile Include="Pages\BaseDetailPage.cs" />
-    <Compile Include="Pages\BaseLoginPage.cs" />
-    <Compile Include="ViewModels\ChapterInfoDtoViewModel.cs" />
-    <Compile Include="ViewModels\BaseItemDtoViewModel.cs" />
-    <Compile Include="ViewModels\ItemCollectionViewModel.cs" />
-    <Compile Include="ViewModels\RangeObservableCollection.cs" />
-    <Compile Include="ViewModels\SpecialFeatureViewModel.cs" />
-    <Compile Include="ViewModels\UserDtoViewModel.cs" />
-    <Compile Include="ViewModels\ViewTypes.cs" />
     <Page Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -321,6 +306,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\MediaBrowser.Plugins.DefaultTheme\MediaBrowser.Plugins.DefaultTheme.csproj">
+      <Project>{6e892999-711d-4e24-8bac-dacf5bfa783a}</Project>
+      <Name>MediaBrowser.Plugins.DefaultTheme</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MediaBrowser.Theater.Implementations\MediaBrowser.Theater.Implementations.csproj">
       <Project>{1bd67463-d86a-4851-be42-4d9098adb791}</Project>
       <Name>MediaBrowser.Theater.Implementations</Name>
@@ -329,9 +318,9 @@
       <Project>{cc3e6aed-e761-42de-a9be-e40ab246a5e0}</Project>
       <Name>MediaBrowser.Theater.Interfaces</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MediaBrowser.UI.Controls\MediaBrowser.UI.Controls.csproj">
-      <Project>{1adfe460-fd95-46fa-8871-cccb4b62e2e8}</Project>
-      <Name>MediaBrowser.UI.Controls</Name>
+    <ProjectReference Include="..\MediaBrowser.Theater.Presentation\MediaBrowser.Theater.Presentation.csproj">
+      <Project>{14eddb65-890e-40b5-8d29-414d0aed60c1}</Project>
+      <Name>MediaBrowser.Theater.Presentation</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -400,9 +389,6 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <Content Include="CorePlugins\MediaBrowser.Plugins.DefaultTheme.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Resource Include="Resources\Images\NavBar\MediaBack.png" />
     <Resource Include="Resources\Images\NavBar\MediaFastForward.png" />
     <Resource Include="Resources\Images\NavBar\MediaForward.png" />

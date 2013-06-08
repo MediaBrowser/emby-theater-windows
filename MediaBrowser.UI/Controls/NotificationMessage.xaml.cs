@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
+using MediaBrowser.Theater.Interfaces.Theming;
 
 namespace MediaBrowser.UI.Controls
 {

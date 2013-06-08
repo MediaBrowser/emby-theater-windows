@@ -1,5 +1,5 @@
 ﻿using MediaBrowser.Model.Entities;
-using MediaBrowser.UI.ViewModels;
+using MediaBrowser.Theater.Presentation.ViewModels;
 using System.Windows;
 
 namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences

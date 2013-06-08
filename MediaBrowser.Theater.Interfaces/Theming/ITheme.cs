@@ -1,4 +1,5 @@
 ﻿using MediaBrowser.Model.Dto;
+using MediaBrowser.Theater.Interfaces.Presentation;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
@@ -41,5 +42,17 @@ namespace MediaBrowser.Theater.Interfaces.Theming
         /// <param name="context">The context.</param>
         /// <returns>Page.</returns>
         Page GetItemPage(BaseItemDto item, string context);
+
+        /// <summary>
+        /// Shows the default error message.
+        /// </summary>
+        void ShowDefaultErrorMessage();
+
+        /// <summary>
+        /// Shows the message.
+        /// </summary>
+        /// <param name="options">The options.</param>
+        /// <returns>MessageBoxResult.</returns>
+        MessageBoxResult ShowMessage(MessageBoxInfo options);
     }
 }

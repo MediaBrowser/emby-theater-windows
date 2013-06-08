@@ -1,8 +1,8 @@
 ﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Theater.Interfaces.Presentation;
-using MediaBrowser.UI.Controls;
-using MediaBrowser.UI.ViewModels;
+using MediaBrowser.Theater.Presentation.Controls;
+using MediaBrowser.Theater.Presentation.ViewModels;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;

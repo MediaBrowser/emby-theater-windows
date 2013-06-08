@@ -1,4 +1,5 @@
-﻿using MediaBrowser.UI.Controls;
+﻿using MediaBrowser.Theater.Presentation.Controls;
+using MediaBrowser.UI.Controls;
 using System;
 using System.Collections.Generic;
 using System.Linq;

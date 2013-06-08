@@ -1,4 +1,4 @@
-﻿using MediaBrowser.UI.Controls;
+﻿using MediaBrowser.Theater.Presentation.Controls;
 using System.Windows;
 
 namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences

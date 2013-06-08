@@ -2,8 +2,9 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:themecontrols="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Controls"
                     xmlns:ee="http://schemas.microsoft.com/expression/2010/effects"
-                    xmlns:ViewModels="clr-namespace:MediaBrowser.UI.ViewModels;assembly=MediaBrowser.UI"
-                    xmlns:controls="clr-namespace:MediaBrowser.UI.Controls;assembly=MediaBrowser.UI.Controls"
+                    xmlns:viewModels="clr-namespace:MediaBrowser.Theater.Presentation.ViewModels;assembly=MediaBrowser.Theater.Presentation"
+                    xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
+                    xmlns:converters="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Converters"
                     x:Class="MediaBrowser.Plugins.DefaultTheme.Resources.AppResources">
 
     <Style TargetType="Grid" x:Key="WindowBackgroundContent">
@@ -47,6 +48,14 @@
 
     <Brush x:Key="SelectedItemHighlightColor">WhiteSmoke</Brush>
 
+
+    <!--Define all the standard converters here in one place-->
+    <converters:WatchedVisibilityConverter x:Key="WatchedVisibilityConverter"></converters:WatchedVisibilityConverter>
+    <converters:MetroTileBackgroundConverter x:Key="MetroTileBackgroundConverter"></converters:MetroTileBackgroundConverter>
+    <converters:FavoriteVisibilityConverter x:Key="FavoriteVisibilityConverter"></converters:FavoriteVisibilityConverter>
+    <converters:LikeVisibilityConverter x:Key="LikeVisibilityConverter"></converters:LikeVisibilityConverter>
+    <converters:DislikeVisibilityConverter x:Key="DislikeVisibilityConverter"></converters:DislikeVisibilityConverter>
+
     <Style TargetType="Image" x:Key="CommunityRatingImage">
         <Setter Property="Stretch" Value="Uniform"/>
         <Setter Property="Height" Value="30" />
@@ -78,11 +87,11 @@
         <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
 
-    <DataTemplate DataType="{x:Type ViewModels:UserDtoViewModel}">
+    <DataTemplate DataType="{x:Type viewModels:UserDtoViewModel}">
         <themecontrols:UserTile DataContext="{Binding Mode=OneWay}"></themecontrols:UserTile>
     </DataTemplate>
 
-    <DataTemplate x:Key="HomePageListBoxItemTemplate" DataType="{x:Type ViewModels:BaseItemDtoViewModel}">
+    <DataTemplate x:Key="HomePageListBoxItemTemplate" DataType="{x:Type viewModels:BaseItemDtoViewModel}">
         <themecontrols:HomePageTile DataContext="{Binding Mode=OneWay}"></themecontrols:HomePageTile>
     </DataTemplate>
 
@@ -433,7 +442,7 @@
         </Grid>
     </ControlTemplate>
 
-    <DataTemplate x:Key="ItemSpecialFeaturesTemplate" DataType="{x:Type ViewModels:SpecialFeatureViewModel}">
+    <DataTemplate x:Key="ItemSpecialFeaturesTemplate" DataType="{x:Type viewModels:SpecialFeatureViewModel}">
         <Grid HorizontalAlignment="Left">
 
             <Border Width="{Binding Path=ImageWidth}" Height="{Binding Path=ImageHeight}">
@@ -473,11 +482,11 @@
         </Grid>
     </DataTemplate>
 
-    <DataTemplate x:Key="ItemPerformersTemplate" DataType="{x:Type ViewModels:BaseItemDtoViewModel}">
+    <DataTemplate x:Key="ItemPerformersTemplate" DataType="{x:Type viewModels:BaseItemDtoViewModel}">
         <themecontrols:BaseItemTile DataContext="{Binding}"></themecontrols:BaseItemTile>
     </DataTemplate>
 
-    <DataTemplate x:Key="ItemChaptersTemplate" DataType="{x:Type ViewModels:ChapterInfoDtoViewModel}">
+    <DataTemplate x:Key="ItemChaptersTemplate" DataType="{x:Type viewModels:ChapterInfoDtoViewModel}">
         <Grid HorizontalAlignment="Left">
 
             <Border Width="{Binding Path=ImageWidth}" Height="{Binding Path=ImageHeight}">
@@ -524,11 +533,11 @@
         </Image>
     </DataTemplate>
 
-    <DataTemplate x:Key="ListPageItemTemplate" DataType="{x:Type ViewModels:BaseItemDtoViewModel}">
+    <DataTemplate x:Key="ListPageItemTemplate" DataType="{x:Type viewModels:BaseItemDtoViewModel}">
         <themecontrols:BaseItemTile DataContext="{Binding}"></themecontrols:BaseItemTile>
     </DataTemplate>
 
-    <DataTemplate x:Key="ListPageListViewItemTemplate" DataType="{x:Type ViewModels:BaseItemDtoViewModel}">
+    <DataTemplate x:Key="ListPageListViewItemTemplate" DataType="{x:Type viewModels:BaseItemDtoViewModel}">
         <themecontrols:BaseItemListViewTile DataContext="{Binding}"></themecontrols:BaseItemListViewTile>
     </DataTemplate>
 

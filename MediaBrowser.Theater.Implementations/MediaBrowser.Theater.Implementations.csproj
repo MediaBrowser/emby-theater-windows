@@ -114,10 +114,6 @@
       <Project>{cc3e6aed-e761-42de-a9be-e40ab246a5e0}</Project>
       <Name>MediaBrowser.Theater.Interfaces</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MediaBrowser.UI.Controls\MediaBrowser.UI.Controls.csproj">
-      <Project>{1adfe460-fd95-46fa-8871-cccb4b62e2e8}</Project>
-      <Name>MediaBrowser.UI.Controls</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

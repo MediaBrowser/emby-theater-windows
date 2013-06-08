@@ -1,7 +1,7 @@
 ﻿using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Net;
-using MediaBrowser.UI.ViewModels;
+using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
 using System.ComponentModel;
 using System.Threading.Tasks;

@@ -1,6 +1,7 @@
 ﻿using MediaBrowser.Common;
 using System.Windows;
 using System.Windows.Controls;
+using MediaBrowser.Theater.Presentation.Controls;
 
 namespace MediaBrowser.UI.Controls
 {

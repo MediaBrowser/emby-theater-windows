@@ -6,11 +6,12 @@ using MediaBrowser.Plugins.DefaultTheme.Controls.Details;
 using MediaBrowser.Plugins.DefaultTheme.Resources;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
-using MediaBrowser.UI.Pages;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
+using MediaBrowser.Theater.Interfaces.Theming;
+using MediaBrowser.Theater.Presentation.Pages;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Pages
 {
@@ -25,8 +26,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         /// Initializes a new instance of the <see cref="DetailPage" /> class.
         /// </summary>
         /// <param name="itemId">The item id.</param>
-        public DetailPage(string itemId, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IApplicationWindow appWindow)
-            : base(itemId, apiClient, sessionManager, appWindow)
+        public DetailPage(string itemId, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IApplicationWindow appWindow, IThemeManager themeManager)
+            : base(itemId, apiClient, sessionManager, appWindow, themeManager)
         {
             _imageManager = imageManager;
             InitializeComponent();
@@ -59,7 +60,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         void BtnSpecialFeatures_Click(object sender, RoutedEventArgs e)
         {
             PrimaryImageGrid.Visibility = Visibility.Collapsed;
-            ShowDetailControl(BtnSpecialFeatures, new ItemSpecialFeatures(ApiClient, _imageManager, SessionManager) { });
+            ShowDetailControl(BtnSpecialFeatures, new ItemSpecialFeatures(ApiClient, _imageManager, SessionManager, ThemeManager) { });
         }
 
         /// <summary>
@@ -70,7 +71,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         void BtnTrailers_Click(object sender, RoutedEventArgs e)
         {
             PrimaryImageGrid.Visibility = Visibility.Collapsed;
-            ShowDetailControl(BtnTrailers, new ItemTrailers(ApiClient, _imageManager, SessionManager) { });
+            ShowDetailControl(BtnTrailers, new ItemTrailers(ApiClient, _imageManager, SessionManager, ThemeManager) { });
         }
 
         /// <summary>

@@ -1,6 +1,4 @@
-﻿using System.Windows.Controls;
-using System.Windows.Threading;
-using MediaBrowser.ApiInteraction;
+﻿using MediaBrowser.ApiInteraction;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Events;
 using MediaBrowser.Common.Implementations;
@@ -12,6 +10,7 @@ using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.System;
 using MediaBrowser.Model.Updates;
+using MediaBrowser.Plugins.DefaultTheme;
 using MediaBrowser.Theater.Implementations.Configuration;
 using MediaBrowser.Theater.Implementations.Playback;
 using MediaBrowser.Theater.Implementations.Presentation;
@@ -22,9 +21,9 @@ using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.Theming;
+using MediaBrowser.UI.Pages;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -34,7 +33,8 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using MediaBrowser.UI.Pages;
+using System.Windows.Controls;
+using System.Windows.Threading;
 
 namespace MediaBrowser.UI
 {
@@ -194,17 +194,6 @@ namespace MediaBrowser.UI
                 yield return pluginAssembly;
             }
 
-            var runningDirectory = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
-            var corePluginDirectory = Path.Combine(runningDirectory, "CorePlugins");
-
-            // This will prevent the .dll file from getting locked, and allow us to replace it when needed
-            foreach (var pluginAssembly in Directory
-                .EnumerateFiles(corePluginDirectory, "*.dll", SearchOption.TopDirectoryOnly)
-                .Select(LoadAssembly).Where(a => a != null))
-            {
-                yield return pluginAssembly;
-            }
-
             // Include composable parts in the Model assembly 
             yield return typeof(SystemInfo).Assembly;
 
@@ -216,6 +205,9 @@ namespace MediaBrowser.UI
 
             // Include composable parts in the running assembly
             yield return GetType().Assembly;
+
+            // Default theme assembly
+            yield return typeof(DefaultTheme).Assembly;
         }
 
         /// <summary>
@@ -234,7 +226,7 @@ namespace MediaBrowser.UI
 
     internal class TheaterApplicationWindow : IApplicationWindow
     {
-        private ILogger _logger;
+        private readonly ILogger _logger;
 
         public TheaterApplicationWindow(ILogger logger)
         {

@@ -4,7 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:DisplayPreferences="clr-namespace:MediaBrowser.Plugins.DefaultTheme.DisplayPreferences"
-      xmlns:controls="clr-namespace:MediaBrowser.UI.Controls;assembly=MediaBrowser.UI.Controls"
+                                               xmlns:controls2="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
                                                mc:Ignorable="d" 
       d:DesignHeight="300" d:DesignWidth="300"
 	Title="ViewMenuPage">
@@ -13,15 +13,15 @@
         <StackPanel Orientation="Vertical">
 
             <TextBlock Style="{StaticResource Heading2TextBlockStyle}">Select View</TextBlock>
-            <controls:ExtendedRadioButton x:Name="radioList" GroupName="View" Style="{StaticResource ViewMenuRadioButton}">
+            <controls2:ExtendedRadioButton x:Name="radioList" GroupName="View" Style="{StaticResource ViewMenuRadioButton}">
                 <TextBlock Style="{StaticResource TextBlockStyle}">List</TextBlock>
-            </controls:ExtendedRadioButton>
-            <controls:ExtendedRadioButton x:Name="radioPoster" GroupName="View" Style="{StaticResource ViewMenuRadioButton}">
+            </controls2:ExtendedRadioButton>
+            <controls2:ExtendedRadioButton x:Name="radioPoster" GroupName="View" Style="{StaticResource ViewMenuRadioButton}">
                 <TextBlock Style="{StaticResource TextBlockStyle}">Poster</TextBlock>
-            </controls:ExtendedRadioButton>
-            <controls:ExtendedRadioButton x:Name="radioThumbstrip" GroupName="View" Style="{StaticResource ViewMenuRadioButton}">
+            </controls2:ExtendedRadioButton>
+            <controls2:ExtendedRadioButton x:Name="radioThumbstrip" GroupName="View" Style="{StaticResource ViewMenuRadioButton}">
                 <TextBlock Style="{StaticResource TextBlockStyle}">Thumbstrip</TextBlock>
-            </controls:ExtendedRadioButton>
+            </controls2:ExtendedRadioButton>
         </StackPanel>
     </Grid>
 </DisplayPreferences:BaseDisplayPreferencesPage>

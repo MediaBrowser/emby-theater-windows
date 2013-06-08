@@ -5,13 +5,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaBrowser.UI", "MediaBro
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaBrowser.Plugins.DefaultTheme", "MediaBrowser.Plugins.DefaultTheme\MediaBrowser.Plugins.DefaultTheme.csproj", "{6E892999-711D-4E24-8BAC-DACF5BFA783A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaBrowser.UI.Controls", "MediaBrowser.UI.Controls\MediaBrowser.UI.Controls.csproj", "{1ADFE460-FD95-46FA-8871-CCCB4B62E2E8}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaBrowser.Theater.Interfaces", "MediaBrowser.Theater.Interfaces\MediaBrowser.Theater.Interfaces.csproj", "{CC3E6AED-E761-42DE-A9BE-E40AB246A5E0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaBrowser.Theater.Implementations", "MediaBrowser.Theater.Implementations\MediaBrowser.Theater.Implementations.csproj", "{1BD67463-D86A-4851-BE42-4D9098ADB791}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaBrowser.Theater.Vlc", "MediaBrowser.Theater.Vlc\MediaBrowser.Theater.Vlc.csproj", "{7EAD6221-F3F6-4CAE-8BDC-906013195ACC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaBrowser.Theater.Presentation", "MediaBrowser.Theater.Presentation\MediaBrowser.Theater.Presentation.csproj", "{14EDDB65-890E-40B5-8D29-414D0AED60C1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,16 +47,6 @@ Global
 		{6E892999-711D-4E24-8BAC-DACF5BFA783A}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{6E892999-711D-4E24-8BAC-DACF5BFA783A}.Release|x86.ActiveCfg = Release|Any CPU
 		{6E892999-711D-4E24-8BAC-DACF5BFA783A}.Release|x86.Build.0 = Release|Any CPU
-		{1ADFE460-FD95-46FA-8871-CCCB4B62E2E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1ADFE460-FD95-46FA-8871-CCCB4B62E2E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1ADFE460-FD95-46FA-8871-CCCB4B62E2E8}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{1ADFE460-FD95-46FA-8871-CCCB4B62E2E8}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{1ADFE460-FD95-46FA-8871-CCCB4B62E2E8}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{1ADFE460-FD95-46FA-8871-CCCB4B62E2E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1ADFE460-FD95-46FA-8871-CCCB4B62E2E8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1ADFE460-FD95-46FA-8871-CCCB4B62E2E8}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{1ADFE460-FD95-46FA-8871-CCCB4B62E2E8}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{1ADFE460-FD95-46FA-8871-CCCB4B62E2E8}.Release|x86.ActiveCfg = Release|Any CPU
 		{CC3E6AED-E761-42DE-A9BE-E40AB246A5E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CC3E6AED-E761-42DE-A9BE-E40AB246A5E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CC3E6AED-E761-42DE-A9BE-E40AB246A5E0}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -87,6 +77,16 @@ Global
 		{7EAD6221-F3F6-4CAE-8BDC-906013195ACC}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{7EAD6221-F3F6-4CAE-8BDC-906013195ACC}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{7EAD6221-F3F6-4CAE-8BDC-906013195ACC}.Release|x86.ActiveCfg = Release|Any CPU
+		{14EDDB65-890E-40B5-8D29-414D0AED60C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14EDDB65-890E-40B5-8D29-414D0AED60C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14EDDB65-890E-40B5-8D29-414D0AED60C1}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{14EDDB65-890E-40B5-8D29-414D0AED60C1}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{14EDDB65-890E-40B5-8D29-414D0AED60C1}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{14EDDB65-890E-40B5-8D29-414D0AED60C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14EDDB65-890E-40B5-8D29-414D0AED60C1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14EDDB65-890E-40B5-8D29-414D0AED60C1}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{14EDDB65-890E-40B5-8D29-414D0AED60C1}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{14EDDB65-890E-40B5-8D29-414D0AED60C1}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

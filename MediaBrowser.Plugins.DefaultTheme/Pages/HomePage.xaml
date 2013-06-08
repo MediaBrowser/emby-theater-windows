@@ -1,10 +1,10 @@
-﻿<Pages:BaseItemsPage x:Class="MediaBrowser.Plugins.DefaultTheme.Pages.HomePage"
+﻿<pages:BaseItemsPage x:Class="MediaBrowser.Plugins.DefaultTheme.Pages.HomePage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:Pages="clr-namespace:MediaBrowser.UI.Pages;assembly=MediaBrowser.UI"
-      xmlns:themecontrols="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Controls"
-                    xmlns:controls="clr-namespace:MediaBrowser.UI.Controls;assembly=MediaBrowser.UI.Controls"
-                    Title="HomePage">
+                     xmlns:themecontrols="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Controls"
+                  xmlns:pages="clr-namespace:MediaBrowser.Theater.Presentation.Pages;assembly=MediaBrowser.Theater.Presentation"
+                     xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
+                     Title="HomePage">
 
     <controls:ExtendedScrollViewer x:Name="scrollviewer" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" CanContentScroll="True">
         <controls:ScrollingPanel CanHorizontallyScroll="True" CanVerticallyScroll="False" HorizontalAlignment="Stretch">
@@ -66,4 +66,4 @@
             </Grid>
         </controls:ScrollingPanel>
     </controls:ExtendedScrollViewer>
-</Pages:BaseItemsPage>
+</pages:BaseItemsPage>

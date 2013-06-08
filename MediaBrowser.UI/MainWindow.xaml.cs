@@ -1,22 +1,22 @@
-﻿using System.Windows.Threading;
-using MediaBrowser.Common;
+﻿using MediaBrowser.Common;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Net;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
+using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.UI.Controls;
 using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Threading;
 
 namespace MediaBrowser.UI
 {
@@ -403,100 +403,6 @@ namespace MediaBrowser.UI
         {
             DisposeBackdropTimer();
             DisposeActivityTimer();
-        }
-
-        /// <summary>
-        /// Shows a notification message that will disappear on it's own
-        /// </summary>
-        /// <param name="text">The text.</param>
-        /// <param name="caption">The caption.</param>
-        /// <param name="icon">The icon.</param>
-        public void ShowNotificationMessage(string text, string caption = null, MessageBoxIcon icon = MessageBoxIcon.None)
-        {
-            var control = new NotificationMessage
-            {
-                Caption = caption,
-                Text = text,
-                MessageBoxImage = icon
-            };
-
-            mainGrid.Children.Add(control);
-
-            Dispatcher.InvokeAsync(async () =>
-            {
-                await Task.Delay(5000);
-                mainGrid.Children.Remove(control);
-            });
-        }
-
-        /// <summary>
-        /// Shows a notification message that will disappear on it's own
-        /// </summary>
-        /// <param name="text">The text.</param>
-        /// <param name="caption">The caption.</param>
-        /// <param name="icon">The icon.</param>
-        public void ShowNotificationMessage(UIElement text, string caption = null, MessageBoxIcon icon = MessageBoxIcon.None)
-        {
-            var control = new NotificationMessage
-            {
-                Caption = caption,
-                TextContent = text,
-                MessageBoxImage = icon
-            };
-
-            mainGrid.Children.Add(control);
-
-            Dispatcher.InvokeAsync(async () =>
-            {
-                await Task.Delay(5000);
-                mainGrid.Children.Remove(control);
-            });
-        }
-
-        /// <summary>
-        /// Shows a modal message box and asynchronously returns a MessageBoxResult
-        /// </summary>
-        /// <param name="text">The text.</param>
-        /// <param name="caption">The caption.</param>
-        /// <param name="button">The button.</param>
-        /// <param name="icon">The icon.</param>
-        /// <returns>MessageBoxResult.</returns>
-        public MessageBoxResult ShowModalMessage(string text, string caption = null, MessageBoxButton button = MessageBoxButton.OK, MessageBoxIcon icon = MessageBoxIcon.None)
-        {
-            var win = new ModalWindow
-            {
-                Caption = caption,
-                Button = button,
-                MessageBoxImage = icon,
-                Text = text
-            };
-
-            win.ShowModal(this);
-
-            return win.MessageBoxResult;
-        }
-
-        /// <summary>
-        /// Shows a modal message box and asynchronously returns a MessageBoxResult
-        /// </summary>
-        /// <param name="text">The text.</param>
-        /// <param name="caption">The caption.</param>
-        /// <param name="button">The button.</param>
-        /// <param name="icon">The icon.</param>
-        /// <returns>MessageBoxResult.</returns>
-        public MessageBoxResult ShowModalMessage(UIElement text, string caption = null, MessageBoxButton button = MessageBoxButton.OK, MessageBoxIcon icon = MessageBoxIcon.None)
-        {
-            var win = new ModalWindow
-            {
-                Caption = caption,
-                Button = button,
-                MessageBoxImage = icon,
-                TextContent = text
-            };
-
-            win.ShowModal(this);
-
-            return win.MessageBoxResult;
         }
     }
 }

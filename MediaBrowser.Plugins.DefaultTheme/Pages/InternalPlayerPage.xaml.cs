@@ -1,7 +1,5 @@
-﻿using System;
-using MediaBrowser.Plugins.DefaultTheme.Resources;
-using MediaBrowser.UI.Pages;
-using System.Windows;
+﻿using MediaBrowser.Theater.Interfaces.Navigation;
+using MediaBrowser.Theater.Presentation.Pages;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Pages
 {
@@ -10,10 +8,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
     /// </summary>
     public partial class InternalPlayerPage : BaseInternalPlayerPage
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="InternalPlayerPage" /> class.
-        /// </summary>
-        public InternalPlayerPage()
+        public InternalPlayerPage(INavigationService navigationManager)
+            : base(navigationManager)
         {
             InitializeComponent();
         }

@@ -3,7 +3,6 @@ using MediaBrowser.Model.Entities;
 using System;
 using System.Linq;
 using System.Windows;
-using MediaBrowser.UI;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
 {

@@ -7,9 +7,10 @@ using MediaBrowser.Plugins.DefaultTheme.Resources;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
-using MediaBrowser.UI.Controls;
-using MediaBrowser.UI.Pages;
-using MediaBrowser.UI.ViewModels;
+using MediaBrowser.Theater.Interfaces.Theming;
+using MediaBrowser.Theater.Presentation.Controls;
+using MediaBrowser.Theater.Presentation.Pages;
+using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -27,8 +28,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         /// </summary>
         private ItemCollectionViewModel _favoriteItems;
 
-        public HomePage(BaseItemDto parent, string displayPreferencesId, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IApplicationWindow applicationWindow, INavigationService navigationManager)
-            : base(parent, displayPreferencesId, apiClient, imageManager, sessionManager, applicationWindow, navigationManager)
+        public HomePage(BaseItemDto parent, string displayPreferencesId, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IApplicationWindow applicationWindow, INavigationService navigationManager, IThemeManager themeManager)
+            : base(parent, displayPreferencesId, apiClient, imageManager, sessionManager, applicationWindow, navigationManager, themeManager)
         {
             InitializeComponent();
         }

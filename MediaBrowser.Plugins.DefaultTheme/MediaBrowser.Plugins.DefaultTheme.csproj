@@ -124,6 +124,8 @@
     <Compile Include="Controls\UserTile.xaml.cs">
       <DependentUpon>UserTile.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converters\MetroTileBackgroundConverter.cs" />
+    <Compile Include="Converters\WatchedVisibilityConverter.cs" />
     <Compile Include="DisplayPreferences\BaseDisplayPreferencesPage.cs" />
     <Compile Include="DisplayPreferences\DisplayPreferencesMenu.xaml.cs">
       <DependentUpon>DisplayPreferencesMenu.xaml</DependentUpon>
@@ -168,7 +170,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="Properties\SharedVersion.cs" />
-    <Compile Include="Theme.cs" />
+    <Compile Include="DefaultTheme.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -186,13 +188,9 @@
       <Project>{cc3e6aed-e761-42de-a9be-e40ab246a5e0}</Project>
       <Name>MediaBrowser.Theater.Interfaces</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MediaBrowser.UI.Controls\MediaBrowser.UI.Controls.csproj">
-      <Project>{1adfe460-fd95-46fa-8871-cccb4b62e2e8}</Project>
-      <Name>MediaBrowser.UI.Controls</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\MediaBrowser.UI\MediaBrowser.UI.csproj">
-      <Project>{b5ece1fb-618e-420b-9a99-8e972d76920a}</Project>
-      <Name>MediaBrowser.UI</Name>
+    <ProjectReference Include="..\MediaBrowser.Theater.Presentation\MediaBrowser.Theater.Presentation.csproj">
+      <Project>{14eddb65-890e-40b5-8d29-414d0aed60c1}</Project>
+      <Name>MediaBrowser.Theater.Presentation</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -363,7 +361,8 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy "$(TargetPath)" "$(SolutionDir)\MediaBrowser.UI\CorePlugins\" /y</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.6\tools\Microsoft.Bcl.Build.targets" />

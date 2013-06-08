@@ -1,7 +1,7 @@
-﻿<controls:BaseModalWindow x:Class="MediaBrowser.UI.Controls.ModalWindow"
+﻿<controls2:BaseModalWindow x:Class="MediaBrowser.UI.Controls.ModalWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:Controls="clr-namespace:MediaBrowser.UI.Controls"
-                          xmlns:controls="clr-namespace:MediaBrowser.UI.Controls;assembly=MediaBrowser.UI.Controls"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                           xmlns:controls2="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
                           Title="ModalWindow"
         AllowsTransparency="True"
         Background="Transparent"
@@ -34,10 +34,10 @@
                 </Grid>
 
                 <StackPanel x:Name="pnlButtons" Style="{StaticResource ModalButtonPanel}" Grid.Row="2" Grid.Column="1">
-                    <controls:ExtendedButton x:Name="btnYes" Content="Yes" Style="{StaticResource ModalButton}"></controls:ExtendedButton>
-                    <controls:ExtendedButton x:Name="btnNo" Content="No" Style="{StaticResource ModalButton}"></controls:ExtendedButton>
-                    <controls:ExtendedButton x:Name="btnOk" Content="OK" Style="{StaticResource ModalButton}"></controls:ExtendedButton>
-                    <controls:ExtendedButton x:Name="btnCancel" Content="Cancel" Style="{StaticResource ModalButton}"></controls:ExtendedButton>
+                    <controls2:ExtendedButton x:Name="btnYes" Content="Yes" Style="{StaticResource ModalButton}"></controls2:ExtendedButton>
+                    <controls2:ExtendedButton x:Name="btnNo" Content="No" Style="{StaticResource ModalButton}"></controls2:ExtendedButton>
+                    <controls2:ExtendedButton x:Name="btnOk" Content="OK" Style="{StaticResource ModalButton}"></controls2:ExtendedButton>
+                    <controls2:ExtendedButton x:Name="btnCancel" Content="Cancel" Style="{StaticResource ModalButton}"></controls2:ExtendedButton>
                 </StackPanel>
             </Grid>
             <!-- Animation -->
@@ -64,4 +64,4 @@
         </Grid.LayoutTransform>
 
     </Grid>
-</controls:BaseModalWindow>
+</controls2:BaseModalWindow>

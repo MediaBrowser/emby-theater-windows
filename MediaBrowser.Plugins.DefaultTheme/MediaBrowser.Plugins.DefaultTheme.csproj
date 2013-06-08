@@ -124,6 +124,20 @@
     <Compile Include="Controls\UserTile.xaml.cs">
       <DependentUpon>UserTile.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DisplayPreferences\BaseDisplayPreferencesPage.cs" />
+    <Compile Include="DisplayPreferences\DisplayPreferencesMenu.xaml.cs">
+      <DependentUpon>DisplayPreferencesMenu.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DisplayPreferences\IHasDisplayPreferences.cs" />
+    <Compile Include="DisplayPreferences\MainPage.xaml.cs">
+      <DependentUpon>MainPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DisplayPreferences\SortMenuPage.xaml.cs">
+      <DependentUpon>SortMenuPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DisplayPreferences\ViewMenuPage.xaml.cs">
+      <DependentUpon>ViewMenuPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\DetailPage.xaml.cs">
       <DependentUpon>DetailPage.xaml</DependentUpon>
     </Compile>
@@ -238,6 +252,22 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="DisplayPreferences\DisplayPreferencesMenu.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="DisplayPreferences\MainPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="DisplayPreferences\SortMenuPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="DisplayPreferences\ViewMenuPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Pages\DetailPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -330,9 +360,7 @@
   <ItemGroup>
     <Resource Include="Resources\Images\BackButton.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="DisplayPreferences\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy "$(TargetPath)" "$(SolutionDir)\MediaBrowser.UI\CorePlugins\" /y</PostBuildEvent>

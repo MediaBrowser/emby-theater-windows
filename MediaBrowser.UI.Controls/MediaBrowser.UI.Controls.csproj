@@ -64,6 +64,7 @@
     <Compile Include="ExtendedRadioButton.cs" />
     <Compile Include="ExtendedScrollViewer.cs" />
     <Compile Include="ItemEventArgs.cs" />
+    <Compile Include="ListFocuser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

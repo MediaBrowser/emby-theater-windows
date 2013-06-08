@@ -1,5 +1,4 @@
 ﻿using System.Windows.Controls;
-using MediaBrowser.UI.Pages;
 
 namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
 {
@@ -13,14 +12,5 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
         /// </summary>
         /// <value>The display preferences window.</value>
         public DisplayPreferencesMenu DisplayPreferencesWindow { get; set; }
-
-        /// <summary>
-        /// Gets the main page.
-        /// </summary>
-        /// <value>The main page.</value>
-        protected BaseItemsPage MainPage
-        {
-            get { return DisplayPreferencesWindow.MainPage; }
-        }
     }
 }

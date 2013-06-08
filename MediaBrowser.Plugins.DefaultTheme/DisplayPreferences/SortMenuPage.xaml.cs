@@ -1,6 +1,4 @@
-﻿using MediaBrowser.Model.Net;
-using MediaBrowser.Model.Querying;
-using MediaBrowser.UI;
+﻿using MediaBrowser.Model.Querying;
 using MediaBrowser.UI.Controls;
 using System;
 using System.Collections.Generic;
@@ -15,7 +13,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
     public partial class SortMenuPage : BaseDisplayPreferencesPage
     {
         private readonly Dictionary<string, string> _sortOptions = new Dictionary<string, string>();
- 
+
         /// <summary>
         /// Initializes a new instance of the <see cref="SortMenuPage" /> class.
         /// </summary>
@@ -39,60 +37,69 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         async void chkRemember_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                await MainPage.UpdateRememberSort(chkRemember.IsChecked.HasValue && chkRemember.IsChecked.Value);
-            }
-            catch (HttpException)
-            {
-                App.Instance.ShowDefaultErrorMessage();
-            }
+            //try
+            //{
+            //    await MainPage.UpdateRememberSort(chkRemember.IsChecked.HasValue && chkRemember.IsChecked.Value);
+            //}
+            //catch (HttpException)
+            //{
+            //    App.Instance.ShowDefaultErrorMessage();
+            //}
         }
 
-        ///// <summary>
-        ///// Called when [loaded].
-        ///// </summary>
-        //protected override void OnLoaded()
-        //{
-        //    chkRemember.IsChecked = MainPage.DisplayPreferences.RememberSorting;
-            
-        //    var index = 0;
+        /// <summary>
+        /// Raises the <see cref="E:System.Windows.FrameworkElement.Initialized" /> event. This method is invoked whenever <see cref="P:System.Windows.FrameworkElement.IsInitialized" /> is set to true internally.
+        /// </summary>
+        /// <param name="e">The <see cref="T:System.Windows.RoutedEventArgs" /> that contains the event data.</param>
+        protected override void OnInitialized(EventArgs e)
+        {
+            base.OnInitialized(e);
 
-        //    var currentValue = MainPage.SortBy ?? string.Empty;
+            AddFields();
+        }
 
-        //    foreach (var option in _sortOptions.Keys)
-        //    {
-        //        var optionValue = _sortOptions[option];
+        /// <summary>
+        /// Adds the fields.
+        /// </summary>
+        private void AddFields()
+        {
+            chkRemember.IsChecked = DisplayPreferencesWindow.DisplayPreferencesContainer.DisplayPreferences.RememberSorting;
 
-        //        var radio = new ExtendedRadioButton { GroupName = "Options" };
+            var index = 0;
 
-        //        radio.SetResourceReference(StyleProperty, "ViewMenuRadioButton");
+            var currentValue = DisplayPreferencesWindow.DisplayPreferencesContainer.DisplayPreferences.SortBy ?? string.Empty;
 
-        //        var textblock = new TextBlock { Text = option };
+            foreach (var option in _sortOptions.Keys)
+            {
+                var optionValue = _sortOptions[option];
 
-        //        textblock.SetResourceReference(StyleProperty, "TextBlockStyle");
+                var radio = new ExtendedRadioButton { GroupName = "Options" };
 
-        //        radio.Content = textblock;
+                radio.SetResourceReference(StyleProperty, "ViewMenuRadioButton");
 
-        //        if (string.IsNullOrEmpty(MainPage.DisplayPreferences.SortBy))
-        //        {
-        //            radio.IsChecked = index == 0;
-        //        }
-        //        else
-        //        {
-        //            radio.IsChecked = currentValue.Equals(optionValue, StringComparison.OrdinalIgnoreCase);
-        //        }
+                var textblock = new TextBlock { Text = option };
 
-        //        radio.Tag = optionValue;
-        //        radio.Click += radio_Click;
+                textblock.SetResourceReference(StyleProperty, "TextBlockStyle");
 
-        //        pnlOptions.Children.Add(radio);
+                radio.Content = textblock;
 
-        //        index++;
-        //    }
+                if (string.IsNullOrEmpty(DisplayPreferencesWindow.DisplayPreferencesContainer.DisplayPreferences.SortBy))
+                {
+                    radio.IsChecked = index == 0;
+                }
+                else
+                {
+                    radio.IsChecked = currentValue.Equals(optionValue, StringComparison.OrdinalIgnoreCase);
+                }
 
-        //    base.OnLoaded();
-        //}
+                radio.Tag = optionValue;
+                radio.Click += radio_Click;
+
+                pnlOptions.Children.Add(radio);
+
+                index++;
+            }
+        }
 
         /// <summary>
         /// Handles the Click event of the radio control.
@@ -101,7 +108,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         async void radio_Click(object sender, RoutedEventArgs e)
         {
-            await MainPage.UpdateSortOption((sender as RadioButton).Tag.ToString());
+            //await MainPage.UpdateSortOption((sender as RadioButton).Tag.ToString());
         }
     }
 }

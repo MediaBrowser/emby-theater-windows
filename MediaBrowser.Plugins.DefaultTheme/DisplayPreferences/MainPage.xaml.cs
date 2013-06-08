@@ -1,6 +1,6 @@
 ﻿using MediaBrowser.Model.Entities;
-using System.Windows;
 using MediaBrowser.UI.ViewModels;
+using System.Windows;
 
 namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
 {
@@ -21,6 +21,17 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
             btnDecrease.Click += btnDecrease_Click;
             ViewMenuButton.Click += ViewMenuButton_Click;
             SortMenuButton.Click += SortMenuButton_Click;
+            Loaded += MainPage_Loaded;
+        }
+
+        /// <summary>
+        /// Handles the Loaded event of the MainPage control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        void MainPage_Loaded(object sender, RoutedEventArgs e)
+        {
+            UpdateFields();
         }
 
         /// <summary>
@@ -32,16 +43,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
         {
             DisplayPreferencesWindow.NavigateToSortMenu();
         }
-
-        ///// <summary>
-        ///// Called when [loaded].
-        ///// </summary>
-        //protected override void OnLoaded()
-        //{
-        //    base.OnLoaded();
-
-        //    UpdateFields();
-        //}
 
         /// <summary>
         /// Handles the Click event of the ViewMenuButton control.
@@ -60,8 +61,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         void btnDecrease_Click(object sender, RoutedEventArgs e)
         {
-            MainPage.DisplayPreferences.DecreaseImageSize();
-            MainPage.NotifyDisplayPreferencesChanged();
+            DisplayPreferencesWindow.DisplayPreferencesContainer.DisplayPreferences.DecreaseImageSize();
+            DisplayPreferencesWindow.DisplayPreferencesContainer.NotifyDisplayPreferencesChanged();
         }
 
         /// <summary>
@@ -71,8 +72,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         void btnIncrease_Click(object sender, RoutedEventArgs e)
         {
-            MainPage.DisplayPreferences.IncreaseImageSize();
-            MainPage.NotifyDisplayPreferencesChanged();
+            DisplayPreferencesWindow.DisplayPreferencesContainer.DisplayPreferences.IncreaseImageSize();
+            DisplayPreferencesWindow.DisplayPreferencesContainer.NotifyDisplayPreferencesChanged();
         }
 
         /// <summary>
@@ -82,11 +83,13 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         void btnScroll_Click(object sender, RoutedEventArgs e)
         {
-            MainPage.DisplayPreferences.ScrollDirection = MainPage.DisplayPreferences.ScrollDirection == ScrollDirection.Horizontal
+            var displayPreferences = DisplayPreferencesWindow.DisplayPreferencesContainer.DisplayPreferences;
+
+            displayPreferences.ScrollDirection = displayPreferences.ScrollDirection == ScrollDirection.Horizontal
                                                      ? ScrollDirection.Vertical
                                                      : ScrollDirection.Horizontal;
 
-            MainPage.NotifyDisplayPreferencesChanged();
+            DisplayPreferencesWindow.DisplayPreferencesContainer.NotifyDisplayPreferencesChanged();
            
             UpdateFields();
         }
@@ -96,7 +99,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
         /// </summary>
         private void UpdateFields()
         {
-            var displayPreferences = MainPage.DisplayPreferences;
+            var displayPreferences = DisplayPreferencesWindow.DisplayPreferencesContainer.DisplayPreferences;
 
             btnScroll.Visibility = displayPreferences.ViewType == ViewTypes.Poster || string.IsNullOrEmpty(displayPreferences.ViewType)
                                        ? Visibility.Visible

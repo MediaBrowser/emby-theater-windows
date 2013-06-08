@@ -1,5 +1,4 @@
 ﻿using MediaBrowser.UI.Controls;
-using MediaBrowser.UI.Pages;
 using System.Windows;
 
 namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
@@ -9,16 +8,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
     /// </summary>
     public partial class DisplayPreferencesMenu : BaseModalWindow
     {
-        /// <summary>
-        /// Gets or sets the main page.
-        /// </summary>
-        /// <value>The main page.</value>
-        public BaseItemsPage MainPage { get; set; }
-        /// <summary>
-        /// Gets or sets the folder id.
-        /// </summary>
-        /// <value>The folder id.</value>
-        public string FolderId { get; set; }
+        public IHasDisplayPreferences DisplayPreferencesContainer { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DisplayPreferencesMenu" /> class.

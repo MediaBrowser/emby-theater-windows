@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.ApiClient;
+﻿using System.Windows.Controls.Primitives;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Net;
@@ -185,7 +186,7 @@ namespace MediaBrowser.UI.Pages
             ItemsList.SelectionChanged += ItemsList_SelectionChanged;
 
             await ReloadDisplayPreferences();
-            await ReloadItems();
+            await ReloadItems(true);
         }
 
         void ItemsList_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -260,7 +261,7 @@ namespace MediaBrowser.UI.Pages
             }
         }
 
-        protected async Task ReloadItems()
+        protected async Task ReloadItems(bool isInitialLoad)
         {
             // Record the current item
             var currentItem = ListCollectionView.CurrentItem as BaseItemDtoViewModel;
@@ -269,6 +270,22 @@ namespace MediaBrowser.UI.Pages
             {
                 var result = await GetItemsAsync();
 
+                int? selectedIndex = null;
+
+                if (isInitialLoad)
+                {
+                    selectedIndex = 0;
+                }
+                else if (currentItem != null)
+                {
+                    var index = Array.FindIndex(result.Items, i => string.Equals(i.Id, currentItem.Item.Id));
+
+                    if (index != -1)
+                    {
+                        selectedIndex = index;
+                    }
+                }
+                
                 ListItems.Clear();
 
                 var averagePrimaryImageAspectRatio = BaseItemDtoViewModel.GetAveragePrimaryImageAspectRatio(result.Items);
@@ -286,21 +303,10 @@ namespace MediaBrowser.UI.Pages
                     MoveFocus(new TraversalRequest(FocusNavigationDirection.First));
                 }
 
-                if (currentItem != null)
+                if (selectedIndex.HasValue)
                 {
-                    var index = Array.FindIndex(result.Items, i => string.Equals(i.Id, currentItem.Item.Id));
-
-                    if (index != -1)
-                    {
-                        var item = ItemsList.ItemContainerGenerator.ContainerFromIndex(index) as ListBoxItem;
-
-                        if (item != null)
-                        {
-                            item.Focus();
-                        }
-                    }
+                    new ListFocuser(ItemsList).FocusAfterContainersGenerated(selectedIndex.Value);
                 }
-
             }
             catch (HttpException)
             {

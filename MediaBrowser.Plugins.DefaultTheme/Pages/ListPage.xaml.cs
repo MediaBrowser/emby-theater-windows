@@ -3,6 +3,7 @@ using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Net;
 using MediaBrowser.Model.Querying;
+using MediaBrowser.Plugins.DefaultTheme.DisplayPreferences;
 using MediaBrowser.Plugins.DefaultTheme.Resources;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
@@ -21,7 +22,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
     /// <summary>
     /// Interaction logic for ListPage.xaml
     /// </summary>
-    public partial class ListPage : BaseItemsPage
+    public partial class ListPage : BaseItemsPage, IHasDisplayPreferences
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ListPage" /> class.
@@ -157,7 +158,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
             {
                 item = await ApiClient.GetItemAsync(item.SeriesId, SessionManager.CurrentUser.Id);
             }
-            
+
             if (item.HasArtImage)
             {
                 ImgDefaultLogo.Source =
@@ -197,22 +198,21 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         async void ViewButton_Click(object sender, RoutedEventArgs e)
         {
-            //var menu = new DisplayPreferencesMenu
-            //{
-            //    FolderId = ParentItem.Id,
-            //    MainPage = this
-            //};
+            var menu = new DisplayPreferencesMenu
+            {
+                DisplayPreferencesContainer = this
+            };
 
-            //menu.ShowModal(this.GetWindow());
+            menu.ShowModal(this.GetWindow());
 
-            //try
-            //{
-            //    await ApiClient.UpdateDisplayPreferencesAsync(DisplayPreferences);
-            //}
-            //catch (HttpException)
-            //{
-            //    App.Instance.ShowDefaultErrorMessage();
-            //}
+            try
+            {
+                await ApiClient.UpdateDisplayPreferencesAsync(DisplayPreferences);
+            }
+            catch (HttpException)
+            {
+                App.Instance.ShowDefaultErrorMessage();
+            }
         }
 
         /// <summary>
@@ -243,7 +243,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
             TxtTagline.Text = item != null && item.Taglines != null && item.Taglines.Count > 0 ? item.Taglines[0] : string.Empty;
             TxtGenres.Text = item != null && item.Genres != null ? string.Join(" / ", item.Genres.Take(3).ToArray()) : string.Empty;
         }
-        
+
         private async void UpdateLogo(BaseItemDto item)
         {
             if (item != null && item.HasLogo)
@@ -281,6 +281,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
             base.OnItemsChanged();
 
             TxtItemCount.Text = ListItems.Count.ToString();
+        }
+
+        public void NotifyDisplayPreferencesChanged()
+        {
+            OnPropertyChanged("DisplayPreferences");
         }
     }
 }

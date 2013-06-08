@@ -1,6 +1,6 @@
 ﻿using MediaBrowser.Model.Entities;
-using System.Windows;
 using MediaBrowser.UI.ViewModels;
+using System.Windows;
 
 namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
 {
@@ -19,17 +19,13 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
             radioList.Click += radioList_Click;
             radioPoster.Click += radioPoster_Click;
             radioThumbstrip.Click += radioThumbstrip_Click;
+            Loaded += ViewMenuPage_Loaded;
         }
 
-        ///// <summary>
-        ///// Called when [loaded].
-        ///// </summary>
-        //protected override void OnLoaded()
-        //{
-        //    base.OnLoaded();
-
-        //    UpdateFields();
-        //}
+        void ViewMenuPage_Loaded(object sender, RoutedEventArgs e)
+        {
+            UpdateFields();
+        }
 
         /// <summary>
         /// Handles the Click event of the radioThumbstrip control.
@@ -38,9 +34,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         void radioThumbstrip_Click(object sender, RoutedEventArgs e)
         {
-            MainPage.DisplayPreferences.ScrollDirection = ScrollDirection.Horizontal;
-            MainPage.DisplayPreferences.ViewType = ViewTypes.Thumbstrip;
-            MainPage.NotifyDisplayPreferencesChanged();
+            DisplayPreferencesWindow.DisplayPreferencesContainer.DisplayPreferences.ScrollDirection = ScrollDirection.Horizontal;
+            DisplayPreferencesWindow.DisplayPreferencesContainer.DisplayPreferences.ViewType = ViewTypes.Thumbstrip;
+            DisplayPreferencesWindow.DisplayPreferencesContainer.NotifyDisplayPreferencesChanged();
         }
 
         /// <summary>
@@ -50,8 +46,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         void radioPoster_Click(object sender, RoutedEventArgs e)
         {
-            MainPage.DisplayPreferences.ViewType = ViewTypes.Poster;
-            MainPage.NotifyDisplayPreferencesChanged();
+            DisplayPreferencesWindow.DisplayPreferencesContainer.DisplayPreferences.ViewType = ViewTypes.Poster;
+            DisplayPreferencesWindow.DisplayPreferencesContainer.NotifyDisplayPreferencesChanged();
         }
 
         /// <summary>
@@ -61,9 +57,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         void radioList_Click(object sender, RoutedEventArgs e)
         {
-            MainPage.DisplayPreferences.ScrollDirection = ScrollDirection.Vertical;
-            MainPage.DisplayPreferences.ViewType = ViewTypes.List;
-            MainPage.NotifyDisplayPreferencesChanged();
+            var displayPreferences = DisplayPreferencesWindow.DisplayPreferencesContainer.DisplayPreferences;
+
+            displayPreferences.ScrollDirection = ScrollDirection.Vertical;
+            displayPreferences.ViewType = ViewTypes.List;
+            DisplayPreferencesWindow.DisplayPreferencesContainer.NotifyDisplayPreferencesChanged();
         }
 
         /// <summary>
@@ -71,7 +69,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
         /// </summary>
         private void UpdateFields()
         {
-            var displayPreferences = MainPage.DisplayPreferences;
+            var displayPreferences = DisplayPreferencesWindow.DisplayPreferencesContainer.DisplayPreferences;
 
             radioList.IsChecked = displayPreferences.ViewType == ViewTypes.List;
             radioPoster.IsChecked = displayPreferences.ViewType == ViewTypes.Poster;

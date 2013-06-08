@@ -66,7 +66,7 @@ namespace MediaBrowser.UI.Pages
             ItemsList.ItemInvoked += ItemsList_ItemInvoked;
             Loaded += BaseLoginPage_Loaded;
 
-            await ReloadUsers();
+            await ReloadUsers(true);
         }
 
         /// <summary>
@@ -98,7 +98,7 @@ namespace MediaBrowser.UI.Pages
         /// Reloads the users.
         /// </summary>
         /// <returns>Task.</returns>
-        protected async Task ReloadUsers()
+        protected async Task ReloadUsers(bool isInitialLoad)
         {
             // Record the current item
             var currentItem = ListCollectionView.CurrentItem as UserDtoViewModel;
@@ -107,6 +107,22 @@ namespace MediaBrowser.UI.Pages
             {
                 var users = await ApiClient.GetUsersAsync();
 
+                int? selectedIndex = null;
+
+                if (isInitialLoad)
+                {
+                    selectedIndex = 0;
+                }
+                else if (currentItem != null)
+                {
+                    var index = Array.FindIndex(users, i => string.Equals(i.Id, currentItem.User.Id));
+
+                    if (index != -1)
+                    {
+                        selectedIndex = index;
+                    }
+                } 
+                
                 ListItems.Clear();
 
                 ListItems.AddRange(users.Select(i => new UserDtoViewModel(ApiClient, ImageManager) { User = i }));
@@ -116,19 +132,9 @@ namespace MediaBrowser.UI.Pages
                     MoveFocus(new TraversalRequest(FocusNavigationDirection.First));
                 }
 
-                if (currentItem != null)
+                if (selectedIndex.HasValue)
                 {
-                    var index = Array.FindIndex(users, i => string.Equals(i.Id, currentItem.User.Id));
-
-                    if (index != -1)
-                    {
-                        var item = ItemsList.ItemContainerGenerator.ContainerFromIndex(index) as ListBoxItem;
-
-                        if (item != null)
-                        {
-                            item.Focus();
-                        }
-                    }
+                    new ListFocuser(ItemsList).FocusAfterContainersGenerated(selectedIndex.Value);
                 }
 
             }

@@ -104,24 +104,32 @@ namespace MediaBrowser.Theater.Implementations.Presentation
                 throw new ArgumentNullException("url");
             }
 
-            var cachePath = _remoteImageCache.GetResourcePath(url.GetMD5().ToString());
-
-            if (File.Exists(cachePath))
-            {
-                return GetCachedBitmapImage(cachePath);
-            }
-
             return await Task.Run(async () =>
             {
+                var cachePath = _remoteImageCache.GetResourcePath(url.GetMD5().ToString());
+
+                try
+                {
+                    return GetCachedBitmapImage(cachePath);
+                }
+                catch (IOException)
+                {
+                    // Cache file doesn't exist or is currently being written to.
+                }
+
                 var semaphore = GetImageFileLock(cachePath);
                 await semaphore.WaitAsync().ConfigureAwait(false);
 
                 // Look in the cache again
-                if (File.Exists(cachePath))
+                try
                 {
+                    var img = GetCachedBitmapImage(cachePath);
                     semaphore.Release();
-
-                    return GetCachedBitmapImage(cachePath);
+                    return img;
+                }
+                catch (IOException)
+                {
+                    // Cache file doesn't exist or is currently being written to.
                 }
 
                 try

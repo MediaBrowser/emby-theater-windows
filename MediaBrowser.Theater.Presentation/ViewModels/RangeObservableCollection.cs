@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 
 namespace MediaBrowser.Theater.Presentation.ViewModels
 {
@@ -11,26 +12,6 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
     /// <typeparam name="T"></typeparam>
     public class RangeObservableCollection<T> : ObservableCollection<T>
     {
-        /// <summary>
-        /// The _suppress notification
-        /// </summary>
-        private bool _suppressNotification;
-
-        /// <summary>
-        /// Raises the <see cref="E:CollectionChanged" /> event.
-        /// </summary>
-        /// <param name="e">The <see cref="NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
-        protected override void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
-        {
-            if (!_suppressNotification)
-                base.OnCollectionChanged(e);
-        }
-
-        /// <summary>
-        /// Adds the range.
-        /// </summary>
-        /// <param name="list">The list.</param>
-        /// <exception cref="System.ArgumentNullException">list</exception>
         public void AddRange(IEnumerable<T> list)
         {
             if (list == null)
@@ -38,16 +19,30 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 throw new ArgumentNullException("list");
             }
 
-            _suppressNotification = true;
+            foreach (var item in list)
+                Items.Add(item);
 
-            foreach (T item in list)
+            SendNotifications();
+        }
+
+        public void RemoveRange(IEnumerable<T> list)
+        {
+            if (list == null)
             {
-                Add(item);
+                throw new ArgumentNullException("list");
             }
 
-            _suppressNotification = false;
+            foreach (var item in list)
+                Items.Remove(item);
 
+            SendNotifications();
+        }
+
+        private void SendNotifications()
+        {
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+            OnPropertyChanged(new PropertyChangedEventArgs("Count"));
+            OnPropertyChanged(new PropertyChangedEventArgs("Item[]"));
         }
     }
 }

@@ -16,7 +16,7 @@ namespace MediaBrowser.Theater.Implementations.Configuration
         {
         }
 #else
-        public UIApplicationPaths()
+        public ApplicationPaths()
             : base(false)
         {
         }

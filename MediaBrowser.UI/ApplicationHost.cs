@@ -63,7 +63,7 @@ namespace MediaBrowser.UI
 
         protected override string LogFilePrefixName
         {
-            get { return "MBT"; }
+            get { return "mbt"; }
         }
 
         public override async Task Init()

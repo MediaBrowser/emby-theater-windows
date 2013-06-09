@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using MediaBrowser.Model.Dto;
+﻿using MediaBrowser.Model.Dto;
+using MediaBrowser.Theater.Interfaces.Playback;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
-using MediaBrowser.Theater.Interfaces.Playback;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
 {
@@ -13,11 +13,19 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
     public partial class ItemOverview : BaseDetailsControl
     {
         /// <summary>
+        /// Gets the playback manager.
+        /// </summary>
+        /// <value>The playback manager.</value>
+        protected IPlaybackManager PlaybackManager { get; private set; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ItemOverview" /> class.
         /// </summary>
-        public ItemOverview()
+        /// <param name="playbackManager">The playback manager.</param>
+        public ItemOverview(IPlaybackManager playbackManager)
             : base()
         {
+            PlaybackManager = playbackManager;
             InitializeComponent();
         }
 
@@ -110,12 +118,17 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
             Overview.Text = Item.Overview;
         }
 
-        public void ButtonClick(object sender, EventArgs e)
+        /// <summary>
+        /// Buttons the click.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        public async void ButtonClick(object sender, EventArgs e)
         {
-            //UIKernel.Instance.PlaybackManager.Play(new PlayOptions
-            //{
-            //    Items = new List<BaseItemDto> { Item }
-            //});
+            await PlaybackManager.Play(new PlayOptions
+            {
+                Items = new List<BaseItemDto> { Item }
+            });
         }
     }
 }

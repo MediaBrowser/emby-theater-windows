@@ -1,40 +1,44 @@
-﻿using MediaBrowser.Theater.Interfaces.Navigation;
-using MediaBrowser.Theater.Presentation.Pages;
+﻿using MediaBrowser.Plugins.DefaultTheme.Resources;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Pages
 {
     /// <summary>
     /// Interaction logic for InternalPlayerPage.xaml
     /// </summary>
-    public partial class InternalPlayerPage : BaseInternalPlayerPage
+    public partial class InternalPlayerPage : Page
     {
-        public InternalPlayerPage(INavigationService navigationManager)
-            : base(navigationManager)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InternalPlayerPage"/> class.
+        /// </summary>
+        public InternalPlayerPage()
         {
             InitializeComponent();
+
+            Loaded += InternalPlayerPage_Loaded;
+            Unloaded += InternalPlayerPage_Unloaded;
         }
 
-        //protected override void OnInitialized(EventArgs e)
-        //{
-        //    base.OnInitialized(e);
+        /// <summary>
+        /// Handles the Unloaded event of the InternalPlayerPage control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        void InternalPlayerPage_Unloaded(object sender, RoutedEventArgs e)
+        {
+            AppResources.Instance.HeaderContent.Visibility = Visibility.Visible;
+        }
 
-        //    Unloaded += InternalPlayerPage_Unloaded;
-        //}
-
-        //void InternalPlayerPage_Unloaded(object sender, RoutedEventArgs e)
-        //{
-        //    AppResources.Instance.HeaderContent.Visibility = Visibility.Visible;
-        //}
-
-        ///// <summary>
-        ///// Called when [loaded].
-        ///// </summary>
-        //protected override void OnLoaded()
-        //{
-        //    base.OnLoaded();
-
-        //    AppResources.Instance.ClearPageTitle();
-        //    AppResources.Instance.HeaderContent.Visibility = Visibility.Collapsed;
-        //}
+        /// <summary>
+        /// Handles the Loaded event of the InternalPlayerPage control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        void InternalPlayerPage_Loaded(object sender, RoutedEventArgs e)
+        {
+            AppResources.Instance.ClearPageTitle();
+            AppResources.Instance.HeaderContent.Visibility = Visibility.Collapsed;
+        }
     }
 }

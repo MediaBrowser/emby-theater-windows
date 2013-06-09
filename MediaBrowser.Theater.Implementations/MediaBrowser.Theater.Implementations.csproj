@@ -79,6 +79,7 @@
   <ItemGroup>
     <Compile Include="Configuration\ApplicationPaths.cs" />
     <Compile Include="Configuration\ConfigurationManager.cs" />
+    <Compile Include="Controls\PageFocusRetainer.cs" />
     <Compile Include="Playback\PlaybackManager.cs" />
     <Compile Include="Presentation\ImageManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">

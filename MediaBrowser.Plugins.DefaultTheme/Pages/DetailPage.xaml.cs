@@ -4,14 +4,15 @@ using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Net;
 using MediaBrowser.Plugins.DefaultTheme.Controls.Details;
 using MediaBrowser.Plugins.DefaultTheme.Resources;
+using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
+using MediaBrowser.Theater.Interfaces.Theming;
+using MediaBrowser.Theater.Presentation.Pages;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
-using MediaBrowser.Theater.Interfaces.Theming;
-using MediaBrowser.Theater.Presentation.Pages;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Pages
 {
@@ -20,16 +21,31 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
     /// </summary>
     public partial class DetailPage : BaseDetailPage
     {
+        /// <summary>
+        /// The _image manager
+        /// </summary>
         private readonly IImageManager _imageManager;
+
+        /// <summary>
+        /// The playback manager
+        /// </summary>
+        private readonly IPlaybackManager _playbackManager;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DetailPage" /> class.
         /// </summary>
         /// <param name="itemId">The item id.</param>
-        public DetailPage(string itemId, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IApplicationWindow appWindow, IThemeManager themeManager)
+        /// <param name="apiClient">The API client.</param>
+        /// <param name="imageManager">The image manager.</param>
+        /// <param name="sessionManager">The session manager.</param>
+        /// <param name="appWindow">The app window.</param>
+        /// <param name="themeManager">The theme manager.</param>
+        /// <param name="playbackManager">The playback manager.</param>
+        public DetailPage(string itemId, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IApplicationWindow appWindow, IThemeManager themeManager, IPlaybackManager playbackManager)
             : base(itemId, apiClient, sessionManager, appWindow, themeManager)
         {
             _imageManager = imageManager;
+            _playbackManager = playbackManager;
             InitializeComponent();
 
             BtnOverview.Click += BtnOverview_Click;
@@ -38,7 +54,22 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
             BtnPerformers.Click += BtnPerformers_Click;
             BtnTrailers.Click += BtnTrailers_Click;
             BtnSpecialFeatures.Click += BtnSpecialFeatures_Click;
-            BtnGallery.Click += BtnGallery_Click;            
+            BtnGallery.Click += BtnGallery_Click;
+
+            Loaded += DetailPage_Loaded;
+        }
+
+        /// <summary>
+        /// Handles the Loaded event of the DetailPage control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        async void DetailPage_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (Item != null)
+            {
+                await AppResources.Instance.SetPageTitle(Item);
+            }
         }
 
         /// <summary>
@@ -104,7 +135,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         void BtnOverview_Click(object sender, RoutedEventArgs e)
         {
             PrimaryImageGrid.Visibility = Visibility.Visible;
-            ShowDetailControl(BtnOverview, new ItemOverview { });
+            ShowDetailControl(BtnOverview, new ItemOverview(_playbackManager));
         }
 
         /// <summary>
@@ -117,19 +148,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
             PrimaryImageGrid.Visibility = Visibility.Collapsed;
             ShowDetailControl(BtnPerformers, new ItemPerformers(ApiClient, _imageManager, SessionManager) { });
         }
-
-        ///// <summary>
-        ///// Called when [loaded].
-        ///// </summary>
-        //protected override async void OnLoaded()
-        //{
-        //    base.OnLoaded();
-
-        //    if (Item != null)
-        //    {
-        //        await AppResources.Instance.SetPageTitle(Item);
-        //    }
-        //}
 
         /// <summary>
         /// Called when [item changed].
@@ -151,6 +169,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
             await pageTitleTask;
         }
 
+        /// <summary>
+        /// Updates the logo.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <returns>Task.</returns>
         private async Task UpdateLogo(BaseItemDto item)
         {
             if (!item.HasArtImage && item.IsType("episode"))
@@ -257,29 +280,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         private void SetDefaultImage()
         {
             PrimaryImage.Visibility = Visibility.Collapsed;
-        }
-
-        /// <summary>
-        /// Handles the 1 event of the Button_Click control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
-        private void Button_Click_1(object sender, RoutedEventArgs e)
-        {
-            //await UIKernel.Instance.PlaybackManager.Play(new PlayOptions
-            //{
-            //    Items = new List<BaseItemDto> { Item }
-            //});
-        }
-
-        /// <summary>
-        /// Handles the 2 event of the Button_Click control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
-        private async void Button_Click_2(object sender, RoutedEventArgs e)
-        {
-            //await UIKernel.Instance.PlaybackManager.StopAllPlayback();
         }
 
         /// <summary>

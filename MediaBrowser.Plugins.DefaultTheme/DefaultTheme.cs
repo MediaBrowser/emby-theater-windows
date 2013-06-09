@@ -48,10 +48,13 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// The _logger
         /// </summary>
         private readonly ILogger _logger;
+        /// <summary>
+        /// The _theme manager
+        /// </summary>
         private readonly IThemeManager _themeManager;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DefaultTheme"/> class.
+        /// Initializes a new instance of the <see cref="DefaultTheme" /> class.
         /// </summary>
         /// <param name="playbackManager">The playback manager.</param>
         /// <param name="imageManager">The image manager.</param>
@@ -60,7 +63,8 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// <param name="sessionManager">The session manager.</param>
         /// <param name="appWindow">The app window.</param>
         /// <param name="logManager">The log manager.</param>
-        public DefaultTheme(IPlaybackManager playbackManager, IImageManager imageManager, IApiClient apiClient, INavigationService navService, ISessionManager sessionManager, IApplicationWindow appWindow, ILogManager logManager)
+        /// <param name="themeManager">The theme manager.</param>
+        public DefaultTheme(IPlaybackManager playbackManager, IImageManager imageManager, IApiClient apiClient, INavigationService navService, ISessionManager sessionManager, IApplicationWindow appWindow, ILogManager logManager, IThemeManager themeManager)
         {
             _playbackManager = playbackManager;
             _imageManager = imageManager;
@@ -68,6 +72,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
             _navService = navService;
             _sessionManager = sessionManager;
             _appWindow = appWindow;
+            _themeManager = themeManager;
             _logger = logManager.GetLogger(GetType().Name);
         }
 
@@ -95,7 +100,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// <returns>Page.</returns>
         public Page GetInternalPlayerPage()
         {
-            return new InternalPlayerPage(_navService);
+            return new InternalPlayerPage();
         }
 
         /// <summary>
@@ -121,12 +126,13 @@ namespace MediaBrowser.Plugins.DefaultTheme
                 return new ListPage(item, item.DisplayPreferencesId, _apiClient, _imageManager, _sessionManager, _appWindow, _navService, _themeManager);
             }
 
-            return new DetailPage(item.Id, _apiClient, _imageManager, _sessionManager, _appWindow, _themeManager);
+            return new DetailPage(item.Id, _apiClient, _imageManager, _sessionManager, _appWindow, _themeManager, _playbackManager);
         }
 
         /// <summary>
         /// Shows the default error message.
         /// </summary>
+        /// <exception cref="System.NotImplementedException"></exception>
         public void ShowDefaultErrorMessage()
         {
             throw new NotImplementedException();
@@ -137,6 +143,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// </summary>
         /// <param name="options">The options.</param>
         /// <returns>MessageBoxResult.</returns>
+        /// <exception cref="System.NotImplementedException"></exception>
         public MessageBoxResult ShowMessage(MessageBoxInfo options)
         {
             throw new NotImplementedException();

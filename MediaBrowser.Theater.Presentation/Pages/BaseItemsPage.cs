@@ -64,11 +64,6 @@ namespace MediaBrowser.Theater.Presentation.Pages
         protected IThemeManager ThemeManager { get; private set; }
 
         /// <summary>
-        /// The _last focused
-        /// </summary>
-        private IInputElement _lastFocused;
-
-        /// <summary>
         /// Gets the list items.
         /// </summary>
         /// <value>The list items.</value>
@@ -181,7 +176,8 @@ namespace MediaBrowser.Theater.Presentation.Pages
                 }
                 else
                 {
-                    CurrentItemIndex = ItemsList.SelectedIndex;
+
+                    CurrentItemIndex = ListCollectionView.CurrentPosition;
                 }
 
                 // Fire notification events after a short delay
@@ -263,6 +259,12 @@ namespace MediaBrowser.Theater.Presentation.Pages
         {
             get
             {
+                // Hasn't loaded yet
+                if (DisplayPreferences == null)
+                {
+                    return Orientation.Horizontal;
+                }
+
                 return DisplayPreferences.ScrollDirection == ScrollDirection.Horizontal ? Orientation.Vertical : Orientation.Horizontal;
             }
         }
@@ -279,46 +281,21 @@ namespace MediaBrowser.Theater.Presentation.Pages
 
             OnPropertyChanged("ParentItem");
             
-            Loaded += BaseItemsPage_Loaded;
-            FocusManager.SetIsFocusScope(this, true);
-
             ListItems = new RangeObservableCollection<BaseItemDtoViewModel>();
             ListCollectionView = (ListCollectionView)CollectionViewSource.GetDefaultView(ListItems);
 
             ItemsList.ItemsSource = ListCollectionView;
-            ItemsList.ItemInvoked += ItemsList_ItemInvoked;
-            ItemsList.SelectionChanged += ItemsList_SelectionChanged;
+            ListCollectionView.CurrentChanged += ListCollectionView_CurrentChanged;
 
             await ReloadDisplayPreferences();
             await ReloadItems(true);
         }
 
-        /// <summary>
-        /// Handles the SelectionChanged event of the ItemsList control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="SelectionChangedEventArgs"/> instance containing the event data.</param>
-        void ItemsList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        void ListCollectionView_CurrentChanged(object sender, EventArgs e)
         {
-            if (e.AddedItems.Count > 0)
-            {
-                CurrentItem = (e.AddedItems[0] as BaseItemDtoViewModel).Item;
-            }
-            else
-            {
-                CurrentItem = null;
-            }
-        }
+            var viewModel = ListCollectionView.CurrentItem as BaseItemDtoViewModel;
 
-        /// <summary>
-        /// Handles the Loaded event of the BaseItemsPage control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-        void BaseItemsPage_Loaded(object sender, RoutedEventArgs e)
-        {
-            NavigationService.Navigating -= NavigationService_Navigating;
-            NavigationService.Navigating += NavigationService_Navigating;
+            CurrentItem = viewModel == null ? null : viewModel.Item;
         }
 
         /// <summary>
@@ -339,40 +316,6 @@ namespace MediaBrowser.Theater.Presentation.Pages
             else if (string.Equals(name, "ParentItem"))
             {
                 OnParentItemChanged();
-            }
-        }
-
-        /// <summary>
-        /// Itemses the list_ item invoked.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="e">The e.</param>
-        void ItemsList_ItemInvoked(object sender, ItemEventArgs<object> e)
-        {
-            var model = e.Argument as BaseItemDtoViewModel;
-
-            if (model != null)
-            {
-                var item = model.Item;
-
-                NavigationManager.NavigateToItem(item, string.Empty);
-            }
-        }
-
-        /// <summary>
-        /// Handles the Navigating event of the NavigationService control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="NavigatingCancelEventArgs"/> instance containing the event data.</param>
-        void NavigationService_Navigating(object sender, NavigatingCancelEventArgs e)
-        {
-            if (e.Content.Equals(this))
-            {
-                FocusManager.SetFocusedElement(this, _lastFocused);
-            }
-            else
-            {
-                _lastFocused = FocusManager.GetFocusedElement(this);
             }
         }
 
@@ -437,10 +380,7 @@ namespace MediaBrowser.Theater.Presentation.Pages
                     AveragePrimaryImageAspectRatio = averagePrimaryImageAspectRatio
                 }));
 
-                if (_lastFocused == null)
-                {
-                    MoveFocus(new TraversalRequest(FocusNavigationDirection.First));
-                }
+                MoveFocus(new TraversalRequest(FocusNavigationDirection.First));
 
                 if (selectedIndex.HasValue)
                 {
@@ -487,7 +427,6 @@ namespace MediaBrowser.Theater.Presentation.Pages
                 ScrollViewer.SetHorizontalScrollBarVisibility(ItemsList, ScrollBarVisibility.Disabled);
                 ScrollViewer.SetVerticalScrollBarVisibility(ItemsList, ScrollBarVisibility.Hidden);
             }
-
         }
 
         /// <summary>
@@ -495,7 +434,6 @@ namespace MediaBrowser.Theater.Presentation.Pages
         /// </summary>
         protected virtual void OnParentItemChanged()
         {
-            ApplicationWindow.SetBackdrops(ParentItem);
         }
 
         /// <summary>
@@ -506,10 +444,6 @@ namespace MediaBrowser.Theater.Presentation.Pages
             if (CurrentItem != null)
             {
                 ApplicationWindow.SetBackdrops(CurrentItem);
-            }
-            else
-            {
-                ApplicationWindow.ClearBackdrops();
             }
         }
 

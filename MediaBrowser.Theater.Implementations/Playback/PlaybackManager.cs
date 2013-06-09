@@ -5,6 +5,7 @@ using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Net;
 using MediaBrowser.Theater.Interfaces.Configuration;
+using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
         private readonly ITheaterConfigurationManager _configurationManager;
         private readonly ILogger _logger;
         private readonly IApiClient _apiClient;
+        private readonly INavigationService _nav;
 
         public event EventHandler<PlaybackStartEventArgs> PlaybackStarted;
 
@@ -31,11 +33,12 @@ namespace MediaBrowser.Theater.Implementations.Playback
 
         private readonly List<IMediaPlayer> _mediaPlayers = new List<IMediaPlayer>();
 
-        public PlaybackManager(ITheaterConfigurationManager configurationManager, ILogger logger, IApiClient apiClient)
+        public PlaybackManager(ITheaterConfigurationManager configurationManager, ILogger logger, IApiClient apiClient, INavigationService nav)
         {
             _configurationManager = configurationManager;
             _logger = logger;
             _apiClient = apiClient;
+            _nav = nav;
         }
 
         public IEnumerable<IMediaPlayer> MediaPlayers
@@ -108,6 +111,11 @@ namespace MediaBrowser.Theater.Implementations.Playback
             }
 
             await player.Play(options);
+
+            if (options.GoFullScreen)
+            {
+                await _nav.NavigateToInternalPlayerPage();
+            }
 
             OnPlaybackStarted(player, options);
         }

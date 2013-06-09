@@ -22,6 +22,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
             InitializeComponent();
 
             chkRemember.Click += chkRemember_Click;
+            Loaded += SortMenuPage_Loaded;
 
             _sortOptions["Name"] = ItemSortBy.SortName;
             _sortOptions["CommunityRating"] = ItemSortBy.CommunityRating;
@@ -30,32 +31,19 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
             _sortOptions["Year"] = ItemSortBy.ProductionYear;
         }
 
+        void SortMenuPage_Loaded(object sender, RoutedEventArgs e)
+        {
+            AddFields();
+        }
+
         /// <summary>
         /// Handles the Click event of the chkRemember control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
-        async void chkRemember_Click(object sender, RoutedEventArgs e)
+        void chkRemember_Click(object sender, RoutedEventArgs e)
         {
-            //try
-            //{
-            //    await MainPage.UpdateRememberSort(chkRemember.IsChecked.HasValue && chkRemember.IsChecked.Value);
-            //}
-            //catch (HttpException)
-            //{
-            //    App.Instance.ShowDefaultErrorMessage();
-            //}
-        }
-
-        /// <summary>
-        /// Raises the <see cref="E:System.Windows.FrameworkElement.Initialized" /> event. This method is invoked whenever <see cref="P:System.Windows.FrameworkElement.IsInitialized" /> is set to true internally.
-        /// </summary>
-        /// <param name="e">The <see cref="T:System.Windows.RoutedEventArgs" /> that contains the event data.</param>
-        protected override void OnInitialized(EventArgs e)
-        {
-            base.OnInitialized(e);
-
-            AddFields();
+            DisplayPreferencesWindow.DisplayPreferencesContainer.DisplayPreferences.RememberSorting = true;
         }
 
         /// <summary>
@@ -106,9 +94,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
-        async void radio_Click(object sender, RoutedEventArgs e)
+        void radio_Click(object sender, RoutedEventArgs e)
         {
-            //await MainPage.UpdateSortOption((sender as RadioButton).Tag.ToString());
+            DisplayPreferencesWindow.DisplayPreferencesContainer.DisplayPreferences.SortBy =
+                (sender as RadioButton).Tag.ToString();
+
+            DisplayPreferencesWindow.DisplayPreferencesContainer.NotifyDisplayPreferencesChanged();
         }
     }
 }

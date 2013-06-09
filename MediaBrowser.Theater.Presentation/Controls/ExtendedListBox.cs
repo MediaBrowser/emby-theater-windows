@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -28,22 +27,6 @@ namespace MediaBrowser.Theater.Presentation.Controls
             {
                 ItemInvoked(this, new ItemEventArgs<object> { Argument = boundObject });
             }
-        }
-
-        /// <summary>
-        /// Gets or sets a value indicating if the first list item should be auto-focused on load
-        /// </summary>
-        /// <value><c>true</c> if [auto focus]; otherwise, <c>false</c>.</value>
-        public bool AutoFocus { get; set; }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ExtendedListBox" /> class.
-        /// </summary>
-        public ExtendedListBox()
-            : base()
-        {
-            AutoFocus = false;
-            ItemContainerGenerator.StatusChanged += ItemContainerGeneratorStatusChanged;
         }
 
         /// <summary>
@@ -213,38 +196,6 @@ namespace MediaBrowser.Theater.Presentation.Controls
             }
 
             return ItemContainerGenerator.ItemFromContainer(dep);
-        }
-
-        /// <summary>
-        /// Autofocuses the first list item when the list is loaded
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
-        async void ItemContainerGeneratorStatusChanged(object sender, EventArgs e)
-        {
-            if (ItemContainerGenerator.Status == GeneratorStatus.ContainersGenerated && AutoFocus)
-            {
-                await Dispatcher.InvokeAsync(OnContainersGenerated);
-            }
-        }
-
-        /// <summary>
-        /// Called when [containers generated].
-        /// </summary>
-        void OnContainersGenerated()
-        {
-            var index = 0;
-
-            if (index >= 0)
-            {
-                var item = ItemContainerGenerator.ContainerFromIndex(index) as ListBoxItem;
-
-                if (item != null)
-                {
-                    item.Focus();
-                    ItemContainerGenerator.StatusChanged -= ItemContainerGeneratorStatusChanged;
-                }
-            }
         }
     }
 }

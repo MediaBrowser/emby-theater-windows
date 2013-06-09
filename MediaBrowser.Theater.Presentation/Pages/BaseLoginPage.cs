@@ -14,7 +14,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-using System.Windows.Navigation;
 
 namespace MediaBrowser.Theater.Presentation.Pages
 {
@@ -32,8 +31,6 @@ namespace MediaBrowser.Theater.Presentation.Pages
 
         protected RangeObservableCollection<UserDtoViewModel> ListItems { get; private set; }
         protected ListCollectionView ListCollectionView { get; private set; }
-
-        private IInputElement _lastFocused;
 
         protected BaseLoginPage(IApiClient apiClient, IImageManager imageManager, INavigationService navigationManager, ISessionManager sessionManager, IApplicationWindow applicationWindow, IThemeManager themeManager)
         {
@@ -59,8 +56,6 @@ namespace MediaBrowser.Theater.Presentation.Pages
         {
             base.OnInitialized(e);
 
-            FocusManager.SetIsFocusScope(this, true);
-
             ListItems = new RangeObservableCollection<UserDtoViewModel>();
             ListCollectionView = (ListCollectionView)CollectionViewSource.GetDefaultView(ListItems);
 
@@ -79,22 +74,7 @@ namespace MediaBrowser.Theater.Presentation.Pages
         /// <param name="e">The <see cref="System.Windows.RoutedEventArgs"/> instance containing the event data.</param>
         void BaseLoginPage_Loaded(object sender, RoutedEventArgs e)
         {
-            NavigationService.Navigating -= NavigationService_Navigating;
-            NavigationService.Navigating += NavigationService_Navigating;
-
             ApplicationWindow.ClearBackdrops();
-        }
-
-        void NavigationService_Navigating(object sender, NavigatingCancelEventArgs e)
-        {
-            if (e.Content.Equals(this))
-            {
-                FocusManager.SetFocusedElement(this, _lastFocused);
-            }
-            else
-            {
-                _lastFocused = FocusManager.GetFocusedElement(this);
-            }
         }
 
         /// <summary>
@@ -130,10 +110,7 @@ namespace MediaBrowser.Theater.Presentation.Pages
 
                 ListItems.AddRange(users.Select(i => new UserDtoViewModel(ApiClient, ImageManager) { User = i }));
 
-                if (_lastFocused == null)
-                {
-                    MoveFocus(new TraversalRequest(FocusNavigationDirection.First));
-                }
+                MoveFocus(new TraversalRequest(FocusNavigationDirection.First));
 
                 if (selectedIndex.HasValue)
                 {

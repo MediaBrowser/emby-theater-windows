@@ -88,6 +88,7 @@
     <Compile Include="Pages\BaseInternalPlayerPage.cs" />
     <Compile Include="Pages\BaseItemsPage.cs" />
     <Compile Include="Pages\BaseLoginPage.cs" />
+    <Compile Include="Playback\PlaybackExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

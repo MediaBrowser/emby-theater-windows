@@ -74,6 +74,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
             radioList.IsChecked = displayPreferences.ViewType == ViewTypes.List;
             radioPoster.IsChecked = displayPreferences.ViewType == ViewTypes.Poster;
             radioThumbstrip.IsChecked = displayPreferences.ViewType == ViewTypes.Thumbstrip;
+
+            if (!radioList.IsChecked.Value && !radioPoster.IsChecked.Value && !radioThumbstrip.IsChecked.Value)
+            {
+                radioPoster.IsChecked = true;
+            }
         }
     }
 }

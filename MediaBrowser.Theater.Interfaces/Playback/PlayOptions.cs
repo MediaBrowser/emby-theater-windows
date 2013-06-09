@@ -66,24 +66,24 @@ namespace MediaBrowser.Theater.Interfaces.Playback
         public DateTime PlaybackStartTime { get; private set; }
 
         /// <summary>
-        /// The _show now playing view
-        /// </summary>
-        private bool _showNowPlayingView = true;
-        /// <summary>
-        /// Determines whether or not the PlaybackController should show the now playing view during playback
-        /// Note that this depends on PlaybackController implementation and support
+        /// Gets or sets a value indicating whether [show now playing view].
         /// </summary>
         /// <value><c>true</c> if [show now playing view]; otherwise, <c>false</c>.</value>
-        public bool ShowNowPlayingView { get { return _showNowPlayingView; } set { _showNowPlayingView = value; } }
+        public bool ShowNowPlayingView { get; set; }
 
         /// <summary>
-        /// The _go full screen
-        /// </summary>
-        private bool _goFullScreen = true;
-        /// <summary>
-        /// Determines whether or not the PlaybackController should go full screen upon beginning playback
+        /// Gets or sets a value indicating whether [go full screen].
         /// </summary>
         /// <value><c>true</c> if [go full screen]; otherwise, <c>false</c>.</value>
-        public bool GoFullScreen { get { return _goFullScreen; } set { _goFullScreen = value; } }
+        public bool GoFullScreen { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PlayOptions"/> class.
+        /// </summary>
+        public PlayOptions()
+        {
+            GoFullScreen = true;
+            ShowNowPlayingView = true;
+        }
     }
 }

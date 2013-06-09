@@ -7,6 +7,7 @@ using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.UI.Controls;
+using MediaBrowser.UI.Implementations;
 using System;
 using System.ComponentModel;
 using System.Linq;

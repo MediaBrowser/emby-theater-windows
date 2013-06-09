@@ -1,13 +1,10 @@
 ﻿using MediaBrowser.ApiInteraction;
 using MediaBrowser.Common.Configuration;
-using MediaBrowser.Common.Events;
 using MediaBrowser.Common.Implementations;
 using MediaBrowser.Common.Implementations.ScheduledTasks;
 using MediaBrowser.Common.IO;
 using MediaBrowser.IsoMounter;
 using MediaBrowser.Model.ApiClient;
-using MediaBrowser.Model.Dto;
-using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.System;
 using MediaBrowser.Model.Updates;
 using MediaBrowser.Plugins.DefaultTheme;
@@ -21,7 +18,8 @@ using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.Theming;
-using MediaBrowser.UI.Pages;
+using MediaBrowser.Theater.Vlc;
+using MediaBrowser.UI.Implementations;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -32,9 +30,6 @@ using System.Net.Http;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Threading;
 
 namespace MediaBrowser.UI
 {
@@ -107,20 +102,21 @@ namespace MediaBrowser.UI
             ThemeManager = new ThemeManager();
             RegisterSingleInstance(ThemeManager);
 
-            PlaybackManager = new PlaybackManager(TheaterConfigurationManager, Logger, ApiClient);
+            NavigationService = new NavigationService(ThemeManager, () => PlaybackManager);
+            RegisterSingleInstance(NavigationService);
+
+            PlaybackManager = new PlaybackManager(TheaterConfigurationManager, Logger, ApiClient, NavigationService);
             RegisterSingleInstance(PlaybackManager);
 
             ImageManager = new ImageManager(ApiClient, ApplicationPaths);
             RegisterSingleInstance(ImageManager);
-
-            NavigationService = new NavigationService(ThemeManager, Logger);
-            RegisterSingleInstance(NavigationService);
 
             SessionManager = new SessionManager(NavigationService, ApiClient, Logger);
             RegisterSingleInstance(SessionManager);
 
             RegisterSingleInstance(ApiClient);
 
+            RegisterSingleInstance<IHiddenWindow>(new AppHiddenWIndow());
         }
 
         /// <summary>
@@ -131,6 +127,8 @@ namespace MediaBrowser.UI
             base.FindParts();
 
             ThemeManager.AddParts(GetExports<ITheme>());
+
+            PlaybackManager.AddParts(GetExports<IMediaPlayer>());
         }
 
         /// <summary>
@@ -206,6 +204,9 @@ namespace MediaBrowser.UI
             // Include composable parts in the running assembly
             yield return GetType().Assembly;
 
+            // Vlc assembly
+            yield return typeof(NVlcPlayer).Assembly;
+
             // Default theme assembly
             yield return typeof(DefaultTheme).Assembly;
         }
@@ -223,116 +224,4 @@ namespace MediaBrowser.UI
             return new ConfigurationManager(ApplicationPaths, LogManager, XmlSerializer);
         }
     }
-
-    internal class TheaterApplicationWindow : IApplicationWindow
-    {
-        private readonly ILogger _logger;
-
-        public TheaterApplicationWindow(ILogger logger)
-        {
-            _logger = logger;
-        }
-
-        public Window Window
-        {
-            get { return App.Instance.ApplicationWindow; }
-        }
-
-        public void ClearBackdrops()
-        {
-            App.Instance.ApplicationWindow.ClearBackdrops();
-        }
-
-        public void SetBackdrops(BaseItemDto item)
-        {
-            App.Instance.ApplicationWindow.SetBackdrops(item);
-        }
-
-        public void SetBackdrops(IEnumerable<string> paths)
-        {
-            App.Instance.ApplicationWindow.SetBackdrops(paths.ToArray());
-        }
-
-        internal void OnWindowLoaded()
-        {
-            EventHelper.FireEventIfNotNull(WindowLoaded, null, EventArgs.Empty, _logger);
-        }
-
-        public event EventHandler<EventArgs> WindowLoaded;
-    }
-
-    internal class NavigationService : INavigationService
-    {
-        private readonly IThemeManager _themeManager;
-        private readonly ILogger _logger;
-
-        public NavigationService(IThemeManager themeManager, ILogger logger)
-        {
-            _themeManager = themeManager;
-            _logger = logger;
-        }
-
-        /// <summary>
-        /// Navigates the specified page.
-        /// </summary>
-        /// <param name="page">The page.</param>
-        public DispatcherOperation Navigate(Page page)
-        {
-            return App.Instance.ApplicationWindow.Navigate(page);
-        }
-
-        /// <summary>
-        /// Navigates to settings page.
-        /// </summary>
-        public DispatcherOperation NavigateToSettingsPage()
-        {
-            return Navigate(new SettingsPage());
-        }
-
-        public DispatcherOperation NavigateToLoginPage()
-        {
-            return App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(() => Navigate(_themeManager.CurrentTheme.GetLoginPage()));
-        }
-
-        /// <summary>
-        /// Navigates to internal player page.
-        /// </summary>
-        public DispatcherOperation NavigateToInternalPlayerPage()
-        {
-            return Navigate(_themeManager.CurrentTheme.GetInternalPlayerPage());
-        }
-
-        /// <summary>
-        /// Navigates to home page.
-        /// </summary>
-        public DispatcherOperation NavigateToHomePage(BaseItemDto rootItem)
-        {
-            return Navigate(_themeManager.CurrentTheme.GetHomePage(rootItem));
-        }
-
-        /// <summary>
-        /// Navigates to item.
-        /// </summary>
-        public DispatcherOperation NavigateToItem(BaseItemDto item, string context)
-        {
-            return Navigate(_themeManager.CurrentTheme.GetItemPage(item, context));
-        }
-
-        /// <summary>
-        /// Navigates the back.
-        /// </summary>
-        public DispatcherOperation NavigateBack()
-        {
-            return App.Instance.ApplicationWindow.NavigateBack();
-        }
-
-        /// <summary>
-        /// Navigates the forward.
-        /// </summary>
-        public DispatcherOperation NavigateForward()
-        {
-            return App.Instance.ApplicationWindow.NavigateForward();
-        }
-    }
-
 }

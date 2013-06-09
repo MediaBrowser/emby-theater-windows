@@ -16,11 +16,30 @@ namespace MediaBrowser.Theater.Presentation.Pages
     /// </summary>
     public abstract class BaseDetailPage : Page, INotifyPropertyChanged
     {
+        /// <summary>
+        /// Gets the API client.
+        /// </summary>
+        /// <value>The API client.</value>
         protected IApiClient ApiClient { get; private set; }
+        /// <summary>
+        /// Gets the session manager.
+        /// </summary>
+        /// <value>The session manager.</value>
         protected ISessionManager SessionManager { get; private set; }
+        /// <summary>
+        /// Gets the application window.
+        /// </summary>
+        /// <value>The application window.</value>
         protected IApplicationWindow ApplicationWindow { get; private set; }
+        /// <summary>
+        /// Gets the theme manager.
+        /// </summary>
+        /// <value>The theme manager.</value>
         protected IThemeManager ThemeManager { get; private set; }
 
+        /// <summary>
+        /// Occurs when a property value changes.
+        /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>
@@ -62,37 +81,13 @@ namespace MediaBrowser.Theater.Presentation.Pages
         }
 
         /// <summary>
-        /// Gets a value indicating whether this instance can resume.
-        /// </summary>
-        /// <value><c>true</c> if this instance can resume; otherwise, <c>false</c>.</value>
-        protected bool CanResume
-        {
-            get { return Item.CanResume; }
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether this instance can queue.
-        /// </summary>
-        /// <value><c>true</c> if this instance can queue; otherwise, <c>false</c>.</value>
-        protected bool CanQueue
-        {
-            get { return true; }
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether this instance can play trailer.
-        /// </summary>
-        /// <value><c>true</c> if this instance can play trailer; otherwise, <c>false</c>.</value>
-        protected bool CanPlayTrailer
-        {
-            get { return Item.HasTrailer; }
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="BaseDetailPage" /> class.
         /// </summary>
         /// <param name="itemId">The item id.</param>
         /// <param name="apiClient">The API client.</param>
+        /// <param name="sessionManager">The session manager.</param>
+        /// <param name="applicationWindow">The application window.</param>
+        /// <param name="themeManager">The theme manager.</param>
         protected BaseDetailPage(string itemId, IApiClient apiClient, ISessionManager sessionManager, IApplicationWindow applicationWindow, IThemeManager themeManager)
             : base()
         {
@@ -137,6 +132,10 @@ namespace MediaBrowser.Theater.Presentation.Pages
             }
         }
 
+        /// <summary>
+        /// Raises the <see cref="E:System.Windows.FrameworkElement.Initialized" /> event. This method is invoked whenever <see cref="P:System.Windows.FrameworkElement.IsInitialized" /> is set to true internally.
+        /// </summary>
+        /// <param name="e">The <see cref="T:System.Windows.RoutedEventArgs" /> that contains the event data.</param>
         protected override void OnInitialized(EventArgs e)
         {
             base.OnInitialized(e);

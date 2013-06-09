@@ -147,6 +147,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         protected override void OnInitialized(EventArgs e)
         {
             Loaded += HomePage_Loaded;
+            ItemsList.ItemInvoked += ItemsList_ItemInvoked;
 
             base.OnInitialized(e);
         }
@@ -164,6 +165,23 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
             else
             {
                 ApplicationWindow.SetBackdrops(parent);
+            }
+        }
+
+        /// <summary>
+        /// Itemses the list_ item invoked.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The e.</param>
+        void ItemsList_ItemInvoked(object sender, ItemEventArgs<object> e)
+        {
+            var model = e.Argument as BaseItemDtoViewModel;
+
+            if (model != null)
+            {
+                var item = model.Item;
+
+                NavigationManager.NavigateToItem(item, string.Empty);
             }
         }
 

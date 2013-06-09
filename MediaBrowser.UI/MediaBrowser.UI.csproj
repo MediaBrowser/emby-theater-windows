@@ -206,6 +206,10 @@
     <Compile Include="ImageViewerWindow.xaml.cs">
       <DependentUpon>ImageViewerWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Implementations\AppHiddenWIndow.cs" />
+    <Compile Include="Implementations\InternalPlayerPageBehavior.cs" />
+    <Compile Include="Implementations\NavigationService.cs" />
+    <Compile Include="Implementations\TheaterApplicationWindow.cs" />
     <Compile Include="UserInput\KeyboardListener.cs" />
     <Compile Include="Controls\WindowCommands.xaml.cs">
       <DependentUpon>WindowCommands.xaml</DependentUpon>
@@ -325,6 +329,10 @@
     <ProjectReference Include="..\MediaBrowser.Theater.Presentation\MediaBrowser.Theater.Presentation.csproj">
       <Project>{14eddb65-890e-40b5-8d29-414d0aed60c1}</Project>
       <Name>MediaBrowser.Theater.Presentation</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MediaBrowser.Theater.Vlc\MediaBrowser.Theater.Vlc.csproj">
+      <Project>{7ead6221-f3f6-4cae-8bdc-906013195acc}</Project>
+      <Name>MediaBrowser.Theater.Vlc</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

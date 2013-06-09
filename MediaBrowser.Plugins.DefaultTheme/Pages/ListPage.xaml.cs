@@ -51,6 +51,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
 
             Loaded += ListPage_Loaded;
             Unloaded += ListPage_Unloaded;
+            ItemsList.ItemInvoked += ItemsList_ItemInvoked;
         }
 
         async void ListPage_Loaded(object sender, RoutedEventArgs e)
@@ -64,6 +65,23 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
             else
             {
                 HideViewButton();
+            }
+        }
+
+        /// <summary>
+        /// Itemses the list_ item invoked.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The e.</param>
+        void ItemsList_ItemInvoked(object sender, ItemEventArgs<object> e)
+        {
+            var model = e.Argument as BaseItemDtoViewModel;
+
+            if (model != null)
+            {
+                var item = model.Item;
+
+                NavigationManager.NavigateToItem(item, string.Empty);
             }
         }
 

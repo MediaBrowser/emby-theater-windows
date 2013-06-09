@@ -63,10 +63,10 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             {
                 if (AveragePrimaryImageAspectRatio.Equals(0))
                 {
-                    return 0;
+                    return 1;
                 }
 
-                return ImageWidth/AveragePrimaryImageAspectRatio;
+                return ImageWidth / AveragePrimaryImageAspectRatio;
             }
         }
 
@@ -87,7 +87,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 OnPropertyChanged("ViewType");
             }
         }
-        
+
         /// <summary>
         /// The _item
         /// </summary>
@@ -138,7 +138,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             var currentAspectRatio = imageType == ImageType.Primary ? Item.PrimaryImageAspectRatio ?? width / height : width / height;
 
             // Preserve the exact AR if it deviates from the average significantly
-            var preserveExactAspectRatio = Math.Abs(currentAspectRatio - averageAspectRatio) > .15;
+            var preserveExactAspectRatio = Math.Abs(currentAspectRatio - averageAspectRatio) > .25;
 
             if (!preserveExactAspectRatio)
             {

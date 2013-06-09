@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Controls;
 using MediaBrowser.Model.Dto;
 using System.Collections.Generic;
 using System.Windows;
@@ -21,6 +22,18 @@ namespace MediaBrowser.Theater.Interfaces.Presentation
         /// <value>The window.</value>
         Window Window { get; }
 
+        /// <summary>
+        /// Gets the backdrop container.
+        /// </summary>
+        /// <value>The backdrop container.</value>
+        FrameworkElement BackdropContainer { get; }
+
+        /// <summary>
+        /// Gets the page content control.
+        /// </summary>
+        /// <value>The page content control.</value>
+        ContentControl PageContentControl { get; }
+        
         /// <summary>
         /// Clears the backdrops.
         /// </summary>

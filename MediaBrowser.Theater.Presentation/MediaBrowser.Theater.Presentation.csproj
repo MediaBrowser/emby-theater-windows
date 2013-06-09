@@ -85,7 +85,6 @@
     <Compile Include="Controls\TreeHelper.cs" />
     <Compile Include="Controls\VirtualizingWrapPanel.cs" />
     <Compile Include="Pages\BaseDetailPage.cs" />
-    <Compile Include="Pages\BaseInternalPlayerPage.cs" />
     <Compile Include="Pages\BaseItemsPage.cs" />
     <Compile Include="Pages\BaseLoginPage.cs" />
     <Compile Include="Playback\PlaybackExtensions.cs" />

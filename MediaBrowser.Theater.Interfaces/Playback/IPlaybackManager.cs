@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MediaBrowser.Model.Dto;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -42,5 +43,12 @@ namespace MediaBrowser.Theater.Interfaces.Playback
         /// </summary>
         /// <returns>Task.</returns>
         Task StopAllPlayback();
+
+        /// <summary>
+        /// Reports the playback completed.
+        /// </summary>
+        /// <param name="player">The player.</param>
+        /// <param name="items">The items.</param>
+        void ReportPlaybackCompleted(IMediaPlayer player, List<BaseItemDto> items);
     }
 }

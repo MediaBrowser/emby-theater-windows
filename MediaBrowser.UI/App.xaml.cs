@@ -53,7 +53,7 @@ namespace MediaBrowser.UI
         /// Gets the application window.
         /// </summary>
         /// <value>The application window.</value>
-        internal MainWindow ApplicationWindow { get; private set; }
+        public MainWindow ApplicationWindow { get; private set; }
 
         /// <summary>
         /// Gets the hidden window.

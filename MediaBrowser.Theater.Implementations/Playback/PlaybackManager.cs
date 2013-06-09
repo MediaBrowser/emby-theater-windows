@@ -7,11 +7,13 @@ using MediaBrowser.Model.Net;
 using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
+using MediaBrowser.Theater.Interfaces.Presentation;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace MediaBrowser.Theater.Implementations.Playback
 {
@@ -21,6 +23,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
         private readonly ILogger _logger;
         private readonly IApiClient _apiClient;
         private readonly INavigationService _nav;
+        private readonly IApplicationWindow _appWindow;
 
         public event EventHandler<PlaybackStartEventArgs> PlaybackStarted;
 
@@ -33,12 +36,13 @@ namespace MediaBrowser.Theater.Implementations.Playback
 
         private readonly List<IMediaPlayer> _mediaPlayers = new List<IMediaPlayer>();
 
-        public PlaybackManager(ITheaterConfigurationManager configurationManager, ILogger logger, IApiClient apiClient, INavigationService nav)
+        public PlaybackManager(ITheaterConfigurationManager configurationManager, ILogger logger, IApiClient apiClient, INavigationService nav, IApplicationWindow appWindow)
         {
             _configurationManager = configurationManager;
             _logger = logger;
             _apiClient = apiClient;
             _nav = nav;
+            _appWindow = appWindow;
         }
 
         public IEnumerable<IMediaPlayer> MediaPlayers
@@ -112,9 +116,18 @@ namespace MediaBrowser.Theater.Implementations.Playback
 
             await player.Play(options);
 
-            if (options.GoFullScreen)
+            if (player is IInternalMediaPlayer)
             {
-                await _nav.NavigateToInternalPlayerPage();
+                await _appWindow.Window.Dispatcher.InvokeAsync(() =>
+                {
+                    _appWindow.BackdropContainer.Visibility = Visibility.Collapsed;
+                    _appWindow.PageContentControl.SetResourceReference(FrameworkElement.StyleProperty, "PageContentDuringPlayback");
+                });
+                
+                if (options.GoFullScreen)
+                {
+                    await _nav.NavigateToInternalPlayerPage();
+                }
             }
 
             OnPlaybackStarted(player, options);
@@ -127,6 +140,15 @@ namespace MediaBrowser.Theater.Implementations.Playback
         /// <param name="options">The options.</param>
         private void OnPlaybackStarted(IMediaPlayer player, PlayOptions options)
         {
+            if (player is IInternalMediaPlayer)
+            {
+                //await App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(() =>
+                //{
+                //    App.Instance.ApplicationWindow.BackdropContainer.Visibility = Visibility.Visible;
+                //    App.Instance.ApplicationWindow.WindowBackgroundContent.SetResourceReference(FrameworkElement.StyleProperty, "WindowBackgroundContent");
+                //});
+            }
+            
             EventHelper.QueueEventIfNotNull(PlaybackStarted, this, new PlaybackStartEventArgs
             {
                 Options = options,
@@ -134,14 +156,20 @@ namespace MediaBrowser.Theater.Implementations.Playback
             }, _logger);
         }
 
-        //internal void OnPlaybackCompleted(BaseMediaPlayer player, List<BaseItemDto> items)
-        //{
-        //    EventHelper.QueueEventIfNotNull(PlaybackCompleted, this, new PlaybackStopEventArgs
-        //    {
-        //        Items = items,
-        //        Player = player
-        //    }, _logger);
-        //}
+        /// <summary>
+        /// Reports the playback completed.
+        /// </summary>
+        /// <param name="player">The player.</param>
+        /// <param name="items">The items.</param>
+        public void ReportPlaybackCompleted(IMediaPlayer player, List<BaseItemDto> items)
+        {
+            EventHelper.QueueEventIfNotNull(PlaybackCompleted, this, new PlaybackStopEventArgs
+            {
+                Items = items,
+                Player = player
+
+            }, _logger);
+        }
         
         /// <summary>
         /// Stops all playback.

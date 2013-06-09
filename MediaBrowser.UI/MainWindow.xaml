@@ -17,10 +17,8 @@
         ShowInTaskbar="False">
 
     <!--The window itself is a tabstop, and it can't be disabled. So this is a workaround.-->
-    <Grid x:Name="mainGrid">
+    <Grid x:Name="MainGrid">
 
-        <Grid x:Name="InternalPlayerContainer"></Grid>
-        
         <!--This allows the user to drag the window.-->
         <Grid x:Name="DragBar" Style="{StaticResource DragBar}"></Grid>
 
@@ -43,7 +41,7 @@
         </controls2:TransitionControl>
         
         <!--Themes will supply this template to outline the window structure.-->
-        <ContentControl x:Name="PageContent" Template="{StaticResource PageContentTemplate}"></ContentControl>
+        <ContentControl x:Name="PageContent" Template="{DynamicResource PageContentTemplate}"></ContentControl>
         
         <controls:NavigationBar x:Name="NavigationBar"></controls:NavigationBar>
 

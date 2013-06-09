@@ -28,7 +28,7 @@
         <Style TargetType="TextBlock" x:Key="WebdingsTextBlock">
             <Setter Property="FontFamily" Value="Webdings"/>
             <Setter Property="FontSize" Value="14"/>
-            <Setter Property="Foreground" Value="{StaticResource DefaultForeground}"/>
+            <Setter Property="Foreground" Value="{DynamicResource DefaultForeground}"/>
         </Style>
 
         <Style TargetType="Button" x:Key="MinimizeApplicationButton" BasedOn="{StaticResource WebdingsButton}">

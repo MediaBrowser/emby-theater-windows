@@ -37,7 +37,7 @@ namespace MediaBrowser.UI
         /// <summary>
         /// Threshold between input events before mouse fades
         /// </summary>
-        private readonly TimeSpan _mouseFadeThreshold = TimeSpan.FromMilliseconds(3000);        
+        private readonly TimeSpan _mouseFadeThreshold = TimeSpan.FromMilliseconds(3000);
         /// <summary>
         /// Gets or sets the backdrop timer.
         /// </summary>
@@ -81,9 +81,15 @@ namespace MediaBrowser.UI
             get { return _isMouseIdle; }
             set
             {
+                var changed = _isMouseIdle != value;
+
                 _isMouseIdle = value;
-                Dispatcher.InvokeAsync(() => Cursor = value ? Cursors.None : Cursors.Arrow);
-                OnPropertyChanged("IsMouseIdle");
+
+                if (changed)
+                {
+                    Dispatcher.InvokeAsync(() => Cursor = value ? Cursors.None : Cursors.Arrow);
+                    OnPropertyChanged("IsMouseIdle");
+                }
             }
         }
 
@@ -138,10 +144,10 @@ namespace MediaBrowser.UI
             WindowCommands.ApplicationHost = _appHost;
 
             ActivityTimer = new Timer(ActivityCallback, null, 100, 100);
-            
+
             RenderOptions.SetBitmapScalingMode(this, BitmapScalingMode.Fant);
         }
-        
+
         private void ActivityCallback(object state)
         {
             var lastTime = GetLastInput();
@@ -167,7 +173,7 @@ namespace MediaBrowser.UI
 
             DragBar.MouseDown += DragableGridMouseDown;
 
-            ((TheaterApplicationWindow) _appWindow).OnWindowLoaded();
+            ((TheaterApplicationWindow)_appWindow).OnWindowLoaded();
         }
 
         /// <summary>
@@ -177,7 +183,7 @@ namespace MediaBrowser.UI
         {
             var currentBackdropIndex = CurrentBackdropIndex;
 
-            if (currentBackdropIndex == -1  )
+            if (currentBackdropIndex == -1)
             {
                 // Setting this to null doesn't seem to clear out the content
                 // Have to check it for null or get startup errors
@@ -247,7 +253,7 @@ namespace MediaBrowser.UI
         internal DispatcherOperation Navigate(Page page)
         {
             _logger.Info("Navigating to " + page.GetType().Name);
-            
+
             return Dispatcher.InvokeAsync(() => PageFrame.NavigateWithTransition(page));
         }
 
@@ -302,7 +308,7 @@ namespace MediaBrowser.UI
                 BackdropTimer = new Timer(state =>
                 {
                     // Don't display backdrops during video playback
-                    if (_playbackManager.MediaPlayers.Any(p => p.CurrentMedia.IsVideo))
+                    if (_playbackManager.MediaPlayers.Any(p => p.PlayState != PlayState.Idle && p.CurrentMedia.IsVideo))
                     {
                         return;
                     }
@@ -340,7 +346,7 @@ namespace MediaBrowser.UI
                 ActivityTimer.Dispose();
             }
         }
-        
+
         /// <summary>
         /// Clears the backdrops.
         /// </summary>
@@ -396,7 +402,7 @@ namespace MediaBrowser.UI
 
             NavigateForward();
         }
-        
+
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>

@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Common.Events;
+﻿using System.Windows.Controls;
+using MediaBrowser.Common.Events;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Interfaces.Presentation;
@@ -20,7 +21,7 @@ namespace MediaBrowser.UI.Implementations
         private readonly ILogger _logger;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TheaterApplicationWindow"/> class.
+        /// Initializes a new instance of the <see cref="TheaterApplicationWindow" /> class.
         /// </summary>
         /// <param name="logger">The logger.</param>
         public TheaterApplicationWindow(ILogger logger)
@@ -75,5 +76,24 @@ namespace MediaBrowser.UI.Implementations
         /// Occurs when [window loaded].
         /// </summary>
         public event EventHandler<EventArgs> WindowLoaded;
+
+
+        /// <summary>
+        /// Gets the backdrop container.
+        /// </summary>
+        /// <value>The backdrop container.</value>
+        public FrameworkElement BackdropContainer
+        {
+            get { return App.Instance.ApplicationWindow.BackdropContainer; }
+        }
+
+        /// <summary>
+        /// Gets the page content control.
+        /// </summary>
+        /// <value>The page content control.</value>
+        public ContentControl PageContentControl
+        {
+            get { return App.Instance.ApplicationWindow.PageContent; }
+        }
     }
 }

@@ -105,7 +105,7 @@ namespace MediaBrowser.UI
             NavigationService = new NavigationService(ThemeManager, () => PlaybackManager);
             RegisterSingleInstance(NavigationService);
 
-            PlaybackManager = new PlaybackManager(TheaterConfigurationManager, Logger, ApiClient, NavigationService);
+            PlaybackManager = new PlaybackManager(TheaterConfigurationManager, Logger, ApiClient, NavigationService, ApplicationWindow);
             RegisterSingleInstance(PlaybackManager);
 
             ImageManager = new ImageManager(ApiClient, ApplicationPaths);

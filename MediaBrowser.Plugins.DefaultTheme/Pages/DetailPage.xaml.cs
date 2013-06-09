@@ -8,7 +8,8 @@ using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.Theming;
-using MediaBrowser.Theater.Presentation.Pages;
+using System;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -19,8 +20,34 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
     /// <summary>
     /// Interaction logic for DetailPage.xaml
     /// </summary>
-    public partial class DetailPage : BaseDetailPage
+    public partial class DetailPage : Page, INotifyPropertyChanged
     {
+        /// <summary>
+        /// Gets the API client.
+        /// </summary>
+        /// <value>The API client.</value>
+        protected IApiClient ApiClient { get; private set; }
+        /// <summary>
+        /// Gets the session manager.
+        /// </summary>
+        /// <value>The session manager.</value>
+        protected ISessionManager SessionManager { get; private set; }
+        /// <summary>
+        /// Gets the application window.
+        /// </summary>
+        /// <value>The application window.</value>
+        protected IApplicationWindow ApplicationWindow { get; private set; }
+        /// <summary>
+        /// Gets the theme manager.
+        /// </summary>
+        /// <value>The theme manager.</value>
+        protected IThemeManager ThemeManager { get; private set; }
+
+        /// <summary>
+        /// Occurs when a property value changes.
+        /// </summary>
+        public event PropertyChangedEventHandler PropertyChanged;
+        
         /// <summary>
         /// The _image manager
         /// </summary>
@@ -34,18 +61,27 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         /// <summary>
         /// Initializes a new instance of the <see cref="DetailPage" /> class.
         /// </summary>
-        /// <param name="itemId">The item id.</param>
-        /// <param name="apiClient">The API client.</param>
+        /// <param name="item">The item.</param>
         /// <param name="imageManager">The image manager.</param>
-        /// <param name="sessionManager">The session manager.</param>
-        /// <param name="appWindow">The app window.</param>
-        /// <param name="themeManager">The theme manager.</param>
         /// <param name="playbackManager">The playback manager.</param>
-        public DetailPage(string itemId, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IApplicationWindow appWindow, IThemeManager themeManager, IPlaybackManager playbackManager)
-            : base(itemId, apiClient, sessionManager, appWindow, themeManager)
+        /// <param name="apiClient">The API client.</param>
+        /// <param name="sessionManager">The session manager.</param>
+        /// <param name="applicationWindow">The application window.</param>
+        /// <param name="themeManager">The theme manager.</param>
+        public DetailPage(BaseItemDto item, IImageManager imageManager, IPlaybackManager playbackManager, IApiClient apiClient, ISessionManager sessionManager, IApplicationWindow applicationWindow, IThemeManager themeManager)
         {
+            if (item == null)
+            {
+                throw new ArgumentNullException("item");
+            }
+
+            _item = item;
             _imageManager = imageManager;
             _playbackManager = playbackManager;
+            ThemeManager = themeManager;
+            ApplicationWindow = applicationWindow;
+            SessionManager = sessionManager;
+            ApiClient = apiClient;
             InitializeComponent();
 
             BtnOverview.Click += BtnOverview_Click;
@@ -57,8 +93,58 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
             BtnGallery.Click += BtnGallery_Click;
 
             Loaded += DetailPage_Loaded;
+
         }
 
+        /// <summary>
+        /// The _item
+        /// </summary>
+        private BaseItemDto _item;
+        /// <summary>
+        /// Gets or sets the item.
+        /// </summary>
+        /// <value>The item.</value>
+        public BaseItemDto Item
+        {
+            get { return _item; }
+
+            set
+            {
+                _item = value;
+                OnPropertyChanged("Item");
+            }
+        }
+
+        /// <summary>
+        /// Called when [property changed].
+        /// </summary>
+        /// <param name="name">The name.</param>
+        public void OnPropertyChanged(string name)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(name));
+            }
+
+            if (string.Equals(name, "Item"))
+            {
+                OnItemChanged();
+            }
+        }
+
+        /// <summary>
+        /// Raises the <see cref="E:System.Windows.FrameworkElement.Initialized" /> event. This method is invoked whenever <see cref="P:System.Windows.FrameworkElement.IsInitialized" /> is set to true internally.
+        /// </summary>
+        /// <param name="e">The <see cref="T:System.Windows.RoutedEventArgs" /> that contains the event data.</param>
+        protected override void OnInitialized(EventArgs e)
+        {
+            base.OnInitialized(e);
+
+            DataContext = this;
+
+            OnPropertyChanged("Item");
+        }
+        
         /// <summary>
         /// Handles the Loaded event of the DetailPage control.
         /// </summary>
@@ -152,9 +238,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         /// <summary>
         /// Called when [item changed].
         /// </summary>
-        protected override async void OnItemChanged()
+        protected async void OnItemChanged()
         {
-            base.OnItemChanged();
+            ApplicationWindow.SetBackdrops(Item);
 
             var pageTitleTask = AppResources.Instance.SetPageTitle(Item);
 

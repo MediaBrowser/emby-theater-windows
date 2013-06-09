@@ -84,7 +84,10 @@ namespace MediaBrowser.UI.Implementations
         /// <value>The backdrop container.</value>
         public FrameworkElement BackdropContainer
         {
-            get { return App.Instance.ApplicationWindow.BackdropContainer; }
+            get
+            {
+                return App.Instance.ApplicationWindow.BackdropContainer;
+            }
         }
 
         /// <summary>
@@ -94,6 +97,18 @@ namespace MediaBrowser.UI.Implementations
         public ContentControl PageContentControl
         {
             get { return App.Instance.ApplicationWindow.PageContent; }
+        }
+
+        /// <summary>
+        /// Gets the window overlay.
+        /// </summary>
+        /// <value>The window overlay.</value>
+        public FrameworkElement WindowOverlay
+        {
+            get
+            {
+                return App.Instance.ApplicationWindow.WindowBackgroundContent;
+            }
         }
     }
 }

@@ -24,11 +24,6 @@
         <Setter Property="Opacity" Value=".22"/>
     </Style>
 
-    <Style TargetType="Grid" x:Key="WindowBackgroundContent">
-    </Style>
-    <Style TargetType="Grid" x:Key="WindowBackgroundContentDuringPlayback">
-        <Setter Property="Opacity" Value=".4"/>
-    </Style>
     <Style TargetType="Grid" x:Key="DragBar">
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Height" Value="20"/>

@@ -29,6 +29,12 @@ namespace MediaBrowser.Theater.Interfaces.Presentation
         FrameworkElement BackdropContainer { get; }
 
         /// <summary>
+        /// Gets the window overlay.
+        /// </summary>
+        /// <value>The window overlay.</value>
+        FrameworkElement WindowOverlay { get; }
+        
+        /// <summary>
         /// Gets the page content control.
         /// </summary>
         /// <value>The page content control.</value>

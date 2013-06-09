@@ -126,7 +126,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
                 return new ListPage(item, item.DisplayPreferencesId, _apiClient, _imageManager, _sessionManager, _appWindow, _navService, _themeManager);
             }
 
-            return new DetailPage(item.Id, _apiClient, _imageManager, _sessionManager, _appWindow, _themeManager, _playbackManager);
+            return new DetailPage(item, _imageManager, _playbackManager, _apiClient, _sessionManager, _appWindow, _themeManager);
         }
 
         /// <summary>

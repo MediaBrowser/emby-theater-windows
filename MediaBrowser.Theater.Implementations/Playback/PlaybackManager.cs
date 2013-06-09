@@ -121,7 +121,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
                 await _appWindow.Window.Dispatcher.InvokeAsync(() =>
                 {
                     _appWindow.BackdropContainer.Visibility = Visibility.Collapsed;
-                    _appWindow.PageContentControl.SetResourceReference(FrameworkElement.StyleProperty, "PageContentDuringPlayback");
+                    _appWindow.WindowOverlay.SetResourceReference(FrameworkElement.StyleProperty, "WindowBackgroundContentDuringPlayback");
                 });
                 
                 if (options.GoFullScreen)
@@ -140,15 +140,6 @@ namespace MediaBrowser.Theater.Implementations.Playback
         /// <param name="options">The options.</param>
         private void OnPlaybackStarted(IMediaPlayer player, PlayOptions options)
         {
-            if (player is IInternalMediaPlayer)
-            {
-                //await App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(() =>
-                //{
-                //    App.Instance.ApplicationWindow.BackdropContainer.Visibility = Visibility.Visible;
-                //    App.Instance.ApplicationWindow.WindowBackgroundContent.SetResourceReference(FrameworkElement.StyleProperty, "WindowBackgroundContent");
-                //});
-            }
-            
             EventHelper.QueueEventIfNotNull(PlaybackStarted, this, new PlaybackStartEventArgs
             {
                 Options = options,
@@ -161,8 +152,17 @@ namespace MediaBrowser.Theater.Implementations.Playback
         /// </summary>
         /// <param name="player">The player.</param>
         /// <param name="items">The items.</param>
-        public void ReportPlaybackCompleted(IMediaPlayer player, List<BaseItemDto> items)
+        public async void ReportPlaybackCompleted(IMediaPlayer player, List<BaseItemDto> items)
         {
+            if (player is IInternalMediaPlayer)
+            {
+                await _appWindow.Window.Dispatcher.InvokeAsync(() =>
+                {
+                    _appWindow.BackdropContainer.Visibility = Visibility.Visible;
+                    _appWindow.WindowOverlay.SetResourceReference(FrameworkElement.StyleProperty, "WindowBackgroundContent");
+                });
+            }
+            
             EventHelper.QueueEventIfNotNull(PlaybackCompleted, this, new PlaybackStopEventArgs
             {
                 Items = items,

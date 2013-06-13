@@ -15,13 +15,17 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
     /// </summary>
     public partial class LoginPage : BaseLoginPage
     {
+        protected IApplicationWindow ApplicationWindow { get; private set; }
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="LoginPage" /> class.
         /// </summary>
         public LoginPage(IApiClient apiClient, IImageManager imageManager, INavigationService navService, ISessionManager sessionManager, IApplicationWindow appWindow, IThemeManager themeManager)
-            : base(apiClient, imageManager, navService, sessionManager, appWindow, themeManager)
+            : base(apiClient, imageManager, navService, sessionManager, themeManager)
         {
             InitializeComponent();
+
+            ApplicationWindow = appWindow;
         }
 
         /// <summary>
@@ -45,7 +49,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
 
         void LoginPage_Loaded(object sender, RoutedEventArgs e)
         {
+            ApplicationWindow.ClearBackdrops();
             AppResources.Instance.SetDefaultPageTitle();
+
+            ThemeManager.CurrentTheme.ShowDefaultErrorMessage();
         }
     }
 }

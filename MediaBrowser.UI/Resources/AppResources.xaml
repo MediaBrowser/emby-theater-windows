@@ -4,29 +4,35 @@
                     xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation">
 
     <!--Default font for text. Themes should override these as needed-->
-    <FontFamily x:Key="DefaultFontFamily">Segoe UI, Lucida Sans Unicode, Verdana</FontFamily>
+    <FontFamily x:Key="DefaultFontFamily">Segoe UI Light, Lucida Sans Unicode, Verdana</FontFamily>
     <FontWeight x:Key="DefaultFontWeight">Normal</FontWeight>
     <Brush x:Key="DefaultForeground">#333</Brush>
     <System:Double x:Key="DefaultFontSize">24</System:Double>
 
     <!--Default font for small text. Themes should override these as needed-->
-    <FontFamily x:Key="SmallFontFamily">Segoe UI, Lucida Sans Unicode, Verdana</FontFamily>
+    <FontFamily x:Key="SmallFontFamily">Segoe UI Light, Lucida Sans Unicode, Verdana</FontFamily>
     <FontWeight x:Key="SmallFontWeight">Normal</FontWeight>
     <Brush x:Key="SmallForeground">#333</Brush>
     <System:Double x:Key="SmallFontSize">20</System:Double>
 
     <!--Default font for h1 headers. Themes should override these as needed-->
     <System:Double x:Key="Heading1FontSize">60</System:Double>
-    <FontFamily x:Key="Heading1FontFamily">Segoe UI, Lucida Sans Unicode, Verdana</FontFamily>
+    <FontFamily x:Key="Heading1FontFamily">Segoe UI Light, Lucida Sans Unicode, Verdana</FontFamily>
     <FontWeight x:Key="Heading1FontWeight">Thin</FontWeight>
     <Brush x:Key="Heading1Foreground">#333</Brush>
 
     <!--Default font for h2 headers. Themes should override these as needed-->
     <System:Double x:Key="Heading2FontSize">36</System:Double>
-    <FontFamily x:Key="Heading2FontFamily">Segoe UI, Lucida Sans Unicode, Verdana</FontFamily>
+    <FontFamily x:Key="Heading2FontFamily">Segoe UI Light, Lucida Sans Unicode, Verdana</FontFamily>
     <FontWeight x:Key="Heading2FontWeight">Normal</FontWeight>
     <Brush x:Key="Heading2Foreground">#333</Brush>
 
+    <!--Default font for h2 headers. Themes should override these as needed-->
+    <System:Double x:Key="Heading3FontSize">30</System:Double>
+    <FontFamily x:Key="Heading3FontFamily">Segoe UI Light, Lucida Sans Unicode, Verdana</FontFamily>
+    <FontWeight x:Key="Heading3FontWeight">Normal</FontWeight>
+    <Brush x:Key="Heading3Foreground">#333</Brush>
+    
     <!--Default Frame style. -->
     <Style TargetType="Frame">
         <Setter Property="NavigationUIVisibility" Value="Hidden"/>
@@ -88,6 +94,15 @@
         <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
 
+    <!--Default TextBlock style. -->
+    <Style TargetType="TextBlock" x:Key="Heading3TextBlockStyle">
+        <Setter Property="FontSize" Value="{DynamicResource Heading3FontSize}"/>
+        <Setter Property="FontFamily" Value="{DynamicResource Heading3FontFamily}"/>
+        <Setter Property="FontWeight" Value="{DynamicResource Heading3FontWeight}"/>
+        <Setter Property="Foreground" Value="{DynamicResource Heading3Foreground}"/>
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
     <!--Default Button style. -->
     <Style TargetType="Button">
         <Setter Property="FontSize" Value="{DynamicResource DefaultFontSize}"/>
@@ -113,9 +128,6 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsKeyboardFocused" Value="true">
-                            <Setter TargetName="Border" Property="Background" Value="#666666" />
-                        </Trigger>
-                        <Trigger Property="IsFocused" Value="true">
                             <Setter TargetName="Border" Property="Background" Value="#666666" />
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="true">
@@ -149,22 +161,6 @@
         <Setter Property="SelectionMode" Value="Single"/>
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"/>
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
-    </Style>
-
-    <!--MB Logo, black text. -->
-    <Style TargetType="Image" x:Key="MBLogoImageBlack">
-        <Setter Property="Source" Value="Images/mblogoblackfull.png"/>
-        <Setter Property="Stretch" Value="Uniform"/>
-        <Setter Property="RenderOptions.BitmapScalingMode" Value="HighQuality"/>
-        <Setter Property="Height" Value="100"/>
-    </Style>
-
-    <!--MB Logo, white text. -->
-    <Style TargetType="Image" x:Key="MBLogoImageWhite">
-        <Setter Property="Source" Value="Images/mblogowhitefull.png"/>
-        <Setter Property="Stretch" Value="Uniform"/>
-        <Setter Property="RenderOptions.BitmapScalingMode" Value="HighQuality"/>
-        <Setter Property="Height" Value="100"/>
     </Style>
 
     <!--Defines the styles for ListBoxItems. Themes should override this if they choose. -->

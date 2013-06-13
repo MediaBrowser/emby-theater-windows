@@ -1,6 +1,8 @@
 ﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
+using MediaBrowser.Plugins.DefaultTheme.Controls;
+using MediaBrowser.Plugins.DefaultTheme.Home;
 using MediaBrowser.Plugins.DefaultTheme.Pages;
 using MediaBrowser.Plugins.DefaultTheme.Resources;
 using MediaBrowser.Theater.Interfaces.Navigation;
@@ -12,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media.Imaging;
 
 namespace MediaBrowser.Plugins.DefaultTheme
 {
@@ -135,7 +138,14 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// <exception cref="System.NotImplementedException"></exception>
         public void ShowDefaultErrorMessage()
         {
-            throw new NotImplementedException();
+            ShowMessage(new MessageBoxInfo
+            {
+                Caption = "Error",
+                Text = "There was an error processing the request.",
+                Icon = MessageBoxIcon.Error,
+                Button = MessageBoxButton.OK
+
+            });
         }
 
         /// <summary>
@@ -143,8 +153,40 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// </summary>
         /// <param name="options">The options.</param>
         /// <returns>MessageBoxResult.</returns>
-        /// <exception cref="System.NotImplementedException"></exception>
         public MessageBoxResult ShowMessage(MessageBoxInfo options)
+        {
+            return ShowMessage(options, _appWindow.Window);
+        }
+        
+        /// <summary>
+        /// Shows the message.
+        /// </summary>
+        /// <param name="options">The options.</param>
+        /// <param name="parentWindow">The parent window.</param>
+        /// <returns>MessageBoxResult.</returns>
+        /// <exception cref="System.NotImplementedException"></exception>
+        public MessageBoxResult ShowMessage(MessageBoxInfo options, Window parentWindow)
+        {
+            var win = new ModalWindow
+            {
+                Caption = options.Caption,
+                Button = options.Button,
+                MessageBoxImage = options.Icon,
+                Text = options.Text
+            };
+
+            win.ShowModal(parentWindow);
+
+            return win.MessageBoxResult;
+        }
+
+        /// <summary>
+        /// Shows the notification.
+        /// </summary>
+        /// <param name="caption">The caption.</param>
+        /// <param name="text">The text.</param>
+        /// <param name="icon">The icon.</param>
+        public void ShowNotification(string caption, string text, BitmapImage icon)
         {
             throw new NotImplementedException();
         }

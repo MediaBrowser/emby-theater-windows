@@ -1,4 +1,5 @@
 ﻿using MediaBrowser.Model.Dto;
+using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Threading;
 
@@ -29,7 +30,7 @@ namespace MediaBrowser.Theater.Interfaces.Navigation
         /// Navigates to login page.
         /// </summary>
         DispatcherOperation NavigateToLoginPage();
-        
+
         /// <summary>
         /// Navigates to internal player page.
         /// </summary>
@@ -40,7 +41,7 @@ namespace MediaBrowser.Theater.Interfaces.Navigation
         /// </summary>
         /// <param name="item">The item.</param>
         /// <param name="context">The context.</param>
-        DispatcherOperation NavigateToItem(BaseItemDto item, string context);
+        Task NavigateToItem(BaseItemDto item, string context);
 
         /// <summary>
         /// Navigates the back.

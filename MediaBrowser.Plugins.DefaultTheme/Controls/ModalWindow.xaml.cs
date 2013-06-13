@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media.Animation;
 using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Presentation.Controls;
 
-namespace MediaBrowser.UI.Controls
+namespace MediaBrowser.Plugins.DefaultTheme.Controls
 {
     /// <summary>
     /// Interaction logic for ModalWindow.xaml

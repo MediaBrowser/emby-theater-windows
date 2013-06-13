@@ -38,13 +38,13 @@
     <RunPostBuildEvent>Always</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MediaBrowser.Common, Version=3.0.4907.21736, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.Common, Version=3.0.4910.24233, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.3.0.119\lib\net45\MediaBrowser.Common.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.122\lib\net45\MediaBrowser.Common.dll</HintPath>
     </Reference>
-    <Reference Include="MediaBrowser.Model, Version=3.0.4907.21736, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.Model, Version=3.0.4910.24232, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.3.0.119\lib\net45\MediaBrowser.Model.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.122\lib\net45\MediaBrowser.Model.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Expression.Effects, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -120,8 +120,14 @@
     <Compile Include="Controls\HomePageTile.xaml.cs">
       <DependentUpon>HomePageTile.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\ModalWindow.xaml.cs">
+      <DependentUpon>ModalWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\MultiItemTile.xaml.cs">
       <DependentUpon>MultiItemTile.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\NotificationMessage.xaml.cs">
+      <DependentUpon>NotificationMessage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\UserTile.xaml.cs">
       <DependentUpon>UserTile.xaml</DependentUpon>
@@ -145,7 +151,7 @@
     <Compile Include="Pages\DetailPage.xaml.cs">
       <DependentUpon>DetailPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\HomePage.xaml.cs">
+    <Compile Include="Home\HomePage.xaml.cs">
       <DependentUpon>HomePage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\InternalPlayerPage.xaml.cs">
@@ -244,9 +250,17 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Controls\ModalWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Controls\MultiItemTile.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\NotificationMessage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\UserTile.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -272,7 +286,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Pages\HomePage.xaml">
+    <Page Include="Home\HomePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -361,7 +375,28 @@
     <Resource Include="Resources\Images\BackButton.png" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Home\" />
+    <Resource Include="Resources\Images\MessageBox\Asterisk.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\MessageBox\Error.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\MessageBox\Exclamation.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\MessageBox\Hand.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\MessageBox\Information.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\MessageBox\Question.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\MessageBox\Stop.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\MessageBox\Warning.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

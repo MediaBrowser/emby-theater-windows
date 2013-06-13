@@ -61,7 +61,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
             {
                 var optionValue = _sortOptions[option];
 
-                var radio = new ExtendedRadioButton { GroupName = "Options" };
+                var radio = new RadioButton { GroupName = "Options" };
 
                 radio.SetResourceReference(StyleProperty, "ViewMenuRadioButton");
 

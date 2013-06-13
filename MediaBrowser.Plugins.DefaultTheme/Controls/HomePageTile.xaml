@@ -15,7 +15,7 @@
             <Grid.Background>
                 <SolidColorBrush Color="#A6000000"></SolidColorBrush>
             </Grid.Background>
-            <TextBlock Margin="10 5 0 10" Foreground="White" Text="{Binding Path=Item.Name}" TextWrapping="Wrap"></TextBlock>
+            <TextBlock Margin="10 5 0 10" Foreground="White" Text="{Binding Path=Item.Name}" TextWrapping="Wrap" Style="{StaticResource TextBlockStyle}"></TextBlock>
         </Grid>
     </Grid>
 </UserControl>

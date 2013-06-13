@@ -1,10 +1,12 @@
-﻿using System;
+﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Theater.Implementations.Controls;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.UI.Pages;
+using System;
+using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Threading;
 
@@ -24,15 +26,19 @@ namespace MediaBrowser.UI.Implementations
         /// </summary>
         private readonly Func<IPlaybackManager> _playbackManagerFactory;
 
+        private readonly IApiClient _apiClient;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="NavigationService" /> class.
         /// </summary>
         /// <param name="themeManager">The theme manager.</param>
         /// <param name="playbackManagerFactory">The playback manager factory.</param>
-        public NavigationService(IThemeManager themeManager, Func<IPlaybackManager> playbackManagerFactory)
+        /// <param name="apiClient">The API client.</param>
+        public NavigationService(IThemeManager themeManager, Func<IPlaybackManager> playbackManagerFactory, IApiClient apiClient)
         {
             _themeManager = themeManager;
             _playbackManagerFactory = playbackManagerFactory;
+            _apiClient = apiClient;
         }
 
         /// <summary>
@@ -94,9 +100,12 @@ namespace MediaBrowser.UI.Implementations
         /// <param name="item">The item.</param>
         /// <param name="context">The context.</param>
         /// <returns>DispatcherOperation.</returns>
-        public DispatcherOperation NavigateToItem(BaseItemDto item, string context)
+        public async Task NavigateToItem(BaseItemDto item, string context)
         {
-            return Navigate(_themeManager.CurrentTheme.GetItemPage(item, context));
+            // Grab it fresh from the server to make sure we have the full record
+            item = await _apiClient.GetItemAsync(item.Id, _apiClient.CurrentUserId);
+
+            await Navigate(_themeManager.CurrentTheme.GetItemPage(item, context));
         }
 
         /// <summary>

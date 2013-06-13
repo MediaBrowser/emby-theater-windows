@@ -35,16 +35,17 @@
     </Style>
 
     <!--Default font for text. Themes should override these as needed-->
-    <Brush x:Key="DefaultForeground">#eeeeee</Brush>
+    <Brush x:Key="DefaultForeground">#ffffff</Brush>
 
     <!--Default font for small text. Themes should override these as needed-->
-    <Brush x:Key="SmallForeground">#eeeeee</Brush>
+    <Brush x:Key="SmallForeground">#ffffff</Brush>
 
     <!--Default font for h1 headers. Themes should override these as needed-->
-    <Brush x:Key="Heading1Foreground">#eeeeee</Brush>
+    <Brush x:Key="Heading1Foreground">#ffffff</Brush>
 
     <!--Default font for h2 headers. Themes should override these as needed-->
-    <Brush x:Key="Heading2Foreground">#eeeeee</Brush>
+    <Brush x:Key="Heading2Foreground">#ffffff</Brush>
+    <Brush x:Key="Heading3Foreground">#ffffff</Brush>
 
     <Brush x:Key="SelectedItemHighlightColor">WhiteSmoke</Brush>
 
@@ -250,7 +251,7 @@
     </Style>
 
     <!--Defines the styles for ListBoxItems. Themes should override this if they choose. -->
-    <Style x:Key="ListBoxItemStyle" TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource ListBoxItemStyle}">
+    <Style x:Key="HighlightedListBoxItemStyle" TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource ListBoxItemStyle}">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ListBoxItem}">
@@ -276,7 +277,7 @@
     </Style>
 
     <!--Defines the styles for ListBoxItems. Themes should override this if they choose. -->
-    <Style x:Key="AnimatedListBoxItemStyle" TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource ListBoxItemStyle}">
+    <Style x:Key="AnimatedListBoxItemStyle" TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource HighlightedListBoxItemStyle}">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ListBoxItem}">
@@ -581,7 +582,7 @@
             </DataTrigger>
             <DataTrigger Binding="{Binding Path=DisplayPreferences.ViewType}" Value="List">
                 <Setter Property="ItemTemplate" Value="{StaticResource ListPageListViewItemTemplate}"></Setter>
-                <Setter Property="ItemContainerStyle" Value="{StaticResource ListBoxItemStyle}"></Setter>
+                <Setter Property="ItemContainerStyle" Value="{StaticResource HighlightedListBoxItemStyle}"></Setter>
                 <Setter Property="ItemsPanel">
                     <Setter.Value>
                         <ItemsPanelTemplate>
@@ -595,6 +596,7 @@
 
     <Style TargetType="Button" x:Key="TextButton" BasedOn="{StaticResource ImageButton}">
         <Setter Property="HorizontalAlignment" Value="Left"></Setter>
+        <Setter Property="Margin" Value="50 0 50 0"></Setter>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
@@ -603,9 +605,6 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsKeyboardFocused" Value="true">
-                            <Setter TargetName="Border" Property="BorderBrush" Value="White" />
-                        </Trigger>
-                        <Trigger Property="IsFocused" Value="true">
                             <Setter TargetName="Border" Property="BorderBrush" Value="White" />
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="true">
@@ -634,9 +633,6 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsKeyboardFocused" Value="true">
-                            <Setter TargetName="Border" Property="BorderBrush" Value="White" />
-                        </Trigger>
-                        <Trigger Property="IsFocused" Value="true">
                             <Setter TargetName="Border" Property="BorderBrush" Value="White" />
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="true">
@@ -694,10 +690,6 @@
                     </BulletDecorator>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsKeyboardFocused" Value="true">
-                            <Setter TargetName="Border" Property="Fill" Value="{StaticResource FocusBackgroundBrush}" />
-                            <Setter TargetName="CheckMark" Property="Fill" Value="{StaticResource FocusGlyphBrush}" />
-                        </Trigger>
-                        <Trigger Property="IsFocused" Value="true">
                             <Setter TargetName="Border" Property="Fill" Value="{StaticResource FocusBackgroundBrush}" />
                             <Setter TargetName="CheckMark" Property="Fill" Value="{StaticResource FocusGlyphBrush}" />
                         </Trigger>
@@ -764,10 +756,6 @@
                             <Setter TargetName="Border" Property="Background" Value="{StaticResource FocusBackgroundBrush}" />
                             <Setter TargetName="CheckMark" Property="Stroke" Value="{StaticResource FocusGlyphBrush}" />
                         </Trigger>
-                        <Trigger Property="IsFocused" Value="true">
-                            <Setter TargetName="Border" Property="Background" Value="{StaticResource FocusBackgroundBrush}" />
-                            <Setter TargetName="CheckMark" Property="Stroke" Value="{StaticResource FocusGlyphBrush}" />
-                        </Trigger>
                         <Trigger Property="IsChecked" Value="{x:Null}">
                             <Setter TargetName="CheckMark" Property="Data" Value="M 0 7 L 7 0" />
                         </Trigger>
@@ -788,6 +776,178 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+    </Style>
+
+
+
+    <!--Modal background style. -->
+    <Style TargetType="Grid" x:Key="ModalOverlayStyle">
+        <Setter Property="Background" Value="Gray"/>
+        <Setter Property="Opacity" Value=".4"/>
+    </Style>
+
+    <!--Modal Window style. -->
+    <Style TargetType="Window" x:Key="ModalWindow">
+        <Setter Property="FontSize" Value="{DynamicResource DefaultFontSize}"/>
+        <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}"/>
+        <Setter Property="FontWeight" Value="{DynamicResource DefaultFontWeight}"/>
+        <Setter Property="Foreground" Value="{DynamicResource DefaultForeground}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="KeyboardNavigation.DirectionalNavigation" Value="Contained"/>
+    </Style>
+
+    <!--Modal content style. -->
+    <Style TargetType="Grid" x:Key="ModalContentStyle">
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Background" Value="#022255"/>
+        <Setter Property="Opacity" Value=".96"/>
+    </Style>
+
+    <!--Modal content style. -->
+    <Style TargetType="Grid" x:Key="ModalContentInnerStyle">
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="MaxWidth" Value="800"/>
+        <Setter Property="Margin" Value="0 20 0 20" />
+    </Style>
+
+    <!--Modal message caption style. -->
+    <Style TargetType="TextBlock" x:Key="ModalTextStyle">
+        <Setter Property="FontSize" Value="{DynamicResource DefaultFontSize}"/>
+        <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}"/>
+        <Setter Property="FontWeight" Value="{DynamicResource DefaultFontWeight}"/>
+        <Setter Property="Foreground" Value="{DynamicResource DefaultForeground}"/>
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="Margin" Value="0 20 0 20" />
+    </Style>
+
+    <!--Modal button image -->
+    <Style TargetType="Image" x:Key="ModalButtonImage">
+        <Setter Property="VerticalAlignment" Value="Top"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="Stretch" Value="None"/>
+        <Setter Property="Margin" Value="0 30 20 10" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding MessageBoxImage}" Value="Asterisk">
+                <Setter Property="Source" Value="../Resources/Images/MessageBox/Asterisk.png">
+                </Setter>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding MessageBoxImage}" Value="Information">
+                <Setter Property="Source" Value="../Resources/Images/MessageBox/Information.png">
+                </Setter>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding MessageBoxImage}" Value="Warning">
+                <Setter Property="Source" Value="../Resources/Images/MessageBox/Warning.png">
+                </Setter>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding MessageBoxImage}" Value="Exclamation">
+                <Setter Property="Source" Value="../Resources/Images/MessageBox/Exclamation.png">
+                </Setter>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding MessageBoxImage}" Value="Question">
+                <Setter Property="Source" Value="../Resources/Images/MessageBox/Question.png">
+                </Setter>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding MessageBoxImage}" Value="Stop">
+                <Setter Property="Source" Value="../Resources/Images/MessageBox/Stop.png">
+                </Setter>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding MessageBoxImage}" Value="Hand">
+                <Setter Property="Source" Value="../Resources/Images/MessageBox/Hand.png">
+                </Setter>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding MessageBoxImage}" Value="Error">
+                <Setter Property="Source" Value="../Resources/Images/MessageBox/Error.png">
+                </Setter>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding MessageBoxImage}" Value="None">
+                <Setter Property="Source" Value="{x:Null}"></Setter>
+                <Setter Property="Visibility" Value="Collapsed"></Setter>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <!--Modal content style. -->
+    <Style TargetType="StackPanel" x:Key="ModalButtonPanel">
+        <Setter Property="HorizontalAlignment" Value="Right"/>
+        <Setter Property="Orientation" Value="Horizontal"/>
+        <Setter Property="Margin" Value="0 20 0 30" />
+    </Style>
+
+    <!--Modal content style. -->
+    <Style TargetType="Button" x:Key="ModalButton">
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Margin" Value="20 0 0 0" />
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="SnapsToDevicePixels" Value="true"/>
+        <Setter Property="OverridesDefaultStyle" Value="true"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Border x:Name="Border" Background="{TemplateBinding Background}" BorderBrush="White" BorderThickness="2" Padding="20 5 20 5">
+                        <ContentPresenter x:Name="contentPresenter" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsKeyboardFocused" Value="true">
+                            <Setter TargetName="Border" Property="Background" Value="#0069C5" />
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="true">
+                            <Setter TargetName="Border" Property="Background" Value="#0069C5" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="true">
+                            <Setter TargetName="Border" Property="Background" Value="#0069C5" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="false">
+                            <Setter TargetName="Border" Property="Background" Value="Gray" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
+    <!--Content style. -->
+    <Style TargetType="Grid" x:Key="NotificationContentStyle">
+        <Setter Property="HorizontalAlignment" Value="Right"/>
+        <Setter Property="VerticalAlignment" Value="Bottom"/>
+        <Setter Property="Background" Value="#FF870F"/>
+        <Setter Property="Margin" Value="0 0 0 20"/>
+    </Style>
+
+    <!--Content style. -->
+    <Style TargetType="Grid" x:Key="NotificationContentInnerStyle">
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="MaxWidth" Value="500"/>
+        <Setter Property="Margin" Value="0 0 20 0"/>
+    </Style>
+
+    <!--Message caption style. -->
+    <Style TargetType="TextBlock" x:Key="NotificationCaptionStyle">
+        <Setter Property="FontSize" Value="{DynamicResource Heading2FontSize}"/>
+        <Setter Property="FontFamily" Value="{DynamicResource Heading2FontFamily}"/>
+        <Setter Property="FontWeight" Value="{DynamicResource Heading2FontWeight}"/>
+        <Setter Property="Foreground" Value="{DynamicResource Heading2Foreground}"/>
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="Margin" Value="20 20 20 0" />
+    </Style>
+
+    <!--Message caption style. -->
+    <Style TargetType="TextBlock" x:Key="NotificationTextStyle">
+        <Setter Property="FontSize" Value="{DynamicResource DefaultFontSize}"/>
+        <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}"/>
+        <Setter Property="FontWeight" Value="{DynamicResource DefaultFontWeight}"/>
+        <Setter Property="Foreground" Value="{DynamicResource DefaultForeground}"/>
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="Margin" Value="20 20 20 0" />
+    </Style>
+
+    <!--Modal button image -->
+    <Style TargetType="Image" x:Key="NotificationButtonImage" BasedOn="{StaticResource ModalButtonImage}">
+        <Setter Property="Margin" Value="20 20 0 20" />
     </Style>
 
 </ResourceDictionary>

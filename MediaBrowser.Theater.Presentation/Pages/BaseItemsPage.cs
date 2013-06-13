@@ -176,7 +176,6 @@ namespace MediaBrowser.Theater.Presentation.Pages
                 }
                 else
                 {
-
                     CurrentItemIndex = ListCollectionView.CurrentPosition;
                 }
 

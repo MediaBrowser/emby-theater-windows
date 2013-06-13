@@ -134,9 +134,9 @@ namespace MediaBrowser.Theater.Implementations.Presentation
 
                 try
                 {
-                    using (var httpStream = await _apiClient.GetImageStreamAsync(url))
+                    using (var httpStream = await _apiClient.GetImageStreamAsync(url).ConfigureAwait(false))
                     {
-                        return await GetBitmapImageAsync(httpStream, cachePath);
+                        return await GetBitmapImageAsync(httpStream, cachePath).ConfigureAwait(false);
                     }
                 }
                 finally

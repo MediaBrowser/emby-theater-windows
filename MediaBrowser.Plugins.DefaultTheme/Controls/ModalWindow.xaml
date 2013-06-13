@@ -1,4 +1,4 @@
-﻿<controls2:BaseModalWindow x:Class="MediaBrowser.UI.Controls.ModalWindow"
+﻿<controls2:BaseModalWindow x:Class="MediaBrowser.Plugins.DefaultTheme.Controls.ModalWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                            xmlns:controls2="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"

@@ -10,7 +10,6 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -26,16 +25,14 @@ namespace MediaBrowser.Theater.Presentation.Pages
         protected IImageManager ImageManager { get; private set; }
         protected INavigationService NavigationManager { get; private set; }
         protected ISessionManager SessionManager { get; private set; }
-        protected IApplicationWindow ApplicationWindow { get; private set; }
         protected IThemeManager ThemeManager { get; private set; }
 
         protected RangeObservableCollection<UserDtoViewModel> ListItems { get; private set; }
         protected ListCollectionView ListCollectionView { get; private set; }
 
-        protected BaseLoginPage(IApiClient apiClient, IImageManager imageManager, INavigationService navigationManager, ISessionManager sessionManager, IApplicationWindow applicationWindow, IThemeManager themeManager)
+        protected BaseLoginPage(IApiClient apiClient, IImageManager imageManager, INavigationService navigationManager, ISessionManager sessionManager, IThemeManager themeManager)
         {
             ThemeManager = themeManager;
-            ApplicationWindow = applicationWindow;
             SessionManager = sessionManager;
             NavigationManager = navigationManager;
             ImageManager = imageManager;
@@ -62,19 +59,8 @@ namespace MediaBrowser.Theater.Presentation.Pages
             ItemsList.ItemsSource = ListCollectionView;
 
             ItemsList.ItemInvoked += ItemsList_ItemInvoked;
-            Loaded += BaseLoginPage_Loaded;
 
             await ReloadUsers(true);
-        }
-
-        /// <summary>
-        /// Handles the Loaded event of the BaseLoginPage control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="System.Windows.RoutedEventArgs"/> instance containing the event data.</param>
-        void BaseLoginPage_Loaded(object sender, RoutedEventArgs e)
-        {
-            ApplicationWindow.ClearBackdrops();
         }
 
         /// <summary>

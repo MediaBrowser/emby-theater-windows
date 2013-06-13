@@ -1,0 +1,41 @@
+﻿<pages:BaseItemsPage x:Class="MediaBrowser.Plugins.DefaultTheme.Home.HomePage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                     xmlns:pages="clr-namespace:MediaBrowser.Theater.Presentation.Pages;assembly=MediaBrowser.Theater.Presentation"
+                     xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
+                     Title="HomePage">
+
+    <Page.Resources>
+
+        <DataTemplate x:Key="HomeMenuItemTemplate">
+            <TextBlock Text="{Binding}" Style="{StaticResource Heading3TextBlockStyle}" Margin="40 0"></TextBlock>
+        </DataTemplate>
+    </Page.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <controls:ExtendedListBox x:Name="MenuList" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{StaticResource ListBoxStyle}" Grid.Row="0" HorizontalAlignment="Center" ItemTemplate="{StaticResource HomeMenuItemTemplate}" Margin="100 30" ItemContainerStyle="{StaticResource ListBoxItemStyle}">
+            <controls:ExtendedListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" />
+                </ItemsPanelTemplate>
+            </controls:ExtendedListBox.ItemsPanel>
+        </controls:ExtendedListBox>
+
+        <controls:ExtendedScrollViewer Grid.Row="1" x:Name="scrollviewer" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalAlignment="Center" HorizontalAlignment="Center" CanContentScroll="True">
+            <controls:ScrollingPanel CanHorizontallyScroll="True" CanVerticallyScroll="False" HorizontalAlignment="Stretch">
+                <controls:ExtendedListBox x:Name="lstCollectionFolders" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{StaticResource ListBoxStyle}" ItemContainerStyle="{StaticResource AnimatedListBoxItemStyle}" Grid.Row="1" Grid.Column="1" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource HomePageListBoxItemTemplate}">
+                    <controls:ExtendedListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Vertical" VerticalAlignment="Top" IsItemsHost="True" Margin="50 50 150 50" />
+                        </ItemsPanelTemplate>
+                    </controls:ExtendedListBox.ItemsPanel>
+                </controls:ExtendedListBox>
+            </controls:ScrollingPanel>
+        </controls:ExtendedScrollViewer>
+    </Grid>
+</pages:BaseItemsPage>

@@ -190,5 +190,14 @@ namespace MediaBrowser.Plugins.DefaultTheme
         {
             throw new NotImplementedException();
         }
+
+        /// <summary>
+        /// Sets the page title.
+        /// </summary>
+        /// <param name="title">The title.</param>
+        public void SetPageTitle(string title)
+        {
+            AppResources.Instance.SetPageTitle(title);
+        }
     }
 }

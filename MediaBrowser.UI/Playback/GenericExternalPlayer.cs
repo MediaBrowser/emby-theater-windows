@@ -214,7 +214,13 @@ namespace MediaBrowser.UI.Playback
                 return _nullTaskResult;
             }
 
-            return Task.Run(() => _currentProcess.Kill());
+            return Task.Run(() =>
+            {
+                if (!_currentProcess.CloseMainWindow())
+                {
+                    _currentProcess.Kill();
+                }
+            });
         }
 
         /// <summary>
@@ -252,7 +258,10 @@ namespace MediaBrowser.UI.Playback
                     throw;
                 }
 
-                KeyboardListener.KeyDown += KeyboardListener_KeyDown;
+                if (options.Configuration.CloseOnStopButton)
+                {
+                    KeyboardListener.KeyDown += KeyboardListener_KeyDown;
+                }
 
                 process.Exited += CurrentProcess_Exited;
 

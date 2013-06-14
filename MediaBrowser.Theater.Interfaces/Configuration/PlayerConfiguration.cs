@@ -49,6 +49,12 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
         /// <value>The args.</value>
         public string Args { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether [close on stop button].
+        /// </summary>
+        /// <value><c>true</c> if [close on stop button]; otherwise, <c>false</c>.</value>
+        public bool CloseOnStopButton { get; set; }
+
         public PlayerConfiguration()
         {
             ItemTypes = new string[] {};

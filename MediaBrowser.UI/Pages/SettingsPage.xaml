@@ -8,6 +8,5 @@
 	Title="SettingsPage">
 
     <Grid>
-        <TextBlock Margin="0 0 0 300">Settings Page</TextBlock>
     </Grid>
 </Page>

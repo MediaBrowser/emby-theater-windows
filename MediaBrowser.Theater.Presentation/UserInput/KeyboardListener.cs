@@ -17,7 +17,7 @@ namespace MediaBrowser.Theater.Presentation.UserInput
         /// <summary>
         /// The _ key down
         /// </summary>
-        static volatile EventHandler<KeyEventArgs> _KeyDown;
+        static volatile EventHandler<KeyEventArgs> _keyDown;
         /// <summary>
         /// Fires whenever CurrentItem changes
         /// </summary>
@@ -25,18 +25,18 @@ namespace MediaBrowser.Theater.Presentation.UserInput
         {
             add
             {
-                if (_KeyDown == null)
+                if (_keyDown == null)
                 {
                     StartListening();
                 }
 
-                _KeyDown += value;
+                _keyDown += value;
             }
             remove
             {
-                _KeyDown -= value;
+                _keyDown -= value;
 
-                if (_KeyDown == null && _hookID != IntPtr.Zero)
+                if (_keyDown == null && _hookID != IntPtr.Zero)
                 {
                     StopListening();
                 }
@@ -51,13 +51,13 @@ namespace MediaBrowser.Theater.Presentation.UserInput
         {
             e.SuppressKeyPress = false;
 
-            if (_KeyDown != null)
+            if (_keyDown != null)
             {
                 // For now, don't async this
                 // This will give listeners a chance to modify SuppressKeyPress if they want
                 try
                 {
-                    _KeyDown(null, e);
+                    _keyDown(null, e);
                 }
                 catch (Exception ex)
                 {

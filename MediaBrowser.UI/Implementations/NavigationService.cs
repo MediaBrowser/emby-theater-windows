@@ -59,7 +59,7 @@ namespace MediaBrowser.UI.Implementations
         /// <returns>DispatcherOperation.</returns>
         public DispatcherOperation NavigateToSettingsPage()
         {
-            return Navigate(new SettingsPage());
+            return Navigate(new SettingsPage(_themeManager));
         }
 
         /// <summary>

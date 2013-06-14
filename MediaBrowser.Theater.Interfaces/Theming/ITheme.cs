@@ -63,5 +63,11 @@ namespace MediaBrowser.Theater.Interfaces.Theming
         /// <param name="text">The text.</param>
         /// <param name="icon">The icon.</param>
         void ShowNotification(string caption, string text, BitmapImage icon);
+
+        /// <summary>
+        /// Sets the page title.
+        /// </summary>
+        /// <param name="title">The title.</param>
+        void SetPageTitle(string title);
     }
 }

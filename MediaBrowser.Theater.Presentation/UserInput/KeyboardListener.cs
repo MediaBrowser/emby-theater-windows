@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
-namespace MediaBrowser.UI.UserInput
+namespace MediaBrowser.Theater.Presentation.UserInput
 {
     /// <summary>
     /// Provides a basic low-level keyboard listener

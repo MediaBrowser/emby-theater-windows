@@ -18,7 +18,7 @@
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <controls:ExtendedListBox x:Name="MenuList" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{StaticResource ListBoxStyle}" Grid.Row="0" HorizontalAlignment="Center" ItemTemplate="{StaticResource HomeMenuItemTemplate}" Margin="100 30" ItemContainerStyle="{StaticResource ListBoxItemStyle}">
+        <controls:ExtendedListBox x:Name="MenuList" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{StaticResource ListBoxStyle}" Grid.Row="0" HorizontalAlignment="Center" ItemTemplate="{StaticResource HomeMenuItemTemplate}" Margin="100 50 100 0" ItemContainerStyle="{StaticResource ListBoxItemStyle}">
             <controls:ExtendedListBox.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" />

@@ -47,8 +47,7 @@ namespace MediaBrowser.Theater.Interfaces.Playback
         /// <summary>
         /// Reports the playback completed.
         /// </summary>
-        /// <param name="player">The player.</param>
-        /// <param name="items">The items.</param>
-        void ReportPlaybackCompleted(IMediaPlayer player, List<BaseItemDto> items);
+        /// <param name="eventArgs">The <see cref="PlaybackStopEventArgs"/> instance containing the event data.</param>
+        void ReportPlaybackCompleted(PlaybackStopEventArgs eventArgs);
     }
 }

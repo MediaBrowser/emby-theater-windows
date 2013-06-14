@@ -207,7 +207,7 @@
     <Compile Include="Implementations\InternalPlayerPageBehavior.cs" />
     <Compile Include="Implementations\NavigationService.cs" />
     <Compile Include="Implementations\TheaterApplicationWindow.cs" />
-    <Compile Include="UserInput\KeyboardListener.cs" />
+    <Compile Include="Playback\GenericExternalPlayer.cs" />
     <Page Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -347,7 +347,6 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <Resource Include="Resources\Images\NavBar\MediaBack.png" />
     <Resource Include="Resources\Images\NavBar\MediaFastForward.png" />

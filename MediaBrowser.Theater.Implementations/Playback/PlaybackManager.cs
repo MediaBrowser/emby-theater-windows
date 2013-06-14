@@ -73,7 +73,8 @@ namespace MediaBrowser.Theater.Implementations.Playback
                 throw new ArgumentException("At least one item must be supplied.");
             }
 
-            var player = GetPlayer(options.Items);
+            PlayerConfiguration config;
+            var player = GetPlayer(options.Items, out config);
 
             if (player == null)
             {
@@ -82,7 +83,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
 
             await StopAllPlayback();
 
-            await Play(player, options);
+            await Play(player, options, config);
         }
 
         /// <summary>
@@ -90,8 +91,9 @@ namespace MediaBrowser.Theater.Implementations.Playback
         /// </summary>
         /// <param name="player">The player.</param>
         /// <param name="options">The options.</param>
+        /// <param name="configuration">The configuration.</param>
         /// <returns>Task.</returns>
-        private async Task Play(IMediaPlayer player, PlayOptions options)
+        private async Task Play(IMediaPlayer player, PlayOptions options, PlayerConfiguration configuration)
         {
             if (options.Shuffle)
             {
@@ -114,6 +116,8 @@ namespace MediaBrowser.Theater.Implementations.Playback
                 }
             }
 
+            options.Configuration = configuration;
+
             await player.Play(options);
 
             if (player is IInternalMediaPlayer)
@@ -123,7 +127,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
                     _appWindow.BackdropContainer.Visibility = Visibility.Collapsed;
                     _appWindow.WindowOverlay.SetResourceReference(FrameworkElement.StyleProperty, "WindowBackgroundContentDuringPlayback");
                 });
-                
+
                 if (options.GoFullScreen)
                 {
                     await _nav.NavigateToInternalPlayerPage();
@@ -150,11 +154,10 @@ namespace MediaBrowser.Theater.Implementations.Playback
         /// <summary>
         /// Reports the playback completed.
         /// </summary>
-        /// <param name="player">The player.</param>
-        /// <param name="items">The items.</param>
-        public async void ReportPlaybackCompleted(IMediaPlayer player, List<BaseItemDto> items)
+        /// <param name="eventArgs">The <see cref="PlaybackStopEventArgs"/> instance containing the event data.</param>
+        public async void ReportPlaybackCompleted(PlaybackStopEventArgs eventArgs)
         {
-            if (player is IInternalMediaPlayer)
+            if (eventArgs.Player is IInternalMediaPlayer)
             {
                 await _appWindow.Window.Dispatcher.InvokeAsync(() =>
                 {
@@ -162,15 +165,10 @@ namespace MediaBrowser.Theater.Implementations.Playback
                     _appWindow.WindowOverlay.SetResourceReference(FrameworkElement.StyleProperty, "WindowBackgroundContent");
                 });
             }
-            
-            EventHelper.QueueEventIfNotNull(PlaybackCompleted, this, new PlaybackStopEventArgs
-            {
-                Items = items,
-                Player = player
 
-            }, _logger);
+            EventHelper.QueueEventIfNotNull(PlaybackCompleted, this, eventArgs, _logger);
         }
-        
+
         /// <summary>
         /// Stops all playback.
         /// </summary>
@@ -221,13 +219,14 @@ namespace MediaBrowser.Theater.Implementations.Playback
                 LocationType = LocationType.Remote
             };
         }
-        
+
         /// <summary>
         /// Gets the player.
         /// </summary>
         /// <param name="items">The items.</param>
+        /// <param name="configuration">The configuration.</param>
         /// <returns>IMediaPlayer.</returns>
-        private IMediaPlayer GetPlayer(List<BaseItemDto> items)
+        private IMediaPlayer GetPlayer(List<BaseItemDto> items, out PlayerConfiguration configuration)
         {
             var configuredPlayer = _configurationManager.Configuration.MediaPlayers.FirstOrDefault(p => IsConfiguredToPlay(p, items));
 
@@ -237,10 +236,13 @@ namespace MediaBrowser.Theater.Implementations.Playback
 
                 if (player != null)
                 {
+                    configuration = configuredPlayer;
                     return player;
                 }
             }
 
+            configuration = null;
+            
             // If there's no explicit configuration just find the first matching player who says they can play it
             return MediaPlayers.FirstOrDefault(p => items.All(p.CanPlay));
         }

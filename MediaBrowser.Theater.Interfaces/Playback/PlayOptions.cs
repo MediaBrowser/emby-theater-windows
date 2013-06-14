@@ -1,6 +1,7 @@
 ﻿using MediaBrowser.Model.Dto;
 using System;
 using System.Collections.Generic;
+using MediaBrowser.Theater.Interfaces.Configuration;
 
 namespace MediaBrowser.Theater.Interfaces.Playback
 {
@@ -76,6 +77,8 @@ namespace MediaBrowser.Theater.Interfaces.Playback
         /// </summary>
         /// <value><c>true</c> if [go full screen]; otherwise, <c>false</c>.</value>
         public bool GoFullScreen { get; set; }
+
+        public PlayerConfiguration Configuration { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PlayOptions"/> class.

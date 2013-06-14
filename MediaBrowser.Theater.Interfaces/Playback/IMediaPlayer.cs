@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using MediaBrowser.Theater.Interfaces.Configuration;
 
 namespace MediaBrowser.Theater.Interfaces.Playback
 {
@@ -20,6 +21,16 @@ namespace MediaBrowser.Theater.Interfaces.Playback
         /// </summary>
         event EventHandler PlayStateChanged;
 
+        /// <summary>
+        /// Occurs when [media changed].
+        /// </summary>
+        event EventHandler<MediaChangeEventArgs> MediaChanged;
+
+        /// <summary>
+        /// Occurs when [playback completed].
+        /// </summary>
+        event EventHandler<PlaybackStopEventArgs> PlaybackCompleted;
+        
         /// <summary>
         /// Gets the playlist.
         /// </summary>

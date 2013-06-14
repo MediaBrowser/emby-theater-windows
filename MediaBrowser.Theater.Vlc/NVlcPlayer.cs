@@ -25,6 +25,10 @@ namespace MediaBrowser.Theater.Vlc
     /// </summary>
     public class NVlcPlayer : IInternalMediaPlayer, IDisposable
     {
+        public event EventHandler<MediaChangeEventArgs> MediaChanged;
+
+        public event EventHandler<PlaybackStopEventArgs> PlaybackCompleted;
+
         /// <summary>
         /// The _windows forms panel
         /// </summary>
@@ -47,6 +51,7 @@ namespace MediaBrowser.Theater.Vlc
         /// </summary>
         private readonly IHiddenWindow _hiddenWindow;
         private readonly ILogger _logger;
+        private readonly IPlaybackManager _playbackManager;
 
         /// <summary>
         /// The _task result
@@ -58,17 +63,22 @@ namespace MediaBrowser.Theater.Vlc
         /// </summary>
         /// <param name="hiddenWindow">The hidden window.</param>
         /// <param name="logManager">The log manager.</param>
-        public NVlcPlayer(IHiddenWindow hiddenWindow, ILogManager logManager)
+        /// <param name="playbackManager">The playback manager.</param>
+        public NVlcPlayer(IHiddenWindow hiddenWindow, ILogManager logManager, IPlaybackManager playbackManager)
         {
             _hiddenWindow = hiddenWindow;
+            _playbackManager = playbackManager;
 
             _logger = logManager.GetLogger(Name);
         }
 
-        private readonly List<BaseItemDto> _playlist = new List<BaseItemDto>();
+        private List<BaseItemDto> _playlist = new List<BaseItemDto>();
         public IReadOnlyList<BaseItemDto> Playlist
         {
-            get { return _playlist; }
+            get
+            {
+                return _playlist;
+            }
         }
 
         public int CurrentPlaylistIndex { get; private set; }
@@ -209,11 +219,7 @@ namespace MediaBrowser.Theater.Vlc
             CurrentPlaylistIndex = 0;
             CurrentPlayOptions = options;
 
-            lock (_playlist)
-            {
-                _playlist.Clear();
-                _playlist.AddRange(options.Items);
-            }
+            _playlist = options.Items.ToList();
 
             try
             {
@@ -251,6 +257,26 @@ namespace MediaBrowser.Theater.Vlc
         /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
         void Events_PlayerStopped(object sender, EventArgs e)
         {
+            var playlist = _playlist.ToList();
+            var index = CurrentPlaylistIndex;
+            var ticks = CurrentPositionTicks;
+
+            DisposePlayer();
+
+            var media = index != -1 && playlist.Count > 0 ? playlist[index] : null;
+
+            var args = new PlaybackStopEventArgs
+            {
+                Playlist = playlist,
+                Player = this,
+                EndingPlaylistIndex = index,
+                EndingPositionTicks = ticks,
+                EndingMedia = media
+            };
+
+            EventHelper.QueueEventIfNotNull(PlaybackCompleted, this, args, _logger);
+
+            _playbackManager.ReportPlaybackCompleted(args);
         }
 
         /// <summary>
@@ -260,7 +286,7 @@ namespace MediaBrowser.Theater.Vlc
         /// <param name="e">The e.</param>
         void MediaListPlayerEvents_MediaListPlayerNextItemSet(object sender, MediaListPlayerNextItemSet e)
         {
-            //var current = MediaList.FirstOrDefault(i => i.Tag == e.NewMedia.Tag);
+            //var current = _mediaList.FirstOrDefault(i => i.Tag == e.Item.Tag);
 
             //var newIndex = current != null ? MediaList.IndexOf(current) : -1;
 
@@ -333,7 +359,7 @@ namespace MediaBrowser.Theater.Vlc
             _mediaListPlayer.InnerPlayer.Volume = volume;
 
             OnVolumeChanged();
-            
+
             return _taskResult;
         }
 
@@ -346,7 +372,7 @@ namespace MediaBrowser.Theater.Vlc
             _mediaListPlayer.InnerPlayer.Mute = true;
 
             OnVolumeChanged();
-            
+
             return _taskResult;
         }
 
@@ -484,10 +510,7 @@ namespace MediaBrowser.Theater.Vlc
             CurrentPlayOptions = null;
             CurrentPlaylistIndex = 0;
 
-            lock (_playlist)
-            {
-                _playlist.Clear();
-            }
+            _playlist = new List<BaseItemDto>();
         }
 
         #region VolumeChanged

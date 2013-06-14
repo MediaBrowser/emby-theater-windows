@@ -59,6 +59,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Net" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -85,6 +86,7 @@
     <Compile Include="Pages\BaseItemsPage.cs" />
     <Compile Include="Pages\BaseLoginPage.cs" />
     <Compile Include="Playback\PlaybackExtensions.cs" />
+    <Compile Include="Playback\PlaybackProgressReporter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -98,6 +100,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="UserInput\KeyboardListener.cs" />
     <Compile Include="ViewModels\BaseItemDtoViewModel.cs" />
     <Compile Include="ViewModels\BaseItemPersonViewModel.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />

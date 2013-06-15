@@ -191,9 +191,6 @@
       <Link>Properties\SharedVersion.cs</Link>
     </Compile>
     <Compile Include="ApplicationHost.cs" />
-    <Compile Include="Controls\NavigationBar.xaml.cs">
-      <DependentUpon>NavigationBar.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Controls\WindowCommands.xaml.cs">
       <DependentUpon>WindowCommands.xaml</DependentUpon>
     </Compile>
@@ -207,14 +204,9 @@
     <Compile Include="Implementations\InternalPlayerPageBehavior.cs" />
     <Compile Include="Implementations\NavigationService.cs" />
     <Compile Include="Implementations\TheaterApplicationWindow.cs" />
-    <Compile Include="Playback\GenericExternalPlayer.cs" />
     <Page Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Controls\NavigationBar.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\WindowCommands.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -296,6 +288,10 @@
       <Project>{6e892999-711d-4e24-8bac-dacf5bfa783a}</Project>
       <Name>MediaBrowser.Plugins.DefaultTheme</Name>
     </ProjectReference>
+    <ProjectReference Include="..\MediaBrowser.Theater.ExternalPlayer\MediaBrowser.Theater.ExternalPlayer.csproj">
+      <Project>{56efab4f-dceb-4acc-9c9e-e86e85ecae82}</Project>
+      <Name>MediaBrowser.Theater.ExternalPlayer</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MediaBrowser.Theater.Implementations\MediaBrowser.Theater.Implementations.csproj">
       <Project>{1bd67463-d86a-4851-be42-4d9098adb791}</Project>
       <Name>MediaBrowser.Theater.Implementations</Name>
@@ -314,16 +310,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Images\NavBar\MuteButton.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Resources\Images\Icon.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Images\NavBar\VolumeDownButton.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Images\NavBar\VolumeUpButton.png" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">
@@ -348,15 +335,8 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Images\NavBar\MediaBack.png" />
-    <Resource Include="Resources\Images\NavBar\MediaFastForward.png" />
-    <Resource Include="Resources\Images\NavBar\MediaForward.png" />
-    <Resource Include="Resources\Images\NavBar\MediaRewind.png" />
-    <Resource Include="Resources\Images\NavBar\PlayButton.png" />
-    <Resource Include="Resources\Images\NavBar\PauseButton.png" />
-    <Resource Include="Resources\Images\NavBar\StopButton.png" />
+    <Folder Include="Playback\" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <PropertyGroup>

@@ -33,7 +33,7 @@ namespace MediaBrowser.UI.Pages
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         void SettingsPage_Loaded(object sender, RoutedEventArgs e)
         {
-            _themeManager.CurrentTheme.SetPageTitle("Settings");
+            _themeManager.CurrentTheme.SetDefaultPageTitle();
         }
     }
 }

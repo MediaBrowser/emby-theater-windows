@@ -6,7 +6,9 @@
       mc:Ignorable="d" 
       d:DesignHeight="300" d:DesignWidth="300"
 	Title="SettingsPage">
-
+    
     <Grid>
+
+        
     </Grid>
 </Page>

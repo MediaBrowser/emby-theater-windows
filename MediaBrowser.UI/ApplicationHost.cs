@@ -8,16 +8,19 @@ using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.System;
 using MediaBrowser.Model.Updates;
 using MediaBrowser.Plugins.DefaultTheme;
+using MediaBrowser.Theater.ExternalPlayer;
 using MediaBrowser.Theater.Implementations.Configuration;
 using MediaBrowser.Theater.Implementations.Playback;
 using MediaBrowser.Theater.Implementations.Presentation;
 using MediaBrowser.Theater.Implementations.Session;
 using MediaBrowser.Theater.Implementations.Theming;
+using MediaBrowser.Theater.Implementations.UserInput;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.Theming;
+using MediaBrowser.Theater.Interfaces.UserInput;
 using MediaBrowser.Theater.Vlc;
 using MediaBrowser.UI.Implementations;
 using System;
@@ -50,6 +53,7 @@ namespace MediaBrowser.UI
         public INavigationService NavigationService { get; private set; }
         public ISessionManager SessionManager { get; private set; }
         public IApplicationWindow ApplicationWindow { get; private set; }
+        public IUserInputManager UserInputManager { get; private set; }
 
         public ConfigurationManager TheaterConfigurationManager
         {
@@ -115,6 +119,9 @@ namespace MediaBrowser.UI
             RegisterSingleInstance(SessionManager);
 
             RegisterSingleInstance(ApiClient);
+
+            UserInputManager = new UserInputManager();
+            RegisterSingleInstance(UserInputManager);
 
             RegisterSingleInstance<IHiddenWindow>(new AppHiddenWIndow());
         }
@@ -207,6 +214,9 @@ namespace MediaBrowser.UI
             // Vlc assembly
             yield return typeof(NVlcPlayer).Assembly;
 
+            // External player assembly
+            yield return typeof(GenericExternalPlayer).Assembly;
+            
             // Default theme assembly
             yield return typeof(DefaultTheme).Assembly;
         }

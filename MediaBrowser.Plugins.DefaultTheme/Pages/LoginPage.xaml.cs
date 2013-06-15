@@ -1,5 +1,4 @@
 ﻿using MediaBrowser.Model.ApiClient;
-using MediaBrowser.Plugins.DefaultTheme.Resources;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
@@ -50,9 +49,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         void LoginPage_Loaded(object sender, RoutedEventArgs e)
         {
             ApplicationWindow.ClearBackdrops();
-            AppResources.Instance.SetDefaultPageTitle();
-
-            ThemeManager.CurrentTheme.ShowDefaultErrorMessage();
+            ThemeManager.CurrentTheme.SetDefaultPageTitle();
         }
     }
 }

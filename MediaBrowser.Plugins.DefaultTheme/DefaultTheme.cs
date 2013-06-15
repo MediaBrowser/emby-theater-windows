@@ -157,7 +157,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         {
             return ShowMessage(options, _appWindow.Window);
         }
-        
+
         /// <summary>
         /// Shows the message.
         /// </summary>
@@ -198,6 +198,14 @@ namespace MediaBrowser.Plugins.DefaultTheme
         public void SetPageTitle(string title)
         {
             AppResources.Instance.SetPageTitle(title);
+        }
+
+        /// <summary>
+        /// Sets the default page title.
+        /// </summary>
+        public void SetDefaultPageTitle()
+        {
+            AppResources.Instance.SetDefaultPageTitle();
         }
     }
 }

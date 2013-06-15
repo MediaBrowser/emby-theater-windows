@@ -101,6 +101,17 @@
         </Setter>
     </Style>
 
+    <Style TargetType="Button" x:Key="BackButton" BasedOn="{StaticResource NavBarButton}">
+        <Setter Property="ToolTip" Value="Back"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Image x:Name="img" Source="..\Resources\Images\NavBar\BackButton.png" Stretch="None" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style TargetType="Grid" x:Key="NavBarGrid">
         <Setter Property="VerticalAlignment" Value="Bottom"/>
         <Setter Property="Visibility" Value="Collapsed" />

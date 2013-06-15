@@ -126,6 +126,9 @@
     <Compile Include="Controls\MultiItemTile.xaml.cs">
       <DependentUpon>MultiItemTile.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\NavigationBar.xaml.cs">
+      <DependentUpon>NavigationBar.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\NotificationMessage.xaml.cs">
       <DependentUpon>NotificationMessage.xaml</DependentUpon>
     </Compile>
@@ -258,6 +261,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Controls\NavigationBar.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Controls\NotificationMessage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -372,9 +379,6 @@
     <Resource Include="Resources\Images\new.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Images\BackButton.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Resources\Images\MessageBox\Asterisk.png" />
   </ItemGroup>
   <ItemGroup>
@@ -397,6 +401,39 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\MessageBox\Warning.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\NavBar\BackButton.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\NavBar\MediaBack.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\NavBar\MediaFastForward.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\NavBar\MediaForward.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\NavBar\MediaRewind.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\NavBar\MuteButton.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\NavBar\PauseButton.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\NavBar\PlayButton.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\NavBar\StopButton.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\NavBar\VolumeDownButton.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\NavBar\VolumeUpButton.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

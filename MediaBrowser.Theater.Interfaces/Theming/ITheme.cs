@@ -69,5 +69,10 @@ namespace MediaBrowser.Theater.Interfaces.Theming
         /// </summary>
         /// <param name="title">The title.</param>
         void SetPageTitle(string title);
+
+        /// <summary>
+        /// Sets the default page title.
+        /// </summary>
+        void SetDefaultPageTitle();
     }
 }

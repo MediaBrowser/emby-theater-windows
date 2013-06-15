@@ -5,13 +5,12 @@ using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Net;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
+using MediaBrowser.Theater.Interfaces.UserInput;
 using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.UI.Controls;
 using MediaBrowser.UI.Implementations;
 using System;
-using System.ComponentModel;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -26,18 +25,11 @@ namespace MediaBrowser.UI
     /// </summary>
     public partial class MainWindow : BaseWindow, IDisposable
     {
+        private DateTime _lastMouseInput;
         /// <summary>
         /// Gets or sets the system activity timer.
         /// </summary>
         private Timer ActivityTimer { get; set; }
-        /// <summary>
-        /// Threshold for time beteen input events to register as activity
-        /// </summary>
-        private readonly TimeSpan _activityThreshold = TimeSpan.FromTicks(1);
-        /// <summary>
-        /// Threshold between input events before mouse fades
-        /// </summary>
-        private readonly TimeSpan _mouseFadeThreshold = TimeSpan.FromMilliseconds(3000);
         /// <summary>
         /// Gets or sets the backdrop timer.
         /// </summary>
@@ -93,42 +85,18 @@ namespace MediaBrowser.UI
             }
         }
 
-        /// <summary>
-        /// Checks windows to see if hold long since the last input event
-        /// eg. Mouse and keyboard
-        /// </summary>
-        /// <returns>Timespan of how long since last event</returns>
-        public static TimeSpan GetLastInput()
-        {
-            var plii = new LASTINPUTINFO();
-            plii.cbSize = (uint)Marshal.SizeOf(plii);
-
-            if (GetLastInputInfo(ref plii))
-                return TimeSpan.FromMilliseconds(Environment.TickCount - plii.dwTime);
-
-            throw new Win32Exception(Marshal.GetLastWin32Error());
-        }
-
-        [DllImport("user32.dll", SetLastError = true)]
-        static extern bool GetLastInputInfo(ref LASTINPUTINFO plii);
-
-        private struct LASTINPUTINFO
-        {
-            public uint cbSize;
-            public uint dwTime;
-        }
-
         private readonly ILogger _logger;
         private readonly IPlaybackManager _playbackManager;
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
         private readonly IApplicationHost _appHost;
         private readonly IApplicationWindow _appWindow;
+        private readonly IUserInputManager _userInput;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MainWindow" /> class.
         /// </summary>
-        public MainWindow(ILogger logger, IPlaybackManager playbackManager, IApiClient apiClient, IImageManager imageManager, IApplicationHost appHost, IApplicationWindow appWindow)
+        public MainWindow(ILogger logger, IPlaybackManager playbackManager, IApiClient apiClient, IImageManager imageManager, IApplicationHost appHost, IApplicationWindow appWindow, IUserInputManager userInput)
             : base()
         {
             _logger = logger;
@@ -137,29 +105,13 @@ namespace MediaBrowser.UI
             _imageManager = imageManager;
             _appHost = appHost;
             _appWindow = appWindow;
+            _userInput = userInput;
 
             InitializeComponent();
 
-            NavigationBar.PlaybackManager = playbackManager;
             WindowCommands.ApplicationHost = _appHost;
 
-            ActivityTimer = new Timer(ActivityCallback, null, 100, 100);
-
             RenderOptions.SetBitmapScalingMode(this, BitmapScalingMode.Fant);
-        }
-
-        private void ActivityCallback(object state)
-        {
-            var lastTime = GetLastInput();
-
-            if (lastTime > _mouseFadeThreshold)// Order is important here.
-            {
-                IsMouseIdle = true;
-            }
-            else if (lastTime > _activityThreshold)
-            {
-                IsMouseIdle = false;
-            }
         }
 
         /// <summary>
@@ -173,7 +125,20 @@ namespace MediaBrowser.UI
 
             DragBar.MouseDown += DragableGridMouseDown;
 
+            ActivityTimer = new Timer(TimerCallback, null, 100, 100);
+            _userInput.MouseMove += _userInput_MouseMove;
+
             ((TheaterApplicationWindow)_appWindow).OnWindowLoaded();
+        }
+
+        void _userInput_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            _lastMouseInput = DateTime.Now;
+        }
+
+        private void TimerCallback(object state)
+        {
+            IsMouseIdle = (DateTime.Now - _lastMouseInput).TotalMilliseconds > 3000;
         }
 
         /// <summary>

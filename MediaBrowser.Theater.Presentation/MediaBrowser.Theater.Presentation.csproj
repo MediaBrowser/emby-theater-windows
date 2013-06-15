@@ -100,7 +100,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="UserInput\KeyboardListener.cs" />
     <Compile Include="ViewModels\BaseItemDtoViewModel.cs" />
     <Compile Include="ViewModels\BaseItemPersonViewModel.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />

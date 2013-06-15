@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="MediaBrowser.UI.Controls.NavigationBar"
+﻿<UserControl x:Class="MediaBrowser.Plugins.DefaultTheme.Controls.NavigationBar"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -34,6 +34,9 @@
 
             </Grid>
 
+            <StackPanel Style="{StaticResource NavBarGridLeftPanel}" Grid.Row="1">
+                <Button x:Name="BackButton" Style="{StaticResource BackButton}"></Button>
+            </StackPanel>
             <StackPanel Style="{StaticResource NavBarGridCenterPanel}" Grid.Row="1">
                 <Button x:Name="PreviousChapterButton" Style="{StaticResource PreviousChapterButton}" Visibility="Collapsed"></Button>
                 <Button x:Name="PlayButton" Style="{StaticResource PlayButton}" Visibility="Collapsed"></Button>

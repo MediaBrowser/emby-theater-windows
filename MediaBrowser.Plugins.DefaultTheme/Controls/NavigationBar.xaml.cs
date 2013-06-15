@@ -6,7 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 
-namespace MediaBrowser.UI.Controls
+namespace MediaBrowser.Plugins.DefaultTheme.Controls
 {
     /// <summary>
     /// Interaction logic for NavigationBar.xaml

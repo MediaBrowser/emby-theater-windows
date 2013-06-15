@@ -84,6 +84,7 @@
     <Compile Include="Theming\ITheme.cs" />
     <Compile Include="Theming\IThemeManager.cs" />
     <Compile Include="Presentation\MessageBoxIcon.cs" />
+    <Compile Include="UserInput\IUserInputManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

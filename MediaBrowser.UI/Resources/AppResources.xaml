@@ -28,7 +28,7 @@
     <Brush x:Key="Heading2Foreground">#333</Brush>
 
     <!--Default font for h2 headers. Themes should override these as needed-->
-    <System:Double x:Key="Heading3FontSize">30</System:Double>
+    <System:Double x:Key="Heading3FontSize">32</System:Double>
     <FontFamily x:Key="Heading3FontFamily">Segoe UI Light, Lucida Sans Unicode, Verdana</FontFamily>
     <FontWeight x:Key="Heading3FontWeight">Normal</FontWeight>
     <Brush x:Key="Heading3Foreground">#333</Brush>
@@ -157,7 +157,6 @@
         <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True"/>
         <Setter Property="VirtualizingPanel.ScrollUnit" Value="Pixel"/>
         <Setter Property="IsSynchronizedWithCurrentItem" Value="True"/>
-        <Setter Property="VirtualizingPanel.ScrollUnit" Value="Pixel"/>
         <Setter Property="SelectionMode" Value="Single"/>
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"/>
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>

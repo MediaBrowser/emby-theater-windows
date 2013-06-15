@@ -42,11 +42,6 @@
         
         <!--Themes will supply this template to outline the window structure.-->
         <ContentControl x:Name="PageContent" Template="{DynamicResource PageContentTemplate}"></ContentControl>
-        
-        <controls:NavigationBar x:Name="NavigationBar"></controls:NavigationBar>
 
-        <Grid.LayoutTransform>
-            <ScaleTransform ScaleX="{Binding Path=ApplicationWindow.ContentScale}" ScaleY="{Binding Path=ApplicationWindow.ContentScale}" CenterX="0" CenterY="0" />
-        </Grid.LayoutTransform>
     </Grid>
 </controls2:BaseWindow>

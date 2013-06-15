@@ -39,7 +39,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         void HomePage_Loaded(object sender, RoutedEventArgs e)
         {
-            AppResources.Instance.SetDefaultPageTitle();
+            ThemeManager.CurrentTheme.SetDefaultPageTitle();
 
             var parent = ParentItem;
 

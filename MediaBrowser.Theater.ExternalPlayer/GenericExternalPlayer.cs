@@ -3,21 +3,23 @@ using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Playback;
-using MediaBrowser.Theater.Presentation.UserInput;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MediaBrowser.Theater.Interfaces.UserInput;
 
-namespace MediaBrowser.UI.Playback
+namespace MediaBrowser.Theater.ExternalPlayer
 {
     /// <summary>
     /// Class GenericExternalPlayer
     /// </summary>
     public class GenericExternalPlayer : IExternalMediaPlayer
     {
+        private readonly IUserInputManager _userInput;
+        
         /// <summary>
         /// The _logger
         /// </summary>
@@ -193,14 +195,16 @@ namespace MediaBrowser.UI.Playback
         private readonly Task _nullTaskResult = Task.FromResult(true);
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GenericExternalPlayer"/> class.
+        /// Initializes a new instance of the <see cref="GenericExternalPlayer" /> class.
         /// </summary>
         /// <param name="playbackManager">The playback manager.</param>
         /// <param name="logger">The logger.</param>
-        public GenericExternalPlayer(IPlaybackManager playbackManager, ILogger logger)
+        /// <param name="userInput">The user input.</param>
+        public GenericExternalPlayer(IPlaybackManager playbackManager, ILogger logger, IUserInputManager userInput)
         {
             _playbackManager = playbackManager;
             _logger = logger;
+            _userInput = userInput;
         }
 
         /// <summary>
@@ -260,7 +264,7 @@ namespace MediaBrowser.UI.Playback
 
                 if (options.Configuration.CloseOnStopButton)
                 {
-                    KeyboardListener.KeyDown += KeyboardListener_KeyDown;
+                    _userInput.KeyDown += KeyboardListener_KeyDown;
                 }
 
                 process.Exited += CurrentProcess_Exited;
@@ -294,7 +298,9 @@ namespace MediaBrowser.UI.Playback
         /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
         void CurrentProcess_Exited(object sender, EventArgs e)
         {
-            var process = (Process) sender;
+            _userInput.KeyDown -= KeyboardListener_KeyDown;
+            
+            var process = (Process)sender;
 
             var playlist = _playlist.ToList();
             var index = CurrentPlaylistIndex;

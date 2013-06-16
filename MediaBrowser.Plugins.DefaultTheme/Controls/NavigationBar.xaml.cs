@@ -1,4 +1,5 @@
 ﻿using MediaBrowser.Theater.Interfaces.Playback;
+using MediaBrowser.Theater.Interfaces.UserInput;
 using System;
 using System.Threading;
 using System.Windows;
@@ -38,6 +39,30 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         }
 
         /// <summary>
+        /// The _is mouse idle
+        /// </summary>
+        private bool _isMouseIdle = true;
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance is mouse idle.
+        /// </summary>
+        /// <value><c>true</c> if this instance is mouse idle; otherwise, <c>false</c>.</value>
+        public bool IsMouseIdle
+        {
+            get { return _isMouseIdle; }
+            set
+            {
+                var changed = _isMouseIdle != value;
+
+                _isMouseIdle = value;
+
+                if (changed)
+                {
+                    Dispatcher.InvokeAsync(() => NavBarGrid.Visibility = value ? Visibility.Collapsed : Visibility.Visible);
+                }
+            }
+        }
+        
+        /// <summary>
         /// Handles the Loaded event of the NavigationBar control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -61,7 +86,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
 
             CurrentPositionSlider.PreviewMouseUp += CurrentPositionSlider_PreviewMouseUp;
         }
-
+        
         /// <summary>
         /// Handles the Click event of the PreviousChapterButton control.
         /// </summary>

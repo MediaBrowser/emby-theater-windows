@@ -49,4 +49,6 @@
         </controls:TransitionFrame>
     </ControlTemplate>
 
+    <ControlTemplate x:Key="NowPlayingOverlayTemplate">
+    </ControlTemplate>
 </ResourceDictionary>

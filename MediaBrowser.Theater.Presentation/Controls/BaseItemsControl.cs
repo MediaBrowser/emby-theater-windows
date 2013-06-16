@@ -7,7 +7,7 @@ using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.Theming;
-using MediaBrowser.Theater.Presentation.Controls;
+using MediaBrowser.Theater.Presentation.Pages;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
 using System.ComponentModel;
@@ -16,14 +16,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Input;
 
-namespace MediaBrowser.Theater.Presentation.Pages
+namespace MediaBrowser.Theater.Presentation.Controls
 {
-    /// <summary>
-    /// Class BaseItemsPage
-    /// </summary>
-    public abstract class BaseItemsPage : Page, INotifyPropertyChanged
+    public abstract class BaseItemsControl : UserControl
     {
         /// <summary>
         /// Occurs when a property value changes.
@@ -45,11 +41,6 @@ namespace MediaBrowser.Theater.Presentation.Pages
         /// </summary>
         /// <value>The session manager.</value>
         protected ISessionManager SessionManager { get; private set; }
-        /// <summary>
-        /// Gets the application window.
-        /// </summary>
-        /// <value>The application window.</value>
-        protected IApplicationWindow ApplicationWindow { get; private set; }
         /// <summary>
         /// Gets the navigation manager.
         /// </summary>
@@ -96,7 +87,6 @@ namespace MediaBrowser.Theater.Presentation.Pages
         /// <param name="apiClient">The API client.</param>
         /// <param name="imageManager">The image manager.</param>
         /// <param name="sessionManager">The session manager.</param>
-        /// <param name="applicationWindow">The application window.</param>
         /// <param name="navigationManager">The navigation manager.</param>
         /// <param name="themeManager">The theme manager.</param>
         /// <exception cref="System.ArgumentNullException">
@@ -104,7 +94,7 @@ namespace MediaBrowser.Theater.Presentation.Pages
         /// or
         /// displayPreferencesId
         /// </exception>
-        protected BaseItemsPage(BaseItemDto parent, string displayPreferencesId, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IApplicationWindow applicationWindow, INavigationService navigationManager, IThemeManager themeManager)
+        protected BaseItemsControl(BaseItemDto parent, string displayPreferencesId, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IThemeManager themeManager)
         {
             if (parent == null)
             {
@@ -116,7 +106,6 @@ namespace MediaBrowser.Theater.Presentation.Pages
             }
 
             NavigationManager = navigationManager;
-            ApplicationWindow = applicationWindow;
             SessionManager = sessionManager;
             ImageManager = imageManager;
             ApiClient = apiClient;
@@ -148,6 +137,18 @@ namespace MediaBrowser.Theater.Presentation.Pages
             {
                 _parentItem = value;
                 OnPropertyChanged("ParentItem");
+            }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether [auto select first item on first load].
+        /// </summary>
+        /// <value><c>true</c> if [auto select first item on first load]; otherwise, <c>false</c>.</value>
+        protected virtual bool AutoSelectFirstItemOnFirstLoad
+        {
+            get
+            {
+                return false;
             }
         }
 
@@ -351,7 +352,7 @@ namespace MediaBrowser.Theater.Presentation.Pages
 
                 int? selectedIndex = null;
 
-                if (isInitialLoad)
+                if (AutoSelectFirstItemOnFirstLoad && isInitialLoad)
                 {
                     selectedIndex = 0;
                 }
@@ -379,7 +380,6 @@ namespace MediaBrowser.Theater.Presentation.Pages
 
                 if (selectedIndex.HasValue)
                 {
-                    MoveFocus(new TraversalRequest(FocusNavigationDirection.First));
                     new ListFocuser(ItemsList).FocusAfterContainersGenerated(selectedIndex.Value);
                 }
             }
@@ -437,10 +437,6 @@ namespace MediaBrowser.Theater.Presentation.Pages
         /// </summary>
         protected virtual void OnCurrentItemChanged()
         {
-            if (CurrentItem != null)
-            {
-                ApplicationWindow.SetBackdrops(CurrentItem);
-            }
         }
 
         /// <summary>
@@ -458,6 +454,5 @@ namespace MediaBrowser.Theater.Presentation.Pages
                 OnCurrentItemChanged();
             });
         }
-
     }
 }

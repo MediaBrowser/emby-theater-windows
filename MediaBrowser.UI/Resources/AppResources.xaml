@@ -22,13 +22,13 @@
     <Brush x:Key="Heading1Foreground">#333</Brush>
 
     <!--Default font for h2 headers. Themes should override these as needed-->
-    <System:Double x:Key="Heading2FontSize">36</System:Double>
+    <System:Double x:Key="Heading2FontSize">38</System:Double>
     <FontFamily x:Key="Heading2FontFamily">Segoe UI Light, Lucida Sans Unicode, Verdana</FontFamily>
     <FontWeight x:Key="Heading2FontWeight">Normal</FontWeight>
     <Brush x:Key="Heading2Foreground">#333</Brush>
 
     <!--Default font for h2 headers. Themes should override these as needed-->
-    <System:Double x:Key="Heading3FontSize">32</System:Double>
+    <System:Double x:Key="Heading3FontSize">30</System:Double>
     <FontFamily x:Key="Heading3FontFamily">Segoe UI Light, Lucida Sans Unicode, Verdana</FontFamily>
     <FontWeight x:Key="Heading3FontWeight">Normal</FontWeight>
     <Brush x:Key="Heading3Foreground">#333</Brush>
@@ -149,14 +149,14 @@
     <Style TargetType="controls:ExtendedListBox" x:Key="ListBoxStyle">
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="KeyboardNavigation.IsTabStop" Value="False"/>
         <Setter Property="KeyboardNavigation.AcceptsReturn" Value="True"/>
-        <Setter Property="KeyboardNavigation.DirectionalNavigation" Value="Continue"/>
+        <Setter Property="KeyboardNavigation.DirectionalNavigation" Value="Once"/>
         <Setter Property="VirtualizingPanel.CacheLength" Value="2,2"/>
         <Setter Property="VirtualizingPanel.CacheLengthUnit" Value="Page"/>
         <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True"/>
         <Setter Property="VirtualizingPanel.ScrollUnit" Value="Pixel"/>
         <Setter Property="IsSynchronizedWithCurrentItem" Value="True"/>
+        <Setter Property="Focusable" Value="False"/>
         <Setter Property="SelectionMode" Value="Single"/>
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"/>
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
@@ -170,11 +170,6 @@
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
         <Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
-        <Style.Triggers>
-            <Trigger Property="IsKeyboardFocusWithin" Value="True">
-                <Setter Property="IsSelected" Value="True" />
-            </Trigger>
-        </Style.Triggers>
     </Style>
 
 </ResourceDictionary>

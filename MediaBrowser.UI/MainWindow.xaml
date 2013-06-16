@@ -43,5 +43,6 @@
         <!--Themes will supply this template to outline the window structure.-->
         <ContentControl x:Name="PageContent" Template="{DynamicResource PageContentTemplate}"></ContentControl>
 
+        <ContentControl x:Name="NowPlayingOverlay" Template="{DynamicResource NowPlayingOverlayTemplate}"></ContentControl>
     </Grid>
 </controls2:BaseWindow>

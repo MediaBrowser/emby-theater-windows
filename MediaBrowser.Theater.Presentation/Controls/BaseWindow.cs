@@ -171,5 +171,23 @@ namespace MediaBrowser.Theater.Presentation.Controls
 
             return false;
         }
+
+        protected override void OnMouseUp(MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.XButton1)
+            {
+                e.Handled = true;
+                OnBrowserBack();
+            }
+            else if (e.ChangedButton == MouseButton.XButton2)
+            {
+                e.Handled = true;
+                OnBrowserForward();
+            }
+            else
+            {
+                base.OnMouseUp(e);
+            }
+        }
     }
 }

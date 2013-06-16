@@ -1,4 +1,6 @@
-﻿using MediaBrowser.Common;
+﻿using System.ComponentModel;
+using System.Threading.Tasks;
+using MediaBrowser.Common;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
@@ -126,9 +128,17 @@ namespace MediaBrowser.UI
             DragBar.MouseDown += DragableGridMouseDown;
 
             ActivityTimer = new Timer(TimerCallback, null, 100, 100);
+
             _userInput.MouseMove += _userInput_MouseMove;
 
             ((TheaterApplicationWindow)_appWindow).OnWindowLoaded();
+        }
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            _userInput.MouseMove -= _userInput_MouseMove;
+            
+            base.OnClosing(e);
         }
 
         void _userInput_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)

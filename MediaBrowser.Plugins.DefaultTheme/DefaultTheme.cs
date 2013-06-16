@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
+using MediaBrowser.Theater.Interfaces.UserInput;
 
 namespace MediaBrowser.Plugins.DefaultTheme
 {
@@ -55,6 +56,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// The _theme manager
         /// </summary>
         private readonly IThemeManager _themeManager;
+        private readonly IUserInputManager _userInputManager;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultTheme" /> class.
@@ -67,7 +69,8 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// <param name="appWindow">The app window.</param>
         /// <param name="logManager">The log manager.</param>
         /// <param name="themeManager">The theme manager.</param>
-        public DefaultTheme(IPlaybackManager playbackManager, IImageManager imageManager, IApiClient apiClient, INavigationService navService, ISessionManager sessionManager, IApplicationWindow appWindow, ILogManager logManager, IThemeManager themeManager)
+        /// <param name="userInputManager">The user input manager.</param>
+        public DefaultTheme(IPlaybackManager playbackManager, IImageManager imageManager, IApiClient apiClient, INavigationService navService, ISessionManager sessionManager, IApplicationWindow appWindow, ILogManager logManager, IThemeManager themeManager, IUserInputManager userInputManager)
         {
             _playbackManager = playbackManager;
             _imageManager = imageManager;
@@ -76,6 +79,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
             _sessionManager = sessionManager;
             _appWindow = appWindow;
             _themeManager = themeManager;
+            _userInputManager = userInputManager;
             _logger = logManager.GetLogger(GetType().Name);
         }
 
@@ -85,7 +89,12 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// <returns>IEnumerable{ResourceDictionary}.</returns>
         public IEnumerable<ResourceDictionary> GetGlobalResources()
         {
-            return new[] { new AppResources(_playbackManager, _imageManager, _apiClient, _appWindow, _navService, _sessionManager, _logger) };
+            return new ResourceDictionary[] { 
+
+                new NavBarResources(),
+                new AppResources(_playbackManager, _imageManager, _apiClient, _appWindow, _navService, _sessionManager, _logger, _userInputManager),
+                new HomePageResources()
+            };
         }
 
         /// <summary>

@@ -12,8 +12,8 @@
             <Setter.Value>
                 <LinearGradientBrush SpreadMethod="Reflect" ColorInterpolationMode="SRgbLinearInterpolation" StartPoint="0,0" EndPoint="0,1" >
                     <GradientStop Color="#ff000000" Offset="0" />
-                    <GradientStop Color="#ff666666" Offset=".45" />
-                    <GradientStop Color="#ff666666" Offset=".55" />
+                    <GradientStop Color="#ff444444" Offset=".45" />
+                    <GradientStop Color="#ff444444" Offset=".55" />
                     <GradientStop Color="#ff000000" Offset="1" />
                 </LinearGradientBrush>
             </Setter.Value>
@@ -26,8 +26,8 @@
             <Setter.Value>
                 <LinearGradientBrush SpreadMethod="Reflect" ColorInterpolationMode="SRgbLinearInterpolation" StartPoint="0,0" EndPoint="0,1" >
                     <GradientStop Color="#ff000000" Offset="0" />
-                    <GradientStop Color="#ff666666" Offset=".45" />
-                    <GradientStop Color="#ff666666" Offset=".55" />
+                    <GradientStop Color="#ff444444" Offset=".45" />
+                    <GradientStop Color="#ff444444" Offset=".55" />
                     <GradientStop Color="#ff000000" Offset="1" />
                 </LinearGradientBrush>
             </Setter.Value>
@@ -52,7 +52,6 @@
 
     <!--Define all the standard converters here in one place-->
     <converters:WatchedVisibilityConverter x:Key="WatchedVisibilityConverter"></converters:WatchedVisibilityConverter>
-    <converters:MetroTileBackgroundConverter x:Key="MetroTileBackgroundConverter"></converters:MetroTileBackgroundConverter>
     <converters:FavoriteVisibilityConverter x:Key="FavoriteVisibilityConverter"></converters:FavoriteVisibilityConverter>
     <converters:LikeVisibilityConverter x:Key="LikeVisibilityConverter"></converters:LikeVisibilityConverter>
     <converters:DislikeVisibilityConverter x:Key="DislikeVisibilityConverter"></converters:DislikeVisibilityConverter>
@@ -90,10 +89,6 @@
 
     <DataTemplate DataType="{x:Type viewModels:UserDtoViewModel}">
         <themecontrols:UserTile DataContext="{Binding Mode=OneWay}"></themecontrols:UserTile>
-    </DataTemplate>
-
-    <DataTemplate x:Key="HomePageListBoxItemTemplate" DataType="{x:Type viewModels:BaseItemDtoViewModel}">
-        <themecontrols:HomePageTile DataContext="{Binding Mode=OneWay}"></themecontrols:HomePageTile>
     </DataTemplate>
 
     <Style x:Key="SpotlightButtonStyle" TargetType="{x:Type Button}">
@@ -277,7 +272,7 @@
     </Style>
 
     <!--Defines the styles for ListBoxItems. Themes should override this if they choose. -->
-    <Style x:Key="AnimatedListBoxItemStyle" TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource HighlightedListBoxItemStyle}">
+    <Style x:Key="AnimatedListBoxItemStyle" TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource ListBoxItemStyle}">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ListBoxItem}">
@@ -392,7 +387,7 @@
                 <ColumnDefinition Width="*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
-            <StackPanel x:Name="PageTitlePanel" Grid.Row="0" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="25 0 0 0">
+            <StackPanel x:Name="PageTitlePanel" Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="25 0 0 0" Grid.Column="0" Grid.Row="0">
 
             </StackPanel>
 
@@ -440,7 +435,12 @@
                     <ee:SlideInTransitionEffect SlideDirection="RightToLeft"></ee:SlideInTransitionEffect>
                 </controls:TransitionFrame.TransitionType>
             </controls:TransitionFrame>
+
         </Grid>
+    </ControlTemplate>
+
+    <ControlTemplate x:Key="NowPlayingOverlayTemplate">
+        <themecontrols:NavigationBar x:Name="NavigationBar" VerticalAlignment="Bottom"></themecontrols:NavigationBar>
     </ControlTemplate>
 
     <DataTemplate x:Key="ItemSpecialFeaturesTemplate" DataType="{x:Type viewModels:SpecialFeatureViewModel}">
@@ -949,5 +949,4 @@
     <Style TargetType="Image" x:Key="NotificationButtonImage" BasedOn="{StaticResource ModalButtonImage}">
         <Setter Property="Margin" Value="20 20 0 20" />
     </Style>
-
 </ResourceDictionary>

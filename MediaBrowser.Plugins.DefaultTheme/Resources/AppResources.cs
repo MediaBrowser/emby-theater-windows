@@ -3,10 +3,12 @@ using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Net;
+using MediaBrowser.Plugins.DefaultTheme.Controls;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
+using MediaBrowser.Theater.Interfaces.UserInput;
 using MediaBrowser.Theater.Presentation.Controls;
 using System;
 using System.Globalization;
@@ -37,6 +39,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Resources
         private readonly INavigationService _navService;
         private readonly IApplicationWindow _appWindow;
         private readonly ISessionManager _sessionManager;
+        private readonly IUserInputManager _userInputManager;
 
         private Timer ClockTimer { get; set; }
 
@@ -45,7 +48,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Resources
         /// <summary>
         /// Initializes a new instance of the <see cref="AppResources" /> class.
         /// </summary>
-        public AppResources(IPlaybackManager playbackManager, IImageManager imageManager, IApiClient apiClient, IApplicationWindow appWindow, INavigationService navService, ISessionManager sessionManager, ILogger logger)
+        public AppResources(IPlaybackManager playbackManager, IImageManager imageManager, IApiClient apiClient, IApplicationWindow appWindow, INavigationService navService, ISessionManager sessionManager, ILogger logger, IUserInputManager userInputManager)
         {
             _playbackManager = playbackManager;
             _imageManager = imageManager;
@@ -54,6 +57,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Resources
             _navService = navService;
             _sessionManager = sessionManager;
             _logger = logger;
+            _userInputManager = userInputManager;
 
             InitializeComponent();
 
@@ -76,6 +80,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.Resources
             _sessionManager.UserLoggedIn += sessionManager_UserLoggedIn;
 
             ClockTimer = new Timer(ClockTimerCallback, null, 0, 10000);
+
+            var navBar = TreeHelper.FindChild<NavigationBar>(_appWindow.Window, "NavigationBar");
+
+            navBar.PlaybackManager = _playbackManager;
         }
 
         /// <summary>
@@ -247,6 +255,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Resources
         async void SettingsButtonClick(object sender, RoutedEventArgs e)
         {
             await _navService.NavigateToSettingsPage();
+        }
+
+        async void BackButtonClick(object sender, RoutedEventArgs e)
+        {
+            await _navService.NavigateBack();
         }
 
         /// <summary>

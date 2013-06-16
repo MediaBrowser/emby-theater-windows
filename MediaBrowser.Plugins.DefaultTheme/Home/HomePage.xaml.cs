@@ -1,40 +1,111 @@
 ﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
-using MediaBrowser.Model.Querying;
-using MediaBrowser.Plugins.DefaultTheme.Resources;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.Theming;
-using MediaBrowser.Theater.Presentation.Controls;
-using MediaBrowser.Theater.Presentation.Pages;
-using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
-using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
+using MediaBrowser.Theater.Presentation.Controls;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Home
 {
     /// <summary>
     /// Interaction logic for HomePage.xaml
     /// </summary>
-    public partial class HomePage : BaseItemsPage
+    public partial class HomePage : Page
     {
+        /// <summary>
+        /// Gets the API client.
+        /// </summary>
+        /// <value>The API client.</value>
+        protected IApiClient ApiClient { get; private set; }
+        /// <summary>
+        /// Gets the image manager.
+        /// </summary>
+        /// <value>The image manager.</value>
+        protected IImageManager ImageManager { get; private set; }
+        /// <summary>
+        /// Gets the session manager.
+        /// </summary>
+        /// <value>The session manager.</value>
+        protected ISessionManager SessionManager { get; private set; }
+        /// <summary>
+        /// Gets the application window.
+        /// </summary>
+        /// <value>The application window.</value>
+        protected IApplicationWindow ApplicationWindow { get; private set; }
+        /// <summary>
+        /// Gets the navigation manager.
+        /// </summary>
+        /// <value>The navigation manager.</value>
+        protected INavigationService NavigationManager { get; private set; }
+        /// <summary>
+        /// Gets the theme manager.
+        /// </summary>
+        /// <value>The theme manager.</value>
+        protected IThemeManager ThemeManager { get; private set; }
+
+        public BaseItemDto ParentItem { get; set; }
+        public string DisplayPreferencesId { get; set; }
+
         public HomePage(BaseItemDto parent, string displayPreferencesId, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IApplicationWindow applicationWindow, INavigationService navigationManager, IThemeManager themeManager)
-            : base(parent, displayPreferencesId, apiClient, imageManager, sessionManager, applicationWindow, navigationManager, themeManager)
         {
             InitializeComponent();
+
+            NavigationManager = navigationManager;
+            ApplicationWindow = applicationWindow;
+            SessionManager = sessionManager;
+            ImageManager = imageManager;
+            ApiClient = apiClient;
+            DisplayPreferencesId = displayPreferencesId;
+
+            ParentItem = parent;
+            ThemeManager = themeManager;
         }
 
         protected override void OnInitialized(EventArgs e)
         {
             Loaded += HomePage_Loaded;
-            ItemsList.ItemInvoked += ItemsList_ItemInvoked;
+
+            MenuList.SelectionChanged += MenuList_SelectionChanged;
+            new ListFocuser(MenuList).FocusAfterContainersGenerated(0);
 
             MenuList.ItemsSource = CollectionViewSource.GetDefaultView(new[] { "movies", "tv", "music", "games", "apps", "folders" });
 
             base.OnInitialized(e);
+        }
+
+        void MenuList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var item = MenuList.SelectedItem as string;
+
+            if (string.Equals(item, "movies"))
+            {
+                PageContent.Content = new Movies();
+            }
+            else if (string.Equals(item, "tv"))
+            {
+                PageContent.Content = new TV();
+            }
+            else if (string.Equals(item, "music"))
+            {
+                PageContent.Content = new Movies();
+            }
+            else if (string.Equals(item, "games"))
+            {
+                PageContent.Content = new Movies();
+            }
+            else if (string.Equals(item, "apps"))
+            {
+                PageContent.Content = new Movies();
+            }
+            if (string.Equals(item, "folders"))
+            {
+                PageContent.Content = new Folders(ParentItem, DisplayPreferencesId, ApiClient, ImageManager, SessionManager, ApplicationWindow, NavigationManager, ThemeManager);
+            }
         }
 
         void HomePage_Loaded(object sender, RoutedEventArgs e)
@@ -51,56 +122,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 ApplicationWindow.SetBackdrops(parent);
             }
-        }
-
-        /// <summary>
-        /// Itemses the list_ item invoked.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="e">The e.</param>
-        void ItemsList_ItemInvoked(object sender, ItemEventArgs<object> e)
-        {
-            var model = e.Argument as BaseItemDtoViewModel;
-
-            if (model != null)
-            {
-                var item = model.Item;
-
-                NavigationManager.NavigateToItem(item, string.Empty);
-            }
-        }
-
-        protected override ExtendedListBox ItemsList
-        {
-            get { return lstCollectionFolders; }
-        }
-
-        protected override Task<ItemsResult> GetItemsAsync()
-        {
-            var query = new ItemQuery
-            {
-                ParentId = ParentItem.Id,
-
-                Fields = new[] {
-                                 ItemFields.UserData,
-                                 ItemFields.PrimaryImageAspectRatio,
-                                 ItemFields.DateCreated,
-                                 ItemFields.MediaStreams,
-                                 ItemFields.Taglines,
-                                 ItemFields.Genres,
-                                 ItemFields.SeriesInfo,
-                                 ItemFields.Overview,
-                                 ItemFields.DisplayPreferencesId
-                             },
-
-                UserId = SessionManager.CurrentUser.Id
-            };
-
-            query.SortBy = !string.IsNullOrEmpty(DisplayPreferences.SortBy) ? new[] { DisplayPreferences.SortBy } : new[] { ItemSortBy.SortName };
-
-            query.SortOrder = DisplayPreferences.SortOrder;
-
-            return ApiClient.GetItemsAsync(query);
         }
     }
 }

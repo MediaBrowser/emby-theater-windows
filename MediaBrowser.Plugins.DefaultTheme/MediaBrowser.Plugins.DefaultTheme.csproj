@@ -70,6 +70,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Net" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -135,7 +136,6 @@
     <Compile Include="Controls\UserTile.xaml.cs">
       <DependentUpon>UserTile.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Converters\MetroTileBackgroundConverter.cs" />
     <Compile Include="Converters\WatchedVisibilityConverter.cs" />
     <Compile Include="DisplayPreferences\BaseDisplayPreferencesPage.cs" />
     <Compile Include="DisplayPreferences\DisplayPreferencesMenu.xaml.cs">
@@ -150,6 +150,15 @@
     </Compile>
     <Compile Include="DisplayPreferences\ViewMenuPage.xaml.cs">
       <DependentUpon>ViewMenuPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Home\Folders.xaml.cs">
+      <DependentUpon>Folders.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Home\Movies.xaml.cs">
+      <DependentUpon>Movies.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Home\TV.xaml.cs">
+      <DependentUpon>TV.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\DetailPage.xaml.cs">
       <DependentUpon>DetailPage.xaml</DependentUpon>
@@ -182,6 +191,8 @@
     </Compile>
     <Compile Include="Properties\SharedVersion.cs" />
     <Compile Include="DefaultTheme.cs" />
+    <Compile Include="Resources\HomePageResources.cs" />
+    <Compile Include="Resources\NavBarResources.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -289,6 +300,18 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Home\Folders.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Home\Movies.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Home\TV.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Pages\DetailPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -317,6 +340,14 @@
     <Page Include="Resources\AppResources.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\HomePageResources.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\NavBarResources.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
   <ItemGroup>
@@ -434,6 +465,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\NavBar\VolumeUpButton.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\BackButton.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

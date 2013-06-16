@@ -174,6 +174,8 @@ namespace MediaBrowser.Theater.Presentation.Controls
                 if (listBoxItem != null && !listBoxItem.IsFocused)
                 {
                     listBoxItem.Focus();
+
+                    SelectedIndex = ItemContainerGenerator.IndexFromContainer(listBoxItem);
                 }
             }
         }

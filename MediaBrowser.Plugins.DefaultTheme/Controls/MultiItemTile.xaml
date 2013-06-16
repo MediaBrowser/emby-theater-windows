@@ -8,7 +8,13 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid x:Name="mainGrid" HorizontalAlignment="Left">
 
-        <Border Background="{Binding Converter={StaticResource MetroTileBackgroundConverter}}">
+        <Border>
+            <Border.Background>
+                <LinearGradientBrush SpreadMethod="Reflect" ColorInterpolationMode="SRgbLinearInterpolation" StartPoint="0,0" EndPoint="0,1" >
+                    <GradientStop Color="#ffCBCBCB" Offset="0" />
+                    <GradientStop Color="#ff545358" Offset="1" />
+                </LinearGradientBrush>
+            </Border.Background>
             <controls2:TransitionControl x:Name="transitionControl">
                 <controls2:TransitionControl.TransitionAnimation>
                     <DoubleAnimation Duration="0:0:1" >

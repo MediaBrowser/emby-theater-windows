@@ -3,13 +3,13 @@ using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Playback;
+using MediaBrowser.Theater.Interfaces.UserInput;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using MediaBrowser.Theater.Interfaces.UserInput;
 
 namespace MediaBrowser.Theater.ExternalPlayer
 {

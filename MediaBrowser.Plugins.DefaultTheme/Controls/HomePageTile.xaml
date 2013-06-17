@@ -5,23 +5,39 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid HorizontalAlignment="Left" Width="400" Height="225">
 
-        <Border>
-            <Border.Background>
-                <LinearGradientBrush SpreadMethod="Reflect" ColorInterpolationMode="SRgbLinearInterpolation" StartPoint="0,0" EndPoint="0,1" >
-                    <GradientStop Color="#ffCBCBCB" Offset="0" />
-                    <GradientStop Color="#ff545358" Offset="1" />
-                </LinearGradientBrush>
-            </Border.Background>
-            <Image x:Name="image" Stretch="Uniform"></Image>
-        </Border>
+    <Border BorderBrush="#555555" BorderThickness="1">
+        <Grid HorizontalAlignment="Left" Width="288">
 
-        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
-            <Grid.Background>
-                <SolidColorBrush Color="#A6000000"></SolidColorBrush>
-            </Grid.Background>
-            <TextBlock Margin="10 5 0 10" Foreground="White" Text="{Binding Path=Item.Name}" TextWrapping="Wrap" Style="{StaticResource TextBlockStyle}"></TextBlock>
+            <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <Border Grid.Row="0" Height="162">
+                <Border.Background>
+                    <LinearGradientBrush SpreadMethod="Reflect" ColorInterpolationMode="SRgbLinearInterpolation" StartPoint="0,0" EndPoint="0,1" >
+                        <GradientStop Color="#ffCBCBCB" Offset="0" />
+                        <GradientStop Color="#ff545358" Offset="1" />
+                    </LinearGradientBrush>
+                </Border.Background>
+                <Image x:Name="image" Stretch="Uniform"></Image>
+            </Border>
+
+            <Grid Grid.Row="1">
+
+                <Grid.Background>
+                    <SolidColorBrush Color="#A6000000"></SolidColorBrush>
+                </Grid.Background>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+
+                <TextBlock x:Name="TxtParentName" Grid.Row="0" Margin="10 5 0 5" Foreground="White" TextWrapping="NoWrap" Style="{StaticResource SmallTextBlockStyle}" TextTrimming="CharacterEllipsis"></TextBlock>
+                <TextBlock x:Name="TxtName" Grid.Row="1" Margin="10 5 0 10" Foreground="White" TextWrapping="NoWrap" Style="{StaticResource SmallTextBlockStyle}" TextTrimming="CharacterEllipsis"></TextBlock>
+            </Grid>
         </Grid>
-    </Grid>
+    </Border>
 </UserControl>

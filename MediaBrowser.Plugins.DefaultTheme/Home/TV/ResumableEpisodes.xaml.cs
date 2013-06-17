@@ -1,45 +1,26 @@
 ﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
+using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Presentation.Controls;
-using MediaBrowser.Theater.Presentation.Pages;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
 using System.Threading.Tasks;
 
-namespace MediaBrowser.Plugins.DefaultTheme.Home
+namespace MediaBrowser.Plugins.DefaultTheme.Home.TV
 {
     /// <summary>
-    /// Interaction logic for Folders.xaml
+    /// Interaction logic for ResumableEpisodes.xaml
     /// </summary>
-    public partial class Folders : BaseItemsControl
+    public partial class ResumableEpisodes : BaseItemsControl
     {
-        /// <summary>
-        /// Gets the application window.
-        /// </summary>
-        /// <value>The application window.</value>
-        protected IApplicationWindow ApplicationWindow { get; private set; }
-        
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BaseItemsPage" /> class.
-        /// </summary>
-        /// <param name="parent">The parent.</param>
-        /// <param name="displayPreferencesId">The display preferences id.</param>
-        /// <param name="apiClient">The API client.</param>
-        /// <param name="imageManager">The image manager.</param>
-        /// <param name="sessionManager">The session manager.</param>
-        /// <param name="applicationWindow">The application window.</param>
-        /// <param name="navigationManager">The navigation manager.</param>
-        /// <param name="themeManager">The theme manager.</param>
-        public Folders(BaseItemDto parent, string displayPreferencesId, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IApplicationWindow applicationWindow, INavigationService navigationManager, IThemeManager themeManager)
+        public ResumableEpisodes(BaseItemDto parent, string displayPreferencesId, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IThemeManager themeManager)
             : base(parent, displayPreferencesId, apiClient, imageManager, sessionManager, navigationManager, themeManager)
         {
-            ApplicationWindow = applicationWindow;
-            
             InitializeComponent();
         }
 
@@ -71,19 +52,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             }
         }
 
-        /// <summary>
-        /// Gets the items list.
-        /// </summary>
-        /// <value>The items list.</value>
         protected override ExtendedListBox ItemsList
         {
-            get { return LstCollectionFolders; }
+            get { return LstItems; }
         }
 
-        /// <summary>
-        /// Gets the items async.
-        /// </summary>
-        /// <returns>Task{ItemsResult}.</returns>
         protected override Task<ItemsResult> GetItemsAsync()
         {
             var query = new ItemQuery
@@ -101,25 +74,20 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
                 UserId = SessionManager.CurrentUser.Id,
 
-                SortBy = !string.IsNullOrEmpty(DisplayPreferences.SortBy)
-                        ? new[] { DisplayPreferences.SortBy }
-                        : new[] { ItemSortBy.SortName },
+                SortBy = new[] { ItemSortBy.DatePlayed },
 
-                SortOrder = DisplayPreferences.SortOrder
+                SortOrder = SortOrder.Descending,
+
+                IncludeItemTypes = new[] { "Episode" },
+
+                Filters = new[] { ItemFilter.IsResumable },
+
+                Recursive = true,
+
+                Limit = 3
             };
 
             return ApiClient.GetItemsAsync(query);
-        }
-
-        /// <summary>
-        /// Called when [current item changed].
-        /// </summary>
-        protected override void OnCurrentItemChanged()
-        {
-            if (CurrentItem != null)
-            {
-                ApplicationWindow.SetBackdrops(CurrentItem);
-            }
         }
     }
 }

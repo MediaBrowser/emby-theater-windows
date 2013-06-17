@@ -12,13 +12,13 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                    <TextBlock Foreground="#888" x:Name="MenuText" Margin="40 0" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Text="{Binding}" Style="{StaticResource Heading2TextBlockStyle}"></TextBlock>
+                    <TextBlock Opacity=".45" x:Name="MenuText" Margin="40 0" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Text="{Binding}" Style="{StaticResource Heading2TextBlockStyle}"></TextBlock>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsSelected" Value="true">
-                            <Setter TargetName="MenuText" Property="Foreground" Value="White"/>
+                            <Setter TargetName="MenuText" Property="Opacity" Value="1"/>
                         </Trigger>
                         <Trigger Property="IsFocused" Value="true">
-                            <Setter TargetName="MenuText" Property="Foreground" Value="White"/>
+                            <Setter TargetName="MenuText" Property="Opacity" Value="1"/>
                             <Setter TargetName="MenuText" Property="TextBlock.TextDecorations" Value="Underline"/>
                         </Trigger>
                     </ControlTemplate.Triggers>

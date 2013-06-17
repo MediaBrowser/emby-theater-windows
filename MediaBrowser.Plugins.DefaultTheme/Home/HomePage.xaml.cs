@@ -84,23 +84,23 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             if (string.Equals(item, "movies"))
             {
-                PageContent.Content = new Movies();
+                PageContent.Content = new Movies.Movies();
             }
             else if (string.Equals(item, "tv"))
             {
-                PageContent.Content = new TV();
+                PageContent.Content = new TV.TV(ParentItem, ApiClient, ImageManager, SessionManager, NavigationManager, ThemeManager);
             }
             else if (string.Equals(item, "music"))
             {
-                PageContent.Content = new Movies();
+                PageContent.Content = new Movies.Movies();
             }
             else if (string.Equals(item, "games"))
             {
-                PageContent.Content = new Movies();
+                PageContent.Content = new Movies.Movies();
             }
             else if (string.Equals(item, "apps"))
             {
-                PageContent.Content = new Movies();
+                PageContent.Content = new Movies.Movies();
             }
             if (string.Equals(item, "folders"))
             {

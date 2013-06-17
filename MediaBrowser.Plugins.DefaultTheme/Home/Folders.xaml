@@ -10,7 +10,7 @@
         <controls:ExtendedListBox x:Name="LstCollectionFolders" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{StaticResource ListBoxStyle}" ItemContainerStyle="{StaticResource AnimatedListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource HomePageListBoxItemTemplate}">
             <controls:ExtendedListBox.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <UniformGrid Margin="50" Rows="2"></UniformGrid>
+                    <WrapPanel Margin="40" Orientation="Vertical"></WrapPanel>
                 </ItemsPanelTemplate>
             </controls:ExtendedListBox.ItemsPanel>
         </controls:ExtendedListBox>

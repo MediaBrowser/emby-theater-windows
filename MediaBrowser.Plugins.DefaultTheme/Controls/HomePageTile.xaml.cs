@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.Dto;
+﻿using System.Globalization;
+using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Net;
 using MediaBrowser.Theater.Presentation.ViewModels;
@@ -51,12 +52,65 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
             OnItemChanged();
         }
 
+        private static readonly CultureInfo UsCulture = new CultureInfo("en-US");
+        
         /// <summary>
         /// Called when [item changed].
         /// </summary>
         private void OnItemChanged()
         {
             ReloadImage();
+
+            var item = Item;
+            var parentName = item.SeriesName;
+
+            if (string.IsNullOrEmpty(parentName))
+            {
+                parentName = item.Album;
+            }
+
+            if (string.IsNullOrEmpty(parentName))
+            {
+                TxtParentName.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                TxtParentName.Text = parentName;
+            }
+
+            var name = Item.Name;
+
+            if (Item.IsType("Episode") && item.IndexNumber.HasValue && item.ParentIndexNumber.HasValue)
+            {
+                var displayIndexNumber = item.IndexNumber < 10
+                                             ? "0" + item.IndexNumber.Value.ToString(UsCulture)
+                                             : item.IndexNumber.Value.ToString(UsCulture);
+
+                var number = item.ParentIndexNumber + "x" + displayIndexNumber;
+
+                if (item.IndexNumberEnd.HasValue)
+                {
+                    displayIndexNumber = item.IndexNumberEnd < 10
+                                             ? "0" + item.IndexNumberEnd.Value.ToString(UsCulture)
+                                             : item.IndexNumberEnd.Value.ToString(UsCulture);
+
+                    number += "-x" + displayIndexNumber;
+                }
+
+                name = number + " - " + name;
+            }
+            else
+            {
+                if (item.IndexNumber.HasValue && !item.IsType("Season")) {
+                    name = item.IndexNumber.Value.ToString(UsCulture) + " - " + name;
+                }
+                if (item.ParentIndexNumber != null && !item.IsType("Episode"))
+                {
+                    name = item.ParentIndexNumber.Value.ToString(UsCulture) + "." + name;
+                }
+            }
+
+            TxtName.Text = name;
         }
 
         /// <summary>

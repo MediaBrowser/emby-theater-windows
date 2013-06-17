@@ -132,13 +132,14 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             {
                 ImageType = imageType,
                 ImageIndex = imageIndex,
-                Width = Convert.ToInt32(width)
+                Width = Convert.ToInt32(width),
+                Quality = 100
             };
 
             var currentAspectRatio = imageType == ImageType.Primary ? Item.PrimaryImageAspectRatio ?? width / height : width / height;
 
             // Preserve the exact AR if it deviates from the average significantly
-            var preserveExactAspectRatio = Math.Abs(currentAspectRatio - averageAspectRatio) > .25;
+            var preserveExactAspectRatio = Math.Abs(currentAspectRatio - averageAspectRatio) > .4;
 
             if (!preserveExactAspectRatio)
             {

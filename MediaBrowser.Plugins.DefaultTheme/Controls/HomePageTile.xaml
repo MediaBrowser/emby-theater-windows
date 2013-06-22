@@ -6,37 +6,26 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
 
-    <Border BorderBrush="#555555" BorderThickness="1">
-        <Grid HorizontalAlignment="Left" Width="288">
+    <Border Height="207" Width="368">
+        <Border.Background>
+            <LinearGradientBrush SpreadMethod="Reflect" ColorInterpolationMode="SRgbLinearInterpolation" StartPoint="0,0" EndPoint="0,1" >
+                <GradientStop Color="#ffCBCBCB" Offset="0" />
+                <GradientStop Color="#ff545358" Offset="1" />
+            </LinearGradientBrush>
+        </Border.Background>
+        <Grid>
+            <Image x:Name="image" Stretch="Uniform"></Image>
 
-            <Grid.RowDefinitions>
-                <RowDefinition></RowDefinition>
-                <RowDefinition></RowDefinition>
-            </Grid.RowDefinitions>
-
-            <Border Grid.Row="0" Height="162">
-                <Border.Background>
-                    <LinearGradientBrush SpreadMethod="Reflect" ColorInterpolationMode="SRgbLinearInterpolation" StartPoint="0,0" EndPoint="0,1" >
-                        <GradientStop Color="#ffCBCBCB" Offset="0" />
-                        <GradientStop Color="#ff545358" Offset="1" />
-                    </LinearGradientBrush>
-                </Border.Background>
-                <Image x:Name="image" Stretch="Uniform"></Image>
-            </Border>
-
-            <Grid Grid.Row="1">
-
-                <Grid.Background>
-                    <SolidColorBrush Color="#A6000000"></SolidColorBrush>
-                </Grid.Background>
-
+            <Grid VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Background="#a6000000">
+                
                 <Grid.RowDefinitions>
                     <RowDefinition></RowDefinition>
                     <RowDefinition></RowDefinition>
                 </Grid.RowDefinitions>
+                
+                <TextBlock x:Name="TxtName" Margin="10 5 10 10" TextWrapping="NoWrap" Style="{StaticResource SmallTextBlockStyle}" TextTrimming="CharacterEllipsis" Grid.Row="0"></TextBlock>
 
-                <TextBlock x:Name="TxtParentName" Grid.Row="0" Margin="10 5 0 5" Foreground="White" TextWrapping="NoWrap" Style="{StaticResource SmallTextBlockStyle}" TextTrimming="CharacterEllipsis"></TextBlock>
-                <TextBlock x:Name="TxtName" Grid.Row="1" Margin="10 5 0 10" Foreground="White" TextWrapping="NoWrap" Style="{StaticResource SmallTextBlockStyle}" TextTrimming="CharacterEllipsis"></TextBlock>
+                <ProgressBar Name="Progress" Maximum="100" Value="40" Margin="10 0 10 10" Style="{StaticResource ResumeProgressBar}" Grid.Row="1" Visibility="Collapsed"></ProgressBar>
             </Grid>
         </Grid>
     </Border>

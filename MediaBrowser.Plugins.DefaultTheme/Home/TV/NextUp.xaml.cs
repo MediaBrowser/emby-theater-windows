@@ -1,6 +1,7 @@
-﻿using MediaBrowser.Model.ApiClient;
+﻿using System.Windows;
+using System.Windows.Input;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
-using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
@@ -18,9 +19,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.TV
     /// </summary>
     public partial class NextUp : BaseItemsControl
     {
-        public NextUp(BaseItemDto parent, string displayPreferencesId, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IThemeManager themeManager)
-            : base(parent, displayPreferencesId, apiClient, imageManager, sessionManager, navigationManager, themeManager)
+        private readonly IApplicationWindow _appWindow;
+
+        public NextUp(BaseItemDto parent, Model.Entities.DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IThemeManager themeManager, IApplicationWindow appWindow)
+            : base(parent, displayPreferences, apiClient, imageManager, sessionManager, navigationManager, themeManager)
         {
+            _appWindow = appWindow;
             InitializeComponent();
         }
 
@@ -35,6 +39,14 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.TV
             base.OnInitialized(e);
         }
 
+        protected override bool AutoSelectFirstItemOnFirstLoad
+        {
+            get
+            {
+                return false;
+            }
+        }
+        
         /// <summary>
         /// Itemses the list_ item invoked.
         /// </summary>
@@ -72,10 +84,22 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.TV
 
                 UserId = SessionManager.CurrentUser.Id,
 
-                Limit = 30
+                Limit = 15
             };
 
             return ApiClient.GetNextUpAsync(query);
+        }
+
+        protected override void OnCurrentItemChanged()
+        {
+            base.OnCurrentItemChanged();
+
+            var item = CurrentItem;
+
+            if (item != null)
+            {
+                _appWindow.SetBackdrops(item);
+            }
         }
     }
 }

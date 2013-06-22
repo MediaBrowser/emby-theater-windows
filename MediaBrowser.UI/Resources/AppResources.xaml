@@ -45,6 +45,10 @@
         <Setter Property="KeyboardNavigation.IsTabStop" Value="false"/>
     </Style>
 
+    <Style TargetType="controls:TransitionControl">
+        <Setter Property="KeyboardNavigation.IsTabStop" Value="false"/>
+    </Style>
+
     <!--Default Frame style. -->
     <Style TargetType="ContentControl">
         <Setter Property="KeyboardNavigation.IsTabStop" Value="false"/>

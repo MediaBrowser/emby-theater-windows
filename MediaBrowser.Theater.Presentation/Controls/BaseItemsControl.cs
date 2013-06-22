@@ -80,29 +80,27 @@ namespace MediaBrowser.Theater.Presentation.Controls
         private Timer CurrentSelectionTimer { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BaseItemsPage"/> class.
+        /// Initializes a new instance of the <see cref="BaseItemsPage" /> class.
         /// </summary>
         /// <param name="parent">The parent.</param>
-        /// <param name="displayPreferencesId">The display preferences id.</param>
+        /// <param name="displayPreferences">The display preferences.</param>
         /// <param name="apiClient">The API client.</param>
         /// <param name="imageManager">The image manager.</param>
         /// <param name="sessionManager">The session manager.</param>
         /// <param name="navigationManager">The navigation manager.</param>
         /// <param name="themeManager">The theme manager.</param>
-        /// <exception cref="System.ArgumentNullException">
-        /// parent
+        /// <exception cref="System.ArgumentNullException">parent
         /// or
-        /// displayPreferencesId
-        /// </exception>
-        protected BaseItemsControl(BaseItemDto parent, string displayPreferencesId, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IThemeManager themeManager)
+        /// displayPreferencesId</exception>
+        protected BaseItemsControl(BaseItemDto parent, DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IThemeManager themeManager)
         {
             if (parent == null)
             {
                 throw new ArgumentNullException("parent");
             }
-            if (string.IsNullOrEmpty(displayPreferencesId))
+            if (displayPreferences == null)
             {
-                throw new ArgumentNullException("displayPreferencesId");
+                throw new ArgumentNullException("displayPreferences");
             }
 
             NavigationManager = navigationManager;
@@ -110,16 +108,10 @@ namespace MediaBrowser.Theater.Presentation.Controls
             ImageManager = imageManager;
             ApiClient = apiClient;
 
-            DisplayPreferencesId = displayPreferencesId;
+            _displayPreferences = displayPreferences;
             _parentItem = parent;
             ThemeManager = themeManager;
         }
-
-        /// <summary>
-        /// Gets the display preferences id.
-        /// </summary>
-        /// <value>The display preferences id.</value>
-        protected string DisplayPreferencesId { get; private set; }
 
         /// <summary>
         /// The _parent item
@@ -281,11 +273,10 @@ namespace MediaBrowser.Theater.Presentation.Controls
             
             ListItems = new RangeObservableCollection<BaseItemDtoViewModel>();
             ListCollectionView = (ListCollectionView)CollectionViewSource.GetDefaultView(ListItems);
-
             ItemsList.ItemsSource = ListCollectionView;
             ListCollectionView.CurrentChanged += ListCollectionView_CurrentChanged;
 
-            await ReloadDisplayPreferences();
+            OnPropertyChanged("DisplayPreferences");
             await ReloadItems(true);
         }
 
@@ -314,23 +305,6 @@ namespace MediaBrowser.Theater.Presentation.Controls
             else if (string.Equals(name, "ParentItem"))
             {
                 OnParentItemChanged();
-            }
-        }
-
-        /// <summary>
-        /// Reloads the display preferences.
-        /// </summary>
-        /// <returns>Task.</returns>
-        protected async Task ReloadDisplayPreferences()
-        {
-            try
-            {
-                DisplayPreferences = await ApiClient.GetDisplayPreferencesAsync(DisplayPreferencesId);
-
-            }
-            catch (HttpException)
-            {
-                ThemeManager.CurrentTheme.ShowDefaultErrorMessage();
             }
         }
 

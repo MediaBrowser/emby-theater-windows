@@ -10,7 +10,7 @@
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <controls:ExtendedListBox x:Name="MenuList" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{StaticResource ListBoxStyle}" Grid.Row="0" HorizontalAlignment="Center" Margin="20 20 20 30" ItemContainerStyle="{StaticResource HomePageListBoxItemStyle}">
+        <controls:ExtendedListBox x:Name="MenuList" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{StaticResource ListBoxStyle}" Grid.Row="0" HorizontalAlignment="Center" Margin="20 20 20 0" ItemContainerStyle="{StaticResource HomePageListBoxItemStyle}">
             <controls:ExtendedListBox.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" />
@@ -18,9 +18,9 @@
             </controls:ExtendedListBox.ItemsPanel>
         </controls:ExtendedListBox>
 
-        <controls:ExtendedScrollViewer Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalAlignment="Center" HorizontalAlignment="Center" CanContentScroll="True">
-            <controls:ScrollingPanel CanHorizontallyScroll="True" CanVerticallyScroll="False" HorizontalAlignment="Stretch">
-                <ContentControl x:Name="PageContent" Margin="150 20 150 60"></ContentControl>
+        <controls:ExtendedScrollViewer x:Name="ScrollViewer" Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalAlignment="Center" HorizontalAlignment="Center" CanContentScroll="True">
+            <controls:ScrollingPanel x:Name="ScrollingPanel" CanHorizontallyScroll="True" CanVerticallyScroll="False" HorizontalAlignment="Stretch">
+                <ContentControl x:Name="PageContent" Margin="100 20 100 40"></ContentControl>
             </controls:ScrollingPanel>
         </controls:ExtendedScrollViewer>
     </Grid>

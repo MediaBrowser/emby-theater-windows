@@ -30,7 +30,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
             set
             {
                 _imageWidth = value;
-                mainGrid.Width = value;
+                MainGrid.Width = value;
             }
         }
 
@@ -48,7 +48,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
             set
             {
                 _imageHeight = value;
-                mainGrid.Height = value;
+                MainGrid.Height = value;
             }
         }
 
@@ -82,6 +82,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
             get { return DataContext as ItemCollectionViewModel; }
         }
 
+        public BaseItemDto CurrentItem
+        {
+            get { return ViewModel.CurrentItem; }
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MultiItemTile" /> class.
         /// </summary>
@@ -91,8 +96,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
 
             Random = new Random(Guid.NewGuid().GetHashCode());
 
-            mainGrid.Width = ImageWidth;
-            mainGrid.Height = ImageHeight;
             DataContextChanged += BaseItemTile_DataContextChanged;
         }
 
@@ -132,8 +135,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
             if (ViewModel == null)
             {
                 // Setting this to null doesn't seem to clear out the content
-                transitionControl.Content = new FrameworkElement();
-                txtName.Text = null;
+                TileTransitionControl.Content = new FrameworkElement();
+                TxtName.Text = null;
                 return;
             }
 
@@ -142,8 +145,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
             if (currentItem == null)
             {
                 // Setting this to null doesn't seem to clear out the content
-                transitionControl.Content = new FrameworkElement();
-                txtName.Text = ViewModel.Name;
+                TileTransitionControl.Content = new FrameworkElement();
+                TxtName.Text = null;
                 return;
             }
 
@@ -161,15 +164,33 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
                 try
                 {
                     img.Source = await ViewModel.ImageManager.GetRemoteBitmapAsync(url);
-                    txtName.Text = ViewModel.Name ?? currentItem.Name;
+                    TxtName.Text = GetDisplayName(currentItem);
                 }
                 catch (HttpException)
                 {
                 }
             }
 
-            transitionControl.TransitionType = _effects[Random.Next(0, _effects.Length)];
-            transitionControl.Content = img;
+            TileTransitionControl.TransitionType = _effects[Random.Next(0, _effects.Length)];
+            TileTransitionControl.Content = img;
+        }
+
+        internal static string GetDisplayName(BaseItemDto item)
+        {
+            var name = item.Name;
+
+            if (item.IsType("Episode"))
+            {
+                name = item.SeriesName;
+
+                if (item.IndexNumber.HasValue && item.ParentIndexNumber.HasValue)
+                {
+                    name = name + ": " + string.Format("Season {0}, Ep. {1}", item.ParentIndexNumber.Value, item.IndexNumber.Value);
+                }
+
+            }
+
+            return name;
         }
 
         /// <summary>
@@ -200,7 +221,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
                         Width = ImageWidth
                     });
                 }
-                
+
                 if (item.HasPrimaryImage)
                 {
                     return ViewModel.ApiClient.GetImageUrl(item, new ImageOptions

@@ -1,4 +1,6 @@
-﻿using MediaBrowser.Model.ApiClient;
+﻿using System.Windows;
+using System.Windows.Input;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Querying;
@@ -18,9 +20,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.TV
     /// </summary>
     public partial class ResumableEpisodes : BaseItemsControl
     {
-        public ResumableEpisodes(BaseItemDto parent, string displayPreferencesId, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IThemeManager themeManager)
-            : base(parent, displayPreferencesId, apiClient, imageManager, sessionManager, navigationManager, themeManager)
+        private readonly IApplicationWindow _appWindow;
+
+        public ResumableEpisodes(BaseItemDto parent, Model.Entities.DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IThemeManager themeManager, IApplicationWindow appWindow)
+            : base(parent, displayPreferences, apiClient, imageManager, sessionManager, navigationManager, themeManager)
         {
+            _appWindow = appWindow;
             InitializeComponent();
         }
 
@@ -33,6 +38,14 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.TV
             ItemsList.ItemInvoked += ItemsList_ItemInvoked;
 
             base.OnInitialized(e);
+        }
+
+        protected override bool AutoSelectFirstItemOnFirstLoad
+        {
+            get
+            {
+                return false;
+            }
         }
 
         /// <summary>
@@ -84,10 +97,22 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.TV
 
                 Recursive = true,
 
-                Limit = 3
+                Limit = 6
             };
 
             return ApiClient.GetItemsAsync(query);
+        }
+
+        protected override void OnCurrentItemChanged()
+        {
+            base.OnCurrentItemChanged();
+
+            var item = CurrentItem;
+
+            if (item != null)
+            {
+                _appWindow.SetBackdrops(item);
+            }
         }
     }
 }

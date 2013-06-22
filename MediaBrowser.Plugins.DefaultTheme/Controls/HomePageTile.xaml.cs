@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using MediaBrowser.Model.Dto;
+﻿using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Net;
 using MediaBrowser.Theater.Presentation.ViewModels;
@@ -52,75 +51,37 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
             OnItemChanged();
         }
 
-        private static readonly CultureInfo UsCulture = new CultureInfo("en-US");
-        
         /// <summary>
         /// Called when [item changed].
         /// </summary>
         private void OnItemChanged()
         {
-            ReloadImage();
-
             var item = Item;
-            var parentName = item.SeriesName;
+            ReloadImage(item);
 
-            if (string.IsNullOrEmpty(parentName))
+            if (item.CanResume && item.RunTimeTicks.HasValue)
             {
-                parentName = item.Album;
-            }
+                Progress.Visibility = Visibility.Visible;
+                Progress.Maximum = item.RunTimeTicks.Value;
 
-            if (string.IsNullOrEmpty(parentName))
-            {
-                TxtParentName.Visibility = Visibility.Collapsed;
+                Progress.Value = item.UserData.PlaybackPositionTicks;
             }
             else
             {
-                TxtParentName.Text = parentName;
+                Progress.Visibility = Visibility.Collapsed;
             }
 
-            var name = Item.Name;
-
-            if (Item.IsType("Episode") && item.IndexNumber.HasValue && item.ParentIndexNumber.HasValue)
-            {
-                var displayIndexNumber = item.IndexNumber < 10
-                                             ? "0" + item.IndexNumber.Value.ToString(UsCulture)
-                                             : item.IndexNumber.Value.ToString(UsCulture);
-
-                var number = item.ParentIndexNumber + "x" + displayIndexNumber;
-
-                if (item.IndexNumberEnd.HasValue)
-                {
-                    displayIndexNumber = item.IndexNumberEnd < 10
-                                             ? "0" + item.IndexNumberEnd.Value.ToString(UsCulture)
-                                             : item.IndexNumberEnd.Value.ToString(UsCulture);
-
-                    number += "-x" + displayIndexNumber;
-                }
-
-                name = number + " - " + name;
-            }
-            else
-            {
-                if (item.IndexNumber.HasValue && !item.IsType("Season")) {
-                    name = item.IndexNumber.Value.ToString(UsCulture) + " - " + name;
-                }
-                if (item.ParentIndexNumber != null && !item.IsType("Episode"))
-                {
-                    name = item.ParentIndexNumber.Value.ToString(UsCulture) + "." + name;
-                }
-            }
-
-            TxtName.Text = name;
+            TxtName.Text = MultiItemTile.GetDisplayName(item);
         }
 
         /// <summary>
         /// Reloads the image.
         /// </summary>
-        private void ReloadImage()
+        private void ReloadImage(BaseItemDto item)
         {
-            if (Item.HasPrimaryImage)
+            if (item.HasPrimaryImage)
             {
-                var url = ViewModel.ApiClient.GetImageUrl(Item, new ImageOptions
+                var url = ViewModel.ApiClient.GetImageUrl(item, new ImageOptions
                 {
                     ImageType = ImageType.Primary,
                     Height = 225
@@ -128,9 +89,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
 
                 SetImage(url);
             }
-            else if (Item.BackdropCount > 0)
+            else if (item.BackdropCount > 0)
             {
-                var url = ViewModel.ApiClient.GetImageUrl(Item, new ImageOptions
+                var url = ViewModel.ApiClient.GetImageUrl(item, new ImageOptions
                 {
                     ImageType = ImageType.Backdrop,
                     Height = 225,
@@ -139,9 +100,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
 
                 SetImage(url);
             }
-            else if (Item.HasThumb)
+            else if (item.HasThumb)
             {
-                var url = ViewModel.ApiClient.GetImageUrl(Item, new ImageOptions
+                var url = ViewModel.ApiClient.GetImageUrl(item, new ImageOptions
                 {
                     ImageType = ImageType.Thumb,
                     Height = 225,

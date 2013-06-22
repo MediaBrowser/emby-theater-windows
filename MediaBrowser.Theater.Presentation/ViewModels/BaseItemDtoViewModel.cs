@@ -197,7 +197,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 return values.Median();
             }
 
-            return 0;
+            return 1;
         }
     }
 

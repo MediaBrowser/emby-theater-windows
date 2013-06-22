@@ -1,5 +1,8 @@
-﻿using MediaBrowser.Model.ApiClient;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
+using MediaBrowser.Model.Net;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
@@ -53,8 +56,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         public HomePage(BaseItemDto parent, string displayPreferencesId, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IApplicationWindow applicationWindow, INavigationService navigationManager, IThemeManager themeManager)
         {
-            InitializeComponent();
-
             NavigationManager = navigationManager;
             ApplicationWindow = applicationWindow;
             SessionManager = sessionManager;
@@ -64,16 +65,51 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             ParentItem = parent;
             ThemeManager = themeManager;
+
+            InitializeComponent();
         }
 
-        protected override void OnInitialized(EventArgs e)
+        protected override async void OnInitialized(EventArgs e)
         {
             Loaded += HomePage_Loaded;
 
             MenuList.SelectionChanged += MenuList_SelectionChanged;
             new ListFocuser(MenuList).FocusAfterContainersGenerated(0);
 
-            MenuList.ItemsSource = CollectionViewSource.GetDefaultView(new[] { "movies", "tv", "music", "games", "apps", "folders" });
+            var views = new List<string>();
+
+            try
+            {
+                var itemCounts = await ApiClient.GetItemCountsAsync(SessionManager.CurrentUser.Id);
+
+                if (itemCounts.MovieCount > 0 || itemCounts.TrailerCount > 0)
+                {
+                    views.Add("movies");
+                }
+
+                if (itemCounts.SeriesCount > 0 || itemCounts.EpisodeCount > 0)
+                {
+                    views.Add("tv");
+                }
+
+                if (itemCounts.SongCount > 0)
+                {
+                    views.Add("music");
+                }
+                if (itemCounts.GameCount > 0)
+                {
+                    views.Add("games");
+                }
+            }
+            catch (HttpException)
+            {
+                ThemeManager.CurrentTheme.ShowDefaultErrorMessage();
+            }
+
+            views.Add("apps");
+            views.Add("media collections");
+
+            MenuList.ItemsSource = CollectionViewSource.GetDefaultView(views);
 
             base.OnInitialized(e);
         }
@@ -88,7 +124,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             }
             else if (string.Equals(item, "tv"))
             {
-                PageContent.Content = new TV.TV(ParentItem, ApiClient, ImageManager, SessionManager, NavigationManager, ThemeManager);
+                PageContent.Content = new TV.TV(ParentItem, ApiClient, ImageManager, SessionManager, NavigationManager, ThemeManager, ApplicationWindow, ScrollingPanel);
             }
             else if (string.Equals(item, "music"))
             {
@@ -102,9 +138,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 PageContent.Content = new Movies.Movies();
             }
-            if (string.Equals(item, "folders"))
+            if (string.Equals(item, "media collections"))
             {
-                PageContent.Content = new Folders(ParentItem, DisplayPreferencesId, ApiClient, ImageManager, SessionManager, ApplicationWindow, NavigationManager, ThemeManager);
+                PageContent.Content = new Folders(ParentItem, new Model.Entities.DisplayPreferences(), ApiClient, ImageManager, SessionManager, ApplicationWindow, NavigationManager, ThemeManager);
             }
         }
 

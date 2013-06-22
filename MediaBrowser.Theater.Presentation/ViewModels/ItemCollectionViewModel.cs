@@ -19,7 +19,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         public IApiClient ApiClient { get; private set; }
         public IImageManager ImageManager { get; private set; }
         
-        public ItemCollectionViewModel(IApiClient apiClient, IImageManager imageManager, int rotationPeriodMs = 10000, int rotationDevaiationMs = 2000)
+        public ItemCollectionViewModel(IApiClient apiClient, IImageManager imageManager, int rotationPeriodMs = 20000, int rotationDevaiationMs = 5000)
             : base()
         {
             ImageManager = imageManager;
@@ -36,20 +36,6 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         /// Gets the timer that updates the current item
         /// </summary>
         private Timer CurrentItemTimer { get; set; }
-
-        private string _name;
-        /// <summary>
-        /// Gets or sets the name of the collection
-        /// </summary>
-        public string Name
-        {
-            get { return _name; }
-            set
-            {
-                _name = value;
-                OnPropertyChanged("Name");
-            }
-        }
 
         private BaseItemDto[] _items;
         /// <summary>

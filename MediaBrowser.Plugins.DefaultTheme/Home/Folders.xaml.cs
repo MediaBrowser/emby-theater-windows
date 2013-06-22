@@ -23,20 +23,20 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         /// </summary>
         /// <value>The application window.</value>
         protected IApplicationWindow ApplicationWindow { get; private set; }
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseItemsPage" /> class.
         /// </summary>
         /// <param name="parent">The parent.</param>
-        /// <param name="displayPreferencesId">The display preferences id.</param>
+        /// <param name="displayPreferences">The display preferences.</param>
         /// <param name="apiClient">The API client.</param>
         /// <param name="imageManager">The image manager.</param>
         /// <param name="sessionManager">The session manager.</param>
         /// <param name="applicationWindow">The application window.</param>
         /// <param name="navigationManager">The navigation manager.</param>
         /// <param name="themeManager">The theme manager.</param>
-        public Folders(BaseItemDto parent, string displayPreferencesId, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IApplicationWindow applicationWindow, INavigationService navigationManager, IThemeManager themeManager)
-            : base(parent, displayPreferencesId, apiClient, imageManager, sessionManager, navigationManager, themeManager)
+        public Folders(BaseItemDto parent, Model.Entities.DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IApplicationWindow applicationWindow, INavigationService navigationManager, IThemeManager themeManager)
+            : base(parent, displayPreferences, apiClient, imageManager, sessionManager, navigationManager, themeManager)
         {
             ApplicationWindow = applicationWindow;
             

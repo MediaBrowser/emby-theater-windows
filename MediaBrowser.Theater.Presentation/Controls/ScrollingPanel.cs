@@ -18,7 +18,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
         /// <summary>
         /// The infinite size
         /// </summary>
-        private static Size InfiniteSize = new Size(double.PositiveInfinity, double.PositiveInfinity);
+        private static Size _infiniteSize = new Size(double.PositiveInfinity, double.PositiveInfinity);
         /// <summary>
         /// The line size
         /// </summary>
@@ -44,7 +44,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
         /// <summary>
         /// The _ animation length
         /// </summary>
-        private TimeSpan _AnimationLength = TimeSpan.FromMilliseconds(125);
+        private TimeSpan _AnimationLength = TimeSpan.FromMilliseconds(100);
 
         /// <summary>
         /// When overridden in a derived class, measures the size in layout required for child elements and determines a size for the <see cref="T:System.Windows.FrameworkElement" />-derived class.
@@ -138,8 +138,6 @@ namespace MediaBrowser.Theater.Presentation.Controls
         private DoubleAnimation GetAnimation(double toValue)
         {
             var animation = new DoubleAnimation(toValue, _AnimationLength);
-
-            animation.EasingFunction = new ExponentialEase { EasingMode = EasingMode.EaseInOut };
 
             return animation;
         }
@@ -302,7 +300,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
             rectangle = visual.TransformToAncestor(this).TransformBounds(rectangle);
 
             //rectangle.Inflate(50, 50);
-            rectangle.Scale(1.2, 1.2);
+            rectangle.Scale(1.8, 1.8);
 
             Rect viewRect = new Rect(HorizontalOffset,
               VerticalOffset, ViewportWidth, ViewportHeight);

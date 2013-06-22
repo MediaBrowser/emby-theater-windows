@@ -179,7 +179,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
             }
 
             MainGrid.Height = ViewModel.ImageHeight;
-
+           
             MainGrid.Width = ViewModel.ImageWidth;
 
             await SetImageSource(item);

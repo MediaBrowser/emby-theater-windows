@@ -11,7 +11,7 @@
             <ColumnDefinition Width="*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
 
-        <TextBlock Style="{StaticResource TextBlockStyle}" Grid.Column="0" x:Name="StreamName"></TextBlock>
+        <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Column="0" x:Name="StreamName"></TextBlock>
         <StackPanel Orientation="Vertical" Grid.Column="1" x:Name="StreamDetails"></StackPanel>
     </Grid>
 </UserControl>

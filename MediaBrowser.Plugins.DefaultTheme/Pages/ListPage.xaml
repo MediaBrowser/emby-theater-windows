@@ -21,12 +21,12 @@
             <RowDefinition Height="auto"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <TextBlock x:Name="TxtName" Style="{StaticResource TextBlockStyle}" Margin="25 0 0 0" Grid.Row="0"></TextBlock>
+        <TextBlock x:Name="TxtName" Style="{DynamicResource TextBlockStyle}" Margin="25 0 0 0" Grid.Row="0"></TextBlock>
 
         <StackPanel Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Left" Margin="25 0 0 0">
-            <TextBlock x:Name="currentItemIndex" Style="{StaticResource TextBlockStyle}"></TextBlock>
-            <TextBlock x:Name="currentItemIndexDivider" Text="|" Style="{StaticResource TextBlockStyle}"></TextBlock>
-            <TextBlock x:Name="TxtItemCount" Style="{StaticResource TextBlockStyle}"></TextBlock>
+            <TextBlock x:Name="currentItemIndex" Style="{DynamicResource TextBlockStyle}"></TextBlock>
+            <TextBlock x:Name="currentItemIndexDivider" Text="|" Style="{DynamicResource TextBlockStyle}"></TextBlock>
+            <TextBlock x:Name="TxtItemCount" Style="{DynamicResource TextBlockStyle}"></TextBlock>
         </StackPanel>
 
         <Grid Grid.Row="2" Margin="30 30 30 0" Visibility="Collapsed">
@@ -35,21 +35,21 @@
                 <ColumnDefinition Width="*"></ColumnDefinition>
                 <ColumnDefinition Width="400"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <TextBlock Name="TxtOverview" Style="{StaticResource TextBlockStyle}" MaxHeight="160" TextTrimming="CharacterEllipsis" Grid.Column="0"></TextBlock>
+            <TextBlock Name="TxtOverview" Style="{DynamicResource TextBlockStyle}" MaxHeight="160" TextTrimming="CharacterEllipsis" Grid.Column="0"></TextBlock>
             <Border Grid.Column="1"></Border>
         </Grid>
 
         <Grid Grid.Row="3">
 
-            <controls:ExtendedListBox x:Name="lstItems" Style="{StaticResource ListPageListBoxStyle}">
+            <controls:ExtendedListBox x:Name="lstItems" Style="{DynamicResource ListPageListBoxStyle}">
             </controls:ExtendedListBox>
         </Grid>
 
         <Grid Grid.Row="4" Margin="0 0 0 100" Name="PnlThumbstripInfo">
 
             <StackPanel Orientation="Vertical">
-                <TextBlock Style="{StaticResource TextBlockStyle}" Name="TxtGenres" Margin="300 0 300 0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" HorizontalAlignment="Center"></TextBlock>
-                <TextBlock Style="{StaticResource TextBlockStyle}" Name="TxtTagline" Margin="300 20 300 0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" HorizontalAlignment="Center"></TextBlock>
+                <TextBlock Style="{DynamicResource TextBlockStyle}" Name="TxtGenres" Margin="300 0 300 0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" HorizontalAlignment="Center"></TextBlock>
+                <TextBlock Style="{DynamicResource TextBlockStyle}" Name="TxtTagline" Margin="300 20 300 0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" HorizontalAlignment="Center"></TextBlock>
             </StackPanel>
         </Grid>
         

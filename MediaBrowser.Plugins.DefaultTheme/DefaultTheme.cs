@@ -10,12 +10,12 @@ using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.Theming;
+using MediaBrowser.Theater.Interfaces.UserInput;
 using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
-using MediaBrowser.Theater.Interfaces.UserInput;
 
 namespace MediaBrowser.Plugins.DefaultTheme
 {
@@ -47,7 +47,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// <summary>
         /// The _app window
         /// </summary>
-        private readonly IApplicationWindow _appWindow;
+        private readonly IPresentationManager _appWindow;
         /// <summary>
         /// The _logger
         /// </summary>
@@ -70,7 +70,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// <param name="logManager">The log manager.</param>
         /// <param name="themeManager">The theme manager.</param>
         /// <param name="userInputManager">The user input manager.</param>
-        public DefaultTheme(IPlaybackManager playbackManager, IImageManager imageManager, IApiClient apiClient, INavigationService navService, ISessionManager sessionManager, IApplicationWindow appWindow, ILogManager logManager, IThemeManager themeManager, IUserInputManager userInputManager)
+        public DefaultTheme(IPlaybackManager playbackManager, IImageManager imageManager, IApiClient apiClient, INavigationService navService, ISessionManager sessionManager, IPresentationManager appWindow, ILogManager logManager, IThemeManager themeManager, IUserInputManager userInputManager)
         {
             _playbackManager = playbackManager;
             _imageManager = imageManager;
@@ -215,6 +215,11 @@ namespace MediaBrowser.Plugins.DefaultTheme
         public void SetDefaultPageTitle()
         {
             AppResources.Instance.SetDefaultPageTitle();
+        }
+
+        public string Name
+        {
+            get { return "Default"; }
         }
     }
 }

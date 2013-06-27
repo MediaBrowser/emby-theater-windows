@@ -19,16 +19,16 @@
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <TextBlock Style="{StaticResource TextBlockStyle}" Grid.Column="0" Grid.Row="0" Margin="20 0 0 5">Views</TextBlock>
-        <TextBlock Style="{StaticResource TextBlockStyle}" Grid.Column="1" Grid.Row="0" Margin="10 0 0 5">Recent</TextBlock>
+        <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Column="0" Grid.Row="0" Margin="20 0 0 5">Views</TextBlock>
+        <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Column="1" Grid.Row="0" Margin="10 0 0 5">What's New</TextBlock>
 
-        <TextBlock Style="{StaticResource TextBlockStyle}" Grid.Column="2" Grid.Row="0" Margin="20 0 0 5">Resume</TextBlock>
-        <TextBlock Style="{StaticResource TextBlockStyle}" Grid.Column="3" Grid.Row="0" Margin="20 0 0 5">Latest Trailers</TextBlock>
+        <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Column="2" Grid.Row="0" Margin="20 0 0 5">Resume</TextBlock>
+        <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Column="3" Grid.Row="0" Margin="20 0 0 5">Latest Trailers</TextBlock>
 
         <Grid x:Name="GridViews" Grid.Row="1" Grid.Column="0" Margin="0 0 50 0"></Grid>
         <Grid x:Name="GridSpotlight" Grid.Row="1" Grid.Column="1"></Grid>
         <Grid x:Name="GridResume" Grid.Row="1" Grid.Column="2"></Grid>
-        <Grid x:Name="GridNextUp" Grid.Row="1" Grid.Column="3"></Grid>
+        <Grid x:Name="GridTrailers" Grid.Row="1" Grid.Column="3"></Grid>
         
     </Grid>
 </UserControl>

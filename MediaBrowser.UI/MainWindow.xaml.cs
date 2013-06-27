@@ -92,13 +92,13 @@ namespace MediaBrowser.UI
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
         private readonly IApplicationHost _appHost;
-        private readonly IApplicationWindow _appWindow;
+        private readonly IPresentationManager _appWindow;
         private readonly IUserInputManager _userInput;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MainWindow" /> class.
         /// </summary>
-        public MainWindow(ILogger logger, IPlaybackManager playbackManager, IApiClient apiClient, IImageManager imageManager, IApplicationHost appHost, IApplicationWindow appWindow, IUserInputManager userInput)
+        public MainWindow(ILogger logger, IPlaybackManager playbackManager, IApiClient apiClient, IImageManager imageManager, IApplicationHost appHost, IPresentationManager appWindow, IUserInputManager userInput)
             : base()
         {
             _logger = logger;

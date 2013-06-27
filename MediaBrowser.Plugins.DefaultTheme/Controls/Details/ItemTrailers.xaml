@@ -10,7 +10,7 @@
     <Grid>
         <controls:ExtendedScrollViewer ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" CanContentScroll="True">
             <controls:ScrollingPanel CanHorizontallyScroll="True" CanVerticallyScroll="False">
-                <controls:ExtendedListBox x:Name="lstItems" HorizontalAlignment="Center" VerticalAlignment="Top" ScrollViewer.VerticalScrollBarVisibility="Disabled" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemTemplate="{StaticResource ItemSpecialFeaturesTemplate}"  Style="{StaticResource ListBoxStyle}" ItemContainerStyle="{StaticResource AnimatedListBoxItemStyle}">
+                <controls:ExtendedListBox x:Name="lstItems" HorizontalAlignment="Center" VerticalAlignment="Top" ScrollViewer.VerticalScrollBarVisibility="Disabled" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemTemplate="{DynamicResource ItemSpecialFeaturesTemplate}"  Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource AnimatedListBoxItemStyle}">
                     <controls:ExtendedListBox.ItemsPanel>
                         <ItemsPanelTemplate>
                             <WrapPanel Orientation="Vertical" Margin="50" />

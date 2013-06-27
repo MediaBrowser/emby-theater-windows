@@ -4,7 +4,12 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Resources/AppResources.xaml" />
+                <ResourceDictionary Source="Resources/Fonts.xaml" />
+                <ResourceDictionary Source="Resources/TextBlocks.xaml" />
+                <ResourceDictionary Source="Resources/Controls.xaml" />
+                <ResourceDictionary Source="Resources/Buttons.xaml" />
+                <ResourceDictionary Source="Resources/TextBox.xaml" />
+                <ResourceDictionary Source="Resources/ListBox.xaml" />
                 <ResourceDictionary Source="Resources/MainWindowResources.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

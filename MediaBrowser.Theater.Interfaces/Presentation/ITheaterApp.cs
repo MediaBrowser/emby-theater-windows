@@ -1,4 +1,6 @@
-﻿using System.Windows.Controls;
+﻿using System.Threading.Tasks;
+using System.Windows.Controls;
+using System.Windows.Media.Imaging;
 
 namespace MediaBrowser.Theater.Interfaces.Presentation
 {
@@ -18,5 +20,11 @@ namespace MediaBrowser.Theater.Interfaces.Presentation
         /// </summary>
         /// <returns>Page.</returns>
         Page GetPage();
+
+        /// <summary>
+        /// Gets the thumb image.
+        /// </summary>
+        /// <returns>Task{BitmapImage}.</returns>
+        Task<BitmapImage> GetThumbImage();
     }
 }

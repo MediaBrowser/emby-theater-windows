@@ -173,12 +173,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         /// </summary>
         private async void ReloadImage(BaseItemDto item)
         {
-            if (ViewModel.ImageWidth.Equals(0) || ViewModel.ImageHeight.Equals(0))
+            if (ViewModel.ImageWidth.Equals(0))
             {
                 return;
             }
 
-            MainGrid.Height = ViewModel.ImageHeight;
+            MainGrid.Height = ViewModel.GetImageHeight(ViewModel.ImageType);
            
             MainGrid.Width = ViewModel.ImageWidth;
 

@@ -1,6 +1,6 @@
 ﻿using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Drawing;
 using MediaBrowser.Model.Dto;
-using MediaBrowser.Model.Net;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
@@ -8,6 +8,7 @@ using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Presentation.Controls;
 using System;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 
@@ -46,13 +47,13 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.TV
         /// <value>The theme manager.</value>
         protected IThemeManager ThemeManager { get; private set; }
 
-        protected IApplicationWindow ApplicationWindow { get; private set; }
+        protected IPresentationManager PresentationManager { get; private set; }
         protected IScrollInfo ScrollingPanel { get; private set; }
 
-        public TV(BaseItemDto parentItem, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IThemeManager themeManager, IApplicationWindow applicationWindow, IScrollInfo scrollingPanel)
+        public TV(BaseItemDto parentItem, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IThemeManager themeManager, IPresentationManager applicationWindow, IScrollInfo scrollingPanel)
         {
             ScrollingPanel = scrollingPanel;
-            ApplicationWindow = applicationWindow;
+            PresentationManager = applicationWindow;
             ThemeManager = themeManager;
             NavigationManager = navigationManager;
             SessionManager = sessionManager;
@@ -62,35 +63,40 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.TV
             InitializeComponent();
         }
 
+        internal static ImageSize GetImageSize()
+        {
+            return new ImageSize
+            {
+                Width = 368,
+                Height = 207
+            };
+        }
+
         protected override async void OnInitialized(EventArgs e)
         {
             base.OnInitialized(e);
 
-            Model.Entities.DisplayPreferences displayPreferences;
+            var size = GetImageSize();
 
-            try
+            var displayPreferences = new Model.Entities.DisplayPreferences
             {
-                displayPreferences = await ApiClient.GetDisplayPreferencesAsync(ParentItem.DisplayPreferencesId);
-            }
-            catch (HttpException)
-            {
-                ThemeManager.CurrentTheme.ShowDefaultErrorMessage();
-                return;
-            }
+                PrimaryImageWidth = Convert.ToInt32(size.Width),
+                PrimaryImageHeight = Convert.ToInt32(size.Height)
+            };
 
-            var spotlight = new Spotlight(ApiClient, ImageManager, NavigationManager, ApplicationWindow);
+            var spotlight = new Spotlight(ApiClient, ImageManager, NavigationManager, PresentationManager);
             spotlight.ContentLoaded += spotlight_ContentLoaded;
 
             GridSpotlight.Children.Add(spotlight);
-            GridResume.Children.Add(new ResumableEpisodes(ParentItem, displayPreferences, ApiClient, ImageManager, SessionManager, NavigationManager, ThemeManager, ApplicationWindow));
-            GridViews.Children.Add(new ResumableEpisodes(ParentItem, displayPreferences, ApiClient, ImageManager, SessionManager, NavigationManager, ThemeManager, ApplicationWindow));
-            GridNextUp.Children.Add(new NextUp(ParentItem, displayPreferences, ApiClient, ImageManager, SessionManager, NavigationManager, ThemeManager, ApplicationWindow));
+            GridResume.Children.Add(new ResumableEpisodes(ParentItem, displayPreferences, ApiClient, ImageManager, SessionManager, NavigationManager, ThemeManager, PresentationManager));
+            GridViews.Children.Add(new ResumableEpisodes(ParentItem, displayPreferences, ApiClient, ImageManager, SessionManager, NavigationManager, ThemeManager, PresentationManager));
+            GridNextUp.Children.Add(new NextUp(ParentItem, displayPreferences, ApiClient, ImageManager, SessionManager, NavigationManager, ThemeManager, PresentationManager));
 
         }
 
         void spotlight_ContentLoaded(object sender, EventArgs e)
         {
-            MainGrid.Visibility = System.Windows.Visibility.Visible;
+            MainGrid.Visibility = Visibility.Visible;
             ScrollingPanel.SetHorizontalOffset(750);
 
             Dispatcher.InvokeAsync(async () =>

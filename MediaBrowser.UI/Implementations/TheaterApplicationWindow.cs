@@ -1,5 +1,4 @@
-﻿using System.Windows.Controls;
-using MediaBrowser.Common.Events;
+﻿using MediaBrowser.Common.Events;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Interfaces.Presentation;
@@ -7,13 +6,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace MediaBrowser.UI.Implementations
 {
     /// <summary>
     /// Class TheaterApplicationWindow
     /// </summary>
-    internal class TheaterApplicationWindow : IApplicationWindow
+    internal class TheaterApplicationWindow : IPresentationManager
     {
         /// <summary>
         /// The _logger
@@ -109,6 +109,22 @@ namespace MediaBrowser.UI.Implementations
             {
                 return App.Instance.ApplicationWindow.WindowBackgroundContent;
             }
+        }
+
+
+        /// <summary>
+        /// Gets the apps.
+        /// </summary>
+        /// <value>The apps.</value>
+        public IEnumerable<ITheaterApp> Apps { get; private set; }
+
+        /// <summary>
+        /// Adds the parts.
+        /// </summary>
+        /// <param name="apps">The apps.</param>
+        public void AddParts(IEnumerable<ITheaterApp> apps)
+        {
+            Apps = apps;
         }
     }
 }

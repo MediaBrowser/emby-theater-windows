@@ -52,7 +52,7 @@ namespace MediaBrowser.UI
         public IImageManager ImageManager { get; private set; }
         public INavigationService NavigationService { get; private set; }
         public ISessionManager SessionManager { get; private set; }
-        public IApplicationWindow ApplicationWindow { get; private set; }
+        public IPresentationManager PresentationManager { get; private set; }
         public IUserInputManager UserInputManager { get; private set; }
 
         public ConfigurationManager TheaterConfigurationManager
@@ -94,8 +94,8 @@ namespace MediaBrowser.UI
 
             await base.RegisterResources().ConfigureAwait(false);
 
-            ApplicationWindow = new TheaterApplicationWindow(Logger);
-            RegisterSingleInstance(ApplicationWindow);
+            PresentationManager = new TheaterApplicationWindow(Logger);
+            RegisterSingleInstance(PresentationManager);
 
             RegisterSingleInstance(ApplicationPaths);
 
@@ -109,7 +109,7 @@ namespace MediaBrowser.UI
             NavigationService = new NavigationService(ThemeManager, () => PlaybackManager, ApiClient);
             RegisterSingleInstance(NavigationService);
 
-            PlaybackManager = new PlaybackManager(TheaterConfigurationManager, Logger, ApiClient, NavigationService, ApplicationWindow);
+            PlaybackManager = new PlaybackManager(TheaterConfigurationManager, Logger, ApiClient, NavigationService, PresentationManager);
             RegisterSingleInstance(PlaybackManager);
 
             ImageManager = new ImageManager(ApiClient, ApplicationPaths);
@@ -134,6 +134,7 @@ namespace MediaBrowser.UI
             base.FindParts();
 
             ThemeManager.AddParts(GetExports<ITheme>());
+            PresentationManager.AddParts(GetExports<ITheaterApp>());
 
             PlaybackManager.AddParts(GetExports<IMediaPlayer>());
         }

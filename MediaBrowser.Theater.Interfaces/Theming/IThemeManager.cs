@@ -35,6 +35,12 @@ namespace MediaBrowser.Theater.Interfaces.Theming
         /// Sets the current theme.
         /// </summary>
         /// <param name="theme">The theme.</param>
-        void SetCurrentTheme(ITheme theme);
+        void LoadTheme(ITheme theme);
+
+        /// <summary>
+        /// Sets the current theme.
+        /// </summary>
+        /// <param name="theme">The theme.</param>
+        void LoadDefaultTheme();
     }
 }

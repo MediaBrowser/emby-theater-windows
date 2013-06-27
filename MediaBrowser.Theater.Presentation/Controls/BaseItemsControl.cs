@@ -51,6 +51,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
         /// </summary>
         /// <value>The theme manager.</value>
         protected IThemeManager ThemeManager { get; private set; }
+        protected IPresentationManager PresentationManager { get; private set; }
 
         /// <summary>
         /// Gets the list items.
@@ -92,7 +93,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
         /// <exception cref="System.ArgumentNullException">parent
         /// or
         /// displayPreferencesId</exception>
-        protected BaseItemsControl(BaseItemDto parent, DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IThemeManager themeManager)
+        protected BaseItemsControl(BaseItemDto parent, DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IThemeManager themeManager, IPresentationManager appWindow)
         {
             if (parent == null)
             {
@@ -107,6 +108,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
             SessionManager = sessionManager;
             ImageManager = imageManager;
             ApiClient = apiClient;
+            PresentationManager = appWindow;
 
             _displayPreferences = displayPreferences;
             _parentItem = parent;
@@ -270,7 +272,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
             DataContext = this;
 
             OnPropertyChanged("ParentItem");
-            
+
             ListItems = new RangeObservableCollection<BaseItemDtoViewModel>();
             ListCollectionView = (ListCollectionView)CollectionViewSource.GetDefaultView(ListItems);
             ItemsList.ItemsSource = ListCollectionView;
@@ -339,17 +341,16 @@ namespace MediaBrowser.Theater.Presentation.Controls
                         selectedIndex = index;
                     }
                 }
-                
+
                 ListItems.Clear();
 
-                var averagePrimaryImageAspectRatio = BaseItemDtoViewModel.GetAveragePrimaryImageAspectRatio(result.Items);
+                var meanPrimaryImageAspectRatio = BaseItemDtoViewModel.GetMeanPrimaryImageAspectRatio(result.Items);
 
-                ListItems.AddRange(result.Items.Select(i => new BaseItemDtoViewModel(ApiClient, ImageManager)
+                ListItems.AddRange(result.Items.Select(i =>
                 {
-                    ImageWidth = DisplayPreferences.PrimaryImageWidth,
-                    ViewType = DisplayPreferences.ViewType,
-                    Item = i,
-                    AveragePrimaryImageAspectRatio = averagePrimaryImageAspectRatio
+                    var model = CreateViewModel(i);
+                    model.MeanPrimaryImageAspectRatio = meanPrimaryImageAspectRatio;
+                    return model;
                 }));
 
                 if (selectedIndex.HasValue)
@@ -364,6 +365,16 @@ namespace MediaBrowser.Theater.Presentation.Controls
             }
 
             OnItemsChanged();
+        }
+
+        protected virtual BaseItemDtoViewModel CreateViewModel(BaseItemDto item)
+        {
+            return new BaseItemDtoViewModel(ApiClient, ImageManager)
+            {
+                ImageWidth = DisplayPreferences.PrimaryImageWidth,
+                ViewType = DisplayPreferences.ViewType,
+                Item = item
+            };
         }
 
         /// <summary>
@@ -406,11 +417,25 @@ namespace MediaBrowser.Theater.Presentation.Controls
         {
         }
 
+        protected virtual bool SetBackdropsOnCurrentItemChanged
+        {
+            get
+            {
+                return true;
+            }
+        }
+
         /// <summary>
         /// Called when [current item changed].
         /// </summary>
         protected virtual void OnCurrentItemChanged()
         {
+            var item = CurrentItem;
+
+            if (SetBackdropsOnCurrentItemChanged && item != null)
+            {
+                PresentationManager.SetBackdrops(item);
+            }
         }
 
         /// <summary>

@@ -1,21 +1,28 @@
-﻿using System;
-using System.Windows.Controls;
-using MediaBrowser.Model.Dto;
+﻿using MediaBrowser.Model.Dto;
+using System;
 using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Controls;
+using MediaBrowser.Theater.Interfaces.Theming;
 
 namespace MediaBrowser.Theater.Interfaces.Presentation
 {
     /// <summary>
     /// Interface IApplicationWindow
     /// </summary>
-    public interface IApplicationWindow
+    public interface IPresentationManager
     {
         /// <summary>
         /// Occurs when [window loaded].
         /// </summary>
         event EventHandler<EventArgs> WindowLoaded;
-        
+
+        /// <summary>
+        /// Gets the apps.
+        /// </summary>
+        /// <value>The apps.</value>
+        IEnumerable<ITheaterApp> Apps { get; }
+
         /// <summary>
         /// Gets the window.
         /// </summary>
@@ -56,5 +63,12 @@ namespace MediaBrowser.Theater.Interfaces.Presentation
         /// </summary>
         /// <param name="paths">The paths.</param>
         void SetBackdrops(IEnumerable<string> paths);
+
+        /// <summary>
+        /// Adds the parts.
+        /// </summary>
+        /// <param name="apps">The apps.</param>
+        void AddParts(IEnumerable<ITheaterApp> apps);
+
     }
 }

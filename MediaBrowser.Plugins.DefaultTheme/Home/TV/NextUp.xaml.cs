@@ -1,6 +1,4 @@
-﻿using System.Windows;
-using System.Windows.Input;
-using MediaBrowser.Model.ApiClient;
+﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Theater.Interfaces.Navigation;
@@ -19,12 +17,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.TV
     /// </summary>
     public partial class NextUp : BaseItemsControl
     {
-        private readonly IApplicationWindow _appWindow;
-
-        public NextUp(BaseItemDto parent, Model.Entities.DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IThemeManager themeManager, IApplicationWindow appWindow)
-            : base(parent, displayPreferences, apiClient, imageManager, sessionManager, navigationManager, themeManager)
+        public NextUp(BaseItemDto parent, Model.Entities.DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IThemeManager themeManager, IPresentationManager appWindow)
+            : base(parent, displayPreferences, apiClient, imageManager, sessionManager, navigationManager, themeManager, appWindow)
         {
-            _appWindow = appWindow;
             InitializeComponent();
         }
 
@@ -88,18 +83,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.TV
             };
 
             return ApiClient.GetNextUpAsync(query);
-        }
-
-        protected override void OnCurrentItemChanged()
-        {
-            base.OnCurrentItemChanged();
-
-            var item = CurrentItem;
-
-            if (item != null)
-            {
-                _appWindow.SetBackdrops(item);
-            }
         }
     }
 }

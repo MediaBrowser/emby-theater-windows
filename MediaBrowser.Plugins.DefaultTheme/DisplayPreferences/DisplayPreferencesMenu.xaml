@@ -6,12 +6,12 @@
                           Title="DisplayPreferencesMenu" Height="300" Width="300"
         AllowsTransparency="True"
         Background="Transparent"
-        Style="{StaticResource ModalWindow}">
+        Style="{DynamicResource ModalWindow}">
     <Grid>
-        <Grid Style="{StaticResource ModalOverlayStyle}">
+        <Grid Style="{DynamicResource ModalOverlayStyle}">
 
         </Grid>
-        <Grid Style="{StaticResource ModalContentStyle}" HorizontalAlignment="Right" VerticalAlignment="Stretch">
+        <Grid Style="{DynamicResource ModalContentStyle}" HorizontalAlignment="Right" VerticalAlignment="Stretch">
 
             <Grid Margin="50 50 120 0">
                 <Grid.RowDefinitions>
@@ -31,10 +31,10 @@
                         <ee:WipeTransitionEffect WipeDirection="RightToLeft"></ee:WipeTransitionEffect>
                     </controls:TransitionFrame.TransitionType>
                 </controls:TransitionFrame>
-                <controls:ExtendedButton x:Name="btnClose" Style="{StaticResource ViewMenuButton}" HorizontalAlignment="Left" Margin="0 50 0 0" Grid.Row="1">
+                <controls:ExtendedButton x:Name="btnClose" Style="{DynamicResource ViewMenuButton}" HorizontalAlignment="Left" Margin="0 50 0 0" Grid.Row="1">
                     <StackPanel Orientation="Horizontal">
                         <Image Source="..\Resources\Images\ViewMenu\Close.png" Stretch="None" />
-                        <TextBlock Style="{StaticResource TextBlockStyle}" VerticalAlignment="Center" Margin="10 0 0 0">Close</TextBlock>
+                        <TextBlock Style="{DynamicResource TextBlockStyle}" VerticalAlignment="Center" Margin="10 0 0 0">Close</TextBlock>
                     </StackPanel>
                 </controls:ExtendedButton>
             </Grid>

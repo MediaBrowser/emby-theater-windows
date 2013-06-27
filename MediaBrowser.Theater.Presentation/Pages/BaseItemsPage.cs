@@ -23,7 +23,7 @@ namespace MediaBrowser.Theater.Presentation.Pages
     /// <summary>
     /// Class BaseItemsPage
     /// </summary>
-    public abstract class BaseItemsPage : Page, INotifyPropertyChanged
+    public abstract class BaseItemsPage : BasePage, INotifyPropertyChanged
     {
         /// <summary>
         /// Occurs when a property value changes.
@@ -49,7 +49,7 @@ namespace MediaBrowser.Theater.Presentation.Pages
         /// Gets the application window.
         /// </summary>
         /// <value>The application window.</value>
-        protected IApplicationWindow ApplicationWindow { get; private set; }
+        protected IPresentationManager PresentationManager { get; private set; }
         /// <summary>
         /// Gets the navigation manager.
         /// </summary>
@@ -104,7 +104,7 @@ namespace MediaBrowser.Theater.Presentation.Pages
         /// or
         /// displayPreferencesId
         /// </exception>
-        protected BaseItemsPage(BaseItemDto parent, string displayPreferencesId, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IApplicationWindow applicationWindow, INavigationService navigationManager, IThemeManager themeManager)
+        protected BaseItemsPage(BaseItemDto parent, string displayPreferencesId, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IPresentationManager applicationWindow, INavigationService navigationManager, IThemeManager themeManager)
         {
             if (parent == null)
             {
@@ -116,7 +116,7 @@ namespace MediaBrowser.Theater.Presentation.Pages
             }
 
             NavigationManager = navigationManager;
-            ApplicationWindow = applicationWindow;
+            PresentationManager = applicationWindow;
             SessionManager = sessionManager;
             ImageManager = imageManager;
             ApiClient = apiClient;
@@ -367,14 +367,14 @@ namespace MediaBrowser.Theater.Presentation.Pages
                 
                 ListItems.Clear();
 
-                var averagePrimaryImageAspectRatio = BaseItemDtoViewModel.GetAveragePrimaryImageAspectRatio(result.Items);
+                var averagePrimaryImageAspectRatio = BaseItemDtoViewModel.GetMeanPrimaryImageAspectRatio(result.Items);
 
                 ListItems.AddRange(result.Items.Select(i => new BaseItemDtoViewModel(ApiClient, ImageManager)
                 {
                     ImageWidth = DisplayPreferences.PrimaryImageWidth,
                     ViewType = DisplayPreferences.ViewType,
                     Item = i,
-                    AveragePrimaryImageAspectRatio = averagePrimaryImageAspectRatio
+                    MeanPrimaryImageAspectRatio = averagePrimaryImageAspectRatio
                 }));
 
                 if (selectedIndex.HasValue)
@@ -439,7 +439,7 @@ namespace MediaBrowser.Theater.Presentation.Pages
         {
             if (CurrentItem != null)
             {
-                ApplicationWindow.SetBackdrops(CurrentItem);
+                PresentationManager.SetBackdrops(CurrentItem);
             }
         }
 

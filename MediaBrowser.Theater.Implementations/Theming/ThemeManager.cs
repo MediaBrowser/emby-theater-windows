@@ -1,6 +1,8 @@
-﻿using MediaBrowser.Theater.Interfaces.Theming;
+﻿using System.Threading.Tasks;
+using MediaBrowser.Theater.Interfaces.Theming;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 
 namespace MediaBrowser.Theater.Implementations.Theming
@@ -26,14 +28,32 @@ namespace MediaBrowser.Theater.Implementations.Theming
             get { return _currentTheme; }
         }
 
-        public void SetCurrentTheme(ITheme theme)
+        public async void LoadTheme(ITheme theme)
         {
             _currentTheme = theme;
 
-            foreach (var resource in _currentTheme.GetGlobalResources())
+            var resources = _currentTheme.GetGlobalResources().ToList();
+
+            foreach (var resource in resources)
             {
                 Application.Current.Resources.MergedDictionaries.Add(resource);
             }
+
+            //await Task.Delay(5000);
+
+            //var current = Application.Current.Resources.MergedDictionaries.ToList();
+
+            //Application.Current.Resources.MergedDictionaries.Clear();
+
+            //foreach (var resource in current.Where(i => !resources.Contains(i)))
+            //{
+            //    Application.Current.Resources.MergedDictionaries.Add(resource);
+            //}
+        }
+
+        public void LoadDefaultTheme()
+        {
+            LoadTheme(Themes.First(i => string.Equals(i.Name, "Default")));
         }
     }
 }

@@ -5,7 +5,7 @@
         xmlns:ee="http://schemas.microsoft.com/expression/2010/effects"
                       xmlns:controls2="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
                       Title="Media Browser Theater" 
-        Style="{StaticResource MainWindow}"
+        Style="{DynamicResource MainWindow}"
         WindowStartupLocation="CenterScreen" 
         AllowsTransparency="True" 
         WindowStyle="None"
@@ -20,11 +20,11 @@
     <Grid x:Name="MainGrid">
 
         <!--This allows the user to drag the window.-->
-        <Grid x:Name="DragBar" Style="{StaticResource DragBar}"></Grid>
+        <Grid x:Name="DragBar" Style="{DynamicResource DragBar}"></Grid>
 
-        <controls:WindowCommands x:Name="WindowCommands" Style="{StaticResource WindowCommands}"></controls:WindowCommands>
+        <controls:WindowCommands x:Name="WindowCommands" Style="{DynamicResource WindowCommands}"></controls:WindowCommands>
 
-        <Grid x:Name="WindowBackgroundContent" Style="{StaticResource WindowBackgroundContent}">
+        <Grid x:Name="WindowBackgroundContent" Style="{DynamicResource WindowBackgroundContent}">
         </Grid>
 
         <controls2:TransitionControl x:Name="BackdropContainer">

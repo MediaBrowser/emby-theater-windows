@@ -11,43 +11,43 @@
 
         <StackPanel Orientation="Horizontal" Name="PnlPersonalRating">
             <!--This textblock is just to make sure the panel always takes up the same amount of vertical space, so that content never moves due to height changes -->
-            <TextBlock Style="{StaticResource TextBlockStyle}" Visibility="Hidden" Text=" "></TextBlock>
-            <Border Style="{StaticResource MediaInfoSeparator}"></Border>
-            <Image x:Name="ImgLike" Style="{StaticResource LikeImage}"></Image>
-            <Image x:Name="ImgDislike" Style="{StaticResource DislikeImage}"></Image>
-            <Image x:Name="ImgFavorite" Style="{StaticResource FavoriteImage}"></Image>
+            <TextBlock Style="{DynamicResource TextBlockStyle}" Visibility="Hidden" Text=" "></TextBlock>
+            <Border Style="{DynamicResource MediaInfoSeparator}"></Border>
+            <Image x:Name="ImgLike" Style="{DynamicResource LikeImage}"></Image>
+            <Image x:Name="ImgDislike" Style="{DynamicResource DislikeImage}"></Image>
+            <Image x:Name="ImgFavorite" Style="{DynamicResource FavoriteImage}"></Image>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Name="PnlCommunityRating">
-            <Border Style="{StaticResource MediaInfoSeparator}"></Border>
-            <Image x:Name="ImgCommunityRating1" Style="{StaticResource CommunityRatingImage}"></Image>
-            <Image x:Name="ImgCommunityRating2" Style="{StaticResource CommunityRatingImage}"></Image>
-            <Image x:Name="ImgCommunityRating3" Style="{StaticResource CommunityRatingImage}"></Image>
-            <Image x:Name="ImgCommunityRating4" Style="{StaticResource CommunityRatingImage}"></Image>
-            <Image x:Name="ImgCommunityRating5" Style="{StaticResource CommunityRatingImage}"></Image>
+            <Border Style="{DynamicResource MediaInfoSeparator}"></Border>
+            <Image x:Name="ImgCommunityRating1" Style="{DynamicResource CommunityRatingImage}"></Image>
+            <Image x:Name="ImgCommunityRating2" Style="{DynamicResource CommunityRatingImage}"></Image>
+            <Image x:Name="ImgCommunityRating3" Style="{DynamicResource CommunityRatingImage}"></Image>
+            <Image x:Name="ImgCommunityRating4" Style="{DynamicResource CommunityRatingImage}"></Image>
+            <Image x:Name="ImgCommunityRating5" Style="{DynamicResource CommunityRatingImage}"></Image>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Name="PnlOfficialRating">
-            <Border Style="{StaticResource MediaInfoSeparator}"></Border>
-            <TextBlock Style="{StaticResource TextBlockStyle}" x:Name="TxtOfficialRating"></TextBlock>
+            <Border Style="{DynamicResource MediaInfoSeparator}"></Border>
+            <TextBlock Style="{DynamicResource TextBlockStyle}" x:Name="TxtOfficialRating"></TextBlock>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Name="PnlRuntime">
-            <Border Style="{StaticResource MediaInfoSeparator}"></Border>
-            <TextBlock Style="{StaticResource TextBlockStyle}" x:Name="TxtRuntime"></TextBlock>
+            <Border Style="{DynamicResource MediaInfoSeparator}"></Border>
+            <TextBlock Style="{DynamicResource TextBlockStyle}" x:Name="TxtRuntime"></TextBlock>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Name="PnlDate">
-            <Border Style="{StaticResource MediaInfoSeparator}"></Border>
-            <TextBlock Style="{StaticResource TextBlockStyle}" x:Name="TxtDate"></TextBlock>
+            <Border Style="{DynamicResource MediaInfoSeparator}"></Border>
+            <TextBlock Style="{DynamicResource TextBlockStyle}" x:Name="TxtDate"></TextBlock>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Name="PnlVideoInfo">
-            <Border Style="{StaticResource MediaInfoSeparator}"></Border>
-            <TextBlock Style="{StaticResource TextBlockStyle}" x:Name="TxtResolution"></TextBlock>
+            <Border Style="{DynamicResource MediaInfoSeparator}"></Border>
+            <TextBlock Style="{DynamicResource TextBlockStyle}" x:Name="TxtResolution"></TextBlock>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Name="PnlAudioCodec">
-            <Border Style="{StaticResource MediaInfoSeparator}"></Border>
-            <TextBlock Style="{StaticResource TextBlockStyle}" x:Name="TxtAudioCodec"></TextBlock>
+            <Border Style="{DynamicResource MediaInfoSeparator}"></Border>
+            <TextBlock Style="{DynamicResource TextBlockStyle}" x:Name="TxtAudioCodec"></TextBlock>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Name="PnlAudioInfo">
-            <Border Style="{StaticResource MediaInfoSeparator}"></Border>
-            <TextBlock Style="{StaticResource TextBlockStyle}" x:Name="TxtAudioChannels"></TextBlock>
+            <Border Style="{DynamicResource MediaInfoSeparator}"></Border>
+            <TextBlock Style="{DynamicResource TextBlockStyle}" x:Name="TxtAudioChannels"></TextBlock>
         </StackPanel>
 
     </StackPanel>

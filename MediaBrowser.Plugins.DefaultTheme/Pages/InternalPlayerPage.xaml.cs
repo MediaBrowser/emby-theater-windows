@@ -1,13 +1,14 @@
 ﻿using MediaBrowser.Plugins.DefaultTheme.Resources;
 using System.Windows;
 using System.Windows.Controls;
+using MediaBrowser.Theater.Presentation.Pages;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Pages
 {
     /// <summary>
     /// Interaction logic for InternalPlayerPage.xaml
     /// </summary>
-    public partial class InternalPlayerPage : Page
+    public partial class InternalPlayerPage : BasePage
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="InternalPlayerPage"/> class.

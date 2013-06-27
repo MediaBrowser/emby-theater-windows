@@ -36,7 +36,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate>
-                        <TextBlock Style="{StaticResource WebdingsTextBlock}">0</TextBlock>
+                        <TextBlock Style="{DynamicResource WebdingsTextBlock}">0</TextBlock>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -47,7 +47,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate>
-                        <TextBlock Style="{StaticResource WebdingsTextBlock}">1</TextBlock>
+                        <TextBlock Style="{DynamicResource WebdingsTextBlock}">1</TextBlock>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -64,7 +64,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate>
-                        <TextBlock Style="{StaticResource WebdingsTextBlock}">2</TextBlock>
+                        <TextBlock Style="{DynamicResource WebdingsTextBlock}">2</TextBlock>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -80,7 +80,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate>
-                        <TextBlock Style="{StaticResource WebdingsTextBlock}">r</TextBlock>
+                        <TextBlock Style="{DynamicResource WebdingsTextBlock}">r</TextBlock>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -88,13 +88,13 @@
 
     </UserControl.Resources>
 
-    <StackPanel Style="{StaticResource WindowCommandsPanel}">
-        <Button x:Name="MinimizeApplicationButton" Style="{StaticResource MinimizeApplicationButton}">
+    <StackPanel Style="{DynamicResource WindowCommandsPanel}">
+        <Button x:Name="MinimizeApplicationButton" Style="{DynamicResource MinimizeApplicationButton}">
         </Button>
-        <Button x:Name="MaximizeApplicationButton" Style="{StaticResource MaximizeApplicationButton}">
+        <Button x:Name="MaximizeApplicationButton" Style="{DynamicResource MaximizeApplicationButton}">
         </Button>
-        <Button x:Name="UndoMaximizeApplicationButton" Style="{StaticResource UndoMaximizeApplicationButton}"></Button>
-        <Button x:Name="CloseApplicationButton" Style="{StaticResource CloseApplicationButton}"></Button>
+        <Button x:Name="UndoMaximizeApplicationButton" Style="{DynamicResource UndoMaximizeApplicationButton}"></Button>
+        <Button x:Name="CloseApplicationButton" Style="{DynamicResource CloseApplicationButton}"></Button>
     </StackPanel>
 
 </UserControl>

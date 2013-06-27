@@ -19,7 +19,7 @@ namespace MediaBrowser.Theater.Presentation.Pages
     /// <summary>
     /// Provides a base page for theme login pages
     /// </summary>
-    public abstract class BaseLoginPage : Page
+    public abstract class BaseLoginPage : BasePage
     {
         protected IApiClient ApiClient { get; private set; }
         protected IImageManager ImageManager { get; private set; }

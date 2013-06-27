@@ -51,7 +51,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
 
                 //if (Items.Count > 0)
                 //{
-                //    height = width / Items[0].AveragePrimaryImageAspectRatio;
+                //    height = width / Items[0].MeanPrimaryImageAspectRatio;
                 //}
 
                 //foreach (var item in Items)

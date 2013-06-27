@@ -1,6 +1,4 @@
-﻿using System.Windows;
-using System.Windows.Input;
-using MediaBrowser.Model.ApiClient;
+﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Querying;
@@ -20,12 +18,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.TV
     /// </summary>
     public partial class ResumableEpisodes : BaseItemsControl
     {
-        private readonly IApplicationWindow _appWindow;
-
-        public ResumableEpisodes(BaseItemDto parent, Model.Entities.DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IThemeManager themeManager, IApplicationWindow appWindow)
-            : base(parent, displayPreferences, apiClient, imageManager, sessionManager, navigationManager, themeManager)
+        public ResumableEpisodes(BaseItemDto parent, Model.Entities.DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IThemeManager themeManager, IPresentationManager appWindow)
+            : base(parent, displayPreferences, apiClient, imageManager, sessionManager, navigationManager, themeManager, appWindow)
         {
-            _appWindow = appWindow;
             InitializeComponent();
         }
 
@@ -101,18 +96,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.TV
             };
 
             return ApiClient.GetItemsAsync(query);
-        }
-
-        protected override void OnCurrentItemChanged()
-        {
-            base.OnCurrentItemChanged();
-
-            var item = CurrentItem;
-
-            if (item != null)
-            {
-                _appWindow.SetBackdrops(item);
-            }
         }
     }
 }

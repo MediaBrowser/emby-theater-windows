@@ -12,10 +12,10 @@
             <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
-        
-        <TextBlock Style="{StaticResource TextBlockStyle}" Grid.Row="0" x:Name="TxtPath"></TextBlock>
 
-        <TextBlock Style="{StaticResource TextBlockStyle}" Grid.Row="1" Margin="0 20 0 0" x:Name="TxtVideoFormat"></TextBlock>
+        <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Row="0" x:Name="TxtPath"></TextBlock>
+
+        <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Row="1" Margin="0 20 0 0" x:Name="TxtVideoFormat"></TextBlock>
         
         <StackPanel Orientation="Vertical" x:Name="MediaStreams" Grid.Row="2" Margin="0 20 0 0"></StackPanel>
     </Grid>

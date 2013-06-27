@@ -26,9 +26,18 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         /// Gets the item.
         /// </summary>
         /// <value>The item.</value>
-        private BaseItemDto Item
+        public BaseItemDto Item
         {
-            get { return ViewModel.Item; }
+            get
+            {
+                var vm = ViewModel;
+
+                if (vm == null)
+                {
+                    return null;
+                }
+                return vm.Item;
+            }
         }
 
         /// <summary>
@@ -57,6 +66,15 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         private void OnItemChanged()
         {
             var item = Item;
+
+            if (item == null)
+            {
+                return;
+            }
+
+            MainElement.Width = ViewModel.ImageWidth;
+            MainElement.Height = ViewModel.GetImageHeight(ViewModel.ImageType);
+
             ReloadImage(item);
 
             if (item.CanResume && item.RunTimeTicks.HasValue)
@@ -79,12 +97,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         /// </summary>
         private void ReloadImage(BaseItemDto item)
         {
-            if (item.HasPrimaryImage)
+            if (ViewModel.ImageType == ImageType.Primary && item.HasPrimaryImage)
             {
                 var url = ViewModel.ApiClient.GetImageUrl(item, new ImageOptions
                 {
                     ImageType = ImageType.Primary,
-                    Height = 225
+                    Height = Convert.ToInt32(ViewModel.GetImageHeight(ImageType.Primary))
                 });
 
                 SetImage(url);
@@ -94,8 +112,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
                 var url = ViewModel.ApiClient.GetImageUrl(item, new ImageOptions
                 {
                     ImageType = ImageType.Backdrop,
-                    Height = 225,
-                    Width = 400
+                    Height = Convert.ToInt32(ViewModel.GetImageHeight(ImageType.Backdrop)),
+                    Width = Convert.ToInt32(ViewModel.ImageWidth)
                 });
 
                 SetImage(url);
@@ -105,8 +123,18 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
                 var url = ViewModel.ApiClient.GetImageUrl(item, new ImageOptions
                 {
                     ImageType = ImageType.Thumb,
-                    Height = 225,
-                    Width = 400
+                    Height = Convert.ToInt32(ViewModel.GetImageHeight(ImageType.Thumb)),
+                    Width = Convert.ToInt32(ViewModel.ImageWidth)
+                });
+
+                SetImage(url);
+            }
+            else if (item.HasPrimaryImage)
+            {
+                var url = ViewModel.ApiClient.GetImageUrl(item, new ImageOptions
+                {
+                    ImageType = ImageType.Primary,
+                    Height = Convert.ToInt32(ViewModel.GetImageHeight(ImageType.Primary))
                 });
 
                 SetImage(url);

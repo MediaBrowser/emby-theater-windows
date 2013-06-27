@@ -1,6 +1,5 @@
 ﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
-using MediaBrowser.Theater.Implementations.Controls;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Theming;
@@ -48,8 +47,6 @@ namespace MediaBrowser.UI.Implementations
         /// <returns>DispatcherOperation.</returns>
         public DispatcherOperation Navigate(Page page)
         {
-            new PageFocusRetainer(page).RetainFocusAfterNavigation();
-
             return App.Instance.ApplicationWindow.Navigate(page);
         }
 

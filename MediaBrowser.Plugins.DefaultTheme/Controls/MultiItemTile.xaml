@@ -31,7 +31,7 @@
             <Grid.Background>
                 <SolidColorBrush Color="#A6000000"></SolidColorBrush>
             </Grid.Background>
-            <TextBlock x:Name="TxtName" Margin="10 5 10 10" TextWrapping="NoWrap" Style="{StaticResource SmallTextBlockStyle}" TextTrimming="CharacterEllipsis"></TextBlock>
+            <TextBlock x:Name="TxtName" Margin="10 5 10 10" TextWrapping="NoWrap" Style="{DynamicResource SmallTextBlockStyle}" TextTrimming="CharacterEllipsis"></TextBlock>
         </Grid>
     </Grid>
 </UserControl>

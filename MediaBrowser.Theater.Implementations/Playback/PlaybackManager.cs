@@ -23,7 +23,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
         private readonly ILogger _logger;
         private readonly IApiClient _apiClient;
         private readonly INavigationService _nav;
-        private readonly IApplicationWindow _appWindow;
+        private readonly IPresentationManager _appWindow;
 
         public event EventHandler<PlaybackStartEventArgs> PlaybackStarted;
 
@@ -36,7 +36,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
 
         private readonly List<IMediaPlayer> _mediaPlayers = new List<IMediaPlayer>();
 
-        public PlaybackManager(ITheaterConfigurationManager configurationManager, ILogger logger, IApiClient apiClient, INavigationService nav, IApplicationWindow appWindow)
+        public PlaybackManager(ITheaterConfigurationManager configurationManager, ILogger logger, IApiClient apiClient, INavigationService nav, IPresentationManager appWindow)
         {
             _configurationManager = configurationManager;
             _logger = logger;

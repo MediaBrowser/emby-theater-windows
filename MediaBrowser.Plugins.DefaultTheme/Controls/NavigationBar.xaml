@@ -5,9 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                           mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid x:Name="NavBarGrid" Style="{StaticResource NavBarGrid}">
+    <Grid x:Name="NavBarGrid" Style="{DynamicResource NavBarGrid}">
 
-        <Grid Style="{StaticResource NavBarBackgroundGrid}"></Grid>
+        <Grid Style="{DynamicResource NavBarBackgroundGrid}"></Grid>
 
         <Grid>
             <Grid.RowDefinitions>
@@ -28,25 +28,25 @@
                     <ColumnDefinition Width="auto"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
 
-                <TextBlock x:Name="TxtCurrentPosition" Grid.Column="0" Style="{StaticResource TextBlockStyle}" Margin="0 0 10 0"></TextBlock>
+                <TextBlock x:Name="TxtCurrentPosition" Grid.Column="0" Style="{DynamicResource TextBlockStyle}" Margin="0 0 10 0"></TextBlock>
                 <Slider x:Name="CurrentPositionSlider" Grid.Column="1" VerticalAlignment="Center" Minimum="0" Thumb.DragStarted="CurrentPositionSlider_DragStarted" Thumb.DragCompleted="CurrentPositionSlider_DragCompleted" IsMoveToPointEnabled="True"></Slider>
-                <TextBlock x:Name="TxtDuration" Grid.Column="2" Style="{StaticResource TextBlockStyle}" Margin="10 0 0 0"></TextBlock>
+                <TextBlock x:Name="TxtDuration" Grid.Column="2" Style="{DynamicResource TextBlockStyle}" Margin="10 0 0 0"></TextBlock>
 
             </Grid>
 
-            <StackPanel Style="{StaticResource NavBarGridLeftPanel}" Grid.Row="1">
+            <StackPanel Style="{DynamicResource NavBarGridLeftPanel}" Grid.Row="1">
             </StackPanel>
-            <StackPanel Style="{StaticResource NavBarGridCenterPanel}" Grid.Row="1">
-                <Button x:Name="PreviousChapterButton" Style="{StaticResource PreviousChapterButton}" Visibility="Collapsed"></Button>
-                <Button x:Name="PlayButton" Style="{StaticResource PlayButton}" Visibility="Collapsed"></Button>
-                <Button x:Name="PauseButton" Style="{StaticResource PauseButton}" Visibility="Collapsed"></Button>
-                <Button x:Name="StopButton" Style="{StaticResource StopButton}" Visibility="Collapsed"></Button>
-                <Button x:Name="NextChapterButton" Style="{StaticResource NextChapterButton}" Visibility="Collapsed"></Button>
+            <StackPanel Style="{DynamicResource NavBarGridCenterPanel}" Grid.Row="1">
+                <Button x:Name="PreviousChapterButton" Style="{DynamicResource PreviousChapterButton}" Visibility="Collapsed"></Button>
+                <Button x:Name="PlayButton" Style="{DynamicResource PlayButton}" Visibility="Collapsed"></Button>
+                <Button x:Name="PauseButton" Style="{DynamicResource PauseButton}" Visibility="Collapsed"></Button>
+                <Button x:Name="StopButton" Style="{DynamicResource StopButton}" Visibility="Collapsed"></Button>
+                <Button x:Name="NextChapterButton" Style="{DynamicResource NextChapterButton}" Visibility="Collapsed"></Button>
             </StackPanel>
-            <StackPanel Style="{StaticResource NavBarGridRightPanel}" Grid.Row="1">
-                <Button x:Name="MuteButton" Style="{StaticResource MuteButton}" Visibility="Collapsed"></Button>
-                <Button x:Name="VolumeDownButton" Style="{StaticResource VolumeDownButton}" Visibility="Collapsed"></Button>
-                <Button x:Name="VolumeUpButton" Style="{StaticResource VolumeUpButton}" Visibility="Collapsed"></Button>
+            <StackPanel Style="{DynamicResource NavBarGridRightPanel}" Grid.Row="1">
+                <Button x:Name="MuteButton" Style="{DynamicResource MuteButton}" Visibility="Collapsed"></Button>
+                <Button x:Name="VolumeDownButton" Style="{DynamicResource VolumeDownButton}" Visibility="Collapsed"></Button>
+                <Button x:Name="VolumeUpButton" Style="{DynamicResource VolumeUpButton}" Visibility="Collapsed"></Button>
             </StackPanel>
         </Grid>
     </Grid>

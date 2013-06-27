@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using MediaBrowser.Model.ApiClient;
+﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Drawing;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Querying;
@@ -10,6 +9,7 @@ using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -25,9 +25,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.TV
         private IApiClient ApiClient { get; set; }
         private IImageManager ImageManager { get; set; }
         private INavigationService Navigation { get; set; }
-        private IApplicationWindow AppWindow { get; set; }
+        private IPresentationManager AppWindow { get; set; }
 
-        public Spotlight(IApiClient apiClient, IImageManager imageManager, INavigationService navigation, IApplicationWindow appWindow)
+        public Spotlight(IApiClient apiClient, IImageManager imageManager, INavigationService navigation, IPresentationManager appWindow)
         {
             AppWindow = appWindow;
             Navigation = navigation;
@@ -38,24 +38,54 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.TV
             InitializeComponent();
 
             BtnSpotlight.Click += BtnSpotlight_Click;
-            BtnRecent1.Click += BtnSpotlight_Click;
-            BtnRecent2.Click += BtnSpotlight_Click;
-            BtnRecent3.Click += BtnSpotlight_Click;
-            BtnRecent4.Click += BtnSpotlight_Click;
-            BtnRecent5.Click += BtnSpotlight_Click;
-            BtnRecent6.Click += BtnSpotlight_Click;
-            BtnRecent7.Click += BtnSpotlight_Click;
-            BtnRecent8.Click += BtnSpotlight_Click;
+            BtnRecent1.Click += BtnRecent1_Click;
+            BtnRecent1.Click += BtnRecent1_Click;
+            BtnRecent2.Click += BtnRecent1_Click;
+            BtnRecent3.Click += BtnRecent1_Click;
+            BtnRecent4.Click += BtnRecent1_Click;
+            BtnRecent5.Click += BtnRecent1_Click;
+            BtnRecent6.Click += BtnRecent1_Click;
+            BtnRecent7.Click += BtnRecent1_Click;
+            BtnRecent8.Click += BtnRecent1_Click;
 
             BtnSpotlight.GotFocus += BtnSpotlight_GotFocus;
-            BtnRecent1.GotFocus += BtnSpotlight_GotFocus;
-            BtnRecent2.GotFocus += BtnSpotlight_GotFocus;
-            BtnRecent3.GotFocus += BtnSpotlight_GotFocus;
-            BtnRecent4.GotFocus += BtnSpotlight_GotFocus;
-            BtnRecent5.GotFocus += BtnSpotlight_GotFocus;
-            BtnRecent6.GotFocus += BtnSpotlight_GotFocus;
-            BtnRecent7.GotFocus += BtnSpotlight_GotFocus;
-            BtnRecent8.GotFocus += BtnSpotlight_GotFocus;
+            BtnRecent1.GotFocus += BtnRecent1_GotFocus;
+            BtnRecent1.GotFocus += BtnRecent1_GotFocus;
+            BtnRecent2.GotFocus += BtnRecent1_GotFocus;
+            BtnRecent3.GotFocus += BtnRecent1_GotFocus;
+            BtnRecent4.GotFocus += BtnRecent1_GotFocus;
+            BtnRecent5.GotFocus += BtnRecent1_GotFocus;
+            BtnRecent6.GotFocus += BtnRecent1_GotFocus;
+            BtnRecent7.GotFocus += BtnRecent1_GotFocus;
+            BtnRecent8.GotFocus += BtnRecent1_GotFocus;
+        }
+
+        void BtnRecent1_GotFocus(object sender, RoutedEventArgs e)
+        {
+            var button = (Button)sender;
+
+            var tile = (HomePageTile)button.Content;
+
+            var currentItem = tile.Item;
+
+            if (currentItem != null)
+            {
+                AppWindow.SetBackdrops(currentItem);
+            }
+        }
+
+        void BtnRecent1_Click(object sender, RoutedEventArgs e)
+        {
+            var button = (Button)sender;
+
+            var tile = (HomePageTile)button.Content;
+
+            var currentItem = tile.Item;
+
+            if (currentItem != null)
+            {
+                Navigation.NavigateToItem(currentItem, "tv");
+            }
         }
 
         void BtnSpotlight_GotFocus(object sender, RoutedEventArgs e)
@@ -86,16 +116,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.TV
             }
         }
 
-        internal static ImageSize GetImageSize()
-        {
-            return new ImageSize
-            {
-                Width = 368,
-                Height = 207
-            };
-        }
-
-        protected override async void OnInitialized(EventArgs e)
+        protected override void OnInitialized(EventArgs e)
         {
             base.OnInitialized(e);
 
@@ -104,13 +125,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.TV
 
         private async void ReloadRecentEpisodes()
         {
-            var itemsPerTile = 5;
-
             var result = await ApiClient.GetItemsAsync(new ItemQuery
             {
                 UserId = ApiClient.CurrentUserId,
                 IncludeItemTypes = new[] { "Episode" },
-                Limit = 8 * itemsPerTile,
+                Limit = 50,
                 SortBy = new[] { ItemSortBy.DateCreated },
                 SortOrder = SortOrder.Descending,
                 Recursive = true,
@@ -119,57 +138,39 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.TV
                 Filters = new[] { ItemFilter.IsUnplayed }
             });
 
-            var items = result.Items.OrderBy(i => Guid.NewGuid()).ToList();
+            var items = result.Items.ToList();
 
             var spotlightTask = ReloadSpotlight(items.Select(i => i.SeriesId).Distinct());
 
-            var size = GetImageSize();
+            var size = TV.GetImageSize();
 
-            RecentEpisodes1.ImageHeight = RecentEpisodes2.ImageHeight = RecentEpisodes3.ImageHeight = RecentEpisodes4.ImageHeight = RecentEpisodes5.ImageHeight = RecentEpisodes6.ImageHeight = RecentEpisodes7.ImageHeight = RecentEpisodes8.ImageHeight = Convert.ToInt32(size.Height);
-            RecentEpisodes1.ImageWidth = RecentEpisodes2.ImageWidth = RecentEpisodes3.ImageWidth = RecentEpisodes4.ImageWidth = RecentEpisodes5.ImageWidth = RecentEpisodes6.ImageWidth = RecentEpisodes7.ImageWidth = RecentEpisodes8.ImageWidth = Convert.ToInt32(size.Width);
+            var recentTiles = new[] { Recent1, Recent2, Recent3, Recent4, Recent5, Recent6, Recent7, Recent8 };
 
-            RecentEpisodes1.DataContext = new ItemCollectionViewModel(ApiClient, ImageManager)
+            var index = 0;
+            foreach (var tile in recentTiles)
             {
-                Items = items.Take(itemsPerTile).ToArray()
-            };
+                if (items.Count < index)
+                {
+                    tile.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    double aspectRatio = 16;
+                    aspectRatio /= 9;
 
-            RecentEpisodes2.DataContext = new ItemCollectionViewModel(ApiClient, ImageManager)
-            {
-                Items = items.Skip(itemsPerTile).Take(itemsPerTile).ToArray()
-            };
+                    tile.DataContext = new BaseItemDtoViewModel(ApiClient, ImageManager)
+                    {
+                        Item = items[index],
+                        ImageWidth = Convert.ToInt32(size.Width),
+                        MeanPrimaryImageAspectRatio = aspectRatio
+                    };
+                }
 
-            RecentEpisodes3.DataContext = new ItemCollectionViewModel(ApiClient, ImageManager)
-            {
-                Items = items.Skip(2 * itemsPerTile).Take(itemsPerTile).ToArray()
-            };
-
-            RecentEpisodes4.DataContext = new ItemCollectionViewModel(ApiClient, ImageManager)
-            {
-                Items = items.Skip(3 * itemsPerTile).Take(itemsPerTile).ToArray()
-            };
-
-            RecentEpisodes5.DataContext = new ItemCollectionViewModel(ApiClient, ImageManager)
-            {
-                Items = items.Skip(4 * itemsPerTile).Take(itemsPerTile).ToArray()
-            };
-
-            RecentEpisodes6.DataContext = new ItemCollectionViewModel(ApiClient, ImageManager)
-            {
-                Items = items.Skip(5 * itemsPerTile).Take(itemsPerTile).ToArray()
-            };
-
-            RecentEpisodes7.DataContext = new ItemCollectionViewModel(ApiClient, ImageManager)
-            {
-                Items = items.Skip(6 * itemsPerTile).Take(itemsPerTile).ToArray()
-            };
-
-            RecentEpisodes8.DataContext = new ItemCollectionViewModel(ApiClient, ImageManager)
-            {
-                Items = items.Skip(7 * itemsPerTile).Take(itemsPerTile).ToArray()
-            };
+                index++;
+            }
 
             await spotlightTask;
-            
+
             if (ContentLoaded != null)
             {
                 ContentLoaded(this, EventArgs.Empty);
@@ -189,7 +190,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.TV
                 ImageTypes = new[] { ImageType.Backdrop }
             });
 
-            var size = GetImageSize();
+            var size = TV.GetImageSize();
 
             SpotlightTile.ImageHeight = Convert.ToInt32(size.Height * 2 + 8);
             SpotlightTile.ImageWidth = Convert.ToInt32(size.Width * 2 + 8);

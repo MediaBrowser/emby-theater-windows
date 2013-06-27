@@ -26,9 +26,9 @@
                 <RowDefinition Height="auto"></RowDefinition>
             </Grid.RowDefinitions>
 
-            <TextBlock Name="TxtName" Style="{StaticResource TextBlockStyle}" Grid.Row="0"></TextBlock>
-            <TextBlock Name="TxtOverview" Style="{StaticResource SmallTextBlockStyle}" Grid.Row="1" Foreground="#bbbbbb" TextTrimming="CharacterEllipsis"></TextBlock>
-            <!--<ProgressBar Name="Progress" Grid.Row="2" Maximum="100" Value="40" Margin="0 5 15 0" Width="200" Height="12" Style="{StaticResource ResumeProgressBar}"></ProgressBar>-->
+            <TextBlock Name="TxtName" Style="{DynamicResource TextBlockStyle}" Grid.Row="0"></TextBlock>
+            <TextBlock Name="TxtOverview" Style="{DynamicResource SmallTextBlockStyle}" Grid.Row="1" Foreground="#bbbbbb" TextTrimming="CharacterEllipsis"></TextBlock>
+            <!--<ProgressBar Name="Progress" Grid.Row="2" Maximum="100" Value="40" Margin="0 5 15 0" Width="200" Height="12" Style="{DynamicResource ResumeProgressBar}"></ProgressBar>-->
         </Grid>
     </Grid>
 </UserControl>

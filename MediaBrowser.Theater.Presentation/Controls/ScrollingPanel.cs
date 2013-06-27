@@ -44,7 +44,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
         /// <summary>
         /// The _ animation length
         /// </summary>
-        private TimeSpan _AnimationLength = TimeSpan.FromMilliseconds(100);
+        private TimeSpan _AnimationLength = TimeSpan.FromMilliseconds(250);
 
         /// <summary>
         /// When overridden in a derived class, measures the size in layout required for child elements and determines a size for the <see cref="T:System.Windows.FrameworkElement" />-derived class.
@@ -138,6 +138,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
         private DoubleAnimation GetAnimation(double toValue)
         {
             var animation = new DoubleAnimation(toValue, _AnimationLength);
+
 
             return animation;
         }
@@ -300,7 +301,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
             rectangle = visual.TransformToAncestor(this).TransformBounds(rectangle);
 
             //rectangle.Inflate(50, 50);
-            rectangle.Scale(1.8, 1.8);
+            rectangle.Scale(1.5, 1.5);
 
             Rect viewRect = new Rect(HorizontalOffset,
               VerticalOffset, ViewportWidth, ViewportHeight);

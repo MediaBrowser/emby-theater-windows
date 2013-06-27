@@ -14,13 +14,14 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
+using MediaBrowser.Theater.Presentation.Pages;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Pages
 {
     /// <summary>
     /// Interaction logic for DetailPage.xaml
     /// </summary>
-    public partial class DetailPage : Page, INotifyPropertyChanged
+    public partial class DetailPage : BasePage, INotifyPropertyChanged
     {
         /// <summary>
         /// Gets the API client.
@@ -36,7 +37,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         /// Gets the application window.
         /// </summary>
         /// <value>The application window.</value>
-        protected IApplicationWindow ApplicationWindow { get; private set; }
+        protected IPresentationManager PresentationManager { get; private set; }
         /// <summary>
         /// Gets the theme manager.
         /// </summary>
@@ -68,7 +69,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         /// <param name="sessionManager">The session manager.</param>
         /// <param name="applicationWindow">The application window.</param>
         /// <param name="themeManager">The theme manager.</param>
-        public DetailPage(BaseItemDto item, IImageManager imageManager, IPlaybackManager playbackManager, IApiClient apiClient, ISessionManager sessionManager, IApplicationWindow applicationWindow, IThemeManager themeManager)
+        public DetailPage(BaseItemDto item, IImageManager imageManager, IPlaybackManager playbackManager, IApiClient apiClient, ISessionManager sessionManager, IPresentationManager applicationWindow, IThemeManager themeManager)
         {
             if (item == null)
             {
@@ -79,7 +80,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
             _imageManager = imageManager;
             _playbackManager = playbackManager;
             ThemeManager = themeManager;
-            ApplicationWindow = applicationWindow;
+            PresentationManager = applicationWindow;
             SessionManager = sessionManager;
             ApiClient = apiClient;
             InitializeComponent();
@@ -240,7 +241,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         /// </summary>
         protected async void OnItemChanged()
         {
-            ApplicationWindow.SetBackdrops(Item);
+            PresentationManager.SetBackdrops(Item);
 
             var pageTitleTask = AppResources.Instance.SetPageTitle(Item);
 

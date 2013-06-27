@@ -1,0 +1,35 @@
+﻿<pages:BasePage x:Class="MediaBrowser.UI.StartupWizard.StartupWizardPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+          xmlns:pages="clr-namespace:MediaBrowser.Theater.Presentation.Pages;assembly=MediaBrowser.Theater.Presentation"
+          mc:Ignorable="d" 
+      d:DesignHeight="300" d:DesignWidth="300"
+	Title="StartupWizardPage">
+
+    <Grid HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0 70 0 0" Width="1200">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <TextBlock Style="{DynamicResource Heading1TextBlockStyle}" Grid.Row="0">Welcome to Media Browser Theater</TextBlock>
+        <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Row="1" Margin="0 40 0 0">This wizard will help you get connected to your Media Browser Server so that you can enjoy your media.</TextBlock>
+
+        <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Row="2" Margin="0 40 0 0">If you do not have Media Browser Server installed on a computer within your network, please visit mediabrowser3.com for installation instructions.</TextBlock>
+
+        <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Row="3" Margin="0 40 0 0">Click next to proceed.</TextBlock>
+
+        <StackPanel Grid.Row="4" Orientation="Horizontal" Margin="0 40 0 0" HorizontalAlignment="Right">
+            <Button x:Name="BtnNext">
+                Next
+            </Button>
+        </StackPanel>
+
+    </Grid>
+</pages:BasePage>

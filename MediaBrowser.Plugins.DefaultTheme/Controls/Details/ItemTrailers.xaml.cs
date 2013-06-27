@@ -70,7 +70,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
             var resultItems = result ?? new BaseItemDto[] { };
 
             const int height = 297;
-            var aspectRatio = BaseItemDtoViewModel.GetAveragePrimaryImageAspectRatio(resultItems);
+            var aspectRatio = BaseItemDtoViewModel.GetMeanPrimaryImageAspectRatio(resultItems);
 
             var width = aspectRatio.Equals(0) ? 528 : height * aspectRatio;
 

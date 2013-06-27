@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
@@ -12,13 +13,14 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using MediaBrowser.Theater.Presentation.Controls;
+using MediaBrowser.Theater.Presentation.Pages;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Home
 {
     /// <summary>
     /// Interaction logic for HomePage.xaml
     /// </summary>
-    public partial class HomePage : Page
+    public partial class HomePage : BasePage
     {
         /// <summary>
         /// Gets the API client.
@@ -39,7 +41,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         /// Gets the application window.
         /// </summary>
         /// <value>The application window.</value>
-        protected IApplicationWindow ApplicationWindow { get; private set; }
+        protected IPresentationManager PresentationManager { get; private set; }
         /// <summary>
         /// Gets the navigation manager.
         /// </summary>
@@ -54,10 +56,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         public BaseItemDto ParentItem { get; set; }
         public string DisplayPreferencesId { get; set; }
 
-        public HomePage(BaseItemDto parent, string displayPreferencesId, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IApplicationWindow applicationWindow, INavigationService navigationManager, IThemeManager themeManager)
+        public HomePage(BaseItemDto parent, string displayPreferencesId, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IPresentationManager applicationWindow, INavigationService navigationManager, IThemeManager themeManager)
         {
             NavigationManager = navigationManager;
-            ApplicationWindow = applicationWindow;
+            PresentationManager = applicationWindow;
             SessionManager = sessionManager;
             ImageManager = imageManager;
             ApiClient = apiClient;
@@ -106,7 +108,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 ThemeManager.CurrentTheme.ShowDefaultErrorMessage();
             }
 
-            views.Add("apps");
+            if (PresentationManager.Apps.Any())
+            {
+                views.Add("apps");
+            }
+
             views.Add("media collections");
 
             MenuList.ItemsSource = CollectionViewSource.GetDefaultView(views);
@@ -118,29 +124,36 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         {
             var item = MenuList.SelectedItem as string;
 
+            ScrollingPanel.SetHorizontalOffset(0);
+
             if (string.Equals(item, "movies"))
             {
-                PageContent.Content = new Movies.Movies();
+                PageContent.Content = new Movies.Movies(ParentItem, ApiClient, ImageManager, SessionManager, NavigationManager, ThemeManager, PresentationManager, ScrollingPanel);
             }
             else if (string.Equals(item, "tv"))
             {
-                PageContent.Content = new TV.TV(ParentItem, ApiClient, ImageManager, SessionManager, NavigationManager, ThemeManager, ApplicationWindow, ScrollingPanel);
+                PageContent.Content = new TV.TV(ParentItem, ApiClient, ImageManager, SessionManager, NavigationManager, ThemeManager, PresentationManager, ScrollingPanel);
             }
             else if (string.Equals(item, "music"))
             {
-                PageContent.Content = new Movies.Movies();
+                PageContent.Content = new Music.Music(ParentItem, ApiClient, ImageManager, SessionManager, NavigationManager, ThemeManager, PresentationManager, ScrollingPanel);
             }
             else if (string.Equals(item, "games"))
             {
-                PageContent.Content = new Movies.Movies();
+                PageContent.Content = new TextBlock();
             }
             else if (string.Equals(item, "apps"))
             {
-                PageContent.Content = new Movies.Movies();
+                PageContent.Content = new TextBlock();
             }
             if (string.Equals(item, "media collections"))
             {
-                PageContent.Content = new Folders(ParentItem, new Model.Entities.DisplayPreferences(), ApiClient, ImageManager, SessionManager, ApplicationWindow, NavigationManager, ThemeManager);
+                PageContent.Content = new Folders(ParentItem, new Model.Entities.DisplayPreferences
+                {
+                    PrimaryImageHeight = 225,
+                    PrimaryImageWidth = 400
+
+                }, ApiClient, ImageManager, SessionManager, PresentationManager, NavigationManager, ThemeManager);
             }
         }
 
@@ -152,11 +165,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             if (parent == null)
             {
-                ApplicationWindow.ClearBackdrops();
+                PresentationManager.ClearBackdrops();
             }
             else
             {
-                ApplicationWindow.SetBackdrops(parent);
+                PresentationManager.SetBackdrops(parent);
             }
         }
     }

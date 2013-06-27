@@ -5,14 +5,14 @@
                           Title="ModalWindow"
         AllowsTransparency="True"
         Background="Transparent"
-        Style="{StaticResource ModalWindow}">
+        Style="{DynamicResource ModalWindow}">
 
     <Grid>
-        <Grid Style="{StaticResource ModalOverlayStyle}">
+        <Grid Style="{DynamicResource ModalOverlayStyle}">
 
         </Grid>
-        <Grid Style="{StaticResource ModalContentStyle}" RenderTransformOrigin="1,0">
-            <Grid Style="{StaticResource ModalContentInnerStyle}">
+        <Grid Style="{DynamicResource ModalContentStyle}" RenderTransformOrigin="1,0">
+            <Grid Style="{DynamicResource ModalContentInnerStyle}">
 
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="auto"></ColumnDefinition>
@@ -25,19 +25,19 @@
                     <RowDefinition Height="auto"></RowDefinition>
                 </Grid.RowDefinitions>
 
-                <Image Grid.Row="0" Grid.RowSpan="3" Grid.Column="0" Style="{StaticResource ModalButtonImage}"></Image>
+                <Image Grid.Row="0" Grid.RowSpan="3" Grid.Column="0" Style="{DynamicResource ModalButtonImage}"></Image>
 
-                <TextBlock x:Name="txtCaption" Text="{Binding Caption}" Style="{StaticResource Heading2TextBlockStyle}" Grid.Row="0" Grid.Column="1" Margin="0 30 0 10"></TextBlock>
+                <TextBlock x:Name="txtCaption" Text="{Binding Caption}" Style="{DynamicResource Heading2TextBlockStyle}" Grid.Row="0" Grid.Column="1" Margin="0 30 0 10"></TextBlock>
 
                 <Grid x:Name="pnlContent" HorizontalAlignment="Stretch" Grid.Row="1" Grid.Column="1">
 
                 </Grid>
 
-                <StackPanel x:Name="pnlButtons" Style="{StaticResource ModalButtonPanel}" Grid.Row="2" Grid.Column="1">
-                    <controls2:ExtendedButton x:Name="btnYes" Content="Yes" Style="{StaticResource ModalButton}"></controls2:ExtendedButton>
-                    <controls2:ExtendedButton x:Name="btnNo" Content="No" Style="{StaticResource ModalButton}"></controls2:ExtendedButton>
-                    <controls2:ExtendedButton x:Name="btnOk" Content="OK" Style="{StaticResource ModalButton}"></controls2:ExtendedButton>
-                    <controls2:ExtendedButton x:Name="btnCancel" Content="Cancel" Style="{StaticResource ModalButton}"></controls2:ExtendedButton>
+                <StackPanel x:Name="pnlButtons" Style="{DynamicResource ModalButtonPanel}" Grid.Row="2" Grid.Column="1">
+                    <controls2:ExtendedButton x:Name="btnYes" Content="Yes" Style="{DynamicResource ModalButton}"></controls2:ExtendedButton>
+                    <controls2:ExtendedButton x:Name="btnNo" Content="No" Style="{DynamicResource ModalButton}"></controls2:ExtendedButton>
+                    <controls2:ExtendedButton x:Name="btnOk" Content="OK" Style="{DynamicResource ModalButton}"></controls2:ExtendedButton>
+                    <controls2:ExtendedButton x:Name="btnCancel" Content="Cancel" Style="{DynamicResource ModalButton}"></controls2:ExtendedButton>
                 </StackPanel>
             </Grid>
             <!-- Animation -->

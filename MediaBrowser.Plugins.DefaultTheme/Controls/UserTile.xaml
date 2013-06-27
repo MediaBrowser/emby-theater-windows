@@ -24,8 +24,8 @@
                 <SolidColorBrush Color="#A6000000"></SolidColorBrush>
             </Grid.Background>
             <StackPanel Orientation="Vertical" Margin="10 5 0 10">
-                <TextBlock x:Name="UserName" Foreground="White" Style="{StaticResource TextBlockStyle}"></TextBlock>
-                <TextBlock x:Name="LastSeen" Foreground="White" Style="{StaticResource SmallTextBlockStyle}"></TextBlock>
+                <TextBlock x:Name="UserName" Foreground="White" Style="{DynamicResource TextBlockStyle}"></TextBlock>
+                <TextBlock x:Name="LastSeen" Foreground="White" Style="{DynamicResource SmallTextBlockStyle}"></TextBlock>
             </StackPanel>
         </Grid>
 

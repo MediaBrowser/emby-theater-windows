@@ -1,13 +1,14 @@
 ﻿using MediaBrowser.Theater.Interfaces.Theming;
 using System.Windows;
 using System.Windows.Controls;
+using MediaBrowser.Theater.Presentation.Pages;
 
 namespace MediaBrowser.UI.Pages
 {
     /// <summary>
     /// Interaction logic for SettingsPage.xaml
     /// </summary>
-    public partial class SettingsPage : Page
+    public partial class SettingsPage : BasePage
     {
         /// <summary>
         /// The _theme manager

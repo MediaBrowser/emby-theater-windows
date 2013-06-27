@@ -11,15 +11,15 @@
     <Grid>
         <StackPanel Orientation="Vertical">
 
-            <TextBlock Style="{StaticResource Heading2TextBlockStyle}">Select View</TextBlock>
-            <RadioButton x:Name="radioList" GroupName="View" Style="{StaticResource ViewMenuRadioButton}">
-                <TextBlock Style="{StaticResource TextBlockStyle}">List</TextBlock>
+            <TextBlock Style="{DynamicResource Heading2TextBlockStyle}">Select View</TextBlock>
+            <RadioButton x:Name="radioList" GroupName="View" Style="{DynamicResource ViewMenuRadioButton}">
+                <TextBlock Style="{DynamicResource TextBlockStyle}">List</TextBlock>
                 </RadioButton>
-            <RadioButton x:Name="radioPoster" GroupName="View" Style="{StaticResource ViewMenuRadioButton}">
-                <TextBlock Style="{StaticResource TextBlockStyle}">Poster</TextBlock>
+            <RadioButton x:Name="radioPoster" GroupName="View" Style="{DynamicResource ViewMenuRadioButton}">
+                <TextBlock Style="{DynamicResource TextBlockStyle}">Poster</TextBlock>
                 </RadioButton>
-            <RadioButton x:Name="radioThumbstrip" GroupName="View" Style="{StaticResource ViewMenuRadioButton}">
-                <TextBlock Style="{StaticResource TextBlockStyle}">Thumbstrip</TextBlock>
+            <RadioButton x:Name="radioThumbstrip" GroupName="View" Style="{DynamicResource ViewMenuRadioButton}">
+                <TextBlock Style="{DynamicResource TextBlockStyle}">Thumbstrip</TextBlock>
             </RadioButton>
         </StackPanel>
     </Grid>

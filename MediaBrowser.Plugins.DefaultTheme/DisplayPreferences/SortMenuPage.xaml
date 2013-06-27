@@ -10,10 +10,10 @@
 
     <Grid>
         <StackPanel Orientation="Vertical">
-            <TextBlock Style="{StaticResource Heading2TextBlockStyle}">Sort By</TextBlock>
+            <TextBlock Style="{DynamicResource Heading2TextBlockStyle}">Sort By</TextBlock>
             <StackPanel x:Name="pnlOptions" Orientation="Vertical"></StackPanel>
-            <CheckBox x:Name="chkRemember" Margin="0 20 0 0" Style="{StaticResource CheckBoxStyle}">
-                <TextBlock Text="Remember Sorting" Style="{StaticResource TextBlockStyle}"></TextBlock>
+            <CheckBox x:Name="chkRemember" Margin="0 20 0 0" Style="{DynamicResource CheckBoxStyle}">
+                <TextBlock Text="Remember Sorting" Style="{DynamicResource TextBlockStyle}"></TextBlock>
             </CheckBox>
         </StackPanel>
     </Grid>

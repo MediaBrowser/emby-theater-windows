@@ -4,7 +4,9 @@ using MediaBrowser.Common.Implementations.Updates;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Net;
 using MediaBrowser.Model.System;
+using MediaBrowser.Plugins.DefaultTheme;
 using MediaBrowser.Theater.Implementations.Configuration;
+using MediaBrowser.UI.StartupWizard;
 using Microsoft.Win32;
 using System;
 using System.IO;
@@ -116,7 +118,7 @@ namespace MediaBrowser.UI
         /// </summary>
         private void ShowApplicationWindow()
         {
-            var win = new MainWindow(_logger, _compositionRoot.PlaybackManager, _compositionRoot.ApiClient, _compositionRoot.ImageManager, _compositionRoot, _compositionRoot.ApplicationWindow, _compositionRoot.UserInputManager);
+            var win = new MainWindow(_logger, _compositionRoot.PlaybackManager, _compositionRoot.ApiClient, _compositionRoot.ImageManager, _compositionRoot, _compositionRoot.PresentationManager, _compositionRoot.UserInputManager);
 
             var config = _compositionRoot.TheaterConfigurationManager.Configuration;
 
@@ -210,7 +212,8 @@ namespace MediaBrowser.UI
 
                 await _compositionRoot.Init();
 
-                _compositionRoot.ThemeManager.SetCurrentTheme(_compositionRoot.ThemeManager.Themes.First());
+                // Load default theme
+                _compositionRoot.ThemeManager.LoadDefaultTheme();
 
                 HiddenWindow = new HiddenWindow(_compositionRoot);
                 HiddenWindow.Show();
@@ -255,7 +258,7 @@ namespace MediaBrowser.UI
             {
                 try
                 {
-                    var address = await new ServerLocator().FindServer().ConfigureAwait(false);
+                    var address = await new ServerLocator().FindServer(500, CancellationToken.None).ConfigureAwait(false);
 
                     var parts = address.ToString().Split(':');
 
@@ -275,12 +278,13 @@ namespace MediaBrowser.UI
             if (!foundServer)
             {
                 // Show connection wizard
+                await Dispatcher.InvokeAsync(async () => await _compositionRoot.NavigationService.Navigate(new StartupWizardPage(_compositionRoot.ThemeManager, _compositionRoot.NavigationService, _compositionRoot.TheaterConfigurationManager, _compositionRoot.ApiClient)));
             }
             else
             {
-                // Open web socket
+                // TODO: Open web socket using systemInfo
 
-                await _compositionRoot.SessionManager.Logout();
+                await _compositionRoot.NavigationService.NavigateToLoginPage();
             }
         }
 

@@ -6,7 +6,7 @@
                                          xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
                                          mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <controls:ExtendedListBox Margin="-25 -35" x:Name="LstItems" KeyboardNavigation.DirectionalNavigation="Continue" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{StaticResource ListBoxStyle}" ItemContainerStyle="{StaticResource AnimatedListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource HomePageListBoxItemTemplate}">
+    <controls:ExtendedListBox Margin="-25 -35" x:Name="LstItems" KeyboardNavigation.DirectionalNavigation="Continue" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource AnimatedListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{DynamicResource HomePageListBoxItemTemplate}">
         <controls:ExtendedListBox.ItemsPanel>
             <ItemsPanelTemplate>
                 <WrapPanel Margin="40 35" Orientation="Vertical"></WrapPanel>

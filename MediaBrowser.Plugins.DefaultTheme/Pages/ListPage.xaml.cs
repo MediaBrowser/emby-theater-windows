@@ -27,7 +27,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         /// <summary>
         /// Initializes a new instance of the <see cref="ListPage" /> class.
         /// </summary>
-        public ListPage(BaseItemDto parent, string displayPreferencesId, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IApplicationWindow applicationWindow, INavigationService navigationManager, IThemeManager themeManager)
+        public ListPage(BaseItemDto parent, string displayPreferencesId, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IPresentationManager applicationWindow, INavigationService navigationManager, IThemeManager themeManager)
             : base(parent, displayPreferencesId, apiClient, imageManager, sessionManager, applicationWindow, navigationManager, themeManager)
         {
             InitializeComponent();

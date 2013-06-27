@@ -21,40 +21,40 @@
             <ColumnDefinition Width="auto"></ColumnDefinition>
         </Grid.ColumnDefinitions>
 
-        <controls1:ExtendedButton x:Name="BtnSpotlight" Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Grid.ColumnSpan="2" Style="{StaticResource SpotlightButtonStyle}">
+        <controls1:ExtendedButton x:Name="BtnSpotlight" Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Grid.ColumnSpan="2" Style="{DynamicResource SpotlightButtonStyle}">
             <controls:MultiItemTile x:Name="SpotlightTile"></controls:MultiItemTile>
         </controls1:ExtendedButton>
 
-        <controls1:ExtendedButton x:Name="BtnRecent1" Style="{StaticResource BaseItemButtonStyle}" Grid.Row="0" Grid.Column="2">
-            <controls:MultiItemTile x:Name="RecentEpisodes1"></controls:MultiItemTile>
+        <controls1:ExtendedButton x:Name="BtnRecent1" Style="{DynamicResource BaseItemButtonStyle}" Grid.Row="0" Grid.Column="2">
+            <controls:HomePageTile x:Name="Recent1"></controls:HomePageTile>
         </controls1:ExtendedButton>
 
-        <controls1:ExtendedButton x:Name="BtnRecent2" Style="{StaticResource BaseItemButtonStyle}" Grid.Row="0" Grid.Column="3">
-            <controls:MultiItemTile x:Name="RecentEpisodes2"></controls:MultiItemTile>
+        <controls1:ExtendedButton x:Name="BtnRecent2" Style="{DynamicResource BaseItemButtonStyle}" Grid.Row="0" Grid.Column="3">
+            <controls:HomePageTile x:Name="Recent2"></controls:HomePageTile>
         </controls1:ExtendedButton>
 
-        <controls1:ExtendedButton x:Name="BtnRecent3" Style="{StaticResource BaseItemButtonStyle}" Grid.Row="1" Grid.Column="2">
-            <controls:MultiItemTile x:Name="RecentEpisodes3"></controls:MultiItemTile>
+        <controls1:ExtendedButton x:Name="BtnRecent3" Style="{DynamicResource BaseItemButtonStyle}" Grid.Row="1" Grid.Column="2">
+            <controls:HomePageTile x:Name="Recent3"></controls:HomePageTile>
         </controls1:ExtendedButton>
 
-        <controls1:ExtendedButton x:Name="BtnRecent4" Style="{StaticResource BaseItemButtonStyle}" Grid.Row="1" Grid.Column="3">
-            <controls:MultiItemTile x:Name="RecentEpisodes4"></controls:MultiItemTile>
+        <controls1:ExtendedButton x:Name="BtnRecent4" Style="{DynamicResource BaseItemButtonStyle}" Grid.Row="1" Grid.Column="3">
+            <controls:HomePageTile x:Name="Recent4"></controls:HomePageTile>
         </controls1:ExtendedButton>
 
-        <controls1:ExtendedButton x:Name="BtnRecent5" Style="{StaticResource BaseItemButtonStyle}" Grid.Row="2" Grid.Column="0">
-            <controls:MultiItemTile x:Name="RecentEpisodes5"></controls:MultiItemTile>
+        <controls1:ExtendedButton x:Name="BtnRecent5" Style="{DynamicResource BaseItemButtonStyle}" Grid.Row="2" Grid.Column="0">
+            <controls:HomePageTile x:Name="Recent5"></controls:HomePageTile>
         </controls1:ExtendedButton>
 
-        <controls1:ExtendedButton x:Name="BtnRecent6" Style="{StaticResource BaseItemButtonStyle}" Grid.Row="2" Grid.Column="1">
-            <controls:MultiItemTile x:Name="RecentEpisodes6"></controls:MultiItemTile>
+        <controls1:ExtendedButton x:Name="BtnRecent6" Style="{DynamicResource BaseItemButtonStyle}" Grid.Row="2" Grid.Column="1">
+            <controls:HomePageTile x:Name="Recent6"></controls:HomePageTile>
         </controls1:ExtendedButton>
 
-        <controls1:ExtendedButton x:Name="BtnRecent7" Style="{StaticResource BaseItemButtonStyle}" Grid.Row="2" Grid.Column="2">
-            <controls:MultiItemTile x:Name="RecentEpisodes7"></controls:MultiItemTile>
+        <controls1:ExtendedButton x:Name="BtnRecent7" Style="{DynamicResource BaseItemButtonStyle}" Grid.Row="2" Grid.Column="2">
+            <controls:HomePageTile x:Name="Recent7"></controls:HomePageTile>
         </controls1:ExtendedButton>
 
-        <controls1:ExtendedButton x:Name="BtnRecent8" Style="{StaticResource BaseItemButtonStyle}" Grid.Row="2" Grid.Column="3">
-            <controls:MultiItemTile x:Name="RecentEpisodes8"></controls:MultiItemTile>
+        <controls1:ExtendedButton x:Name="BtnRecent8" Style="{DynamicResource BaseItemButtonStyle}" Grid.Row="2" Grid.Column="3">
+            <controls:HomePageTile x:Name="Recent8"></controls:HomePageTile>
         </controls1:ExtendedButton>
     </Grid>
 </UserControl>

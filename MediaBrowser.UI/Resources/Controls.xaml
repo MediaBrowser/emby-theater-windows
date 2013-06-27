@@ -1,0 +1,24 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation">
+
+    <Style TargetType="Frame">
+        <Setter Property="NavigationUIVisibility" Value="Hidden"/>
+        <Setter Property="KeyboardNavigation.IsTabStop" Value="false"/>
+    </Style>
+
+    <!--Default Frame style. -->
+    <Style TargetType="controls:TransitionFrame">
+        <Setter Property="NavigationUIVisibility" Value="Hidden"/>
+        <Setter Property="KeyboardNavigation.IsTabStop" Value="false"/>
+    </Style>
+
+    <Style TargetType="controls:TransitionControl">
+        <Setter Property="KeyboardNavigation.IsTabStop" Value="false"/>
+    </Style>
+
+    <!--Default Frame style. -->
+    <Style TargetType="ContentControl">
+        <Setter Property="KeyboardNavigation.IsTabStop" Value="false"/>
+    </Style>
+</ResourceDictionary>

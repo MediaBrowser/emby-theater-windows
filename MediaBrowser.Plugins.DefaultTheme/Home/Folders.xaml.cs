@@ -19,12 +19,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
     public partial class Folders : BaseItemsControl
     {
         /// <summary>
-        /// Gets the application window.
-        /// </summary>
-        /// <value>The application window.</value>
-        protected IApplicationWindow ApplicationWindow { get; private set; }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="BaseItemsPage" /> class.
         /// </summary>
         /// <param name="parent">The parent.</param>
@@ -35,11 +29,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         /// <param name="applicationWindow">The application window.</param>
         /// <param name="navigationManager">The navigation manager.</param>
         /// <param name="themeManager">The theme manager.</param>
-        public Folders(BaseItemDto parent, Model.Entities.DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IApplicationWindow applicationWindow, INavigationService navigationManager, IThemeManager themeManager)
-            : base(parent, displayPreferences, apiClient, imageManager, sessionManager, navigationManager, themeManager)
+        public Folders(BaseItemDto parent, Model.Entities.DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IPresentationManager applicationWindow, INavigationService navigationManager, IThemeManager themeManager)
+            : base(parent, displayPreferences, apiClient, imageManager, sessionManager, navigationManager, themeManager, applicationWindow)
         {
-            ApplicationWindow = applicationWindow;
-            
             InitializeComponent();
         }
 
@@ -109,17 +101,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             };
 
             return ApiClient.GetItemsAsync(query);
-        }
-
-        /// <summary>
-        /// Called when [current item changed].
-        /// </summary>
-        protected override void OnCurrentItemChanged()
-        {
-            if (CurrentItem != null)
-            {
-                ApplicationWindow.SetBackdrops(CurrentItem);
-            }
         }
     }
 }

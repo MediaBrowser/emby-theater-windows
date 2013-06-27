@@ -23,22 +23,40 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         /// <summary>
         /// The _average primary image aspect ratio
         /// </summary>
-        private double _averagePrimaryImageAspectRatio;
+        private double _meanPrimaryImageAspectRatio;
         /// <summary>
         /// Gets the aspect ratio that should be used if displaying the primary image
         /// </summary>
         /// <value>The average primary image aspect ratio.</value>
-        public double AveragePrimaryImageAspectRatio
+        public double MeanPrimaryImageAspectRatio
         {
-            get { return _averagePrimaryImageAspectRatio; }
+            get { return _meanPrimaryImageAspectRatio; }
 
             set
             {
-                _averagePrimaryImageAspectRatio = value;
-                OnPropertyChanged("AveragePrimaryImageAspectRatio");
+                _meanPrimaryImageAspectRatio = value;
+                OnPropertyChanged("MeanPrimaryImageAspectRatio");
             }
         }
 
+        /// <summary>
+        /// The _image width
+        /// </summary>
+        private ImageType _imageType;
+        /// <summary>
+        /// Gets or sets the width of the image.
+        /// </summary>
+        /// <value>The width of the image.</value>
+        public ImageType ImageType
+        {
+            get { return _imageType; }
+            set
+            {
+                _imageType = value;
+                OnPropertyChanged("ImageType");
+            }
+        }
+        
         /// <summary>
         /// The _image width
         /// </summary>
@@ -54,19 +72,6 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             {
                 _imageWidth = value;
                 OnPropertyChanged("ImageWidth");
-            }
-        }
-
-        public double ImageHeight
-        {
-            get
-            {
-                if (AveragePrimaryImageAspectRatio.Equals(0))
-                {
-                    return 1;
-                }
-
-                return ImageWidth / AveragePrimaryImageAspectRatio;
             }
         }
 
@@ -114,6 +119,11 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
+        public double GetImageHeight(ImageType imageType)
+        {
+            return ImageWidth/GetAspectRatio(imageType, MeanPrimaryImageAspectRatio);
+        }
+
         /// <summary>
         /// Gets an image url that can be used to download an image from the api
         /// </summary>
@@ -124,7 +134,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         {
             var width = ImageWidth;
 
-            var averageAspectRatio = GetAspectRatio(imageType, AveragePrimaryImageAspectRatio);
+            var averageAspectRatio = GetAspectRatio(imageType, MeanPrimaryImageAspectRatio);
 
             var height = width / averageAspectRatio;
 
@@ -183,7 +193,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         /// <param name="items">The items.</param>
         /// <returns>System.Double.</returns>
         /// <exception cref="System.ArgumentNullException">items</exception>
-        public static double GetAveragePrimaryImageAspectRatio(IEnumerable<BaseItemDto> items)
+        public static double GetMeanPrimaryImageAspectRatio(IEnumerable<BaseItemDto> items)
         {
             if (items == null)
             {

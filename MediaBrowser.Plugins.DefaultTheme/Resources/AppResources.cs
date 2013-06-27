@@ -37,7 +37,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Resources
         private readonly IImageManager _imageManager;
 
         private readonly INavigationService _navService;
-        private readonly IApplicationWindow _appWindow;
+        private readonly IPresentationManager _appWindow;
         private readonly ISessionManager _sessionManager;
         private readonly IUserInputManager _userInputManager;
 
@@ -48,7 +48,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Resources
         /// <summary>
         /// Initializes a new instance of the <see cref="AppResources" /> class.
         /// </summary>
-        public AppResources(IPlaybackManager playbackManager, IImageManager imageManager, IApiClient apiClient, IApplicationWindow appWindow, INavigationService navService, ISessionManager sessionManager, ILogger logger, IUserInputManager userInputManager)
+        public AppResources(IPlaybackManager playbackManager, IImageManager imageManager, IApiClient apiClient, IPresentationManager appWindow, INavigationService navService, ISessionManager sessionManager, ILogger logger, IUserInputManager userInputManager)
         {
             _playbackManager = playbackManager;
             _imageManager = imageManager;

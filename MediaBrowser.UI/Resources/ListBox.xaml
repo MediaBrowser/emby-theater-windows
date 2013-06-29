@@ -1,6 +1,8 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+    <Brush x:Key="SelectedItemHighlightColor">WhiteSmoke</Brush>
+
     <!--Default ListBox style. -->
     <Style TargetType="ListBox" x:Key="ListBoxStyle">
         <Setter Property="BorderThickness" Value="0"/>
@@ -26,6 +28,32 @@
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
         <Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+    </Style>
+
+    <!--Defines the styles for ListBoxItems. Themes should override this if they choose. -->
+    <Style x:Key="HighlightedListBoxItemStyle" TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource ListBoxItemStyle}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                    <Border x:Name="Bd" SnapsToDevicePixels="true" RenderTransformOrigin="0.5,0.5" Padding="3">
+                        <Grid x:Name="ContentGrid">
+                            <Border x:Name="BdDropShadow" Margin="-11" BorderBrush="{DynamicResource SelectedItemHighlightColor}" BorderThickness="16" Background="Transparent" SnapsToDevicePixels="true" CornerRadius="1" Visibility="Hidden">
+                                <Border.Effect>
+                                    <BlurEffect Radius="10" KernelType="Gaussian"></BlurEffect>
+                                </Border.Effect>
+                            </Border>
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsFocused" Value="true">
+                            <Setter Property="Visibility" TargetName="BdDropShadow" Value="Visible"/>
+                            <Setter Property="Panel.ZIndex" Value="5"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 
 </ResourceDictionary>

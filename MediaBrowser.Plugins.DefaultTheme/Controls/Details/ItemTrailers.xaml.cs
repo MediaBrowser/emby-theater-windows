@@ -74,11 +74,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
 
             var width = aspectRatio.Equals(0) ? 528 : height * aspectRatio;
 
-            if (Item.TrailerUrls != null)
-            {
-                //resultItems.AddRange(Item.TrailerUrls.Select(i => UIKernel.Instance.PlaybackManager.GetPlayableItem(new Uri(i), "Trailer")));
-            }
-
             lstItems.ItemsSource = resultItems.Select(i => new SpecialFeatureViewModel(_apiClient, _imageManager)
             {
                 Item = i,

@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
-using MediaBrowser.Theater.Interfaces.Theming;
 
 namespace MediaBrowser.Theater.Interfaces.Presentation
 {
@@ -24,6 +23,12 @@ namespace MediaBrowser.Theater.Interfaces.Presentation
         IEnumerable<ITheaterApp> Apps { get; }
 
         /// <summary>
+        /// Gets the settings pages.
+        /// </summary>
+        /// <value>The settings pages.</value>
+        IEnumerable<ISettingsPage> SettingsPages { get; }
+
+        /// <summary>
         /// Gets the window.
         /// </summary>
         /// <value>The window.</value>
@@ -40,13 +45,13 @@ namespace MediaBrowser.Theater.Interfaces.Presentation
         /// </summary>
         /// <value>The window overlay.</value>
         FrameworkElement WindowOverlay { get; }
-        
+
         /// <summary>
         /// Gets the page content control.
         /// </summary>
         /// <value>The page content control.</value>
         ContentControl PageContentControl { get; }
-        
+
         /// <summary>
         /// Clears the backdrops.
         /// </summary>
@@ -68,7 +73,8 @@ namespace MediaBrowser.Theater.Interfaces.Presentation
         /// Adds the parts.
         /// </summary>
         /// <param name="apps">The apps.</param>
-        void AddParts(IEnumerable<ITheaterApp> apps);
+        /// <param name="settingsPages">The settings pages.</param>
+        void AddParts(IEnumerable<ITheaterApp> apps, IEnumerable<ISettingsPage> settingsPages);
 
     }
 }

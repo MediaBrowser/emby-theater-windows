@@ -106,7 +106,7 @@ namespace MediaBrowser.UI
             ThemeManager = new ThemeManager();
             RegisterSingleInstance(ThemeManager);
 
-            NavigationService = new NavigationService(ThemeManager, () => PlaybackManager, ApiClient);
+            NavigationService = new NavigationService(ThemeManager, () => PlaybackManager, ApiClient, PresentationManager);
             RegisterSingleInstance(NavigationService);
 
             PlaybackManager = new PlaybackManager(TheaterConfigurationManager, Logger, ApiClient, NavigationService, PresentationManager);
@@ -134,7 +134,7 @@ namespace MediaBrowser.UI
             base.FindParts();
 
             ThemeManager.AddParts(GetExports<ITheme>());
-            PresentationManager.AddParts(GetExports<ITheaterApp>());
+            PresentationManager.AddParts(GetExports<ITheaterApp>(), GetExports<ISettingsPage>());
 
             PlaybackManager.AddParts(GetExports<IMediaPlayer>());
         }
@@ -217,7 +217,7 @@ namespace MediaBrowser.UI
 
             // External player assembly
             yield return typeof(GenericExternalPlayer).Assembly;
-            
+
             // Default theme assembly
             yield return typeof(DefaultTheme).Assembly;
         }

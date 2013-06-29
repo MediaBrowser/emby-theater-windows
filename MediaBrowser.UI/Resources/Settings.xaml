@@ -1,0 +1,21 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:presentation="clr-namespace:MediaBrowser.Theater.Interfaces.Presentation;assembly=MediaBrowser.Theater.Interfaces">
+
+    <DataTemplate x:Key="SettingsPageTemplate" DataType="{x:Type presentation:ISettingsPage}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <Image Source="{Binding ThumbUri}" Width="320" Height="180" Stretch="Uniform" Grid.Row="0">
+
+            </Image>
+
+            <Border Grid.Row="1" Padding="5 0 5 5" Background="#a6000000">
+                <TextBlock HorizontalAlignment="Center" Text="{Binding Name}" Style="{DynamicResource TextBlockStyle}" TextWrapping="NoWrap"></TextBlock>
+            </Border>
+        </Grid>
+    </DataTemplate>
+</ResourceDictionary>

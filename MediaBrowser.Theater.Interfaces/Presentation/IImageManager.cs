@@ -15,12 +15,6 @@ namespace MediaBrowser.Theater.Interfaces.Presentation
         /// </summary>
         /// <param name="uri">The URI.</param>
         /// <returns>BitmapImage.</returns>
-        BitmapImage GetBitmapImage(string uri);
-        /// <summary>
-        /// Gets the bitmap image.
-        /// </summary>
-        /// <param name="uri">The URI.</param>
-        /// <returns>BitmapImage.</returns>
         BitmapImage GetBitmapImage(Uri uri);
 
         /// <summary>

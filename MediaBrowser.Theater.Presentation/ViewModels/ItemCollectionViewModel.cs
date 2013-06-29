@@ -19,7 +19,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         public IApiClient ApiClient { get; private set; }
         public IImageManager ImageManager { get; private set; }
         
-        public ItemCollectionViewModel(IApiClient apiClient, IImageManager imageManager, int rotationPeriodMs = 10000, int rotationDevaiationMs = 0)
+        public ItemCollectionViewModel(IApiClient apiClient, IImageManager imageManager, int rotationPeriodMs = 8000, int rotationDevaiationMs = 0)
             : base()
         {
             ImageManager = imageManager;

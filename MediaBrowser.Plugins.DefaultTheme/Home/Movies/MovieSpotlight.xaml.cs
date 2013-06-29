@@ -125,7 +125,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.Movies
 
         private async void ReloadRecent()
         {
-            var totalItems = 40;
+            var totalItems = 50;
 
             var result = await ApiClient.GetItemsAsync(new ItemQuery
             {

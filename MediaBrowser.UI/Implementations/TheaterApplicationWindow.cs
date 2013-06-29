@@ -119,12 +119,20 @@ namespace MediaBrowser.UI.Implementations
         public IEnumerable<ITheaterApp> Apps { get; private set; }
 
         /// <summary>
+        /// Gets the settings pages.
+        /// </summary>
+        /// <value>The settings pages.</value>
+        public IEnumerable<ISettingsPage> SettingsPages { get; private set; }
+
+        /// <summary>
         /// Adds the parts.
         /// </summary>
         /// <param name="apps">The apps.</param>
-        public void AddParts(IEnumerable<ITheaterApp> apps)
+        /// <param name="settingsPages">The settings pages.</param>
+        public void AddParts(IEnumerable<ITheaterApp> apps, IEnumerable<ISettingsPage> settingsPages)
         {
             Apps = apps;
+            SettingsPages = settingsPages;
         }
     }
 }

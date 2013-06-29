@@ -34,10 +34,10 @@
                 </Grid>
 
                 <StackPanel x:Name="pnlButtons" Style="{DynamicResource ModalButtonPanel}" Grid.Row="2" Grid.Column="1">
-                    <controls2:ExtendedButton x:Name="btnYes" Content="Yes" Style="{DynamicResource ModalButton}"></controls2:ExtendedButton>
-                    <controls2:ExtendedButton x:Name="btnNo" Content="No" Style="{DynamicResource ModalButton}"></controls2:ExtendedButton>
-                    <controls2:ExtendedButton x:Name="btnOk" Content="OK" Style="{DynamicResource ModalButton}"></controls2:ExtendedButton>
-                    <controls2:ExtendedButton x:Name="btnCancel" Content="Cancel" Style="{DynamicResource ModalButton}"></controls2:ExtendedButton>
+                    <Button x:Name="btnYes" Content="Yes"></Button>
+                    <Button x:Name="btnNo" Content="No"></Button>
+                    <Button x:Name="btnOk" Content="OK"></Button>
+                    <Button x:Name="btnCancel" Content="Cancel"></Button>
                 </StackPanel>
             </Grid>
             <!-- Animation -->

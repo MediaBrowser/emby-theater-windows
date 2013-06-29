@@ -2,6 +2,7 @@
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
+using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.UI.Pages;
 using System;
@@ -27,17 +28,21 @@ namespace MediaBrowser.UI.Implementations
 
         private readonly IApiClient _apiClient;
 
+        private readonly IPresentationManager _presentationManager;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="NavigationService" /> class.
         /// </summary>
         /// <param name="themeManager">The theme manager.</param>
         /// <param name="playbackManagerFactory">The playback manager factory.</param>
         /// <param name="apiClient">The API client.</param>
-        public NavigationService(IThemeManager themeManager, Func<IPlaybackManager> playbackManagerFactory, IApiClient apiClient)
+        /// <param name="presentationManager">The presentation manager.</param>
+        public NavigationService(IThemeManager themeManager, Func<IPlaybackManager> playbackManagerFactory, IApiClient apiClient, IPresentationManager presentationManager)
         {
             _themeManager = themeManager;
             _playbackManagerFactory = playbackManagerFactory;
             _apiClient = apiClient;
+            _presentationManager = presentationManager;
         }
 
         /// <summary>
@@ -56,7 +61,7 @@ namespace MediaBrowser.UI.Implementations
         /// <returns>DispatcherOperation.</returns>
         public DispatcherOperation NavigateToSettingsPage()
         {
-            return Navigate(new SettingsPage(_themeManager));
+            return Navigate(new SettingsPage(_themeManager, _presentationManager, this));
         }
 
         /// <summary>

@@ -53,22 +53,6 @@ namespace MediaBrowser.Theater.Implementations.Presentation
         /// <param name="uri">The URI.</param>
         /// <returns>BitmapImage.</returns>
         /// <exception cref="System.ArgumentNullException">uri</exception>
-        public BitmapImage GetBitmapImage(string uri)
-        {
-            if (string.IsNullOrEmpty(uri))
-            {
-                throw new ArgumentNullException("uri");
-            }
-
-            return GetBitmapImage(new Uri(uri));
-        }
-
-        /// <summary>
-        /// Gets the bitmap image.
-        /// </summary>
-        /// <param name="uri">The URI.</param>
-        /// <returns>BitmapImage.</returns>
-        /// <exception cref="System.ArgumentNullException">uri</exception>
         public BitmapImage GetBitmapImage(Uri uri)
         {
             if (uri == null)

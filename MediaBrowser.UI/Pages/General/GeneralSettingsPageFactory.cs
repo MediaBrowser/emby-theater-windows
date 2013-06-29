@@ -1,19 +1,29 @@
-﻿using MediaBrowser.Theater.Interfaces.Presentation;
-using MediaBrowser.UI.Pages.MediaPlayers;
+﻿using MediaBrowser.Common;
+using MediaBrowser.Theater.Interfaces.Configuration;
+using MediaBrowser.Theater.Interfaces.Presentation;
 using System;
 using System.Windows.Controls;
 
-namespace MediaBrowser.UI.Pages.Appearance
+namespace MediaBrowser.UI.Pages.General
 {
-    public class AppearancePageFactory : ISystemSettingsPage
+    class GeneralSettingsPageFactory : ISystemSettingsPage
     {
+        private readonly ITheaterConfigurationManager _config;
+        private readonly IApplicationHost _appHost;
+
+        public GeneralSettingsPageFactory(ITheaterConfigurationManager config, IApplicationHost appHost)
+        {
+            _config = config;
+            _appHost = appHost;
+        }
+
         /// <summary>
         /// Gets the name.
         /// </summary>
         /// <value>The name.</value>
         public string Name
         {
-            get { return "Appearance"; }
+            get { return "General"; }
         }
 
         /// <summary>
@@ -22,7 +32,7 @@ namespace MediaBrowser.UI.Pages.Appearance
         /// <returns>Page.</returns>
         public Page GetPage()
         {
-            return new MediaPlayersPage();
+            return new GeneralSettingsPage(_config, _appHost);
         }
 
         /// <summary>
@@ -36,7 +46,7 @@ namespace MediaBrowser.UI.Pages.Appearance
 
         public int? Order
         {
-            get { return null; }
+            get { return 0; }
         }
     }
 }

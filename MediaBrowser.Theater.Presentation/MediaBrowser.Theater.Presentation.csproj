@@ -80,6 +80,9 @@
     <Compile Include="Controls\ItemEventArgs.cs" />
     <Compile Include="Controls\ListFocuser.cs" />
     <Compile Include="Controls\ScrollingPanel.cs" />
+    <Compile Include="Controls\SelectList.xaml.cs">
+      <DependentUpon>SelectList.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\TransitionControl.cs" />
     <Compile Include="Controls\TransitionFrame.cs" />
     <Compile Include="Controls\TreeHelper.cs" />
@@ -130,6 +133,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Controls\SelectList.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

@@ -32,5 +32,10 @@ namespace MediaBrowser.UI.Pages.Plugins
         {
             get { return new Uri("../../Resources/Images/Settings/weather6.png", UriKind.Relative); }
         }
+
+        public int? Order
+        {
+            get { return null; }
+        }
     }
 }

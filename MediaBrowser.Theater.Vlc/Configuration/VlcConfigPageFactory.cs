@@ -30,7 +30,7 @@ namespace MediaBrowser.Theater.Vlc.Configuration
         /// <value>The thumb URI.</value>
         public Uri ThumbUri
         {
-            get { return new Uri("../../Resources/Images/Settings/weather6.png", UriKind.Relative); }
+            get { return new Uri("pack://application:,,,/MediaBrowser.Theater.Vlc;component/Resources/Images/settings.jpg", UriKind.Absolute); }
         }
     }
 }

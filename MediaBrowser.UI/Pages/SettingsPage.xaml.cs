@@ -80,7 +80,8 @@ namespace MediaBrowser.UI.Pages
             MenuList.ItemsSource = view;
 
             var pages = _presentationManager.SettingsPages.OfType<ISystemSettingsPage>()
-                .OrderBy(i => i.Name);
+                .OrderBy(i => i.Order ?? 10)
+                .ThenBy(i => i.Name);
 
             items.AddRange(pages);
         }

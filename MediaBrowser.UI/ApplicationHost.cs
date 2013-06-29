@@ -15,6 +15,7 @@ using MediaBrowser.Theater.Implementations.Presentation;
 using MediaBrowser.Theater.Implementations.Session;
 using MediaBrowser.Theater.Implementations.Theming;
 using MediaBrowser.Theater.Implementations.UserInput;
+using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
@@ -99,7 +100,7 @@ namespace MediaBrowser.UI
 
             RegisterSingleInstance(ApplicationPaths);
 
-            RegisterSingleInstance(TheaterConfigurationManager);
+            RegisterSingleInstance<ITheaterConfigurationManager>(TheaterConfigurationManager);
 
             RegisterSingleInstance<IIsoManager>(new PismoIsoManager(Logger));
 

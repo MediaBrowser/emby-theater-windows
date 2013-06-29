@@ -32,6 +32,6 @@ namespace MediaBrowser.Theater.Interfaces.Presentation
     /// </summary>
     public interface ISystemSettingsPage : ISettingsPage
     {
-        
+        int? Order { get; }
     }
 }

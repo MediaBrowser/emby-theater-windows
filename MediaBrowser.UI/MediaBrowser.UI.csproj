@@ -200,6 +200,10 @@
       <DependentUpon>AppearancePage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\Appearance\AppearancePageFactory.cs" />
+    <Compile Include="Pages\General\GeneralSettingsPage.xaml.cs">
+      <DependentUpon>GeneralSettingsPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\General\GeneralSettingsPageFactory.cs" />
     <Compile Include="Pages\MediaPlayers\MediaPlayersPage.xaml.cs">
       <DependentUpon>MediaPlayersPage.xaml</DependentUpon>
     </Compile>
@@ -250,6 +254,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Pages\Appearance\AppearancePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\General\GeneralSettingsPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -402,7 +410,9 @@
   <ItemGroup>
     <Resource Include="Resources\Images\Settings\weather6.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Resources\Images\Settings\network.jpg" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <PropertyGroup>

@@ -13,7 +13,7 @@
 
             </Image>
 
-            <Border Grid.Row="1" Padding="5 0 5 5" Background="#a6000000">
+            <Border Grid.Row="1" Padding="5 5 5 10" Background="#a6000000">
                 <TextBlock HorizontalAlignment="Center" Text="{Binding Name}" Style="{DynamicResource TextBlockStyle}" TextWrapping="NoWrap"></TextBlock>
             </Border>
         </Grid>

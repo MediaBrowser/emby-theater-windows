@@ -215,7 +215,7 @@ namespace MediaBrowser.UI
                 // Load default theme
                 _compositionRoot.ThemeManager.LoadDefaultTheme();
 
-                HiddenWindow = new HiddenWindow(_compositionRoot);
+                HiddenWindow = new HiddenWindow();
                 HiddenWindow.Show();
 
                 ShowApplicationWindow();

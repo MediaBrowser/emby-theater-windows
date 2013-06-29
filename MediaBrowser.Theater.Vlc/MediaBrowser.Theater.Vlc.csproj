@@ -994,7 +994,7 @@
     <Content Include="plugins\visualization\libvisual_plugin.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Resource Include="Resources\Images\Settings\weather6.png" />
+    <Resource Include="Resources\Images\settings.jpg" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MediaBrowser.Theater.Interfaces\MediaBrowser.Theater.Interfaces.csproj">

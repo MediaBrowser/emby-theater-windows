@@ -335,13 +335,6 @@
         <Setter Property="Opacity" Value=".7"/>
     </Style>
 
-    <Style TargetType="Image" x:Key="CustomUserImage">
-        <Setter Property="Height" Value="40"/>
-    </Style>
-
-    <Style TargetType="Image" x:Key="DefaultUserImage">
-    </Style>
-
     <!--Override PageContentTemplate-->
     <ControlTemplate x:Key="PageContentTemplate">
 
@@ -363,25 +356,89 @@
             <StackPanel x:Name="HeaderContent" Orientation="Horizontal" Grid.Column="1" Panel.ZIndex="3" Grid.Row="0" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0 10 30 0">
 
                 <Button x:Name="NowPlayingButton" Style="{DynamicResource ImageButton}" Margin="0 0 30 0" Visibility="Collapsed" Click="NowPlaying_Click">
-                    <Image Source="..\Resources\Images\NowPlayingButton.png" />
+                    <Grid>
+                        <Grid Width="48" Height="48" />
+                        <Path Data="M16.6693,45.905003L43.4757,45.905003C44.112999,45.905003,44.628002,46.421967,44.628002,47.056145L44.628002,48.788155C44.628002,49.425034,44.112999,49.941998,43.4757,49.941998L16.6693,49.941998C16.0326,49.941998,15.517,49.425034,15.517,48.788155L15.517,47.056145C15.517,46.421967,16.0326,45.905003,16.6693,45.905003z M49.41954,39.667637C48.692036,39.667637 48.101837,40.270634 48.101837,41.014027 48.101837,41.76012 48.692036,42.362915 49.41954,42.362915 50.145443,42.362915 50.735249,41.76012 50.735249,41.014027 50.735249,40.270634 50.145443,39.667637 49.41954,39.667637z M44.825417,39.607838C44.097614,39.607838 43.509415,40.210533 43.509415,40.953926 43.509415,41.69762 44.097614,42.303116 44.825417,42.303116 45.55172,42.303116 46.141525,41.69762 46.141525,40.953926 46.141525,40.210533 45.55172,39.607838 44.825417,39.607838z M6.3522615,5.5287595C5.911829,5.5287595,5.5541072,5.8554168,5.5541077,6.2604427L5.5541077,37.508957C5.5541072,37.913853,5.911829,38.240654,6.3522615,38.240654L55.388371,38.240654C55.828773,38.240654,56.188175,37.913853,56.188175,37.508957L56.188175,6.2604427C56.188175,5.8554168,55.828773,5.5287595,55.388371,5.5287595z M0.98016852,0L61.087196,0C61.629902,-2.3297311E-09,62.068005,0.436275,62.068005,0.97923898L62.068005,42.791309C62.068005,43.333004,61.629902,43.772999,61.087196,43.772999L38.711491,43.772999 38.711491,42.46711C38.711491,41.924217,38.272388,41.484024,37.729683,41.484024L24.010818,41.484024C23.471514,41.484024,23.030712,41.924217,23.030712,42.46711L23.030712,43.772999 0.98016852,43.772999C0.43945515,43.772999,-3.5527137E-15,43.333004,0,42.791309L0,0.97923898C-3.5527137E-15,0.436275,0.43945515,-2.3297311E-09,0.98016852,0z" Stretch="Uniform" Fill="#FFFFFFFF" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+                            <Path.RenderTransform>
+                                <TransformGroup>
+                                    <TransformGroup.Children>
+                                        <RotateTransform Angle="0" />
+                                        <ScaleTransform ScaleX="1" ScaleY="1" />
+                                    </TransformGroup.Children>
+                                </TransformGroup>
+                            </Path.RenderTransform>
+                        </Path>
+                    </Grid>
                 </Button>
 
                 <Button x:Name="ViewButton" Style="{DynamicResource ImageButton}" Margin="0 0 30 0" Visibility="Collapsed">
-                    <Image Source="..\Resources\Images\ViewButton.png" />
+                    <Grid>
+                        <Grid Width="48" Height="48" />
+                        <Path Data="M3.5234878,31.704002L21.136544,31.704002C23.074021,31.704002,24.66,33.292845,24.66,35.2276L24.66,52.841503C24.66,54.779058,23.074021,56.365002,21.136544,56.365002L3.5234878,56.365002C1.5860111,56.365002,4.4521053E-07,54.779058,0,52.841503L0,35.2276C4.4521053E-07,33.292845,1.5860111,31.704002,3.5234878,31.704002z M35.228287,31.704001L52.841515,31.704001C54.779007,31.704001,56.364998,33.292846,56.364998,35.2276L56.364998,52.841499C56.364998,54.779055,54.779007,56.365,52.841515,56.365L35.228287,56.365C33.290894,56.365,31.705,54.779055,31.705,52.841499L31.705,35.2276C31.705,33.292846,33.290894,31.704001,35.228287,31.704001z M35.228287,0L52.841515,0C54.779007,0,56.364998,1.5872669,56.364998,3.5234127L56.364998,21.136529C56.364998,23.074013,54.779007,24.66,52.841515,24.660001L35.228287,24.660001C33.290894,24.66,31.705,23.074013,31.705,21.136529L31.705,3.5234127C31.705,1.5872669,33.290894,0,35.228287,0z M3.5234878,0L21.136544,0C23.074021,0,24.66,1.5872669,24.66,3.5234127L24.66,21.136529C24.66,23.074013,23.074021,24.66,21.136544,24.660001L3.5234878,24.660001C1.5860111,24.66,4.4521053E-07,23.074013,0,21.136529L0,3.5234127C4.4521053E-07,1.5872669,1.5860111,0,3.5234878,0z" Stretch="Uniform" Fill="#FFFFFFFF" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+                            <Path.RenderTransform>
+                                <TransformGroup>
+                                    <TransformGroup.Children>
+                                        <RotateTransform Angle="0" />
+                                        <ScaleTransform ScaleX="1" ScaleY="1" />
+                                    </TransformGroup.Children>
+                                </TransformGroup>
+                            </Path.RenderTransform>
+                        </Path>
+                    </Grid>
                 </Button>
 
                 <Button Style="{DynamicResource ImageButton}" Margin="0 0 30 0">
-                    <Image Source="..\Resources\Images\SearchButton.png" />
+                    <Grid>
+                        <Grid Width="48" Height="48" />
+                        <Path Data="F1M54.8672,51.2266L42.1145,36.0703C44.2473,33.3333 45.6692,29.9946 46.0469,26.2942 47.1016,15.8333 39.4948,6.49219 29.0313,5.43213 18.5729,4.37231 9.2395,11.9868 8.17188,22.4453 7.10938,32.9036 14.7291,42.2446 25.1875,43.3098 28.6692,43.6563 32.0416,43.0469 35.0051,41.6797L47.9244,57.0547C49.5416,58.9634 52.401,59.2134 54.3125,57.6094 56.2266,55.9973 56.4766,53.1348 54.8672,51.2266 M15.9219,23.1614C16.5547,16.9399 22.1094,12.4087 28.3333,13.0391 34.5573,13.6719 39.0781,19.2266 38.4453,25.4426 37.8098,31.6692 32.2708,36.1953 26.0416,35.5703 19.8203,34.9399 15.2891,29.3828 15.9219,23.1614" Stretch="Uniform" Fill="#FFFFFFFF" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+                            <Path.RenderTransform>
+                                <TransformGroup>
+                                    <TransformGroup.Children>
+                                        <RotateTransform Angle="0" />
+                                        <ScaleTransform ScaleX="1" ScaleY="1" />
+                                    </TransformGroup.Children>
+                                </TransformGroup>
+                            </Path.RenderTransform>
+                        </Path>
+                    </Grid>
                 </Button>
 
                 <Button Style="{DynamicResource ImageButton}" Margin="0 0 30 0" Click="SettingsButtonClick">
-                    <Image Source="..\Resources\Images\SettingsButton.png" />
+                    <Grid>
+                        <Grid Width="48" Height="48" />
+                        <Path Data="F1M-515.802,331.242C-515.789,329.857,-515.923,328.495,-516.128,327.172L-510.578,322.745C-512.008,317.424,-514.756,312.655,-518.482,308.812L-525.111,311.322C-527.209,309.586,-529.594,308.195,-532.179,307.198L-533.233,300.195C-535.788,299.515 -538.464,299.107 -541.237,299.086 -544.006,299.07 -546.686,299.44 -549.259,300.088L-550.396,307.078C-552.989,308.052,-555.398,309.403,-557.514,311.117L-564.117,308.526C-567.886,312.318,-570.696,317.047,-572.198,322.354L-566.702,326.846C-566.924,328.172 -567.071,329.531 -567.083,330.919 -567.093,332.318 -566.962,333.672 -566.752,335.005L-572.311,339.427C-570.872,344.742,-568.124,349.518,-564.398,353.354L-557.769,350.851C-555.674,352.581,-553.284,353.971,-550.698,354.976L-549.656,361.976C-547.092,362.659 -544.416,363.065 -541.647,363.086 -538.875,363.096 -536.198,362.729 -533.63,362.086L-532.482,355.088C-529.891,354.114,-527.484,352.763,-525.362,351.062L-518.771,353.651C-514.998,349.851,-512.192,345.12,-510.687,339.82L-516.182,335.333C-515.959,333.997,-515.814,332.643,-515.802,331.242z M-541.53,344.336C-548.84,344.292 -554.737,338.318 -554.689,331 -554.641,323.68 -548.673,317.784 -541.354,317.833 -534.035,317.88 -528.139,323.851 -528.187,331.172 -528.235,338.495 -534.205,344.385 -541.53,344.336z" Stretch="Uniform" Fill="#FFFFFFFF" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+                            <Path.RenderTransform>
+                                <TransformGroup>
+                                    <TransformGroup.Children>
+                                        <RotateTransform Angle="0" />
+                                        <ScaleTransform ScaleX="1" ScaleY="1" />
+                                    </TransformGroup.Children>
+                                </TransformGroup>
+                            </Path.RenderTransform>
+                        </Path>
+                    </Grid>
                 </Button>
 
                 <!--Display CurrentUser-->
                 <Button x:Name="CurrentUserButton" Margin="0 0 30 0" Visibility="Collapsed" Style="{DynamicResource ImageButton}">
-                    <Image x:Name="CurrentUserImage" Stretch="Uniform">
-                    </Image>
+                    <Grid>
+                        <Image x:Name="CurrentUserImage" Stretch="Uniform" Height="40">
+                        </Image>
+
+                        <Grid>
+                            <Grid Name="backgroundGrid" Width="48" Height="48" Visibility="Collapsed" />
+                            <Path Data="M15.930851,36.710608C22.14356,36.647291 30.005098,41.570198 30.005098,41.570198 38.080673,46.45562 45.657448,38.281082 45.657448,38.281082 48.847534,35.288968 53.432121,42.865801 53.432121,42.865801 59.214702,51.040343 59.414001,64.000004 59.414001,64.000004L0,64.000004C2.092523,41.669198 12.360659,37.482978 12.360659,37.482978 13.423015,36.951675 14.64142,36.723749 15.930851,36.710608z M33.0965,0C42.015587,0 49.245998,7.8997269 49.245998,17.644449 49.245998,27.390621 42.015587,35.288998 33.0965,35.288999 24.177311,35.288998 16.947,27.390621 16.947,17.644449 16.947,7.8997269 24.177311,0 33.0965,0z" Stretch="Uniform" Fill="#FFFFFFFF" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+                                <Path.RenderTransform>
+                                    <TransformGroup>
+                                        <TransformGroup.Children>
+                                            <RotateTransform Angle="0" />
+                                            <ScaleTransform ScaleX="1" ScaleY="1" />
+                                        </TransformGroup.Children>
+                                    </TransformGroup>
+                                </Path.RenderTransform>
+                            </Path>
+                        </Grid>
+                    </Grid>
                 </Button>
 
                 <!--Display Clock-->
@@ -700,54 +757,6 @@
     <SolidColorBrush x:Key="DisabledBackgroundBrush" Color="#EEE" />
     <SolidColorBrush x:Key="DisabledBorderBrush" Color="#AAA" />
     <SolidColorBrush x:Key="DisabledForegroundBrush" Color="#888" />
-
-    <Style TargetType="CheckBox" x:Key="CheckBoxStyle">
-        <Setter Property="SnapsToDevicePixels" Value="true"/>
-        <Setter Property="OverridesDefaultStyle" Value="true"/>
-        <Setter Property="KeyboardNavigation.AcceptsReturn" Value="true"/>
-        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="CheckBox">
-                    <BulletDecorator Background="Transparent">
-                        <BulletDecorator.Bullet>
-                            <Border x:Name="Border" Width="32" Height="32" CornerRadius="0" Background="{StaticResource NormalBackgroundBrush}" BorderThickness="3" BorderBrush="{StaticResource NormalBorderBrush}">
-                                <Path Width="15" Height="15" VerticalAlignment="Center" HorizontalAlignment="Center" x:Name="CheckMark" SnapsToDevicePixels="False" Stroke="{StaticResource GlyphBrush}" StrokeThickness="10" Data="M 0 0 L 7 7 M 0 7 L 7 0" />
-                            </Border>
-                        </BulletDecorator.Bullet>
-                        <ContentPresenter Margin="20,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" RecognizesAccessKey="True"/>
-                    </BulletDecorator>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsChecked" Value="false">
-                            <Setter TargetName="CheckMark" Property="Visibility" Value="Collapsed"/>
-                        </Trigger>
-                        <Trigger Property="IsKeyboardFocused" Value="true">
-                            <Setter TargetName="Border" Property="Background" Value="{StaticResource FocusBackgroundBrush}" />
-                            <Setter TargetName="CheckMark" Property="Stroke" Value="{StaticResource FocusGlyphBrush}" />
-                        </Trigger>
-                        <Trigger Property="IsChecked" Value="{x:Null}">
-                            <Setter TargetName="CheckMark" Property="Data" Value="M 0 7 L 7 0" />
-                        </Trigger>
-                        <Trigger Property="IsMouseOver" Value="true">
-                            <Setter TargetName="Border" Property="Background" Value="{StaticResource FocusBackgroundBrush}" />
-                            <Setter TargetName="CheckMark" Property="Stroke" Value="{StaticResource FocusGlyphBrush}" />
-                        </Trigger>
-                        <Trigger Property="IsPressed" Value="true">
-                            <Setter TargetName="Border" Property="Background" Value="{StaticResource PressedBrush}" />
-                            <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource PressedBorderBrush}" />
-                        </Trigger>
-                        <Trigger Property="IsEnabled" Value="false">
-                            <Setter TargetName="Border" Property="Background" Value="{StaticResource DisabledBackgroundBrush}" />
-                            <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource DisabledBorderBrush}" />
-                            <Setter Property="Foreground" Value="{StaticResource DisabledForegroundBrush}"/>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-
 
     <!--Modal background style. -->
     <Style TargetType="Grid" x:Key="ModalOverlayStyle">

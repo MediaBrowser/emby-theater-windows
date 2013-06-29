@@ -99,7 +99,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Resources
 
                 panel.Visibility = Visibility.Visible;
 
-                await UpdateUserImage(_sessionManager.CurrentUser);
+                await UpdateUserImage(_sessionManager.CurrentUser, panel);
 
             });
         }
@@ -108,13 +108,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.Resources
         /// Updates the user image.
         /// </summary>
         /// <param name="user">The user.</param>
+        /// <param name="currentUserButton">The current user button.</param>
         /// <returns>Task.</returns>
-        private async Task UpdateUserImage(UserDto user)
+        private async Task UpdateUserImage(UserDto user, Button currentUserButton)
         {
-            var panel = TreeHelper.FindChild<Button>(_appWindow.Window, "CurrentUserButton");
-
-            var image = (Image)panel.Content;
-
             if (user.HasPrimaryImage)
             {
                 var imageUrl = _apiClient.GetUserImageUrl(user, new ImageOptions
@@ -128,30 +125,37 @@ namespace MediaBrowser.Plugins.DefaultTheme.Resources
                 {
                     var img = await _imageManager.GetRemoteBitmapAsync(imageUrl);
 
+                    var grid = (Grid) currentUserButton.Content;
+
+                    var image = (Image)grid.Children[0];
+
+                    image.Visibility = Visibility.Visible;
                     image.Source = img;
-                    image.SetResourceReference(Image.StyleProperty, "CustomUserImage");
+                    grid.Children[1].Visibility = Visibility.Collapsed;
+
                 }
                 catch (Exception ex)
                 {
                     _logger.ErrorException("Error getting user image", ex);
 
-                    SetDefaultUserImage(image);
+                    SetDefaultUserImage(currentUserButton);
                 }
             }
             else
             {
-                SetDefaultUserImage(image);
+                SetDefaultUserImage(currentUserButton);
             }
         }
 
         /// <summary>
         /// Sets the default user image.
         /// </summary>
-        /// <param name="image">The image.</param>
-        private void SetDefaultUserImage(Image image)
+        /// <param name="currentUserButton">The current user button.</param>
+        private void SetDefaultUserImage(Button currentUserButton)
         {
-            image.Source = _imageManager.GetBitmapImage(new Uri("..\\Resources\\Images\\CurrentUserDefault.png", UriKind.Relative));
-            image.SetResourceReference(Image.StyleProperty, "DefaultUserImage");
+            var grid = (Grid)currentUserButton.Content;
+            grid.Children[0].Visibility = Visibility.Collapsed;
+            grid.Children[1].Visibility = Visibility.Visible;
         }
 
         /// <summary>

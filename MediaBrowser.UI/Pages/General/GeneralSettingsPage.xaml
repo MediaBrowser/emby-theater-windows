@@ -17,6 +17,7 @@
             <RowDefinition></RowDefinition>
             <RowDefinition></RowDefinition>
             <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
@@ -59,5 +60,12 @@
 
         <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Row="4" Grid.Column="0" Margin="0 40 0 0">Automatic Update Level:</TextBlock>
         <controls:SelectList x:Name="SelectUpdateLevel" Margin="40 40 0 0" Grid.Row="4" Grid.Column="1"></controls:SelectList>
+
+        <StackPanel Orientation="Horizontal" Margin="0 20 0 0" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center">
+
+            <CheckBox x:Name="ChkAutoRun">
+            </CheckBox>
+            <TextBlock Style="{DynamicResource TextBlockStyle}" Margin="10 0 0 0">Auto-run at startup</TextBlock>
+        </StackPanel>
     </Grid>
 </pages:BasePage>

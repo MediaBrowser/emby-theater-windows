@@ -6,10 +6,10 @@
 
     <SolidColorBrush x:Key="InputBackground" Color="#262626" />
     <SolidColorBrush x:Key="InputBackgroundHover" Color="#3e3e42" />
-    <SolidColorBrush x:Key="InputBorder" Color="#262626" />
+    <SolidColorBrush x:Key="InputBorder" Color="#444444" />
     <SolidColorBrush x:Key="InputBorderHover" Color="#3e3e42" />
-    <SolidColorBrush x:Key="InputText" Color="#d1d1d1" />
-    <SolidColorBrush x:Key="InputTextHover" Color="#d1d1d1" />
+    <SolidColorBrush x:Key="InputText" Color="#ffffff" />
+    <SolidColorBrush x:Key="InputTextHover" Color="#ffffff" />
     <SolidColorBrush x:Key="InputTextDisabled" Color="#717171" />
 
     <Style x:Key="{x:Type TextBoxBase}" TargetType="{x:Type TextBoxBase}" BasedOn="{x:Null}">

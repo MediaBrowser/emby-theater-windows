@@ -421,14 +421,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Images\CurrentUserDefault.png" />
     <Resource Include="Resources\Images\UserLoginDefault.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Images\SettingsButton.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Images\SearchButton.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\VideoDefault.png" />
@@ -442,9 +435,6 @@
     <Resource Include="Resources\Images\DislikeOverlay.png" />
     <Resource Include="Resources\Images\FavoriteOverlay.png" />
     <Resource Include="Resources\Images\LikeOverlay.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Images\ViewButton.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\ViewMenu\View.png" />
@@ -461,9 +451,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\ChapterDefault.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Images\NowPlayingButton.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\AudioDefault.png" />
@@ -535,12 +522,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\NavBar\VolumeUpButton.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Images\BackButton.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Images\bgflip.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

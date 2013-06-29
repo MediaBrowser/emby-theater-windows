@@ -7,6 +7,7 @@ using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Presentation.Pages;
 using System;
 using System.Globalization;
+using System.Net.Http;
 using System.Threading;
 using System.Windows;
 
@@ -61,13 +62,18 @@ namespace MediaBrowser.UI.StartupWizard
             {
                 var port = int.Parse(TxtPort.Text, _usCulture);
 
-                _apiClient.ServerApiPort = port;
-                _apiClient.ServerHostName = TxtHost.Text;
+                var url = string.Format("http://{0}:{1}/mediabrowser/system/info", TxtHost.Text, port);
 
                 try
                 {
-                    await _apiClient.GetSystemInfoAsync();
+                    using (var client = new HttpClient())
+                    {
+                        var json = await client.GetStringAsync(url);
+                    }
 
+                    _apiClient.ServerApiPort = port;
+                    _apiClient.ServerHostName = TxtHost.Text;
+                    
                     _config.Configuration.ServerApiPort = port;
                     _config.Configuration.ServerHostName = TxtHost.Text;
                     _config.SaveConfiguration();

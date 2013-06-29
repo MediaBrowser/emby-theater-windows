@@ -45,5 +45,8 @@
 
         <ContentControl x:Name="NowPlayingOverlay" Template="{DynamicResource NowPlayingOverlayTemplate}"></ContentControl>
 
+        <Grid.LayoutTransform>
+            <ScaleTransform ScaleX="{Binding Path=ApplicationWindow.ContentScale}" ScaleY="{Binding Path=ApplicationWindow.ContentScale}" CenterX="0" CenterY="0" />
+        </Grid.LayoutTransform>
     </Grid>
 </controls2:BaseWindow>

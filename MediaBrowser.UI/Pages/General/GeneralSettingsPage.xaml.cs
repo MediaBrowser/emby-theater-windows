@@ -1,8 +1,4 @@
-﻿using System.Linq;
-using System.Threading;
-using MediaBrowser.Common;
-using MediaBrowser.Common.Updates;
-using MediaBrowser.Model.ApiClient;
+﻿using MediaBrowser.Common;
 using MediaBrowser.Model.Net;
 using MediaBrowser.Model.Updates;
 using MediaBrowser.Theater.Interfaces.Configuration;
@@ -10,6 +6,7 @@ using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.Pages;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Windows;
 
 namespace MediaBrowser.UI.Pages.General
@@ -56,6 +53,8 @@ namespace MediaBrowser.UI.Pages.General
             TxtVersion.Text = "Version " + _appHost.ApplicationVersion;
             SelectUpdateLevel.SelectedValue = _config.Configuration.SystemUpdateLevel.ToString();
 
+            ChkAutoRun.IsChecked = _config.Configuration.RunAtStartup;
+
             LoadApplicationUpdates();
         }
 
@@ -96,6 +95,8 @@ namespace MediaBrowser.UI.Pages.General
             {
                 _config.Configuration.SystemUpdateLevel = updateLevel;
             }
+
+            _config.Configuration.RunAtStartup = ChkAutoRun.IsChecked ?? false;
 
             _config.SaveConfiguration();
         }

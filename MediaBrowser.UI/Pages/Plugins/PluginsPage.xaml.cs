@@ -1,5 +1,6 @@
 ﻿using MediaBrowser.Common;
 using MediaBrowser.Common.Updates;
+using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.Pages;
@@ -19,12 +20,14 @@ namespace MediaBrowser.UI.Pages.Plugins
         private readonly IPackageManager _packageManager;
         private readonly IThemeManager _themeManager;
         private readonly IApplicationHost _appHost;
+        private readonly INavigationService _nav;
 
-        public PluginsPage(IPackageManager packageManager, IThemeManager themeManager, IApplicationHost appHost)
+        public PluginsPage(IPackageManager packageManager, IThemeManager themeManager, IApplicationHost appHost, INavigationService nav)
         {
             _packageManager = packageManager;
             _themeManager = themeManager;
             _appHost = appHost;
+            _nav = nav;
             InitializeComponent();
         }
 
@@ -55,7 +58,7 @@ namespace MediaBrowser.UI.Pages.Plugins
             {
                 case "installed plugins":
 
-                    PageContent.Content = new InstalledPlugins(_appHost);
+                    PageContent.Content = new InstalledPlugins(_appHost, _nav);
                     break;
                 case "plugin catalog":
 

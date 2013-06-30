@@ -1,9 +1,10 @@
 ﻿using MediaBrowser.Common;
 using MediaBrowser.Common.Updates;
+using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
+using MediaBrowser.Theater.Interfaces.Theming;
 using System;
 using System.Windows.Controls;
-using MediaBrowser.Theater.Interfaces.Theming;
 
 namespace MediaBrowser.UI.Pages.Plugins
 {
@@ -12,12 +13,14 @@ namespace MediaBrowser.UI.Pages.Plugins
         private readonly IPackageManager _packageManager;
         private readonly IThemeManager _themeManager;
         private readonly IApplicationHost _appHost;
+        private readonly INavigationService _nav;
 
-        public PluginsPageFactory(IPackageManager packageManager, IThemeManager themeManager, IApplicationHost appHost)
+        public PluginsPageFactory(IPackageManager packageManager, IThemeManager themeManager, IApplicationHost appHost, INavigationService nav)
         {
             _packageManager = packageManager;
             _themeManager = themeManager;
             _appHost = appHost;
+            _nav = nav;
         }
 
         /// <summary>
@@ -35,7 +38,7 @@ namespace MediaBrowser.UI.Pages.Plugins
         /// <returns>Page.</returns>
         public Page GetPage()
         {
-            return new PluginsPage(_packageManager, _themeManager, _appHost);
+            return new PluginsPage(_packageManager, _themeManager, _appHost, _nav);
         }
 
         /// <summary>

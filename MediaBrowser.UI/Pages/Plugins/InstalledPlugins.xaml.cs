@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Windows;
+using MediaBrowser.Common;
+using MediaBrowser.Theater.Presentation.ViewModels;
+using System;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace MediaBrowser.UI.Pages.Plugins
 {
@@ -20,9 +13,42 @@ namespace MediaBrowser.UI.Pages.Plugins
     /// </summary>
     public partial class InstalledPlugins : UserControl
     {
-        public InstalledPlugins()
+        private readonly IApplicationHost _appHost;
+
+        public InstalledPlugins(IApplicationHost appHost)
         {
+            _appHost = appHost;
             InitializeComponent();
         }
+
+        protected override void OnInitialized(EventArgs e)
+        {
+            base.OnInitialized(e);
+
+            var items = new RangeObservableCollection<InstalledPluginViewModel>();
+            var view = (ListCollectionView)CollectionViewSource.GetDefaultView(items);
+            LstItems.ItemsSource = view;
+
+            items.AddRange(_appHost.Plugins.Select(i => new InstalledPluginViewModel
+            {
+                Name = i.Name,
+                Version = i.Version.ToString(),
+                ImageVisibility = Visibility.Collapsed,
+                DefaultImageVisibility = Visibility.Visible
+            }));
+        }
+    }
+
+    public class InstalledPluginViewModel
+    {
+        public string Name { get; set; }
+
+        public string Version { get; set; }
+
+        public Uri ImageUri { get; set; }
+
+        public Visibility ImageVisibility { get; set; }
+
+        public Visibility DefaultImageVisibility { get; set; }
     }
 }

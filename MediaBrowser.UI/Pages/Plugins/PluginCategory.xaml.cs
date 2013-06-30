@@ -12,7 +12,7 @@ namespace MediaBrowser.UI.Pages.Plugins
     /// </summary>
     public partial class PluginCategory : UserControl
     {
-        private IEnumerable<PackageInfo> _packages;
+        private readonly IEnumerable<PackageInfo> _packages;
 
         public PluginCategory(string name, IEnumerable<PackageInfo> packages)
         {

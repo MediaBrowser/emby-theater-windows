@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Common.Updates;
+﻿using MediaBrowser.Common;
+using MediaBrowser.Common.Updates;
 using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.Pages;
@@ -17,11 +18,13 @@ namespace MediaBrowser.UI.Pages.Plugins
     {
         private readonly IPackageManager _packageManager;
         private readonly IThemeManager _themeManager;
+        private readonly IApplicationHost _appHost;
 
-        public PluginsPage(IPackageManager packageManager, IThemeManager themeManager)
+        public PluginsPage(IPackageManager packageManager, IThemeManager themeManager, IApplicationHost appHost)
         {
             _packageManager = packageManager;
             _themeManager = themeManager;
+            _appHost = appHost;
             InitializeComponent();
         }
 
@@ -52,21 +55,9 @@ namespace MediaBrowser.UI.Pages.Plugins
             {
                 case "installed plugins":
 
-                    //ScrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled;
-                    //ScrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Hidden;
-
-                    //ScrollingPanel.CanVerticallyScroll = true;
-                    //ScrollingPanel.CanHorizontallyScroll = false;
-
-                    PageContent.Content = new InstalledPlugins();
+                    PageContent.Content = new InstalledPlugins(_appHost);
                     break;
                 case "plugin catalog":
-
-                    //ScrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Hidden;
-                    //ScrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Disabled;
-
-                    //ScrollingPanel.CanVerticallyScroll = false;
-                    //ScrollingPanel.CanHorizontallyScroll = true;
 
                     PageContent.Content = new PluginCatalog(_packageManager, _themeManager);
                     break;

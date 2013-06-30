@@ -50,7 +50,7 @@ namespace MediaBrowser.UI.Implementations
         /// </summary>
         /// <param name="page">The page.</param>
         /// <returns>DispatcherOperation.</returns>
-        public DispatcherOperation Navigate(Page page)
+        public Task Navigate(Page page)
         {
             return App.Instance.ApplicationWindow.Navigate(page);
         }
@@ -59,7 +59,7 @@ namespace MediaBrowser.UI.Implementations
         /// Navigates to settings page.
         /// </summary>
         /// <returns>DispatcherOperation.</returns>
-        public DispatcherOperation NavigateToSettingsPage()
+        public Task NavigateToSettingsPage()
         {
             return Navigate(new SettingsPage(_themeManager, _presentationManager, this));
         }
@@ -68,16 +68,16 @@ namespace MediaBrowser.UI.Implementations
         /// Navigates to login page.
         /// </summary>
         /// <returns>DispatcherOperation.</returns>
-        public DispatcherOperation NavigateToLoginPage()
+        public async Task NavigateToLoginPage()
         {
-            return App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(() => Navigate(_themeManager.CurrentTheme.GetLoginPage()));
+            await App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(() => Navigate(_themeManager.CurrentTheme.GetLoginPage()));
         }
 
         /// <summary>
         /// Navigates to internal player page.
         /// </summary>
         /// <returns>DispatcherOperation.</returns>
-        public DispatcherOperation NavigateToInternalPlayerPage()
+        public Task NavigateToInternalPlayerPage()
         {
             var page = _themeManager.CurrentTheme.GetInternalPlayerPage();
 
@@ -91,7 +91,7 @@ namespace MediaBrowser.UI.Implementations
         /// </summary>
         /// <param name="rootItem">The root item.</param>
         /// <returns>DispatcherOperation.</returns>
-        public DispatcherOperation NavigateToHomePage(BaseItemDto rootItem)
+        public Task NavigateToHomePage(BaseItemDto rootItem)
         {
             return Navigate(_themeManager.CurrentTheme.GetHomePage(rootItem));
         }
@@ -114,7 +114,7 @@ namespace MediaBrowser.UI.Implementations
         /// Navigates the back.
         /// </summary>
         /// <returns>DispatcherOperation.</returns>
-        public DispatcherOperation NavigateBack()
+        public Task NavigateBack()
         {
             return App.Instance.ApplicationWindow.NavigateBack();
         }
@@ -123,9 +123,14 @@ namespace MediaBrowser.UI.Implementations
         /// Navigates the forward.
         /// </summary>
         /// <returns>DispatcherOperation.</returns>
-        public DispatcherOperation NavigateForward()
+        public Task NavigateForward()
         {
             return App.Instance.ApplicationWindow.NavigateForward();
+        }
+
+        public void ClearHistory()
+        {
+            App.Instance.ApplicationWindow.ClearNavigationHistory();
         }
     }
 }

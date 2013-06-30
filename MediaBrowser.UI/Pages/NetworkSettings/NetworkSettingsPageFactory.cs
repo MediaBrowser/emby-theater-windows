@@ -1,6 +1,5 @@
 ﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Theater.Interfaces.Configuration;
-using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.Theming;
@@ -12,7 +11,7 @@ namespace MediaBrowser.UI.Pages.NetworkSettings
     /// <summary>
     /// Class NetworkSettingsPageFactory
     /// </summary>
-    public class NetworkSettingsPageFactory : ISystemSettingsPage
+    public class NetworkSettingsPageFactory : ISettingsPage
     {
         private readonly ITheaterConfigurationManager _config;
         private readonly IApiClient _apiClient;
@@ -54,9 +53,9 @@ namespace MediaBrowser.UI.Pages.NetworkSettings
             get { return new Uri("../../Resources/Images/Settings/network.jpg", UriKind.Relative); }
         }
 
-        public int? Order
+        public SettingsPageCategory Category
         {
-            get { return null; }
+            get { return SettingsPageCategory.System; }
         }
     }
 }

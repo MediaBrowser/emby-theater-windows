@@ -212,6 +212,15 @@
       <DependentUpon>NetworkSettingsPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\NetworkSettings\NetworkSettingsPageFactory.cs" />
+    <Compile Include="Pages\Plugins\InstalledPlugins.xaml.cs">
+      <DependentUpon>InstalledPlugins.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\Plugins\PluginCatalog.xaml.cs">
+      <DependentUpon>PluginCatalog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\Plugins\PluginCategory.xaml.cs">
+      <DependentUpon>PluginCategory.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\Plugins\PluginsPage.xaml.cs">
       <DependentUpon>PluginsPage.xaml</DependentUpon>
     </Compile>
@@ -266,6 +275,18 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Pages\NetworkSettings\NetworkSettingsPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\Plugins\InstalledPlugins.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\Plugins\PluginCatalog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\Plugins\PluginCategory.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

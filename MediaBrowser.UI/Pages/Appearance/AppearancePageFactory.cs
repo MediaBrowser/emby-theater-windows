@@ -5,7 +5,7 @@ using System.Windows.Controls;
 
 namespace MediaBrowser.UI.Pages.Appearance
 {
-    public class AppearancePageFactory : ISystemSettingsPage
+    public class AppearancePageFactory : ISettingsPage
     {
         /// <summary>
         /// Gets the name.
@@ -34,9 +34,9 @@ namespace MediaBrowser.UI.Pages.Appearance
             get { return new Uri("../../Resources/Images/Settings/weather6.png", UriKind.Relative); }
         }
 
-        public int? Order
+        public SettingsPageCategory Category
         {
-            get { return null; }
+            get { return SettingsPageCategory.System; }
         }
     }
 }

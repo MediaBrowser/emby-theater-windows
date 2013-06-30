@@ -66,8 +66,10 @@ namespace MediaBrowser.UI.Pages
 
             PluginMenuList.ItemsSource = view;
 
-            var pages = _presentationManager.SettingsPages.Where(i => !(i is ISystemSettingsPage))
-                .OrderBy(i => i.Name);
+            var pages = _presentationManager.SettingsPages
+                .Where(i => i.Category == SettingsPageCategory.Plugin)
+                .OrderBy(GetOrder)
+                .ThenBy(i => i.Name);
 
             items.AddRange(pages);
         }
@@ -79,11 +81,19 @@ namespace MediaBrowser.UI.Pages
 
             MenuList.ItemsSource = view;
 
-            var pages = _presentationManager.SettingsPages.OfType<ISystemSettingsPage>()
-                .OrderBy(i => i.Order ?? 10)
+            var pages = _presentationManager.SettingsPages
+                .Where(i => i.Category == SettingsPageCategory.System)
+                .OrderBy(GetOrder)
                 .ThenBy(i => i.Name);
 
             items.AddRange(pages);
+        }
+
+        private int GetOrder(ISettingsPage page)
+        {
+            var orderedPage = page as IOrderedSettingsPage;
+
+            return orderedPage == null ? 10 : orderedPage.Order;
         }
 
         /// <summary>

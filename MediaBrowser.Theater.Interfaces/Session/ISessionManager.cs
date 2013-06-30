@@ -1,7 +1,6 @@
 ﻿using MediaBrowser.Model.Dto;
 using System;
 using System.Threading.Tasks;
-using System.Windows.Threading;
 
 namespace MediaBrowser.Theater.Interfaces.Session
 {
@@ -28,7 +27,7 @@ namespace MediaBrowser.Theater.Interfaces.Session
         /// <summary>
         /// Logouts this instance.
         /// </summary>
-        DispatcherOperation Logout();
+        Task Logout();
 
         /// <summary>
         /// Logins the specified user.

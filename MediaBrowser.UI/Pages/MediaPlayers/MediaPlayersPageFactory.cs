@@ -4,7 +4,7 @@ using System.Windows.Controls;
 
 namespace MediaBrowser.UI.Pages.MediaPlayers
 {
-    public class MediaPlayersPageFactory : ISystemSettingsPage
+    public class MediaPlayersPageFactory : ISettingsPage
     {
         /// <summary>
         /// Gets the name.
@@ -33,9 +33,9 @@ namespace MediaBrowser.UI.Pages.MediaPlayers
             get { return new Uri("../../Resources/Images/Settings/weather6.png", UriKind.Relative); }
         }
 
-        public int? Order
+        public SettingsPageCategory Category
         {
-            get { return null; }
+            get { return SettingsPageCategory.System; }
         }
     }
 }

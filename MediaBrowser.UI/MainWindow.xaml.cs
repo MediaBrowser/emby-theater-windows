@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Threading.Tasks;
+using System.Windows.Navigation;
 using MediaBrowser.Common;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
@@ -129,16 +130,21 @@ namespace MediaBrowser.UI
 
             ActivityTimer = new Timer(TimerCallback, null, 100, 100);
 
-            _userInput.MouseMove += _userInput_MouseMove;
-
             ((TheaterApplicationWindow)_appWindow).OnWindowLoaded();
         }
 
         protected override void OnClosing(CancelEventArgs e)
         {
             _userInput.MouseMove -= _userInput_MouseMove;
-            
+
             base.OnClosing(e);
+        }
+
+        protected override void OnMouseMove(MouseEventArgs e)
+        {
+            base.OnMouseMove(e);
+
+            _lastMouseInput = DateTime.Now;
         }
 
         void _userInput_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
@@ -225,11 +231,19 @@ namespace MediaBrowser.UI
         /// Navigates the specified page.
         /// </summary>
         /// <param name="page">The page.</param>
-        internal DispatcherOperation Navigate(Page page)
+        internal Task Navigate(Page page)
         {
             _logger.Info("Navigating to " + page.GetType().Name);
+            var task = new TaskCompletionSource<bool>();
 
-            return Dispatcher.InvokeAsync(() => PageFrame.NavigateWithTransition(page));
+            Dispatcher.InvokeAsync(async () =>
+            {
+                await PageFrame.NavigateWithTransition(page);
+
+                task.TrySetResult(true);
+            });
+
+            return task.Task;
         }
 
         /// <summary>
@@ -333,29 +347,52 @@ namespace MediaBrowser.UI
         /// <summary>
         /// Navigates the back.
         /// </summary>
-        internal DispatcherOperation NavigateBack()
+        internal Task NavigateBack()
         {
-            return Dispatcher.InvokeAsync(() =>
+            var task = new TaskCompletionSource<bool>();
+
+            Dispatcher.InvokeAsync(async () =>
             {
                 if (PageFrame.NavigationService.CanGoBack)
                 {
-                    PageFrame.GoBackWithTransition();
+                    await PageFrame.GoBackWithTransition();
                 }
+                task.TrySetResult(true);
             });
+
+            return task.Task;
         }
 
         /// <summary>
         /// Navigates the forward.
         /// </summary>
-        internal DispatcherOperation NavigateForward()
+        internal Task NavigateForward()
         {
-            return Dispatcher.InvokeAsync(() =>
+            var task = new TaskCompletionSource<bool>();
+
+            Dispatcher.InvokeAsync(async () =>
             {
                 if (PageFrame.NavigationService.CanGoForward)
                 {
-                    PageFrame.GoForwardWithTransition();
+                    await PageFrame.GoForwardWithTransition();
                 }
+                task.TrySetResult(true);
             });
+
+            return task.Task;
+        }
+
+        internal void ClearNavigationHistory()
+        {
+            var frame = PageFrame;
+
+            if (frame.CanGoBack)
+            {
+                while (frame.RemoveBackEntry() != null)
+                {
+
+                }
+            }
         }
 
         /// <summary>

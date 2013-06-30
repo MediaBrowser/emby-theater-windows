@@ -43,6 +43,7 @@ namespace MediaBrowser.UI.StartupWizard
         async void BtnFinish_Click(object sender, RoutedEventArgs e)
         {
             await _nav.NavigateToLoginPage();
+            _nav.ClearHistory();
         }
 
         void StartupWizardPage_Loaded(object sender, RoutedEventArgs e)

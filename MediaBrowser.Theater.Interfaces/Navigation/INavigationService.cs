@@ -13,28 +13,28 @@ namespace MediaBrowser.Theater.Interfaces.Navigation
         /// <summary>
         /// Navigates to home page.
         /// </summary>
-        DispatcherOperation NavigateToHomePage(BaseItemDto rootItem);
+        Task NavigateToHomePage(BaseItemDto rootItem);
 
         /// <summary>
         /// Navigates the specified page.
         /// </summary>
         /// <param name="page">The page.</param>
-        DispatcherOperation Navigate(Page page);
+        Task Navigate(Page page);
 
         /// <summary>
         /// Navigates to settings page.
         /// </summary>
-        DispatcherOperation NavigateToSettingsPage();
+        Task NavigateToSettingsPage();
 
         /// <summary>
         /// Navigates to login page.
         /// </summary>
-        DispatcherOperation NavigateToLoginPage();
+        Task NavigateToLoginPage();
 
         /// <summary>
         /// Navigates to internal player page.
         /// </summary>
-        DispatcherOperation NavigateToInternalPlayerPage();
+        Task NavigateToInternalPlayerPage();
 
         /// <summary>
         /// Navigates to item.
@@ -46,11 +46,16 @@ namespace MediaBrowser.Theater.Interfaces.Navigation
         /// <summary>
         /// Navigates the back.
         /// </summary>
-        DispatcherOperation NavigateBack();
+        Task NavigateBack();
 
         /// <summary>
         /// Navigates the forward.
         /// </summary>
-        DispatcherOperation NavigateForward();
+        Task NavigateForward();
+
+        /// <summary>
+        /// Clears the history.
+        /// </summary>
+        void ClearHistory();
     }
 }

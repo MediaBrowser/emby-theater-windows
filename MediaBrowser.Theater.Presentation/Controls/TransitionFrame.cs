@@ -1,4 +1,5 @@
-﻿using Microsoft.Expression.Media.Effects;
+﻿using System.Threading.Tasks;
+using Microsoft.Expression.Media.Effects;
 using System;
 using System.Windows;
 using System.Windows.Controls;
@@ -121,40 +122,71 @@ namespace MediaBrowser.Theater.Presentation.Controls
         /// Navigates the with transition.
         /// </summary>
         /// <param name="page">The page.</param>
-        public void NavigateWithTransition(Page page)
+        public Task NavigateWithTransition(Page page)
         {
-            AnimateContent(() => Navigate(page));
-        }
+            var taskCompletionSource = new TaskCompletionSource<bool>();
 
-        /// <summary>
-        /// Navigates the with transition.
-        /// </summary>
-        /// <param name="page">The page.</param>
-        public void NavigateWithTransition(Uri page)
-        {
-            AnimateContent(() => Navigate(page));
+            AnimateContent(async () =>
+            {
+                Navigate(page);
+
+                while (!page.Equals(Content))
+                {
+                    await Task.Delay(10);
+                }
+                
+                taskCompletionSource.TrySetResult(true);
+            });
+
+            return taskCompletionSource.Task;
         }
 
         /// <summary>
         /// Goes the back with transition.
         /// </summary>
-        public void GoBackWithTransition()
+        public Task GoBackWithTransition()
         {
+            var taskCompletionSource = new TaskCompletionSource<bool>();
+
             if (CanGoBack)
             {
-                AnimateContent(GoBack, false, true);
+                AnimateContent(() =>
+                {
+                    GoBack();
+                    taskCompletionSource.TrySetResult(true);
+
+                }, false, true);
             }
+            else
+            {
+                taskCompletionSource.TrySetCanceled();
+            }
+
+            return taskCompletionSource.Task;
         }
 
         /// <summary>
         /// Goes the forward with transition.
         /// </summary>
-        public void GoForwardWithTransition()
+        public Task GoForwardWithTransition()
         {
+            var taskCompletionSource = new TaskCompletionSource<bool>();
+            
             if (CanGoForward)
             {
-                AnimateContent(GoForward, false);
+                AnimateContent(() =>
+                {
+                    GoForward();
+                    taskCompletionSource.TrySetResult(true);
+
+                }, false);
             }
+            else
+            {
+                taskCompletionSource.TrySetCanceled();
+            }
+
+            return taskCompletionSource.Task;
         }
 
         /// <summary>

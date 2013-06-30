@@ -25,13 +25,25 @@ namespace MediaBrowser.Theater.Interfaces.Presentation
         /// </summary>
         /// <returns>Page.</returns>
         Page GetPage();
+
+        /// <summary>
+        /// Gets the category.
+        /// </summary>
+        /// <value>The category.</value>
+        SettingsPageCategory Category { get; }
     }
 
     /// <summary>
     /// Interface ISystemSettingsPage
     /// </summary>
-    public interface ISystemSettingsPage : ISettingsPage
+    public interface IOrderedSettingsPage : ISettingsPage
     {
-        int? Order { get; }
+        int Order { get; }
+    }
+
+    public enum SettingsPageCategory
+    {
+        System,
+        Plugin
     }
 }

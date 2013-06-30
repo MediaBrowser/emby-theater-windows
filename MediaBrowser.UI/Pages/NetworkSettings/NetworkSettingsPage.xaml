@@ -4,12 +4,11 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                                  xmlns:pages="clr-namespace:MediaBrowser.Theater.Presentation.Pages;assembly=MediaBrowser.Theater.Presentation"
-                xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
                 mc:Ignorable="d" 
       d:DesignHeight="300" d:DesignWidth="300"
 	Title="NetworkSettingsPage">
 
-    <Grid HorizontalAlignment="Center" VerticalAlignment="Top" Width="800">
+    <Grid HorizontalAlignment="Center" VerticalAlignment="Top" Width="1000">
 
         <Grid.RowDefinitions>
             <RowDefinition></RowDefinition>

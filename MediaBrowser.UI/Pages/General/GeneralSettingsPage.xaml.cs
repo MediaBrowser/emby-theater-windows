@@ -19,8 +19,6 @@ namespace MediaBrowser.UI.Pages.General
         private readonly ITheaterConfigurationManager _config;
         private readonly IApplicationHost _appHost;
 
-        private PackageVersionInfo _availableAppUpdate;
-
         public GeneralSettingsPage(ITheaterConfigurationManager config, IApplicationHost appHost)
         {
             _config = config;
@@ -44,8 +42,13 @@ namespace MediaBrowser.UI.Pages.General
             BtnUpdate.Click += BtnUpdate_Click;
         }
 
-        void BtnUpdate_Click(object sender, RoutedEventArgs e)
+        async void BtnUpdate_Click(object sender, RoutedEventArgs e)
         {
+            var update = await _appHost.CheckForApplicationUpdate(CancellationToken.None, new Progress<double>());
+
+            if (update.IsUpdateAvailable)
+            {
+            }
         }
 
         void GeneralSettingsPage_Loaded(object sender, RoutedEventArgs e)
@@ -70,8 +73,6 @@ namespace MediaBrowser.UI.Pages.General
                     PanelUpToDate.Visibility = Visibility.Collapsed;
 
                     TxtNewVersion.Text = "Update now to version " + update.AvailableVersion + ".";
-
-                    _availableAppUpdate = update.Package;
                 }
                 else
                 {

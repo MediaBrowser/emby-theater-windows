@@ -1,11 +1,22 @@
-﻿using MediaBrowser.Theater.Interfaces.Presentation;
+﻿using MediaBrowser.Common.Updates;
+using MediaBrowser.Theater.Interfaces.Presentation;
 using System;
 using System.Windows.Controls;
+using MediaBrowser.Theater.Interfaces.Theming;
 
 namespace MediaBrowser.UI.Pages.Plugins
 {
-    public class PluginsPageFactory : ISystemSettingsPage
+    public class PluginsPageFactory : ISettingsPage
     {
+        private readonly IPackageManager _packageManager;
+        private readonly IThemeManager _themeManager;
+
+        public PluginsPageFactory(IPackageManager packageManager, IThemeManager themeManager)
+        {
+            _packageManager = packageManager;
+            _themeManager = themeManager;
+        }
+
         /// <summary>
         /// Gets the name.
         /// </summary>
@@ -21,7 +32,7 @@ namespace MediaBrowser.UI.Pages.Plugins
         /// <returns>Page.</returns>
         public Page GetPage()
         {
-            return new PluginsPage();
+            return new PluginsPage(_packageManager, _themeManager);
         }
 
         /// <summary>
@@ -33,9 +44,9 @@ namespace MediaBrowser.UI.Pages.Plugins
             get { return new Uri("../../Resources/Images/Settings/weather6.png", UriKind.Relative); }
         }
 
-        public int? Order
+        public SettingsPageCategory Category
         {
-            get { return null; }
+            get { return SettingsPageCategory.System; }
         }
     }
 }

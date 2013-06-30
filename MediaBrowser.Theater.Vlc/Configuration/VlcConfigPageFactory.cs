@@ -32,5 +32,10 @@ namespace MediaBrowser.Theater.Vlc.Configuration
         {
             get { return new Uri("pack://application:,,,/MediaBrowser.Theater.Vlc;component/Resources/Images/settings.jpg", UriKind.Absolute); }
         }
+
+        public SettingsPageCategory Category
+        {
+            get { return SettingsPageCategory.Plugin; }
+        }
     }
 }

@@ -6,7 +6,7 @@ using System.Windows.Controls;
 
 namespace MediaBrowser.UI.Pages.General
 {
-    class GeneralSettingsPageFactory : ISystemSettingsPage
+    class GeneralSettingsPageFactory : IOrderedSettingsPage
     {
         private readonly ITheaterConfigurationManager _config;
         private readonly IApplicationHost _appHost;
@@ -44,9 +44,14 @@ namespace MediaBrowser.UI.Pages.General
             get { return new Uri("../../Resources/Images/Settings/weather6.png", UriKind.Relative); }
         }
 
-        public int? Order
+        public int Order
         {
             get { return 0; }
+        }
+
+        public SettingsPageCategory Category
+        {
+            get { return SettingsPageCategory.System; }
         }
     }
 }

@@ -32,7 +32,7 @@ namespace MediaBrowser.Theater.Implementations.Session
 
         public UserDto CurrentUser { get; private set; }
 
-        public DispatcherOperation Logout()
+        public async Task Logout()
         {
             _apiClient.CurrentUserId = null;
 
@@ -44,8 +44,9 @@ namespace MediaBrowser.Theater.Implementations.Session
             {
                 EventHelper.FireEventIfNotNull(UserLoggedOut, this, EventArgs.Empty, _logger);
             }
-            
-            return _navService.NavigateToLoginPage();
+
+            await _navService.NavigateToLoginPage();
+            _navService.ClearHistory();
         }
 
         public async Task Login(UserDto user, string password)
@@ -70,6 +71,8 @@ namespace MediaBrowser.Theater.Implementations.Session
             var root = await _apiClient.GetRootFolderAsync(user.Id);
 
             await _navService.NavigateToHomePage(root);
+
+            _navService.ClearHistory();
         }
     }
 }

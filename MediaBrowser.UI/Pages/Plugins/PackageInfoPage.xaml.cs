@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Common.Extensions;
+﻿using MediaBrowser.Common;
+using MediaBrowser.Common.Extensions;
 using MediaBrowser.Model.Updates;
 using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.Pages;
@@ -17,10 +18,12 @@ namespace MediaBrowser.UI.Pages.Plugins
     public partial class PackageInfoPage : BasePage
     {
         private readonly PackageInfo _packageInfo;
+        private readonly IApplicationHost _appHost;
 
-        public PackageInfoPage(PackageInfo packageInfo)
+        public PackageInfoPage(PackageInfo packageInfo, IApplicationHost appHost)
         {
             _packageInfo = packageInfo;
+            _appHost = appHost;
 
             InitializeComponent();
         }
@@ -41,13 +44,15 @@ namespace MediaBrowser.UI.Pages.Plugins
 
             SelectVersion.SelectedItemChanged += SelectVersion_SelectedItemChanged;
 
+            TxtDeveloper.Text = string.IsNullOrEmpty(_packageInfo.owner) ? string.Empty : "Developer: " + _packageInfo.owner;
+
             LoadVersions();
             LoadImage();
         }
 
         private void LoadVersions()
         {
-            SelectVersion.Options = _packageInfo.versions.OrderByDescending(i => i.version)
+            SelectVersion.Options = _packageInfo.versions.OrderBy(i => i.version)
                 .Select(i => new SelectListItem
             {
                 Text = i.versionStr + " " + i.classification.ToString(),
@@ -55,9 +60,30 @@ namespace MediaBrowser.UI.Pages.Plugins
 
             }).ToList();
 
-            SelectVersion.SelectedValue = SelectVersion.Options[0].Value;
+            SetInitialSelectedValue();
 
             SelectVersion_SelectedItemChanged(null, EventArgs.Empty);
+        }
+
+        private void SetInitialSelectedValue()
+        {
+            var updateLevel = PackageVersionClass.Release;
+
+            var installedPlugin = _appHost.Plugins.FirstOrDefault(i => string.Equals(i.Name, _packageInfo.name, StringComparison.OrdinalIgnoreCase));
+
+            if (installedPlugin != null)
+            {
+                updateLevel = installedPlugin.Configuration.UpdateClass;
+            }
+
+            var versions = _packageInfo.versions.OrderByDescending(i => i.version).ToList();
+
+            var version = versions.FirstOrDefault(i => i.classification <= updateLevel) ?? versions.FirstOrDefault();
+
+            if (version != null)
+            {
+                SelectVersion.SelectedValue = version.versionStr;
+            }
         }
 
         void SelectVersion_SelectedItemChanged(object sender, EventArgs e)

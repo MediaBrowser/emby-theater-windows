@@ -43,9 +43,9 @@ namespace MediaBrowser.UI.Pages.Plugins
 
             SelectUpdateLevel.Options = new List<SelectListItem> 
             { 
-                new SelectListItem{ Text = "Official Release", Value = PackageVersionClass.Release.ToString()},
-                new SelectListItem{ Text = "Beta", Value = PackageVersionClass.Beta.ToString()},
-                new SelectListItem{ Text = "Dev", Value = PackageVersionClass.Dev.ToString()}
+                 new SelectListItem{ Text = "Dev", Value = PackageVersionClass.Dev.ToString()},
+                 new SelectListItem{ Text = "Beta", Value = PackageVersionClass.Beta.ToString()},
+                 new SelectListItem{ Text = "Official Release", Value = PackageVersionClass.Release.ToString()}
             };
 
             Loaded += InstalledPluginPage_Loaded;

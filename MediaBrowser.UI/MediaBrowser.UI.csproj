@@ -100,9 +100,9 @@
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MediaBrowser.ApiInteraction, Version=3.0.4928.30661, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.ApiInteraction, Version=3.0.4930.25820, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.ApiClient.3.0.0.133\lib\net45\MediaBrowser.ApiInteraction.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.ApiClient.3.0.0.134\lib\net45\MediaBrowser.ApiInteraction.dll</HintPath>
     </Reference>
     <Reference Include="MediaBrowser.Common, Version=3.0.4929.38782, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -500,5 +500,5 @@ del "$(SolutionDir)..\Deploy\MBTheater.zip"
     </GetAssemblyIdentity>
     <Exec Command="copy $(SolutionDir)..\Deploy\MBTheater.zip  $(SolutionDir)..\Deploy\MBTheater_%(CurrentAssembly.Version).zip" Condition="'$(ConfigurationName)' == 'Release'" />
   </Target>
-  <Import Project="..\packages\Microsoft.Bcl.Build.1.0.6\tools\Microsoft.Bcl.Build.targets" />
+  <Import Project="..\packages\Microsoft.Bcl.Build.1.0.7\tools\Microsoft.Bcl.Build.targets" />
 </Project>

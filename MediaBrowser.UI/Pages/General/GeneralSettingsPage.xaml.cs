@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Windows;
+using System.Linq;
 
 namespace MediaBrowser.UI.Pages.General
 {
@@ -32,9 +33,9 @@ namespace MediaBrowser.UI.Pages.General
 
             SelectUpdateLevel.Options = new List<SelectListItem> 
             { 
-                new SelectListItem{ Text = "Official Release", Value = PackageVersionClass.Release.ToString()},
-                new SelectListItem{ Text = "Beta", Value = PackageVersionClass.Beta.ToString()},
-                new SelectListItem{ Text = "Dev", Value = PackageVersionClass.Dev.ToString()}
+                 new SelectListItem{ Text = "Dev", Value = PackageVersionClass.Dev.ToString()},
+                 new SelectListItem{ Text = "Beta", Value = PackageVersionClass.Beta.ToString()},
+                 new SelectListItem{ Text = "Official Release", Value = PackageVersionClass.Release.ToString()}
             };
 
             Loaded += GeneralSettingsPage_Loaded;

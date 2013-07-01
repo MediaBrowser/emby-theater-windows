@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.Updates;
+﻿using MediaBrowser.Common;
+using MediaBrowser.Model.Updates;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.ViewModels;
@@ -16,11 +17,13 @@ namespace MediaBrowser.UI.Pages.Plugins
     {
         private readonly IEnumerable<PackageInfo> _packages;
         private readonly INavigationService _nav;
+        private readonly IApplicationHost _appHost;
 
-        public PluginCategory(string name, IEnumerable<PackageInfo> packages, INavigationService nav)
+        public PluginCategory(string name, IEnumerable<PackageInfo> packages, INavigationService nav, IApplicationHost appHost)
         {
             _packages = packages;
             _nav = nav;
+            _appHost = appHost;
 
             InitializeComponent();
 
@@ -44,7 +47,7 @@ namespace MediaBrowser.UI.Pages.Plugins
         {
             var packageInfo = (PackageInfo)e.Argument;
 
-            await _nav.Navigate(new PackageInfoPage(packageInfo));
+            await _nav.Navigate(new PackageInfoPage(packageInfo, _appHost));
         }
     }
 }

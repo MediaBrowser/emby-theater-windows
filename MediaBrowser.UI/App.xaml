@@ -11,6 +11,7 @@
                 <ResourceDictionary Source="Resources/TextBox.xaml" />
                 <ResourceDictionary Source="Resources/ListBox.xaml" />
                 <ResourceDictionary Source="Resources/Checkbox.xaml" />
+                <ResourceDictionary Source="Resources/RadioButton.xaml" />
                 <ResourceDictionary Source="Resources/MainWindowResources.xaml" />
                 <ResourceDictionary Source="Resources/Settings.xaml" />
             </ResourceDictionary.MergedDictionaries>

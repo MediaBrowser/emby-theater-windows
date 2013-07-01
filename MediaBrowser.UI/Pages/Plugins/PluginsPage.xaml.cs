@@ -64,7 +64,7 @@ namespace MediaBrowser.UI.Pages.Plugins
                     break;
                 case "plugin catalog":
 
-                    PageContent.Content = new PluginCatalog(_packageManager, _presentation);
+                    PageContent.Content = new PluginCatalog(_packageManager, _presentation, _nav);
                     break;
             }
         }

@@ -11,6 +11,8 @@ namespace MediaBrowser.Theater.Presentation.Controls
     /// </summary>
     public partial class SelectList : UserControl
     {
+        public event EventHandler<EventArgs> SelectedItemChanged;
+
         public List<SelectListItem> Options { get; set; }
 
         public SelectListItem SelectedItem
@@ -60,6 +62,11 @@ namespace MediaBrowser.Theater.Presentation.Controls
             var newIndex = currentIndex == 0 ? Options.Count - 1 : currentIndex - 1;
 
             SelectedValue = Options[newIndex].Value;
+
+            if (SelectedItemChanged != null)
+            {
+                SelectedItemChanged(this, EventArgs.Empty);
+            }
         }
 
         void BtnNextOption_Click(object sender, RoutedEventArgs e)
@@ -69,6 +76,11 @@ namespace MediaBrowser.Theater.Presentation.Controls
             var newIndex = currentIndex == Options.Count - 1 ? 0 : currentIndex + 1;
 
             SelectedValue = Options[newIndex].Value;
+
+            if (SelectedItemChanged != null)
+            {
+                SelectedItemChanged(this, EventArgs.Empty);
+            }
         }
     }
 

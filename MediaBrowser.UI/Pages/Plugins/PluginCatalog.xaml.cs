@@ -1,6 +1,7 @@
 ﻿using MediaBrowser.Common.Updates;
 using MediaBrowser.Model.Net;
 using MediaBrowser.Model.Updates;
+using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using System;
 using System.Linq;
@@ -16,11 +17,13 @@ namespace MediaBrowser.UI.Pages.Plugins
     {
         private readonly IPackageManager _packageManager;
         private readonly IPresentationManager _presentation;
+        private readonly INavigationService _nav;
 
-        public PluginCatalog(IPackageManager packageManager, IPresentationManager presentation)
+        public PluginCatalog(IPackageManager packageManager, IPresentationManager presentation, INavigationService nav)
         {
             _packageManager = packageManager;
             _presentation = presentation;
+            _nav = nav;
             InitializeComponent();
         }
 
@@ -45,7 +48,7 @@ namespace MediaBrowser.UI.Pages.Plugins
 
                 foreach (var category in categories)
                 {
-                    CateogriesPanel.Children.Add(new PluginCategory(category.Key, category.ToList()));
+                    CateogriesPanel.Children.Add(new PluginCategory(category.Key, category.ToList(), _nav));
                 }
             }
             catch (HttpException)

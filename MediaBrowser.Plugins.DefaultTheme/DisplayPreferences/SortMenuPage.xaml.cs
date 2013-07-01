@@ -63,7 +63,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
 
                 var radio = new RadioButton { GroupName = "Options" };
 
-                radio.SetResourceReference(StyleProperty, "ViewMenuRadioButton");
+                radio.Margin = new Thickness(0, 25, 0, 0);
 
                 var textblock = new TextBlock { Text = option };
 

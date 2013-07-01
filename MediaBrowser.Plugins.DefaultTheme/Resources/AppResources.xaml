@@ -674,84 +674,6 @@
         </Setter>
     </Style>
 
-    <LinearGradientBrush x:Key="PressedBrush" StartPoint="0,0" EndPoint="0,1">
-        <GradientBrush.GradientStops>
-            <GradientStopCollection>
-                <GradientStop Color="#444" Offset="0.0"/>
-                <GradientStop Color="#888" Offset="0.1"/>
-                <GradientStop Color="#EEE" Offset="0.9"/>
-                <GradientStop Color="#FFF" Offset="1.0"/>
-            </GradientStopCollection>
-        </GradientBrush.GradientStops>
-    </LinearGradientBrush>
-
-    <!-- Miscellaneous Brushes -->
-    <SolidColorBrush x:Key="GlyphBrush" Color="#ffffff" />
-    <SolidColorBrush x:Key="FocusBackgroundBrush" Color="#ffffff" />
-    <SolidColorBrush x:Key="FocusGlyphBrush" Color="#022255" />
-    <SolidColorBrush x:Key="NormalBackgroundBrush" Color="Transparent" />
-    <SolidColorBrush x:Key="NormalBorderBrush" Color="#ffffff" />
-
-    <Style TargetType="RadioButton" x:Key="RadioButtonStyle">
-        <Setter Property="HorizontalAlignment" Value="Left"></Setter>
-        <Setter Property="BorderBrush" Value="Transparent"></Setter>
-        <Setter Property="BorderThickness" Value="2"></Setter>
-        <Setter Property="KeyboardNavigation.AcceptsReturn" Value="true"/>
-        <Setter Property="SnapsToDevicePixels" Value="true"/>
-        <Setter Property="OverridesDefaultStyle" Value="true"/>
-        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type RadioButton}">
-                    <BulletDecorator Background="Transparent">
-                        <BulletDecorator.Bullet>
-                            <Grid Width="32" Height="32" VerticalAlignment="Center">
-                                <Ellipse x:Name="Border" Fill="{StaticResource NormalBackgroundBrush}" StrokeThickness="3" Stroke="{StaticResource NormalBorderBrush}" />
-                                <Ellipse x:Name="CheckMark" Margin="8" Fill="{StaticResource GlyphBrush}" />
-                            </Grid>
-                        </BulletDecorator.Bullet>
-                        <ContentPresenter Margin="20,0,0,0" HorizontalAlignment="Left" RecognizesAccessKey="True"/>
-                    </BulletDecorator>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsKeyboardFocused" Value="true">
-                            <Setter TargetName="Border" Property="Fill" Value="{StaticResource FocusBackgroundBrush}" />
-                            <Setter TargetName="CheckMark" Property="Fill" Value="{StaticResource FocusGlyphBrush}" />
-                        </Trigger>
-                        <Trigger Property="IsChecked" Value="false">
-                            <Setter TargetName="CheckMark" Property="Visibility" Value="Collapsed"/>
-                        </Trigger>
-                        <Trigger Property="IsMouseOver" Value="true">
-                            <Setter TargetName="Border" Property="Fill" Value="{StaticResource FocusBackgroundBrush}" />
-                            <Setter TargetName="CheckMark" Property="Fill" Value="{StaticResource FocusGlyphBrush}" />
-                        </Trigger>
-                        <Trigger Property="IsPressed" Value="true">
-                            <Setter TargetName="Border" Property="Fill" Value="{StaticResource PressedBrush}" />
-                            <Setter TargetName="Border" Property="Stroke" Value="{StaticResource GlyphBrush}" />
-                        </Trigger>
-                        <Trigger Property="IsEnabled" Value="false">
-                            <Setter TargetName="Border" Property="Fill" Value="#eeeeee" />
-                            <Setter TargetName="Border" Property="Stroke" Value="#40000000" />
-                            <Setter Property="Foreground" Value="#80000000"/>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <Style TargetType="RadioButton" x:Key="ViewMenuRadioButton" BasedOn="{StaticResource RadioButtonStyle}">
-        <Setter Property="Margin" Value="0 25 0 0"></Setter>
-    </Style>
-
-    <LinearGradientBrush x:Key="PressedBorderBrush" StartPoint="0,0" EndPoint="0,1">
-        <GradientBrush.GradientStops>
-            <GradientStopCollection>
-                <GradientStop Color="#444" Offset="0.0"/>
-                <GradientStop Color="#888" Offset="1.0"/>
-            </GradientStopCollection>
-        </GradientBrush.GradientStops>
-    </LinearGradientBrush>
-
     <!--Modal background style. -->
     <Style TargetType="Grid" x:Key="ModalOverlayStyle">
         <Setter Property="Background" Value="Gray"/>
@@ -773,6 +695,6 @@
         <Setter Property="HorizontalAlignment" Value="Stretch"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
         <Setter Property="Background" Value="#202020"/>
-        <Setter Property="Opacity" Value=".96"/>
+        <Setter Property="Opacity" Value=".97"/>
     </Style>
 </ResourceDictionary>

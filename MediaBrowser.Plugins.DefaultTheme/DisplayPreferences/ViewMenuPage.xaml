@@ -12,13 +12,13 @@
         <StackPanel Orientation="Vertical">
 
             <TextBlock Style="{DynamicResource Heading2TextBlockStyle}">Select View</TextBlock>
-            <RadioButton x:Name="radioList" GroupName="View" Style="{DynamicResource ViewMenuRadioButton}">
+            <RadioButton x:Name="radioList" GroupName="View" Margin="0 25 0 0">
                 <TextBlock Style="{DynamicResource TextBlockStyle}">List</TextBlock>
                 </RadioButton>
-            <RadioButton x:Name="radioPoster" GroupName="View" Style="{DynamicResource ViewMenuRadioButton}">
+            <RadioButton x:Name="radioPoster" GroupName="View" Margin="0 25 0 0">
                 <TextBlock Style="{DynamicResource TextBlockStyle}">Poster</TextBlock>
                 </RadioButton>
-            <RadioButton x:Name="radioThumbstrip" GroupName="View" Style="{DynamicResource ViewMenuRadioButton}">
+            <RadioButton x:Name="radioThumbstrip" GroupName="View" Margin="0 25 0 0">
                 <TextBlock Style="{DynamicResource TextBlockStyle}">Thumbstrip</TextBlock>
             </RadioButton>
         </StackPanel>

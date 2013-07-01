@@ -218,6 +218,9 @@
     <Compile Include="Pages\Plugins\InstalledPlugins.xaml.cs">
       <DependentUpon>InstalledPlugins.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Pages\Plugins\PackageInfoPage.xaml.cs">
+      <DependentUpon>PackageInfoPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\Plugins\PluginCatalog.xaml.cs">
       <DependentUpon>PluginCatalog.xaml</DependentUpon>
     </Compile>
@@ -289,6 +292,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Pages\Plugins\PackageInfoPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Pages\Plugins\PluginCatalog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -326,6 +333,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Resources\MainWindowResources.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\RadioButton.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

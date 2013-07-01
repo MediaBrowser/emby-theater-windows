@@ -5,7 +5,6 @@ using MediaBrowser.Model.Querying;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
-using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
@@ -18,8 +17,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.TV
     /// </summary>
     public partial class ResumableEpisodes : BaseItemsControl
     {
-        public ResumableEpisodes(BaseItemDto parent, Model.Entities.DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IThemeManager themeManager, IPresentationManager appWindow)
-            : base(parent, displayPreferences, apiClient, imageManager, sessionManager, navigationManager, themeManager, appWindow)
+        public ResumableEpisodes(BaseItemDto parent, Model.Entities.DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IPresentationManager appWindow)
+            : base(parent, displayPreferences, apiClient, imageManager, sessionManager, navigationManager, appWindow)
         {
             InitializeComponent();
         }

@@ -61,7 +61,7 @@ namespace MediaBrowser.UI.Implementations
         /// <returns>DispatcherOperation.</returns>
         public Task NavigateToSettingsPage()
         {
-            return Navigate(new SettingsPage(_themeManager, _presentationManager, this));
+            return Navigate(new SettingsPage(_presentationManager, this));
         }
 
         /// <summary>
@@ -128,9 +128,21 @@ namespace MediaBrowser.UI.Implementations
             return App.Instance.ApplicationWindow.NavigateForward();
         }
 
+        /// <summary>
+        /// Clears the history.
+        /// </summary>
         public void ClearHistory()
         {
             App.Instance.ApplicationWindow.ClearNavigationHistory();
+        }
+
+        /// <summary>
+        /// Removes the pages from history.
+        /// </summary>
+        /// <param name="count">The count.</param>
+        public void RemovePagesFromHistory(int count)
+        {
+            App.Instance.ApplicationWindow.RemovePagesFromHistory(count);
         }
     }
 }

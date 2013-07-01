@@ -2,7 +2,6 @@
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
-using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.Pages;
 using System.Windows;
@@ -14,17 +13,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
     /// </summary>
     public partial class LoginPage : BaseLoginPage
     {
-        protected IPresentationManager PresentationManager { get; private set; }
-        
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LoginPage" /> class.
-        /// </summary>
-        public LoginPage(IApiClient apiClient, IImageManager imageManager, INavigationService navService, ISessionManager sessionManager, IPresentationManager appWindow, IThemeManager themeManager)
-            : base(apiClient, imageManager, navService, sessionManager, themeManager)
+        public LoginPage(IApiClient apiClient, IImageManager imageManager, INavigationService navigationManager, ISessionManager sessionManager, IPresentationManager presentationManager)
+            : base(apiClient, imageManager, navigationManager, sessionManager, presentationManager)
         {
             InitializeComponent();
-
-            PresentationManager = appWindow;
         }
 
         /// <summary>
@@ -49,7 +41,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         void LoginPage_Loaded(object sender, RoutedEventArgs e)
         {
             PresentationManager.ClearBackdrops();
-            ThemeManager.CurrentTheme.SetDefaultPageTitle();
+            PresentationManager.SetDefaultPageTitle();
         }
     }
 }

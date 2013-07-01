@@ -105,7 +105,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             }
             catch (HttpException)
             {
-                ThemeManager.CurrentTheme.ShowDefaultErrorMessage();
+                PresentationManager.ShowDefaultErrorMessage();
             }
 
             if (PresentationManager.Apps.Any())
@@ -153,13 +153,13 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                     PrimaryImageHeight = 225,
                     PrimaryImageWidth = 400
 
-                }, ApiClient, ImageManager, SessionManager, PresentationManager, NavigationManager, ThemeManager);
+                }, ApiClient, ImageManager, SessionManager, NavigationManager, PresentationManager);
             }
         }
 
         void HomePage_Loaded(object sender, RoutedEventArgs e)
         {
-            ThemeManager.CurrentTheme.SetDefaultPageTitle();
+            PresentationManager.SetDefaultPageTitle();
 
             var parent = ParentItem;
 

@@ -1,7 +1,4 @@
-﻿using System.ComponentModel;
-using System.Threading.Tasks;
-using System.Windows.Navigation;
-using MediaBrowser.Common;
+﻿using MediaBrowser.Common;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
@@ -13,8 +10,10 @@ using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.UI.Controls;
 using MediaBrowser.UI.Implementations;
 using System;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -115,15 +114,11 @@ namespace MediaBrowser.UI
             WindowCommands.ApplicationHost = _appHost;
 
             RenderOptions.SetBitmapScalingMode(this, BitmapScalingMode.Fant);
+            Loaded += MainWindow_Loaded;
         }
 
-        /// <summary>
-        /// Called when [loaded].
-        /// </summary>
-        protected override void OnLoaded()
+        void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            base.OnLoaded();
-
             DataContext = App.Instance;
 
             DragBar.MouseDown += DragableGridMouseDown;
@@ -391,6 +386,25 @@ namespace MediaBrowser.UI
                 while (frame.RemoveBackEntry() != null)
                 {
 
+                }
+            }
+        }
+
+        /// <summary>
+        /// Removes the pages from history.
+        /// </summary>
+        /// <param name="count">The count.</param>
+        internal void RemovePagesFromHistory(int count)
+        {
+            var frame = PageFrame;
+
+            var current = 0;
+
+            if (frame.CanGoBack)
+            {
+                while (current < count && frame.RemoveBackEntry() != null)
+                {
+                    current++;
                 }
             }
         }

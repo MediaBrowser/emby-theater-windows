@@ -1,8 +1,9 @@
-﻿using System;
-using System.Windows;
-using System.Windows.Controls;
+﻿using System.Linq;
+using System.Windows.Input;
 using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Presentation.Controls;
+using System;
+using System.Windows;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Controls
 {
@@ -13,25 +14,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
     {
         public MessageBoxResult MessageBoxResult { get; set; }
 
-        public UIElement TextContent
-        {
-            set
-            {
-                pnlContent.Children.Clear();
-
-                var textBlock = value as TextBlock;
-
-                if (textBlock != null)
-                {
-                    textBlock.SetResourceReference(TextBlock.StyleProperty, "ModalTextStyle");
-                }
-                pnlContent.Children.Add(value);
-            }
-        }
-
         public string Text
         {
-            set { TextContent = new TextBlock { Text = value }; }
+            set { Txt.Text = value; }
         }
 
         private MessageBoxButton _button;
@@ -64,7 +49,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
             set
             {
                 _caption = value;
-                txtCaption.Visibility = string.IsNullOrEmpty(value) ? Visibility.Collapsed : Visibility.Visible;
+                TxtCaption.Visibility = string.IsNullOrEmpty(value) ? Visibility.Collapsed : Visibility.Visible;
                 OnPropertyChanged("Caption");
             }
         }
@@ -73,16 +58,28 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
             : base()
         {
             InitializeComponent();
+
+            Loaded += ModalWindow_Loaded;
+        }
+
+        void ModalWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            var button = new[] { BtnOk, BtnCancel, BtnYes, BtnNo }.FirstOrDefault(i => i.Visibility == Visibility.Visible);
+
+            if (button != null)
+                button.Focus();
         }
 
         protected override void OnInitialized(EventArgs e)
         {
             base.OnInitialized(e);
 
-            btnOk.Click += btnOk_Click;
-            btnCancel.Click += btnCancel_Click;
-            btnYes.Click += btnYes_Click;
-            btnNo.Click += btnNo_Click;
+            DataContext = this;
+            
+            BtnOk.Click += btnOk_Click;
+            BtnCancel.Click += btnCancel_Click;
+            BtnYes.Click += btnYes_Click;
+            BtnNo.Click += btnNo_Click;
         }
 
         void btnNo_Click(object sender, RoutedEventArgs e)
@@ -111,19 +108,19 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
 
         private void UpdateButtonVisibility()
         {
-            btnYes.Visibility = Button == MessageBoxButton.YesNo || Button == MessageBoxButton.YesNoCancel
+            BtnYes.Visibility = Button == MessageBoxButton.YesNo || Button == MessageBoxButton.YesNoCancel
                                     ? Visibility.Visible
                                     : Visibility.Collapsed;
 
-            btnNo.Visibility = Button == MessageBoxButton.YesNo || Button == MessageBoxButton.YesNoCancel
+            BtnNo.Visibility = Button == MessageBoxButton.YesNo || Button == MessageBoxButton.YesNoCancel
                             ? Visibility.Visible
                             : Visibility.Collapsed;
 
-            btnOk.Visibility = Button == MessageBoxButton.OK || Button == MessageBoxButton.OKCancel
+            BtnOk.Visibility = Button == MessageBoxButton.OK || Button == MessageBoxButton.OKCancel
                     ? Visibility.Visible
                     : Visibility.Collapsed;
 
-            btnCancel.Visibility = Button == MessageBoxButton.OKCancel || Button == MessageBoxButton.YesNoCancel
+            BtnCancel.Visibility = Button == MessageBoxButton.OKCancel || Button == MessageBoxButton.YesNoCancel
             ? Visibility.Visible
             : Visibility.Collapsed;
         }

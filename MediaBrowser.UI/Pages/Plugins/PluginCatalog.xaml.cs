@@ -1,7 +1,7 @@
 ﻿using MediaBrowser.Common.Updates;
 using MediaBrowser.Model.Net;
 using MediaBrowser.Model.Updates;
-using MediaBrowser.Theater.Interfaces.Theming;
+using MediaBrowser.Theater.Interfaces.Presentation;
 using System;
 using System.Linq;
 using System.Threading;
@@ -15,12 +15,12 @@ namespace MediaBrowser.UI.Pages.Plugins
     public partial class PluginCatalog : UserControl
     {
         private readonly IPackageManager _packageManager;
-        private readonly IThemeManager _themeManager;
+        private readonly IPresentationManager _presentation;
 
-        public PluginCatalog(IPackageManager packageManager, IThemeManager themeManager)
+        public PluginCatalog(IPackageManager packageManager, IPresentationManager presentation)
         {
             _packageManager = packageManager;
-            _themeManager = themeManager;
+            _presentation = presentation;
             InitializeComponent();
         }
 
@@ -50,7 +50,7 @@ namespace MediaBrowser.UI.Pages.Plugins
             }
             catch (HttpException)
             {
-                _themeManager.CurrentTheme.ShowDefaultErrorMessage();
+                _presentation.ShowDefaultErrorMessage();
             }
 
             TxtPleaseWait.Visibility = System.Windows.Visibility.Collapsed;

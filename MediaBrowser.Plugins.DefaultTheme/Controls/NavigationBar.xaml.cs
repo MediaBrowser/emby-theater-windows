@@ -1,5 +1,4 @@
 ﻿using MediaBrowser.Theater.Interfaces.Playback;
-using MediaBrowser.Theater.Interfaces.UserInput;
 using System;
 using System.Threading;
 using System.Windows;

@@ -6,7 +6,6 @@ using MediaBrowser.Common.IO;
 using MediaBrowser.IsoMounter;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.System;
-using MediaBrowser.Model.Updates;
 using MediaBrowser.Plugins.DefaultTheme;
 using MediaBrowser.Theater.ExternalPlayer;
 using MediaBrowser.Theater.Implementations.Configuration;
@@ -32,7 +31,6 @@ using System.Net;
 using System.Net.Cache;
 using System.Net.Http;
 using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace MediaBrowser.UI
@@ -95,7 +93,10 @@ namespace MediaBrowser.UI
 
             await base.RegisterResources().ConfigureAwait(false);
 
-            PresentationManager = new TheaterApplicationWindow(Logger);
+            ThemeManager = new ThemeManager();
+            RegisterSingleInstance(ThemeManager);
+
+            PresentationManager = new TheaterApplicationWindow(Logger, ThemeManager);
             RegisterSingleInstance(PresentationManager);
 
             RegisterSingleInstance(ApplicationPaths);
@@ -103,9 +104,6 @@ namespace MediaBrowser.UI
             RegisterSingleInstance<ITheaterConfigurationManager>(TheaterConfigurationManager);
 
             RegisterSingleInstance<IIsoManager>(new PismoIsoManager(Logger));
-
-            ThemeManager = new ThemeManager();
-            RegisterSingleInstance(ThemeManager);
 
             NavigationService = new NavigationService(ThemeManager, () => PlaybackManager, ApiClient, PresentationManager);
             RegisterSingleInstance(NavigationService);
@@ -173,17 +171,6 @@ namespace MediaBrowser.UI
         public override bool CanSelfUpdate
         {
             get { return false; }
-        }
-
-        /// <summary>
-        /// Checks for update.
-        /// </summary>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <param name="progress">The progress.</param>
-        /// <returns>Task{CheckForUpdateResult}.</returns>
-        public override Task<CheckForUpdateResult> CheckForApplicationUpdate(CancellationToken cancellationToken, IProgress<double> progress)
-        {
-            return Task.FromResult(new CheckForUpdateResult { });
         }
 
         /// <summary>

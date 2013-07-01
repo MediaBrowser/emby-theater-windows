@@ -3,7 +3,6 @@ using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Net;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
-using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using System.Linq;
@@ -18,17 +17,17 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
         private readonly ISessionManager _sessionManager;
-        private readonly IThemeManager _themeManager;
+        private readonly IPresentationManager _presentation;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ItemSpecialFeatures" /> class.
         /// </summary>
-        public ItemSpecialFeatures(IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IThemeManager themeManager)
+        public ItemSpecialFeatures(IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IPresentationManager presentation)
         {
             _apiClient = apiClient;
             _imageManager = imageManager;
             _sessionManager = sessionManager;
-            _themeManager = themeManager;
+            _presentation = presentation;
             InitializeComponent();
 
             lstItems.ItemInvoked += lstItems_ItemInvoked;
@@ -62,7 +61,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
             }
             catch (HttpException)
             {
-                _themeManager.CurrentTheme.ShowDefaultErrorMessage();
+                _presentation.ShowDefaultErrorMessage();
 
                 return;
             }

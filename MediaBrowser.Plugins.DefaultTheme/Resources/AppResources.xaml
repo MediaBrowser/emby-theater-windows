@@ -43,8 +43,6 @@
     <Brush x:Key="Heading2Foreground">#ffffff</Brush>
     <Brush x:Key="Heading3Foreground">#ffffff</Brush>
 
-
-
     <!--Define all the standard converters here in one place-->
     <converters:WatchedVisibilityConverter x:Key="WatchedVisibilityConverter"></converters:WatchedVisibilityConverter>
     <converters:FavoriteVisibilityConverter x:Key="FavoriteVisibilityConverter"></converters:FavoriteVisibilityConverter>
@@ -754,10 +752,6 @@
         </GradientBrush.GradientStops>
     </LinearGradientBrush>
 
-    <SolidColorBrush x:Key="DisabledBackgroundBrush" Color="#EEE" />
-    <SolidColorBrush x:Key="DisabledBorderBrush" Color="#AAA" />
-    <SolidColorBrush x:Key="DisabledForegroundBrush" Color="#888" />
-
     <!--Modal background style. -->
     <Style TargetType="Grid" x:Key="ModalOverlayStyle">
         <Setter Property="Background" Value="Gray"/>
@@ -778,117 +772,7 @@
     <Style TargetType="Grid" x:Key="ModalContentStyle">
         <Setter Property="HorizontalAlignment" Value="Stretch"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
-        <Setter Property="Background" Value="#022255"/>
+        <Setter Property="Background" Value="#202020"/>
         <Setter Property="Opacity" Value=".96"/>
-    </Style>
-
-    <!--Modal content style. -->
-    <Style TargetType="Grid" x:Key="ModalContentInnerStyle">
-        <Setter Property="HorizontalAlignment" Value="Center"/>
-        <Setter Property="MaxWidth" Value="800"/>
-        <Setter Property="Margin" Value="0 20 0 20" />
-    </Style>
-
-    <!--Modal message caption style. -->
-    <Style TargetType="TextBlock" x:Key="ModalTextStyle">
-        <Setter Property="FontSize" Value="{DynamicResource DefaultFontSize}"/>
-        <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}"/>
-        <Setter Property="FontWeight" Value="{DynamicResource DefaultFontWeight}"/>
-        <Setter Property="Foreground" Value="{DynamicResource DefaultForeground}"/>
-        <Setter Property="TextWrapping" Value="Wrap" />
-        <Setter Property="Margin" Value="0 20 0 20" />
-    </Style>
-
-    <!--Modal button image -->
-    <Style TargetType="Image" x:Key="ModalButtonImage">
-        <Setter Property="VerticalAlignment" Value="Top"/>
-        <Setter Property="HorizontalAlignment" Value="Left"/>
-        <Setter Property="Stretch" Value="None"/>
-        <Setter Property="Margin" Value="0 30 20 10" />
-        <Style.Triggers>
-            <DataTrigger Binding="{Binding MessageBoxImage}" Value="Asterisk">
-                <Setter Property="Source" Value="../Resources/Images/MessageBox/Asterisk.png">
-                </Setter>
-            </DataTrigger>
-            <DataTrigger Binding="{Binding MessageBoxImage}" Value="Information">
-                <Setter Property="Source" Value="../Resources/Images/MessageBox/Information.png">
-                </Setter>
-            </DataTrigger>
-            <DataTrigger Binding="{Binding MessageBoxImage}" Value="Warning">
-                <Setter Property="Source" Value="../Resources/Images/MessageBox/Warning.png">
-                </Setter>
-            </DataTrigger>
-            <DataTrigger Binding="{Binding MessageBoxImage}" Value="Exclamation">
-                <Setter Property="Source" Value="../Resources/Images/MessageBox/Exclamation.png">
-                </Setter>
-            </DataTrigger>
-            <DataTrigger Binding="{Binding MessageBoxImage}" Value="Question">
-                <Setter Property="Source" Value="../Resources/Images/MessageBox/Question.png">
-                </Setter>
-            </DataTrigger>
-            <DataTrigger Binding="{Binding MessageBoxImage}" Value="Stop">
-                <Setter Property="Source" Value="../Resources/Images/MessageBox/Stop.png">
-                </Setter>
-            </DataTrigger>
-            <DataTrigger Binding="{Binding MessageBoxImage}" Value="Hand">
-                <Setter Property="Source" Value="../Resources/Images/MessageBox/Hand.png">
-                </Setter>
-            </DataTrigger>
-            <DataTrigger Binding="{Binding MessageBoxImage}" Value="Error">
-                <Setter Property="Source" Value="../Resources/Images/MessageBox/Error.png">
-                </Setter>
-            </DataTrigger>
-            <DataTrigger Binding="{Binding MessageBoxImage}" Value="None">
-                <Setter Property="Source" Value="{x:Null}"></Setter>
-                <Setter Property="Visibility" Value="Collapsed"></Setter>
-            </DataTrigger>
-        </Style.Triggers>
-    </Style>
-
-    <!--Modal content style. -->
-    <Style TargetType="StackPanel" x:Key="ModalButtonPanel">
-        <Setter Property="HorizontalAlignment" Value="Right"/>
-        <Setter Property="Orientation" Value="Horizontal"/>
-        <Setter Property="Margin" Value="0 20 0 30" />
-    </Style>
-
-    <!--Content style. -->
-    <Style TargetType="Grid" x:Key="NotificationContentStyle">
-        <Setter Property="HorizontalAlignment" Value="Right"/>
-        <Setter Property="VerticalAlignment" Value="Bottom"/>
-        <Setter Property="Background" Value="#FF870F"/>
-        <Setter Property="Margin" Value="0 0 0 20"/>
-    </Style>
-
-    <!--Content style. -->
-    <Style TargetType="Grid" x:Key="NotificationContentInnerStyle">
-        <Setter Property="HorizontalAlignment" Value="Center"/>
-        <Setter Property="MaxWidth" Value="500"/>
-        <Setter Property="Margin" Value="0 0 20 0"/>
-    </Style>
-
-    <!--Message caption style. -->
-    <Style TargetType="TextBlock" x:Key="NotificationCaptionStyle">
-        <Setter Property="FontSize" Value="{DynamicResource Heading2FontSize}"/>
-        <Setter Property="FontFamily" Value="{DynamicResource Heading2FontFamily}"/>
-        <Setter Property="FontWeight" Value="{DynamicResource Heading2FontWeight}"/>
-        <Setter Property="Foreground" Value="{DynamicResource Heading2Foreground}"/>
-        <Setter Property="TextWrapping" Value="Wrap" />
-        <Setter Property="Margin" Value="20 20 20 0" />
-    </Style>
-
-    <!--Message caption style. -->
-    <Style TargetType="TextBlock" x:Key="NotificationTextStyle">
-        <Setter Property="FontSize" Value="{DynamicResource DefaultFontSize}"/>
-        <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}"/>
-        <Setter Property="FontWeight" Value="{DynamicResource DefaultFontWeight}"/>
-        <Setter Property="Foreground" Value="{DynamicResource DefaultForeground}"/>
-        <Setter Property="TextWrapping" Value="Wrap" />
-        <Setter Property="Margin" Value="20 20 20 0" />
-    </Style>
-
-    <!--Modal button image -->
-    <Style TargetType="Image" x:Key="NotificationButtonImage" BasedOn="{StaticResource ModalButtonImage}">
-        <Setter Property="Margin" Value="20 20 0 20" />
     </Style>
 </ResourceDictionary>

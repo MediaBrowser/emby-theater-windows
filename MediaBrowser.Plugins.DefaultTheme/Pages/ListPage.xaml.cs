@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.ApiClient;
+﻿using System.Globalization;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Net;
@@ -8,7 +9,6 @@ using MediaBrowser.Plugins.DefaultTheme.Resources;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
-using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.Pages;
 using MediaBrowser.Theater.Presentation.ViewModels;
@@ -24,11 +24,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
     /// </summary>
     public partial class ListPage : BaseItemsPage, IHasDisplayPreferences
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ListPage" /> class.
-        /// </summary>
-        public ListPage(BaseItemDto parent, string displayPreferencesId, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IPresentationManager applicationWindow, INavigationService navigationManager, IThemeManager themeManager)
-            : base(parent, displayPreferencesId, apiClient, imageManager, sessionManager, applicationWindow, navigationManager, themeManager)
+        public ListPage(BaseItemDto parent, string displayPreferencesId, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IPresentationManager applicationWindow, INavigationService navigationManager)
+            : base(parent, displayPreferencesId, apiClient, imageManager, sessionManager, applicationWindow, navigationManager)
         {
             InitializeComponent();
         }
@@ -229,7 +226,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
             }
             catch (HttpException)
             {
-                ThemeManager.CurrentTheme.ShowDefaultErrorMessage();
+                PresentationManager.ShowDefaultErrorMessage();
             }
         }
 
@@ -298,7 +295,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         {
             base.OnItemsChanged();
 
-            TxtItemCount.Text = ListItems.Count.ToString();
+            TxtItemCount.Text = ListItems.Count.ToString(CultureInfo.CurrentCulture);
         }
 
         public void NotifyDisplayPreferencesChanged()

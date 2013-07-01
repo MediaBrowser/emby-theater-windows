@@ -1,7 +1,6 @@
 ﻿using MediaBrowser.Model.Dto;
 using System.Threading.Tasks;
 using System.Windows.Controls;
-using System.Windows.Threading;
 
 namespace MediaBrowser.Theater.Interfaces.Navigation
 {
@@ -57,5 +56,11 @@ namespace MediaBrowser.Theater.Interfaces.Navigation
         /// Clears the history.
         /// </summary>
         void ClearHistory();
+
+        /// <summary>
+        /// Removes the pages from history.
+        /// </summary>
+        /// <param name="count">The count.</param>
+        void RemovePagesFromHistory(int count);
     }
 }

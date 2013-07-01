@@ -1,7 +1,7 @@
 ﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Navigation;
-using MediaBrowser.Theater.Interfaces.Theming;
+using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Presentation.Pages;
 using System;
 using System.Windows;
@@ -13,17 +13,17 @@ namespace MediaBrowser.UI.StartupWizard
     /// </summary>
     public partial class StartupWizardPage : BasePage
     {
-        private readonly IThemeManager _themeManager;
+        private readonly IPresentationManager _presentation;
         private readonly INavigationService _nav;
         private readonly ITheaterConfigurationManager _config;
         private readonly IApiClient _apiClient;
 
-        public StartupWizardPage(IThemeManager themeManager, INavigationService nav, ITheaterConfigurationManager config, IApiClient apiClient)
+        public StartupWizardPage(INavigationService nav, ITheaterConfigurationManager config, IApiClient apiClient, IPresentationManager presentation)
         {
-            _themeManager = themeManager;
             _nav = nav;
             _config = config;
             _apiClient = apiClient;
+            _presentation = presentation;
             InitializeComponent();
         }
 
@@ -37,12 +37,13 @@ namespace MediaBrowser.UI.StartupWizard
 
         async void BtnNext_Click(object sender, RoutedEventArgs e)
         {
-            await _nav.Navigate(new StartupWizardPage2(_themeManager, _nav, _config, _apiClient));
+            await _nav.Navigate(new StartupWizardPage2(_nav, _config, _apiClient, _presentation));
         }
 
         void StartupWizardPage_Loaded(object sender, RoutedEventArgs e)
         {
-            _themeManager.CurrentTheme.SetDefaultPageTitle();
+            _presentation.SetDefaultPageTitle();
+            _presentation.ClearBackdrops();
         }
     }
 }

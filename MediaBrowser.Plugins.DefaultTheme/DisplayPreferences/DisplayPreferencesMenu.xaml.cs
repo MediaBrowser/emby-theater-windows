@@ -18,6 +18,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
             InitializeComponent();
 
             btnClose.Click += btnClose_Click;
+            Loaded += DisplayPreferencesMenu_Loaded;
+        }
+
+        void DisplayPreferencesMenu_Loaded(object sender, RoutedEventArgs e)
+        {
+            PageFrame.Navigate(new MainPage { DisplayPreferencesWindow = this });
         }
 
         /// <summary>
@@ -43,16 +49,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
             {
                 base.CloseModal();
             }
-        }
-
-        /// <summary>
-        /// Called when [loaded].
-        /// </summary>
-        protected override void OnLoaded()
-        {
-            base.OnLoaded();
-
-            PageFrame.Navigate(new MainPage { DisplayPreferencesWindow = this });
         }
 
         /// <summary>

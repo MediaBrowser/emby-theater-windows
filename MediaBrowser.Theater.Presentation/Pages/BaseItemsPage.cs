@@ -55,11 +55,6 @@ namespace MediaBrowser.Theater.Presentation.Pages
         /// </summary>
         /// <value>The navigation manager.</value>
         protected INavigationService NavigationManager { get; private set; }
-        /// <summary>
-        /// Gets the theme manager.
-        /// </summary>
-        /// <value>The theme manager.</value>
-        protected IThemeManager ThemeManager { get; private set; }
 
         /// <summary>
         /// Gets the list items.
@@ -98,13 +93,12 @@ namespace MediaBrowser.Theater.Presentation.Pages
         /// <param name="sessionManager">The session manager.</param>
         /// <param name="applicationWindow">The application window.</param>
         /// <param name="navigationManager">The navigation manager.</param>
-        /// <param name="themeManager">The theme manager.</param>
         /// <exception cref="System.ArgumentNullException">
         /// parent
         /// or
         /// displayPreferencesId
         /// </exception>
-        protected BaseItemsPage(BaseItemDto parent, string displayPreferencesId, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IPresentationManager applicationWindow, INavigationService navigationManager, IThemeManager themeManager)
+        protected BaseItemsPage(BaseItemDto parent, string displayPreferencesId, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IPresentationManager applicationWindow, INavigationService navigationManager)
         {
             if (parent == null)
             {
@@ -123,7 +117,6 @@ namespace MediaBrowser.Theater.Presentation.Pages
 
             DisplayPreferencesId = displayPreferencesId;
             _parentItem = parent;
-            ThemeManager = themeManager;
         }
 
         /// <summary>
@@ -329,7 +322,7 @@ namespace MediaBrowser.Theater.Presentation.Pages
             }
             catch (HttpException)
             {
-                ThemeManager.CurrentTheme.ShowDefaultErrorMessage();
+                PresentationManager.ShowDefaultErrorMessage();
             }
         }
 
@@ -385,7 +378,7 @@ namespace MediaBrowser.Theater.Presentation.Pages
             }
             catch (HttpException)
             {
-                ThemeManager.CurrentTheme.ShowDefaultErrorMessage();
+                PresentationManager.ShowDefaultErrorMessage();
                 return;
             }
 

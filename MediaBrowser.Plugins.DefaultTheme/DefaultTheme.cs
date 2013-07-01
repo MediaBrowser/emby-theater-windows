@@ -47,7 +47,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// <summary>
         /// The _app window
         /// </summary>
-        private readonly IPresentationManager _appWindow;
+        private readonly IPresentationManager _presentationManager;
         /// <summary>
         /// The _logger
         /// </summary>
@@ -66,18 +66,18 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// <param name="apiClient">The API client.</param>
         /// <param name="navService">The nav service.</param>
         /// <param name="sessionManager">The session manager.</param>
-        /// <param name="appWindow">The app window.</param>
+        /// <param name="presentationManager">The app window.</param>
         /// <param name="logManager">The log manager.</param>
         /// <param name="themeManager">The theme manager.</param>
         /// <param name="userInputManager">The user input manager.</param>
-        public DefaultTheme(IPlaybackManager playbackManager, IImageManager imageManager, IApiClient apiClient, INavigationService navService, ISessionManager sessionManager, IPresentationManager appWindow, ILogManager logManager, IThemeManager themeManager, IUserInputManager userInputManager)
+        public DefaultTheme(IPlaybackManager playbackManager, IImageManager imageManager, IApiClient apiClient, INavigationService navService, ISessionManager sessionManager, IPresentationManager presentationManager, ILogManager logManager, IThemeManager themeManager, IUserInputManager userInputManager)
         {
             _playbackManager = playbackManager;
             _imageManager = imageManager;
             _apiClient = apiClient;
             _navService = navService;
             _sessionManager = sessionManager;
-            _appWindow = appWindow;
+            _presentationManager = presentationManager;
             _themeManager = themeManager;
             _userInputManager = userInputManager;
             _logger = logManager.GetLogger(GetType().Name);
@@ -92,7 +92,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
             return new ResourceDictionary[] { 
 
                 new NavBarResources(),
-                new AppResources(_playbackManager, _imageManager, _apiClient, _appWindow, _navService, _sessionManager, _logger, _userInputManager),
+                new AppResources(_playbackManager, _imageManager, _apiClient, _presentationManager, _navService, _sessionManager, _logger, _userInputManager),
                 new HomePageResources()
             };
         }
@@ -103,7 +103,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// <returns>Page.</returns>
         public Page GetLoginPage()
         {
-            return new LoginPage(_apiClient, _imageManager, _navService, _sessionManager, _appWindow, _themeManager);
+            return new LoginPage(_apiClient, _imageManager, _navService, _sessionManager, _presentationManager);
         }
 
         /// <summary>
@@ -122,7 +122,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// <returns>Page.</returns>
         public Page GetHomePage(BaseItemDto rootItem)
         {
-            return new HomePage(rootItem, rootItem.DisplayPreferencesId, _apiClient, _imageManager, _sessionManager, _appWindow, _navService, _themeManager);
+            return new HomePage(rootItem, rootItem.DisplayPreferencesId, _apiClient, _imageManager, _sessionManager, _presentationManager, _navService, _themeManager);
         }
 
         /// <summary>
@@ -135,10 +135,10 @@ namespace MediaBrowser.Plugins.DefaultTheme
         {
             if (item.IsFolder)
             {
-                return new ListPage(item, item.DisplayPreferencesId, _apiClient, _imageManager, _sessionManager, _appWindow, _navService, _themeManager);
+                return new ListPage(item, item.DisplayPreferencesId, _apiClient, _imageManager, _sessionManager, _presentationManager, _navService);
             }
 
-            return new DetailPage(item, _imageManager, _playbackManager, _apiClient, _sessionManager, _appWindow, _themeManager);
+            return new DetailPage(item, _imageManager, _playbackManager, _apiClient, _sessionManager, _presentationManager, _themeManager);
         }
 
         /// <summary>
@@ -164,7 +164,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// <returns>MessageBoxResult.</returns>
         public MessageBoxResult ShowMessage(MessageBoxInfo options)
         {
-            return ShowMessage(options, _appWindow.Window);
+            return ShowMessage(options, _presentationManager.Window);
         }
 
         /// <summary>

@@ -4,9 +4,7 @@ using MediaBrowser.Model.Querying;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
-using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Presentation.Controls;
-using MediaBrowser.Theater.Presentation.Pages;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
 using System.Threading.Tasks;
@@ -18,19 +16,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
     /// </summary>
     public partial class Folders : BaseItemsControl
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BaseItemsPage" /> class.
-        /// </summary>
-        /// <param name="parent">The parent.</param>
-        /// <param name="displayPreferences">The display preferences.</param>
-        /// <param name="apiClient">The API client.</param>
-        /// <param name="imageManager">The image manager.</param>
-        /// <param name="sessionManager">The session manager.</param>
-        /// <param name="applicationWindow">The application window.</param>
-        /// <param name="navigationManager">The navigation manager.</param>
-        /// <param name="themeManager">The theme manager.</param>
-        public Folders(BaseItemDto parent, Model.Entities.DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IPresentationManager applicationWindow, INavigationService navigationManager, IThemeManager themeManager)
-            : base(parent, displayPreferences, apiClient, imageManager, sessionManager, navigationManager, themeManager, applicationWindow)
+        public Folders(BaseItemDto parent, Model.Entities.DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IPresentationManager appWindow)
+            : base(parent, displayPreferences, apiClient, imageManager, sessionManager, navigationManager, appWindow)
         {
             InitializeComponent();
         }

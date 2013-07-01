@@ -1,4 +1,5 @@
 ﻿using MediaBrowser.Theater.Interfaces.Navigation;
+using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Presentation.Pages;
 using System;
@@ -11,13 +12,13 @@ namespace MediaBrowser.UI.StartupWizard
     /// </summary>
     public partial class StartupWizardFinish : BasePage
     {
-        private readonly IThemeManager _themeManager;
+        private readonly IPresentationManager _presentation;
         private readonly INavigationService _nav;
         
-        public StartupWizardFinish(IThemeManager themeManager, INavigationService nav)
+        public StartupWizardFinish(INavigationService nav, IPresentationManager presentation)
         {
-            _themeManager = themeManager;
             _nav = nav;
+            _presentation = presentation;
             InitializeComponent();
         }
 
@@ -48,7 +49,8 @@ namespace MediaBrowser.UI.StartupWizard
 
         void StartupWizardPage_Loaded(object sender, RoutedEventArgs e)
         {
-            _themeManager.CurrentTheme.SetDefaultPageTitle();
+            _presentation.SetDefaultPageTitle();
+            _presentation.ClearBackdrops();
         }
 
     }

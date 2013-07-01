@@ -2,11 +2,12 @@
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Interfaces.Presentation;
+using MediaBrowser.Theater.Interfaces.Theming;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
+using System.Windows.Media.Imaging;
 
 namespace MediaBrowser.UI.Implementations
 {
@@ -19,14 +20,17 @@ namespace MediaBrowser.UI.Implementations
         /// The _logger
         /// </summary>
         private readonly ILogger _logger;
+        private readonly IThemeManager _themeManager;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TheaterApplicationWindow" /> class.
         /// </summary>
         /// <param name="logger">The logger.</param>
-        public TheaterApplicationWindow(ILogger logger)
+        /// <param name="themeManager">The theme manager.</param>
+        public TheaterApplicationWindow(ILogger logger, IThemeManager themeManager)
         {
             _logger = logger;
+            _themeManager = themeManager;
         }
 
         /// <summary>
@@ -91,15 +95,6 @@ namespace MediaBrowser.UI.Implementations
         }
 
         /// <summary>
-        /// Gets the page content control.
-        /// </summary>
-        /// <value>The page content control.</value>
-        public ContentControl PageContentControl
-        {
-            get { return App.Instance.ApplicationWindow.PageContent; }
-        }
-
-        /// <summary>
         /// Gets the window overlay.
         /// </summary>
         /// <value>The window overlay.</value>
@@ -133,6 +128,31 @@ namespace MediaBrowser.UI.Implementations
         {
             Apps = apps;
             SettingsPages = settingsPages;
+        }
+
+        public void ShowDefaultErrorMessage()
+        {
+            _themeManager.CurrentTheme.ShowDefaultErrorMessage();
+        }
+
+        public MessageBoxResult ShowMessage(MessageBoxInfo options)
+        {
+            return _themeManager.CurrentTheme.ShowMessage(options);
+        }
+
+        public void ShowNotification(string caption, string text, BitmapImage icon)
+        {
+            _themeManager.CurrentTheme.ShowNotification(caption, text, icon);
+        }
+
+        public void SetPageTitle(string title)
+        {
+            _themeManager.CurrentTheme.SetPageTitle(title);
+        }
+
+        public void SetDefaultPageTitle()
+        {
+            _themeManager.CurrentTheme.SetDefaultPageTitle();
         }
     }
 }

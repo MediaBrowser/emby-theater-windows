@@ -52,25 +52,6 @@ namespace MediaBrowser.Theater.Presentation.Controls
             : base()
         {
             SizeChanged += MainWindow_SizeChanged;
-            Loaded += BaseWindowLoaded;
-        }
-
-        /// <summary>
-        /// Bases the window loaded.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
-        void BaseWindowLoaded(object sender, RoutedEventArgs e)
-        {
-            OnLoaded();
-        }
-
-        /// <summary>
-        /// Called when [loaded].
-        /// </summary>
-        protected virtual void OnLoaded()
-        {
-            MoveFocus(new TraversalRequest(FocusNavigationDirection.First));
         }
 
         /// <summary>

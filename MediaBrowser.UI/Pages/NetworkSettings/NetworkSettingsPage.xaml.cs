@@ -18,17 +18,17 @@ namespace MediaBrowser.UI.Pages.NetworkSettings
     {
         private readonly ITheaterConfigurationManager _config;
         private readonly IApiClient _apiClient;
-        private readonly IThemeManager _themeManager;
+        private readonly IPresentationManager _presentationManager;
         private readonly ISessionManager _session;
 
         private readonly CultureInfo _usCulture = new CultureInfo("en-US");
         
-        public NetworkSettingsPage(ITheaterConfigurationManager config, IApiClient apiClient, IThemeManager themeManager, ISessionManager session)
+        public NetworkSettingsPage(ITheaterConfigurationManager config, IApiClient apiClient, ISessionManager session, IPresentationManager presentationManager)
         {
             _config = config;
             _apiClient = apiClient;
-            _themeManager = themeManager;
             _session = session;
+            _presentationManager = presentationManager;
             InitializeComponent();
         }
 
@@ -80,7 +80,7 @@ namespace MediaBrowser.UI.Pages.NetworkSettings
                     _config.Configuration.ServerHostName = TxtHost.Text;
                     _config.SaveConfiguration();
 
-                    _themeManager.CurrentTheme.ShowMessage(new MessageBoxInfo
+                    _presentationManager.ShowMessage(new MessageBoxInfo
                     {
                         Button = MessageBoxButton.OK,
                         Caption = "Connection Confirmed",
@@ -92,7 +92,7 @@ namespace MediaBrowser.UI.Pages.NetworkSettings
                 }
                 catch (Exception)
                 {
-                    _themeManager.CurrentTheme.ShowMessage(new MessageBoxInfo
+                    _presentationManager.ShowMessage(new MessageBoxInfo
                     {
                         Button = MessageBoxButton.OK,
                         Caption = "Error",
@@ -111,7 +111,7 @@ namespace MediaBrowser.UI.Pages.NetworkSettings
             {
                 TxtPort.Focus();
 
-                _themeManager.CurrentTheme.ShowMessage(new MessageBoxInfo
+                _presentationManager.ShowMessage(new MessageBoxInfo
                 {
                     Button = MessageBoxButton.OK,
                     Caption = "Error",

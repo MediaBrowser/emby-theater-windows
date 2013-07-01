@@ -18,19 +18,19 @@ namespace MediaBrowser.UI.StartupWizard
     /// </summary>
     public partial class StartupWizardPage2 : BasePage
     {
-        private readonly IThemeManager _themeManager;
+        private readonly IPresentationManager _presentation;
         private readonly INavigationService _nav;
         private readonly ITheaterConfigurationManager _config;
         private readonly IApiClient _apiClient;
 
         private readonly CultureInfo _usCulture = new CultureInfo("en-US");
 
-        public StartupWizardPage2(IThemeManager themeManager, INavigationService nav, ITheaterConfigurationManager config, IApiClient apiClient)
+        public StartupWizardPage2(INavigationService nav, ITheaterConfigurationManager config, IApiClient apiClient, IPresentationManager presentation)
         {
-            _themeManager = themeManager;
             _nav = nav;
             _config = config;
             _apiClient = apiClient;
+            _presentation = presentation;
             InitializeComponent();
         }
 
@@ -78,11 +78,11 @@ namespace MediaBrowser.UI.StartupWizard
                     _config.Configuration.ServerHostName = TxtHost.Text;
                     _config.SaveConfiguration();
 
-                    await _nav.Navigate(new StartupWizardFinish(_themeManager, _nav));
+                    await _nav.Navigate(new StartupWizardFinish(_nav, _presentation));
                 }
                 catch (Exception)
                 {
-                    _themeManager.CurrentTheme.ShowMessage(new MessageBoxInfo
+                    _presentation.ShowMessage(new MessageBoxInfo
                     {
                         Button = MessageBoxButton.OK,
                         Caption = "Error",
@@ -95,7 +95,8 @@ namespace MediaBrowser.UI.StartupWizard
 
         void StartupWizardPage_Loaded(object sender, RoutedEventArgs e)
         {
-            _themeManager.CurrentTheme.SetDefaultPageTitle();
+            _presentation.SetDefaultPageTitle();
+            _presentation.ClearBackdrops();
         }
 
         private bool ValidateInput()
@@ -106,7 +107,7 @@ namespace MediaBrowser.UI.StartupWizard
             {
                 TxtPort.Focus();
 
-                _themeManager.CurrentTheme.ShowMessage(new MessageBoxInfo
+                _presentation.ShowMessage(new MessageBoxInfo
                 {
                     Button = MessageBoxButton.OK,
                     Caption = "Error",

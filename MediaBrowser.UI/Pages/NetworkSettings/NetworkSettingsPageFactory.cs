@@ -2,7 +2,6 @@
 using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
-using MediaBrowser.Theater.Interfaces.Theming;
 using System;
 using System.Windows.Controls;
 
@@ -15,15 +14,15 @@ namespace MediaBrowser.UI.Pages.NetworkSettings
     {
         private readonly ITheaterConfigurationManager _config;
         private readonly IApiClient _apiClient;
-        private readonly IThemeManager _themeManager;
         private readonly ISessionManager _session;
+        private readonly IPresentationManager _presentationManager;
 
-        public NetworkSettingsPageFactory(ITheaterConfigurationManager config, IApiClient apiClient, IThemeManager themeManager, ISessionManager session)
+        public NetworkSettingsPageFactory(ITheaterConfigurationManager config, IApiClient apiClient, ISessionManager session, IPresentationManager presentationManager)
         {
             _config = config;
             _apiClient = apiClient;
-            _themeManager = themeManager;
             _session = session;
+            _presentationManager = presentationManager;
         }
 
         /// <summary>
@@ -41,7 +40,7 @@ namespace MediaBrowser.UI.Pages.NetworkSettings
         /// <returns>Page.</returns>
         public Page GetPage()
         {
-            return new NetworkSettingsPage(_config, _apiClient, _themeManager, _session);
+            return new NetworkSettingsPage(_config, _apiClient, _session, _presentationManager);
         }
 
         /// <summary>

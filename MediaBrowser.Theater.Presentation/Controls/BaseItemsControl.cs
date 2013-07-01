@@ -46,11 +46,6 @@ namespace MediaBrowser.Theater.Presentation.Controls
         /// </summary>
         /// <value>The navigation manager.</value>
         protected INavigationService NavigationManager { get; private set; }
-        /// <summary>
-        /// Gets the theme manager.
-        /// </summary>
-        /// <value>The theme manager.</value>
-        protected IThemeManager ThemeManager { get; private set; }
         protected IPresentationManager PresentationManager { get; private set; }
 
         /// <summary>
@@ -89,11 +84,11 @@ namespace MediaBrowser.Theater.Presentation.Controls
         /// <param name="imageManager">The image manager.</param>
         /// <param name="sessionManager">The session manager.</param>
         /// <param name="navigationManager">The navigation manager.</param>
-        /// <param name="themeManager">The theme manager.</param>
+        /// <param name="appWindow">The app window.</param>
         /// <exception cref="System.ArgumentNullException">parent
         /// or
         /// displayPreferencesId</exception>
-        protected BaseItemsControl(BaseItemDto parent, DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IThemeManager themeManager, IPresentationManager appWindow)
+        protected BaseItemsControl(BaseItemDto parent, DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IPresentationManager appWindow)
         {
             if (parent == null)
             {
@@ -112,7 +107,6 @@ namespace MediaBrowser.Theater.Presentation.Controls
 
             _displayPreferences = displayPreferences;
             _parentItem = parent;
-            ThemeManager = themeManager;
         }
 
         /// <summary>
@@ -360,7 +354,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
             }
             catch (HttpException)
             {
-                ThemeManager.CurrentTheme.ShowDefaultErrorMessage();
+                PresentationManager.ShowDefaultErrorMessage();
                 return;
             }
 

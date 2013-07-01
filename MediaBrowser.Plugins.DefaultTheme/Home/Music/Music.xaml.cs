@@ -87,9 +87,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.Music
             //spotlight.ContentLoaded += spotlight_ContentLoaded;
 
             //GridSpotlight.Children.Add(spotlight);
-            GridViews.Children.Add(new LatestAlbums(ParentItem, displayPreferences, ApiClient, ImageManager, SessionManager, NavigationManager, ThemeManager, PresentationManager));
-            GridLatestAlbums.Children.Add(new LatestAlbums(ParentItem, displayPreferences, ApiClient, ImageManager, SessionManager, NavigationManager, ThemeManager, PresentationManager));
-            GridLatestSongs.Children.Add(new LatestSongs(ParentItem, displayPreferences, ApiClient, ImageManager, SessionManager, NavigationManager, ThemeManager, PresentationManager));
+            GridViews.Children.Add(new LatestAlbums(ParentItem, displayPreferences, ApiClient, ImageManager, SessionManager, NavigationManager, PresentationManager));
+            GridLatestAlbums.Children.Add(new LatestAlbums(ParentItem, displayPreferences, ApiClient, ImageManager, SessionManager, NavigationManager, PresentationManager));
+            GridLatestSongs.Children.Add(new LatestSongs(ParentItem, displayPreferences, ApiClient, ImageManager, SessionManager, NavigationManager, PresentationManager));
             MainGrid.Visibility = Visibility.Visible;
 
             var itemCounts = await ApiClient.GetItemCountsAsync(ApiClient.CurrentUserId);
@@ -98,7 +98,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.Music
             {
                 LblMusicVideos.Visibility = Visibility.Visible;
                 GridLatestMusicVideos.Visibility = Visibility.Visible;
-                GridLatestMusicVideos.Children.Add(new LatestMusicVideos(ParentItem, displayPreferences, ApiClient, ImageManager, SessionManager, NavigationManager, ThemeManager, PresentationManager));
+                GridLatestMusicVideos.Children.Add(new LatestMusicVideos(ParentItem, displayPreferences, ApiClient, ImageManager, SessionManager, NavigationManager, PresentationManager));
             }
             else
             {

@@ -10,7 +10,6 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 
@@ -25,14 +24,14 @@ namespace MediaBrowser.Theater.Presentation.Pages
         protected IImageManager ImageManager { get; private set; }
         protected INavigationService NavigationManager { get; private set; }
         protected ISessionManager SessionManager { get; private set; }
-        protected IThemeManager ThemeManager { get; private set; }
+        protected IPresentationManager PresentationManager { get; private set; }
 
         protected RangeObservableCollection<UserDtoViewModel> ListItems { get; private set; }
         protected ListCollectionView ListCollectionView { get; private set; }
 
-        protected BaseLoginPage(IApiClient apiClient, IImageManager imageManager, INavigationService navigationManager, ISessionManager sessionManager, IThemeManager themeManager)
+        protected BaseLoginPage(IApiClient apiClient, IImageManager imageManager, INavigationService navigationManager, ISessionManager sessionManager, IPresentationManager presentationManager)
         {
-            ThemeManager = themeManager;
+            PresentationManager = presentationManager;
             SessionManager = sessionManager;
             NavigationManager = navigationManager;
             ImageManager = imageManager;
@@ -106,7 +105,7 @@ namespace MediaBrowser.Theater.Presentation.Pages
             }
             catch (HttpException)
             {
-                ThemeManager.CurrentTheme.ShowDefaultErrorMessage();
+                PresentationManager.ShowDefaultErrorMessage();
             }
         }
 
@@ -128,7 +127,7 @@ namespace MediaBrowser.Theater.Presentation.Pages
             {
                 if (ex.StatusCode.HasValue && ex.StatusCode.Value == HttpStatusCode.Unauthorized)
                 {
-                    ThemeManager.CurrentTheme.ShowMessage(new MessageBoxInfo
+                    PresentationManager.ShowMessage(new MessageBoxInfo
                     {
                         Caption = "Login Failure",
                         Text = "Invalid username or password. Please try again.",
@@ -137,7 +136,7 @@ namespace MediaBrowser.Theater.Presentation.Pages
                 }
                 else
                 {
-                    ThemeManager.CurrentTheme.ShowDefaultErrorMessage();
+                    PresentationManager.ShowDefaultErrorMessage();
                 }
             }
         }

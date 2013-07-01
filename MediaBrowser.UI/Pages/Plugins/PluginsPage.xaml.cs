@@ -1,7 +1,7 @@
 ﻿using MediaBrowser.Common;
 using MediaBrowser.Common.Updates;
 using MediaBrowser.Theater.Interfaces.Navigation;
-using MediaBrowser.Theater.Interfaces.Theming;
+using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.Pages;
 using System;
@@ -18,16 +18,18 @@ namespace MediaBrowser.UI.Pages.Plugins
     public partial class PluginsPage : BasePage
     {
         private readonly IPackageManager _packageManager;
-        private readonly IThemeManager _themeManager;
+        private readonly IPresentationManager _presentation;
         private readonly IApplicationHost _appHost;
         private readonly INavigationService _nav;
+        private readonly IInstallationManager _installationManager;
 
-        public PluginsPage(IPackageManager packageManager, IThemeManager themeManager, IApplicationHost appHost, INavigationService nav)
+        public PluginsPage(IPackageManager packageManager, IApplicationHost appHost, INavigationService nav, IPresentationManager presentation, IInstallationManager installationManager)
         {
             _packageManager = packageManager;
-            _themeManager = themeManager;
             _appHost = appHost;
             _nav = nav;
+            _presentation = presentation;
+            _installationManager = installationManager;
             InitializeComponent();
         }
 
@@ -58,17 +60,19 @@ namespace MediaBrowser.UI.Pages.Plugins
             {
                 case "installed plugins":
 
-                    PageContent.Content = new InstalledPlugins(_appHost, _nav);
+                    PageContent.Content = new InstalledPlugins(_appHost, _nav, _presentation, _installationManager, _packageManager);
                     break;
                 case "plugin catalog":
 
-                    PageContent.Content = new PluginCatalog(_packageManager, _themeManager);
+                    PageContent.Content = new PluginCatalog(_packageManager, _presentation);
                     break;
             }
         }
 
         void HomePage_Loaded(object sender, RoutedEventArgs e)
         {
+            _presentation.SetDefaultPageTitle();
+            _presentation.ClearBackdrops();
         }
     }
 }

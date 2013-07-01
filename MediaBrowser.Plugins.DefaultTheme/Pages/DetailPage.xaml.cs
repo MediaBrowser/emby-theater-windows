@@ -178,7 +178,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         void BtnSpecialFeatures_Click(object sender, RoutedEventArgs e)
         {
             PrimaryImageGrid.Visibility = Visibility.Collapsed;
-            ShowDetailControl(BtnSpecialFeatures, new ItemSpecialFeatures(ApiClient, _imageManager, SessionManager, ThemeManager) { });
+            ShowDetailControl(BtnSpecialFeatures, new ItemSpecialFeatures(ApiClient, _imageManager, SessionManager, PresentationManager) { });
         }
 
         /// <summary>
@@ -189,7 +189,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         void BtnTrailers_Click(object sender, RoutedEventArgs e)
         {
             PrimaryImageGrid.Visibility = Visibility.Collapsed;
-            ShowDetailControl(BtnTrailers, new ItemTrailers(ApiClient, _imageManager, SessionManager, ThemeManager) { });
+            ShowDetailControl(BtnTrailers, new ItemTrailers(ApiClient, _imageManager, SessionManager, PresentationManager) { });
         }
 
         /// <summary>

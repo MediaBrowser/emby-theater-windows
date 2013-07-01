@@ -1,6 +1,5 @@
 ﻿using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
-using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.Pages;
 using MediaBrowser.Theater.Presentation.ViewModels;
@@ -16,11 +15,6 @@ namespace MediaBrowser.UI.Pages
     /// </summary>
     public partial class SettingsPage : BasePage
     {
-        /// <summary>
-        /// The _theme manager
-        /// </summary>
-        private readonly IThemeManager _themeManager;
-
         private readonly IPresentationManager _presentationManager;
 
         private readonly INavigationService _nav;
@@ -28,12 +22,10 @@ namespace MediaBrowser.UI.Pages
         /// <summary>
         /// Initializes a new instance of the <see cref="SettingsPage" /> class.
         /// </summary>
-        /// <param name="themeManager">The theme manager.</param>
         /// <param name="presentationManager">The presentation manager.</param>
         /// <param name="nav">The nav.</param>
-        public SettingsPage(IThemeManager themeManager, IPresentationManager presentationManager, INavigationService nav)
+        public SettingsPage(IPresentationManager presentationManager, INavigationService nav)
         {
-            _themeManager = themeManager;
             _presentationManager = presentationManager;
             _nav = nav;
 
@@ -103,7 +95,8 @@ namespace MediaBrowser.UI.Pages
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         void SettingsPage_Loaded(object sender, RoutedEventArgs e)
         {
-            _themeManager.CurrentTheme.SetDefaultPageTitle();
+            _presentationManager.SetDefaultPageTitle();
+            _presentationManager.ClearBackdrops();
         }
     }
 }

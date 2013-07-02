@@ -7,7 +7,6 @@ using MediaBrowser.IsoMounter;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.System;
 using MediaBrowser.Plugins.DefaultTheme;
-using MediaBrowser.Theater.ExternalPlayer;
 using MediaBrowser.Theater.Implementations.Configuration;
 using MediaBrowser.Theater.Implementations.Playback;
 using MediaBrowser.Theater.Implementations.Presentation;
@@ -21,6 +20,7 @@ using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Interfaces.UserInput;
+using MediaBrowser.Theater.Presentation.Playback;
 using MediaBrowser.Theater.Vlc;
 using MediaBrowser.UI.Implementations;
 using System;
@@ -203,7 +203,7 @@ namespace MediaBrowser.UI
             // Vlc assembly
             yield return typeof(NVlcPlayer).Assembly;
 
-            // External player assembly
+            // Presentation player assembly
             yield return typeof(GenericExternalPlayer).Assembly;
 
             // Default theme assembly

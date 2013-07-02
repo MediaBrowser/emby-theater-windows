@@ -1,5 +1,4 @@
-﻿using MediaBrowser.Model.Entities;
-
+﻿
 namespace MediaBrowser.Theater.Interfaces.Configuration
 {
     /// <summary>
@@ -14,11 +13,17 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
         public string PlayerName { get; set; }
 
         /// <summary>
-        /// Gets or sets the item types.
+        /// Gets or sets the type of the media.
         /// </summary>
-        /// <value>The item types.</value>
-        public string[] ItemTypes { get; set; }
+        /// <value>The type of the media.</value>
+        public string MediaType { get; set; }
 
+        /// <summary>
+        /// Gets or sets the game system.
+        /// </summary>
+        /// <value>The game system.</value>
+        public string GameSystem { get; set; }
+        
         /// <summary>
         /// Gets or sets the file extensions.
         /// </summary>
@@ -26,16 +31,21 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
         public string[] FileExtensions { get; set; }
 
         /// <summary>
-        /// Gets or sets the video types.
+        /// Gets or sets a value indicating whether [play bluray].
         /// </summary>
-        /// <value>The video types.</value>
-        public VideoType[] VideoTypes { get; set; }
-        
+        /// <value><c>true</c> if [play bluray]; otherwise, <c>false</c>.</value>
+        public bool PlayBluray { get; set; }
+        /// <summary>
+        /// Gets or sets a value indicating whether [play DVD].
+        /// </summary>
+        /// <value><c>true</c> if [play DVD]; otherwise, <c>false</c>.</value>
+        public bool PlayDvd { get; set; }
+
         /// <summary>
         /// Gets or sets the video formats.
         /// </summary>
         /// <value>The video formats.</value>
-        public VideoFormat[] VideoFormats { get; set; }
+        public bool Play3DVideo { get; set; }
 
         /// <summary>
         /// Gets or sets the command.
@@ -49,6 +59,8 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
         /// <value>The args.</value>
         public string Args { get; set; }
 
+        public IsoConfiguration IsoMethod { get; set; }
+        
         /// <summary>
         /// Gets or sets a value indicating whether [close on stop button].
         /// </summary>
@@ -57,10 +69,17 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
 
         public PlayerConfiguration()
         {
-            ItemTypes = new string[] {};
             FileExtensions = new string[] { };
-            VideoTypes = new VideoType[] { };
-            VideoFormats = new VideoFormat[] { };
+            Play3DVideo = true;
+            PlayBluray = true;
+            PlayDvd = true;
         }
+    }
+
+    public enum IsoConfiguration
+    {
+        None,
+        Mount,
+        PassThrough
     }
 }

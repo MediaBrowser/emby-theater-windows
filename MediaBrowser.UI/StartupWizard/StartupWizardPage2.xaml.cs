@@ -1,5 +1,6 @@
 ﻿using MediaBrowser.ApiInteraction;
 using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
@@ -22,15 +23,17 @@ namespace MediaBrowser.UI.StartupWizard
         private readonly INavigationService _nav;
         private readonly ITheaterConfigurationManager _config;
         private readonly IApiClient _apiClient;
+        private readonly ILogger _logger;
 
         private readonly CultureInfo _usCulture = new CultureInfo("en-US");
 
-        public StartupWizardPage2(INavigationService nav, ITheaterConfigurationManager config, IApiClient apiClient, IPresentationManager presentation)
+        public StartupWizardPage2(INavigationService nav, ITheaterConfigurationManager config, IApiClient apiClient, IPresentationManager presentation, ILogger logger)
         {
             _nav = nav;
             _config = config;
             _apiClient = apiClient;
             _presentation = presentation;
+            _logger = logger;
             InitializeComponent();
         }
 
@@ -38,12 +41,19 @@ namespace MediaBrowser.UI.StartupWizard
         {
             base.OnInitialized(e);
 
-            var result = await new ServerLocator().FindServer(CancellationToken.None);
-
-            if (result != null)
+            try
             {
-                TxtHost.Text = result.Address.ToString();
-                TxtPort.Text = result.Port.ToString(_usCulture);
+                var result = await new ServerLocator().FindServer(CancellationToken.None);
+
+                if (result != null)
+                {
+                    TxtHost.Text = result.Address.ToString();
+                    TxtPort.Text = result.Port.ToString(_usCulture);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.ErrorException("Error attempting to locate server.", ex);
             }
 
             Loaded += StartupWizardPage_Loaded;

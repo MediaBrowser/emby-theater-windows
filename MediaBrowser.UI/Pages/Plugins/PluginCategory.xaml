@@ -10,7 +10,7 @@
 
     <UserControl.Resources>
         <DataTemplate x:Key="PluginListBoxItemTemplate" DataType="{x:Type viewModels:PackageInfo}">
-            <Border x:Name="MainElement" Margin="4">
+            <Border x:Name="MainElement">
                 <Border.Background>
                     <LinearGradientBrush SpreadMethod="Reflect" ColorInterpolationMode="SRgbLinearInterpolation" StartPoint="0,0" EndPoint="0,1" >
                         <GradientStop Color="#ffCBCBCB" Offset="0" />

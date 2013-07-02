@@ -11,7 +11,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace MediaBrowser.Theater.ExternalPlayer
+namespace MediaBrowser.Theater.Presentation.Playback
 {
     /// <summary>
     /// Class GenericExternalPlayer
@@ -23,7 +23,8 @@ namespace MediaBrowser.Theater.ExternalPlayer
         /// <summary>
         /// The _logger
         /// </summary>
-        private readonly ILogger _logger;
+        protected readonly ILogger Logger;
+
         /// <summary>
         /// The _playback manager
         /// </summary>
@@ -95,10 +96,19 @@ namespace MediaBrowser.Theater.ExternalPlayer
         }
 
         /// <summary>
+        /// Gets a value indicating whether this instance can close automatically on stop button.
+        /// </summary>
+        /// <value><c>true</c> if this instance can close automatically on stop button; otherwise, <c>false</c>.</value>
+        public virtual bool CanCloseAutomaticallyOnStopButton
+        {
+            get { return false; }
+        }
+
+        /// <summary>
         /// Gets a value indicating whether this instance can seek.
         /// </summary>
         /// <value><c>true</c> if this instance can seek; otherwise, <c>false</c>.</value>
-        public bool CanSeek
+        public virtual bool CanSeek
         {
             get { return false; }
         }
@@ -107,7 +117,7 @@ namespace MediaBrowser.Theater.ExternalPlayer
         /// Gets a value indicating whether this instance can pause.
         /// </summary>
         /// <value><c>true</c> if this instance can pause; otherwise, <c>false</c>.</value>
-        public bool CanPause
+        public virtual bool CanPause
         {
             get { return false; }
         }
@@ -116,7 +126,7 @@ namespace MediaBrowser.Theater.ExternalPlayer
         /// Gets a value indicating whether this instance can queue.
         /// </summary>
         /// <value><c>true</c> if this instance can queue; otherwise, <c>false</c>.</value>
-        public bool CanQueue
+        public virtual bool CanQueue
         {
             get { return false; }
         }
@@ -125,7 +135,7 @@ namespace MediaBrowser.Theater.ExternalPlayer
         /// Gets a value indicating whether this instance can control volume.
         /// </summary>
         /// <value><c>true</c> if this instance can control volume; otherwise, <c>false</c>.</value>
-        public bool CanControlVolume
+        public virtual bool CanControlVolume
         {
             get { return false; }
         }
@@ -134,7 +144,7 @@ namespace MediaBrowser.Theater.ExternalPlayer
         /// Gets a value indicating whether this instance can track progress.
         /// </summary>
         /// <value><c>true</c> if this instance can track progress; otherwise, <c>false</c>.</value>
-        public bool CanTrackProgress
+        public virtual bool CanTrackProgress
         {
             get { return false; }
         }
@@ -143,16 +153,16 @@ namespace MediaBrowser.Theater.ExternalPlayer
         /// Gets the name.
         /// </summary>
         /// <value>The name.</value>
-        public string Name
+        public virtual string Name
         {
-            get { return "Generic Player"; }
+            get { return "Generic External Player"; }
         }
 
         /// <summary>
         /// Gets a value indicating whether [supports multi file playback].
         /// </summary>
         /// <value><c>true</c> if [supports multi file playback]; otherwise, <c>false</c>.</value>
-        public bool SupportsMultiFilePlayback
+        public virtual bool SupportsMultiFilePlayback
         {
             get { return false; }
         }
@@ -161,7 +171,7 @@ namespace MediaBrowser.Theater.ExternalPlayer
         /// Gets the state of the play.
         /// </summary>
         /// <value>The state of the play.</value>
-        public PlayState PlayState
+        public virtual PlayState PlayState
         {
             get
             {
@@ -173,7 +183,7 @@ namespace MediaBrowser.Theater.ExternalPlayer
         /// Gets the current position ticks.
         /// </summary>
         /// <value>The current position ticks.</value>
-        public long? CurrentPositionTicks
+        public virtual long? CurrentPositionTicks
         {
             get { return null; }
         }
@@ -183,10 +193,16 @@ namespace MediaBrowser.Theater.ExternalPlayer
         /// </summary>
         /// <param name="item">The item.</param>
         /// <returns><c>true</c> if this instance can play the specified item; otherwise, <c>false</c>.</returns>
-        public bool CanPlay(BaseItemDto item)
+        public virtual bool CanPlayByDefault(BaseItemDto item)
         {
             // Can only play if configured to do so
             return false;
+        }
+
+        public virtual bool CanPlayMediaType(string mediaType)
+        {
+            // We don't know
+            return true;
         }
 
         /// <summary>
@@ -203,7 +219,7 @@ namespace MediaBrowser.Theater.ExternalPlayer
         public GenericExternalPlayer(IPlaybackManager playbackManager, ILogger logger, IUserInputManager userInput)
         {
             _playbackManager = playbackManager;
-            _logger = logger;
+            Logger = logger;
             _userInput = userInput;
         }
 
@@ -211,7 +227,7 @@ namespace MediaBrowser.Theater.ExternalPlayer
         /// Stops this instance.
         /// </summary>
         /// <returns>Task.</returns>
-        public Task Stop()
+        public virtual Task Stop()
         {
             if (_currentProcess == null)
             {
@@ -247,7 +263,7 @@ namespace MediaBrowser.Theater.ExternalPlayer
                     StartInfo = GetProcessStartInfo(options.Items, options.Configuration)
                 };
 
-                _logger.Info("{0} {1}", _currentProcess.StartInfo.FileName, _currentProcess.StartInfo.Arguments);
+                Logger.Info("{0} {1}", _currentProcess.StartInfo.FileName, _currentProcess.StartInfo.Arguments);
 
                 try
                 {
@@ -255,14 +271,14 @@ namespace MediaBrowser.Theater.ExternalPlayer
                 }
                 catch (Exception ex)
                 {
-                    _logger.ErrorException("Error staring player", ex);
+                    Logger.ErrorException("Error staring player", ex);
 
                     _playlist.Clear();
 
                     throw;
                 }
 
-                if (options.Configuration.CloseOnStopButton)
+                if (options.Configuration.CloseOnStopButton && !CanCloseAutomaticallyOnStopButton)
                 {
                     _userInput.KeyDown += KeyboardListener_KeyDown;
                 }
@@ -270,7 +286,14 @@ namespace MediaBrowser.Theater.ExternalPlayer
                 process.Exited += CurrentProcess_Exited;
 
                 _currentProcess = process;
+
+                OnPlayerLaunched();
             });
+        }
+
+        protected virtual void OnPlayerLaunched()
+        {
+            
         }
 
         /// <summary>
@@ -319,16 +342,23 @@ namespace MediaBrowser.Theater.ExternalPlayer
                 EndingMedia = media
             };
 
-            EventHelper.QueueEventIfNotNull(PlaybackCompleted, this, args, _logger);
+            EventHelper.QueueEventIfNotNull(PlaybackCompleted, this, args, Logger);
 
             _playbackManager.ReportPlaybackCompleted(args);
+
+            OnPlayerExited();
+        }
+
+        protected virtual void OnPlayerExited()
+        {
+            
         }
 
         /// <summary>
         /// Gets a value indicating whether this instance is muted.
         /// </summary>
         /// <value><c>true</c> if this instance is muted; otherwise, <c>false</c>.</value>
-        public bool IsMuted
+        public virtual bool IsMuted
         {
             get { return false; }
         }
@@ -337,7 +367,7 @@ namespace MediaBrowser.Theater.ExternalPlayer
         /// Gets the volume.
         /// </summary>
         /// <value>The volume.</value>
-        public int Volume
+        public virtual int Volume
         {
             get { return 100; }
         }
@@ -348,7 +378,7 @@ namespace MediaBrowser.Theater.ExternalPlayer
         /// <param name="volume">The volume.</param>
         /// <returns>Task.</returns>
         /// <exception cref="System.NotImplementedException"></exception>
-        public Task SetVolume(int volume)
+        public virtual Task SetVolume(int volume)
         {
             throw new NotImplementedException();
         }
@@ -358,7 +388,7 @@ namespace MediaBrowser.Theater.ExternalPlayer
         /// </summary>
         /// <returns>Task.</returns>
         /// <exception cref="System.NotImplementedException"></exception>
-        public Task Mute()
+        public virtual Task Mute()
         {
             throw new NotImplementedException();
         }
@@ -368,7 +398,7 @@ namespace MediaBrowser.Theater.ExternalPlayer
         /// </summary>
         /// <returns>Task.</returns>
         /// <exception cref="System.NotImplementedException"></exception>
-        public Task UnMute()
+        public virtual Task UnMute()
         {
             throw new NotImplementedException();
         }
@@ -378,7 +408,7 @@ namespace MediaBrowser.Theater.ExternalPlayer
         /// </summary>
         /// <returns>Task.</returns>
         /// <exception cref="System.NotImplementedException"></exception>
-        public Task Pause()
+        public virtual Task Pause()
         {
             throw new NotImplementedException();
         }
@@ -388,7 +418,7 @@ namespace MediaBrowser.Theater.ExternalPlayer
         /// </summary>
         /// <returns>Task.</returns>
         /// <exception cref="System.NotImplementedException"></exception>
-        public Task UnPause()
+        public virtual Task UnPause()
         {
             throw new NotImplementedException();
         }
@@ -399,7 +429,7 @@ namespace MediaBrowser.Theater.ExternalPlayer
         /// <param name="positionTicks">The position ticks.</param>
         /// <returns>Task.</returns>
         /// <exception cref="System.NotImplementedException"></exception>
-        public Task Seek(long positionTicks)
+        public virtual Task Seek(long positionTicks)
         {
             throw new NotImplementedException();
         }
@@ -410,7 +440,7 @@ namespace MediaBrowser.Theater.ExternalPlayer
         /// <param name="items">The items.</param>
         /// <param name="playerConfiguration">The player configuration.</param>
         /// <returns>ProcessStartInfo.</returns>
-        private ProcessStartInfo GetProcessStartInfo(IEnumerable<BaseItemDto> items, PlayerConfiguration playerConfiguration)
+        protected virtual ProcessStartInfo GetProcessStartInfo(IEnumerable<BaseItemDto> items, PlayerConfiguration playerConfiguration)
         {
             return new ProcessStartInfo
             {
@@ -425,7 +455,7 @@ namespace MediaBrowser.Theater.ExternalPlayer
         /// <param name="items">The items.</param>
         /// <param name="playerConfiguration">The player configuration.</param>
         /// <returns>System.String.</returns>
-        private string GetCommandArguments(IEnumerable<BaseItemDto> items, PlayerConfiguration playerConfiguration)
+        protected virtual string GetCommandArguments(IEnumerable<BaseItemDto> items, PlayerConfiguration playerConfiguration)
         {
             var args = playerConfiguration.Args;
 
@@ -444,9 +474,19 @@ namespace MediaBrowser.Theater.ExternalPlayer
         /// </summary>
         /// <param name="item">The item.</param>
         /// <returns>System.String.</returns>
-        private string GetPathForCommandLine(BaseItemDto item)
+        protected virtual string GetPathForCommandLine(BaseItemDto item)
         {
             return item.Path;
+        }
+
+        public virtual bool RequiresConfiguredPath
+        {
+            get { return true; }
+        }
+
+        public virtual bool RequiresConfiguredArguments
+        {
+            get { return true; }
         }
     }
 }

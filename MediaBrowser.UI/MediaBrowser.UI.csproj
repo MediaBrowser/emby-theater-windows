@@ -204,6 +204,9 @@
       <DependentUpon>GeneralSettingsPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\General\GeneralSettingsPageFactory.cs" />
+    <Compile Include="Pages\MediaPlayers\ConfigureMediaPlayerPage.xaml.cs">
+      <DependentUpon>ConfigureMediaPlayerPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\MediaPlayers\MediaPlayersPage.xaml.cs">
       <DependentUpon>MediaPlayersPage.xaml</DependentUpon>
     </Compile>
@@ -273,6 +276,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Pages\General\GeneralSettingsPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\MediaPlayers\ConfigureMediaPlayerPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -403,10 +410,6 @@
     <ProjectReference Include="..\MediaBrowser.Plugins.DefaultTheme\MediaBrowser.Plugins.DefaultTheme.csproj">
       <Project>{6e892999-711d-4e24-8bac-dacf5bfa783a}</Project>
       <Name>MediaBrowser.Plugins.DefaultTheme</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\MediaBrowser.Theater.ExternalPlayer\MediaBrowser.Theater.ExternalPlayer.csproj">
-      <Project>{56efab4f-dceb-4acc-9c9e-e86e85ecae82}</Project>
-      <Name>MediaBrowser.Theater.ExternalPlayer</Name>
     </ProjectReference>
     <ProjectReference Include="..\MediaBrowser.Theater.Implementations\MediaBrowser.Theater.Implementations.csproj">
       <Project>{1bd67463-d86a-4851-be42-4d9098adb791}</Project>

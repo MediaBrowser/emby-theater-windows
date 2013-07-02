@@ -22,7 +22,7 @@ namespace MediaBrowser.UI.Pages.Appearance
         /// <returns>Page.</returns>
         public Page GetPage()
         {
-            return new MediaPlayersPage();
+            return null;
         }
 
         /// <summary>

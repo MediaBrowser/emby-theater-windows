@@ -144,7 +144,7 @@ namespace MediaBrowser.Theater.Vlc
         /// <value>The name.</value>
         public string Name
         {
-            get { return "Vlc"; }
+            get { return "Internal Vlc Player"; }
         }
 
         /// <summary>
@@ -328,9 +328,14 @@ namespace MediaBrowser.Theater.Vlc
         /// </summary>
         /// <param name="item">The item.</param>
         /// <returns><c>true</c> if this instance can play the specified item; otherwise, <c>false</c>.</returns>
-        public bool CanPlay(BaseItemDto item)
+        public bool CanPlayByDefault(BaseItemDto item)
         {
             return item.IsVideo || item.IsAudio;
+        }
+
+        public bool CanPlayMediaType(string mediaType)
+        {
+            return new[] { MediaType.Video, MediaType.Audio }.Contains(mediaType, StringComparer.OrdinalIgnoreCase);
         }
 
         /// <summary>

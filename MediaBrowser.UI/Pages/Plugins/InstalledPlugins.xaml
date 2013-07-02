@@ -10,7 +10,7 @@
 
     <UserControl.Resources>
         <DataTemplate x:Key="PluginListBoxItemTemplate" DataType="{x:Type viewModels:InstalledPluginViewModel}">
-            <Border x:Name="MainElement" Margin="4">
+            <Border x:Name="MainElement">
                 <Border.Background>
                     <LinearGradientBrush SpreadMethod="Reflect" ColorInterpolationMode="SRgbLinearInterpolation" StartPoint="0,0" EndPoint="0,1" >
                         <GradientStop Color="#ffCBCBCB" Offset="0" />
@@ -52,7 +52,7 @@
     </UserControl.Resources>
 
     <Grid>
-        <controls:ExtendedListBox Margin="-40 -30 -40 -35" Grid.Row="1" x:Name="LstItems" KeyboardNavigation.DirectionalNavigation="Continue" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{DynamicResource PluginListBoxItemTemplate}">
+        <controls:ExtendedListBox Margin="-40 -30 -40 -35" Grid.Row="1" x:Name="LstItems" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{DynamicResource PluginListBoxItemTemplate}">
             <controls:ExtendedListBox.ItemsPanel>
                 <ItemsPanelTemplate>
                     <WrapPanel Margin="40 35" Orientation="Vertical"></WrapPanel>

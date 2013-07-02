@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using MediaBrowser.Theater.Interfaces.Configuration;
 
 namespace MediaBrowser.Theater.Interfaces.Playback
 {
@@ -114,7 +113,14 @@ namespace MediaBrowser.Theater.Interfaces.Playback
         /// </summary>
         /// <param name="item">The item.</param>
         /// <returns><c>true</c> if this instance can play the specified item; otherwise, <c>false</c>.</returns>
-        bool CanPlay(BaseItemDto item);
+        bool CanPlayByDefault(BaseItemDto item);
+
+        /// <summary>
+        /// Determines whether this instance [can play media type] the specified media type.
+        /// </summary>
+        /// <param name="mediaType">Type of the media.</param>
+        /// <returns><c>true</c> if this instance [can play media type] the specified media type; otherwise, <c>false</c>.</returns>
+        bool CanPlayMediaType(string mediaType);
 
         /// <summary>
         /// Stops this instance.

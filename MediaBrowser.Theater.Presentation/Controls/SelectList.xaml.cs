@@ -15,6 +15,16 @@ namespace MediaBrowser.Theater.Presentation.Controls
 
         public List<SelectListItem> Options { get; set; }
 
+        public bool Enabled
+        {
+            get { return BtnNextOption.IsEnabled; }
+            set
+            {
+                BtnNextOption.IsEnabled = value;
+                BtnPreviousOption.IsEnabled = value;
+            }
+        }
+
         public SelectListItem SelectedItem
         {
             get

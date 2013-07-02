@@ -9,7 +9,7 @@
       d:DesignHeight="300" d:DesignWidth="300"
 	Title="PackageInfoPage">
 
-    <Grid HorizontalAlignment="Center" VerticalAlignment="Top" Margin="100 0">
+    <Grid HorizontalAlignment="Center" VerticalAlignment="Top" Margin="80 0">
 
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"></RowDefinition>
@@ -25,10 +25,10 @@
                 <ColumnDefinition Width="*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
-            <Grid Grid.Column="0" Margin="0 0 100 0" VerticalAlignment="Top">
+            <Grid Grid.Column="0" Margin="0 0 80 0" VerticalAlignment="Top">
                 <StackPanel Orientation="Vertical">
 
-                    <Border BorderThickness="1" Padding="2" BorderBrush="#666666">
+                    <Border>
                         <Image x:Name="PackageImage" MaxWidth="500" Stretch="Uniform"></Image>
                     </Border>
                     <TextBlock x:Name="TxtDeveloper" Style="{DynamicResource TextBlockStyle}" Margin="5 15 0 0"></TextBlock>

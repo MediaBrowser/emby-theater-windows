@@ -226,7 +226,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
         /// <param name="items">The items.</param>
         /// <param name="configuration">The configuration.</param>
         /// <returns>IMediaPlayer.</returns>
-        private IMediaPlayer GetPlayer(List<BaseItemDto> items, out PlayerConfiguration configuration)
+        private IMediaPlayer GetPlayer(IEnumerable<BaseItemDto> items, out PlayerConfiguration configuration)
         {
             var configuredPlayer = _configurationManager.Configuration.MediaPlayers.FirstOrDefault(p => IsConfiguredToPlay(p, items));
 
@@ -242,9 +242,9 @@ namespace MediaBrowser.Theater.Implementations.Playback
             }
 
             configuration = null;
-            
+
             // If there's no explicit configuration just find the first matching player who says they can play it
-            return MediaPlayers.FirstOrDefault(p => items.All(p.CanPlay));
+            return MediaPlayers.FirstOrDefault(p => items.All(p.CanPlayByDefault));
         }
 
         /// <summary>
@@ -253,45 +253,93 @@ namespace MediaBrowser.Theater.Implementations.Playback
         /// <param name="configuration">The configuration.</param>
         /// <param name="items">The items.</param>
         /// <returns><c>true</c> if [is configured to play] [the specified configuration]; otherwise, <c>false</c>.</returns>
-        private bool IsConfiguredToPlay(PlayerConfiguration configuration, List<BaseItemDto> items)
+        private bool IsConfiguredToPlay(PlayerConfiguration configuration, IEnumerable<BaseItemDto> items)
         {
+            return items.All(i => IsConfiguredToPlay(configuration, i));
+        }
+
+        /// <summary>
+        /// Determines whether [is configured to play] [the specified configuration].
+        /// </summary>
+        /// <param name="configuration">The configuration.</param>
+        /// <param name="item">The item.</param>
+        /// <returns><c>true</c> if [is configured to play] [the specified configuration]; otherwise, <c>false</c>.</returns>
+        private bool IsConfiguredToPlay(PlayerConfiguration configuration, BaseItemDto item)
+        {
+            // Make this configurable if/when needed
+            if (item.LocationType != LocationType.FileSystem)
+            {
+                return false;
+            }
+
             // If it's configured for specific item types
-            if (configuration.ItemTypes.Length > 0)
+            if (!string.Equals(configuration.MediaType, item.MediaType, StringComparison.OrdinalIgnoreCase))
             {
-                if (items.Any(i => !configuration.ItemTypes.Contains(i.Type, StringComparer.OrdinalIgnoreCase)))
+                return false;
+            }
+
+            if (string.Equals(configuration.MediaType, MediaType.Video))
+            {
+                if (!item.VideoType.HasValue)
+                {
+                    return false;
+                }
+
+                if (item.VideoType.Value == VideoType.VideoFile)
+                {
+                    // If it's configured for specific file extensions
+                    if (!IsConfiguredForFileExtension(configuration, item.Path))
+                    {
+                        return false;
+                    }
+                }
+
+                if (item.VideoType.Value == VideoType.BluRay && !configuration.PlayBluray)
+                {
+                    return false;
+                }
+                if (item.VideoType.Value == VideoType.Dvd && !configuration.PlayDvd)
+                {
+                    return false;
+                }
+
+                if (!configuration.Play3DVideo && item.Video3DFormat.HasValue)
+                {
+                    return false;
+                }
+
+                if (item.VideoType.Value == VideoType.Iso & configuration.IsoMethod == IsoConfiguration.None)
                 {
                     return false;
                 }
             }
 
-            // If it's configured for specific file extensions
-            if (configuration.FileExtensions.Length > 0)
+            else if (string.Equals(configuration.MediaType, MediaType.Audio))
             {
-                if (items.Any(i => !configuration.FileExtensions.Select(ext => ext.TrimStart('.')).Contains((Path.GetExtension(i.Path) ?? string.Empty).TrimStart('.'), StringComparer.OrdinalIgnoreCase)))
+                // If it's configured for specific file extensions
+                if (!IsConfiguredForFileExtension(configuration, item.Path))
                 {
                     return false;
                 }
             }
 
-            // If it's configured for specific video types
-            if (configuration.VideoTypes.Length > 0)
+            else if (string.Equals(configuration.MediaType, MediaType.Game))
             {
-                if (items.Any(i => i.VideoType.HasValue && !configuration.VideoTypes.Contains(i.VideoType.Value)))
+                // If it's configured for specific file extensions
+                if (!string.Equals(item.GameSystem, configuration.GameSystem, StringComparison.OrdinalIgnoreCase))
                 {
                     return false;
                 }
             }
-
-            // If it's configured for specific video formats
-            if (configuration.VideoFormats.Length > 0)
-            {
-                if (items.Any(i => i.VideoFormat.HasValue && !configuration.VideoFormats.Contains(i.VideoFormat.Value)))
-                {
-                    return false;
-                }
-            }
-
+            
             return true;
+        }
+
+        private bool IsConfiguredForFileExtension(PlayerConfiguration configuration, string path)
+        {
+            var extensions = configuration.FileExtensions.Select(i => i.TrimStart('.'));
+
+            return extensions.Contains(Path.GetExtension(path).TrimStart('.'), StringComparer.OrdinalIgnoreCase);
         }
     }
 }

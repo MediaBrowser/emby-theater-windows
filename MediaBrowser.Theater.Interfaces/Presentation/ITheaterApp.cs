@@ -1,4 +1,5 @@
-﻿
+﻿using System.Windows.Controls;
+
 namespace MediaBrowser.Theater.Interfaces.Presentation
 {
     /// <summary>
@@ -13,8 +14,9 @@ namespace MediaBrowser.Theater.Interfaces.Presentation
         string Name { get; }
 
         /// <summary>
-        /// Launches this instance.
+        /// Gets the page.
         /// </summary>
-        void Launch();
+        /// <returns>Page.</returns>
+        Page GetLaunchPage();
     }
 }

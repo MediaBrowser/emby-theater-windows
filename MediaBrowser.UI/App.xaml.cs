@@ -278,7 +278,7 @@ namespace MediaBrowser.UI
             if (!foundServer)
             {
                 // Show connection wizard
-                await Dispatcher.InvokeAsync(async () => await _compositionRoot.NavigationService.Navigate(new StartupWizardPage(_compositionRoot.NavigationService, _compositionRoot.TheaterConfigurationManager, _compositionRoot.ApiClient, _compositionRoot.PresentationManager)));
+                await Dispatcher.InvokeAsync(async () => await _compositionRoot.NavigationService.Navigate(new StartupWizardPage(_compositionRoot.NavigationService, _compositionRoot.TheaterConfigurationManager, _compositionRoot.ApiClient, _compositionRoot.PresentationManager, _logger)));
             }
             else
             {

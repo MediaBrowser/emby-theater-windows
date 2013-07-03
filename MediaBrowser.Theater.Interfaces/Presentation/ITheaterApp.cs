@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using System.Threading.Tasks;
+using System.Windows;
 
 namespace MediaBrowser.Theater.Interfaces.Presentation
 {
@@ -17,6 +18,12 @@ namespace MediaBrowser.Theater.Interfaces.Presentation
         /// Gets the page.
         /// </summary>
         /// <returns>Page.</returns>
-        Page GetLaunchPage();
+        Task Launch();
+
+        /// <summary>
+        /// Gets the tile image.
+        /// </summary>
+        /// <returns>FrameworkElement.</returns>
+        FrameworkElement GetTileImage();
     }
 }

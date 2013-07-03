@@ -18,6 +18,7 @@
             <RowDefinition></RowDefinition>
             <RowDefinition></RowDefinition>
             <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
@@ -63,6 +64,10 @@
 
         <CheckBox x:Name="ChkAutoRun" Margin="0 20 0 0" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center">
             <TextBlock Style="{DynamicResource TextBlockStyle}">Auto-run at startup</TextBlock>
+        </CheckBox>
+
+        <CheckBox x:Name="ChkEnableDebugLogging" Margin="0 20 0 0" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center">
+            <TextBlock Style="{DynamicResource TextBlockStyle}">Enable debug logging</TextBlock>
         </CheckBox>
     </Grid>
 </pages:BasePage>

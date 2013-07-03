@@ -117,8 +117,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Resources
                 var imageUrl = _apiClient.GetUserImageUrl(user, new ImageOptions
                 {
                     ImageType = ImageType.Primary,
-                    MaxHeight = 48,
-                    Quality = 100
+                    MaxHeight = 48
                 });
 
                 try
@@ -365,7 +364,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Resources
             {
                 var url = _apiClient.GetLogoImageUrl(item, new ImageOptions
                 {
-                    Quality = 100
                 });
 
                 try

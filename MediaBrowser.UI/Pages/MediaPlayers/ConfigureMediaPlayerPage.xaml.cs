@@ -164,7 +164,7 @@ namespace MediaBrowser.UI.Pages.MediaPlayers
             PanelVideoTypes.Visibility = string.Equals(value, MediaType.Video) ? Visibility.Visible : Visibility.Collapsed;
 
             PanelIsoSupport.Visibility = string.Equals(value, MediaType.Video) || string.Equals(value, MediaType.Game) ? Visibility.Visible : Visibility.Collapsed;
-            
+
             UpdateFileExtensions();
         }
 
@@ -203,7 +203,9 @@ namespace MediaBrowser.UI.Pages.MediaPlayers
         {
             TxtTitle.Text = _isNew ? "Add Media Player" : "Edit Media Player";
 
-            SelectPlayer.SelectedValue = _playerConfig.PlayerName ?? SelectPlayer.Options[0].Value;
+            var option = SelectPlayer.Options.FirstOrDefault(i => string.Equals(i.Text, _playerConfig.PlayerName, StringComparison.OrdinalIgnoreCase)) ?? SelectPlayer.Options.First();
+
+            SelectPlayer.SelectedValue = option.Value;
 
             SelectPlayer_SelectedItemChanged(null, EventArgs.Empty);
 

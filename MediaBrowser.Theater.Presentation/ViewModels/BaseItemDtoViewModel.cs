@@ -142,8 +142,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             {
                 ImageType = imageType,
                 ImageIndex = imageIndex,
-                Width = Convert.ToInt32(width),
-                Quality = 100
+                Width = Convert.ToInt32(width)
             };
 
             var currentAspectRatio = imageType == ImageType.Primary ? Item.PrimaryImageAspectRatio ?? width / height : width / height;

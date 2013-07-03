@@ -148,6 +148,13 @@
     <Compile Include="DisplayPreferences\ViewMenuPage.xaml.cs">
       <DependentUpon>ViewMenuPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="HomePageFactory.cs" />
+    <Compile Include="Home\Apps\AppControl.xaml.cs">
+      <DependentUpon>AppControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Home\Apps\AppsControl.xaml.cs">
+      <DependentUpon>AppsControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Home\Folders.xaml.cs">
       <DependentUpon>Folders.xaml</DependentUpon>
     </Compile>
@@ -322,6 +329,14 @@
     <Page Include="DisplayPreferences\ViewMenuPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Home\Apps\AppControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Home\Apps\AppsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Home\Folders.xaml">
       <SubType>Designer</SubType>

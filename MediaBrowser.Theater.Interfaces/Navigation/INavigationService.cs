@@ -12,7 +12,8 @@ namespace MediaBrowser.Theater.Interfaces.Navigation
         /// <summary>
         /// Navigates to home page.
         /// </summary>
-        Task NavigateToHomePage(BaseItemDto rootItem);
+        /// <returns>Task.</returns>
+        Task NavigateToHomePage(string userId);
 
         /// <summary>
         /// Navigates the specified page.

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Controls;
+using MediaBrowser.Model.Dto;
 
 namespace MediaBrowser.Theater.Interfaces.Presentation
 {
@@ -31,6 +32,13 @@ namespace MediaBrowser.Theater.Interfaces.Presentation
         /// </summary>
         /// <value>The category.</value>
         SettingsPageCategory Category { get; }
+
+        /// <summary>
+        /// Determines whether the specified user is visible.
+        /// </summary>
+        /// <param name="user">The user.</param>
+        /// <returns><c>true</c> if the specified user is visible; otherwise, <c>false</c>.</returns>
+        bool IsVisible(UserDto user);
     }
 
     /// <summary>

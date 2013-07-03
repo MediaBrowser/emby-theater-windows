@@ -4,6 +4,8 @@ using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Serialization;
 using MediaBrowser.Theater.Interfaces.Configuration;
 using System;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace MediaBrowser.Theater.Implementations.Configuration
 {
@@ -45,6 +47,44 @@ namespace MediaBrowser.Theater.Implementations.Configuration
         public ApplicationConfiguration Configuration
         {
             get { return (ApplicationConfiguration)CommonConfiguration; }
+        }
+
+        private string GetConfigPath(string userId)
+        {
+            return Path.Combine(ApplicationPaths.ConfigurationDirectoryPath, userId + ".xml");
+        }
+
+        public Task<UserTheaterConfiguration> GetUserTheaterConfiguration(string userId)
+        {
+            return Task.Run(() =>
+            {
+                var path = GetConfigPath(userId);
+
+                try
+                {
+                    return (UserTheaterConfiguration)XmlSerializer.DeserializeFromFile(typeof(UserTheaterConfiguration), path);
+                }
+                catch (DirectoryNotFoundException)
+                {
+                    return new UserTheaterConfiguration();
+                }
+                catch (FileNotFoundException)
+                {
+                    return new UserTheaterConfiguration();
+                }
+
+            });
+        }
+
+        public Task UpdateUserTheaterConfiguration(string userId, UserTheaterConfiguration configuration)
+        {
+            return Task.Run(() =>
+            {
+                var path = GetConfigPath(userId);
+
+                XmlSerializer.SerializeToFile(configuration, path);
+
+            });
         }
     }
 }

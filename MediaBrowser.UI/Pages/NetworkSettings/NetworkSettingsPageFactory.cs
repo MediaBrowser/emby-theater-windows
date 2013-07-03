@@ -1,4 +1,5 @@
 ﻿using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Dto;
 using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
@@ -55,6 +56,11 @@ namespace MediaBrowser.UI.Pages.NetworkSettings
         public SettingsPageCategory Category
         {
             get { return SettingsPageCategory.System; }
+        }
+
+        public bool IsVisible(UserDto user)
+        {
+            return true;
         }
     }
 }

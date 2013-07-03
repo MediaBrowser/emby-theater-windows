@@ -292,7 +292,15 @@ namespace MediaBrowser.UI
                 BackdropTimer = new Timer(state =>
                 {
                     // Don't display backdrops during video playback
-                    if (_playbackManager.MediaPlayers.Any(p => p.PlayState != PlayState.Idle && p.CurrentMedia.IsVideo))
+                    if (_playbackManager.MediaPlayers.Any(p =>
+                    {
+                        if (p.PlayState != PlayState.Idle)
+                        {
+                            var media = p.CurrentMedia;
+                            return media != null && (media.IsVideo || media.IsGame);
+                        }
+                        return false;
+                    }))
                     {
                         return;
                     }

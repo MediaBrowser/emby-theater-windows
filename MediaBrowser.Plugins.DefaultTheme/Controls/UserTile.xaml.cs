@@ -146,7 +146,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
             {
                 var url = ViewModel.ApiClient.GetUserImageUrl(item, new ImageOptions
                 {
-                    Quality = 100,
                     ImageType = ImageType.Primary
                 });
 

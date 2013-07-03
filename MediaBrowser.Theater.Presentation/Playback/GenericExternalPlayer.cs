@@ -1,7 +1,6 @@
 ﻿using MediaBrowser.Common.Events;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
-using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.UserInput;
 using System;
@@ -19,7 +18,7 @@ namespace MediaBrowser.Theater.Presentation.Playback
     public class GenericExternalPlayer : IExternalMediaPlayer
     {
         private readonly IUserInputManager _userInput;
-        
+
         /// <summary>
         /// The _logger
         /// </summary>
@@ -75,7 +74,7 @@ namespace MediaBrowser.Theater.Presentation.Playback
         /// Gets the index of the current playlist.
         /// </summary>
         /// <value>The index of the current playlist.</value>
-        public int CurrentPlaylistIndex { get; private set; }
+        public int CurrentPlaylistIndex { get; protected set; }
 
         /// <summary>
         /// Gets the current play options.
@@ -91,7 +90,9 @@ namespace MediaBrowser.Theater.Presentation.Playback
         {
             get
             {
-                return _playlist.Count > 0 ? _playlist[CurrentPlaylistIndex] : null;
+                var index = CurrentPlaylistIndex;
+
+                return _playlist.Count > 0 && index >= 0 ? _playlist[index] : null;
             }
         }
 
@@ -183,10 +184,7 @@ namespace MediaBrowser.Theater.Presentation.Playback
         /// Gets the current position ticks.
         /// </summary>
         /// <value>The current position ticks.</value>
-        public virtual long? CurrentPositionTicks
-        {
-            get { return null; }
-        }
+        public long? CurrentPositionTicks { get; protected set; }
 
         /// <summary>
         /// Determines whether this instance can play the specified item.
@@ -256,14 +254,14 @@ namespace MediaBrowser.Theater.Presentation.Playback
                 CurrentPlayOptions = options;
 
                 _playlist = options.Items.ToList();
-                
+
                 var process = new Process
                 {
                     EnableRaisingEvents = true,
-                    StartInfo = GetProcessStartInfo(options.Items, options.Configuration)
+                    StartInfo = GetProcessStartInfo(options.Items, options)
                 };
 
-                Logger.Info("{0} {1}", _currentProcess.StartInfo.FileName, _currentProcess.StartInfo.Arguments);
+                Logger.Info("{0} {1}", process.StartInfo.FileName, process.StartInfo.Arguments);
 
                 try
                 {
@@ -293,7 +291,7 @@ namespace MediaBrowser.Theater.Presentation.Playback
 
         protected virtual void OnPlayerLaunched()
         {
-            
+
         }
 
         /// <summary>
@@ -322,7 +320,7 @@ namespace MediaBrowser.Theater.Presentation.Playback
         void CurrentProcess_Exited(object sender, EventArgs e)
         {
             _userInput.KeyDown -= KeyboardListener_KeyDown;
-            
+
             var process = (Process)sender;
 
             var playlist = _playlist.ToList();
@@ -351,7 +349,7 @@ namespace MediaBrowser.Theater.Presentation.Playback
 
         protected virtual void OnPlayerExited()
         {
-            
+
         }
 
         /// <summary>
@@ -438,14 +436,14 @@ namespace MediaBrowser.Theater.Presentation.Playback
         /// Gets the process start info.
         /// </summary>
         /// <param name="items">The items.</param>
-        /// <param name="playerConfiguration">The player configuration.</param>
+        /// <param name="options">The options.</param>
         /// <returns>ProcessStartInfo.</returns>
-        protected virtual ProcessStartInfo GetProcessStartInfo(IEnumerable<BaseItemDto> items, PlayerConfiguration playerConfiguration)
+        protected virtual ProcessStartInfo GetProcessStartInfo(IEnumerable<BaseItemDto> items, PlayOptions options)
         {
             return new ProcessStartInfo
             {
-                FileName = playerConfiguration.Command,
-                Arguments = GetCommandArguments(items, playerConfiguration)
+                FileName = options.Configuration.Command,
+                Arguments = GetCommandArguments(items, options)
             };
         }
 
@@ -453,20 +451,31 @@ namespace MediaBrowser.Theater.Presentation.Playback
         /// Gets the command arguments.
         /// </summary>
         /// <param name="items">The items.</param>
-        /// <param name="playerConfiguration">The player configuration.</param>
+        /// <param name="options">The options.</param>
         /// <returns>System.String.</returns>
-        protected virtual string GetCommandArguments(IEnumerable<BaseItemDto> items, PlayerConfiguration playerConfiguration)
+        protected virtual string GetCommandArguments(IEnumerable<BaseItemDto> items, PlayOptions options)
         {
-            var args = playerConfiguration.Args;
+            return GetCommandArguments(items, options.Configuration.Args);
+        }
 
-            if (string.IsNullOrEmpty(args))
+        /// <summary>
+        /// Gets the command arguments.
+        /// </summary>
+        /// <param name="items">The items.</param>
+        /// <param name="formatString">The format string.</param>
+        /// <returns>System.String.</returns>
+        protected string GetCommandArguments(IEnumerable<BaseItemDto> items, string formatString)
+        {
+            var list = items.ToList();
+
+            var paths = list.Select(i => "\"" + GetPathForCommandLine(i) + "\"");
+
+            if (!SupportsMultiFilePlayback)
             {
-                return string.Empty;
+                paths = paths.Take(1);
             }
 
-            var paths = items.Take(1).Select(i => "\"" + GetPathForCommandLine(i) + "\"");
-
-            return string.Format(args, string.Join(" ", paths.ToArray()));
+            return string.Format(formatString, string.Join(" ", paths.ToArray()));
         }
 
         /// <summary>

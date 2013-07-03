@@ -1,5 +1,6 @@
 ﻿using MediaBrowser.Common;
 using MediaBrowser.Common.Updates;
+using MediaBrowser.Model.Dto;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using System;
@@ -54,6 +55,11 @@ namespace MediaBrowser.UI.Pages.Plugins
         public SettingsPageCategory Category
         {
             get { return SettingsPageCategory.System; }
+        }
+
+        public bool IsVisible(UserDto user)
+        {
+            return true;
         }
     }
 }

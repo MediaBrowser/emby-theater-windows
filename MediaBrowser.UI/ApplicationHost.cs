@@ -105,7 +105,7 @@ namespace MediaBrowser.UI
 
             RegisterSingleInstance<IIsoManager>(new PismoIsoManager(Logger));
 
-            NavigationService = new NavigationService(ThemeManager, () => PlaybackManager, ApiClient, PresentationManager);
+            NavigationService = new NavigationService(ThemeManager, () => PlaybackManager, ApiClient, PresentationManager, TheaterConfigurationManager, () => SessionManager);
             RegisterSingleInstance(NavigationService);
 
             PlaybackManager = new PlaybackManager(TheaterConfigurationManager, Logger, ApiClient, NavigationService, PresentationManager);
@@ -133,7 +133,7 @@ namespace MediaBrowser.UI
             base.FindParts();
 
             ThemeManager.AddParts(GetExports<ITheme>());
-            PresentationManager.AddParts(GetExports<ITheaterApp>(), GetExports<ISettingsPage>());
+            PresentationManager.AddParts(GetExports<ITheaterApp>(), GetExports<ISettingsPage>(), GetExports<IHomePage>());
 
             PlaybackManager.AddParts(GetExports<IMediaPlayer>());
         }

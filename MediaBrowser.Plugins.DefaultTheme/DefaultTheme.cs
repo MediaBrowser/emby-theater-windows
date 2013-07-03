@@ -116,16 +116,6 @@ namespace MediaBrowser.Plugins.DefaultTheme
         }
 
         /// <summary>
-        /// Gets the home page.
-        /// </summary>
-        /// <param name="rootItem">The root item.</param>
-        /// <returns>Page.</returns>
-        public Page GetHomePage(BaseItemDto rootItem)
-        {
-            return new HomePage(rootItem, rootItem.DisplayPreferencesId, _apiClient, _imageManager, _sessionManager, _presentationManager, _navService, _themeManager);
-        }
-
-        /// <summary>
         /// Gets the item page.
         /// </summary>
         /// <param name="item">The item.</param>

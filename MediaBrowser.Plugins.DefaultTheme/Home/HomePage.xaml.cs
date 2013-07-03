@@ -1,19 +1,20 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using MediaBrowser.Model.ApiClient;
+﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
+using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Net;
+using MediaBrowser.Plugins.DefaultTheme.Home.Apps;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.Theming;
+using MediaBrowser.Theater.Presentation.Controls;
+using MediaBrowser.Theater.Presentation.Pages;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using MediaBrowser.Theater.Presentation.Controls;
-using MediaBrowser.Theater.Presentation.Pages;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Home
 {
@@ -56,17 +57,17 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         public BaseItemDto ParentItem { get; set; }
         public string DisplayPreferencesId { get; set; }
 
-        public HomePage(BaseItemDto parent, string displayPreferencesId, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IPresentationManager applicationWindow, INavigationService navigationManager, IThemeManager themeManager)
+        private readonly ILogger _logger;
+
+        public HomePage(IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IPresentationManager applicationWindow, INavigationService navigationManager, IThemeManager themeManager, ILogger logger)
         {
             NavigationManager = navigationManager;
             PresentationManager = applicationWindow;
             SessionManager = sessionManager;
             ImageManager = imageManager;
             ApiClient = apiClient;
-            DisplayPreferencesId = displayPreferencesId;
-
-            ParentItem = parent;
             ThemeManager = themeManager;
+            _logger = logger;
 
             InitializeComponent();
         }
@@ -76,6 +77,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             Loaded += HomePage_Loaded;
 
             MenuList.SelectionChanged += MenuList_SelectionChanged;
+
+            ParentItem = await ApiClient.GetRootFolderAsync(SessionManager.CurrentUser.Id);
+
+            DisplayPreferencesId = ParentItem.DisplayPreferencesId;
+
             new ListFocuser(MenuList).FocusAfterContainersGenerated(0);
 
             var views = new List<string>();
@@ -108,7 +114,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 PresentationManager.ShowDefaultErrorMessage();
             }
 
-            if (PresentationManager.Apps.Any())
+            if (PresentationManager.GetApps(SessionManager.CurrentUser).Any())
             {
                 views.Add("apps");
             }
@@ -144,7 +150,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             }
             else if (string.Equals(item, "apps"))
             {
-                PageContent.Content = new TextBlock();
+                PageContent.Content = new AppsControl(PresentationManager, SessionManager, _logger);
             }
             if (string.Equals(item, "media collections"))
             {

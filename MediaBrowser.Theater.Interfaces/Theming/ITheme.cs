@@ -31,12 +31,6 @@ namespace MediaBrowser.Theater.Interfaces.Theming
         Page GetInternalPlayerPage();
 
         /// <summary>
-        /// Gets the home page.
-        /// </summary>
-        /// <returns>Page.</returns>
-        Page GetHomePage(BaseItemDto rootItem);
-
-        /// <summary>
         /// Gets the item page.
         /// </summary>
         /// <param name="item">The item.</param>

@@ -68,9 +68,7 @@ namespace MediaBrowser.Theater.Implementations.Session
 
             EventHelper.FireEventIfNotNull(UserLoggedIn, this, EventArgs.Empty, _logger);
 
-            var root = await _apiClient.GetRootFolderAsync(user.Id);
-
-            await _navService.NavigateToHomePage(root);
+            await _navService.NavigateToHomePage(user.Id);
 
             _navService.ClearHistory();
         }

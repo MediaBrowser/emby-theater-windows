@@ -1,5 +1,7 @@
-﻿using MediaBrowser.Theater.Interfaces.Navigation;
+﻿using System.Collections.Generic;
+using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
+using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.Pages;
 using MediaBrowser.Theater.Presentation.ViewModels;
@@ -18,16 +20,19 @@ namespace MediaBrowser.UI.Pages
         private readonly IPresentationManager _presentationManager;
 
         private readonly INavigationService _nav;
+        private readonly ISessionManager _session;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SettingsPage" /> class.
         /// </summary>
         /// <param name="presentationManager">The presentation manager.</param>
         /// <param name="nav">The nav.</param>
-        public SettingsPage(IPresentationManager presentationManager, INavigationService nav)
+        /// <param name="session">The session.</param>
+        public SettingsPage(IPresentationManager presentationManager, INavigationService nav, ISessionManager session)
         {
             _presentationManager = presentationManager;
             _nav = nav;
+            _session = session;
 
             InitializeComponent();
 
@@ -47,36 +52,38 @@ namespace MediaBrowser.UI.Pages
         {
             base.OnInitialized(e);
 
-            LoadSystemSettingsList();
-            LoadPluginSettingsList();
+            var pages = _presentationManager.SettingsPages
+                .Where(i => i.IsVisible(_session.CurrentUser))
+                .OrderBy(GetOrder)
+                .ThenBy(i => i.Name)
+                .ToList();
+
+            LoadSystemSettingsList(pages);
+            LoadPluginSettingsList(pages);
         }
 
-        private void LoadPluginSettingsList()
+        private void LoadPluginSettingsList(IEnumerable<ISettingsPage> allSettingsPages)
         {
             var items = new RangeObservableCollection<ISettingsPage>();
             var view = (ListCollectionView)CollectionViewSource.GetDefaultView(items);
 
             PluginMenuList.ItemsSource = view;
 
-            var pages = _presentationManager.SettingsPages
-                .Where(i => i.Category == SettingsPageCategory.Plugin)
-                .OrderBy(GetOrder)
-                .ThenBy(i => i.Name);
+            var pages = allSettingsPages
+                .Where(i => i.Category == SettingsPageCategory.Plugin);
 
             items.AddRange(pages);
         }
 
-        private void LoadSystemSettingsList()
+        private void LoadSystemSettingsList(IEnumerable<ISettingsPage> allSettingsPages)
         {
             var items = new RangeObservableCollection<ISettingsPage>();
             var view = (ListCollectionView)CollectionViewSource.GetDefaultView(items);
 
             MenuList.ItemsSource = view;
 
-            var pages = _presentationManager.SettingsPages
-                .Where(i => i.Category == SettingsPageCategory.System)
-                .OrderBy(GetOrder)
-                .ThenBy(i => i.Name);
+            var pages = allSettingsPages
+                .Where(i => i.Category == SettingsPageCategory.System);
 
             items.AddRange(pages);
         }

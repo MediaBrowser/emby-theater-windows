@@ -1,14 +1,16 @@
 ﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
+using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
+using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.UI.Pages;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Controls;
-using System.Windows.Threading;
 
 namespace MediaBrowser.UI.Implementations
 {
@@ -30,6 +32,9 @@ namespace MediaBrowser.UI.Implementations
 
         private readonly IPresentationManager _presentationManager;
 
+        private readonly ITheaterConfigurationManager _config;
+        private readonly Func<ISessionManager> _sessionFactory;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="NavigationService" /> class.
         /// </summary>
@@ -37,12 +42,14 @@ namespace MediaBrowser.UI.Implementations
         /// <param name="playbackManagerFactory">The playback manager factory.</param>
         /// <param name="apiClient">The API client.</param>
         /// <param name="presentationManager">The presentation manager.</param>
-        public NavigationService(IThemeManager themeManager, Func<IPlaybackManager> playbackManagerFactory, IApiClient apiClient, IPresentationManager presentationManager)
+        public NavigationService(IThemeManager themeManager, Func<IPlaybackManager> playbackManagerFactory, IApiClient apiClient, IPresentationManager presentationManager, ITheaterConfigurationManager config, Func<ISessionManager> sessionFactory)
         {
             _themeManager = themeManager;
             _playbackManagerFactory = playbackManagerFactory;
             _apiClient = apiClient;
             _presentationManager = presentationManager;
+            _config = config;
+            _sessionFactory = sessionFactory;
         }
 
         /// <summary>
@@ -61,7 +68,7 @@ namespace MediaBrowser.UI.Implementations
         /// <returns>DispatcherOperation.</returns>
         public Task NavigateToSettingsPage()
         {
-            return Navigate(new SettingsPage(_presentationManager, this));
+            return Navigate(new SettingsPage(_presentationManager, this, _sessionFactory()));
         }
 
         /// <summary>
@@ -89,11 +96,18 @@ namespace MediaBrowser.UI.Implementations
         /// <summary>
         /// Navigates to home page.
         /// </summary>
-        /// <param name="rootItem">The root item.</param>
         /// <returns>DispatcherOperation.</returns>
-        public Task NavigateToHomePage(BaseItemDto rootItem)
+        public async Task NavigateToHomePage(string userId)
         {
-            return Navigate(_themeManager.CurrentTheme.GetHomePage(rootItem));
+            var userConfig = await _config.GetUserTheaterConfiguration(userId);
+
+            var homePages = _presentationManager.HomePages.ToList();
+
+            var homePage = homePages.FirstOrDefault(i => string.Equals(i.Name, userConfig.HomePage)) ?? 
+                homePages.FirstOrDefault(i => string.Equals(i.Name, "Default")) ?? 
+                homePages.First();
+
+            await Navigate(homePage.GetPage());
         }
 
         /// <summary>

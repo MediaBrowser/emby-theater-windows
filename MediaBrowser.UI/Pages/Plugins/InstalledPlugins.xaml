@@ -23,7 +23,7 @@
                         <RowDefinition></RowDefinition>
                     </Grid.RowDefinitions>
 
-                    <Image x:Name="image" Stretch="Uniform" Height="180" Width="320" Source="{Binding ImageUri}" Grid.Row="0" Visibility="{Binding ImageVisibility}"></Image>
+                    <Image x:Name="image" Stretch="Uniform" Height="216" Width="384" Source="{Binding ImageUri}" Grid.Row="0" Visibility="{Binding ImageVisibility}"></Image>
 
                     <Grid Visibility="{Binding DefaultImageVisibility}">
                         <Grid Width="320" Height="180" />
@@ -42,7 +42,7 @@
                     <Grid VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Background="#a6000000" Grid.Row="1">
 
                         <StackPanel Orientation="Vertical">
-                            <TextBlock Margin="10 5 10 0" TextWrapping="NoWrap" Style="{DynamicResource SmallTextBlockStyle}" TextTrimming="CharacterEllipsis" Text="{Binding Name}"></TextBlock>
+                            <TextBlock Margin="10 5 10 0" TextWrapping="NoWrap" Style="{DynamicResource TextBlockStyle}" TextTrimming="CharacterEllipsis" Text="{Binding Name}"></TextBlock>
                             <TextBlock Margin="10 5 10 10" TextWrapping="NoWrap" Style="{DynamicResource SmallTextBlockStyle}" TextTrimming="CharacterEllipsis" Text="{Binding Version}"></TextBlock>
                         </StackPanel>
                     </Grid>

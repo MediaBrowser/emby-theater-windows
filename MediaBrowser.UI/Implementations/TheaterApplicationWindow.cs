@@ -33,6 +33,8 @@ namespace MediaBrowser.UI.Implementations
             _themeManager = themeManager;
         }
 
+        public IEnumerable<IHomePage> HomePages { get; private set; }
+
         /// <summary>
         /// Gets the window.
         /// </summary>
@@ -111,7 +113,7 @@ namespace MediaBrowser.UI.Implementations
         /// Gets the apps.
         /// </summary>
         /// <value>The apps.</value>
-        public IEnumerable<ITheaterApp> Apps { get; private set; }
+        private IEnumerable<ITheaterApp> Apps { get; set; }
 
         /// <summary>
         /// Gets the settings pages.
@@ -124,10 +126,12 @@ namespace MediaBrowser.UI.Implementations
         /// </summary>
         /// <param name="apps">The apps.</param>
         /// <param name="settingsPages">The settings pages.</param>
-        public void AddParts(IEnumerable<ITheaterApp> apps, IEnumerable<ISettingsPage> settingsPages)
+        /// <param name="homePages">The home pages.</param>
+        public void AddParts(IEnumerable<ITheaterApp> apps, IEnumerable<ISettingsPage> settingsPages, IEnumerable<IHomePage> homePages)
         {
             Apps = apps;
             SettingsPages = settingsPages;
+            HomePages = homePages;
         }
 
         public void ShowDefaultErrorMessage()
@@ -153,6 +157,11 @@ namespace MediaBrowser.UI.Implementations
         public void SetDefaultPageTitle()
         {
             _themeManager.CurrentTheme.SetDefaultPageTitle();
+        }
+
+        public IEnumerable<ITheaterApp> GetApps(UserDto user)
+        {
+            return Apps;
         }
     }
 }

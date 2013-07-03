@@ -300,8 +300,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
 
                 primaryImageTask = _imageManager.GetRemoteBitmapAsync(ApiClient.GetImageUrl(Item, new ImageOptions
                 {
-                    ImageType = ImageType.Primary,
-                    Quality = 100
+                    ImageType = ImageType.Primary
                 }));
             }
             else

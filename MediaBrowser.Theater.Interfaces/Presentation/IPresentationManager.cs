@@ -19,8 +19,10 @@ namespace MediaBrowser.Theater.Interfaces.Presentation
         /// <summary>
         /// Gets the apps.
         /// </summary>
+        /// <param name="user">The user.</param>
+        /// <returns>IEnumerable{ITheaterApp}.</returns>
         /// <value>The apps.</value>
-        IEnumerable<ITheaterApp> Apps { get; }
+        IEnumerable<ITheaterApp> GetApps(UserDto user);
 
         /// <summary>
         /// Gets the settings pages.
@@ -28,6 +30,8 @@ namespace MediaBrowser.Theater.Interfaces.Presentation
         /// <value>The settings pages.</value>
         IEnumerable<ISettingsPage> SettingsPages { get; }
 
+        IEnumerable<IHomePage> HomePages { get; }
+        
         /// <summary>
         /// Gets the window.
         /// </summary>
@@ -93,13 +97,14 @@ namespace MediaBrowser.Theater.Interfaces.Presentation
         /// Sets the default page title.
         /// </summary>
         void SetDefaultPageTitle();
-        
+
         /// <summary>
         /// Adds the parts.
         /// </summary>
         /// <param name="apps">The apps.</param>
         /// <param name="settingsPages">The settings pages.</param>
-        void AddParts(IEnumerable<ITheaterApp> apps, IEnumerable<ISettingsPage> settingsPages);
+        /// <param name="homePages">The home pages.</param>
+        void AddParts(IEnumerable<ITheaterApp> apps, IEnumerable<ISettingsPage> settingsPages, IEnumerable<IHomePage> homePages);
 
     }
 }

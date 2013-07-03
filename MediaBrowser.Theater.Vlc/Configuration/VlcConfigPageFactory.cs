@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Theater.Interfaces.Presentation;
+﻿using MediaBrowser.Model.Dto;
+using MediaBrowser.Theater.Interfaces.Presentation;
 using System;
 using System.Windows.Controls;
 
@@ -36,6 +37,11 @@ namespace MediaBrowser.Theater.Vlc.Configuration
         public SettingsPageCategory Category
         {
             get { return SettingsPageCategory.Plugin; }
+        }
+
+        public bool IsVisible(UserDto user)
+        {
+            return true;
         }
     }
 }

@@ -1,12 +1,33 @@
-﻿using MediaBrowser.Theater.Interfaces.Presentation;
-using MediaBrowser.UI.Pages.MediaPlayers;
+﻿using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Dto;
+using MediaBrowser.Theater.Interfaces.Configuration;
+using MediaBrowser.Theater.Interfaces.Presentation;
 using System;
 using System.Windows.Controls;
+using MediaBrowser.Theater.Interfaces.Session;
+using MediaBrowser.Theater.Interfaces.Theming;
 
 namespace MediaBrowser.UI.Pages.Appearance
 {
     public class AppearancePageFactory : ISettingsPage
     {
+        private readonly ITheaterConfigurationManager _config;
+        private readonly ISessionManager _session;
+        private readonly IImageManager _imageManager;
+        private readonly IApiClient _apiClient;
+        private readonly IPresentationManager _presentation;
+        private readonly IThemeManager _themeManager;
+
+        public AppearancePageFactory(ITheaterConfigurationManager config, ISessionManager session, IImageManager imageManager, IApiClient apiClient, IPresentationManager presentation, IThemeManager themeManager)
+        {
+            _config = config;
+            _session = session;
+            _imageManager = imageManager;
+            _apiClient = apiClient;
+            _presentation = presentation;
+            _themeManager = themeManager;
+        }
+
         /// <summary>
         /// Gets the name.
         /// </summary>
@@ -22,7 +43,7 @@ namespace MediaBrowser.UI.Pages.Appearance
         /// <returns>Page.</returns>
         public Page GetPage()
         {
-            return null;
+            return new AppearancePage(_config, _session, _imageManager, _apiClient, _presentation, _themeManager);
         }
 
         /// <summary>
@@ -37,6 +58,11 @@ namespace MediaBrowser.UI.Pages.Appearance
         public SettingsPageCategory Category
         {
             get { return SettingsPageCategory.System; }
+        }
+
+        public bool IsVisible(UserDto user)
+        {
+            return user != null;
         }
     }
 }

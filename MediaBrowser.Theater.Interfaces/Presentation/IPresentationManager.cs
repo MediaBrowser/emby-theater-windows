@@ -1,5 +1,5 @@
-﻿using MediaBrowser.Model.Dto;
-using System;
+﻿using System;
+using MediaBrowser.Model.Dto;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media.Imaging;
@@ -11,11 +11,6 @@ namespace MediaBrowser.Theater.Interfaces.Presentation
     /// </summary>
     public interface IPresentationManager
     {
-        /// <summary>
-        /// Occurs when [window loaded].
-        /// </summary>
-        event EventHandler<EventArgs> WindowLoaded;
-
         /// <summary>
         /// Gets the apps.
         /// </summary>
@@ -31,6 +26,11 @@ namespace MediaBrowser.Theater.Interfaces.Presentation
         IEnumerable<ISettingsPage> SettingsPages { get; }
 
         IEnumerable<IHomePage> HomePages { get; }
+
+        /// <summary>
+        /// Occurs when [window loaded].
+        /// </summary>
+        event EventHandler<EventArgs> WindowLoaded;
         
         /// <summary>
         /// Gets the window.
@@ -106,5 +106,16 @@ namespace MediaBrowser.Theater.Interfaces.Presentation
         /// <param name="homePages">The home pages.</param>
         void AddParts(IEnumerable<ITheaterApp> apps, IEnumerable<ISettingsPage> settingsPages, IEnumerable<IHomePage> homePages);
 
+        /// <summary>
+        /// Adds the resource dictionary.
+        /// </summary>
+        /// <param name="resource">The resource.</param>
+        void AddResourceDictionary(ResourceDictionary resource);
+
+        /// <summary>
+        /// Removes the resource dictionary.
+        /// </summary>
+        /// <param name="resource">The resource.</param>
+        void RemoveResourceDictionary(ResourceDictionary resource);
     }
 }

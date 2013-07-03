@@ -204,6 +204,9 @@
       <DependentUpon>GeneralSettingsPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\General\GeneralSettingsPageFactory.cs" />
+    <Compile Include="Pages\InternalPlayer\FullscreenVideoPage.xaml.cs">
+      <DependentUpon>FullscreenVideoPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\MediaPlayers\ConfigureMediaPlayerPage.xaml.cs">
       <DependentUpon>ConfigureMediaPlayerPage.xaml</DependentUpon>
     </Compile>
@@ -276,6 +279,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Pages\General\GeneralSettingsPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\InternalPlayer\FullscreenVideoPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

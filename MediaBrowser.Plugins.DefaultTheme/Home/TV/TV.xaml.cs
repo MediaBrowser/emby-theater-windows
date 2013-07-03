@@ -41,20 +41,14 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.TV
         /// </summary>
         /// <value>The navigation manager.</value>
         protected INavigationService NavigationManager { get; private set; }
-        /// <summary>
-        /// Gets the theme manager.
-        /// </summary>
-        /// <value>The theme manager.</value>
-        protected IThemeManager ThemeManager { get; private set; }
 
         protected IPresentationManager PresentationManager { get; private set; }
         protected IScrollInfo ScrollingPanel { get; private set; }
 
-        public TV(BaseItemDto parentItem, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IThemeManager themeManager, IPresentationManager applicationWindow, IScrollInfo scrollingPanel)
+        public TV(BaseItemDto parentItem, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IPresentationManager applicationWindow, IScrollInfo scrollingPanel)
         {
             ScrollingPanel = scrollingPanel;
             PresentationManager = applicationWindow;
-            ThemeManager = themeManager;
             NavigationManager = navigationManager;
             SessionManager = sessionManager;
             ImageManager = imageManager;

@@ -5,7 +5,7 @@ using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Net;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Plugins.DefaultTheme.DisplayPreferences;
-using MediaBrowser.Plugins.DefaultTheme.Resources;
+using MediaBrowser.Plugins.DefaultTheme.Header;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
@@ -57,7 +57,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
             {
                 ShowViewButton();
 
-                await AppResources.Instance.SetPageTitle(ParentItem);
+                await PageTitlePanel.Current.SetPageTitle(ParentItem);
             }
             else
             {
@@ -146,7 +146,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         {
             base.OnParentItemChanged();
 
-            var pageTitleTask = AppResources.Instance.SetPageTitle(ParentItem);
+            var pageTitleTask = PageTitlePanel.Current.SetPageTitle(ParentItem);
 
             ShowViewButton();
 
@@ -190,7 +190,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         /// </summary>
         private void ShowViewButton()
         {
-            var viewButton = AppResources.Instance.ViewButton;
+            var viewButton = TopRightPanel.Current.ViewButton;
             viewButton.Visibility = Visibility.Visible;
             viewButton.Click -= ViewButton_Click;
             viewButton.Click += ViewButton_Click;
@@ -201,7 +201,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         /// </summary>
         private void HideViewButton()
         {
-            var viewButton = AppResources.Instance.ViewButton;
+            var viewButton = TopRightPanel.Current.ViewButton;
             viewButton.Visibility = Visibility.Collapsed;
             viewButton.Click -= ViewButton_Click;
         }

@@ -48,25 +48,19 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         /// </summary>
         /// <value>The navigation manager.</value>
         protected INavigationService NavigationManager { get; private set; }
-        /// <summary>
-        /// Gets the theme manager.
-        /// </summary>
-        /// <value>The theme manager.</value>
-        protected IThemeManager ThemeManager { get; private set; }
 
         public BaseItemDto ParentItem { get; set; }
         public string DisplayPreferencesId { get; set; }
 
         private readonly ILogger _logger;
 
-        public HomePage(IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IPresentationManager applicationWindow, INavigationService navigationManager, IThemeManager themeManager, ILogger logger)
+        public HomePage(IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IPresentationManager applicationWindow, INavigationService navigationManager, ILogger logger)
         {
             NavigationManager = navigationManager;
             PresentationManager = applicationWindow;
             SessionManager = sessionManager;
             ImageManager = imageManager;
             ApiClient = apiClient;
-            ThemeManager = themeManager;
             _logger = logger;
 
             InitializeComponent();
@@ -134,15 +128,15 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             if (string.Equals(item, "movies"))
             {
-                PageContent.Content = new Movies.Movies(ParentItem, ApiClient, ImageManager, SessionManager, NavigationManager, ThemeManager, PresentationManager, ScrollingPanel);
+                PageContent.Content = new Movies.Movies(ParentItem, ApiClient, ImageManager, SessionManager, NavigationManager, PresentationManager, ScrollingPanel);
             }
             else if (string.Equals(item, "tv"))
             {
-                PageContent.Content = new TV.TV(ParentItem, ApiClient, ImageManager, SessionManager, NavigationManager, ThemeManager, PresentationManager, ScrollingPanel);
+                PageContent.Content = new TV.TV(ParentItem, ApiClient, ImageManager, SessionManager, NavigationManager, PresentationManager, ScrollingPanel);
             }
             else if (string.Equals(item, "music"))
             {
-                PageContent.Content = new Music.Music(ParentItem, ApiClient, ImageManager, SessionManager, NavigationManager, ThemeManager, PresentationManager, ScrollingPanel);
+                PageContent.Content = new Music.Music(ParentItem, ApiClient, ImageManager, SessionManager, NavigationManager, PresentationManager, ScrollingPanel);
             }
             else if (string.Equals(item, "games"))
             {

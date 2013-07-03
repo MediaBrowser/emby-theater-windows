@@ -10,7 +10,7 @@
         
         <Grid Background="#a6000000" VerticalAlignment="Bottom" HorizontalAlignment="Stretch">
             
-            <TextBlock x:Name="TxtName" Style="{DynamicResource TextBlockStyle}" Margin="10 5 10 10"></TextBlock>
+            <TextBlock x:Name="TxtName" Style="{DynamicResource TextBlockStyle}" Foreground="White"  Margin="10 5 10 10"></TextBlock>
             
         </Grid>
     </Grid>

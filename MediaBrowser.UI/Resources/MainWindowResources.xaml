@@ -1,6 +1,7 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation">
+                    xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
+                    xmlns:ee="clr-namespace:Microsoft.Expression.Media.Effects;assembly=Microsoft.Expression.Effects">
 
     <!--Default Window style. -->
     <Style TargetType="Window" x:Key="MainWindow">
@@ -46,6 +47,16 @@
     <!--Themes should override this to layout window content-->
     <ControlTemplate x:Key="PageContentTemplate">
         <controls:TransitionFrame x:Name="PageFrame">
+            <controls:TransitionFrame.TransitionAnimation>
+                <DoubleAnimation Duration="0:0:0.35" >
+                    <DoubleAnimation.EasingFunction>
+                        <ExponentialEase EasingMode="EaseInOut"></ExponentialEase>
+                    </DoubleAnimation.EasingFunction>
+                </DoubleAnimation>
+            </controls:TransitionFrame.TransitionAnimation>
+            <controls:TransitionFrame.TransitionType>
+                <ee:SlideInTransitionEffect SlideDirection="RightToLeft"></ee:SlideInTransitionEffect>
+            </controls:TransitionFrame.TransitionType>
         </controls:TransitionFrame>
     </ControlTemplate>
 

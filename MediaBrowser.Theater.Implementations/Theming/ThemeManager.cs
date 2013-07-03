@@ -1,9 +1,8 @@
-﻿using System.Threading.Tasks;
-using MediaBrowser.Theater.Interfaces.Theming;
+﻿using MediaBrowser.Theater.Interfaces.Theming;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows;
+using System.Threading.Tasks;
 
 namespace MediaBrowser.Theater.Implementations.Theming
 {
@@ -28,32 +27,40 @@ namespace MediaBrowser.Theater.Implementations.Theming
             get { return _currentTheme; }
         }
 
-        public async void LoadTheme(ITheme theme)
+        public async Task LoadTheme(ITheme theme)
         {
-            _currentTheme = theme;
-
-            var resources = _currentTheme.GetGlobalResources().ToList();
-
-            foreach (var resource in resources)
+            if (_currentTheme == theme)
             {
-                Application.Current.Resources.MergedDictionaries.Add(resource);
+                return;
             }
 
-            //await Task.Delay(5000);
+            var hadThemePrior = false;
 
-            //var current = Application.Current.Resources.MergedDictionaries.ToList();
+            if (_currentTheme != null)
+            {
+                _currentTheme.Unload();
+                hadThemePrior = true;
+            }
 
-            //Application.Current.Resources.MergedDictionaries.Clear();
+            _currentTheme = theme;
 
-            //foreach (var resource in current.Where(i => !resources.Contains(i)))
-            //{
-            //    Application.Current.Resources.MergedDictionaries.Add(resource);
-            //}
+            _currentTheme.Load();
+
+            if (hadThemePrior)
+            {
+                // TODO: Figure out how to determine when this has completed
+                await Task.Delay(10);
+            }
         }
 
-        public void LoadDefaultTheme()
+        public Task LoadDefaultTheme()
         {
-            LoadTheme(Themes.First(i => string.Equals(i.Name, "Default")));
+            return LoadTheme(DefaultTheme);
+        }
+
+        public ITheme DefaultTheme
+        {
+            get { return Themes.First(i => string.Equals(i.Name, "Default")); }
         }
     }
 }

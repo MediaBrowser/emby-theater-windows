@@ -1,6 +1,5 @@
 ﻿using MediaBrowser.Model.Dto;
 using MediaBrowser.Theater.Interfaces.Presentation;
-using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
@@ -13,22 +12,10 @@ namespace MediaBrowser.Theater.Interfaces.Theming
     public interface ITheme
     {
         /// <summary>
-        /// Gets the global resources.
-        /// </summary>
-        /// <returns>IEnumerable{ResourceDictionary}.</returns>
-        IEnumerable<ResourceDictionary> GetGlobalResources();
-
-        /// <summary>
         /// Gets the login page.
         /// </summary>
         /// <returns>Page.</returns>
         Page GetLoginPage();
-
-        /// <summary>
-        /// Gets the internal player page.
-        /// </summary>
-        /// <returns>Page.</returns>
-        Page GetInternalPlayerPage();
 
         /// <summary>
         /// Gets the item page.
@@ -74,5 +61,21 @@ namespace MediaBrowser.Theater.Interfaces.Theming
         /// </summary>
         /// <value>The name.</value>
         string Name { get; }
+
+        /// <summary>
+        /// Loads this instance.
+        /// </summary>
+        void Load();
+
+        /// <summary>
+        /// Unloads this instance.
+        /// </summary>
+        void Unload();
+
+        /// <summary>
+        /// Sets the global content visibility.
+        /// </summary>
+        /// <param name="visible">if set to <c>true</c> [visible].</param>
+        void SetGlobalContentVisibility(bool visible);
     }
 }

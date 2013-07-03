@@ -213,7 +213,7 @@ namespace MediaBrowser.UI
                 await _compositionRoot.Init();
 
                 // Load default theme
-                _compositionRoot.ThemeManager.LoadDefaultTheme();
+                await _compositionRoot.ThemeManager.LoadDefaultTheme();
 
                 HiddenWindow = new HiddenWindow();
                 HiddenWindow.Show();

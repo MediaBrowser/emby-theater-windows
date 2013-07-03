@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MediaBrowser.Theater.Interfaces.Theming
 {
@@ -32,14 +33,20 @@ namespace MediaBrowser.Theater.Interfaces.Theming
         ITheme CurrentTheme { get; }
 
         /// <summary>
-        /// Sets the current theme.
+        /// Gets the default theme.
         /// </summary>
-        /// <param name="theme">The theme.</param>
-        void LoadTheme(ITheme theme);
+        /// <value>The default theme.</value>
+        ITheme DefaultTheme { get; }
 
         /// <summary>
         /// Sets the current theme.
         /// </summary>
-        void LoadDefaultTheme();
+        /// <param name="theme">The theme.</param>
+        Task LoadTheme(ITheme theme);
+
+        /// <summary>
+        /// Sets the current theme.
+        /// </summary>
+        Task LoadDefaultTheme();
     }
 }

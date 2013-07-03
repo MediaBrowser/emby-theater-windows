@@ -23,11 +23,11 @@
                     <RowDefinition Height="auto"></RowDefinition>
                     <RowDefinition Height="auto"></RowDefinition>
                 </Grid.RowDefinitions>
-                
-                <TextBlock Grid.Row="0" Style="{DynamicResource TextBlockStyle}" Text="{Binding Name}" Margin="15 10 0 0"></TextBlock>
-                <TextBlock Grid.Row="0" Style="{DynamicResource TextBlockStyle}" Text="{Binding MediaType}" HorizontalAlignment="Right" Margin="0 10 15 0"></TextBlock>
 
-                <TextBlock Grid.Row="1" Style="{DynamicResource SmallTextBlockStyle}" Text="{Binding FileExtensions}" Margin="15 10 0 10" Visibility="{Binding FileExtensionsVisibility}"></TextBlock>
+                <TextBlock Grid.Row="0" Style="{DynamicResource TextBlockStyle}" Foreground="White" Text="{Binding Name}" Margin="15 10 0 0"></TextBlock>
+                <TextBlock Grid.Row="0" Style="{DynamicResource TextBlockStyle}" Foreground="White" Text="{Binding MediaType}" HorizontalAlignment="Right" Margin="0 10 15 0"></TextBlock>
+
+                <TextBlock Grid.Row="1" Style="{DynamicResource SmallTextBlockStyle}" Foreground="White" Text="{Binding FileExtensions}" Margin="15 10 0 10" Visibility="{Binding FileExtensionsVisibility}"></TextBlock>
 
             </Grid>
 

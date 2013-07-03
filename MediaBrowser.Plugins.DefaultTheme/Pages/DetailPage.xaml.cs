@@ -3,11 +3,10 @@ using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Net;
 using MediaBrowser.Plugins.DefaultTheme.Controls.Details;
-using MediaBrowser.Plugins.DefaultTheme.Resources;
+using MediaBrowser.Plugins.DefaultTheme.Header;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
-using MediaBrowser.Theater.Interfaces.Theming;
 using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -38,11 +37,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         /// </summary>
         /// <value>The application window.</value>
         protected IPresentationManager PresentationManager { get; private set; }
-        /// <summary>
-        /// Gets the theme manager.
-        /// </summary>
-        /// <value>The theme manager.</value>
-        protected IThemeManager ThemeManager { get; private set; }
 
         /// <summary>
         /// Occurs when a property value changes.
@@ -68,8 +62,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         /// <param name="apiClient">The API client.</param>
         /// <param name="sessionManager">The session manager.</param>
         /// <param name="applicationWindow">The application window.</param>
-        /// <param name="themeManager">The theme manager.</param>
-        public DetailPage(BaseItemDto item, IImageManager imageManager, IPlaybackManager playbackManager, IApiClient apiClient, ISessionManager sessionManager, IPresentationManager applicationWindow, IThemeManager themeManager)
+        public DetailPage(BaseItemDto item, IImageManager imageManager, IPlaybackManager playbackManager, IApiClient apiClient, ISessionManager sessionManager, IPresentationManager applicationWindow)
         {
             if (item == null)
             {
@@ -79,7 +72,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
             _item = item;
             _imageManager = imageManager;
             _playbackManager = playbackManager;
-            ThemeManager = themeManager;
             PresentationManager = applicationWindow;
             SessionManager = sessionManager;
             ApiClient = apiClient;
@@ -155,7 +147,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         {
             if (Item != null)
             {
-                await AppResources.Instance.SetPageTitle(Item);
+                await PageTitlePanel.Current.SetPageTitle(Item);
             }
         }
 
@@ -243,7 +235,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         {
             PresentationManager.SetBackdrops(Item);
 
-            var pageTitleTask = AppResources.Instance.SetPageTitle(Item);
+            var pageTitleTask = PageTitlePanel.Current.SetPageTitle(Item);
 
             BtnOverview_Click(null, null);
 

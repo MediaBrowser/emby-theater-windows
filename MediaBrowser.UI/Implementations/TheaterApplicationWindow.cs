@@ -163,5 +163,19 @@ namespace MediaBrowser.UI.Implementations
         {
             return Apps;
         }
+
+        public void AddResourceDictionary(ResourceDictionary resource)
+        {
+            _logger.Info("Adding resource {0}", resource.GetType().Name);
+
+            Application.Current.Resources.MergedDictionaries.Add(resource);
+        }
+
+        public void RemoveResourceDictionary(ResourceDictionary resource)
+        {
+            _logger.Info("Removing resource {0}", resource.GetType().Name);
+            
+            Application.Current.Resources.MergedDictionaries.Remove(resource);
+        }
     }
 }

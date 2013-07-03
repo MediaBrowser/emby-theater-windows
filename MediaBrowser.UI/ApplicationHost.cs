@@ -114,7 +114,7 @@ namespace MediaBrowser.UI
             ImageManager = new ImageManager(ApiClient, ApplicationPaths);
             RegisterSingleInstance(ImageManager);
 
-            SessionManager = new SessionManager(NavigationService, ApiClient, Logger);
+            SessionManager = new SessionManager(NavigationService, ApiClient, Logger, ThemeManager, TheaterConfigurationManager);
             RegisterSingleInstance(SessionManager);
 
             RegisterSingleInstance(ApiClient);

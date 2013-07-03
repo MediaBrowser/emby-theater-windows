@@ -15,7 +15,6 @@
             <RowDefinition></RowDefinition>
             <RowDefinition></RowDefinition>
             <RowDefinition></RowDefinition>
-            <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
@@ -48,7 +47,7 @@
         <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Row="1" Grid.Column="0" Margin="0 40 0 0">Theme:</TextBlock>
         <controls:SelectList x:Name="SelectTheme" Margin="40 40 0 0" Grid.Row="1" Grid.Column="1"></controls:SelectList>
 
-        <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Row="2" Grid.Column="0" Margin="0 30 0 0">Home page:</TextBlock>
-        <controls:SelectList x:Name="SelectHomePage" Margin="40 30 0 0" Grid.Row="2" Grid.Column="1"></controls:SelectList>
+        <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Row="2" Grid.Column="0" Margin="0 40 0 0">Home page:</TextBlock>
+        <controls:SelectList x:Name="SelectHomePage" Margin="40 40 0 0" Grid.Row="2" Grid.Column="1"></controls:SelectList>
     </Grid>
 </pages:BasePage>

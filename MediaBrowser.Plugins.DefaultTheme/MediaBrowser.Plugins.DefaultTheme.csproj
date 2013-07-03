@@ -148,6 +148,12 @@
     <Compile Include="DisplayPreferences\ViewMenuPage.xaml.cs">
       <DependentUpon>ViewMenuPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Header\PageTitlePanel.xaml.cs">
+      <DependentUpon>PageTitlePanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Header\TopRightPanel.xaml.cs">
+      <DependentUpon>TopRightPanel.xaml</DependentUpon>
+    </Compile>
     <Compile Include="HomePageFactory.cs" />
     <Compile Include="Home\Apps\AppControl.xaml.cs">
       <DependentUpon>AppControl.xaml</DependentUpon>
@@ -200,16 +206,12 @@
     <Compile Include="Home\HomePage.xaml.cs">
       <DependentUpon>HomePage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\InternalPlayerPage.xaml.cs">
-      <DependentUpon>InternalPlayerPage.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Pages\ListPage.xaml.cs">
       <DependentUpon>ListPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\LoginPage.xaml.cs">
       <DependentUpon>LoginPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Resources\AppResources.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -225,8 +227,6 @@
     </Compile>
     <Compile Include="Properties\SharedVersion.cs" />
     <Compile Include="DefaultTheme.cs" />
-    <Compile Include="Resources\HomePageResources.cs" />
-    <Compile Include="Resources\NavBarResources.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -330,6 +330,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Header\PageTitlePanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Header\TopRightPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Home\Apps\AppControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -398,10 +406,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Pages\InternalPlayerPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Pages\ListPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -423,9 +427,17 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Resources\ListBoxItems.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Resources\NavBarResources.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resources\Popups.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>

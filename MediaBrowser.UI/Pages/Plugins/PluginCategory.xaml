@@ -27,7 +27,7 @@
 
                     <Grid VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Background="#a6000000" Grid.Row="1">
 
-                        <TextBlock x:Name="TxtName" Margin="10 5 10 10" TextWrapping="NoWrap" Style="{DynamicResource SmallTextBlockStyle}" HorizontalAlignment="Center" TextTrimming="CharacterEllipsis" Text="{Binding name}"></TextBlock>
+                        <TextBlock x:Name="TxtName" Margin="10 5 10 10" TextWrapping="NoWrap" Style="{DynamicResource TextBlockStyle}" Foreground="White" HorizontalAlignment="Center" TextTrimming="CharacterEllipsis" Text="{Binding name}"></TextBlock>
                     </Grid>
                 </Grid>
             </Border>

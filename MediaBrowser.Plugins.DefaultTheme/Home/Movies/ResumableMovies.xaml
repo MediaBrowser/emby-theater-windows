@@ -9,7 +9,7 @@
     <controls:ExtendedListBox Margin="-25 -35" x:Name="LstItems" KeyboardNavigation.DirectionalNavigation="Continue" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource AnimatedListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{DynamicResource HomePageListBoxItemTemplate}">
         <controls:ExtendedListBox.ItemsPanel>
             <ItemsPanelTemplate>
-                <WrapPanel Margin="40 35" Orientation="Vertical"></WrapPanel>
+                <UniformGrid Rows="3" Margin="40 35"></UniformGrid>
             </ItemsPanelTemplate>
         </controls:ExtendedListBox.ItemsPanel>
     </controls:ExtendedListBox>

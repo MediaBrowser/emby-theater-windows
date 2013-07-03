@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>MediaBrowser.Theater</id>
-        <version>3.0.51</version>
+        <version>3.0.54</version>
         <title>MediaBrowser.Theater</title>
         <authors>Media Browser Team</authors>
         <owners>ebr,Luke,scottisafool</owners>
@@ -18,5 +18,7 @@
     <files>
         <file src="dlls\MediaBrowser.Theater.Interfaces.dll" target="lib\net45\MediaBrowser.Theater.Interfaces.dll" />
         <file src="dlls\MediaBrowser.Theater.Presentation.dll" target="lib\net45\MediaBrowser.Theater.Presentation.dll" />
+        <file src="..\ThirdParty\Expression\Microsoft.Expression.Effects.dll" target="lib\net45\Microsoft.Expression.Effects.dll" />
+        <file src="..\ThirdParty\Expression\Microsoft.Expression.Interactions.dll" target="lib\net45\Microsoft.Expression.Interactions.dll" />
     </files>
 </package>

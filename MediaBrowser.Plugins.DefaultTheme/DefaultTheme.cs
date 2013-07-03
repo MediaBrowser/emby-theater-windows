@@ -2,17 +2,16 @@
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Plugins.DefaultTheme.Controls;
-using MediaBrowser.Plugins.DefaultTheme.Home;
+using MediaBrowser.Plugins.DefaultTheme.Header;
 using MediaBrowser.Plugins.DefaultTheme.Pages;
-using MediaBrowser.Plugins.DefaultTheme.Resources;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.Theming;
-using MediaBrowser.Theater.Interfaces.UserInput;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
@@ -52,11 +51,6 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// The _logger
         /// </summary>
         private readonly ILogger _logger;
-        /// <summary>
-        /// The _theme manager
-        /// </summary>
-        private readonly IThemeManager _themeManager;
-        private readonly IUserInputManager _userInputManager;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultTheme" /> class.
@@ -68,9 +62,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// <param name="sessionManager">The session manager.</param>
         /// <param name="presentationManager">The app window.</param>
         /// <param name="logManager">The log manager.</param>
-        /// <param name="themeManager">The theme manager.</param>
-        /// <param name="userInputManager">The user input manager.</param>
-        public DefaultTheme(IPlaybackManager playbackManager, IImageManager imageManager, IApiClient apiClient, INavigationService navService, ISessionManager sessionManager, IPresentationManager presentationManager, ILogManager logManager, IThemeManager themeManager, IUserInputManager userInputManager)
+        public DefaultTheme(IPlaybackManager playbackManager, IImageManager imageManager, IApiClient apiClient, INavigationService navService, ISessionManager sessionManager, IPresentationManager presentationManager, ILogManager logManager)
         {
             _playbackManager = playbackManager;
             _imageManager = imageManager;
@@ -78,23 +70,53 @@ namespace MediaBrowser.Plugins.DefaultTheme
             _navService = navService;
             _sessionManager = sessionManager;
             _presentationManager = presentationManager;
-            _themeManager = themeManager;
-            _userInputManager = userInputManager;
             _logger = logManager.GetLogger(GetType().Name);
+
+            NavigationBar.PlaybackManager = _playbackManager;
+            TopRightPanel.SessionManager = _sessionManager;
+            TopRightPanel.ApiClient = _apiClient;
+            TopRightPanel.ImageManager = _imageManager;
+            TopRightPanel.Logger = _logger;
+            TopRightPanel.Navigation = _navService;
+            TopRightPanel.PlaybackManager = _playbackManager;
+            PageTitlePanel.ApiClient = _apiClient;
+            PageTitlePanel.ImageManager = _imageManager;
+
+            _presentationManager.WindowLoaded += _presentationManager_WindowLoaded;
+        }
+
+        void _presentationManager_WindowLoaded(object sender, EventArgs e)
+        {
+            var namespaceName = GetType().Namespace;
+
+            _presentationManager.AddResourceDictionary(new ResourceDictionary
+            {
+                Source = new Uri("pack://application:,,,/" + namespaceName + ";component/Resources/ListBoxItems.xaml", UriKind.Absolute)
+            });
+
+            _presentationManager.AddResourceDictionary(new ResourceDictionary
+            {
+                Source = new Uri("pack://application:,,,/" + namespaceName + ";component/Resources/Popups.xaml", UriKind.Absolute)
+            });
+
+            _presentationManager.AddResourceDictionary(new ResourceDictionary
+            {
+                Source = new Uri("pack://application:,,,/" + namespaceName + ";component/Resources/HomePageResources.xaml", UriKind.Absolute)
+            });
         }
 
         /// <summary>
         /// Gets the global resources.
         /// </summary>
         /// <returns>IEnumerable{ResourceDictionary}.</returns>
-        public IEnumerable<ResourceDictionary> GetGlobalResources()
+        private IEnumerable<ResourceDictionary> GetGlobalResources()
         {
-            return new ResourceDictionary[] { 
+            var namespaceName = GetType().Namespace;
 
-                new NavBarResources(),
-                new AppResources(_playbackManager, _imageManager, _apiClient, _presentationManager, _navService, _sessionManager, _logger, _userInputManager),
-                new HomePageResources()
-            };
+            return new[] { "NavBarResources", "AppResources" }.Select(i => new ResourceDictionary
+            {
+                Source = new Uri("pack://application:,,,/" + namespaceName + ";component/Resources/" + i + ".xaml", UriKind.Absolute)
+            });
         }
 
         /// <summary>
@@ -104,15 +126,6 @@ namespace MediaBrowser.Plugins.DefaultTheme
         public Page GetLoginPage()
         {
             return new LoginPage(_apiClient, _imageManager, _navService, _sessionManager, _presentationManager);
-        }
-
-        /// <summary>
-        /// Gets the internal player page.
-        /// </summary>
-        /// <returns>Page.</returns>
-        public Page GetInternalPlayerPage()
-        {
-            return new InternalPlayerPage();
         }
 
         /// <summary>
@@ -128,7 +141,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
                 return new ListPage(item, item.DisplayPreferencesId, _apiClient, _imageManager, _sessionManager, _presentationManager, _navService);
             }
 
-            return new DetailPage(item, _imageManager, _playbackManager, _apiClient, _sessionManager, _presentationManager, _themeManager);
+            return new DetailPage(item, _imageManager, _playbackManager, _apiClient, _sessionManager, _presentationManager);
         }
 
         /// <summary>
@@ -196,7 +209,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// <param name="title">The title.</param>
         public void SetPageTitle(string title)
         {
-            AppResources.Instance.SetPageTitle(title);
+            PageTitlePanel.Current.SetPageTitle(title);
         }
 
         /// <summary>
@@ -204,12 +217,45 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// </summary>
         public void SetDefaultPageTitle()
         {
-            AppResources.Instance.SetDefaultPageTitle();
+            PageTitlePanel.Current.SetDefaultPageTitle();
         }
 
         public string Name
         {
             get { return "Default"; }
+        }
+
+        private List<ResourceDictionary> _globalResources;
+
+        public void Load()
+        {
+            _globalResources = GetGlobalResources().ToList();
+
+            foreach (var resource in _globalResources)
+            {
+                _presentationManager.AddResourceDictionary(resource);
+            }
+        }
+
+        public void Unload()
+        {
+            foreach (var resource in _globalResources)
+            {
+                _presentationManager.RemoveResourceDictionary(resource);
+            }
+
+            foreach (var resource in _globalResources.OfType<IDisposable>())
+            {
+                resource.Dispose();
+            }
+
+            _globalResources.Clear();
+        }
+
+        public void SetGlobalContentVisibility(bool visible)
+        {
+            TopRightPanel.Current.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
+            PageTitlePanel.Current.MainGrid.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
         }
     }
 }

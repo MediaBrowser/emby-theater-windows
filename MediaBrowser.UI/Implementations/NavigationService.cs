@@ -7,6 +7,7 @@ using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.UI.Pages;
+using MediaBrowser.UI.Pages.InternalPlayer;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -86,7 +87,7 @@ namespace MediaBrowser.UI.Implementations
         /// <returns>DispatcherOperation.</returns>
         public Task NavigateToInternalPlayerPage()
         {
-            var page = _themeManager.CurrentTheme.GetInternalPlayerPage();
+            var page = new FullscreenVideoPage(_themeManager);
 
             new InternalPlayerPageBehavior(page, _playbackManagerFactory(), this).AdjustPresentationForPlayback();
 

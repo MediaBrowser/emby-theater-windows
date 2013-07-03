@@ -4,7 +4,6 @@ using MediaBrowser.Plugins.DefaultTheme.Home;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
-using MediaBrowser.Theater.Interfaces.Theming;
 using System.Windows.Controls;
 
 namespace MediaBrowser.Plugins.DefaultTheme
@@ -35,19 +34,14 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// The _logger
         /// </summary>
         private readonly ILogger _logger;
-        /// <summary>
-        /// The _theme manager
-        /// </summary>
-        private readonly IThemeManager _themeManager;
 
-        public HomePageFactory(IApiClient apiClient, IImageManager imageManager, INavigationService navService, ISessionManager sessionManager, IPresentationManager presentationManager, IThemeManager themeManager, ILogger logger)
+        public HomePageFactory(IApiClient apiClient, IImageManager imageManager, INavigationService navService, ISessionManager sessionManager, IPresentationManager presentationManager, ILogger logger)
         {
             _apiClient = apiClient;
             _imageManager = imageManager;
             _navService = navService;
             _sessionManager = sessionManager;
             _presentationManager = presentationManager;
-            _themeManager = themeManager;
             _logger = logger;
         }
 
@@ -58,7 +52,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
 
         public Page GetPage()
         {
-            return new HomePage(_apiClient, _imageManager, _sessionManager, _presentationManager, _navService, _themeManager, _logger);
+            return new HomePage(_apiClient, _imageManager, _sessionManager, _presentationManager, _navService, _logger);
         }
     }
 }

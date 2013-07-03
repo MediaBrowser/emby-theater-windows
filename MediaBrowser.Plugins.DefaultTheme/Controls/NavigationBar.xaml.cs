@@ -13,7 +13,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
     /// </summary>
     public partial class NavigationBar : UserControl
     {
-        public IPlaybackManager PlaybackManager { get; set; }
+        internal static IPlaybackManager PlaybackManager { get; set; }
 
         /// <summary>
         /// Gets or sets the current player.

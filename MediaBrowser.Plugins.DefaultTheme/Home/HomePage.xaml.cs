@@ -1,4 +1,6 @@
-﻿using MediaBrowser.Model.ApiClient;
+﻿using System.Threading;
+using System.Windows.Threading;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Net;
@@ -69,6 +71,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         protected override async void OnInitialized(EventArgs e)
         {
             Loaded += HomePage_Loaded;
+            Unloaded += HomePage_Unloaded;
 
             MenuList.SelectionChanged += MenuList_SelectionChanged;
 
@@ -120,23 +123,41 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             base.OnInitialized(e);
         }
 
+        private DispatcherTimer _selectionChangeTimer;
+        private readonly object _syncLock = new object();
+
         void MenuList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var item = MenuList.SelectedItem as string;
+            lock (_syncLock)
+            {
+                if (_selectionChangeTimer == null)
+                {
+                    _selectionChangeTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(300), DispatcherPriority.Render, UpdatePageContent, Dispatcher);
+                }
+                else
+                {
+                    _selectionChangeTimer.Start();
+                }
+            }
+        }
 
-            ScrollingPanel.SetHorizontalOffset(0);
+        private void UpdatePageContent(object sender, EventArgs args)
+        {
+            DisposeTimer();
+
+            var item = MenuList.SelectedItem as string;
 
             if (string.Equals(item, "movies"))
             {
-                PageContent.Content = new Movies.Movies(ParentItem, ApiClient, ImageManager, SessionManager, NavigationManager, PresentationManager, ScrollingPanel);
+                PageContent.Content = new Movies.Movies(ParentItem, ApiClient, ImageManager, SessionManager, NavigationManager, PresentationManager);
             }
             else if (string.Equals(item, "tv"))
             {
-                PageContent.Content = new TV.TV(ParentItem, ApiClient, ImageManager, SessionManager, NavigationManager, PresentationManager, ScrollingPanel);
+                PageContent.Content = new TV.TV(ParentItem, ApiClient, ImageManager, SessionManager, NavigationManager, PresentationManager);
             }
             else if (string.Equals(item, "music"))
             {
-                PageContent.Content = new Music.Music(ParentItem, ApiClient, ImageManager, SessionManager, NavigationManager, PresentationManager, ScrollingPanel);
+                PageContent.Content = new Music.Music(ParentItem, ApiClient, ImageManager, SessionManager, NavigationManager, PresentationManager);
             }
             else if (string.Equals(item, "games"))
             {
@@ -170,6 +191,22 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             else
             {
                 PresentationManager.SetBackdrops(parent);
+            }
+        }
+
+        void HomePage_Unloaded(object sender, RoutedEventArgs e)
+        {
+            DisposeTimer();
+        }
+
+        private void DisposeTimer()
+        {
+            lock (_syncLock)
+            {
+                if (_selectionChangeTimer != null)
+                {
+                    _selectionChangeTimer.Stop();
+                }
             }
         }
     }

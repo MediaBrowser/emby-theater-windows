@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.ApiClient;
+﻿using MediaBrowser.Common;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Navigation;
@@ -36,6 +37,8 @@ namespace MediaBrowser.UI.Implementations
         private readonly ITheaterConfigurationManager _config;
         private readonly Func<ISessionManager> _sessionFactory;
 
+        private IApplicationHost _appHost;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="NavigationService" /> class.
         /// </summary>
@@ -43,7 +46,7 @@ namespace MediaBrowser.UI.Implementations
         /// <param name="playbackManagerFactory">The playback manager factory.</param>
         /// <param name="apiClient">The API client.</param>
         /// <param name="presentationManager">The presentation manager.</param>
-        public NavigationService(IThemeManager themeManager, Func<IPlaybackManager> playbackManagerFactory, IApiClient apiClient, IPresentationManager presentationManager, ITheaterConfigurationManager config, Func<ISessionManager> sessionFactory)
+        public NavigationService(IThemeManager themeManager, Func<IPlaybackManager> playbackManagerFactory, IApiClient apiClient, IPresentationManager presentationManager, ITheaterConfigurationManager config, Func<ISessionManager> sessionFactory, IApplicationHost appHost)
         {
             _themeManager = themeManager;
             _playbackManagerFactory = playbackManagerFactory;
@@ -51,6 +54,7 @@ namespace MediaBrowser.UI.Implementations
             _presentationManager = presentationManager;
             _config = config;
             _sessionFactory = sessionFactory;
+            _appHost = appHost;
         }
 
         /// <summary>
@@ -104,11 +108,13 @@ namespace MediaBrowser.UI.Implementations
 
             var homePages = _presentationManager.HomePages.ToList();
 
-            var homePage = homePages.FirstOrDefault(i => string.Equals(i.Name, userConfig.HomePage)) ?? 
-                homePages.FirstOrDefault(i => string.Equals(i.Name, "Default")) ?? 
+            var homePage = homePages.FirstOrDefault(i => string.Equals(i.Name, userConfig.HomePage)) ??
+                homePages.FirstOrDefault(i => string.Equals(i.Name, "Default")) ??
                 homePages.First();
 
-            await Navigate(homePage.GetPage());
+            var page = (Page)_appHost.CreateInstance(homePage.PageType);
+
+            await Navigate(page);
         }
 
         /// <summary>

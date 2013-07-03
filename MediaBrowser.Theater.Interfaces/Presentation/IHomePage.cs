@@ -1,4 +1,4 @@
-﻿using System.Windows.Controls;
+﻿using System;
 
 namespace MediaBrowser.Theater.Interfaces.Presentation
 {
@@ -6,6 +6,6 @@ namespace MediaBrowser.Theater.Interfaces.Presentation
     {
         string Name { get; }
 
-        Page GetPage();
+        Type PageType { get; }
     }
 }

@@ -18,7 +18,7 @@
         <controls:ExtendedListBox Margin="-40 -30 -40 -35" x:Name="LstItems" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{DynamicResource AppListBoxItemTemplate}">
             <controls:ExtendedListBox.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <WrapPanel Margin="40 35" Orientation="Vertical"></WrapPanel>
+                    <UniformGrid Margin="40 35" Rows="2"></UniformGrid>
                 </ItemsPanelTemplate>
             </controls:ExtendedListBox.ItemsPanel>
         </controls:ExtendedListBox>

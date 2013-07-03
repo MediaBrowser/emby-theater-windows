@@ -12,14 +12,15 @@
     <Grid HorizontalAlignment="Center" VerticalAlignment="Top">
 
         <Grid.RowDefinitions>
-            <RowDefinition></RowDefinition>
-            <RowDefinition></RowDefinition>
-            <RowDefinition></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition></ColumnDefinition>
-            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition Width="auto"></ColumnDefinition>
+            <ColumnDefinition Width="auto"></ColumnDefinition>
         </Grid.ColumnDefinitions>
 
         <StackPanel Orientation="Horizontal" Margin="0 30 0 0" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
@@ -44,10 +45,14 @@
             <TextBlock Style="{DynamicResource Heading1TextBlockStyle}" Margin="20 0 0 0">Appearance Settings</TextBlock>
         </StackPanel>
 
-        <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Row="1" Grid.Column="0" Margin="0 40 0 0">Theme:</TextBlock>
-        <controls:SelectList x:Name="SelectTheme" Margin="40 40 0 0" Grid.Row="1" Grid.Column="1"></controls:SelectList>
+        <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Row="1" Grid.Column="0" Margin="0 80 0 0">Theme:</TextBlock>
+        <controls:SelectList x:Name="SelectTheme" Margin="40 80 0 0" Grid.Row="1" Grid.Column="1"></controls:SelectList>
 
-        <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Row="2" Grid.Column="0" Margin="0 40 0 0">Home page:</TextBlock>
-        <controls:SelectList x:Name="SelectHomePage" Margin="40 40 0 0" Grid.Row="2" Grid.Column="1"></controls:SelectList>
+        <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Row="2" Grid.Column="0" Margin="0 30 0 0">Home page:</TextBlock>
+        <controls:SelectList x:Name="SelectHomePage" Margin="40 30 0 0" Grid.Row="2" Grid.Column="1"></controls:SelectList>
+
+        <Button x:Name="BtnApply" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="0 60 0 0">
+            <TextBlock Style="{DynamicResource TextBlockStyle}">Apply</TextBlock>
+        </Button>
     </Grid>
 </pages:BasePage>

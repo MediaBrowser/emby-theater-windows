@@ -59,7 +59,7 @@ namespace MediaBrowser.UI.Pages.Plugins
 
         public bool IsVisible(UserDto user)
         {
-            return true;
+            return user != null && user.Configuration.IsAdministrator;
         }
     }
 }

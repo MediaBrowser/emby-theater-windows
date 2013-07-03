@@ -9,7 +9,6 @@ using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -182,8 +181,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.Movies
         {
             var size = TV.TV.GetImageSize();
 
-            SpotlightTile.ImageHeight = Convert.ToInt32(size.Height * 2 + 8);
-            SpotlightTile.ImageWidth = Convert.ToInt32(size.Width * 2 + 8);
+            SpotlightTile.ImageHeight = Convert.ToInt32(size.Height * 2 + 14);
+            SpotlightTile.ImageWidth = Convert.ToInt32(size.Width * 2 + 14);
 
             SpotlightTile.DataContext = new ItemCollectionViewModel(ApiClient, ImageManager)
             {

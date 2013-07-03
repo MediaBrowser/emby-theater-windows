@@ -6,20 +6,25 @@
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
 
-    <Grid HorizontalAlignment="Left">
+    <Grid>
+        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+        </Grid.RowDefinitions>
 
-        <Border x:Name="ImageBorder">
+        <Border x:Name="ImageBorder" Grid.Row="0" Width="250" Height="250">
             <Border.Background>
                 <LinearGradientBrush SpreadMethod="Reflect" ColorInterpolationMode="SRgbLinearInterpolation" StartPoint="0,0" EndPoint="0,1" >
                     <GradientStop Color="#ffCBCBCB" Offset="0" />
                     <GradientStop Color="#ff545358" Offset="1" />
                 </LinearGradientBrush>
             </Border.Background>
-            <Image Stretch="Uniform" Width="300" Height="300" x:Name="UserImage">
+            <Image Stretch="Uniform" x:Name="UserImage" VerticalAlignment="Bottom">
             </Image>
         </Border>
 
-        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+        <Grid HorizontalAlignment="Stretch" Grid.Row="1">
             <Grid.Background>
                 <SolidColorBrush Color="#A6000000"></SolidColorBrush>
             </Grid.Background>

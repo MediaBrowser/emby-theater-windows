@@ -4,12 +4,9 @@ using MediaBrowser.Model.Dto;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
-using MediaBrowser.Theater.Interfaces.Theming;
 using System;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Home.Music
 {
@@ -42,11 +39,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.Music
         protected INavigationService NavigationManager { get; private set; }
 
         protected IPresentationManager PresentationManager { get; private set; }
-        protected IScrollInfo ScrollingPanel { get; private set; }
 
-        public Music(BaseItemDto parentItem, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IPresentationManager applicationWindow, IScrollInfo scrollingPanel)
+        public Music(BaseItemDto parentItem, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IPresentationManager applicationWindow)
         {
-            ScrollingPanel = scrollingPanel;
             PresentationManager = applicationWindow;
             NavigationManager = navigationManager;
             SessionManager = sessionManager;
@@ -99,18 +94,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.Music
                 LblMusicVideos.Visibility = Visibility.Collapsed;
                 GridLatestMusicVideos.Visibility = Visibility.Collapsed;
             }
-        }
-
-        void spotlight_ContentLoaded(object sender, EventArgs e)
-        {
             MainGrid.Visibility = Visibility.Visible;
-            ScrollingPanel.SetHorizontalOffset(750);
-
-            Dispatcher.InvokeAsync(async () =>
-            {
-                await Task.Delay(50);
-                ScrollingPanel.SetHorizontalOffset(750);
-            });
         }
     }
 }

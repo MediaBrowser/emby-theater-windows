@@ -5,10 +5,8 @@ using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using System;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Home.Movies
 {
@@ -41,11 +39,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.Movies
         protected INavigationService NavigationManager { get; private set; }
 
         protected IPresentationManager PresentationManager { get; private set; }
-        protected IScrollInfo ScrollingPanel { get; private set; }
 
-        public Movies(BaseItemDto parentItem, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IPresentationManager applicationWindow, IScrollInfo scrollingPanel)
+        public Movies(BaseItemDto parentItem, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IPresentationManager applicationWindow)
         {
-            ScrollingPanel = scrollingPanel;
             PresentationManager = applicationWindow;
             NavigationManager = navigationManager;
             SessionManager = sessionManager;
@@ -94,14 +90,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.Movies
 
         void spotlight_ContentLoaded(object sender, EventArgs e)
         {
-            ScrollingPanel.SetHorizontalOffset(750);
-
-            Dispatcher.InvokeAsync(async () =>
-            {
-                await Task.Delay(50);
-                ScrollingPanel.SetHorizontalOffset(750);
-                MainGrid.Visibility = Visibility.Visible;
-            });
+            MainGrid.Visibility = Visibility.Visible;
         }
     }
 }

@@ -9,7 +9,7 @@
       d:DesignHeight="300" d:DesignWidth="300"
 	Title="SettingsPage">
 
-    <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Margin="100 30 100 100">
+    <Grid HorizontalAlignment="Center" VerticalAlignment="Top" Margin="100 30 100 100">
 
         <controls:ExtendedScrollViewer ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalAlignment="Top" HorizontalAlignment="Left" CanContentScroll="True">
             <controls:ScrollingPanel CanHorizontallyScroll="True" CanVerticallyScroll="False" HorizontalAlignment="Stretch">

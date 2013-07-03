@@ -26,11 +26,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
 
             TxtPath.Text = Item.Path;
 
-            if (Item.VideoFormat.HasValue && Item.VideoFormat.Value != VideoFormat.Standard)
+            if (Item.Video3DFormat.HasValue)
             {
                 TxtVideoFormat.Visibility = Visibility.Visible;
 
-                TxtVideoFormat.Text = Item.VideoFormat.Value == VideoFormat.Digital3D ? "Digital 3D" : "SBS 3D";
+                TxtVideoFormat.Text = "3D";
             }
             else
             {

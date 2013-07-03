@@ -1,7 +1,9 @@
-﻿using MediaBrowser.Model.ApiClient;
+﻿using System.Threading.Tasks;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Net;
 using MediaBrowser.Theater.Interfaces.Configuration;
+using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.Theming;
@@ -24,8 +26,9 @@ namespace MediaBrowser.UI.Pages.Appearance
         private readonly IApiClient _apiClient;
         private readonly IPresentationManager _presentation;
         private readonly IThemeManager _themeManager;
+        private readonly INavigationService _nav;
 
-        public AppearancePage(ITheaterConfigurationManager config, ISessionManager session, IImageManager imageManager, IApiClient apiClient, IPresentationManager presentation, IThemeManager themeManager)
+        public AppearancePage(ITheaterConfigurationManager config, ISessionManager session, IImageManager imageManager, IApiClient apiClient, IPresentationManager presentation, IThemeManager themeManager, INavigationService nav)
         {
             _config = config;
             _session = session;
@@ -33,12 +36,15 @@ namespace MediaBrowser.UI.Pages.Appearance
             _apiClient = apiClient;
             _presentation = presentation;
             _themeManager = themeManager;
+            _nav = nav;
             InitializeComponent();
         }
 
         protected override void OnInitialized(EventArgs e)
         {
             base.OnInitialized(e);
+
+            BtnApply.Click += BtnApply_Click;
 
             SelectHomePage.Options = _presentation.HomePages.Select(i => new SelectListItem
             {
@@ -54,10 +60,19 @@ namespace MediaBrowser.UI.Pages.Appearance
 
             }).ToList();
 
-            Unloaded += AppearancePage_Unloaded;
-
             SetUserImage();
             LoadConfiguration();
+        }
+
+        async void BtnApply_Click(object sender, RoutedEventArgs e)
+        {
+            await SaveConfiguration();
+
+            await _themeManager.LoadTheme(_themeManager.Themes.First(i => string.Equals(i.Name, SelectTheme.SelectedItem.Text)));
+
+            await _nav.NavigateToHomePage(_session.CurrentUser.Id);
+
+            _nav.ClearHistory();
         }
 
         private async void SetUserImage()
@@ -90,11 +105,6 @@ namespace MediaBrowser.UI.Pages.Appearance
             UserImage.Visibility = Visibility.Collapsed;
         }
 
-        void AppearancePage_Unloaded(object sender, RoutedEventArgs e)
-        {
-            SaveConfiguration();
-        }
-
         private async void LoadConfiguration()
         {
             var userConfig = await _config.GetUserTheaterConfiguration(_session.CurrentUser.Id);
@@ -112,7 +122,7 @@ namespace MediaBrowser.UI.Pages.Appearance
             SelectTheme.SelectedValue = themeOption.Value;
         }
 
-        private async void SaveConfiguration()
+        private async Task SaveConfiguration()
         {
             var userConfig = await _config.GetUserTheaterConfiguration(_session.CurrentUser.Id);
 

@@ -57,7 +57,7 @@ namespace MediaBrowser.UI.Pages.MediaPlayers
 
         public bool IsVisible(UserDto user)
         {
-            return true;
+            return user != null && user.Configuration.IsAdministrator;
         }
     }
 }

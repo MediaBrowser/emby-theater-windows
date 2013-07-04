@@ -16,9 +16,13 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
     /// </summary>
     public partial class Folders : BaseItemsControl
     {
+        private readonly BaseItemDto _parentItem;
+
         public Folders(BaseItemDto parent, Model.Entities.DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IPresentationManager appWindow)
-            : base(parent, displayPreferences, apiClient, imageManager, sessionManager, navigationManager, appWindow)
+            : base(displayPreferences, apiClient, imageManager, sessionManager, navigationManager, appWindow)
         {
+            _parentItem = parent;
+
             InitializeComponent();
         }
 
@@ -67,7 +71,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         {
             var query = new ItemQuery
             {
-                ParentId = ParentItem.Id,
+                ParentId = _parentItem.Id,
 
                 Fields = new[]
                         {

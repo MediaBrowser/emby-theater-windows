@@ -116,16 +116,16 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         /// </summary>
         private async void ReloadImage(BaseItemDto item)
         {
-            if (ViewModel.ImageWidth.Equals(0))
+            if (ViewModel.ImageDisplayWidth.Equals(0))
             {
                 return;
             }
 
-            MainGrid.Height = ViewModel.GetImageHeight(ImageType.Backdrop);
+            MainGrid.Height = ViewModel.ImageDisplayHeight;
 
             const int detailWidth = 900;
 
-            MainGrid.Width = ViewModel.ImageWidth + detailWidth;
+            MainGrid.Width = ViewModel.ImageDisplayWidth + detailWidth;
             MainGrid.ColumnDefinitions[1].Width = new GridLength(detailWidth);
 
             await SetImageSource(item);

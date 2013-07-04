@@ -77,10 +77,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.Movies
 
             GridSpotlight.Children.Add(spotlight);
 
-            GridResume.Children.Add(new ResumableMovies(ParentItem, displayPreferences, ApiClient, ImageManager, SessionManager, NavigationManager, PresentationManager));
-            GridViews.Children.Add(new ResumableMovies(ParentItem, displayPreferences, ApiClient, ImageManager, SessionManager, NavigationManager, PresentationManager));
+            GridResume.Children.Add(new ResumableMovies(displayPreferences, ApiClient, ImageManager, SessionManager, NavigationManager, PresentationManager));
+            GridViews.Children.Add(new ResumableMovies(displayPreferences, ApiClient, ImageManager, SessionManager, NavigationManager, PresentationManager));
 
-            GridTrailers.Children.Add(new RecentTrailers(ParentItem, new Model.Entities.DisplayPreferences
+            GridTrailers.Children.Add(new RecentTrailers(new Model.Entities.DisplayPreferences
             {
                 PrimaryImageWidth = 138,
                 PrimaryImageHeight = Convert.ToInt32(size.Height)

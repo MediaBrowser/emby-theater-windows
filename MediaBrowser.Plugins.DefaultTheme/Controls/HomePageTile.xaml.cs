@@ -72,8 +72,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
                 return;
             }
 
-            MainElement.Width = ViewModel.ImageWidth;
-            MainElement.Height = ViewModel.GetImageHeight(ViewModel.ImageType);
+            MainElement.Width = ViewModel.ImageDisplayWidth;
+            MainElement.Height = ViewModel.ImageDisplayHeight;
 
             ReloadImage(item);
 
@@ -102,7 +102,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
                 var url = ViewModel.ApiClient.GetImageUrl(item, new ImageOptions
                 {
                     ImageType = ImageType.Primary,
-                    Height = Convert.ToInt32(ViewModel.GetImageHeight(ImageType.Primary))
+                    Height = Convert.ToInt32(ViewModel.ImageDisplayHeight)
                 });
 
                 SetImage(url);
@@ -112,8 +112,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
                 var url = ViewModel.ApiClient.GetImageUrl(item, new ImageOptions
                 {
                     ImageType = ImageType.Backdrop,
-                    Height = Convert.ToInt32(ViewModel.GetImageHeight(ImageType.Backdrop)),
-                    Width = Convert.ToInt32(ViewModel.ImageWidth)
+                    Height = Convert.ToInt32(ViewModel.ImageDisplayHeight),
+                    Width = Convert.ToInt32(ViewModel.ImageDisplayWidth)
                 });
 
                 SetImage(url);
@@ -123,8 +123,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
                 var url = ViewModel.ApiClient.GetImageUrl(item, new ImageOptions
                 {
                     ImageType = ImageType.Thumb,
-                    Height = Convert.ToInt32(ViewModel.GetImageHeight(ImageType.Thumb)),
-                    Width = Convert.ToInt32(ViewModel.ImageWidth)
+                    Height = Convert.ToInt32(ViewModel.ImageDisplayHeight),
+                    Width = Convert.ToInt32(ViewModel.ImageDisplayWidth)
                 });
 
                 SetImage(url);
@@ -134,7 +134,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
                 var url = ViewModel.ApiClient.GetImageUrl(item, new ImageOptions
                 {
                     ImageType = ImageType.Primary,
-                    Height = Convert.ToInt32(ViewModel.GetImageHeight(ImageType.Primary))
+                    Height = Convert.ToInt32(ViewModel.ImageDisplayHeight)
                 });
 
                 SetImage(url);

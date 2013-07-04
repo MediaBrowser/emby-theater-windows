@@ -1,5 +1,4 @@
 ﻿using MediaBrowser.Model.ApiClient;
-using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Theater.Interfaces.Navigation;
@@ -17,8 +16,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.Music
     /// </summary>
     public partial class LatestAlbums : BaseItemsControl
     {
-        public LatestAlbums(BaseItemDto parent, Model.Entities.DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IPresentationManager appWindow) 
-            : base(parent, displayPreferences, apiClient, imageManager, sessionManager, navigationManager, appWindow)
+        public LatestAlbums(Model.Entities.DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IPresentationManager appWindow) 
+            : base(displayPreferences, apiClient, imageManager, sessionManager, navigationManager, appWindow)
         {
             InitializeComponent();
         }
@@ -68,8 +67,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.Music
         {
             var query = new ItemQuery
             {
-                ParentId = ParentItem.Id,
-
                 Fields = new[]
                         {
                             ItemFields.UserData,

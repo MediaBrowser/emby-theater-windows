@@ -161,8 +161,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.TV
                     tile.DataContext = new BaseItemDtoViewModel(ApiClient, ImageManager)
                     {
                         Item = items[index],
-                        ImageWidth = Convert.ToInt32(size.Width),
-                        MeanPrimaryImageAspectRatio = aspectRatio
+                        ImageDisplayWidth = Convert.ToInt32(size.Width),
+                        ImageDisplayHeight = Convert.ToInt32(size.Height),
+                        MedianPrimaryImageAspectRatio = aspectRatio
                     };
                 }
 

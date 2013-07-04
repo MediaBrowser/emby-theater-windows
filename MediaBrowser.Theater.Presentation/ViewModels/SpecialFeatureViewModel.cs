@@ -51,7 +51,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             set
             {
                 _imageWidth = value;
-                OnPropertyChanged("ImageWidth");
+                OnPropertyChanged("ImageDisplayWidth");
             }
         }
 

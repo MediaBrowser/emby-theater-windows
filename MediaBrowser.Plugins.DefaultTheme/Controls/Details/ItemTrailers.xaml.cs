@@ -4,6 +4,7 @@ using MediaBrowser.Model.Net;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Presentation.Controls;
+using MediaBrowser.Theater.Presentation.Extensions;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using System.Linq;
 
@@ -69,7 +70,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
             var resultItems = result ?? new BaseItemDto[] { };
 
             const int height = 297;
-            var aspectRatio = BaseItemDtoViewModel.GetMeanPrimaryImageAspectRatio(resultItems);
+            var aspectRatio = resultItems.MedianPrimaryImageAspectRatio();
 
             var width = aspectRatio.Equals(0) ? 528 : height * aspectRatio;
 

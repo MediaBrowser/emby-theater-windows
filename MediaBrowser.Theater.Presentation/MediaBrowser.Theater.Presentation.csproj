@@ -90,6 +90,9 @@
     <Compile Include="Controls\TransitionFrame.cs" />
     <Compile Include="Controls\TreeHelper.cs" />
     <Compile Include="Controls\VirtualizingWrapPanel.cs" />
+    <Compile Include="Extensions\AspectRatioHelper.cs" />
+    <Compile Include="Extensions\MedianExtension.cs" />
+    <Compile Include="Extensions\MedianPrimaryImageAspectRatioExtension.cs" />
     <Compile Include="Pages\BaseItemsPage.cs" />
     <Compile Include="Pages\BaseLoginPage.cs" />
     <Compile Include="Pages\BasePage.cs" />

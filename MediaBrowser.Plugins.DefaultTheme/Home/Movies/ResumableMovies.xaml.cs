@@ -17,8 +17,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.Movies
     /// </summary>
     public partial class ResumableMovies : BaseItemsControl
     {
-        public ResumableMovies(BaseItemDto parent, Model.Entities.DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IPresentationManager appWindow)
-            : base(parent, displayPreferences, apiClient, imageManager, sessionManager, navigationManager, appWindow)
+        public ResumableMovies(Model.Entities.DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IPresentationManager appWindow)
+            : base(displayPreferences, apiClient, imageManager, sessionManager, navigationManager, appWindow)
         {
             InitializeComponent();
         }
@@ -68,8 +68,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.Movies
         {
             var query = new ItemQuery
             {
-                ParentId = ParentItem.Id,
-
                 Fields = new[]
                         {
                             ItemFields.UserData,

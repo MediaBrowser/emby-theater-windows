@@ -6,16 +6,17 @@ using MediaBrowser.Model.Querying;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
-using MediaBrowser.Theater.Interfaces.Theming;
+using MediaBrowser.Theater.Presentation.Extensions;
 using MediaBrowser.Theater.Presentation.Pages;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
 using System.ComponentModel;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Threading;
 
 namespace MediaBrowser.Theater.Presentation.Controls
 {
@@ -73,12 +74,11 @@ namespace MediaBrowser.Theater.Presentation.Controls
         /// Gets or sets the current selection timer.
         /// </summary>
         /// <value>The current selection timer.</value>
-        private Timer CurrentSelectionTimer { get; set; }
+        private DispatcherTimer CurrentSelectionTimer { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseItemsPage" /> class.
         /// </summary>
-        /// <param name="parent">The parent.</param>
         /// <param name="displayPreferences">The display preferences.</param>
         /// <param name="apiClient">The API client.</param>
         /// <param name="imageManager">The image manager.</param>
@@ -88,12 +88,8 @@ namespace MediaBrowser.Theater.Presentation.Controls
         /// <exception cref="System.ArgumentNullException">parent
         /// or
         /// displayPreferencesId</exception>
-        protected BaseItemsControl(BaseItemDto parent, DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IPresentationManager appWindow)
+        protected BaseItemsControl(DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IPresentationManager appWindow)
         {
-            if (parent == null)
-            {
-                throw new ArgumentNullException("parent");
-            }
             if (displayPreferences == null)
             {
                 throw new ArgumentNullException("displayPreferences");
@@ -106,26 +102,6 @@ namespace MediaBrowser.Theater.Presentation.Controls
             PresentationManager = appWindow;
 
             _displayPreferences = displayPreferences;
-            _parentItem = parent;
-        }
-
-        /// <summary>
-        /// The _parent item
-        /// </summary>
-        private BaseItemDto _parentItem;
-        /// <summary>
-        /// Gets or sets the parent item.
-        /// </summary>
-        /// <value>The parent item.</value>
-        public BaseItemDto ParentItem
-        {
-            get { return _parentItem; }
-
-            set
-            {
-                _parentItem = value;
-                OnPropertyChanged("ParentItem");
-            }
         }
 
         /// <summary>
@@ -139,6 +115,8 @@ namespace MediaBrowser.Theater.Presentation.Controls
                 return false;
             }
         }
+
+        private readonly object _timerLock = new object();
 
         /// <summary>
         /// The _current item
@@ -168,13 +146,22 @@ namespace MediaBrowser.Theater.Presentation.Controls
 
                 // Fire notification events after a short delay
                 // We don't want backdrops and logos reloading while the user is navigating quickly
-                if (CurrentSelectionTimer != null)
+                lock (_timerLock)
                 {
-                    CurrentSelectionTimer.Change(500, Timeout.Infinite);
+                    if (CurrentSelectionTimer != null)
+                    {
+                        CurrentSelectionTimer.Stop();
+                        CurrentSelectionTimer.Start();
+                    }
+                    else
+                    {
+                        CurrentSelectionTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(500), DispatcherPriority.Normal, CurrentItemChangedTimerCallback, Dispatcher);
+                    }
                 }
-                else
+
+                if (SetBackdropsOnCurrentItemChanged && value != null)
                 {
-                    CurrentSelectionTimer = new Timer(CurrentItemChangedTimerCallback, value, 500, Timeout.Infinite);
+                    PresentationManager.SetBackdrops(value);
                 }
             }
         }
@@ -238,24 +225,6 @@ namespace MediaBrowser.Theater.Presentation.Controls
         }
 
         /// <summary>
-        /// Gets the wrap panel orientation.
-        /// </summary>
-        /// <value>The wrap panel orientation.</value>
-        public Orientation WrapPanelOrientation
-        {
-            get
-            {
-                // Hasn't loaded yet
-                if (DisplayPreferences == null)
-                {
-                    return Orientation.Horizontal;
-                }
-
-                return DisplayPreferences.ScrollDirection == ScrollDirection.Horizontal ? Orientation.Vertical : Orientation.Horizontal;
-            }
-        }
-
-        /// <summary>
         /// Raises the <see cref="E:System.Windows.FrameworkElement.Initialized" /> event. This method is invoked whenever <see cref="P:System.Windows.FrameworkElement.IsInitialized" /> is set to true internally.
         /// </summary>
         /// <param name="e">The <see cref="T:System.Windows.RoutedEventArgs" /> that contains the event data.</param>
@@ -264,6 +233,8 @@ namespace MediaBrowser.Theater.Presentation.Controls
             base.OnInitialized(e);
 
             DataContext = this;
+
+            Unloaded += BaseItemsControl_Unloaded;
 
             OnPropertyChanged("ParentItem");
 
@@ -274,6 +245,11 @@ namespace MediaBrowser.Theater.Presentation.Controls
 
             OnPropertyChanged("DisplayPreferences");
             await ReloadItems(true);
+        }
+
+        void BaseItemsControl_Unloaded(object sender, RoutedEventArgs e)
+        {
+            DisposeTimer();
         }
 
         void ListCollectionView_CurrentChanged(object sender, EventArgs e)
@@ -297,10 +273,6 @@ namespace MediaBrowser.Theater.Presentation.Controls
             if (string.Equals(name, "DisplayPreferences"))
             {
                 OnDisplayPreferencesChanged();
-            }
-            else if (string.Equals(name, "ParentItem"))
-            {
-                OnParentItemChanged();
             }
         }
 
@@ -338,12 +310,12 @@ namespace MediaBrowser.Theater.Presentation.Controls
 
                 ListItems.Clear();
 
-                var meanPrimaryImageAspectRatio = BaseItemDtoViewModel.GetMeanPrimaryImageAspectRatio(result.Items);
+                var meanPrimaryImageAspectRatio = result.Items.MedianPrimaryImageAspectRatio();
 
                 ListItems.AddRange(result.Items.Select(i =>
                 {
                     var model = CreateViewModel(i);
-                    model.MeanPrimaryImageAspectRatio = meanPrimaryImageAspectRatio;
+                    model.MedianPrimaryImageAspectRatio = meanPrimaryImageAspectRatio;
                     return model;
                 }));
 
@@ -365,7 +337,8 @@ namespace MediaBrowser.Theater.Presentation.Controls
         {
             return new BaseItemDtoViewModel(ApiClient, ImageManager)
             {
-                ImageWidth = DisplayPreferences.PrimaryImageWidth,
+                ImageDisplayWidth = DisplayPreferences.PrimaryImageWidth,
+                ImageDisplayHeight = DisplayPreferences.PrimaryImageHeight,
                 ViewType = DisplayPreferences.ViewType,
                 Item = item
             };
@@ -386,29 +359,10 @@ namespace MediaBrowser.Theater.Presentation.Controls
             // Notify all of the child view models
             foreach (var item in ListItems)
             {
-                item.ImageWidth = DisplayPreferences.PrimaryImageWidth;
+                item.ImageDisplayWidth = DisplayPreferences.PrimaryImageWidth;
+                item.ImageDisplayHeight = DisplayPreferences.PrimaryImageHeight;
                 item.ViewType = DisplayPreferences.ViewType;
             }
-
-            OnPropertyChanged("WrapPanelOrientation");
-
-            if (DisplayPreferences.ScrollDirection == ScrollDirection.Horizontal)
-            {
-                ScrollViewer.SetHorizontalScrollBarVisibility(ItemsList, ScrollBarVisibility.Hidden);
-                ScrollViewer.SetVerticalScrollBarVisibility(ItemsList, ScrollBarVisibility.Disabled);
-            }
-            else
-            {
-                ScrollViewer.SetHorizontalScrollBarVisibility(ItemsList, ScrollBarVisibility.Disabled);
-                ScrollViewer.SetVerticalScrollBarVisibility(ItemsList, ScrollBarVisibility.Hidden);
-            }
-        }
-
-        /// <summary>
-        /// Called when [parent item changed].
-        /// </summary>
-        protected virtual void OnParentItemChanged()
-        {
         }
 
         protected virtual bool SetBackdropsOnCurrentItemChanged
@@ -424,28 +378,33 @@ namespace MediaBrowser.Theater.Presentation.Controls
         /// </summary>
         protected virtual void OnCurrentItemChanged()
         {
-            var item = CurrentItem;
-
-            if (SetBackdropsOnCurrentItemChanged && item != null)
-            {
-                PresentationManager.SetBackdrops(item);
-            }
         }
 
         /// <summary>
         /// Currents the item changed timer callback.
         /// </summary>
-        /// <param name="state">The state.</param>
-        private async void CurrentItemChangedTimerCallback(object state)
+        /// <param name="sender">The sender.</param>
+        /// <param name="args">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void CurrentItemChangedTimerCallback(object sender, EventArgs args)
         {
-            await Dispatcher.InvokeAsync(() =>
-            {
-                // Fire notification events for the UI
-                OnPropertyChanged("CurrentItem");
+            DisposeTimer();
+            
+            // Fire notification events for the UI
+            OnPropertyChanged("CurrentItem");
 
-                // Alert subclasses
-                OnCurrentItemChanged();
-            });
+            // Alert subclasses
+            OnCurrentItemChanged();
+        }
+
+        private void DisposeTimer()
+        {
+            lock (_timerLock)
+            {
+                if (CurrentSelectionTimer != null)
+                {
+                    CurrentSelectionTimer.Stop();
+                }
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.ApiClient;
+﻿using System.Windows.Threading;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
@@ -27,7 +28,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Header
         internal static INavigationService Navigation { get; set; }
         internal static IPlaybackManager PlaybackManager { get; set; }
 
-        private Timer ClockTimer { get; set; }
+        private DispatcherTimer ClockTimer { get; set; }
 
         internal static TopRightPanel Current;
 
@@ -42,15 +43,26 @@ namespace MediaBrowser.Plugins.DefaultTheme.Header
         {
             base.OnInitialized(e);
 
+            Loaded += TopRightPanel_Loaded;
             Unloaded += TopRightPanel_Unloaded;
-            
+
             SessionManager.UserLoggedIn += SessionManager_UserLoggedIn;
             SessionManager.UserLoggedOut += SessionManager_UserLoggedOut;
 
             PlaybackManager.PlaybackStarted += PlaybackManager_PlaybackStarted;
-            PlaybackManager.PlaybackCompleted += PlaybackManager_PlaybackCompleted; 
-            
-            ClockTimer = new Timer(ClockTimerCallback, null, 0, 10000);
+            PlaybackManager.PlaybackCompleted += PlaybackManager_PlaybackCompleted;
+
+            ClockTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(10000), DispatcherPriority.Normal, ClockTimerCallback, Dispatcher);
+
+            ClockTimerCallback(null, EventArgs.Empty);
+        }
+
+        void TopRightPanel_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (ClockTimer != null)
+            {
+                ClockTimer.Start();
+            }
         }
 
         void TopRightPanel_Unloaded(object sender, RoutedEventArgs e)
@@ -60,11 +72,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.Header
 
             PlaybackManager.PlaybackStarted -= PlaybackManager_PlaybackStarted;
             PlaybackManager.PlaybackCompleted -= PlaybackManager_PlaybackCompleted;
-            
+
             if (ClockTimer != null)
             {
-                ClockTimer.Dispose();
-                ClockTimer = null;
+                ClockTimer.Stop();
             }
         }
 
@@ -72,29 +83,26 @@ namespace MediaBrowser.Plugins.DefaultTheme.Header
         /// Clocks the timer callback.
         /// </summary>
         /// <param name="stateInfo">The state info.</param>
-        private async void ClockTimerCallback(object stateInfo)
+        /// <param name="args">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ClockTimerCallback(object stateInfo, EventArgs args)
         {
-            await Dispatcher.InvokeAsync(() =>
+            var left = CurrentTimeLeft;
+            var right = CurrentTimeRight;
+
+            var now = DateTime.Now;
+
+            left.Text = now.ToString("h:mm");
+
+            if (CultureInfo.CurrentCulture.Name.Equals("en-US", StringComparison.OrdinalIgnoreCase))
             {
-                var left = CurrentTimeLeft;
-                var right = CurrentTimeRight;
-
-                var now = DateTime.Now;
-
-                left.Text = now.ToString("h:mm");
-
-                if (CultureInfo.CurrentCulture.Name.Equals("en-US", StringComparison.OrdinalIgnoreCase))
-                {
-                    var time = now.ToString("t");
-                    var values = time.Split(' ');
-                    right.Text = values[values.Length - 1].ToLower();
-                }
-                else
-                {
-                    right.Text = string.Empty;
-                }
-
-            });
+                var time = now.ToString("t");
+                var values = time.Split(' ');
+                right.Text = values[values.Length - 1].ToLower();
+            }
+            else
+            {
+                right.Text = string.Empty;
+            }
         }
 
         async void SessionManager_UserLoggedOut(object sender, EventArgs e)

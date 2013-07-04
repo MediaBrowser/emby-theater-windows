@@ -17,9 +17,13 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.TV
     /// </summary>
     public partial class ResumableEpisodes : BaseItemsControl
     {
+        private readonly BaseItemDto _parentItem;
+        
         public ResumableEpisodes(BaseItemDto parent, Model.Entities.DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IPresentationManager appWindow)
-            : base(parent, displayPreferences, apiClient, imageManager, sessionManager, navigationManager, appWindow)
+            : base(displayPreferences, apiClient, imageManager, sessionManager, navigationManager, appWindow)
         {
+            _parentItem = parent;
+
             InitializeComponent();
         }
 
@@ -68,7 +72,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.TV
         {
             var query = new ItemQuery
             {
-                ParentId = ParentItem.Id,
+                ParentId = _parentItem.Id,
 
                 Fields = new[]
                         {

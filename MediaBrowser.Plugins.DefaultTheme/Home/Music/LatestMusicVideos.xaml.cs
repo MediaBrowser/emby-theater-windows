@@ -17,8 +17,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.Music
     /// </summary>
     public partial class LatestMusicVideos : BaseItemsControl
     {
-        public LatestMusicVideos(BaseItemDto parent, Model.Entities.DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IPresentationManager appWindow)
-            : base(parent, displayPreferences, apiClient, imageManager, sessionManager, navigationManager, appWindow)
+        public LatestMusicVideos(Model.Entities.DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IPresentationManager appWindow)
+            : base(displayPreferences, apiClient, imageManager, sessionManager, navigationManager, appWindow)
         {
             InitializeComponent();
         }
@@ -68,8 +68,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.Music
         {
             var query = new ItemQuery
             {
-                ParentId = ParentItem.Id,
-
                 Fields = new[]
                         {
                             ItemFields.UserData,

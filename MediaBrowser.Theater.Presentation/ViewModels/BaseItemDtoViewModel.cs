@@ -2,9 +2,8 @@
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Theater.Interfaces.Presentation;
+using MediaBrowser.Theater.Presentation.Extensions;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace MediaBrowser.Theater.Presentation.ViewModels
 {
@@ -23,19 +22,19 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         /// <summary>
         /// The _average primary image aspect ratio
         /// </summary>
-        private double _meanPrimaryImageAspectRatio;
+        private double _medianPrimaryImageAspectRatio;
         /// <summary>
         /// Gets the aspect ratio that should be used if displaying the primary image
         /// </summary>
         /// <value>The average primary image aspect ratio.</value>
-        public double MeanPrimaryImageAspectRatio
+        public double MedianPrimaryImageAspectRatio
         {
-            get { return _meanPrimaryImageAspectRatio; }
+            get { return _medianPrimaryImageAspectRatio; }
 
             set
             {
-                _meanPrimaryImageAspectRatio = value;
-                OnPropertyChanged("MeanPrimaryImageAspectRatio");
+                _medianPrimaryImageAspectRatio = value;
+                OnPropertyChanged("MedianPrimaryImageAspectRatio");
             }
         }
 
@@ -60,21 +59,32 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         /// <summary>
         /// The _image width
         /// </summary>
-        private double _imageWidth;
+        private double _imageDisplayWidth;
         /// <summary>
         /// Gets or sets the width of the image.
         /// </summary>
         /// <value>The width of the image.</value>
-        public double ImageWidth
+        public double ImageDisplayWidth
         {
-            get { return _imageWidth; }
+            get { return _imageDisplayWidth; }
             set
             {
-                _imageWidth = value;
-                OnPropertyChanged("ImageWidth");
+                _imageDisplayWidth = value;
+                OnPropertyChanged("ImageDisplayWidth");
             }
         }
 
+        private double _imageDisplayHeight;
+        public double ImageDisplayHeight
+        {
+            get { return _imageDisplayHeight; }
+            set
+            {
+                _imageDisplayHeight = value;
+                OnPropertyChanged("ImageDisplayHeight");
+            }
+        }
+        
         /// <summary>
         /// The _image type
         /// </summary>
@@ -119,11 +129,6 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
-        public double GetImageHeight(ImageType imageType)
-        {
-            return ImageWidth/GetAspectRatio(imageType, MeanPrimaryImageAspectRatio);
-        }
-
         /// <summary>
         /// Gets an image url that can be used to download an image from the api
         /// </summary>
@@ -132,11 +137,8 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         /// <returns>System.String.</returns>
         public string GetImageUrl(ImageType imageType, int? imageIndex = null)
         {
-            var width = ImageWidth;
-
-            var averageAspectRatio = GetAspectRatio(imageType, MeanPrimaryImageAspectRatio);
-
-            var height = width / averageAspectRatio;
+            var width = ImageDisplayWidth;
+            var height = ImageDisplayHeight;
 
             var imageOptions = new ImageOptions
             {
@@ -145,10 +147,12 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 Width = Convert.ToInt32(width)
             };
 
+            var medianAspectRatio = AspectRatioHelper.GetAspectRatio(imageType, MedianPrimaryImageAspectRatio);
+
             var currentAspectRatio = imageType == ImageType.Primary ? Item.PrimaryImageAspectRatio ?? width / height : width / height;
 
             // Preserve the exact AR if it deviates from the average significantly
-            var preserveExactAspectRatio = Math.Abs(currentAspectRatio - averageAspectRatio) > .4;
+            var preserveExactAspectRatio = Math.Abs(currentAspectRatio - medianAspectRatio) > .4;
 
             if (!preserveExactAspectRatio)
             {
@@ -163,74 +167,6 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             return ApiClient.GetImageUrl(Item, imageOptions);
         }
 
-        private double GetAspectRatio(ImageType imageType, double averagePrimaryImageAspectRatio)
-        {
-            switch (imageType)
-            {
-                case ImageType.Art:
-                    return 1.777777777777778;
-                case ImageType.Backdrop:
-                    return 1.777777777777778;
-                case ImageType.Banner:
-                    return 5.414285714285714;
-                case ImageType.Disc:
-                    return 1;
-                case ImageType.Logo:
-                    return 1.777777777777778;
-                case ImageType.Primary:
-                    return averagePrimaryImageAspectRatio;
-                case ImageType.Thumb:
-                    return 1.777777777777778;
-                default:
-                    return 1;
-            }
-        }
 
-        /// <summary>
-        /// Gets the average primary image aspect ratio.
-        /// </summary>
-        /// <param name="items">The items.</param>
-        /// <returns>System.Double.</returns>
-        /// <exception cref="System.ArgumentNullException">items</exception>
-        public static double GetMeanPrimaryImageAspectRatio(IEnumerable<BaseItemDto> items)
-        {
-            if (items == null)
-            {
-                throw new ArgumentNullException("items");
-            }
-
-            var values = items.Select(i => i.PrimaryImageAspectRatio ?? 0).Where(i => i > 0).ToList();
-
-            if (values.Count > 0)
-            {
-                return values.Median();
-            }
-
-            return 1;
-        }
-    }
-
-    public static class MedianExtension
-    {
-        public static double Median(this IEnumerable<double> source)
-        {
-            var list = source.ToList();
-
-            if (list.Count != 0)
-            {
-                var midpoint = (list.Count - 1) / 2;
-                var sorted = list.OrderBy(n => n);
-                var median = sorted.ElementAt(midpoint);
-
-                if (list.Count % 2 == 0)
-                {
-                    median = (median + sorted.ElementAt(midpoint + 1)) / 2;
-                }
-
-                return median;
-            }
-
-            throw new InvalidOperationException("Sequence contains no elements");
-        }
     }
 }

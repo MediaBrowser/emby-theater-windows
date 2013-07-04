@@ -295,14 +295,14 @@ namespace MediaBrowser.Theater.Presentation.Controls
         public Rect MakeVisible(Visual visual, Rect rectangle)
         {
             if (rectangle.IsEmpty || visual == null
-              || visual == this || !base.IsAncestorOf(visual))
+              || visual == this || !IsAncestorOf(visual))
             { return Rect.Empty; }
 
             rectangle = visual.TransformToAncestor(this).TransformBounds(rectangle);
 
-            rectangle.Scale(1.4, 1.4);
+            rectangle.Scale(1.5, 1.5);
 
-            Rect viewRect = new Rect(HorizontalOffset,
+            var viewRect = new Rect(HorizontalOffset,
               VerticalOffset, ViewportWidth, ViewportHeight);
             rectangle.X += viewRect.X;
             rectangle.Y += viewRect.Y;

@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.ApiClient;
+﻿using System.Windows.Threading;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using System;
@@ -35,7 +36,9 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         /// <summary>
         /// Gets the timer that updates the current item
         /// </summary>
-        private Timer CurrentItemTimer { get; set; }
+        private DispatcherTimer CurrentItemTimer { get; set; }
+
+        private object _timerLock = new object();
 
         private BaseItemDto[] _items;
         /// <summary>
@@ -105,9 +108,12 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         /// </summary>
         private void DisposeTimer()
         {
-            if (CurrentItemTimer != null)
+            lock (_timerLock)
             {
-                CurrentItemTimer.Dispose();
+                if (CurrentItemTimer != null)
+                {
+                    CurrentItemTimer.Stop();
+                }
             }
         }
 
@@ -121,14 +127,26 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             // Don't bother unless there's at least two items
             if (Items.Length > 1)
             {
-                CurrentItemTimer = new Timer(state => Application.Current.Dispatcher.InvokeAsync(IncrementCurrentItemIndex), null, RotationPeriodMs, RotationPeriodMs);
+                lock (_timerLock)
+                {
+                    if (CurrentItemTimer == null)
+                    {
+                        CurrentItemTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(RotationPeriodMs), DispatcherPriority.Normal, IncrementCurrentItemIndex,
+                                                               Application.Current.Dispatcher);
+                    }
+                    else
+                    {
+                        CurrentItemTimer.Stop();
+                        CurrentItemTimer.Start();
+                    }
+                }
             }
         }
 
         /// <summary>
         /// Increments current item index, or resets it back to zero if we're at the end of the list
         /// </summary>
-        private void IncrementCurrentItemIndex()
+        private void IncrementCurrentItemIndex(object sender, EventArgs args)
         {
             var newIndex = CurrentItemIndex + 1;
 

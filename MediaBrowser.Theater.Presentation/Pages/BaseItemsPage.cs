@@ -8,6 +8,7 @@ using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Presentation.Controls;
+using MediaBrowser.Theater.Presentation.Extensions;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
 using System.ComponentModel;
@@ -360,14 +361,15 @@ namespace MediaBrowser.Theater.Presentation.Pages
                 
                 ListItems.Clear();
 
-                var averagePrimaryImageAspectRatio = BaseItemDtoViewModel.GetMeanPrimaryImageAspectRatio(result.Items);
+                var averagePrimaryImageAspectRatio = result.Items.MedianPrimaryImageAspectRatio();
 
                 ListItems.AddRange(result.Items.Select(i => new BaseItemDtoViewModel(ApiClient, ImageManager)
                 {
-                    ImageWidth = DisplayPreferences.PrimaryImageWidth,
+                    ImageDisplayWidth = DisplayPreferences.PrimaryImageWidth,
+                    ImageDisplayHeight = DisplayPreferences.PrimaryImageHeight,
                     ViewType = DisplayPreferences.ViewType,
                     Item = i,
-                    MeanPrimaryImageAspectRatio = averagePrimaryImageAspectRatio
+                    MedianPrimaryImageAspectRatio = averagePrimaryImageAspectRatio
                 }));
 
                 if (selectedIndex.HasValue)
@@ -400,7 +402,8 @@ namespace MediaBrowser.Theater.Presentation.Pages
             // Notify all of the child view models
             foreach (var item in ListItems)
             {
-                item.ImageWidth = DisplayPreferences.PrimaryImageWidth;
+                item.ImageDisplayWidth = DisplayPreferences.PrimaryImageWidth;
+                item.ImageDisplayHeight = DisplayPreferences.PrimaryImageHeight;
                 item.ViewType = DisplayPreferences.ViewType;
             }
 

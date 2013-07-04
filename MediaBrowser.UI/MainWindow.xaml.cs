@@ -1,8 +1,6 @@
 ﻿using MediaBrowser.Common;
 using MediaBrowser.Model.ApiClient;
-using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
-using MediaBrowser.Model.Net;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.UserInput;
@@ -11,7 +9,6 @@ using MediaBrowser.UI.Controls;
 using MediaBrowser.UI.Implementations;
 using System;
 using System.ComponentModel;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -25,42 +22,13 @@ namespace MediaBrowser.UI
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : BaseWindow, IDisposable
+    public partial class MainWindow : BaseWindow
     {
         private DateTime _lastMouseInput;
         /// <summary>
         /// Gets or sets the system activity timer.
         /// </summary>
         private Timer ActivityTimer { get; set; }
-        /// <summary>
-        /// Gets or sets the backdrop timer.
-        /// </summary>
-        /// <value>The backdrop timer.</value>
-        private Timer BackdropTimer { get; set; }
-        /// <summary>
-        /// Gets or sets the current backdrops.
-        /// </summary>
-        /// <value>The current backdrops.</value>
-        private string[] CurrentBackdrops { get; set; }
-
-        /// <summary>
-        /// The _current backdrop index
-        /// </summary>
-        private int _currentBackdropIndex;
-        /// <summary>
-        /// Gets or sets the index of the current backdrop.
-        /// </summary>
-        /// <value>The index of the current backdrop.</value>
-        public int CurrentBackdropIndex
-        {
-            get { return _currentBackdropIndex; }
-            set
-            {
-                _currentBackdropIndex = value;
-                OnPropertyChanged("CurrentBackdropIndex");
-                Dispatcher.InvokeAsync(OnBackdropIndexChanged);
-            }
-        }
 
         /// <summary>
         /// The _is mouse idle
@@ -87,10 +55,9 @@ namespace MediaBrowser.UI
             }
         }
 
+        internal RotatingBackdrops RotatingBackdrops { get; private set; }
+
         private readonly ILogger _logger;
-        private readonly IPlaybackManager _playbackManager;
-        private readonly IApiClient _apiClient;
-        private readonly IImageManager _imageManager;
         private readonly IApplicationHost _appHost;
         private readonly IPresentationManager _appWindow;
         private readonly IUserInputManager _userInput;
@@ -102,19 +69,18 @@ namespace MediaBrowser.UI
             : base()
         {
             _logger = logger;
-            _playbackManager = playbackManager;
-            _apiClient = apiClient;
-            _imageManager = imageManager;
             _appHost = appHost;
             _appWindow = appWindow;
             _userInput = userInput;
 
+            Loaded += MainWindow_Loaded;
+
             InitializeComponent();
 
-            WindowCommands.ApplicationHost = _appHost;
+            RotatingBackdrops = new RotatingBackdrops(Dispatcher, BackdropContainer, imageManager, apiClient, playbackManager);
 
+            WindowCommands.ApplicationHost = _appHost;
             RenderOptions.SetBitmapScalingMode(this, BitmapScalingMode.Fant);
-            Loaded += MainWindow_Loaded;
         }
 
         void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -132,6 +98,9 @@ namespace MediaBrowser.UI
         {
             _userInput.MouseMove -= _userInput_MouseMove;
 
+            RotatingBackdrops.Dispose();
+            DisposeActivityTimer();
+            
             base.OnClosing(e);
         }
 
@@ -150,46 +119,6 @@ namespace MediaBrowser.UI
         private void TimerCallback(object state)
         {
             IsMouseIdle = (DateTime.Now - _lastMouseInput).TotalMilliseconds > 3000;
-        }
-
-        /// <summary>
-        /// Called when [backdrop index changed].
-        /// </summary>
-        private async void OnBackdropIndexChanged()
-        {
-            var currentBackdropIndex = CurrentBackdropIndex;
-
-            if (currentBackdropIndex == -1)
-            {
-                // Setting this to null doesn't seem to clear out the content
-                // Have to check it for null or get startup errors
-                if (BackdropContainer.Content != null)
-                {
-                    BackdropContainer.Content = new FrameworkElement();
-                }
-                return;
-            }
-
-            try
-            {
-                var bitmap = await _imageManager.GetRemoteBitmapAsync(CurrentBackdrops[currentBackdropIndex]);
-
-                var img = new Image
-                {
-                    Source = bitmap
-                };
-
-                img.SetResourceReference(StyleProperty, "BackdropImage");
-
-                BackdropContainer.Content = img;
-            }
-            catch (HttpException)
-            {
-                if (currentBackdropIndex == 0)
-                {
-                    BackdropContainer.Content = new FrameworkElement();
-                }
-            }
         }
 
         /// <summary>
@@ -242,94 +171,6 @@ namespace MediaBrowser.UI
 
             return task.Task;
         }
-
-        /// <summary>
-        /// Sets the backdrop based on a BaseItemDto
-        /// </summary>
-        /// <param name="item">The item.</param>
-        internal void SetBackdrops(BaseItemDto item)
-        {
-            var urls = _apiClient.GetBackdropImageUrls(item, new ImageOptions
-            {
-                MaxWidth = Convert.ToInt32(SystemParameters.VirtualScreenWidth),
-                MaxHeight = Convert.ToInt32(SystemParameters.VirtualScreenHeight)
-            });
-
-            SetBackdrops(urls);
-        }
-
-        /// <summary>
-        /// Sets the backdrop based on a list of image files
-        /// </summary>
-        /// <param name="backdrops">The backdrops.</param>
-        internal void SetBackdrops(string[] backdrops)
-        {
-            // Don't reload the same backdrops
-            if (CurrentBackdrops != null && backdrops.SequenceEqual(CurrentBackdrops))
-            {
-                return;
-            }
-
-            DisposeBackdropTimer();
-            CurrentBackdrops = backdrops;
-
-            if (backdrops == null || backdrops.Length == 0)
-            {
-                CurrentBackdropIndex = -1;
-
-                // Setting this to null doesn't seem to clear out the content
-                // Have to check it for null or get startup errors
-                if (BackdropContainer.Content != null)
-                {
-                    BackdropContainer.Content = new FrameworkElement();
-                }
-                return;
-            }
-
-            CurrentBackdropIndex = 0;
-
-            // We only need the timer if there's more than one backdrop
-            if (backdrops.Length > 1)
-            {
-                BackdropTimer = new Timer(state =>
-                {
-                    // Don't display backdrops during video playback
-                    if (_playbackManager.MediaPlayers.Any(p =>
-                    {
-                        if (p.PlayState != PlayState.Idle)
-                        {
-                            var media = p.CurrentMedia;
-                            return media != null && (media.IsVideo || media.IsGame);
-                        }
-                        return false;
-                    }))
-                    {
-                        return;
-                    }
-
-                    var index = CurrentBackdropIndex + 1;
-
-                    if (index >= backdrops.Length)
-                    {
-                        index = 0;
-                    }
-
-                    CurrentBackdropIndex = index;
-
-                }, null, 6000, 6000);
-            }
-        }
-
-        /// <summary>
-        /// Disposes the backdrop timer.
-        /// </summary>
-        public void DisposeBackdropTimer()
-        {
-            if (BackdropTimer != null)
-            {
-                BackdropTimer.Dispose();
-            }
-        }
         /// <summary>
         /// Disposes the Activity Timer
         /// </summary>
@@ -339,14 +180,6 @@ namespace MediaBrowser.UI
             {
                 ActivityTimer.Dispose();
             }
-        }
-
-        /// <summary>
-        /// Clears the backdrops.
-        /// </summary>
-        internal void ClearBackdrops()
-        {
-            SetBackdrops(new string[] { });
         }
 
         /// <summary>
@@ -437,15 +270,6 @@ namespace MediaBrowser.UI
             base.OnBrowserForward();
 
             NavigateForward();
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            DisposeBackdropTimer();
-            DisposeActivityTimer();
         }
     }
 }

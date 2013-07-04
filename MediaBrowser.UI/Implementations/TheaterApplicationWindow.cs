@@ -49,7 +49,7 @@ namespace MediaBrowser.UI.Implementations
         /// </summary>
         public void ClearBackdrops()
         {
-            App.Instance.ApplicationWindow.ClearBackdrops();
+            App.Instance.ApplicationWindow.RotatingBackdrops.ClearBackdrops();
         }
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace MediaBrowser.UI.Implementations
         /// <param name="item">The item.</param>
         public void SetBackdrops(BaseItemDto item)
         {
-            App.Instance.ApplicationWindow.SetBackdrops(item);
+            App.Instance.ApplicationWindow.RotatingBackdrops.SetBackdrops(item);
         }
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace MediaBrowser.UI.Implementations
         /// <param name="paths">The paths.</param>
         public void SetBackdrops(IEnumerable<string> paths)
         {
-            App.Instance.ApplicationWindow.SetBackdrops(paths.ToArray());
+            App.Instance.ApplicationWindow.RotatingBackdrops.SetBackdrops(paths.ToArray());
         }
 
         /// <summary>

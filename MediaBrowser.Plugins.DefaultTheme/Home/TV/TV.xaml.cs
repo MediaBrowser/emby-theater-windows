@@ -78,7 +78,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.TV
             GridSpotlight.Children.Add(spotlight);
             GridResume.Children.Add(new ResumableEpisodes(ParentItem, displayPreferences, ApiClient, ImageManager, SessionManager, NavigationManager, PresentationManager));
             GridViews.Children.Add(new ResumableEpisodes(ParentItem, displayPreferences, ApiClient, ImageManager, SessionManager, NavigationManager, PresentationManager));
-            GridNextUp.Children.Add(new NextUp(ParentItem, displayPreferences, ApiClient, ImageManager, SessionManager, NavigationManager, PresentationManager));
+            GridNextUp.Children.Add(new NextUp(displayPreferences, ApiClient, ImageManager, SessionManager, NavigationManager, PresentationManager));
         }
 
         void spotlight_ContentLoaded(object sender, EventArgs e)

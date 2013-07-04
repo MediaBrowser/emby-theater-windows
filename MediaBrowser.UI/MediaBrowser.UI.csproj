@@ -195,6 +195,7 @@
     <Compile Include="Implementations\AppHiddenWIndow.cs" />
     <Compile Include="Implementations\InternalPlayerPageBehavior.cs" />
     <Compile Include="Implementations\NavigationService.cs" />
+    <Compile Include="Implementations\RotatingBackdrops.cs" />
     <Compile Include="Implementations\TheaterApplicationWindow.cs" />
     <Compile Include="Pages\Appearance\AppearancePage.xaml.cs">
       <DependentUpon>AppearancePage.xaml</DependentUpon>

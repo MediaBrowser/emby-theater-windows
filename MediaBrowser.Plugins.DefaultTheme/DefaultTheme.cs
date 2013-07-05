@@ -4,6 +4,7 @@ using MediaBrowser.Model.Logging;
 using MediaBrowser.Plugins.DefaultTheme.Controls;
 using MediaBrowser.Plugins.DefaultTheme.Header;
 using MediaBrowser.Plugins.DefaultTheme.Pages;
+using MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
@@ -138,7 +139,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         {
             if (item.IsFolder)
             {
-                return new ListPage(item, item.DisplayPreferencesId, _apiClient, _imageManager, _sessionManager, _presentationManager, _navService);
+                return new FolderPage(item, item.DisplayPreferencesId, _apiClient, _imageManager, _sessionManager, _presentationManager, _navService);
             }
 
             return new DetailPage(item, _imageManager, _playbackManager, _apiClient, _sessionManager, _presentationManager);

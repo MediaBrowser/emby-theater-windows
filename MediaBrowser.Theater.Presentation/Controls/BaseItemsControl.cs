@@ -7,7 +7,6 @@ using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Presentation.Extensions;
-using MediaBrowser.Theater.Presentation.Pages;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
 using System.ComponentModel;
@@ -20,7 +19,7 @@ using System.Windows.Threading;
 
 namespace MediaBrowser.Theater.Presentation.Controls
 {
-    public abstract class BaseItemsControl : UserControl
+    public abstract class BaseItemsControl : UserControl, INotifyPropertyChanged
     {
         /// <summary>
         /// Occurs when a property value changes.
@@ -76,18 +75,6 @@ namespace MediaBrowser.Theater.Presentation.Controls
         /// <value>The current selection timer.</value>
         private DispatcherTimer CurrentSelectionTimer { get; set; }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BaseItemsPage" /> class.
-        /// </summary>
-        /// <param name="displayPreferences">The display preferences.</param>
-        /// <param name="apiClient">The API client.</param>
-        /// <param name="imageManager">The image manager.</param>
-        /// <param name="sessionManager">The session manager.</param>
-        /// <param name="navigationManager">The navigation manager.</param>
-        /// <param name="appWindow">The app window.</param>
-        /// <exception cref="System.ArgumentNullException">parent
-        /// or
-        /// displayPreferencesId</exception>
         protected BaseItemsControl(DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IPresentationManager appWindow)
         {
             if (displayPreferences == null)
@@ -104,6 +91,25 @@ namespace MediaBrowser.Theater.Presentation.Controls
             _displayPreferences = displayPreferences;
         }
 
+        /// <summary>
+        /// The _average primary image aspect ratio
+        /// </summary>
+        private double _medianPrimaryImageAspectRatio;
+        /// <summary>
+        /// Gets the aspect ratio that should be used if displaying the primary image
+        /// </summary>
+        /// <value>The average primary image aspect ratio.</value>
+        public double MedianPrimaryImageAspectRatio
+        {
+            get { return _medianPrimaryImageAspectRatio; }
+
+            set
+            {
+                _medianPrimaryImageAspectRatio = value;
+                OnPropertyChanged("MedianPrimaryImageAspectRatio");
+            }
+        }
+        
         /// <summary>
         /// Gets a value indicating whether [auto select first item on first load].
         /// </summary>
@@ -232,8 +238,6 @@ namespace MediaBrowser.Theater.Presentation.Controls
         {
             base.OnInitialized(e);
 
-            DataContext = this;
-
             Unloaded += BaseItemsControl_Unloaded;
 
             OnPropertyChanged("ParentItem");
@@ -243,8 +247,10 @@ namespace MediaBrowser.Theater.Presentation.Controls
             ItemsList.ItemsSource = ListCollectionView;
             ListCollectionView.CurrentChanged += ListCollectionView_CurrentChanged;
 
-            OnPropertyChanged("DisplayPreferences");
             await ReloadItems(true);
+            OnPropertyChanged("DisplayPreferences");
+
+            DataContext = this;
         }
 
         void BaseItemsControl_Unloaded(object sender, RoutedEventArgs e)
@@ -310,14 +316,9 @@ namespace MediaBrowser.Theater.Presentation.Controls
 
                 ListItems.Clear();
 
-                var meanPrimaryImageAspectRatio = result.Items.MedianPrimaryImageAspectRatio();
+                MedianPrimaryImageAspectRatio = result.Items.MedianPrimaryImageAspectRatio();
 
-                ListItems.AddRange(result.Items.Select(i =>
-                {
-                    var model = CreateViewModel(i);
-                    model.MedianPrimaryImageAspectRatio = meanPrimaryImageAspectRatio;
-                    return model;
-                }));
+                ListItems.AddRange(result.Items.Select(i => CreateViewModel(i, MedianPrimaryImageAspectRatio)));
 
                 if (selectedIndex.HasValue)
                 {
@@ -333,14 +334,18 @@ namespace MediaBrowser.Theater.Presentation.Controls
             OnItemsChanged();
         }
 
-        protected virtual BaseItemDtoViewModel CreateViewModel(BaseItemDto item)
+        protected virtual BaseItemDtoViewModel CreateViewModel(BaseItemDto item, double medianPrimaryImageAspectRatio)
         {
+            double width = DisplayPreferences.PrimaryImageWidth;
+            double height = GetImageDisplayHeight(DisplayPreferences, medianPrimaryImageAspectRatio);
+
             return new BaseItemDtoViewModel(ApiClient, ImageManager)
             {
-                ImageDisplayWidth = DisplayPreferences.PrimaryImageWidth,
-                ImageDisplayHeight = DisplayPreferences.PrimaryImageHeight,
+                ImageDisplayWidth = width,
+                ImageDisplayHeight = height,
                 ViewType = DisplayPreferences.ViewType,
-                Item = item
+                Item = item,
+                MedianPrimaryImageAspectRatio = medianPrimaryImageAspectRatio
             };
         }
 
@@ -360,9 +365,17 @@ namespace MediaBrowser.Theater.Presentation.Controls
             foreach (var item in ListItems)
             {
                 item.ImageDisplayWidth = DisplayPreferences.PrimaryImageWidth;
-                item.ImageDisplayHeight = DisplayPreferences.PrimaryImageHeight;
+                item.ImageDisplayHeight = GetImageDisplayHeight(DisplayPreferences, MedianPrimaryImageAspectRatio);
                 item.ViewType = DisplayPreferences.ViewType;
+                item.NotifyDisplayPreferencesChanged();
             }
+
+            OnPropertyChanged("WrapPanelOrientation");
+        }
+
+        protected virtual double GetImageDisplayHeight(DisplayPreferences displayPreferences, double medianPrimaryImageAspectRatio)
+        {
+            return displayPreferences.PrimaryImageHeight;
         }
 
         protected virtual bool SetBackdropsOnCurrentItemChanged
@@ -404,6 +417,24 @@ namespace MediaBrowser.Theater.Presentation.Controls
                 {
                     CurrentSelectionTimer.Stop();
                 }
+            }
+        }        
+        
+        /// <summary>
+        /// Gets the wrap panel orientation.
+        /// </summary>
+        /// <value>The wrap panel orientation.</value>
+        public Orientation WrapPanelOrientation
+        {
+            get
+            {
+                // Hasn't loaded yet
+                if (DisplayPreferences == null)
+                {
+                    return Orientation.Horizontal;
+                }
+
+                return DisplayPreferences.ScrollDirection == ScrollDirection.Horizontal ? Orientation.Vertical : Orientation.Horizontal;
             }
         }
     }

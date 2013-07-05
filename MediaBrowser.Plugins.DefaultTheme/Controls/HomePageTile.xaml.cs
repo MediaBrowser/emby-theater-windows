@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.Dto;
+﻿using System.Windows.Media;
+using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Net;
 using MediaBrowser.Theater.Presentation.ViewModels;
@@ -105,6 +106,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
                     Height = Convert.ToInt32(ViewModel.ImageDisplayHeight)
                 });
 
+                Image.Stretch = Stretch.Uniform;
                 SetImage(url);
             }
             else if (item.BackdropCount > 0)
@@ -116,6 +118,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
                     Width = Convert.ToInt32(ViewModel.ImageDisplayWidth)
                 });
 
+                Image.Stretch = Stretch.UniformToFill;
                 SetImage(url);
             }
             else if (item.HasThumb)
@@ -127,6 +130,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
                     Width = Convert.ToInt32(ViewModel.ImageDisplayWidth)
                 });
 
+                Image.Stretch = Stretch.UniformToFill;
                 SetImage(url);
             }
             else if (item.HasPrimaryImage)
@@ -137,6 +141,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
                     Height = Convert.ToInt32(ViewModel.ImageDisplayHeight)
                 });
 
+                Image.Stretch = Stretch.Uniform;
                 SetImage(url);
             }
             else
@@ -153,7 +158,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         {
             try
             {
-                image.Source = await ViewModel.ImageManager.GetRemoteBitmapAsync(url);
+                Image.Source = await ViewModel.ImageManager.GetRemoteBitmapAsync(url);
             }
             catch (HttpException)
             {
@@ -164,7 +169,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         private void SetDefaultImage()
         {
             var imageUri = new Uri("../Resources/Images/VideoDefault.png", UriKind.Relative);
-            image.Source = ViewModel.ImageManager.GetBitmapImage(imageUri);
+            Image.Source = ViewModel.ImageManager.GetBitmapImage(imageUri);
         }
     }
 }

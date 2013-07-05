@@ -1,10 +1,9 @@
-﻿using System.Windows.Threading;
-using MediaBrowser.Model.ApiClient;
+﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using System;
-using System.Threading;
 using System.Windows;
+using System.Windows.Threading;
 
 namespace MediaBrowser.Theater.Presentation.ViewModels
 {
@@ -13,14 +12,14 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
     /// This should be used if you want to display a button or list item that holds more than one item, 
     /// and cycle through them periodically.
     /// </summary>
-    public class ItemCollectionViewModel : BaseViewModel, IDisposable
+    public class RotatingCollectionViewModel : BaseViewModel, IDisposable
     {
         private int RotationPeriodMs { get; set; }
 
         public IApiClient ApiClient { get; private set; }
         public IImageManager ImageManager { get; private set; }
         
-        public ItemCollectionViewModel(IApiClient apiClient, IImageManager imageManager, int rotationPeriodMs = 8000, int rotationDevaiationMs = 0)
+        public RotatingCollectionViewModel(IApiClient apiClient, IImageManager imageManager, int rotationPeriodMs = 8000, int rotationDevaiationMs = 0)
             : base()
         {
             ImageManager = imageManager;
@@ -38,7 +37,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         /// </summary>
         private DispatcherTimer CurrentItemTimer { get; set; }
 
-        private object _timerLock = new object();
+        private readonly object _timerLock = new object();
 
         private BaseItemDto[] _items;
         /// <summary>

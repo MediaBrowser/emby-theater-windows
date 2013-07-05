@@ -14,7 +14,7 @@
             </LinearGradientBrush>
         </Border.Background>
         <Grid>
-            <Image x:Name="image" Stretch="Uniform"></Image>
+            <Image x:Name="Image" Stretch="UniformToFill"></Image>
 
             <Grid VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Background="#a6000000">
 

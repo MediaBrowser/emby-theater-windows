@@ -206,8 +206,11 @@
     <Compile Include="Home\HomePage.xaml.cs">
       <DependentUpon>HomePage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\ListPage.xaml.cs">
-      <DependentUpon>ListPage.xaml</DependentUpon>
+    <Compile Include="Pages\FolderBrowsing\FolderPage.xaml.cs">
+      <DependentUpon>FolderPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\FolderBrowsing\ItemsListControl.xaml.cs">
+      <DependentUpon>ItemsListControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\LoginPage.xaml.cs">
       <DependentUpon>LoginPage.xaml</DependentUpon>
@@ -406,7 +409,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Pages\ListPage.xaml">
+    <Page Include="Pages\FolderBrowsing\FolderPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\FolderBrowsing\ItemsListControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

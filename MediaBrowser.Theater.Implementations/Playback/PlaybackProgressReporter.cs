@@ -6,7 +6,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MediaBrowser.Theater.Presentation.Playback
+namespace MediaBrowser.Theater.Implementations.Playback
 {
     public class PlaybackProgressReporter : IDisposable
     {

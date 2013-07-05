@@ -95,9 +95,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.Movies
             return ApiClient.GetItemsAsync(query);
         }
 
-        protected override BaseItemDtoViewModel CreateViewModel(BaseItemDto item)
+        protected override BaseItemDtoViewModel CreateViewModel(BaseItemDto item, double medianPrimaryImageAspectRatio)
         {
-            var vm = base.CreateViewModel(item);
+            var vm = base.CreateViewModel(item, medianPrimaryImageAspectRatio);
 
             vm.ImageType = ImageType.Backdrop;
 

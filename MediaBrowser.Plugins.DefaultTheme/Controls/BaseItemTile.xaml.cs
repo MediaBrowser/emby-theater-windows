@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.Dto;
+﻿using System.Windows.Media;
+using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Net;
 using MediaBrowser.Theater.Presentation.ViewModels;
@@ -173,7 +174,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         /// </summary>
         private async void ReloadImage(BaseItemDto item)
         {
-            if (ViewModel.ImageDisplayWidth.Equals(0))
+            if (ViewModel.ImageDisplayWidth.Equals(0) || ViewModel.ImageDisplayWidth.Equals(0))
             {
                 return;
             }
@@ -193,12 +194,16 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
             {
                 if (item.HasThumb)
                 {
+                    ItemImage.Stretch = Stretch.UniformToFill;
+                    
                     var url = ViewModel.GetImageUrl(ImageType.Thumb);
 
                     return SetImage(url);
                 }
                 if (item.BackdropCount > 0)
                 {
+                    ItemImage.Stretch = Stretch.UniformToFill;
+                    
                     var url = ViewModel.GetImageUrl(ImageType.Backdrop);
 
                     return SetImage(url);
@@ -207,6 +212,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
             
             if (item.HasPrimaryImage)
             {
+                ItemImage.Stretch = Stretch.Uniform;
+                
                 var url = ViewModel.GetImageUrl(ImageType.Primary);
 
                 return SetImage(url);

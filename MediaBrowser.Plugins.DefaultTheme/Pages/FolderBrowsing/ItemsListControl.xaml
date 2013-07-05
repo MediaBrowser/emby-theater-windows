@@ -1,15 +1,12 @@
-﻿<pages2:BaseItemsPage x:Class="MediaBrowser.Plugins.DefaultTheme.Pages.ListPage"
-      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                      xmlns:pages2="clr-namespace:MediaBrowser.Theater.Presentation.Pages;assembly=MediaBrowser.Theater.Presentation"
-                      xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
-                      xmlns:details="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Controls.Details"
-                      mc:Ignorable="d" 
-      d:DesignHeight="300" d:DesignWidth="300"
-	Title="ListPage">
-
+﻿<controls:BaseFolderControl x:Class="MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing.ItemsListControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                         xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
+                           xmlns:details="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Controls.Details"
+                           mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
         <Grid.RowDefinitions>
@@ -41,7 +38,7 @@
 
         <Grid Grid.Row="3">
 
-            <controls:ExtendedListBox x:Name="lstItems" Style="{DynamicResource ListPageListBoxStyle}">
+            <controls:ExtendedListBox x:Name="LstItems" Style="{DynamicResource ListPageListBoxStyle}">
             </controls:ExtendedListBox>
         </Grid>
 
@@ -52,11 +49,11 @@
                 <TextBlock Style="{DynamicResource TextBlockStyle}" Name="TxtTagline" Margin="300 20 300 0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" HorizontalAlignment="Center"></TextBlock>
             </StackPanel>
         </Grid>
-        
+
         <Grid Grid.Row="5" Margin="25 0 25 20">
             <Image Name="ImgLogo" Height="50" Stretch="Uniform" HorizontalAlignment="Left" VerticalAlignment="Bottom"></Image>
             <Image Name="ImgDefaultLogo" Height="80" Stretch="Uniform" HorizontalAlignment="Left" VerticalAlignment="Bottom"></Image>
             <details:ItemInfoFooter x:Name="ItemInfoFooter" HorizontalAlignment="Right" VerticalAlignment="Bottom" VerticalContentAlignment="Center" KeyboardNavigation.IsTabStop="False"></details:ItemInfoFooter>
         </Grid>
     </Grid>
-</pages2:BaseItemsPage>
+</controls:BaseFolderControl>

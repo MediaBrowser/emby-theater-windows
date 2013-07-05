@@ -15,7 +15,7 @@
                     <GradientStop Color="#ff545358" Offset="1" />
                 </LinearGradientBrush>
             </Border.Background>
-            <Image x:Name="ItemImage" Stretch="Uniform" HorizontalAlignment="Center"></Image>
+            <Image x:Name="ItemImage" Stretch="UniformToFill" HorizontalAlignment="Center"></Image>
         </Border>
 
         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Name="OverlayGrid">

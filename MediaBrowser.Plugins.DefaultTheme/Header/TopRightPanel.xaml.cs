@@ -136,8 +136,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Header
             {
                 var imageUrl = ApiClient.GetUserImageUrl(user, new ImageOptions
                 {
-                    ImageType = ImageType.Primary,
-                    MaxHeight = 48
+                    ImageType = ImageType.Primary
                 });
 
                 try

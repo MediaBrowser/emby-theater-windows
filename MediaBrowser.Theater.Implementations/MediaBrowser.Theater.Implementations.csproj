@@ -82,6 +82,7 @@
     <Compile Include="Configuration\ApplicationPaths.cs" />
     <Compile Include="Configuration\ConfigurationManager.cs" />
     <Compile Include="Playback\PlaybackManager.cs" />
+    <Compile Include="Playback\PlaybackProgressReporter.cs" />
     <Compile Include="Presentation\ImageManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>

@@ -56,51 +56,20 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
         
-        /// <summary>
-        /// The _image width
-        /// </summary>
-        private double _imageDisplayWidth;
+
         /// <summary>
         /// Gets or sets the width of the image.
         /// </summary>
         /// <value>The width of the image.</value>
-        public double ImageDisplayWidth
-        {
-            get { return _imageDisplayWidth; }
-            set
-            {
-                _imageDisplayWidth = value;
-                OnPropertyChanged("ImageDisplayWidth");
-            }
-        }
+        public double ImageDisplayWidth { get; set; }
 
-        private double _imageDisplayHeight;
-        public double ImageDisplayHeight
-        {
-            get { return _imageDisplayHeight; }
-            set
-            {
-                _imageDisplayHeight = value;
-                OnPropertyChanged("ImageDisplayHeight");
-            }
-        }
+        public double ImageDisplayHeight { get; set; }
         
-        /// <summary>
-        /// The _image type
-        /// </summary>
-        private string _viewType;
-        /// <summary>
-        /// Gets or sets the type of the image.
-        /// </summary>
-        /// <value>The type of the image.</value>
-        public string ViewType
+        public string ViewType { get; set; }
+
+        public void NotifyDisplayPreferencesChanged()
         {
-            get { return _viewType; }
-            set
-            {
-                _viewType = value;
-                OnPropertyChanged("ViewType");
-            }
+            OnPropertyChanged("ViewType");
         }
 
         /// <summary>
@@ -151,8 +120,8 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
             var currentAspectRatio = imageType == ImageType.Primary ? Item.PrimaryImageAspectRatio ?? width / height : width / height;
 
-            // Preserve the exact AR if it deviates from the average significantly
-            var preserveExactAspectRatio = Math.Abs(currentAspectRatio - medianAspectRatio) > .4;
+            // Preserve the exact AR if it deviates from the median significantly
+            var preserveExactAspectRatio = Math.Abs(currentAspectRatio - medianAspectRatio) > .25;
 
             if (!preserveExactAspectRatio)
             {

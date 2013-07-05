@@ -77,9 +77,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         /// Gets the collection.
         /// </summary>
         /// <value>The collection.</value>
-        public ItemCollectionViewModel ViewModel
+        public RotatingCollectionViewModel ViewModel
         {
-            get { return DataContext as ItemCollectionViewModel; }
+            get { return DataContext as RotatingCollectionViewModel; }
         }
 
         public BaseItemDto CurrentItem
@@ -152,7 +152,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
 
             var img = new Image
             {
-                Stretch = Stretch.Uniform,
+                Stretch = Stretch.UniformToFill,
                 Width = ImageWidth,
                 Height = ImageHeight
             };

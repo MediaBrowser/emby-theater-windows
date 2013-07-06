@@ -448,9 +448,6 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Images\UserLoginDefault.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Resources\Images\VideoDefault.png" />
   </ItemGroup>
   <ItemGroup>

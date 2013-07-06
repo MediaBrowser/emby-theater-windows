@@ -44,7 +44,7 @@
             </controls:ExtendedListBox.ItemsPanel>
         </controls:ExtendedListBox>
 
-        <controls:ExtendedScrollViewer x:Name="ScrollViewer" Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalAlignment="Top" HorizontalAlignment="Center" CanContentScroll="True">
+        <controls:ExtendedScrollViewer x:Name="ScrollViewer" Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalAlignment="Center" HorizontalAlignment="Center" CanContentScroll="True">
             <controls:ScrollingPanel x:Name="ScrollingPanel" CanHorizontallyScroll="True" CanVerticallyScroll="False" HorizontalAlignment="Stretch">
                 <ContentControl x:Name="PageContent" Margin="100 50 100 100"></ContentControl>
             </controls:ScrollingPanel>

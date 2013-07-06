@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using MediaBrowser.Common;
+using MediaBrowser.Common.Updates;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
@@ -6,11 +7,12 @@ using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.Pages;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 
-namespace MediaBrowser.UI.Pages
+namespace MediaBrowser.UI.Pages.Settings
 {
     /// <summary>
     /// Interaction logic for SettingsPage.xaml
@@ -18,21 +20,19 @@ namespace MediaBrowser.UI.Pages
     public partial class SettingsPage : BasePage
     {
         private readonly IPresentationManager _presentationManager;
+        private readonly IApplicationHost _appHost;
+        private readonly IInstallationManager _installationManager;
 
         private readonly INavigationService _nav;
         private readonly ISessionManager _session;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SettingsPage" /> class.
-        /// </summary>
-        /// <param name="presentationManager">The presentation manager.</param>
-        /// <param name="nav">The nav.</param>
-        /// <param name="session">The session.</param>
-        public SettingsPage(IPresentationManager presentationManager, INavigationService nav, ISessionManager session)
+        public SettingsPage(IPresentationManager presentationManager, INavigationService nav, ISessionManager session, IApplicationHost appHost, IInstallationManager installationManager)
         {
             _presentationManager = presentationManager;
             _nav = nav;
             _session = session;
+            _appHost = appHost;
+            _installationManager = installationManager;
 
             InitializeComponent();
 
@@ -52,16 +52,31 @@ namespace MediaBrowser.UI.Pages
         {
             base.OnInitialized(e);
 
+            SystemInfoContent.Content = new SystemInfoPanel(_appHost, _installationManager);
+
             var pages = _presentationManager.SettingsPages
                 .Where(i => i.IsVisible(_session.CurrentUser))
                 .OrderBy(GetOrder)
                 .ThenBy(i => i.Name)
                 .ToList();
 
+            new ListFocuser(MenuList).FocusAfterContainersGenerated(0);
+
             LoadSystemSettingsList(pages);
             LoadPluginSettingsList(pages);
         }
 
+        /// <summary>
+        /// Handles the Loaded event of the SettingsPage control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        void SettingsPage_Loaded(object sender, RoutedEventArgs e)
+        {
+            _presentationManager.SetDefaultPageTitle();
+            _presentationManager.ClearBackdrops();
+        }
+        
         private void LoadPluginSettingsList(IEnumerable<ISettingsPage> allSettingsPages)
         {
             var items = new RangeObservableCollection<ISettingsPage>();
@@ -95,15 +110,9 @@ namespace MediaBrowser.UI.Pages
             return orderedPage == null ? 10 : orderedPage.Order;
         }
 
-        /// <summary>
-        /// Handles the Loaded event of the SettingsPage control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-        void SettingsPage_Loaded(object sender, RoutedEventArgs e)
+        protected override void FocusOnFirstLoad()
         {
-            _presentationManager.SetDefaultPageTitle();
-            _presentationManager.ClearBackdrops();
+            // Focus the first settings tile 
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using MediaBrowser.Common;
+using MediaBrowser.Common.Updates;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Theater.Interfaces.Configuration;
@@ -13,6 +14,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using MediaBrowser.UI.Pages.Settings;
 
 namespace MediaBrowser.UI.Implementations
 {
@@ -36,8 +38,9 @@ namespace MediaBrowser.UI.Implementations
 
         private readonly ITheaterConfigurationManager _config;
         private readonly Func<ISessionManager> _sessionFactory;
+        private readonly IInstallationManager _installationManager;
 
-        private IApplicationHost _appHost;
+        private readonly IApplicationHost _appHost;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NavigationService" /> class.
@@ -46,7 +49,7 @@ namespace MediaBrowser.UI.Implementations
         /// <param name="playbackManagerFactory">The playback manager factory.</param>
         /// <param name="apiClient">The API client.</param>
         /// <param name="presentationManager">The presentation manager.</param>
-        public NavigationService(IThemeManager themeManager, Func<IPlaybackManager> playbackManagerFactory, IApiClient apiClient, IPresentationManager presentationManager, ITheaterConfigurationManager config, Func<ISessionManager> sessionFactory, IApplicationHost appHost)
+        public NavigationService(IThemeManager themeManager, Func<IPlaybackManager> playbackManagerFactory, IApiClient apiClient, IPresentationManager presentationManager, ITheaterConfigurationManager config, Func<ISessionManager> sessionFactory, IApplicationHost appHost, IInstallationManager installationManager)
         {
             _themeManager = themeManager;
             _playbackManagerFactory = playbackManagerFactory;
@@ -55,6 +58,7 @@ namespace MediaBrowser.UI.Implementations
             _config = config;
             _sessionFactory = sessionFactory;
             _appHost = appHost;
+            _installationManager = installationManager;
         }
 
         /// <summary>
@@ -73,7 +77,7 @@ namespace MediaBrowser.UI.Implementations
         /// <returns>DispatcherOperation.</returns>
         public Task NavigateToSettingsPage()
         {
-            return Navigate(new SettingsPage(_presentationManager, this, _sessionFactory()));
+            return Navigate(new SettingsPage(_presentationManager, this, _sessionFactory(), _appHost, _installationManager));
         }
 
         /// <summary>

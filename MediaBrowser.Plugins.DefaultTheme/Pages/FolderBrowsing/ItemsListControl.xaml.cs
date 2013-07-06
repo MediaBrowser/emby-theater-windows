@@ -97,6 +97,14 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
             get { return LstItems; }
         }
 
+        protected override bool AutoSelectFirstItemOnFirstLoad
+        {
+            get
+            {
+                return true;
+            }
+        }
+
         /// <summary>
         /// Gets the items async.
         /// </summary>

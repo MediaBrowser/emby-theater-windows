@@ -10,12 +10,10 @@ namespace MediaBrowser.UI.Pages.General
     class GeneralSettingsPageFactory : IOrderedSettingsPage
     {
         private readonly ITheaterConfigurationManager _config;
-        private readonly IApplicationHost _appHost;
 
-        public GeneralSettingsPageFactory(ITheaterConfigurationManager config, IApplicationHost appHost)
+        public GeneralSettingsPageFactory(ITheaterConfigurationManager config)
         {
             _config = config;
-            _appHost = appHost;
         }
 
         /// <summary>
@@ -33,7 +31,7 @@ namespace MediaBrowser.UI.Pages.General
         /// <returns>Page.</returns>
         public Page GetPage()
         {
-            return new GeneralSettingsPage(_config, _appHost);
+            return new GeneralSettingsPage(_config);
         }
 
         /// <summary>
@@ -42,7 +40,7 @@ namespace MediaBrowser.UI.Pages.General
         /// <value>The thumb URI.</value>
         public Uri ThumbUri
         {
-            get { return new Uri("../../Resources/Images/Settings/weather6.png", UriKind.Relative); }
+            get { return new Uri("../../Resources/Images/Settings/general.jpg", UriKind.Relative); }
         }
 
         public int Order

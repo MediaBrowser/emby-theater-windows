@@ -4,10 +4,10 @@
 
     <Color x:Key="AccentColor">#1ba1e2</Color>
     
-    <SolidColorBrush x:Key="ButtonBackground" Color="#262626" />
+    <SolidColorBrush x:Key="ButtonBackground" Color="#202020" />
     <SolidColorBrush x:Key="ButtonBackgroundHover" Color="#3e3e42" />
     <SolidColorBrush x:Key="ButtonBackgroundPressed" Color="#1ba1e2" />
-    <SolidColorBrush x:Key="ButtonBorder" Color="#333333" />
+    <SolidColorBrush x:Key="ButtonBorder" Color="#555555" />
     <SolidColorBrush x:Key="ButtonBorderHover" Color="#3e3e42" />
     <SolidColorBrush x:Key="ButtonBorderPressed" Color="#1ba1e2" />
     <SolidColorBrush x:Key="ButtonText" Color="#ffffff" />

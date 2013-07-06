@@ -105,7 +105,7 @@ namespace MediaBrowser.UI
 
             RegisterSingleInstance<IIsoManager>(new PismoIsoManager(Logger));
 
-            NavigationService = new NavigationService(ThemeManager, () => PlaybackManager, ApiClient, PresentationManager, TheaterConfigurationManager, () => SessionManager, this);
+            NavigationService = new NavigationService(ThemeManager, () => PlaybackManager, ApiClient, PresentationManager, TheaterConfigurationManager, () => SessionManager, this, InstallationManager);
             RegisterSingleInstance(NavigationService);
 
             PlaybackManager = new PlaybackManager(TheaterConfigurationManager, Logger, ApiClient, NavigationService, PresentationManager);

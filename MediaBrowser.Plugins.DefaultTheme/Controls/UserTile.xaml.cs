@@ -168,7 +168,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
 
             try
             {
+                GridDefaultImage.Visibility = Visibility.Collapsed;
+
                 UserImage.Source = await ViewModel.ImageManager.GetRemoteBitmapAsync(url);
+
+                UserImage.Visibility = Visibility.Visible;
             }
             catch (HttpException)
             {
@@ -181,9 +185,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         /// </summary>
         private void SetDefaultImage()
         {
-            var imageUri = new Uri("../Resources/Images/UserLoginDefault.png", UriKind.Relative);
-
-            UserImage.Source = ViewModel.ImageManager.GetBitmapImage(imageUri);
+            UserImage.Visibility = Visibility.Collapsed;
+            GridDefaultImage.Visibility = Visibility.Visible;
         }
 
         /// <summary>

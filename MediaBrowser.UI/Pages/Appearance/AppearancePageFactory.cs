@@ -55,7 +55,7 @@ namespace MediaBrowser.UI.Pages.Appearance
         /// <value>The thumb URI.</value>
         public Uri ThumbUri
         {
-            get { return new Uri("../../Resources/Images/Settings/weather6.png", UriKind.Relative); }
+            get { return new Uri("../../Resources/Images/Settings/appearance.jpg", UriKind.Relative); }
         }
 
         public SettingsPageCategory Category

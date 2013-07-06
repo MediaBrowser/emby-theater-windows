@@ -1,11 +1,14 @@
 ﻿using MediaBrowser.Common;
 using MediaBrowser.Common.Extensions;
+using MediaBrowser.Common.Updates;
 using MediaBrowser.Model.Updates;
+using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.Pages;
 using System;
 using System.Linq;
 using System.Net.Cache;
+using System.Threading;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -19,11 +22,15 @@ namespace MediaBrowser.UI.Pages.Plugins
     {
         private readonly PackageInfo _packageInfo;
         private readonly IApplicationHost _appHost;
+        private readonly IInstallationManager _installationManager;
+        private readonly INavigationService _nav;
 
-        public PackageInfoPage(PackageInfo packageInfo, IApplicationHost appHost)
+        public PackageInfoPage(PackageInfo packageInfo, IApplicationHost appHost, IInstallationManager installationManager, INavigationService nav)
         {
             _packageInfo = packageInfo;
             _appHost = appHost;
+            _installationManager = installationManager;
+            _nav = nav;
 
             InitializeComponent();
         }
@@ -31,6 +38,8 @@ namespace MediaBrowser.UI.Pages.Plugins
         protected override void OnInitialized(EventArgs e)
         {
             base.OnInitialized(e);
+
+            BtnInstall.Click += BtnInstall_Click;
 
             TxtName.Text = _packageInfo.name;
 
@@ -48,6 +57,17 @@ namespace MediaBrowser.UI.Pages.Plugins
 
             LoadVersions();
             LoadImage();
+        }
+
+        async void BtnInstall_Click(object sender, RoutedEventArgs e)
+        {
+            var version = _packageInfo.versions.First(i => string.Equals(i.versionStr, SelectVersion.SelectedValue));
+
+            _installationManager.InstallPackage(version, new Progress<double>(), CancellationToken.None);
+
+            await _nav.NavigateToSettingsPage();
+
+            _nav.RemovePagesFromHistory(3);
         }
 
         private void LoadVersions()

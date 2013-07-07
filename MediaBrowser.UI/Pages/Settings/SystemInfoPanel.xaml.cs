@@ -52,6 +52,16 @@ namespace MediaBrowser.UI.Pages.Settings
             UpdateRestartPanelVisibility();
         }
 
+        void _installationManager_PackageInstallationFailed(object sender, InstallationFailedEventArgs e)
+        {
+            Dispatcher.InvokeAsync(UpdateInProgressInstallations);
+        }
+
+        void _installationManager_PackageInstalling(object sender, InstallationEventArgs e)
+        {
+            Dispatcher.InvokeAsync(UpdateInProgressInstallations);
+        }
+
         void SystemInfoPanel_Unloaded(object sender, RoutedEventArgs e)
         {
             _appHost.HasPendingRestartChanged -= _appHost_HasPendingRestartChanged;
@@ -62,16 +72,6 @@ namespace MediaBrowser.UI.Pages.Settings
             _installationManager.PackageInstallationCancelled -= _installationManager_PackageInstalling;
         }
 
-        void _installationManager_PackageInstallationFailed(object sender, GenericEventArgs<InstallationInfo> e)
-        {
-            Dispatcher.InvokeAsync(UpdateInProgressInstallations);
-        }
-
-        void _installationManager_PackageInstalling(object sender, GenericEventArgs<InstallationInfo> e)
-        {
-            Dispatcher.InvokeAsync(UpdateInProgressInstallations);
-        }
-
         void _appHost_HasPendingRestartChanged(object sender, EventArgs e)
         {
             Dispatcher.InvokeAsync(UpdateRestartPanelVisibility);
@@ -79,7 +79,7 @@ namespace MediaBrowser.UI.Pages.Settings
 
         void BtnRestart_Click(object sender, RoutedEventArgs e)
         {
-            _appHost.PerformPendingRestart();
+            _appHost.Restart();
         }
 
         async void BtnUpdate_Click(object sender, RoutedEventArgs e)

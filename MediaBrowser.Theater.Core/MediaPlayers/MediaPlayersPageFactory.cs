@@ -2,9 +2,9 @@
 using MediaBrowser.Theater.Interfaces.Presentation;
 using System;
 
-namespace MediaBrowser.Theater.Vlc.Configuration
+namespace MediaBrowser.Theater.Core.MediaPlayers
 {
-    public class VlcConfigPageFactory : ISettingsPage
+    public class MediaPlayersPageFactory : ISettingsPage
     {
         /// <summary>
         /// Gets the name.
@@ -12,7 +12,7 @@ namespace MediaBrowser.Theater.Vlc.Configuration
         /// <value>The name.</value>
         public string Name
         {
-            get { return "VLC"; }
+            get { return "Media Players"; }
         }
 
         /// <summary>
@@ -21,22 +21,22 @@ namespace MediaBrowser.Theater.Vlc.Configuration
         /// <value>The thumb URI.</value>
         public Uri ThumbUri
         {
-            get { return new Uri("pack://application:,,,/MediaBrowser.Theater.Vlc;component/Resources/Images/settings.jpg", UriKind.Absolute); }
+            get { return new Uri("../Resources/Images/Settings/mediaplayers.jpg", UriKind.Relative); }
         }
 
         public SettingsPageCategory Category
         {
-            get { return SettingsPageCategory.Plugin; }
+            get { return SettingsPageCategory.System; }
         }
 
         public bool IsVisible(UserDto user)
         {
-            return true;
+            return user != null && user.Configuration.IsAdministrator;
         }
 
         public Type PageType
         {
-            get { return typeof(VlcConfigPage); }
+            get { return typeof(MediaPlayersPage); }
         }
     }
 }

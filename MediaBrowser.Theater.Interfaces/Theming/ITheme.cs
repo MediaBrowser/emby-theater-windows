@@ -12,12 +12,6 @@ namespace MediaBrowser.Theater.Interfaces.Theming
     public interface ITheme
     {
         /// <summary>
-        /// Gets the login page.
-        /// </summary>
-        /// <returns>Page.</returns>
-        Page GetLoginPage();
-
-        /// <summary>
         /// Gets the item page.
         /// </summary>
         /// <param name="item">The item.</param>
@@ -77,5 +71,11 @@ namespace MediaBrowser.Theater.Interfaces.Theming
         /// </summary>
         /// <param name="visible">if set to <c>true</c> [visible].</param>
         void SetGlobalContentVisibility(bool visible);
+
+        /// <summary>
+        /// Gets the default name of the home page.
+        /// </summary>
+        /// <value>The default name of the home page.</value>
+        string DefaultHomePageName { get; }
     }
 }

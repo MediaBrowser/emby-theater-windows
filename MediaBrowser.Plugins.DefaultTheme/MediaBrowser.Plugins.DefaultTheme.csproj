@@ -130,9 +130,6 @@
     <Compile Include="Controls\NavigationBar.xaml.cs">
       <DependentUpon>NavigationBar.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\UserTile.xaml.cs">
-      <DependentUpon>UserTile.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Converters\WatchedVisibilityConverter.cs" />
     <Compile Include="DisplayPreferences\BaseDisplayPreferencesPage.cs" />
     <Compile Include="DisplayPreferences\DisplayPreferencesMenu.xaml.cs">
@@ -211,9 +208,6 @@
     </Compile>
     <Compile Include="Pages\FolderBrowsing\ItemsListControl.xaml.cs">
       <DependentUpon>ItemsListControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\LoginPage.xaml.cs">
-      <DependentUpon>LoginPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -310,10 +304,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\NavigationBar.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Controls\UserTile.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -414,10 +404,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Pages\FolderBrowsing\ItemsListControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Pages\LoginPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

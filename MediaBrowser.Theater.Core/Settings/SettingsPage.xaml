@@ -1,0 +1,61 @@
+﻿<pages:BasePage x:Class="MediaBrowser.Theater.Core.Settings.SettingsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                xmlns:pages="clr-namespace:MediaBrowser.Theater.Presentation.Pages;assembly=MediaBrowser.Theater.Presentation"
+                xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
+                mc:Ignorable="d" 
+      d:DesignHeight="300" d:DesignWidth="300"
+	Title="SettingsPage">
+
+    <Grid HorizontalAlignment="Center" VerticalAlignment="Top" Margin="100 30 100 100">
+
+        <controls:ExtendedScrollViewer ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalAlignment="Top" HorizontalAlignment="Left" CanContentScroll="True">
+            <controls:ScrollingPanel CanHorizontallyScroll="True" CanVerticallyScroll="False" HorizontalAlignment="Stretch">
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition></ColumnDefinition>
+                        <ColumnDefinition></ColumnDefinition>
+                        <ColumnDefinition></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Style="{DynamicResource Heading2TextBlockStyle}" Grid.Row="0" Grid.Column="0" Margin="0 20 0 0">System Info</TextBlock>
+
+                    <ContentControl x:Name="SystemInfoContent" Grid.Row="1" Grid.Column="0" Margin="0 25 100 0">
+                    </ContentControl>
+
+                    <TextBlock Style="{DynamicResource Heading2TextBlockStyle}" Grid.Row="0" Grid.Column="1" Margin="25 20 0 0">System Settings</TextBlock>
+
+                    <Grid Grid.Row="1" Grid.Column="1" Margin="0 10 0 0">
+                        <controls:ExtendedListBox x:Name="MenuList" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" Grid.Row="0" HorizontalAlignment="Center" Margin="-15" ItemTemplate="{DynamicResource SettingsPageTemplate}" ItemContainerStyle="{DynamicResource HighlightedListBoxItemStyle}" KeyboardNavigation.DirectionalNavigation="Continue">
+                            <controls:ExtendedListBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel Orientation="Vertical" HorizontalAlignment="Stretch" Margin="30" />
+                                </ItemsPanelTemplate>
+                            </controls:ExtendedListBox.ItemsPanel>
+                        </controls:ExtendedListBox>
+                    </Grid>
+
+                    <TextBlock Style="{DynamicResource Heading2TextBlockStyle}" Grid.Row="0" Grid.Column="2" Margin="65 20 0 0">Plugin Settings</TextBlock>
+
+                    <Grid Grid.Row="1" Grid.Column="2" Margin="40 10 0 0">
+                        <controls:ExtendedListBox x:Name="PluginMenuList" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" Grid.Row="0" HorizontalAlignment="Center" Margin="-15" ItemTemplate="{DynamicResource SettingsPageTemplate}" ItemContainerStyle="{DynamicResource HighlightedListBoxItemStyle}" KeyboardNavigation.DirectionalNavigation="Continue">
+                            <controls:ExtendedListBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel Orientation="Vertical" HorizontalAlignment="Stretch" Margin="30" />
+                                </ItemsPanelTemplate>
+                            </controls:ExtendedListBox.ItemsPanel>
+                        </controls:ExtendedListBox>
+                    </Grid>
+                </Grid>
+            </controls:ScrollingPanel>
+        </controls:ExtendedScrollViewer>
+    </Grid>
+</pages:BasePage>

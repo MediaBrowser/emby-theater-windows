@@ -1,0 +1,10 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:viewModels="clr-namespace:MediaBrowser.Theater.Presentation.ViewModels;assembly=MediaBrowser.Theater.Presentation"
+                    xmlns:themecontrols="clr-namespace:MediaBrowser.Theater.Core.Login">
+
+    <DataTemplate DataType="{x:Type viewModels:UserDtoViewModel}">
+        <themecontrols:UserTile DataContext="{Binding Mode=OneWay}"></themecontrols:UserTile>
+    </DataTemplate>
+
+</ResourceDictionary>

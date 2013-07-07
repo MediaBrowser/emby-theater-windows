@@ -121,15 +121,6 @@ namespace MediaBrowser.Plugins.DefaultTheme
         }
 
         /// <summary>
-        /// Gets the login page.
-        /// </summary>
-        /// <returns>Page.</returns>
-        public Page GetLoginPage()
-        {
-            return new LoginPage(_apiClient, _imageManager, _navService, _sessionManager, _presentationManager);
-        }
-
-        /// <summary>
         /// Gets the item page.
         /// </summary>
         /// <param name="item">The item.</param>
@@ -257,6 +248,11 @@ namespace MediaBrowser.Plugins.DefaultTheme
         {
             TopRightPanel.Current.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
             PageTitlePanel.Current.MainGrid.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        public string DefaultHomePageName
+        {
+            get { return "Default"; }
         }
     }
 }

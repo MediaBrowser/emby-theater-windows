@@ -7,6 +7,7 @@ using MediaBrowser.IsoMounter;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.System;
 using MediaBrowser.Plugins.DefaultTheme;
+using MediaBrowser.Theater.Core.Login;
 using MediaBrowser.Theater.Implementations.Configuration;
 using MediaBrowser.Theater.Implementations.Playback;
 using MediaBrowser.Theater.Implementations.Presentation;
@@ -105,14 +106,14 @@ namespace MediaBrowser.UI
 
             RegisterSingleInstance<IIsoManager>(new PismoIsoManager(Logger));
 
-            NavigationService = new NavigationService(ThemeManager, () => PlaybackManager, ApiClient, PresentationManager, TheaterConfigurationManager, () => SessionManager, this, InstallationManager);
+            ImageManager = new ImageManager(ApiClient, ApplicationPaths);
+            RegisterSingleInstance(ImageManager);
+
+            NavigationService = new NavigationService(ThemeManager, () => PlaybackManager, ApiClient, PresentationManager, TheaterConfigurationManager, () => SessionManager, this, InstallationManager, ImageManager);
             RegisterSingleInstance(NavigationService);
 
             PlaybackManager = new PlaybackManager(TheaterConfigurationManager, Logger, ApiClient, NavigationService, PresentationManager);
             RegisterSingleInstance(PlaybackManager);
-
-            ImageManager = new ImageManager(ApiClient, ApplicationPaths);
-            RegisterSingleInstance(ImageManager);
 
             SessionManager = new SessionManager(NavigationService, ApiClient, Logger, ThemeManager, TheaterConfigurationManager);
             RegisterSingleInstance(SessionManager);
@@ -205,6 +206,9 @@ namespace MediaBrowser.UI
 
             // Presentation player assembly
             yield return typeof(GenericExternalPlayer).Assembly;
+
+            // Core assembly
+            yield return typeof(LoginPage).Assembly;
 
             // Default theme assembly
             yield return typeof(DefaultTheme).Assembly;

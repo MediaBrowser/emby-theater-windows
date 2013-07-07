@@ -1,6 +1,5 @@
-﻿using System;
-using System.Windows.Controls;
-using MediaBrowser.Model.Dto;
+﻿using MediaBrowser.Model.Dto;
+using System;
 
 namespace MediaBrowser.Theater.Interfaces.Presentation
 {
@@ -22,10 +21,10 @@ namespace MediaBrowser.Theater.Interfaces.Presentation
         Uri ThumbUri { get; }
 
         /// <summary>
-        /// Gets the page.
+        /// Gets the type of the page.
         /// </summary>
-        /// <returns>Page.</returns>
-        Page GetPage();
+        /// <value>The type of the page.</value>
+        Type PageType { get; }
 
         /// <summary>
         /// Gets the category.

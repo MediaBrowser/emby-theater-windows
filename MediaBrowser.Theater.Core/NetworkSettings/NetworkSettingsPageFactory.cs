@@ -2,9 +2,12 @@
 using MediaBrowser.Theater.Interfaces.Presentation;
 using System;
 
-namespace MediaBrowser.Theater.Vlc.Configuration
+namespace MediaBrowser.Theater.Core.NetworkSettings
 {
-    public class VlcConfigPageFactory : ISettingsPage
+    /// <summary>
+    /// Class NetworkSettingsPageFactory
+    /// </summary>
+    public class NetworkSettingsPageFactory : ISettingsPage
     {
         /// <summary>
         /// Gets the name.
@@ -12,7 +15,7 @@ namespace MediaBrowser.Theater.Vlc.Configuration
         /// <value>The name.</value>
         public string Name
         {
-            get { return "VLC"; }
+            get { return "Network"; }
         }
 
         /// <summary>
@@ -21,12 +24,12 @@ namespace MediaBrowser.Theater.Vlc.Configuration
         /// <value>The thumb URI.</value>
         public Uri ThumbUri
         {
-            get { return new Uri("pack://application:,,,/MediaBrowser.Theater.Vlc;component/Resources/Images/settings.jpg", UriKind.Absolute); }
+            get { return new Uri("../Resources/Images/Settings/network.jpg", UriKind.Relative); }
         }
 
         public SettingsPageCategory Category
         {
-            get { return SettingsPageCategory.Plugin; }
+            get { return SettingsPageCategory.System; }
         }
 
         public bool IsVisible(UserDto user)
@@ -36,7 +39,7 @@ namespace MediaBrowser.Theater.Vlc.Configuration
 
         public Type PageType
         {
-            get { return typeof(VlcConfigPage); }
+            get { return typeof(NetworkSettingsPage); }
         }
     }
 }

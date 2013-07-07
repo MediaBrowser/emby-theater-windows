@@ -2,19 +2,19 @@
 using MediaBrowser.Common.Updates;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
+using MediaBrowser.Theater.Core.InternalPlayer;
+using MediaBrowser.Theater.Core.Login;
+using MediaBrowser.Theater.Core.Settings;
 using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.Theming;
-using MediaBrowser.UI.Pages;
-using MediaBrowser.UI.Pages.InternalPlayer;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Controls;
-using MediaBrowser.UI.Pages.Settings;
 
 namespace MediaBrowser.UI.Implementations
 {
@@ -42,6 +42,8 @@ namespace MediaBrowser.UI.Implementations
 
         private readonly IApplicationHost _appHost;
 
+        private readonly IImageManager _imageManager;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="NavigationService" /> class.
         /// </summary>
@@ -49,7 +51,7 @@ namespace MediaBrowser.UI.Implementations
         /// <param name="playbackManagerFactory">The playback manager factory.</param>
         /// <param name="apiClient">The API client.</param>
         /// <param name="presentationManager">The presentation manager.</param>
-        public NavigationService(IThemeManager themeManager, Func<IPlaybackManager> playbackManagerFactory, IApiClient apiClient, IPresentationManager presentationManager, ITheaterConfigurationManager config, Func<ISessionManager> sessionFactory, IApplicationHost appHost, IInstallationManager installationManager)
+        public NavigationService(IThemeManager themeManager, Func<IPlaybackManager> playbackManagerFactory, IApiClient apiClient, IPresentationManager presentationManager, ITheaterConfigurationManager config, Func<ISessionManager> sessionFactory, IApplicationHost appHost, IInstallationManager installationManager, IImageManager imageManager)
         {
             _themeManager = themeManager;
             _playbackManagerFactory = playbackManagerFactory;
@@ -59,6 +61,7 @@ namespace MediaBrowser.UI.Implementations
             _sessionFactory = sessionFactory;
             _appHost = appHost;
             _installationManager = installationManager;
+            _imageManager = imageManager;
         }
 
         /// <summary>
@@ -86,7 +89,7 @@ namespace MediaBrowser.UI.Implementations
         /// <returns>DispatcherOperation.</returns>
         public async Task NavigateToLoginPage()
         {
-            await App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(() => Navigate(_themeManager.CurrentTheme.GetLoginPage()));
+            await App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(() => Navigate(new LoginPage(_apiClient, _imageManager, this, _sessionFactory(), _presentationManager)));
         }
 
         /// <summary>

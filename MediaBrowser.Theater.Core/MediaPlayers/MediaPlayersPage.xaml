@@ -1,0 +1,60 @@
+﻿<pages:BasePage x:Class="MediaBrowser.Theater.Core.MediaPlayers.MediaPlayersPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                 xmlns:pages="clr-namespace:MediaBrowser.Theater.Presentation.Pages;assembly=MediaBrowser.Theater.Presentation"
+                xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
+                xmlns:mediaPlayers2="clr-namespace:MediaBrowser.Theater.Core.MediaPlayers"
+                mc:Ignorable="d" 
+      d:DesignHeight="300" d:DesignWidth="300"
+	Title="MediaPlayersPage">
+
+    <Page.Resources>
+        <DataTemplate x:Key="MediaPlayersListBoxItemTemplate" DataType="{x:Type mediaPlayers2:MediaPlayerViewModel}">
+
+            <Grid Width="1000">
+
+                <Grid.Background>
+                    <SolidColorBrush Color="#A6000000"></SolidColorBrush>
+                </Grid.Background>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"></RowDefinition>
+                    <RowDefinition Height="auto"></RowDefinition>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Style="{DynamicResource TextBlockStyle}" Foreground="White" Text="{Binding Name}" Margin="15 10 0 0"></TextBlock>
+                <TextBlock Grid.Row="0" Style="{DynamicResource TextBlockStyle}" Foreground="White" Text="{Binding MediaType}" HorizontalAlignment="Right" Margin="0 10 15 0"></TextBlock>
+
+                <TextBlock Grid.Row="1" Style="{DynamicResource SmallTextBlockStyle}" Foreground="White" Text="{Binding FileExtensions}" Margin="15 10 0 10" Visibility="{Binding FileExtensionsVisibility}"></TextBlock>
+
+            </Grid>
+
+        </DataTemplate>
+    </Page.Resources>
+
+    <Grid HorizontalAlignment="Center" VerticalAlignment="Top">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <TextBlock Style="{DynamicResource Heading1TextBlockStyle}" Margin="0 30 0 30" Grid.Row="0">Media Players</TextBlock>
+
+        <TextBlock Style="{DynamicResource SmallTextBlockStyle}" Grid.Row="1">Setup rules to configure media players to handle specific formats.</TextBlock>
+
+        <controls:ExtendedListBox Margin="-40 0 -40 -35" HorizontalAlignment="Stretch" Grid.Row="2" x:Name="LstItems" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{DynamicResource MediaPlayersListBoxItemTemplate}">
+            <controls:ExtendedListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Margin="40 35" Orientation="Vertical"></StackPanel>
+                </ItemsPanelTemplate>
+            </controls:ExtendedListBox.ItemsPanel>
+        </controls:ExtendedListBox>
+
+        <Button x:Name="BtnAddPlayer" Grid.Row="3" Margin="0 30 0 0">Add Player</Button>
+    </Grid>
+</pages:BasePage>

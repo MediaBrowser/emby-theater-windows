@@ -108,7 +108,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
 
             ReloadImage(item);
 
-            var nameVisibility = !string.Equals(ViewModel.ViewType, ViewTypes.Thumbstrip, StringComparison.OrdinalIgnoreCase) && Item.HasPrimaryImage && !Item.IsType("Episode") && !Item.IsType("Audio") ? Visibility.Collapsed : Visibility.Visible;
+            var nameVisibility = !string.Equals(ViewModel.ViewType, ViewTypes.Thumbstrip, StringComparison.OrdinalIgnoreCase) && !Item.IsType("Episode") && !Item.IsType("Audio") ? Visibility.Collapsed : Visibility.Visible;
 
             if (item.IsType("Person") || item.IsType("IndexFolder"))
             {
@@ -133,28 +133,28 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
             }
 
             Progress.Visibility = progressBarVisibility;
-
-            var playedVisibility = Visibility.Collapsed;
-            if (!item.CanResume && item.UserData != null && item.UserData.Played)
-            {
-                playedVisibility = Visibility.Visible;
-            }
-            ImgPlayed.Visibility = playedVisibility;
-
-            var newVisibility = Visibility.Collapsed;
-            if (item.DateCreated.HasValue && (DateTime.UtcNow - item.DateCreated.Value).TotalDays < 14)
-            {
-                newVisibility = Visibility.Visible;
-            }
-            ImgNew.Visibility = newVisibility;
         
 
             OverlayGrid.Visibility = nameVisibility == Visibility.Visible ||
-                                     playedVisibility == Visibility.Visible ||
-                                     newVisibility == Visibility.Visible ||
                                      progressBarVisibility == Visibility.Visible
                                          ? Visibility.Visible
                                          : Visibility.Collapsed;
+
+            if (item.UserData != null && item.UserData.Played)
+            {
+                ImgPlayed.Visibility = Visibility.Visible;
+                ImgNew.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                ImgPlayed.Visibility = Visibility.Collapsed;
+
+                if (item.DateCreated.HasValue && (DateTime.UtcNow - item.DateCreated.Value).TotalDays < 14)
+                {
+                    ImgNew.Visibility = Visibility.Visible;
+                }
+            }
+
         }
 
         public static string GetDisplayName(BaseItemDto item)
@@ -226,7 +226,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
 
         private async Task SetImage(string url)
         {
-            ImageBorder.Background = null;
+            MainGrid.Background = null;
 
             try
             {

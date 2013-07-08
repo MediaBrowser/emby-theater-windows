@@ -9,12 +9,19 @@
                 <RowDefinition></RowDefinition>
             </Grid.RowDefinitions>
 
+            <Grid.Background>
+                <LinearGradientBrush SpreadMethod="Reflect" ColorInterpolationMode="SRgbLinearInterpolation" StartPoint="0,0" EndPoint="0,1" >
+                    <GradientStop Color="#ffCBCBCB" Offset="0" />
+                    <GradientStop Color="#ff545358" Offset="1" />
+                </LinearGradientBrush>
+            </Grid.Background>
+
             <Image Source="{Binding ThumbUri}" Width="320" Height="180" Stretch="Uniform" Grid.Row="0">
 
             </Image>
 
             <Border Grid.Row="1" Padding="5 5 5 10" Background="#a6000000">
-                <TextBlock HorizontalAlignment="Center" Text="{Binding Name}" Style="{DynamicResource TextBlockStyle}" TextWrapping="NoWrap"></TextBlock>
+                <TextBlock HorizontalAlignment="Center" Text="{Binding Name}" Style="{DynamicResource TextBlockStyle}" TextWrapping="NoWrap" Foreground="White"></TextBlock>
             </Border>
         </Grid>
     </DataTemplate>

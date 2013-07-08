@@ -7,42 +7,6 @@
                     xmlns:converters="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Converters"
                     xmlns:header="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Header">
 
-    <Style TargetType="Grid" x:Key="WindowBackgroundContent">
-        <Setter Property="Background">
-            <Setter.Value>
-                <LinearGradientBrush SpreadMethod="Reflect" ColorInterpolationMode="SRgbLinearInterpolation" StartPoint="0,0" EndPoint="0,1" >
-                    <GradientStop Color="#ff000000" Offset="0" />
-                    <GradientStop Color="#ff888888" Offset="1" />
-                </LinearGradientBrush>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <Style TargetType="Grid" x:Key="WindowBackgroundContentDuringPlayback">
-        <Setter Property="Opacity" Value=".75"/>
-        <Setter Property="Background">
-            <Setter.Value>
-                <LinearGradientBrush SpreadMethod="Reflect" ColorInterpolationMode="SRgbLinearInterpolation" StartPoint="0,0" EndPoint="0,1" >
-                    <GradientStop Color="#ff000000" Offset="0" />
-                    <GradientStop Color="#ff888888" Offset="1" />
-                </LinearGradientBrush>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <!--Default font for text. Themes should override these as needed-->
-    <Brush x:Key="DefaultForeground">#ffffff</Brush>
-
-    <!--Default font for small text. Themes should override these as needed-->
-    <Brush x:Key="SmallForeground">#ffffff</Brush>
-
-    <!--Default font for h1 headers. Themes should override these as needed-->
-    <Brush x:Key="Heading1Foreground">#ffffff</Brush>
-
-    <!--Default font for h2 headers. Themes should override these as needed-->
-    <Brush x:Key="Heading2Foreground">#ffffff</Brush>
-    <Brush x:Key="Heading3Foreground">#ffffff</Brush>
-
     <!--Define all the standard converters here in one place-->
     <converters:WatchedVisibilityConverter x:Key="WatchedVisibilityConverter"></converters:WatchedVisibilityConverter>
     <converters:FavoriteVisibilityConverter x:Key="FavoriteVisibilityConverter"></converters:FavoriteVisibilityConverter>
@@ -75,6 +39,7 @@
     <Style TargetType="Border" x:Key="MediaInfoSeparator">
         <Setter Property="Height" Value="12" />
         <Setter Property="Width" Value="12" />
+        <Setter Property="CornerRadius" Value="2" />
         <Setter Property="Background" Value="#cc3333" />
         <Setter Property="Margin" Value="25 7 5 0" />
         <Setter Property="VerticalAlignment" Value="Center" />

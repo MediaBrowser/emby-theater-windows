@@ -432,6 +432,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Resources\ThemeDark.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\ThemeLight.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\VideoDefault.png" />
@@ -469,12 +477,6 @@
     <Resource Include="Resources\Images\dislike.png" />
     <Resource Include="Resources\Images\favorite.png" />
     <Resource Include="Resources\Images\like.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Images\played.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Images\new.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\NavBar\BackButton.png" />

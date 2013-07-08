@@ -148,7 +148,7 @@
         <Setter Property="Background" Value="Black"/>
         <Setter Property="BorderBrush" Value="#666666"/>
         <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="Height" Value="10"/>
+        <Setter Property="Height" Value="12"/>
         <Setter Property="Opacity" Value=".7"/>
     </Style>
 

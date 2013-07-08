@@ -21,7 +21,7 @@
     <!--Themes may want to override this to adjust the backdrop image style-->
     <Style TargetType="Image" x:Key="BackdropImage">
         <Setter Property="Stretch" Value="UniformToFill"/>
-        <Setter Property="Opacity" Value=".10"/>
+        <Setter Property="Opacity" Value=".20"/>
     </Style>
 
     <Style TargetType="Grid" x:Key="DragBar">

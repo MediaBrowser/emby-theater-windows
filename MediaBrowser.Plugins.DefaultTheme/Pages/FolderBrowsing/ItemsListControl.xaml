@@ -51,8 +51,12 @@
         </Grid>
 
         <Grid Grid.Row="5" Margin="25 0 25 20">
-            <Image Name="ImgLogo" Height="50" Stretch="Uniform" HorizontalAlignment="Left" VerticalAlignment="Bottom"></Image>
-            <Image Name="ImgDefaultLogo" Height="80" Stretch="Uniform" HorizontalAlignment="Left" VerticalAlignment="Bottom"></Image>
+            
+            <!-- This is just to make sure the bottom always has the same height -->
+            <Grid Height="100"></Grid>
+
+            <Image Name="ImgLogo" Stretch="None" HorizontalAlignment="Left" VerticalAlignment="Bottom"></Image>
+            <Image Name="ImgDefaultLogo" Stretch="None" HorizontalAlignment="Left" VerticalAlignment="Bottom"></Image>
             <details:ItemInfoFooter x:Name="ItemInfoFooter" HorizontalAlignment="Right" VerticalAlignment="Bottom" VerticalContentAlignment="Center" KeyboardNavigation.IsTabStop="False"></details:ItemInfoFooter>
         </Grid>
     </Grid>

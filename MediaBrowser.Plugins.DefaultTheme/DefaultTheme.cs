@@ -106,6 +106,11 @@ namespace MediaBrowser.Plugins.DefaultTheme
             });
         }
 
+        protected virtual string ThemeColorResource
+        {
+            get { return "ThemeDark"; }
+        }
+
         /// <summary>
         /// Gets the global resources.
         /// </summary>
@@ -114,7 +119,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         {
             var namespaceName = GetType().Namespace;
 
-            return new[] { "NavBarResources", "AppResources" }.Select(i => new ResourceDictionary
+            return new[] { ThemeColorResource, "NavBarResources", "AppResources" }.Select(i => new ResourceDictionary
             {
                 Source = new Uri("pack://application:,,,/" + namespaceName + ";component/Resources/" + i + ".xaml", UriKind.Absolute)
             });
@@ -212,7 +217,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
             PageTitlePanel.Current.SetDefaultPageTitle();
         }
 
-        public string Name
+        public virtual string Name
         {
             get { return "Default"; }
         }

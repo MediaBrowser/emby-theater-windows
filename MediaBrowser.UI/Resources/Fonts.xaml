@@ -3,32 +3,32 @@
                     xmlns:System="clr-namespace:System;assembly=mscorlib">
 
     <!--Default font for text. Themes should override these as needed-->
-    <FontFamily x:Key="DefaultFontFamily">Segoe UI Light, Lucida Sans Unicode, Verdana</FontFamily>
+    <FontFamily x:Key="DefaultFontFamily">Segoe UI SemiLight, Lucida Sans Unicode, Verdana</FontFamily>
     <FontWeight x:Key="DefaultFontWeight">Normal</FontWeight>
     <Brush x:Key="DefaultForeground">#000</Brush>
     <System:Double x:Key="DefaultFontSize">26</System:Double>
 
     <!--Default font for small text. Themes should override these as needed-->
-    <FontFamily x:Key="SmallFontFamily">Segoe UI Light, Lucida Sans Unicode, Verdana</FontFamily>
+    <FontFamily x:Key="SmallFontFamily">Segoe UI SemiLight, Lucida Sans Unicode, Verdana</FontFamily>
     <FontWeight x:Key="SmallFontWeight">Normal</FontWeight>
     <Brush x:Key="SmallForeground">#000</Brush>
     <System:Double x:Key="SmallFontSize">20</System:Double>
 
     <!--Default font for h1 headers. Themes should override these as needed-->
     <System:Double x:Key="Heading1FontSize">48</System:Double>
-    <FontFamily x:Key="Heading1FontFamily">Segoe UI Light, Lucida Sans Unicode, Verdana</FontFamily>
+    <FontFamily x:Key="Heading1FontFamily">Segoe UI SemiLight, Lucida Sans Unicode, Verdana</FontFamily>
     <FontWeight x:Key="Heading1FontWeight">Thin</FontWeight>
     <Brush x:Key="Heading1Foreground">#000</Brush>
 
     <!--Default font for h2 headers. Themes should override these as needed-->
     <System:Double x:Key="Heading2FontSize">38</System:Double>
-    <FontFamily x:Key="Heading2FontFamily">Segoe UI Light, Lucida Sans Unicode, Verdana</FontFamily>
+    <FontFamily x:Key="Heading2FontFamily">Segoe UI SemiLight, Lucida Sans Unicode, Verdana</FontFamily>
     <FontWeight x:Key="Heading2FontWeight">Normal</FontWeight>
     <Brush x:Key="Heading2Foreground">#000</Brush>
 
     <!--Default font for h2 headers. Themes should override these as needed-->
     <System:Double x:Key="Heading3FontSize">32</System:Double>
-    <FontFamily x:Key="Heading3FontFamily">Segoe UI Light, Lucida Sans Unicode, Verdana</FontFamily>
+    <FontFamily x:Key="Heading3FontFamily">Segoe UI SemiLight, Lucida Sans Unicode, Verdana</FontFamily>
     <FontWeight x:Key="Heading3FontWeight">Normal</FontWeight>
     <Brush x:Key="Heading3Foreground">#000</Brush>
 </ResourceDictionary>

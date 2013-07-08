@@ -142,7 +142,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
 
         private async void UpdateClearArt(BaseItemDto item)
         {
-            if (!item.HasArtImage && item.IsType("season"))
+            if (!item.HasArtImage && !string.IsNullOrEmpty(item.SeriesId))
             {
                 item = await ApiClient.GetItemAsync(item.SeriesId, SessionManager.CurrentUser.Id);
             }
@@ -152,7 +152,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
                 ImgDefaultLogo.Source =
                     await ImageManager.GetRemoteBitmapAsync(ApiClient.GetImageUrl(item, new ImageOptions
                     {
-                        MaxHeight = 200,
+                        MaxHeight = 120,
                         ImageType = ImageType.Art
                     }));
             }
@@ -282,15 +282,17 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
         {
             base.OnDisplayPreferencesChanged();
 
-            ItemContainerWidth = DisplayPreferences.PrimaryImageWidth;
-            ItemContainerHeight = GetImageDisplayHeight(DisplayPreferences, MedianPrimaryImageAspectRatio);
+            var displayPreferences = DisplayPreferences;
 
-            PnlThumbstripInfo.Visibility = DisplayPreferences != null &&
-                                           DisplayPreferences.ViewType == ViewTypes.Thumbstrip
+            ItemContainerWidth = GetItemContainerWidth(displayPreferences, MedianPrimaryImageAspectRatio);
+            ItemContainerHeight = GetItemContainerHeight(displayPreferences, MedianPrimaryImageAspectRatio);
+
+            PnlThumbstripInfo.Visibility = displayPreferences != null &&
+                                           displayPreferences.ViewType == ViewTypes.Thumbstrip
                                                ? Visibility.Visible
                                                : Visibility.Collapsed;
 
-            if (DisplayPreferences.ScrollDirection == ScrollDirection.Horizontal)
+            if (displayPreferences.ScrollDirection == ScrollDirection.Horizontal)
             {
                 ScrollViewer.SetHorizontalScrollBarVisibility(ItemsList, ScrollBarVisibility.Hidden);
                 ScrollViewer.SetVerticalScrollBarVisibility(ItemsList, ScrollBarVisibility.Disabled);
@@ -300,6 +302,18 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
                 ScrollViewer.SetHorizontalScrollBarVisibility(ItemsList, ScrollBarVisibility.Disabled);
                 ScrollViewer.SetVerticalScrollBarVisibility(ItemsList, ScrollBarVisibility.Hidden);
             }
+        }
+
+        protected virtual double GetItemContainerWidth(Model.Entities.DisplayPreferences displayPreferences, double medianPrimaryImageAspectRatio)
+        {
+            // 14 = double the margin between items as defined in the resource file
+            return displayPreferences.PrimaryImageWidth + 14;
+        }
+
+        protected virtual double GetItemContainerHeight(Model.Entities.DisplayPreferences displayPreferences, double medianPrimaryImageAspectRatio)
+        {
+            // 14 = double the margin between items as defined in the resource file
+            return GetImageDisplayHeight(displayPreferences, medianPrimaryImageAspectRatio) + 14;
         }
 
         protected override void OnItemsChanged()
@@ -327,7 +341,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
                 ImgLogo.Source =
                     await ImageManager.GetRemoteBitmapAsync(ApiClient.GetImageUrl(item, new ImageOptions
                     {
-                        MaxHeight = 50,
+                        MaxHeight = 70,
                         ImageType = ImageType.Logo
                     }));
 

@@ -1,0 +1,23 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Style TargetType="Grid" x:Key="WindowBackgroundContent">
+        <Setter Property="Background" Value="#eaeaea">
+        </Setter>
+    </Style>
+
+    <Style TargetType="Grid" x:Key="WindowBackgroundContentDuringPlayback">
+        <Setter Property="Opacity" Value=".75"/>
+        <Setter Property="Background">
+            <Setter.Value>
+                <LinearGradientBrush SpreadMethod="Reflect" ColorInterpolationMode="SRgbLinearInterpolation" StartPoint="0,0" EndPoint="0,1" >
+                    <GradientStop Color="#ffdddddd" Offset="0" />
+                    <GradientStop Color="#ffffffff" Offset="1" />
+                </LinearGradientBrush>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Brush x:Key="SelectedItemHighlightColor">SkyBlue</Brush>
+
+</ResourceDictionary>

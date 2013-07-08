@@ -104,9 +104,29 @@ namespace MediaBrowser.UI
             base.OnClosing(e);
         }
 
+        /// <summary>
+        /// The _last mouse move point
+        /// </summary>
+        private Point _lastMouseMovePoint;
+
+        /// <summary>
+        /// Handles OnMouseMove to auto-select the item that's being moused over
+        /// </summary>
+        /// <param name="e">Provides data for <see cref="T:System.Windows.Input.MouseEventArgs" />.</param>
         protected override void OnMouseMove(MouseEventArgs e)
         {
             base.OnMouseMove(e);
+
+            // Store the last position for comparison purposes
+            // Even if the mouse is not moving this event will fire as elements are showing and hiding
+            var pos = e.GetPosition(this);
+
+            if (pos == _lastMouseMovePoint)
+            {
+                return;
+            }
+
+            _lastMouseMovePoint = pos;
 
             _lastMouseInput = DateTime.Now;
         }

@@ -1,11 +1,11 @@
-﻿using System.Windows.Controls;
+﻿using MediaBrowser.Theater.Presentation.Pages;
 
 namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
 {
     /// <summary>
     /// Class BaseDisplayPreferencesPage
     /// </summary>
-    public class BaseDisplayPreferencesPage : Page
+    public class BaseDisplayPreferencesPage : BasePage
     {
         /// <summary>
         /// Gets or sets the display preferences window.

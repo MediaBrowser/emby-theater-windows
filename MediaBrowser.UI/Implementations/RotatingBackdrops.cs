@@ -124,7 +124,7 @@ namespace MediaBrowser.UI.Implementations
 
                 if (_backdropSetTimer == null)
                 {
-                    _backdropSetTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(300), DispatcherPriority.Normal,
+                    _backdropSetTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(400), DispatcherPriority.Normal,
                                                             OnPendingBackdropsTimerTick, _dispatcher);
                 }
                 else

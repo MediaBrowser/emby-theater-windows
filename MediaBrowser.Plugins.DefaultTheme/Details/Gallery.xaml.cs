@@ -1,87 +1,74 @@
-﻿using MediaBrowser.Model.ApiClient;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Net;
 using MediaBrowser.Theater.Interfaces.Presentation;
-using MediaBrowser.Theater.Presentation.Controls;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows.Media.Imaging;
 
-namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
+namespace MediaBrowser.Plugins.DefaultTheme.Details
 {
     /// <summary>
-    /// Interaction logic for ItemGallery.xaml
+    /// Interaction logic for Gallery.xaml
     /// </summary>
-    public partial class ItemGallery : BaseDetailsControl
+    public partial class Gallery : UserControl
     {
-        private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
-        
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ItemGallery" /> class.
-        /// </summary>
-        public ItemGallery(IApiClient apiClient, IImageManager imageManager)
-            : base()
+
+        private readonly IApiClient _apiClient;
+
+        public Gallery(IImageManager imageManager, IApiClient apiClient)
         {
-            _apiClient = apiClient;
             _imageManager = imageManager;
+            _apiClient = apiClient;
             InitializeComponent();
-            lstItems.ItemInvoked += lstItems_ItemInvoked;
         }
 
         /// <summary>
-        /// LSTs the items_ item invoked.
+        /// The _item
         /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="e">The e.</param>
-        void lstItems_ItemInvoked(object sender, ItemEventArgs<object> e)
-        {
-            var img = (BitmapImage)e.Argument;
-
-            var index = Images.IndexOf(img);
-
-            //App.Instance.OpenImageViewer(new Uri(ImageUrls[index]), Item.Name);
-        }
-
+        private BaseItemDto _item;
         /// <summary>
-        /// The _images
+        /// Gets or sets the item.
         /// </summary>
-        private List<BitmapImage> _images;
-        /// <summary>
-        /// Gets or sets the images.
-        /// </summary>
-        /// <value>The images.</value>
-        public List<BitmapImage> Images
+        /// <value>The item.</value>
+        public BaseItemDto Item
         {
-            get { return _images; }
+            get { return _item; }
+
             set
             {
-                _images = value;
-                lstItems.ItemsSource = value;
-                OnPropertyChanged("Images");
+                _item = value;
+                OnItemChanged();
             }
         }
 
         /// <summary>
-        /// Gets or sets the image urls.
-        /// </summary>
-        /// <value>The image urls.</value>
-        private List<string> ImageUrls { get; set; }
-
-        /// <summary>
         /// Called when [item changed].
         /// </summary>
-        protected override async void OnItemChanged()
+        protected async void OnItemChanged()
         {
-            ImageUrls = GetImages(Item, _apiClient);
+            var urls = GetImages(Item, _apiClient);
 
-            var tasks = ImageUrls.Select(GetImage);
+            var tasks = urls.Select(GetImage);
 
             var results = await Task.WhenAll(tasks);
 
-            Images = results.Where(i => i != null).ToList();
+            var images = results.Where(i => i != null).ToList();
+
+            LstItems.ItemsSource = CollectionViewSource.GetDefaultView(images);
         }
 
         /// <summary>
@@ -117,7 +104,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
                     images.Add(apiClient.GetImageUrl(item, new ImageOptions
                     {
                         ImageType = ImageType.Backdrop,
-                        ImageIndex = i
+                        ImageIndex = i,
+                        MaxHeight = 150
                     }));
                 }
             }
@@ -126,7 +114,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
             {
                 images.Add(apiClient.GetImageUrl(item, new ImageOptions
                 {
-                    ImageType = ImageType.Thumb
+                    ImageType = ImageType.Thumb,
+                    MaxHeight = 150
                 }));
             }
 
@@ -134,7 +123,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
             {
                 images.Add(apiClient.GetImageUrl(item, new ImageOptions
                 {
-                    ImageType = ImageType.Art
+                    ImageType = ImageType.Art,
+                    MaxHeight = 150
                 }));
             }
 
@@ -142,7 +132,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
             {
                 images.Add(apiClient.GetImageUrl(item, new ImageOptions
                 {
-                    ImageType = ImageType.Disc
+                    ImageType = ImageType.Disc,
+                    MaxHeight = 150
                 }));
             }
 
@@ -150,7 +141,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
             {
                 images.Add(apiClient.GetImageUrl(item, new ImageOptions
                 {
-                    ImageType = ImageType.Menu
+                    ImageType = ImageType.Menu,
+                    MaxHeight = 150
                 }));
             }
 
@@ -158,7 +150,26 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
             {
                 images.Add(apiClient.GetImageUrl(item, new ImageOptions
                 {
-                    ImageType = ImageType.Box
+                    ImageType = ImageType.Box,
+                    MaxHeight = 150
+                }));
+            }
+
+            if (item.HasBoxImage)
+            {
+                images.Add(apiClient.GetImageUrl(item, new ImageOptions
+                {
+                    ImageType = ImageType.BoxRear,
+                    MaxHeight = 150
+                }));
+            }
+
+            if (item.HasBoxImage)
+            {
+                images.Add(apiClient.GetImageUrl(item, new ImageOptions
+                {
+                    ImageType = ImageType.BoxRear,
+                    MaxHeight = 150
                 }));
             }
 

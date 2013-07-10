@@ -159,7 +159,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         void BtnGallery_Click(object sender, RoutedEventArgs e)
         {
             PrimaryImageGrid.Visibility = Visibility.Collapsed;
-            ShowDetailControl(BtnGallery, new ItemGallery(ApiClient, _imageManager) { });
         }
 
         /// <summary>
@@ -170,7 +169,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         void BtnSpecialFeatures_Click(object sender, RoutedEventArgs e)
         {
             PrimaryImageGrid.Visibility = Visibility.Collapsed;
-            ShowDetailControl(BtnSpecialFeatures, new ItemSpecialFeatures(ApiClient, _imageManager, SessionManager, PresentationManager) { });
         }
 
         /// <summary>
@@ -181,7 +179,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         void BtnTrailers_Click(object sender, RoutedEventArgs e)
         {
             PrimaryImageGrid.Visibility = Visibility.Collapsed;
-            ShowDetailControl(BtnTrailers, new ItemTrailers(ApiClient, _imageManager, SessionManager, PresentationManager) { });
         }
 
         /// <summary>
@@ -203,7 +200,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         void BtnChapters_Click(object sender, RoutedEventArgs e)
         {
             PrimaryImageGrid.Visibility = Visibility.Collapsed;
-            ShowDetailControl(BtnChapters, new ItemChapters(ApiClient, _imageManager) { });
         }
 
         /// <summary>
@@ -333,7 +329,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
                 Tagline.Visibility = Visibility.Collapsed;
             }
 
-            BtnGallery.Visibility = ItemGallery.GetImages(Item, ApiClient).Count > 0 ? Visibility.Visible : Visibility.Collapsed;
             BtnTrailers.Visibility = Item.LocalTrailerCount > 0 ? Visibility.Visible : Visibility.Collapsed;
             BtnSpecialFeatures.Visibility = Item.SpecialFeatureCount > 0 ? Visibility.Visible : Visibility.Collapsed;
             BtnPerformers.Visibility = Item.People != null && Item.People.Length > 0 ? Visibility.Visible : Visibility.Collapsed;

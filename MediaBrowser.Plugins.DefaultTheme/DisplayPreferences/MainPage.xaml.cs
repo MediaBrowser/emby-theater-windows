@@ -22,6 +22,18 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
             ViewMenuButton.Click += ViewMenuButton_Click;
             SortMenuButton.Click += SortMenuButton_Click;
             Loaded += MainPage_Loaded;
+            ChkShowSidebar.Checked += ChkShowSidebar_Checked;
+            ChkShowSidebar.Unchecked += ChkShowSidebar_Checked;
+        }
+
+        void ChkShowSidebar_Checked(object sender, RoutedEventArgs e)
+        {
+            var isChecked = ChkShowSidebar.IsChecked ?? false;
+
+            var val = isChecked ? "1" : "0";
+
+            DisplayPreferencesWindow.DisplayPreferencesContainer.DisplayPreferences.CustomPrefs["sidebar"] = val;
+            DisplayPreferencesWindow.DisplayPreferencesContainer.NotifyDisplayPreferencesChanged();
         }
 
         /// <summary>
@@ -90,7 +102,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
                                                      : ScrollDirection.Horizontal;
 
             DisplayPreferencesWindow.DisplayPreferencesContainer.NotifyDisplayPreferencesChanged();
-           
+
             UpdateFields();
         }
 
@@ -101,11 +113,20 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
         {
             var displayPreferences = DisplayPreferencesWindow.DisplayPreferencesContainer.DisplayPreferences;
 
-            btnScroll.Visibility = displayPreferences.ViewType == ViewTypes.Poster || string.IsNullOrEmpty(displayPreferences.ViewType)
+            ChkShowSidebar.Visibility = btnScroll.Visibility = displayPreferences.ViewType == ViewTypes.Poster || string.IsNullOrEmpty(displayPreferences.ViewType)
                                        ? Visibility.Visible
                                        : Visibility.Collapsed;
 
             txtScrollDirection.Text = displayPreferences.ScrollDirection == ScrollDirection.Horizontal ? "Scroll: Horizontal" : "Scroll: Vertical";
+
+            string showSidebar;
+
+            if (!displayPreferences.CustomPrefs.TryGetValue("sidebar", out showSidebar))
+            {
+                showSidebar = "0";
+            }
+
+            ChkShowSidebar.IsChecked = string.Equals(showSidebar, "1");
         }
     }
 }

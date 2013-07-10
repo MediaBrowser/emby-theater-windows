@@ -132,7 +132,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 if (_selectionChangeTimer == null)
                 {
-                    _selectionChangeTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(300), DispatcherPriority.Normal, UpdatePageContent, Dispatcher);
+                    _selectionChangeTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(400), DispatcherPriority.Normal, UpdatePageContent, Dispatcher);
                 }
                 else
                 {

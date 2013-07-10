@@ -2,6 +2,7 @@
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Plugins.DefaultTheme.Controls;
+using MediaBrowser.Plugins.DefaultTheme.Details;
 using MediaBrowser.Plugins.DefaultTheme.Header;
 using MediaBrowser.Plugins.DefaultTheme.Pages;
 using MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing;
@@ -119,7 +120,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         {
             var namespaceName = GetType().Namespace;
 
-            return new[] { ThemeColorResource, "NavBarResources", "AppResources" }.Select(i => new ResourceDictionary
+            return new[] { ThemeColorResource, "NavBarResources", "AppResources", "DisplayPreferences" }.Select(i => new ResourceDictionary
             {
                 Source = new Uri("pack://application:,,,/" + namespaceName + ";component/Resources/" + i + ".xaml", UriKind.Absolute)
             });
@@ -138,7 +139,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
                 return new FolderPage(item, item.DisplayPreferencesId, _apiClient, _imageManager, _sessionManager, _presentationManager, _navService);
             }
 
-            return new DetailPage(item, _imageManager, _playbackManager, _apiClient, _sessionManager, _presentationManager);
+            return new PanoramaDetailPage(item, _apiClient, _sessionManager, _presentationManager, _imageManager, _navService);
         }
 
         /// <summary>

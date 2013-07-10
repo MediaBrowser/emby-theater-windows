@@ -4,7 +4,6 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:DisplayPreferences="clr-namespace:MediaBrowser.Plugins.DefaultTheme.DisplayPreferences"
-                                               xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
                                                mc:Ignorable="d" 
       d:DesignHeight="300" d:DesignWidth="300"
 	Title="MainPage">
@@ -13,36 +12,41 @@
         <StackPanel Orientation="Vertical">
             <TextBlock Style="{DynamicResource Heading2TextBlockStyle}">Display Options</TextBlock>
 
-            <controls:ExtendedButton x:Name="ViewMenuButton" Style="{DynamicResource ViewMenuButton}">
+            <Button x:Name="ViewMenuButton" Style="{DynamicResource ViewMenuButton}">
                 <StackPanel Orientation="Horizontal">
                     <Image Source="..\Resources\Images\ViewMenu\View.png" Stretch="None" />
                     <TextBlock Style="{DynamicResource TextBlockStyle}" VerticalAlignment="Center" Margin="10 0 0 0">View Menu</TextBlock>
                 </StackPanel>
-            </controls:ExtendedButton>
-            <controls:ExtendedButton x:Name="SortMenuButton" Style="{DynamicResource ViewMenuButton}">
+            </Button>
+            <Button x:Name="SortMenuButton" Style="{DynamicResource ViewMenuButton}">
                 <StackPanel Orientation="Horizontal">
                     <Image Source="..\Resources\Images\ViewMenu\Sort.png" Stretch="None" />
                     <TextBlock Style="{DynamicResource TextBlockStyle}" VerticalAlignment="Center" Margin="10 0 0 0">Sort Menu</TextBlock>
                 </StackPanel>
-            </controls:ExtendedButton>
-            <controls:ExtendedButton x:Name="btnIncrease" Style="{DynamicResource ViewMenuButton}">
+            </Button>
+            <Button x:Name="btnIncrease" Style="{DynamicResource ViewMenuButton}">
                 <StackPanel Orientation="Horizontal">
                     <Image Source="..\Resources\Images\ViewMenu\Increase.png" Stretch="None" />
                     <TextBlock Style="{DynamicResource TextBlockStyle}" VerticalAlignment="Center" Margin="10 0 0 0">Increase Image Size</TextBlock>
                 </StackPanel>
-            </controls:ExtendedButton>
-            <controls:ExtendedButton x:Name="btnDecrease" Style="{DynamicResource ViewMenuButton}">
+            </Button>
+            <Button x:Name="btnDecrease" Style="{DynamicResource ViewMenuButton}">
                 <StackPanel Orientation="Horizontal">
                     <Image Source="..\Resources\Images\ViewMenu\Decrease.png" Stretch="None" />
                     <TextBlock Style="{DynamicResource TextBlockStyle}" VerticalAlignment="Center" Margin="10 0 0 0">Decrease Image Size</TextBlock>
                 </StackPanel>
-            </controls:ExtendedButton>
-            <controls:ExtendedButton x:Name="btnScroll" Style="{DynamicResource ViewMenuButton}">
+            </Button>
+            <Button x:Name="btnScroll" Style="{DynamicResource ViewMenuButton}">
                 <StackPanel Orientation="Horizontal">
                     <Image Source="..\Resources\Images\ViewMenu\Scroll.png" Stretch="None" />
                     <TextBlock x:Name="txtScrollDirection" Style="{DynamicResource TextBlockStyle}" VerticalAlignment="Center" Margin="10 0 0 0">Scroll: Vertical</TextBlock>
                 </StackPanel>
-            </controls:ExtendedButton>
+            </Button>
+
+            <CheckBox x:Name="ChkShowSidebar" Margin="0 20 0 0">
+                <TextBlock Style="{DynamicResource TextBlockStyle}">Show Sidebar</TextBlock>
+            </CheckBox>
+
         </StackPanel>
     </Grid>
 </DisplayPreferences:BaseDisplayPreferencesPage>

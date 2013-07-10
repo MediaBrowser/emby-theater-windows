@@ -110,7 +110,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
 
             var nameVisibility = !string.Equals(ViewModel.ViewType, ViewTypes.Thumbstrip, StringComparison.OrdinalIgnoreCase) && !Item.IsType("Episode") && !Item.IsType("Audio") ? Visibility.Collapsed : Visibility.Visible;
 
-            if (item.IsType("Person") || item.IsType("IndexFolder"))
+            if (item.IsType("Person") || item.IsType("IndexFolder") || ViewModel.IsSpecialFeature || ViewModel.IsLocalTrailer)
             {
                 nameVisibility = Visibility.Visible;
             }
@@ -133,9 +133,17 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
             }
 
             Progress.Visibility = progressBarVisibility;
-        
 
+            var timeVisibility = Visibility.Collapsed;
+            if (ViewModel.IsSpecialFeature || ViewModel.IsLocalTrailer)
+            {
+                TxtTime.Text = GetMinutesString(item);
+                timeVisibility = Visibility.Visible;
+            }
+            TxtTime.Visibility = timeVisibility;
+   
             OverlayGrid.Visibility = nameVisibility == Visibility.Visible ||
+                                     timeVisibility == Visibility.Visible ||
                                      progressBarVisibility == Visibility.Visible
                                          ? Visibility.Visible
                                          : Visibility.Collapsed;
@@ -149,12 +157,24 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
             {
                 ImgPlayed.Visibility = Visibility.Collapsed;
 
-                if (item.DateCreated.HasValue && (DateTime.UtcNow - item.DateCreated.Value).TotalDays < 14)
+                if (item.RecentlyAddedItemCount > 0)
                 {
                     ImgNew.Visibility = Visibility.Visible;
+                    TxtNew.Text = item.RecentlyAddedItemCount + " NEW";
+                }
+                else if (item.DateCreated.HasValue && (DateTime.UtcNow - item.DateCreated.Value).TotalDays < 14)
+                {
+                    ImgNew.Visibility = Visibility.Visible;
+                    TxtNew.Text = "NEW";
                 }
             }
+        }
 
+        private string GetMinutesString(BaseItemDto item)
+        {
+            var time = TimeSpan.FromTicks(item.RunTimeTicks ?? 0);
+
+            return time.ToString(time.TotalHours < 1 ? "m':'ss" : "h':'mm':'ss");
         }
 
         public static string GetDisplayName(BaseItemDto item)

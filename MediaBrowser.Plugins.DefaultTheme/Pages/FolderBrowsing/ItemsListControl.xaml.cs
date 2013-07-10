@@ -13,6 +13,7 @@ using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Presentation.Controls;
+using MediaBrowser.Theater.Presentation.Extensions;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
 using System.Threading.Tasks;
@@ -45,7 +46,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
                 OnPropertyChanged("ItemContainerHeight");
             }
         }
-        
+
+        private Sidebar _sidebarControl;
+
         public ItemsListControl(BaseItemDto parentItem, Model.Entities.DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IPresentationManager appWindow)
             : base(parentItem, displayPreferences, apiClient, imageManager, sessionManager, navigationManager, appWindow)
         {
@@ -59,6 +62,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
             Loaded += ItemsListControl_Loaded;
             Unloaded += ItemsListControl_Unloaded;
             ItemsList.ItemInvoked += ItemsList_ItemInvoked;
+
+            _sidebarControl = new Sidebar(ApiClient, ImageManager);
+            Sidebar.Content = _sidebarControl;
         }
 
         void ItemsListControl_Unloaded(object sender, RoutedEventArgs e)
@@ -140,24 +146,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
             return ApiClient.GetItemsAsync(query);
         }
 
-        private async void UpdateClearArt(BaseItemDto item)
-        {
-            if (!item.HasArtImage && !string.IsNullOrEmpty(item.SeriesId))
-            {
-                item = await ApiClient.GetItemAsync(item.SeriesId, SessionManager.CurrentUser.Id);
-            }
-
-            if (item.HasArtImage)
-            {
-                ImgDefaultLogo.Source =
-                    await ImageManager.GetRemoteBitmapAsync(ApiClient.GetImageUrl(item, new ImageOptions
-                    {
-                        MaxHeight = 120,
-                        ImageType = ImageType.Art
-                    }));
-            }
-        }
-
         /// <summary>
         /// Shows the view button.
         /// </summary>
@@ -203,33 +191,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
             }
         }
 
-        /// <summary>
-        /// Called when [property changed].
-        /// </summary>
-        /// <param name="name">The name.</param>
-        protected override void OnPropertyChanged(string name)
-        {
-            base.OnPropertyChanged(name);
-
-            if (name.Equals("CurrentItemIndex"))
-            {
-                UpdateCurrentItemIndex();
-            }
-        }
-
-        /// <summary>
-        /// Updates the index of the current item.
-        /// </summary>
-        private void UpdateCurrentItemIndex()
-        {
-            var index = CurrentItemIndex;
-
-            currentItemIndex.Visibility = index == -1 ? Visibility.Collapsed : Visibility.Visible;
-            currentItemIndex.Text = (CurrentItemIndex + 1).ToString();
-
-            currentItemIndexDivider.Visibility = index == -1 ? Visibility.Collapsed : Visibility.Visible;
-        }
-
         protected override async void OnParentItemChanged()
         {
             base.OnParentItemChanged();
@@ -248,13 +209,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
                 TxtName.Visibility = Visibility.Collapsed;
             }
 
-            UpdateClearArt(ParentItem);
-
-            TxtOverview.Text = ParentItem.Overview ?? string.Empty;
-
             await pageTitleTask;
         }
-        
+
         /// <summary>
         /// Handles current item selection changes
         /// </summary>
@@ -276,6 +233,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
 
             UpdateLogo(item);
             UpdateTagline(item);
+
+            if (Sidebar.Visibility == Visibility.Visible)
+            {
+                _sidebarControl.Item = item;
+            }
         }
 
         protected override void OnDisplayPreferencesChanged()
@@ -302,6 +264,18 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
                 ScrollViewer.SetHorizontalScrollBarVisibility(ItemsList, ScrollBarVisibility.Disabled);
                 ScrollViewer.SetVerticalScrollBarVisibility(ItemsList, ScrollBarVisibility.Hidden);
             }
+
+            // Sidebar visibility
+            string showSidebar;
+
+            if (!displayPreferences.CustomPrefs.TryGetValue("sidebar", out showSidebar))
+            {
+                showSidebar = "0";
+            }
+
+            Sidebar.Visibility = string.Equals(showSidebar, "1")
+                                     ? Visibility.Visible
+                                     : Visibility.Collapsed;
         }
 
         protected virtual double GetItemContainerWidth(Model.Entities.DisplayPreferences displayPreferences, double medianPrimaryImageAspectRatio)
@@ -314,13 +288,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
         {
             // 14 = double the margin between items as defined in the resource file
             return GetImageDisplayHeight(displayPreferences, medianPrimaryImageAspectRatio) + 14;
-        }
-
-        protected override void OnItemsChanged()
-        {
-            base.OnItemsChanged();
-
-            TxtItemCount.Text = ListItems.Count.ToString(CultureInfo.CurrentCulture);
         }
 
         public void NotifyDisplayPreferencesChanged()
@@ -336,28 +303,71 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
 
         private async void UpdateLogo(BaseItemDto item)
         {
-            if (item != null && item.HasLogo)
+            if (item != null && item.HasLogo && Sidebar.Visibility == Visibility.Collapsed)
             {
-                ImgLogo.Source =
-                    await ImageManager.GetRemoteBitmapAsync(ApiClient.GetImageUrl(item, new ImageOptions
-                    {
-                        MaxHeight = 70,
-                        ImageType = ImageType.Logo
-                    }));
+                ImgLogo.Source = await ImageManager.GetRemoteBitmapAsync(ApiClient.GetLogoImageUrl(item, new ImageOptions
+                {
+                    MaxHeight = 80,
+                    ImageType = ImageType.Logo
+                }));
 
                 ImgLogo.Visibility = Visibility.Visible;
-                ImgDefaultLogo.Visibility = Visibility.Hidden;
+            }
+            else if (item != null && (item.HasArtImage || item.ParentArtImageTag.HasValue))
+            {
+                ImgLogo.Source = await ImageManager.GetRemoteBitmapAsync(ApiClient.GetArtImageUrl(item, new ImageOptions
+                {
+                    MaxHeight = 80,
+                    ImageType = ImageType.Art
+                }));
+
+                ImgLogo.Visibility = Visibility.Visible;
+            }
+            else if (item != null && item.HasDiscImage)
+            {
+                ImgLogo.Source = await ImageManager.GetRemoteBitmapAsync(ApiClient.GetImageUrl(item, new ImageOptions
+                {
+                    MaxHeight = 80,
+                    ImageType = ImageType.Disc
+                }));
+
+                ImgLogo.Visibility = Visibility.Visible;
+            }
+            else if (item != null && item.HasBoxImage)
+            {
+                ImgLogo.Source = await ImageManager.GetRemoteBitmapAsync(ApiClient.GetImageUrl(item, new ImageOptions
+                {
+                    MaxHeight = 80,
+                    ImageType = ImageType.Box
+                }));
+
+                ImgLogo.Visibility = Visibility.Visible;
+            }
+            else if (item != null && item.HasBoxImage)
+            {
+                ImgLogo.Source = await ImageManager.GetRemoteBitmapAsync(ApiClient.GetImageUrl(item, new ImageOptions
+                {
+                    MaxHeight = 80,
+                    ImageType = ImageType.BoxRear
+                }));
+
+                ImgLogo.Visibility = Visibility.Visible;
             }
             else
             {
                 // Just hide it so that it still takes up the same amount of space
                 ImgLogo.Visibility = Visibility.Hidden;
-                ImgDefaultLogo.Visibility = Visibility.Visible;
             }
         }
 
         protected override double GetImageDisplayHeight(Model.Entities.DisplayPreferences displayPreferences, double medianPrimaryImageAspectRatio)
         {
+            if (string.Equals(displayPreferences.ViewType, ViewTypes.Thumbstrip) || string.Equals(displayPreferences.ViewType, ViewTypes.List))
+            {
+                double height = displayPreferences.PrimaryImageWidth;
+                return height / AspectRatioHelper.GetAspectRatio(ImageType.Backdrop, medianPrimaryImageAspectRatio);
+            }
+
             if (!medianPrimaryImageAspectRatio.Equals(0))
             {
                 if (string.IsNullOrEmpty(displayPreferences.ViewType) || string.Equals(displayPreferences.ViewType, ViewTypes.Poster))

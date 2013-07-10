@@ -1,11 +1,14 @@
-﻿using MediaBrowser.ApiInteraction;
+﻿using System.Threading;
+using MediaBrowser.ApiInteraction;
 using MediaBrowser.Common.Configuration;
+using MediaBrowser.Common.Constants;
 using MediaBrowser.Common.Implementations;
 using MediaBrowser.Common.Implementations.ScheduledTasks;
 using MediaBrowser.Common.IO;
 using MediaBrowser.IsoMounter;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.System;
+using MediaBrowser.Model.Updates;
 using MediaBrowser.Plugins.DefaultTheme;
 using MediaBrowser.Theater.Core.Login;
 using MediaBrowser.Theater.Implementations.Configuration;
@@ -151,7 +154,7 @@ namespace MediaBrowser.UI
                 AutomaticDecompression = DecompressionMethods.Deflate,
                 CachePolicy = new RequestCachePolicy(RequestCacheLevel.Revalidate)
 
-            }), TheaterConfigurationManager.Configuration.ServerHostName, TheaterConfigurationManager.Configuration.ServerApiPort, "Media Browser Theater", Environment.MachineName, Environment.MachineName)
+            }), TheaterConfigurationManager.Configuration.ServerHostName, TheaterConfigurationManager.Configuration.ServerApiPort, "Media Browser Theater", Environment.MachineName, Environment.MachineName, ApplicationVersion.ToString())
             {
                 JsonSerializer = JsonSerializer
             };
@@ -225,6 +228,15 @@ namespace MediaBrowser.UI
         protected override IConfigurationManager GetConfigurationManager()
         {
             return new ConfigurationManager(ApplicationPaths, LogManager, XmlSerializer);
+        }
+
+        public override async Task<CheckForUpdateResult> CheckForApplicationUpdate(CancellationToken cancellationToken, IProgress<double> progress)
+        {
+            var availablePackages = await PackageManager.GetAvailablePackagesWithoutRegistrationInfo(CancellationToken.None).ConfigureAwait(false);
+            var version = InstallationManager.GetLatestCompatibleVersion(availablePackages, Constants.MbTheaterPkgName, ConfigurationManager.CommonConfiguration.SystemUpdateLevel);
+
+            return version != null ? new CheckForUpdateResult { AvailableVersion = version.version, IsUpdateAvailable = version.version > ApplicationVersion, Package = version } :
+                       new CheckForUpdateResult { AvailableVersion = ApplicationVersion, IsUpdateAvailable = false };
         }
     }
 }

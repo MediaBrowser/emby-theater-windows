@@ -19,6 +19,9 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         public IApiClient ApiClient { get; private set; }
         public IImageManager ImageManager { get; private set; }
 
+        public bool IsSpecialFeature { get; set; }
+        public bool IsLocalTrailer { get; set; }
+
         /// <summary>
         /// The _average primary image aspect ratio
         /// </summary>

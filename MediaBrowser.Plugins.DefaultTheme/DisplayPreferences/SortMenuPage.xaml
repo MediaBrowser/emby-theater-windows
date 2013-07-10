@@ -12,7 +12,7 @@
         <StackPanel Orientation="Vertical">
             <TextBlock Style="{DynamicResource Heading2TextBlockStyle}">Sort By</TextBlock>
             <StackPanel x:Name="pnlOptions" Orientation="Vertical"></StackPanel>
-            <CheckBox x:Name="chkRemember" Margin="0 20 0 0">
+            <CheckBox x:Name="chkRemember" Margin="0 50 0 0">
                 <TextBlock Text="Remember Sorting" Style="{DynamicResource TextBlockStyle}"></TextBlock>
             </CheckBox>
         </StackPanel>

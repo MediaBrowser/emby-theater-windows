@@ -31,12 +31,12 @@
                         <ee:WipeTransitionEffect WipeDirection="RightToLeft"></ee:WipeTransitionEffect>
                     </controls:TransitionFrame.TransitionType>
                 </controls:TransitionFrame>
-                <controls:ExtendedButton x:Name="btnClose" Style="{DynamicResource ViewMenuButton}" HorizontalAlignment="Left" Margin="0 50 0 0" Grid.Row="1">
+                <Button x:Name="btnClose" Style="{DynamicResource ViewMenuButton}" HorizontalAlignment="Left" Margin="0 50 0 0" Grid.Row="1">
                     <StackPanel Orientation="Horizontal">
                         <Image Source="..\Resources\Images\ViewMenu\Close.png" Stretch="None" />
                         <TextBlock Style="{DynamicResource TextBlockStyle}" VerticalAlignment="Center" Margin="10 0 0 0">Close</TextBlock>
                     </StackPanel>
-                </controls:ExtendedButton>
+                </Button>
             </Grid>
         </Grid>
 

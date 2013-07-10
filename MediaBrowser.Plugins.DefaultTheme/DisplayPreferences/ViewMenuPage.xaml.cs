@@ -34,8 +34,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         void radioThumbstrip_Click(object sender, RoutedEventArgs e)
         {
+            DisplayPreferencesWindow.DisplayPreferencesContainer.DisplayPreferences.PrimaryImageWidth = 640;
+
             DisplayPreferencesWindow.DisplayPreferencesContainer.DisplayPreferences.ScrollDirection = ScrollDirection.Horizontal;
             DisplayPreferencesWindow.DisplayPreferencesContainer.DisplayPreferences.ViewType = ViewTypes.Thumbstrip;
+            DisplayPreferencesWindow.DisplayPreferencesContainer.DisplayPreferences.CustomPrefs["sidebar"] = "0";
+
             DisplayPreferencesWindow.DisplayPreferencesContainer.NotifyDisplayPreferencesChanged();
         }
 
@@ -46,6 +50,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         void radioPoster_Click(object sender, RoutedEventArgs e)
         {
+            DisplayPreferencesWindow.DisplayPreferencesContainer.DisplayPreferences.PrimaryImageWidth = new Model.Entities.DisplayPreferences().PrimaryImageWidth;
+            
             DisplayPreferencesWindow.DisplayPreferencesContainer.DisplayPreferences.ViewType = ViewTypes.Poster;
             DisplayPreferencesWindow.DisplayPreferencesContainer.NotifyDisplayPreferencesChanged();
         }
@@ -57,10 +63,14 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         void radioList_Click(object sender, RoutedEventArgs e)
         {
+            DisplayPreferencesWindow.DisplayPreferencesContainer.DisplayPreferences.PrimaryImageWidth = 320;
+            
             var displayPreferences = DisplayPreferencesWindow.DisplayPreferencesContainer.DisplayPreferences;
 
             displayPreferences.ScrollDirection = ScrollDirection.Vertical;
             displayPreferences.ViewType = ViewTypes.List;
+            DisplayPreferencesWindow.DisplayPreferencesContainer.DisplayPreferences.CustomPrefs["sidebar"] = "0";
+
             DisplayPreferencesWindow.DisplayPreferencesContainer.NotifyDisplayPreferencesChanged();
         }
 

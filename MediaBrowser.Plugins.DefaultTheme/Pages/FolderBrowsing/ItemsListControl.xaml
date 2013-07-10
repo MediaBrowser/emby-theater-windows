@@ -5,13 +5,13 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                                          xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
                            xmlns:details="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Controls.Details"
-                           mc:Ignorable="d" 
+                            xmlns:folderBrowsing="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing"
+                            mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
+    
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
         <Grid.RowDefinitions>
-            <RowDefinition Height="auto"></RowDefinition>
-            <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="auto"></RowDefinition>
@@ -20,43 +20,32 @@
 
         <TextBlock x:Name="TxtName" Style="{DynamicResource TextBlockStyle}" Margin="25 0 0 0" Grid.Row="0"></TextBlock>
 
-        <StackPanel Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Left" Margin="25 0 0 0">
-            <TextBlock x:Name="currentItemIndex" Style="{DynamicResource TextBlockStyle}"></TextBlock>
-            <TextBlock x:Name="currentItemIndexDivider" Text="|" Style="{DynamicResource TextBlockStyle}"></TextBlock>
-            <TextBlock x:Name="TxtItemCount" Style="{DynamicResource TextBlockStyle}"></TextBlock>
-        </StackPanel>
-
-        <Grid Grid.Row="2" Margin="30 30 30 0" Visibility="Collapsed">
+        <Grid Grid.Row="1" Margin="0 25 0 0">
 
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"></ColumnDefinition>
                 <ColumnDefinition Width="*"></ColumnDefinition>
-                <ColumnDefinition Width="400"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <TextBlock Name="TxtOverview" Style="{DynamicResource TextBlockStyle}" MaxHeight="160" TextTrimming="CharacterEllipsis" Grid.Column="0"></TextBlock>
-            <Border Grid.Column="1"></Border>
-        </Grid>
 
-        <Grid Grid.Row="3">
-
-            <controls:ExtendedListBox x:Name="LstItems" Style="{DynamicResource ListPageListBoxStyle}">
+            <ContentControl x:Name="Sidebar" Grid.Column="0" Margin="30 30 30 0" Width="600"></ContentControl>
+            <controls:ExtendedListBox x:Name="LstItems" Style="{DynamicResource ListPageListBoxStyle}" Grid.Column="1">
             </controls:ExtendedListBox>
         </Grid>
 
-        <Grid Grid.Row="4" Margin="0 0 0 100" Name="PnlThumbstripInfo">
+        <Grid Grid.Row="2" Margin="0 0 0 100" Name="PnlThumbstripInfo">
 
             <StackPanel Orientation="Vertical">
-                <TextBlock Style="{DynamicResource TextBlockStyle}" Name="TxtGenres" Margin="300 0 300 0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" HorizontalAlignment="Center"></TextBlock>
+                <TextBlock Style="{DynamicResource Heading3TextBlockStyle}" Foreground="OrangeRed" Name="TxtGenres" Margin="300 0 300 0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" HorizontalAlignment="Center"></TextBlock>
                 <TextBlock Style="{DynamicResource TextBlockStyle}" Name="TxtTagline" Margin="300 20 300 0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" HorizontalAlignment="Center"></TextBlock>
             </StackPanel>
         </Grid>
 
-        <Grid Grid.Row="5" Margin="25 0 25 20">
-            
+        <Grid Grid.Row="3" Margin="25 0 25 20">
+
             <!-- This is just to make sure the bottom always has the same height -->
             <Grid Height="100"></Grid>
 
             <Image Name="ImgLogo" Stretch="None" HorizontalAlignment="Left" VerticalAlignment="Bottom"></Image>
-            <Image Name="ImgDefaultLogo" Stretch="None" HorizontalAlignment="Left" VerticalAlignment="Bottom"></Image>
             <details:ItemInfoFooter x:Name="ItemInfoFooter" HorizontalAlignment="Right" VerticalAlignment="Bottom" VerticalContentAlignment="Center" KeyboardNavigation.IsTabStop="False"></details:ItemInfoFooter>
         </Grid>
     </Grid>

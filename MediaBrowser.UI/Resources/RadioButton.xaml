@@ -36,7 +36,9 @@
                             <Setter TargetName="CheckMark" Property="Fill" Value="{DynamicResource ButtonTextPressed}" />
                         </Trigger>
                         <Trigger Property="IsKeyboardFocused" Value="true">
-                            <Setter TargetName="CheckBorder" Property="BorderBrush" Value="{DynamicResource Accent}" />
+                            <Setter TargetName="CheckBorder" Property="Background" Value="{DynamicResource ButtonBackgroundPressed}" />
+                            <Setter TargetName="CheckBorder" Property="BorderBrush" Value="{DynamicResource ButtonBorderPressed}" />
+                            <Setter TargetName="CheckMark" Property="Fill" Value="{DynamicResource ButtonTextPressed}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

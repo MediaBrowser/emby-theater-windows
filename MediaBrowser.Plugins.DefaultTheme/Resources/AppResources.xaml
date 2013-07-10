@@ -5,7 +5,9 @@
                     xmlns:viewModels="clr-namespace:MediaBrowser.Theater.Presentation.ViewModels;assembly=MediaBrowser.Theater.Presentation"
                     xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
                     xmlns:converters="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Converters"
-                    xmlns:header="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Header">
+                    xmlns:header="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Header"
+                    xmlns:pages="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Pages"
+                    xmlns:details="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Details">
 
     <!--Define all the standard converters here in one place-->
     <converters:WatchedVisibilityConverter x:Key="WatchedVisibilityConverter"></converters:WatchedVisibilityConverter>
@@ -83,44 +85,8 @@
         <themecontrols:NavigationBar x:Name="NavigationBar" VerticalAlignment="Bottom"></themecontrols:NavigationBar>
     </ControlTemplate>
 
-    <DataTemplate x:Key="ItemSpecialFeaturesTemplate" DataType="{x:Type viewModels:SpecialFeatureViewModel}">
-        <Grid HorizontalAlignment="Left">
-
-            <Border Width="{Binding Path=ImageWidth}" Height="{Binding Path=ImageHeight}">
-                <Border.Background>
-                    <LinearGradientBrush SpreadMethod="Reflect" ColorInterpolationMode="SRgbLinearInterpolation" StartPoint="0,0" EndPoint="0,1" >
-                        <GradientStop Color="#ff545358" Offset="0" />
-                        <GradientStop Color="#ffCBCBCB" Offset="1" />
-                    </LinearGradientBrush>
-                </Border.Background>
-                <Image>
-                    <Image.Style>
-                        <Style TargetType="{x:Type Image}">
-                            <Setter Property="Stretch" Value="Uniform" />
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Path=Item.HasPrimaryImage}" Value="True">
-                                    <Setter Property="Source" Value="{Binding Path=Image}" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding Path=Item.HasPrimaryImage}" Value="False">
-                                    <Setter Property="Source" Value="../Resources/Images/ChapterDefault.png" />
-                                    <Setter Property="VerticalAlignment" Value="Top" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Image.Style>
-                </Image>
-            </Border>
-
-            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
-                <Grid.Background>
-                    <SolidColorBrush Color="#A6000000"></SolidColorBrush>
-                </Grid.Background>
-                <StackPanel Orientation="Vertical" Margin="10 5 0 10">
-                    <TextBlock Foreground="White" Text="{Binding Path=Item.Name}" Style="{DynamicResource TextBlockStyle}"></TextBlock>
-                    <TextBlock Foreground="White" Text="{Binding Path=MinutesString}" Style="{DynamicResource SmallTextBlockStyle}"></TextBlock>
-                </StackPanel>
-            </Grid>
-        </Grid>
+    <DataTemplate x:Key="ItemSpecialFeaturesTemplate" DataType="{x:Type viewModels:BaseItemDtoViewModel}">
+        <themecontrols:BaseItemTile DataContext="{Binding}"></themecontrols:BaseItemTile>
     </DataTemplate>
 
     <DataTemplate x:Key="ItemPerformersTemplate" DataType="{x:Type viewModels:BaseItemDtoViewModel}">
@@ -128,48 +94,11 @@
     </DataTemplate>
 
     <DataTemplate x:Key="ItemChaptersTemplate" DataType="{x:Type viewModels:ChapterInfoDtoViewModel}">
-        <Grid HorizontalAlignment="Left">
-
-            <Border Width="{Binding Path=ImageWidth}" Height="{Binding Path=ImageHeight}">
-                <Border.Background>
-                    <LinearGradientBrush SpreadMethod="Reflect" ColorInterpolationMode="SRgbLinearInterpolation" StartPoint="0,0" EndPoint="0,1" >
-                        <GradientStop Color="#ff545358" Offset="0" />
-                        <GradientStop Color="#ffCBCBCB" Offset="1" />
-                    </LinearGradientBrush>
-                </Border.Background>
-                <Image>
-                    <Image.Style>
-                        <Style TargetType="{x:Type Image}">
-                            <Setter Property="Stretch" Value="Uniform" />
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Path=Chapter.HasImage}" Value="True">
-                                    <Setter Property="Source" Value="{Binding Path=Image}" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding Path=Chapter.HasImage}" Value="False">
-                                    <Setter Property="Source" Value="../Resources/Images/ChapterDefault.png" />
-                                    <Setter Property="VerticalAlignment" Value="Top" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Image.Style>
-                </Image>
-            </Border>
-
-            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
-                <Grid.Background>
-                    <SolidColorBrush Color="#A6000000"></SolidColorBrush>
-                </Grid.Background>
-                <StackPanel Orientation="Vertical" Margin="10 5 0 10">
-                    <TextBlock Foreground="White" Text="{Binding Path=Chapter.Name}" Style="{DynamicResource TextBlockStyle}"></TextBlock>
-                    <TextBlock Foreground="White" Text="{Binding Path=TimeString}" Style="{DynamicResource SmallTextBlockStyle}"></TextBlock>
-                </StackPanel>
-            </Grid>
-
-        </Grid>
+        <details:Chapter DataContext="{Binding}"></details:Chapter>
     </DataTemplate>
 
     <DataTemplate x:Key="ItemGalleryTemplate" DataType="{x:Type BitmapImage}">
-        <Image Source="{Binding}" Height="297" VerticalAlignment="Center" HorizontalAlignment="Center">
+        <Image Source="{Binding}" Height="150" VerticalAlignment="Center" HorizontalAlignment="Center" Stretch="None">
 
         </Image>
     </DataTemplate>
@@ -234,60 +163,5 @@
         </Style.Triggers>
     </Style>
 
-    <Style TargetType="Button" x:Key="TextButton" BasedOn="{StaticResource ImageButton}">
-        <Setter Property="HorizontalAlignment" Value="Left"></Setter>
-        <Setter Property="Margin" Value="50 0 50 0"></Setter>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type Button}">
-                    <Border x:Name="Border" Background="{TemplateBinding Background}" BorderThickness="0 0 0 2" BorderBrush="Transparent">
-                        <ContentPresenter x:Name="contentPresenter" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
-                    </Border>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsKeyboardFocused" Value="true">
-                            <Setter TargetName="Border" Property="BorderBrush" Value="White" />
-                        </Trigger>
-                        <Trigger Property="IsMouseOver" Value="true">
-                            <Setter TargetName="Border" Property="BorderBrush" Value="White" />
-                        </Trigger>
-                        <Trigger Property="IsPressed" Value="true">
-                            <Setter TargetName="Border" Property="BorderBrush" Value="Gray" />
-                        </Trigger>
-                        <Trigger Property="IsEnabled" Value="false">
-                            <Setter TargetName="Border" Property="Opacity" Value=".2" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <Style TargetType="Button" x:Key="ViewMenuButton" BasedOn="{StaticResource ImageButton}">
-        <Setter Property="HorizontalAlignment" Value="Left"></Setter>
-        <Setter Property="Margin" Value="0 15 0 0"></Setter>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type Button}">
-                    <Border x:Name="Border" Background="{TemplateBinding Background}" BorderThickness="2" BorderBrush="Transparent" Padding="0 5 20 5">
-                        <ContentPresenter x:Name="contentPresenter" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
-                    </Border>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsKeyboardFocused" Value="true">
-                            <Setter TargetName="Border" Property="BorderBrush" Value="White" />
-                        </Trigger>
-                        <Trigger Property="IsMouseOver" Value="true">
-                            <Setter TargetName="Border" Property="BorderBrush" Value="White" />
-                        </Trigger>
-                        <Trigger Property="IsPressed" Value="true">
-                            <Setter TargetName="Border" Property="BorderBrush" Value="Gray" />
-                        </Trigger>
-                        <Trigger Property="IsEnabled" Value="false">
-                            <Setter TargetName="Border" Property="Opacity" Value=".2" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
 
 </ResourceDictionary>

@@ -103,8 +103,8 @@ namespace MediaBrowser.Theater.Presentation.Controls
 
             // ScrollContentPresenter sets these to 0 - current offset
             // We need to set it to zero in order to make the animation work
-            finalRect.X = 0;
-            finalRect.Y = 0;
+            finalRect.X = 0 - HorizontalOffset;
+            finalRect.Y = 0 - VerticalOffset;
 
             finalRect.Width = Math.Max(finalRect.Width, arrangeSize.Width);
             finalRect.Height = Math.Max(finalRect.Height, arrangeSize.Height);
@@ -120,12 +120,12 @@ namespace MediaBrowser.Theater.Presentation.Controls
 
             uiElement.Arrange(finalRect);
 
-            trans.BeginAnimation(TranslateTransform.XProperty,
-              GetAnimation(0 - HorizontalOffset),
-              HandoffBehavior.Compose);
-            trans.BeginAnimation(TranslateTransform.YProperty,
-              GetAnimation(0 - VerticalOffset),
-              HandoffBehavior.Compose);
+            //trans.BeginAnimation(TranslateTransform.XProperty,
+            //  GetAnimation(0 - HorizontalOffset),
+            //  HandoffBehavior.Compose);
+            //trans.BeginAnimation(TranslateTransform.YProperty,
+            //  GetAnimation(0 - VerticalOffset),
+            //  HandoffBehavior.Compose);
 
             return arrangeSize;
         }

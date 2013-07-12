@@ -125,7 +125,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
                 return true;
             }
 
-            if (e.SystemKey == Key.Left && e.KeyboardDevice.Modifiers.HasFlag(ModifierKeys.Alt))
+            if (e.SystemKey == Key.Left && (e.KeyboardDevice.Modifiers & ModifierKeys.Alt) == ModifierKeys.Alt)
             {
                 return true;
             }
@@ -145,7 +145,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
                 return true;
             }
 
-            if (e.SystemKey == Key.RightAlt && e.KeyboardDevice.Modifiers.HasFlag(ModifierKeys.Alt))
+            if (e.SystemKey == Key.Right && (e.KeyboardDevice.Modifiers & ModifierKeys.Alt) == ModifierKeys.Alt)
             {
                 return true;
             }

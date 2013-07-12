@@ -13,6 +13,7 @@
         <Setter Property="VirtualizingPanel.CacheLengthUnit" Value="Page"/>
         <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True"/>
         <Setter Property="VirtualizingPanel.ScrollUnit" Value="Pixel"/>
+        <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling"/>
         <Setter Property="IsSynchronizedWithCurrentItem" Value="True"/>
         <Setter Property="Focusable" Value="False"/>
         <Setter Property="SelectionMode" Value="Single"/>

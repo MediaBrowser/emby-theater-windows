@@ -96,7 +96,10 @@ namespace MediaBrowser.Theater.Presentation.Controls
             if (DesignerProperties.GetIsInDesignMode(transitionControl))
                 return;
 
-            if (oldContent != null && newContent != null && transitionControl.IsVisible)
+            // The rendering tier corresponds to the high-order word of the Tier property. 
+            var renderingTier = (RenderCapability.Tier >> 16);
+
+            if (oldContent != null && newContent != null && transitionControl.IsVisible && renderingTier == 2)
             {
                 transitionControl.AnimateContent(oldContent, newContent);
             }

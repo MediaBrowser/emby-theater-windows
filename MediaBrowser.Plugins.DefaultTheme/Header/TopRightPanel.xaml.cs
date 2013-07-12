@@ -28,7 +28,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Header
         internal static INavigationService Navigation { get; set; }
         internal static IPlaybackManager PlaybackManager { get; set; }
 
-        private DispatcherTimer ClockTimer { get; set; }
+        private Timer ClockTimer { get; set; }
 
         internal static TopRightPanel Current;
 
@@ -51,18 +51,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Header
 
             PlaybackManager.PlaybackStarted += PlaybackManager_PlaybackStarted;
             PlaybackManager.PlaybackCompleted += PlaybackManager_PlaybackCompleted;
-
-            ClockTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(10000), DispatcherPriority.Normal, ClockTimerCallback, Dispatcher);
-
-            ClockTimerCallback(null, EventArgs.Empty);
         }
 
         void TopRightPanel_Loaded(object sender, RoutedEventArgs e)
         {
-            if (ClockTimer != null)
-            {
-                ClockTimer.Start();
-            }
+            ClockTimer = new Timer(ClockTimerCallback, null, 0, 10000);
         }
 
         void TopRightPanel_Unloaded(object sender, RoutedEventArgs e)
@@ -75,7 +68,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Header
 
             if (ClockTimer != null)
             {
-                ClockTimer.Stop();
+                ClockTimer.Dispose();
+                ClockTimer = null;
             }
         }
 
@@ -83,8 +77,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Header
         /// Clocks the timer callback.
         /// </summary>
         /// <param name="stateInfo">The state info.</param>
-        /// <param name="args">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ClockTimerCallback(object stateInfo, EventArgs args)
+        private void ClockTimerCallback(object stateInfo)
+        {
+            Dispatcher.InvokeAsync(UpdateTime, DispatcherPriority.Background);
+        }
+
+        private void UpdateTime()
         {
             var left = CurrentTimeLeft;
             var right = CurrentTimeRight;

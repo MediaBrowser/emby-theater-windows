@@ -50,9 +50,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
         private async void ReloadImage()
         {
-            var width = 288;
+            const int width = 384;
 
-            var height = ChapterInfoDtoViewModel.GetChapterImageHeight(ViewModel.Item, width, 162);
+            var height = ChapterInfoDtoViewModel.GetChapterImageHeight(ViewModel.Item, width, 216);
 
             ChapterImage.Width = width;
             ChapterImage.Height = height;

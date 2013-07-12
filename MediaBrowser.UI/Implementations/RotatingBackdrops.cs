@@ -23,8 +23,8 @@ namespace MediaBrowser.UI.Implementations
         private readonly object _rotationTimerLock = new object();
         private readonly object _initialSetTimerLock = new object();
 
-        private DispatcherTimer _backdropSetTimer;
-        private DispatcherTimer _backdropRotationTimer;
+        private Timer _backdropSetTimer;
+        private Timer _backdropRotationTimer;
 
         /// <summary>
         /// Gets or sets the current backdrops.
@@ -124,23 +124,19 @@ namespace MediaBrowser.UI.Implementations
 
                 if (_backdropSetTimer == null)
                 {
-                    _backdropSetTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(400), DispatcherPriority.Normal,
-                                                            OnPendingBackdropsTimerTick, _dispatcher);
+                    _backdropSetTimer = new Timer(OnPendingBackdropsTimerFired, null, 400, Timeout.Infinite);
                 }
                 else
                 {
-                    _backdropSetTimer.Stop();
-                    _backdropSetTimer.Start();
+                    _backdropSetTimer.Change(400, Timeout.Infinite);
                 }
             }
         }
 
         private string[] _pendingBackdrops;
-        private void OnPendingBackdropsTimerTick(object sender, EventArgs args)
+        private void OnPendingBackdropsTimerFired(object state)
         {
-            DisposeInitialSetTimer();
-
-            SetBackdropsInternal(_pendingBackdrops);
+            _dispatcher.InvokeAsync(() => SetBackdropsInternal(_pendingBackdrops), DispatcherPriority.Background);
         }
 
         /// <summary>
@@ -155,7 +151,6 @@ namespace MediaBrowser.UI.Implementations
                 return;
             }
 
-            DisposeRotationTimer();
             _currentBackdrops = backdrops;
 
             if (backdrops == null || backdrops.Length == 0)
@@ -180,18 +175,22 @@ namespace MediaBrowser.UI.Implementations
                 {
                     if (_backdropRotationTimer == null)
                     {
-                        _backdropRotationTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(6000), DispatcherPriority.Normal, OnBackdropRotationTimerCallback, _dispatcher);
+                        _backdropRotationTimer = new Timer(OnBackdropRotationTimerCallback, null, 7000, 7000);
                     }
                     else
                     {
-                        _backdropRotationTimer.Stop();
-                        _backdropRotationTimer.Start();
+                        _backdropRotationTimer.Change(7000, 7000);
                     }
                 }
             }
         }
 
-        private void OnBackdropRotationTimerCallback(object sender, EventArgs args)
+        private void OnBackdropRotationTimerCallback(object state)
+        {
+            _dispatcher.InvokeAsync(MoveToNextBackdrop, DispatcherPriority.Background);
+        }
+
+        private void MoveToNextBackdrop()
         {
             // Don't display backdrops during video playback
             if (_playbackManager.MediaPlayers.Any(p =>
@@ -235,7 +234,8 @@ namespace MediaBrowser.UI.Implementations
             {
                 if (_backdropRotationTimer != null)
                 {
-                    _backdropRotationTimer.Stop();
+                    _backdropRotationTimer.Dispose();
+                    _backdropRotationTimer = null;
                 }
             }
         }
@@ -246,7 +246,8 @@ namespace MediaBrowser.UI.Implementations
             {
                 if (_backdropSetTimer != null)
                 {
-                    _backdropSetTimer.Stop();
+                    _backdropSetTimer.Dispose();
+                    _backdropSetTimer = null;
                 }
             }
         }

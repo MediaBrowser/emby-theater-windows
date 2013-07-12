@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.ApiClient;
+﻿using System.Threading;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Net;
@@ -73,7 +74,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
         /// Gets or sets the current selection timer.
         /// </summary>
         /// <value>The current selection timer.</value>
-        private DispatcherTimer CurrentSelectionTimer { get; set; }
+        private Timer CurrentSelectionTimer { get; set; }
 
         protected BaseItemsControl(DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IPresentationManager appWindow)
         {
@@ -156,12 +157,11 @@ namespace MediaBrowser.Theater.Presentation.Controls
                 {
                     if (CurrentSelectionTimer != null)
                     {
-                        CurrentSelectionTimer.Stop();
-                        CurrentSelectionTimer.Start();
+                        CurrentSelectionTimer.Change(500, Timeout.Infinite);
                     }
                     else
                     {
-                        CurrentSelectionTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(500), DispatcherPriority.Normal, CurrentItemChangedTimerCallback, Dispatcher);
+                        CurrentSelectionTimer = new Timer(CurrentItemChangedTimerCallback, null, 500, Timeout.Infinite);
                     }
                 }
 
@@ -396,17 +396,17 @@ namespace MediaBrowser.Theater.Presentation.Controls
         /// <summary>
         /// Currents the item changed timer callback.
         /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="args">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void CurrentItemChangedTimerCallback(object sender, EventArgs args)
+        /// <param name="state">The state.</param>
+        private void CurrentItemChangedTimerCallback(object state)
         {
-            DisposeTimer();
-            
-            // Fire notification events for the UI
-            OnPropertyChanged("CurrentItem");
+            Dispatcher.InvokeAsync(() =>
+            {
+                // Fire notification events for the UI
+                OnPropertyChanged("CurrentItem");
 
-            // Alert subclasses
-            OnCurrentItemChanged();
+                // Alert subclasses
+                OnCurrentItemChanged();
+            });
         }
 
         private void DisposeTimer()
@@ -415,7 +415,8 @@ namespace MediaBrowser.Theater.Presentation.Controls
             {
                 if (CurrentSelectionTimer != null)
                 {
-                    CurrentSelectionTimer.Stop();
+                    CurrentSelectionTimer.Dispose();
+                    CurrentSelectionTimer = null;
                 }
             }
         }        

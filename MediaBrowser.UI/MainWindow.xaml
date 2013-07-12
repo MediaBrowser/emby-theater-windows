@@ -11,6 +11,7 @@
         WindowStyle="None"
         ResizeMode="CanResizeWithGrip"
         KeyboardNavigation.DirectionalNavigation="Contained"
+        KeyboardNavigation.IsTabStop="False"
         MinWidth="720"
         MinHeight="480"
         Background="Transparent"

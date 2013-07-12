@@ -3,6 +3,8 @@ using System.Windows.Controls;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
+using MediaBrowser.Model.Net;
+using MediaBrowser.Model.Querying;
 using MediaBrowser.Plugins.DefaultTheme.Header;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
@@ -43,7 +45,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
         private readonly IPlaybackManager _playbackManager;
 
         private readonly INavigationService _nav;
-        
+
         /// <summary>
         /// Gets the application window.
         /// </summary>
@@ -58,11 +60,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
         /// <param name="sessionManager">The session manager.</param>
         /// <param name="presentationManager">The presentation manager.</param>
         /// <param name="imageManager">The image manager.</param>
-        public PanoramaDetailPage(BaseItemDto item, IApiClient apiClient, ISessionManager sessionManager, IPresentationManager presentationManager, IImageManager imageManager, INavigationService nav)
+        public PanoramaDetailPage(BaseItemDto item, IApiClient apiClient, ISessionManager sessionManager, IPresentationManager presentationManager, IImageManager imageManager, INavigationService nav, IPlaybackManager playbackManager)
         {
             _presentationManager = presentationManager;
             _imageManager = imageManager;
             _nav = nav;
+            _playbackManager = playbackManager;
             _sessionManager = sessionManager;
             _apiClient = apiClient;
 
@@ -114,6 +117,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             }
         }
 
+        protected override void FocusOnFirstLoad()
+        {
+        }
+
         /// <summary>
         /// Called when [item changed].
         /// </summary>
@@ -134,32 +141,46 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             await pageTitleTask;
         }
 
-        private void RenderDetailControls(BaseItemDto item)
+        private async void RenderDetailControls(BaseItemDto item)
         {
+            AllThemeMediaResult allThemeMedia;
+
+            try
+            {
+                allThemeMedia = await _apiClient.GetAllThemeMediaAsync(_sessionManager.CurrentUser.Id, item.Id, false);
+            }
+            catch (HttpException)
+            {
+                // Don't let this blow up the page
+                allThemeMedia = new AllThemeMediaResult();
+            }
+
             DetailPanels.Children.Clear();
             DetailPanels.ColumnDefinitions.Clear();
 
-            if (item.LocalTrailerCount > 0)
+            DetailPanels.Children.Add(new Overview(_item, _imageManager, _apiClient, ScrollingPanel, _playbackManager, _presentationManager));
+
+            if (item.LocalTrailerCount > 1)
             {
                 DetailPanels.Children.Add(new Trailers(new Model.Entities.DisplayPreferences
                 {
                     PrimaryImageWidth = 384
 
-                }, _apiClient, _imageManager, _sessionManager, _nav, _presentationManager, _item));
+                }, _apiClient, _imageManager, _sessionManager, _nav, _presentationManager, _item, _playbackManager));
             }
 
             if (item.People.Length > 0)
             {
                 DetailPanels.Children.Add(new People(new Model.Entities.DisplayPreferences
                 {
-                    PrimaryImageWidth = 200
+                    PrimaryImageWidth = 230
 
                 }, _apiClient, _imageManager, _sessionManager, _nav, _presentationManager, _item));
             }
 
-            if (item.Chapters.Count > 0)
+            if (item.Chapters != null && item.Chapters.Count > 0)
             {
-                DetailPanels.Children.Add(new Scenes(item, _apiClient, _imageManager));
+                DetailPanels.Children.Add(new Scenes(item, _apiClient, _imageManager, _playbackManager));
             }
 
             if (item.SpecialFeatureCount > 0)
@@ -168,7 +189,25 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 {
                     PrimaryImageWidth = 384
 
-                }, _apiClient, _imageManager, _sessionManager, _nav, _presentationManager, _item));
+                }, _apiClient, _imageManager, _sessionManager, _nav, _presentationManager, _item, _playbackManager));
+            }
+
+            if (allThemeMedia.ThemeVideosResult.TotalRecordCount > 0)
+            {
+                DetailPanels.Children.Add(new ThemeVideos(new Model.Entities.DisplayPreferences
+                {
+                    PrimaryImageWidth = 384
+
+                }, _apiClient, _imageManager, _sessionManager, _nav, _presentationManager, allThemeMedia.ThemeVideosResult, "Theme Videos", _playbackManager));
+            }
+
+            if (allThemeMedia.ThemeSongsResult.TotalRecordCount > 0)
+            {
+                DetailPanels.Children.Add(new ThemeVideos(new Model.Entities.DisplayPreferences
+                {
+                    PrimaryImageWidth = 384
+
+                }, _apiClient, _imageManager, _sessionManager, _nav, _presentationManager, allThemeMedia.ThemeSongsResult, "Theme Songs", _playbackManager));
             }
 
             if (Gallery.GetImages(item, _apiClient).Any())
@@ -184,7 +223,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             foreach (var child in DetailPanels.Children.OfType<UIElement>())
             {
                 DetailPanels.ColumnDefinitions.Add(new ColumnDefinition());
-                
+
                 Grid.SetColumn(child, columnIndex++);
             }
         }
@@ -226,7 +265,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
                 ImgLogo.Visibility = Visibility.Visible;
             }
-            else if (item != null && item.HasBoxImage)
+            else if (item != null && item.HasBoxRearImage)
             {
                 ImgLogo.Source = await _imageManager.GetRemoteBitmapAsync(_apiClient.GetImageUrl(item, new ImageOptions
                 {

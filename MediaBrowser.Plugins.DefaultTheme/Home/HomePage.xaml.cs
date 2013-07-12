@@ -123,7 +123,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             base.OnInitialized(e);
         }
 
-        private DispatcherTimer _selectionChangeTimer;
+        private Timer _selectionChangeTimer;
         private readonly object _syncLock = new object();
 
         void MenuList_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -132,20 +132,22 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 if (_selectionChangeTimer == null)
                 {
-                    _selectionChangeTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(400), DispatcherPriority.Normal, UpdatePageContent, Dispatcher);
+                    _selectionChangeTimer = new Timer(OnSelectionTimerFired, null, 500, Timeout.Infinite);
                 }
                 else
                 {
-                    _selectionChangeTimer.Stop();
-                    _selectionChangeTimer.Start();
+                    _selectionChangeTimer.Change(500, Timeout.Infinite);
                 }
             }
         }
 
-        private void UpdatePageContent(object sender, EventArgs args)
+        private void OnSelectionTimerFired(object state)
         {
-            DisposeTimer();
+            Dispatcher.InvokeAsync(UpdatePageContent);
+        }
 
+        private void UpdatePageContent()
+        {
             var item = MenuList.SelectedItem as string;
 
             if (string.Equals(item, "movies"))
@@ -206,7 +208,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 if (_selectionChangeTimer != null)
                 {
-                    _selectionChangeTimer.Stop();
+                    _selectionChangeTimer.Dispose();
+                    _selectionChangeTimer = null;
                 }
             }
         }

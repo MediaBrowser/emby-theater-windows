@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.Dto;
+﻿using System.Windows.Threading;
+using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Net;
 using MediaBrowser.Theater.Presentation.ViewModels;
@@ -97,6 +98,29 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
             Random = new Random(Guid.NewGuid().GetHashCode());
 
             DataContextChanged += BaseItemTile_DataContextChanged;
+
+            Loaded += MultiItemTile_Loaded;
+            Unloaded += MultiItemTile_Unloaded;
+        }
+
+        void MultiItemTile_Unloaded(object sender, RoutedEventArgs e)
+        {
+            var vm = ViewModel;
+
+            if (vm != null)
+            {
+                vm.StopTimer();
+            }
+        }
+
+        void MultiItemTile_Loaded(object sender, RoutedEventArgs e)
+        {
+            var vm = ViewModel;
+
+            if (vm != null)
+            {
+                vm.StartTimer();
+            }
         }
 
         /// <summary>
@@ -106,7 +130,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         /// <param name="e">The <see cref="DependencyPropertyChangedEventArgs" /> instance containing the event data.</param>
         void BaseItemTile_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            OnCurrentItemChanged();
+            Dispatcher.InvokeAsync(OnCurrentItemChanged, DispatcherPriority.Background);
 
             if (ViewModel != null)
             {
@@ -123,7 +147,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         {
             if (e.PropertyName.Equals("CurrentItem"))
             {
-                OnCurrentItemChanged();
+                Dispatcher.InvokeAsync(OnCurrentItemChanged, DispatcherPriority.Background);
             }
         }
 

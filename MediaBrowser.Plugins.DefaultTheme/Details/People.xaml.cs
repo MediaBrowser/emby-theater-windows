@@ -1,4 +1,6 @@
-﻿using MediaBrowser.Model.ApiClient;
+﻿using System;
+using System.Linq;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Net;
 using MediaBrowser.Model.Querying;
@@ -7,6 +9,7 @@ using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Presentation.Controls;
 using System.Threading.Tasks;
+using MediaBrowser.Theater.Presentation.ViewModels;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Details
 {
@@ -37,7 +40,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 {
                     ParentId = _item.Id,
                     UserId = SessionManager.CurrentUser.Id,
-                    Fields = new[] { ItemFields.PrimaryImageAspectRatio }
+                    Fields = new[] { ItemFields.PrimaryImageAspectRatio },
+                    Limit = 8
                 });
 
             }
@@ -53,6 +57,20 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             {
                 return false;
             }
+        }
+
+        protected override BaseItemDtoViewModel CreateViewModel(BaseItemDto item, double medianPrimaryImageAspectRatio)
+        {
+            var vm = base.CreateViewModel(item, medianPrimaryImageAspectRatio);
+
+            var roles = _item.People
+                .Where(i => string.Equals(i.Name, item.Name, StringComparison.OrdinalIgnoreCase))
+                .Select(i => string.IsNullOrEmpty(i.Role) ? i.Type : i.Role)
+                .ToArray();
+
+            vm.PersonRole = string.Join(",", roles);
+
+            return vm;
         }
 
         protected override double GetImageDisplayHeight(Model.Entities.DisplayPreferences displayPreferences, double medianPrimaryImageAspectRatio)

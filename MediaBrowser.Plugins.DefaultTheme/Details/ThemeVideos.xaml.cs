@@ -1,6 +1,6 @@
-﻿using MediaBrowser.Model.ApiClient;
+﻿using System;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
-using MediaBrowser.Model.Net;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
@@ -8,26 +8,27 @@ using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.ViewModels;
-using System;
 using System.Threading.Tasks;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Details
 {
     /// <summary>
-    /// Interaction logic for SpecialFeatures.xaml
+    /// Interaction logic for ThemeVideos.xaml
     /// </summary>
-    public partial class SpecialFeatures : BaseItemsControl
+    public partial class ThemeVideos : BaseItemsControl
     {
-        private readonly BaseItemDto _item;
+        private readonly ThemeMediaResult _mediaResult;
 
         private readonly IPlaybackManager _playbackManager;
-        
-        public SpecialFeatures(Model.Entities.DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IPresentationManager appWindow, BaseItemDto item, IPlaybackManager playbackManager) 
+
+        public ThemeVideos(Model.Entities.DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IPresentationManager appWindow, ThemeMediaResult mediaResult, string title, IPlaybackManager playbackManager) 
             : base(displayPreferences, apiClient, imageManager, sessionManager, navigationManager, appWindow)
         {
-            _item = item;
+            _mediaResult = mediaResult;
             _playbackManager = playbackManager;
             InitializeComponent();
+
+            TxtTitle.Text = title;
         }
 
         protected override void OnInitialized(EventArgs e)
@@ -43,28 +44,19 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
             await _playbackManager.Play(new PlayOptions(item.Item));
         }
-
+        
         protected override ExtendedListBox ItemsList
         {
             get { return LstItems; }
         }
 
-        protected override async Task<ItemsResult> GetItemsAsync()
+        protected override Task<ItemsResult> GetItemsAsync()
         {
-            try
+            return Task.FromResult(new ItemsResult
             {
-                var items = await ApiClient.GetSpecialFeaturesAsync(SessionManager.CurrentUser.Id, _item.Id);
-
-                return new ItemsResult
-                {
-                    Items = items,
-                    TotalRecordCount = items.Length
-                };
-            }
-            catch (HttpException)
-            {
-                return new ItemsResult();
-            }
+                TotalRecordCount = _mediaResult.TotalRecordCount,
+                Items = _mediaResult.Items
+            });
         }
 
         protected override bool SetBackdropsOnCurrentItemChanged
@@ -79,7 +71,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
         {
             var vm = base.CreateViewModel(item, medianPrimaryImageAspectRatio);
 
-            vm.IsSpecialFeature = true;
+            vm.IsLocalTrailer = true;
 
             return vm;
         }
@@ -93,7 +85,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
             double height = displayPreferences.PrimaryImageWidth;
 
-            return height/medianPrimaryImageAspectRatio;
+            return height / medianPrimaryImageAspectRatio;
         }
     }
 }

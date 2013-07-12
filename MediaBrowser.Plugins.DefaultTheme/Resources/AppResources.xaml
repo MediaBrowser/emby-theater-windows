@@ -37,6 +37,12 @@
     <Style TargetType="Image" x:Key="FavoriteImage" BasedOn="{StaticResource CommunityRatingImage}">
         <Setter Property="Source" Value="Images/favorite.png" />
     </Style>
+    <Style TargetType="Image" x:Key="RottenImage" BasedOn="{StaticResource CommunityRatingImage}">
+        <Setter Property="Source" Value="Images/rotten.png" />
+    </Style>
+    <Style TargetType="Image" x:Key="FreshImage" BasedOn="{StaticResource CommunityRatingImage}">
+        <Setter Property="Source" Value="Images/fresh.png" />
+    </Style>
 
     <Style TargetType="Border" x:Key="MediaInfoSeparator">
         <Setter Property="Height" Value="12" />

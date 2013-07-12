@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.ApiClient;
+﻿using System.Threading;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using System;
@@ -24,6 +25,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         {
             ImageManager = imageManager;
             ApiClient = apiClient;
+
             if (rotationDevaiationMs > 0)
             {
                 rotationPeriodMs += new Random(Guid.NewGuid().GetHashCode()).Next(0 - rotationDevaiationMs, rotationDevaiationMs);
@@ -35,7 +37,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         /// <summary>
         /// Gets the timer that updates the current item
         /// </summary>
-        private DispatcherTimer CurrentItemTimer { get; set; }
+        private Timer CurrentItemTimer { get; set; }
 
         private readonly object _timerLock = new object();
 
@@ -111,7 +113,8 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             {
                 if (CurrentItemTimer != null)
                 {
-                    CurrentItemTimer.Stop();
+                    CurrentItemTimer.Dispose();
+                    CurrentItemTimer = null;
                 }
             }
         }
@@ -121,8 +124,6 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         /// </summary>
         private void ReloadTimer()
         {
-            DisposeTimer();
-
             // Don't bother unless there's at least two items
             if (Items.Length > 1)
             {
@@ -130,22 +131,27 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 {
                     if (CurrentItemTimer == null)
                     {
-                        CurrentItemTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(RotationPeriodMs), DispatcherPriority.Normal, IncrementCurrentItemIndex,
-                                                               Application.Current.Dispatcher);
+                        CurrentItemTimer = new Timer(OnTimerFired, null, TimeSpan.FromMilliseconds(RotationPeriodMs), TimeSpan.FromMilliseconds(RotationPeriodMs));
                     }
                     else
                     {
-                        CurrentItemTimer.Stop();
-                        CurrentItemTimer.Start();
+                        CurrentItemTimer.Change(TimeSpan.FromMilliseconds(RotationPeriodMs), TimeSpan.FromMilliseconds(RotationPeriodMs));
                     }
                 }
             }
         }
 
-        /// <summary>
-        /// Increments current item index, or resets it back to zero if we're at the end of the list
-        /// </summary>
-        private void IncrementCurrentItemIndex(object sender, EventArgs args)
+        public void StopTimer()
+        {
+            DisposeTimer();
+        }
+
+        public void StartTimer()
+        {
+            ReloadTimer();
+        }
+
+        private void OnTimerFired(object state)
         {
             var newIndex = CurrentItemIndex + 1;
 

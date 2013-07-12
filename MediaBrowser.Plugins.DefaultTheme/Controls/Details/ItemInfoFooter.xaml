@@ -6,7 +6,7 @@
                                            xmlns:details="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Controls.Details"
                                            mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    
+
     <StackPanel Orientation="Horizontal" Name="PnlItemInfo" Visibility="Hidden">
 
         <StackPanel Orientation="Horizontal" Name="PnlPersonalRating">
@@ -16,6 +16,11 @@
             <Image x:Name="ImgLike" Style="{DynamicResource LikeImage}"></Image>
             <Image x:Name="ImgDislike" Style="{DynamicResource DislikeImage}"></Image>
             <Image x:Name="ImgFavorite" Style="{DynamicResource FavoriteImage}"></Image>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Name="PnlCriticRating">
+            <Image x:Name="ImgRotten" Style="{DynamicResource RottenImage}" Margin="25 0 5 0"></Image>
+            <Image x:Name="ImgFresh" Style="{DynamicResource FreshImage}" Margin="25 0 5 0"></Image>
+            <TextBlock Style="{DynamicResource TextBlockStyle}" x:Name="TxtCriticRating"></TextBlock>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Name="PnlCommunityRating">
             <Border Style="{DynamicResource MediaInfoSeparator}"></Border>

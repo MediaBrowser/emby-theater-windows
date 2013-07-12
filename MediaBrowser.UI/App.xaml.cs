@@ -196,6 +196,14 @@ namespace MediaBrowser.UI
             HiddenWindow.Left = ApplicationWindow.Left;
             HiddenWindow.WindowState = ApplicationWindow.WindowState;
 
+            HiddenWindow.Activated += HiddenWindow_Activated;
+
+            ApplicationWindow.Activate();
+        }
+
+        void HiddenWindow_Activated(object sender, EventArgs e)
+        {
+            _logger.Debug("Hidden window activated.");
             ApplicationWindow.Activate();
         }
 

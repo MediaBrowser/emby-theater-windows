@@ -303,11 +303,13 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
 
         private async void UpdateLogo(BaseItemDto item)
         {
+            const int maxheight = 90;
+
             if (item != null && item.HasLogo && Sidebar.Visibility == Visibility.Collapsed)
             {
                 ImgLogo.Source = await ImageManager.GetRemoteBitmapAsync(ApiClient.GetLogoImageUrl(item, new ImageOptions
                 {
-                    MaxHeight = 80,
+                    MaxHeight = maxheight,
                     ImageType = ImageType.Logo
                 }));
 
@@ -317,7 +319,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
             {
                 ImgLogo.Source = await ImageManager.GetRemoteBitmapAsync(ApiClient.GetArtImageUrl(item, new ImageOptions
                 {
-                    MaxHeight = 80,
+                    MaxHeight = maxheight,
                     ImageType = ImageType.Art
                 }));
 
@@ -327,7 +329,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
             {
                 ImgLogo.Source = await ImageManager.GetRemoteBitmapAsync(ApiClient.GetImageUrl(item, new ImageOptions
                 {
-                    MaxHeight = 80,
+                    MaxHeight = maxheight,
                     ImageType = ImageType.Disc
                 }));
 
@@ -337,17 +339,17 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
             {
                 ImgLogo.Source = await ImageManager.GetRemoteBitmapAsync(ApiClient.GetImageUrl(item, new ImageOptions
                 {
-                    MaxHeight = 80,
+                    MaxHeight = maxheight,
                     ImageType = ImageType.Box
                 }));
 
                 ImgLogo.Visibility = Visibility.Visible;
             }
-            else if (item != null && item.HasBoxImage)
+            else if (item != null && item.HasBoxRearImage)
             {
                 ImgLogo.Source = await ImageManager.GetRemoteBitmapAsync(ApiClient.GetImageUrl(item, new ImageOptions
                 {
-                    MaxHeight = 80,
+                    MaxHeight = maxheight,
                     ImageType = ImageType.BoxRear
                 }));
 

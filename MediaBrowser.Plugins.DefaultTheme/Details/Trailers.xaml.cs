@@ -3,11 +3,13 @@ using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Net;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Theater.Interfaces.Navigation;
+using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Presentation.Controls;
-using System.Threading.Tasks;
 using MediaBrowser.Theater.Presentation.ViewModels;
+using System;
+using System.Threading.Tasks;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Details
 {
@@ -18,11 +20,28 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
     {
         private readonly BaseItemDto _item;
 
-        public Trailers(Model.Entities.DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IPresentationManager appWindow, BaseItemDto item) 
+        private readonly IPlaybackManager _playbackManager;
+
+        public Trailers(Model.Entities.DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IPresentationManager appWindow, BaseItemDto item, IPlaybackManager playbackManager)
             : base(displayPreferences, apiClient, imageManager, sessionManager, navigationManager, appWindow)
         {
             _item = item;
+            _playbackManager = playbackManager;
             InitializeComponent();
+        }
+
+        protected override void OnInitialized(EventArgs e)
+        {
+            base.OnInitialized(e);
+
+            LstItems.ItemInvoked += LstItems_ItemInvoked;
+        }
+
+        async void LstItems_ItemInvoked(object sender, ItemEventArgs<object> e)
+        {
+            var item = (BaseItemDtoViewModel)e.Argument;
+
+            await _playbackManager.Play(new PlayOptions(item.Item));
         }
 
         protected override ExtendedListBox ItemsList

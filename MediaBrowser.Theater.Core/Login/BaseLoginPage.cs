@@ -74,7 +74,7 @@ namespace MediaBrowser.Theater.Core.Login
 
             try
             {
-                var users = await ApiClient.GetUsersAsync();
+                var users = await ApiClient.GetPublicUsersAsync();
 
                 int? selectedIndex = null;
 

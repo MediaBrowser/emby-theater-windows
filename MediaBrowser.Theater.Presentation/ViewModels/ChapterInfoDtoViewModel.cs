@@ -1,11 +1,11 @@
-﻿using System.Threading.Tasks;
-using System.Windows.Media.Imaging;
-using MediaBrowser.Model.ApiClient;
+﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Media.Imaging;
 
 namespace MediaBrowser.Theater.Presentation.ViewModels
 {

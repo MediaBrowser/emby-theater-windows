@@ -67,11 +67,12 @@ namespace MediaBrowser.Theater.Implementations.Presentation
                 UriCachePolicy = new RequestCachePolicy(RequestCacheLevel.CacheIfAvailable)
             };
 
+            RenderOptions.SetBitmapScalingMode(bitmap, BitmapScalingMode.Fant);
+            
             bitmap.BeginInit();
             bitmap.UriSource = uri;
             bitmap.EndInit();
 
-            RenderOptions.SetBitmapScalingMode(bitmap, BitmapScalingMode.Fant);
             return bitmap;
         }
 

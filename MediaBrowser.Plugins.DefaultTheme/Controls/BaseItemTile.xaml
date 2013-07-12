@@ -26,9 +26,12 @@
 
             <Grid Height="5"></Grid>
 
-            <TextBlock x:Name="TxtName" Foreground="White" Margin="10 0 10 10" TextWrapping="NoWrap" Style="{DynamicResource TextBlockStyle}" TextTrimming="CharacterEllipsis"></TextBlock>
+            <TextBlock x:Name="TxtName" Foreground="White" Margin="10 0 10 0" TextWrapping="NoWrap" Style="{DynamicResource TextBlockStyle}" TextTrimming="CharacterEllipsis"></TextBlock>
 
-            <TextBlock x:Name="TxtTime" Foreground="White" Margin="10 -5 10 10" TextWrapping="NoWrap" Style="{DynamicResource SmallTextBlockStyle}" TextTrimming="CharacterEllipsis" Visibility="Collapsed"></TextBlock>
+            <TextBlock x:Name="TxtTime" Foreground="White" Margin="10 5 10 0" TextWrapping="NoWrap" Style="{DynamicResource TextBlockStyle}" TextTrimming="CharacterEllipsis" Visibility="Collapsed"></TextBlock>
+            <TextBlock x:Name="TxtRole" Foreground="White" Margin="10 5 10 0" TextWrapping="NoWrap" Style="{DynamicResource SmallTextBlockStyle}" TextTrimming="CharacterEllipsis" Visibility="Collapsed"></TextBlock>
+
+            <Grid Height="10"></Grid>
         </StackPanel>
 
         <Grid Name="ImgPlayed" Visibility="Collapsed" VerticalAlignment="Top" HorizontalAlignment="Right">

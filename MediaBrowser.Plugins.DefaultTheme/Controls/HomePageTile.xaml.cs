@@ -159,6 +159,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
             try
             {
                 Image.Source = await ViewModel.ImageManager.GetRemoteBitmapAsync(url);
+                Image.Visibility = Visibility.Visible;
+                DefaultImageGrid.Visibility = Visibility.Collapsed;
             }
             catch (HttpException)
             {
@@ -168,8 +170,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
 
         private void SetDefaultImage()
         {
-            var imageUri = new Uri("../Resources/Images/VideoDefault.png", UriKind.Relative);
-            Image.Source = ViewModel.ImageManager.GetBitmapImage(imageUri);
+            Image.Visibility = Visibility.Collapsed;
+            DefaultImageGrid.Visibility = Visibility.Visible;
         }
     }
 }

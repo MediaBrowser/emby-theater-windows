@@ -110,9 +110,14 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
 
             var nameVisibility = !string.Equals(ViewModel.ViewType, ViewTypes.Thumbstrip, StringComparison.OrdinalIgnoreCase) && !Item.IsType("Episode") && !Item.IsType("Audio") ? Visibility.Collapsed : Visibility.Visible;
 
-            if (item.IsType("Person") || item.IsType("IndexFolder") || ViewModel.IsSpecialFeature || ViewModel.IsLocalTrailer)
+            if (item.IsType("Person") || item.IsType("IndexFolder") || ViewModel.IsSpecialFeature)
             {
                 nameVisibility = Visibility.Visible;
+            }
+
+            else if (ViewModel.IsLocalTrailer)
+            {
+                nameVisibility = Visibility.Collapsed;
             }
 
             TxtName.Visibility = nameVisibility;
@@ -140,14 +145,30 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
                 TxtTime.Text = GetMinutesString(item);
                 timeVisibility = Visibility.Visible;
             }
+
             TxtTime.Visibility = timeVisibility;
-   
+
+
+            var personRoleVisibility = Visibility.Collapsed;
+            if (!string.IsNullOrEmpty(ViewModel.PersonRole))
+            {
+                TxtRole.Text = "as " + ViewModel.PersonRole;
+                personRoleVisibility = Visibility.Visible;
+            }
+            TxtRole.Visibility = personRoleVisibility;
+
             OverlayGrid.Visibility = nameVisibility == Visibility.Visible ||
                                      timeVisibility == Visibility.Visible ||
+                                     personRoleVisibility == Visibility.Visible ||
                                      progressBarVisibility == Visibility.Visible
                                          ? Visibility.Visible
                                          : Visibility.Collapsed;
 
+            UpdateUserData(item);
+        }
+
+        private void UpdateUserData(BaseItemDto item)
+        {
             if (item.UserData != null && item.UserData.Played)
             {
                 ImgPlayed.Visibility = Visibility.Visible;
@@ -200,7 +221,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
             }
 
             MainGrid.Height = ViewModel.ImageDisplayHeight;
-           
+
             MainGrid.Width = ViewModel.ImageDisplayWidth;
 
             await SetImageSource(item);
@@ -215,7 +236,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
                 if (item.HasThumb)
                 {
                     ItemImage.Stretch = Stretch.UniformToFill;
-                    
+
                     var url = ViewModel.GetImageUrl(ImageType.Thumb);
 
                     return SetImage(url);
@@ -223,17 +244,17 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
                 if (item.BackdropCount > 0)
                 {
                     ItemImage.Stretch = Stretch.UniformToFill;
-                    
+
                     var url = ViewModel.GetImageUrl(ImageType.Backdrop);
 
                     return SetImage(url);
                 }
             }
-            
+
             if (item.HasPrimaryImage)
             {
                 ItemImage.Stretch = Stretch.Uniform;
-                
+
                 var url = ViewModel.GetImageUrl(ImageType.Primary);
 
                 return SetImage(url);

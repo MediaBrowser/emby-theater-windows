@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.Dto;
+﻿using System.Linq;
+using MediaBrowser.Model.Dto;
 using System;
 using System.Collections.Generic;
 using MediaBrowser.Theater.Interfaces.Configuration;
@@ -84,9 +85,21 @@ namespace MediaBrowser.Theater.Interfaces.Playback
         /// Initializes a new instance of the <see cref="PlayOptions"/> class.
         /// </summary>
         public PlayOptions()
+            : this(new BaseItemDto[] { })
+        {
+        }
+
+        public PlayOptions(BaseItemDto item)
+            : this(new[] { item })
+        {
+
+        }
+
+        public PlayOptions(IEnumerable<BaseItemDto> items)
         {
             GoFullScreen = true;
             ShowNowPlayingView = true;
+            Items = items.ToList();
         }
     }
 }

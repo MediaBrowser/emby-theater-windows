@@ -87,7 +87,18 @@ namespace MediaBrowser.Theater.Presentation.Controls
                 CommandBindings.Clear();
                 return;
             }
+
+            // The rendering tier corresponds to the high-order word of the Tier property. 
+            var renderingTier = (RenderCapability.Tier >> 16);
             
+            if (renderingTier != 2)
+            {
+                CommandBindings.Clear();
+                navigationAction();
+                CommandBindings.Clear();
+                return;
+            }
+
             var oldContentVisual = this as FrameworkElement;
 
             _contentPresenter.IsHitTestVisible = false;

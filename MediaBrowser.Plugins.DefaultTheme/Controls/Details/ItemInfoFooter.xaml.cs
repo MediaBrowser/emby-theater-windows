@@ -49,6 +49,24 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
             UpdateVideoInfo(item);
             UpdateAudioCodec(item);
             UpdateAudioInfo(item);
+            UpdateCriticRating(item);
+        }
+
+        private void UpdateCriticRating(BaseItemDto item)
+        {
+            if (item.CriticRating.HasValue)
+            {
+                PnlCriticRating.Visibility = Visibility.Visible;
+
+                ImgFresh.Visibility = item.CriticRating.Value >= 60 ? Visibility.Visible : Visibility.Collapsed;
+                ImgRotten.Visibility = item.CriticRating.Value < 60 ? Visibility.Visible : Visibility.Collapsed;
+
+                TxtCriticRating.Text = item.CriticRating.Value.ToString() + "%";
+            }
+            else
+            {
+                PnlCriticRating.Visibility = Visibility.Collapsed;
+            }
         }
 
         private void UpdatePersonalRating(BaseItemDto item)
@@ -60,7 +78,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
                 if (userdata.Likes.HasValue || userdata.IsFavorite)
                 {
                     PnlPersonalRating.Visibility = Visibility.Visible;
-              
+
                     if (userdata.IsFavorite)
                     {
                         ImgFavorite.Visibility = Visibility.Visible;
@@ -237,7 +255,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
             {
                 var img = images[i];
 
-                var starValue = (i + 1)*2;
+                var starValue = (i + 1) * 2;
 
                 if (rating < starValue - 2)
                 {

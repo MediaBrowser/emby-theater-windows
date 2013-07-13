@@ -1,4 +1,5 @@
 ﻿using Declarations;
+using Declarations.Enums;
 using Declarations.Events;
 using Declarations.Media;
 using Declarations.Players;
@@ -7,6 +8,7 @@ using MediaBrowser.Common.Events;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
+using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using System;
@@ -52,6 +54,7 @@ namespace MediaBrowser.Theater.Vlc
         private readonly IHiddenWindow _hiddenWindow;
         private readonly ILogger _logger;
         private readonly IPlaybackManager _playbackManager;
+        private readonly ITheaterConfigurationManager _config;
 
         /// <summary>
         /// The _task result
@@ -64,10 +67,11 @@ namespace MediaBrowser.Theater.Vlc
         /// <param name="hiddenWindow">The hidden window.</param>
         /// <param name="logManager">The log manager.</param>
         /// <param name="playbackManager">The playback manager.</param>
-        public NVlcPlayer(IHiddenWindow hiddenWindow, ILogManager logManager, IPlaybackManager playbackManager)
+        public NVlcPlayer(IHiddenWindow hiddenWindow, ILogManager logManager, IPlaybackManager playbackManager, ITheaterConfigurationManager config)
         {
             _hiddenWindow = hiddenWindow;
             _playbackManager = playbackManager;
+            _config = config;
 
             _logger = logManager.GetLogger(Name);
         }
@@ -195,16 +199,22 @@ namespace MediaBrowser.Theater.Vlc
 
             _hiddenWindow.WindowsFormsHost.Child = _windowsFormsPanel;
 
-            _mediaPlayerFactory = new MediaPlayerFactory(new[] 
-             {
+            var configStrings = new List<string>
+                {
                 "-I", 
                 "dummy",  
 		        "--ignore-config", 
                 "--no-osd",
                 "--disable-screensaver",
-                //"--ffmpeg-hw",
 		        "--plugin-path=./plugins"
-             });
+                };
+
+            if (_config.Configuration.VlcConfiguration.EnableGpuAcceleration)
+            {
+                configStrings.Add("--ffmpeg-hw");
+            }
+
+            _mediaPlayerFactory = new MediaPlayerFactory(configStrings.ToArray());
         }
 
         /// <summary>
@@ -225,8 +235,8 @@ namespace MediaBrowser.Theater.Vlc
             {
                 _mediaList = _mediaPlayerFactory.CreateMediaList<IMediaList>(options.Items.Select(GetPlayablePath));
                 _mediaListPlayer = _mediaPlayerFactory.CreateMediaListPlayer<IMediaListPlayer>(_mediaList);
-
                 _mediaListPlayer.InnerPlayer.WindowHandle = _windowsFormsPanel.Handle;
+                _mediaListPlayer.InnerPlayer.DeviceType = GetAudioDeviceType();
 
                 _mediaListPlayer.InnerPlayer.Events.PlayerStopped += Events_PlayerStopped;
                 _mediaListPlayer.Play();
@@ -248,6 +258,25 @@ namespace MediaBrowser.Theater.Vlc
             }
 
             return _taskResult;
+        }
+
+        private AudioOutputDeviceType GetAudioDeviceType()
+        {
+            switch (_config.Configuration.VlcConfiguration.AudioLayout)
+            {
+                case AudioLayout.Five1:
+                    return AudioOutputDeviceType.AudioOutputDevice_5_1;
+                case AudioLayout.Six1:
+                    return AudioOutputDeviceType.AudioOutputDevice_6_1;
+                case AudioLayout.Seven1:
+                    return AudioOutputDeviceType.AudioOutputDevice_7_1;
+                case AudioLayout.Mono:
+                    return AudioOutputDeviceType.AudioOutputDevice_Mono;
+                case AudioLayout.Spdif:
+                    return AudioOutputDeviceType.AudioOutputDevice_SPDIF;
+                default:
+                    return AudioOutputDeviceType.AudioOutputDevice_Stereo;
+            }
         }
 
         /// <summary>

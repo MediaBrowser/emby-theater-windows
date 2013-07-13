@@ -16,6 +16,7 @@
             <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
@@ -25,15 +26,19 @@
 
         <TextBlock Style="{DynamicResource Heading1TextBlockStyle}" Margin="0 30 0 0" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">Advanced Settings</TextBlock>
 
-        <CheckBox x:Name="ChkEnableHighQualityImageScaling" Margin="0 50 0 0" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center">
-            <TextBlock Style="{DynamicResource TextBlockStyle}">Enable high quality image scaling</TextBlock>
-        </CheckBox>
-
-        <CheckBox x:Name="ChkEnableBackdrops" Margin="0 30 0 0" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center">
+        <CheckBox x:Name="ChkEnableBackdrops" Margin="0 50 0 0" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center">
             <TextBlock Style="{DynamicResource TextBlockStyle}">Enable backdrops</TextBlock>
         </CheckBox>
 
-        <CheckBox x:Name="ChkEnableDebugLogging" Margin="0 30 0 0" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center">
+        <CheckBox x:Name="ChkDownloadCompressedImages" Margin="0 30 0 0" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center">
+            <TextBlock Style="{DynamicResource TextBlockStyle}">Download compressed images</TextBlock>
+        </CheckBox>
+
+        <CheckBox x:Name="ChkEnableHighQualityImageScaling" Margin="0 30 0 0" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center">
+            <TextBlock Style="{DynamicResource TextBlockStyle}">Enable high quality image scaling</TextBlock>
+        </CheckBox>
+
+        <CheckBox x:Name="ChkEnableDebugLogging" Margin="0 30 0 0" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center">
             <TextBlock Style="{DynamicResource TextBlockStyle}">Enable debug logging</TextBlock>
         </CheckBox>
     </Grid>

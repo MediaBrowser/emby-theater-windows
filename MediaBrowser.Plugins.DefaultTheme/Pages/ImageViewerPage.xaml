@@ -24,6 +24,6 @@
             </controls:TransitionControl.TransitionType>
         </controls:TransitionControl>
 
-        <TextBlock x:Name="TxtTitle" Style="{DynamicResource Heading1TextBlockStyle}" Foreground="White" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0 0 100 50" FontSize="90"></TextBlock>
+        <TextBlock x:Name="TxtTitle" Style="{DynamicResource Heading1TextBlockStyle}" Foreground="White" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0 0 90 50" FontSize="90"></TextBlock>
     </Grid>
 </pages:BasePage>

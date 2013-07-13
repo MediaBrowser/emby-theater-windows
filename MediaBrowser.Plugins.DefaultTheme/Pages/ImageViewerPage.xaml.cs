@@ -1,5 +1,4 @@
-﻿using System.Windows.Media;
-using MediaBrowser.Theater.Interfaces.Presentation;
+﻿using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Presentation.Pages;
 using Microsoft.Expression.Media.Effects;
@@ -7,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Windows;
+using System.Windows.Media;
 using System.Windows.Threading;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Pages
@@ -95,15 +95,18 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         /// </summary>
         private void ReloadTimer()
         {
-            lock (_timerLock)
+            if (_urls.Count > 1)
             {
-                if (CurrentItemTimer == null)
+                lock (_timerLock)
                 {
-                    CurrentItemTimer = new Timer(OnTimerFired, null, TimeSpan.FromMilliseconds(RotationPeriodMs), TimeSpan.FromMilliseconds(RotationPeriodMs));
-                }
-                else
-                {
-                    CurrentItemTimer.Change(TimeSpan.FromMilliseconds(RotationPeriodMs), TimeSpan.FromMilliseconds(RotationPeriodMs));
+                    if (CurrentItemTimer == null)
+                    {
+                        CurrentItemTimer = new Timer(OnTimerFired, null, TimeSpan.FromMilliseconds(RotationPeriodMs), TimeSpan.FromMilliseconds(RotationPeriodMs));
+                    }
+                    else
+                    {
+                        CurrentItemTimer.Change(TimeSpan.FromMilliseconds(RotationPeriodMs), TimeSpan.FromMilliseconds(RotationPeriodMs));
+                    }
                 }
             }
         }

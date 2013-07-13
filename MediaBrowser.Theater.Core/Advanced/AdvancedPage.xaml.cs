@@ -33,6 +33,7 @@ namespace MediaBrowser.Theater.Core.Advanced
             ChkEnableHighQualityImageScaling.IsChecked = _config.Configuration.EnableHighQualityImageScaling;
             ChkEnableDebugLogging.IsChecked = _config.Configuration.EnableDebugLevelLogging;
             ChkEnableBackdrops.IsChecked = _config.Configuration.EnableBackdrops;
+            ChkDownloadCompressedImages.IsChecked = _config.Configuration.DownloadCompressedImages;
         }
 
         void GeneralSettingsPage_Unloaded(object sender, RoutedEventArgs e)
@@ -40,6 +41,7 @@ namespace MediaBrowser.Theater.Core.Advanced
             _config.Configuration.EnableDebugLevelLogging = ChkEnableDebugLogging.IsChecked ?? false;
             _config.Configuration.EnableHighQualityImageScaling = ChkEnableHighQualityImageScaling.IsChecked ?? false;
             _config.Configuration.EnableBackdrops = ChkEnableBackdrops.IsChecked ?? false;
+            _config.Configuration.DownloadCompressedImages = ChkDownloadCompressedImages.IsChecked ?? false;
 
             _config.SaveConfiguration();
         }

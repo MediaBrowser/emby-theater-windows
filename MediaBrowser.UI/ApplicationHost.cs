@@ -156,7 +156,10 @@ namespace MediaBrowser.UI
 
             }), TheaterConfigurationManager.Configuration.ServerHostName, TheaterConfigurationManager.Configuration.ServerApiPort, "Media Browser Theater", Environment.MachineName, Environment.MachineName, ApplicationVersion.ToString())
             {
-                JsonSerializer = JsonSerializer
+                JsonSerializer = JsonSerializer,
+                ImageQuality = TheaterConfigurationManager.Configuration.DownloadCompressedImages
+                                                       ? 90
+                                                       : 100
             };
         }
 
@@ -223,6 +226,15 @@ namespace MediaBrowser.UI
         public override void Shutdown()
         {
             App.Instance.Shutdown();
+        }
+
+        protected override void OnConfigurationUpdated(object sender, EventArgs e)
+        {
+            base.OnConfigurationUpdated(sender, e);
+
+            ((ApiClient)ApiClient).ImageQuality = TheaterConfigurationManager.Configuration.DownloadCompressedImages
+                                                       ? 90
+                                                       : 100;
         }
 
         protected override IConfigurationManager GetConfigurationManager()

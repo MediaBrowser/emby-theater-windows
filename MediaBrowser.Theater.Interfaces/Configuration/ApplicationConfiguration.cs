@@ -60,6 +60,10 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
 
         public bool EnableBackdrops { get; set; }
 
+        public bool DownloadCompressedImages { get; set; }
+
+        public VlcConfiguration VlcConfiguration { get; set; }
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="ApplicationConfiguration" /> class.
         /// </summary>
@@ -71,8 +75,9 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
 
             EnableHighQualityImageScaling = true;
             EnableBackdrops = true;
-
             MediaPlayers = new PlayerConfiguration[] { };
+
+            VlcConfiguration = new VlcConfiguration();
         }
     }
 }

@@ -118,7 +118,7 @@ namespace MediaBrowser.UI
         /// </summary>
         private void ShowApplicationWindow()
         {
-            var win = new MainWindow(_logger, _compositionRoot.PlaybackManager, _compositionRoot.ApiClient, _compositionRoot.ImageManager, _compositionRoot, _compositionRoot.PresentationManager, _compositionRoot.UserInputManager);
+            var win = new MainWindow(_logger, _compositionRoot.PlaybackManager, _compositionRoot.ApiClient, _compositionRoot.ImageManager, _compositionRoot, _compositionRoot.PresentationManager, _compositionRoot.UserInputManager, _compositionRoot.TheaterConfigurationManager, _compositionRoot.SessionManager);
 
             var config = _compositionRoot.TheaterConfigurationManager.Configuration;
 
@@ -166,6 +166,9 @@ namespace MediaBrowser.UI
             win.StateChanged += ApplicationWindow_LocationChanged;
             win.SizeChanged += ApplicationWindow_LocationChanged;
 
+            HiddenWindow.Activated += HiddenWindow_Activated;
+            HiddenWindow.IsVisibleChanged += HiddenWindow_IsVisibleChanged;
+
             ApplicationWindow = win;
 
             ApplicationWindow.Show();
@@ -173,6 +176,12 @@ namespace MediaBrowser.UI
             ApplicationWindow.Owner = HiddenWindow;
 
             SyncHiddenWindowLocation();
+        }
+
+        void HiddenWindow_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            _logger.Debug("HiddenWindow_IsVisibleChanged.");
+            ApplicationWindow.Activate();
         }
 
         /// <summary>
@@ -195,8 +204,6 @@ namespace MediaBrowser.UI
             HiddenWindow.Top = ApplicationWindow.Top;
             HiddenWindow.Left = ApplicationWindow.Left;
             HiddenWindow.WindowState = ApplicationWindow.WindowState;
-
-            HiddenWindow.Activated += HiddenWindow_Activated;
 
             ApplicationWindow.Activate();
         }

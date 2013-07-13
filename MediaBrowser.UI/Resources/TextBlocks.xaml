@@ -44,13 +44,4 @@
         <Setter Property="Foreground" Value="{DynamicResource Heading2Foreground}"/>
         <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
-
-    <!--Default TextBlock style. -->
-    <Style TargetType="TextBlock" x:Key="Heading3TextBlockStyle">
-        <Setter Property="FontSize" Value="{DynamicResource Heading3FontSize}"/>
-        <Setter Property="FontFamily" Value="{DynamicResource Heading3FontFamily}"/>
-        <Setter Property="FontWeight" Value="{DynamicResource Heading3FontWeight}"/>
-        <Setter Property="Foreground" Value="{DynamicResource Heading3Foreground}"/>
-        <Setter Property="TextWrapping" Value="Wrap" />
-    </Style>
 </ResourceDictionary>

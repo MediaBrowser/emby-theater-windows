@@ -63,11 +63,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             {
                 try
                 {
-                    ChapterImage.Source = await ViewModel.GetImage(new ImageOptions
-                    {
-                        Width = width,
-                        Height = Convert.ToInt32(height)
-                    });
+                    ChapterImage.Source = await ViewModel.GetImage(new ImageOptions());
 
                     ChapterImage.Visibility = Visibility.Visible;
                     ImageBorder.Visibility = Visibility.Collapsed;

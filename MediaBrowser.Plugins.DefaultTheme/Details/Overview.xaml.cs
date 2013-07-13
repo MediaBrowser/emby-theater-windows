@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.ApiClient;
+﻿using System.Collections.Generic;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Net;
@@ -54,8 +55,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             BtnPlayTrailer.Click += BtnPlayTrailer_Click;
 
             Loaded += Overview_Loaded;
-            Unloaded += Overview_Unloaded;
-
         }
 
         private void ReloadItem()
@@ -99,14 +98,15 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             _scrollPanel.SetHorizontalOffset(0);
         }
 
-        void Overview_Unloaded(object sender, RoutedEventArgs e)
-        {
-            Loaded -= Overview_Loaded;
-        }
+        private bool _isFirstLoad;
 
         void Overview_Loaded(object sender, RoutedEventArgs e)
         {
-            BtnPlay.Focus();
+            if (_isFirstLoad)
+            {
+                BtnPlay.Focus();
+            }
+            _isFirstLoad = false;
         }
 
         private void ReloadDetails()
@@ -117,7 +117,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
             var directors = _item.People.Where(i => string.Equals(i.Type, PersonType.Director, StringComparison.OrdinalIgnoreCase)).ToList();
 
-            if (directors.Count > 0)
+            if (directors.Count > 0 && !_item.IsType("episode"))
             {
                 LblDirector.Visibility = TxtDirector.Visibility = Visibility.Visible;
 
@@ -128,7 +128,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 LblDirector.Visibility = TxtDirector.Visibility = Visibility.Collapsed;
             }
 
-            if (_item.Genres.Count > 0)
+            if (_item.Genres.Count > 0 && !_item.IsType("episode"))
             {
                 LblGenre.Visibility = TxtGenre.Visibility = Visibility.Visible;
 
@@ -139,7 +139,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 LblGenre.Visibility = TxtGenre.Visibility = Visibility.Collapsed;
             }
 
-            if (_item.Studios.Length > 0)
+            if (_item.Studios.Length > 0 && !_item.IsType("episode"))
             {
                 LblStudio.Visibility = TxtStudio.Visibility = Visibility.Visible;
 
@@ -183,6 +183,22 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             else
             {
                 LblGameSystem.Visibility = TxtGameSystem.Visibility = Visibility.Collapsed;
+            }
+
+            PnlTags.Children.Clear();
+
+            PnlTags.Visibility = _item.Tags.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+
+            foreach (var tag in _item.Tags)
+            {
+                var textBlock = new TextBlock
+                {
+                    Text = tag
+                };
+
+                textBlock.SetResourceReference(TextBlock.StyleProperty, "TagTextBlock");
+
+                PnlTags.Children.Add(textBlock);
             }
         }
 

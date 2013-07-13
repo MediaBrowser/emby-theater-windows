@@ -100,25 +100,25 @@
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MediaBrowser.ApiInteraction, Version=3.0.4939.24711, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.ApiInteraction, Version=3.0.4942.30757, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.ApiClient.3.0.0.142\lib\net45\MediaBrowser.ApiInteraction.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.ApiClient.3.0.0.145\lib\net45\MediaBrowser.ApiInteraction.dll</HintPath>
     </Reference>
-    <Reference Include="MediaBrowser.Common, Version=3.0.4939.24324, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.Common, Version=3.0.4942.23767, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.3.0.145\lib\net45\MediaBrowser.Common.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.146\lib\net45\MediaBrowser.Common.dll</HintPath>
     </Reference>
-    <Reference Include="MediaBrowser.Common.Implementations, Version=3.0.4939.24324, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.Common.Implementations, Version=3.0.4942.23767, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.Internal.3.0.145\lib\net45\MediaBrowser.Common.Implementations.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.Internal.3.0.146\lib\net45\MediaBrowser.Common.Implementations.dll</HintPath>
     </Reference>
     <Reference Include="MediaBrowser.IsoMounter, Version=1.0.4915.20167, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\MediaBrowser.IsoMounting.3.0.52\lib\net45\MediaBrowser.IsoMounter.dll</HintPath>
     </Reference>
-    <Reference Include="MediaBrowser.Model, Version=3.0.4939.24323, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.Model, Version=3.0.4942.23766, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.3.0.145\lib\net45\MediaBrowser.Model.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.146\lib\net45\MediaBrowser.Model.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Expression.Effects, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -190,9 +190,6 @@
     <Compile Include="HiddenWindow.xaml.cs">
       <DependentUpon>HiddenWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ImageViewerWindow.xaml.cs">
-      <DependentUpon>ImageViewerWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Implementations\AppHiddenWIndow.cs" />
     <Compile Include="Implementations\InternalPlayerPageBehavior.cs" />
     <Compile Include="Implementations\NavigationService.cs" />
@@ -216,10 +213,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="HiddenWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ImageViewerWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

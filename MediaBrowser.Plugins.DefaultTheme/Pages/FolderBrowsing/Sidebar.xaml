@@ -15,7 +15,7 @@
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
         
-        <Image x:Name="LogoImage" Stretch="None" Grid.Row="0"></Image>
+        <Image x:Name="LogoImage" Stretch="Uniform" MaxWidth="500" MaxHeight="120" Grid.Row="0"></Image>
 
         <TextBlock x:Name="TxtTitle" Style="{DynamicResource Heading2TextBlockStyle}" Grid.Row="0"></TextBlock>
 

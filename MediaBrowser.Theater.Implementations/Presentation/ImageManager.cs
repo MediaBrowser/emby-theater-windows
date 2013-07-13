@@ -2,6 +2,7 @@
 using MediaBrowser.Common.Extensions;
 using MediaBrowser.Common.IO;
 using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using System;
 using System.Collections.Concurrent;
@@ -30,6 +31,8 @@ namespace MediaBrowser.Theater.Implementations.Presentation
         /// </summary>
         private readonly IApiClient _apiClient;
 
+        private readonly ITheaterConfigurationManager _config;
+        
         /// <summary>
         /// The _locks
         /// </summary>
@@ -40,9 +43,11 @@ namespace MediaBrowser.Theater.Implementations.Presentation
         /// </summary>
         /// <param name="apiClient">The API client.</param>
         /// <param name="paths">The paths.</param>
-        public ImageManager(IApiClient apiClient, IApplicationPaths paths)
+        /// <param name="config"></param>
+        public ImageManager(IApiClient apiClient, IApplicationPaths paths, ITheaterConfigurationManager config)
         {
             _apiClient = apiClient;
+            _config = config;
 
             _remoteImageCache = new FileSystemRepository(Path.Combine(paths.CachePath, "remote-images"));
         }
@@ -67,7 +72,11 @@ namespace MediaBrowser.Theater.Implementations.Presentation
                 UriCachePolicy = new RequestCachePolicy(RequestCacheLevel.CacheIfAvailable)
             };
 
-            RenderOptions.SetBitmapScalingMode(bitmap, BitmapScalingMode.Fant);
+            var scalingMode = _config.Configuration.EnableHighQualityImageScaling
+                                  ? BitmapScalingMode.Fant
+                                  : BitmapScalingMode.LowQuality;
+
+            RenderOptions.SetBitmapScalingMode(bitmap, scalingMode);
             
             bitmap.BeginInit();
             bitmap.UriSource = uri;
@@ -191,7 +200,11 @@ namespace MediaBrowser.Theater.Implementations.Presentation
                 UriCachePolicy = new RequestCachePolicy(RequestCacheLevel.CacheIfAvailable)
             };
 
-            RenderOptions.SetBitmapScalingMode(bitmapImage, BitmapScalingMode.Fant);
+            var scalingMode = _config.Configuration.EnableHighQualityImageScaling
+                                  ? BitmapScalingMode.Fant
+                                  : BitmapScalingMode.LowQuality;
+
+            RenderOptions.SetBitmapScalingMode(bitmapImage, scalingMode);
 
             bitmapImage.BeginInit();
             bitmapImage.UriSource = new Uri(cachePath);

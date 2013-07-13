@@ -15,7 +15,6 @@
             <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="auto"></RowDefinition>
-            <RowDefinition Height="auto"></RowDefinition>
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
@@ -28,12 +27,8 @@
         <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Row="1" Grid.Column="0" Margin="0 50 0 0">Automatic Update Level:</TextBlock>
         <controls:SelectList x:Name="SelectUpdateLevel" Margin="40 50 0 0" Grid.Row="1" Grid.Column="1"></controls:SelectList>
 
-        <CheckBox x:Name="ChkAutoRun" Margin="0 20 0 0" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center">
+        <CheckBox x:Name="ChkAutoRun" Margin="0 30 0 0" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center">
             <TextBlock Style="{DynamicResource TextBlockStyle}">Auto-run at startup</TextBlock>
-        </CheckBox>
-
-        <CheckBox x:Name="ChkEnableDebugLogging" Margin="0 20 0 0" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center">
-            <TextBlock Style="{DynamicResource TextBlockStyle}">Enable debug logging</TextBlock>
         </CheckBox>
     </Grid>
 </pages:BasePage>

@@ -153,7 +153,18 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
             }
             if (item.ProductionYear.HasValue)
             {
-                TxtDate.Text = item.ProductionYear.Value.ToString();
+                var text = item.ProductionYear.Value.ToString();
+
+                if (item.EndDate.HasValue)
+                {
+                    text += "-" + item.EndDate.Value.Year;
+                }
+                else if (item.Status.HasValue && item.Status.Value == SeriesStatus.Continuing)
+                {
+                    text += "-Present";
+                }
+
+                TxtDate.Text = text;
                 PnlDate.Visibility = Visibility.Visible;
                 return;
             }

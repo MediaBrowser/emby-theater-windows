@@ -1,8 +1,10 @@
 ﻿using MediaBrowser.Common;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Logging;
+using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
+using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.UserInput;
 using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.UI.Controls;
@@ -16,6 +18,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
+using Microsoft.Expression.Media.Effects;
 
 namespace MediaBrowser.UI
 {
@@ -61,26 +64,53 @@ namespace MediaBrowser.UI
         private readonly IApplicationHost _appHost;
         private readonly IPresentationManager _appWindow;
         private readonly IUserInputManager _userInput;
+        private readonly ITheaterConfigurationManager _config;
+        private readonly ISessionManager _session;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MainWindow" /> class.
         /// </summary>
-        public MainWindow(ILogger logger, IPlaybackManager playbackManager, IApiClient apiClient, IImageManager imageManager, IApplicationHost appHost, IPresentationManager appWindow, IUserInputManager userInput)
+        public MainWindow(ILogger logger, IPlaybackManager playbackManager, IApiClient apiClient, IImageManager imageManager, IApplicationHost appHost, IPresentationManager appWindow, IUserInputManager userInput, ITheaterConfigurationManager config, ISessionManager session)
             : base()
         {
             _logger = logger;
             _appHost = appHost;
             _appWindow = appWindow;
             _userInput = userInput;
+            _config = config;
+            _session = session;
 
             Loaded += MainWindow_Loaded;
 
             InitializeComponent();
 
-            RotatingBackdrops = new RotatingBackdrops(Dispatcher, BackdropContainer, imageManager, apiClient, playbackManager);
+            RotatingBackdrops = new RotatingBackdrops(Dispatcher, BackdropContainer, imageManager, apiClient, playbackManager, _config);
 
             WindowCommands.ApplicationHost = _appHost;
-            RenderOptions.SetBitmapScalingMode(this, BitmapScalingMode.Fant);
+            _config.UserConfigurationUpdated += _config_UserConfigurationUpdated;
+            _config.ConfigurationUpdated += _config_ConfigurationUpdated;
+            _session.UserLoggedIn += _session_UserLoggedIn;
+            _session.UserLoggedOut += _session_UserLoggedOut;
+        }
+
+        void _session_UserLoggedOut(object sender, EventArgs e)
+        {
+            UpdatePageTransition();
+        }
+
+        void _session_UserLoggedIn(object sender, EventArgs e)
+        {
+            UpdatePageTransition();
+        }
+
+        void _config_ConfigurationUpdated(object sender, EventArgs e)
+        {
+            Dispatcher.InvokeAsync(() => RenderOptions.SetBitmapScalingMode(this, _config.Configuration.EnableHighQualityImageScaling ? BitmapScalingMode.Fant : BitmapScalingMode.LowQuality));
+        }
+
+        void _config_UserConfigurationUpdated(object sender, UserConfigurationUpdatedEventArgs e)
+        {
+            Dispatcher.InvokeAsync(() => PageFrame.TransitionType = GetTransitionEffect(e.Configuration.NavigationTransition));
         }
 
         void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -92,6 +122,21 @@ namespace MediaBrowser.UI
             ActivityTimer = new Timer(TimerCallback, null, 100, 100);
 
             ((TheaterApplicationWindow)_appWindow).OnWindowLoaded();
+
+            RenderOptions.SetBitmapScalingMode(this, _config.Configuration.EnableHighQualityImageScaling
+                                                   ? BitmapScalingMode.Fant
+                                                   : BitmapScalingMode.LowQuality);
+
+            UpdatePageTransition();
+        }
+
+        private async void UpdatePageTransition()
+        {
+            if (_session.CurrentUser != null)
+            {
+                var userConfig = await _config.GetUserTheaterConfiguration(_session.CurrentUser.Id).ConfigureAwait(false);
+                Dispatcher.InvokeAsync(() => PageFrame.TransitionType = GetTransitionEffect(userConfig.NavigationTransition));
+            }
         }
 
         protected override void OnClosing(CancelEventArgs e)
@@ -100,7 +145,7 @@ namespace MediaBrowser.UI
 
             RotatingBackdrops.Dispose();
             DisposeActivityTimer();
-            
+
             base.OnClosing(e);
         }
 
@@ -191,6 +236,42 @@ namespace MediaBrowser.UI
 
             return task.Task;
         }
+
+        private TransitionEffect GetTransitionEffect(string name)
+        {
+            switch (name.ToLower())
+            {
+                case "blur":
+                    return new RadialBlurTransitionEffect();
+                case "circle reveal":
+                    return new CircleRevealTransitionEffect();
+                case "cloud reveal":
+                    return new CloudRevealTransitionEffect();
+                case "fade":
+                    return new FadeTransitionEffect();
+                case "horizontal blinds":
+                    return new BlindsTransitionEffect { Orientation = BlindOrientation.Horizontal };
+                case "horizontal slide":
+                    return new SlideInTransitionEffect { SlideDirection = SlideDirection.RightToLeft };
+                case "horizontal wipe":
+                    return new WipeTransitionEffect { WipeDirection = WipeDirection.RightToLeft };
+                case "ripple":
+                    return new RippleTransitionEffect();
+                case "smooth swirl":
+                    return new SmoothSwirlGridTransitionEffect();
+                case "vertical blinds":
+                    return new BlindsTransitionEffect { Orientation = BlindOrientation.Vertical };
+                case "vertical slide":
+                    return new SlideInTransitionEffect { SlideDirection = SlideDirection.TopToBottom };
+                case "vertical wipe":
+                    return new WipeTransitionEffect { WipeDirection = WipeDirection.TopToBottom };
+                case "wave":
+                    return new WaveTransitionEffect();
+                default:
+                    return null;
+            }
+        }
+
         /// <summary>
         /// Disposes the Activity Timer
         /// </summary>

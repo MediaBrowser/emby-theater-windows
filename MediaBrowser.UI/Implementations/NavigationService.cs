@@ -15,6 +15,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using Microsoft.Expression.Media.Effects;
 
 namespace MediaBrowser.UI.Implementations
 {
@@ -62,6 +63,7 @@ namespace MediaBrowser.UI.Implementations
             _appHost = appHost;
             _installationManager = installationManager;
             _imageManager = imageManager;
+     
         }
 
         /// <summary>
@@ -130,7 +132,7 @@ namespace MediaBrowser.UI.Implementations
         /// <param name="item">The item.</param>
         /// <param name="context">The context.</param>
         /// <returns>DispatcherOperation.</returns>
-        public async Task NavigateToItem(BaseItemDto item, string context)
+        public async Task NavigateToItem(BaseItemDto item, string context = null)
         {
             // Grab it fresh from the server to make sure we have the full record
             item = await _apiClient.GetItemAsync(item.Id, _apiClient.CurrentUserId);

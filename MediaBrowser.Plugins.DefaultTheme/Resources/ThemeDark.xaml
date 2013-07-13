@@ -36,6 +36,13 @@
 
     <!--Default font for h2 headers. Themes should override these as needed-->
     <Brush x:Key="Heading2Foreground">#ffffff</Brush>
-    <Brush x:Key="Heading3Foreground">#ffffff</Brush>
 
+    <Style TargetType="TextBlock" x:Key="TagTextBlock" BasedOn="{StaticResource TextBlockStyle}">
+        <Setter Property="Background" Value="#a6444444">
+        </Setter>
+        <Setter Property="Padding" Value="10">
+        </Setter>
+        <Setter Property="Margin" Value="0 0 10 0">
+        </Setter>
+    </Style>
 </ResourceDictionary>

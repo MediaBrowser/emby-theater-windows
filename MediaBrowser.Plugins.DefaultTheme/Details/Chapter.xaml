@@ -28,7 +28,7 @@
             </Path>
         </Border>
 
-        <Image x:Name="ChapterImage" Stretch="None">
+        <Image x:Name="ChapterImage" Stretch="UniformToFill">
         </Image>
         
         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Bottom">

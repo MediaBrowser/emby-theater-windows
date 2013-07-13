@@ -60,6 +60,13 @@ namespace MediaBrowser.Theater.Core.Appearance
 
             }).ToList();
 
+            SelectBackdropTransition.Options =
+                SelectNavigationTransition.Options =
+
+                new[] { "none", "blur", "circle reveal", "cloud reveal", "fade", "horizontal blinds", "horizontal slide", "horizontal wipe", "ripple", "smooth swirl", "vertical blinds", "vertical slide", "vertical wipe", "wave" }
+
+                .Select(i => new SelectListItem { Text = i, Value = i }).ToList();
+
             SelectTheme.SelectedItemChanged += SelectTheme_SelectedItemChanged;
 
             SetUserImage();
@@ -134,6 +141,9 @@ namespace MediaBrowser.Theater.Core.Appearance
                 SelectTheme.Options.First();
 
             SelectTheme.SelectedValue = themeOption.Value;
+
+            SelectNavigationTransition.SelectedValue = SelectNavigationTransition.ContainsValue(userConfig.NavigationTransition) ? userConfig.NavigationTransition : "none";
+            SelectBackdropTransition.SelectedValue = SelectBackdropTransition.ContainsValue(userConfig.BackdropTransition) ? userConfig.BackdropTransition : "none";
         }
 
         private async Task SaveConfiguration()
@@ -142,6 +152,14 @@ namespace MediaBrowser.Theater.Core.Appearance
 
             userConfig.HomePage = SelectHomePage.SelectedValue;
             userConfig.Theme = SelectTheme.SelectedValue;
+
+            userConfig.NavigationTransition = string.Equals(SelectNavigationTransition.SelectedValue, "none")
+                                                             ? string.Empty
+                                                             : SelectNavigationTransition.SelectedValue;
+
+            userConfig.BackdropTransition = string.Equals(SelectBackdropTransition.SelectedValue, "none")
+                                                             ? string.Empty
+                                                             : SelectBackdropTransition.SelectedValue;
 
             await _config.UpdateUserTheaterConfiguration(_session.CurrentUser.Id, userConfig);
         }

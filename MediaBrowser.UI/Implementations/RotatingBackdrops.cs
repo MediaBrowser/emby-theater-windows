@@ -1,11 +1,14 @@
-﻿using System.Threading;
-using MediaBrowser.Model.ApiClient;
+﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Net;
+using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
+using MediaBrowser.Theater.Presentation.Controls;
+using Microsoft.Expression.Media.Effects;
 using System;
 using System.Linq;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
@@ -15,10 +18,11 @@ namespace MediaBrowser.UI.Implementations
     public class RotatingBackdrops : IDisposable
     {
         private readonly Dispatcher _dispatcher;
-        private readonly ContentControl _backdropContainer;
+        private readonly TransitionControl _backdropContainer;
         private readonly IImageManager _imageManager;
         private readonly IApiClient _apiClient;
         private readonly IPlaybackManager _playbackManager;
+        private readonly ITheaterConfigurationManager _config;
 
         private readonly object _rotationTimerLock = new object();
         private readonly object _initialSetTimerLock = new object();
@@ -31,16 +35,59 @@ namespace MediaBrowser.UI.Implementations
         /// </summary>
         /// <value>The current backdrops.</value>
         private string[] _currentBackdrops;
-        
+
         private int _currentBackdropIndex;
 
-        public RotatingBackdrops(Dispatcher dispatcher, ContentControl backdropContainer, IImageManager imageManager, IApiClient apiClient, IPlaybackManager playbackManager)
+        public RotatingBackdrops(Dispatcher dispatcher, TransitionControl backdropContainer, IImageManager imageManager, IApiClient apiClient, IPlaybackManager playbackManager, ITheaterConfigurationManager config)
         {
             _dispatcher = dispatcher;
             _backdropContainer = backdropContainer;
             _imageManager = imageManager;
             _apiClient = apiClient;
             _playbackManager = playbackManager;
+            _config = config;
+
+            _config.UserConfigurationUpdated += _config_UserConfigurationUpdated;
+        }
+
+        void _config_UserConfigurationUpdated(object sender, UserConfigurationUpdatedEventArgs e)
+        {
+            _dispatcher.InvokeAsync(() => _backdropContainer.TransitionType = GetTransitionEffect(e.Configuration.BackdropTransition));
+        }
+
+        private TransitionEffect GetTransitionEffect(string name)
+        {
+            switch (name.ToLower())
+            {
+                case "blur":
+                    return new RadialBlurTransitionEffect();
+                case "circle reveal":
+                    return new CircleRevealTransitionEffect();
+                case "cloud reveal":
+                    return new CloudRevealTransitionEffect();
+                case "fade":
+                    return new FadeTransitionEffect();
+                case "horizontal blinds":
+                    return new BlindsTransitionEffect { Orientation = BlindOrientation.Horizontal };
+                case "horizontal slide":
+                    return new SlideInTransitionEffect { SlideDirection = SlideDirection.RightToLeft };
+                case "horizontal wipe":
+                    return new WipeTransitionEffect { WipeDirection = WipeDirection.RightToLeft };
+                case "ripple":
+                    return new RippleTransitionEffect();
+                case "smooth swirl":
+                    return new SmoothSwirlGridTransitionEffect();
+                case "vertical blinds":
+                    return new BlindsTransitionEffect { Orientation = BlindOrientation.Vertical };
+                case "vertical slide":
+                    return new SlideInTransitionEffect { SlideDirection = SlideDirection.TopToBottom };
+                case "vertical wipe":
+                    return new WipeTransitionEffect { WipeDirection = WipeDirection.TopToBottom };
+                case "wave":
+                    return new WaveTransitionEffect();
+                default:
+                    return null;
+            }
         }
 
         public int CurrentBackdropIndex
@@ -118,17 +165,22 @@ namespace MediaBrowser.UI.Implementations
 
         public void SetBackdrops(string[] backdrops)
         {
+            if (!_config.Configuration.EnableBackdrops)
+            {
+                backdrops = new string[] { };
+            }
+
             lock (_initialSetTimerLock)
             {
                 _pendingBackdrops = backdrops;
 
                 if (_backdropSetTimer == null)
                 {
-                    _backdropSetTimer = new Timer(OnPendingBackdropsTimerFired, null, 400, Timeout.Infinite);
+                    _backdropSetTimer = new Timer(OnPendingBackdropsTimerFired, null, 800, Timeout.Infinite);
                 }
                 else
                 {
-                    _backdropSetTimer.Change(400, Timeout.Infinite);
+                    _backdropSetTimer.Change(800, Timeout.Infinite);
                 }
             }
         }
@@ -175,11 +227,11 @@ namespace MediaBrowser.UI.Implementations
                 {
                     if (_backdropRotationTimer == null)
                     {
-                        _backdropRotationTimer = new Timer(OnBackdropRotationTimerCallback, null, 7000, 7000);
+                        _backdropRotationTimer = new Timer(OnBackdropRotationTimerCallback, null, 8000, 8000);
                     }
                     else
                     {
-                        _backdropRotationTimer.Change(7000, 7000);
+                        _backdropRotationTimer.Change(8000, 8000);
                     }
                 }
             }

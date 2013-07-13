@@ -558,7 +558,6 @@ namespace MediaBrowser.Theater.Presentation.Controls
                         if (elementRectangle.Top < 0.0)
                         {
                             this.SetVerticalOffset(this.contentOffset.Y + elementRectangle.Top - padding);
-                            return;
                         }
                     }
                     else
@@ -572,7 +571,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
                         }
                         if (elementRectangle.Left < 0.0)
                         {
-                            this.SetHorizontalOffset(this.contentOffset.X + elementRectangle.Left - padding);
+                            SetHorizontalOffset(this.contentOffset.X + elementRectangle.Left - padding);
                         }
                     }
                 }

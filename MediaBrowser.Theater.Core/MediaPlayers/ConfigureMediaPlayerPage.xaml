@@ -25,7 +25,7 @@
 
         <StackPanel x:Name="PanelVideoTypes" Margin="0 20 0 0" Orientation="Vertical">
 
-            <TextBlock Style="{DynamicResource Heading3TextBlockStyle}">Video types:</TextBlock>
+            <TextBlock Style="{DynamicResource TextBlockStyle}">Video types:</TextBlock>
 
             <WrapPanel Orientation="Horizontal" Margin="0 10 0 0">
 
@@ -46,7 +46,7 @@
 
         <StackPanel x:Name="PanelFileExtensions" Margin="0 30 0 0">
 
-            <TextBlock Style="{DynamicResource Heading3TextBlockStyle}">File Extensions:</TextBlock>
+            <TextBlock Style="{DynamicResource TextBlockStyle}">File Extensions:</TextBlock>
 
             <UniformGrid x:Name="WrapPanelFileExtensions" Margin="0 10 0 0" Columns="7">
             </UniformGrid>

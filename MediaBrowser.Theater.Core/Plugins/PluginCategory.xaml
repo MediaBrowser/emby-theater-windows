@@ -59,9 +59,9 @@
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <TextBlock x:Name="TxtName" Grid.Row="0" Style="{DynamicResource Heading3TextBlockStyle}" Margin="10 0 0 0"></TextBlock>
+        <TextBlock x:Name="TxtName" Grid.Row="0" Style="{DynamicResource TextBlockStyle}" Margin="10 0 0 0"></TextBlock>
 
-        <controls:ExtendedListBox Margin="-40 -30 -40 -35" Grid.Row="1" x:Name="LstItems" KeyboardNavigation.DirectionalNavigation="Continue" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{DynamicResource PluginListBoxItemTemplate}">
+        <controls:ExtendedListBox Margin="-40 -35 -40 -35" Grid.Row="1" x:Name="LstItems" KeyboardNavigation.DirectionalNavigation="Continue" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{DynamicResource PluginListBoxItemTemplate}">
             <controls:ExtendedListBox.ItemsPanel>
                 <ItemsPanelTemplate>
                     <WrapPanel Margin="40 35" Orientation="Vertical"></WrapPanel>

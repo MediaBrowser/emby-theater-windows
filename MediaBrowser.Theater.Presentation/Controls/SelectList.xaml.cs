@@ -55,6 +55,11 @@ namespace MediaBrowser.Theater.Presentation.Controls
             }
         }
 
+        public bool ContainsValue(string value)
+        {
+            return Options.Any(i => string.Equals(value, i.Value));
+        }
+
         public SelectList()
         {
             InitializeComponent();

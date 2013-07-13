@@ -41,7 +41,7 @@ namespace MediaBrowser.Theater.Interfaces.Navigation
         /// </summary>
         /// <param name="item">The item.</param>
         /// <param name="context">The context.</param>
-        Task NavigateToItem(BaseItemDto item, string context);
+        Task NavigateToItem(BaseItemDto item, string context = null);
 
         /// <summary>
         /// Navigates the back.

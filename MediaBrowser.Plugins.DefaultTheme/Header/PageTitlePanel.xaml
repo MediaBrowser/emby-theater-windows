@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid x:Name="MainGrid">
+    <Grid x:Name="MainGrid" Margin="0 10 0 0">
             
     </Grid>
 </UserControl>

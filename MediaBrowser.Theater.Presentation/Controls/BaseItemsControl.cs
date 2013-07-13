@@ -294,7 +294,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
 
             try
             {
-                var result = await GetItemsAsync();
+                var result = await Task.Run(async () => await GetItemsAsync().ConfigureAwait(false));
 
                 ItemCount = result.Items.Length;
 

@@ -41,7 +41,6 @@ namespace MediaBrowser.Theater.Core.General
             SelectUpdateLevel.SelectedValue = _config.Configuration.SystemUpdateLevel.ToString();
 
             ChkAutoRun.IsChecked = _config.Configuration.RunAtStartup;
-            ChkEnableDebugLogging.IsChecked = _config.Configuration.EnableDebugLevelLogging;
         }
 
         void GeneralSettingsPage_Unloaded(object sender, RoutedEventArgs e)
@@ -54,7 +53,6 @@ namespace MediaBrowser.Theater.Core.General
             }
 
             _config.Configuration.RunAtStartup = ChkAutoRun.IsChecked ?? false;
-            _config.Configuration.EnableDebugLevelLogging = ChkEnableDebugLogging.IsChecked ?? false;
 
             _config.SaveConfiguration();
         }

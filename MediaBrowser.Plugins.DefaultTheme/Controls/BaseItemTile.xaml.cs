@@ -155,6 +155,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
                 TxtRole.Text = "as " + ViewModel.PersonRole;
                 personRoleVisibility = Visibility.Visible;
             }
+
             TxtRole.Visibility = personRoleVisibility;
 
             OverlayGrid.Visibility = nameVisibility == Visibility.Visible ||
@@ -169,6 +170,16 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
 
         private void UpdateUserData(BaseItemDto item)
         {
+            if (item.LocationType == LocationType.Offline)
+            {
+                ImgOffline.Visibility = Visibility.Visible;
+                ImgPlayed.Visibility = Visibility.Collapsed;
+                ImgNew.Visibility = Visibility.Collapsed;
+                return;    
+            }
+
+            ImgOffline.Visibility = Visibility.Collapsed;
+            
             if (item.UserData != null && item.UserData.Played)
             {
                 ImgPlayed.Visibility = Visibility.Visible;

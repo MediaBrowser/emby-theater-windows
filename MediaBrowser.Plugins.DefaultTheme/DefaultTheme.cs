@@ -53,6 +53,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// The _logger
         /// </summary>
         private readonly ILogger _logger;
+        private readonly IThemeManager _themeManager;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultTheme" /> class.
@@ -64,7 +65,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// <param name="sessionManager">The session manager.</param>
         /// <param name="presentationManager">The app window.</param>
         /// <param name="logManager">The log manager.</param>
-        public DefaultTheme(IPlaybackManager playbackManager, IImageManager imageManager, IApiClient apiClient, INavigationService navService, ISessionManager sessionManager, IPresentationManager presentationManager, ILogManager logManager)
+        public DefaultTheme(IPlaybackManager playbackManager, IImageManager imageManager, IApiClient apiClient, INavigationService navService, ISessionManager sessionManager, IPresentationManager presentationManager, ILogManager logManager, IThemeManager themeManager)
         {
             _playbackManager = playbackManager;
             _imageManager = imageManager;
@@ -72,6 +73,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
             _navService = navService;
             _sessionManager = sessionManager;
             _presentationManager = presentationManager;
+            _themeManager = themeManager;
             _logger = logManager.GetLogger(GetType().Name);
 
             NavigationBar.PlaybackManager = _playbackManager;
@@ -139,7 +141,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
                 return new FolderPage(item, item.DisplayPreferencesId, _apiClient, _imageManager, _sessionManager, _presentationManager, _navService);
             }
 
-            return new PanoramaDetailPage(item, _apiClient, _sessionManager, _presentationManager, _imageManager, _navService, _playbackManager);
+            return new PanoramaDetailPage(item, _apiClient, _sessionManager, _presentationManager, _imageManager, _navService, _playbackManager, _themeManager);
         }
 
         /// <summary>

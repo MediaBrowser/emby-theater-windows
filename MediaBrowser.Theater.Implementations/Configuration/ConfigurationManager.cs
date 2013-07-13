@@ -1,4 +1,5 @@
 ﻿using MediaBrowser.Common.Configuration;
+using MediaBrowser.Common.Events;
 using MediaBrowser.Common.Implementations.Configuration;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Serialization;
@@ -84,7 +85,10 @@ namespace MediaBrowser.Theater.Implementations.Configuration
 
                 XmlSerializer.SerializeToFile(configuration, path);
 
+                EventHelper.FireEventIfNotNull(UserConfigurationUpdated, this, new UserConfigurationUpdatedEventArgs { UserId = userId, Configuration = configuration }, Logger);
             });
         }
+
+        public event EventHandler<UserConfigurationUpdatedEventArgs> UserConfigurationUpdated;
     }
 }

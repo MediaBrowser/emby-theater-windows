@@ -10,6 +10,7 @@ using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
+using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Presentation.Pages;
 using System;
 using System.Threading.Tasks;
@@ -45,6 +46,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
         private readonly IPlaybackManager _playbackManager;
 
         private readonly INavigationService _nav;
+        private readonly IThemeManager _themeManager;
 
         /// <summary>
         /// Gets the application window.
@@ -60,12 +62,13 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
         /// <param name="sessionManager">The session manager.</param>
         /// <param name="presentationManager">The presentation manager.</param>
         /// <param name="imageManager">The image manager.</param>
-        public PanoramaDetailPage(BaseItemDto item, IApiClient apiClient, ISessionManager sessionManager, IPresentationManager presentationManager, IImageManager imageManager, INavigationService nav, IPlaybackManager playbackManager)
+        public PanoramaDetailPage(BaseItemDto item, IApiClient apiClient, ISessionManager sessionManager, IPresentationManager presentationManager, IImageManager imageManager, INavigationService nav, IPlaybackManager playbackManager, IThemeManager themeManager)
         {
             _presentationManager = presentationManager;
             _imageManager = imageManager;
             _nav = nav;
             _playbackManager = playbackManager;
+            _themeManager = themeManager;
             _sessionManager = sessionManager;
             _apiClient = apiClient;
 
@@ -89,7 +92,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             set
             {
                 _item = value;
-                OnItemChanged();
+                LoadItem();
             }
         }
 
@@ -101,20 +104,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
         {
             base.OnInitialized(e);
 
-            Loaded += DetailPage_Loaded;
-        }
-
-        /// <summary>
-        /// Handles the Loaded event of the DetailPage control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
-        void DetailPage_Loaded(object sender, RoutedEventArgs e)
-        {
-            if (Item != null)
-            {
-                OnItemChanged();
-            }
+            LoadItem();
         }
 
         protected override void FocusOnFirstLoad()
@@ -124,7 +114,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
         /// <summary>
         /// Called when [item changed].
         /// </summary>
-        protected async void OnItemChanged()
+        protected async void LoadItem()
         {
             _presentationManager.SetBackdrops(Item);
 
@@ -147,7 +137,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
             try
             {
-                allThemeMedia = await _apiClient.GetAllThemeMediaAsync(_sessionManager.CurrentUser.Id, item.Id, false);
+                allThemeMedia = await Task.Run(async () => await _apiClient.GetAllThemeMediaAsync(_sessionManager.CurrentUser.Id, item.Id, false).ConfigureAwait(false));
             }
             catch (HttpException)
             {
@@ -173,7 +163,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             {
                 DetailPanels.Children.Add(new People(new Model.Entities.DisplayPreferences
                 {
-                    PrimaryImageWidth = 230
+                    PrimaryImageWidth = 225
 
                 }, _apiClient, _imageManager, _sessionManager, _nav, _presentationManager, _item));
             }
@@ -190,6 +180,15 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                     PrimaryImageWidth = 384
 
                 }, _apiClient, _imageManager, _sessionManager, _nav, _presentationManager, _item, _playbackManager));
+            }
+
+            if (item.IsType("movie") || item.IsType("trailer") || item.IsType("series") || item.IsType("album") || item.IsType("game"))
+            {
+                DetailPanels.Children.Add(new SimilarItems(new Model.Entities.DisplayPreferences
+                {
+                    PrimaryImageWidth = 220
+
+                }, _apiClient, _imageManager, _sessionManager, _nav, _presentationManager, _item));
             }
 
             if (allThemeMedia.ThemeVideosResult.TotalRecordCount > 0)
@@ -212,7 +211,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
             if (Gallery.GetImages(item, _apiClient).Any())
             {
-                DetailPanels.Children.Add(new Gallery(_imageManager, _apiClient)
+                DetailPanels.Children.Add(new Gallery(_imageManager, _apiClient, _nav, _themeManager)
                 {
                     Item = item
                 });
@@ -239,7 +238,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             {
                 ImgLogo.Source = await _imageManager.GetRemoteBitmapAsync(_apiClient.GetArtImageUrl(item, new ImageOptions
                 {
-                    MaxHeight = 80,
                     ImageType = ImageType.Art
                 }));
 
@@ -249,7 +247,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             {
                 ImgLogo.Source = await _imageManager.GetRemoteBitmapAsync(_apiClient.GetImageUrl(item, new ImageOptions
                 {
-                    MaxHeight = 80,
                     ImageType = ImageType.Disc
                 }));
 
@@ -259,7 +256,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             {
                 ImgLogo.Source = await _imageManager.GetRemoteBitmapAsync(_apiClient.GetImageUrl(item, new ImageOptions
                 {
-                    MaxHeight = 80,
                     ImageType = ImageType.Box
                 }));
 
@@ -269,7 +265,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             {
                 ImgLogo.Source = await _imageManager.GetRemoteBitmapAsync(_apiClient.GetImageUrl(item, new ImageOptions
                 {
-                    MaxHeight = 80,
                     ImageType = ImageType.BoxRear
                 }));
 

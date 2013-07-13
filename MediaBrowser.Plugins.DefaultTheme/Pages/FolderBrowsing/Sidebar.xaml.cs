@@ -46,8 +46,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
             {
                 LogoImage.Source = await _imageManager.GetRemoteBitmapAsync(_apiClient.GetLogoImageUrl(item, new ImageOptions
                 {
-                    MaxHeight = 120,
-                    MaxWidth = 500
                 }));
 
                 LogoImage.Visibility = Visibility.Visible;

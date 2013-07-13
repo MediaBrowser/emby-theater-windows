@@ -12,7 +12,7 @@
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <TextBlock x:Name="TxtTagline" Style="{DynamicResource Heading3TextBlockStyle}" Margin="5 5 0 5" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"></TextBlock>
+        <TextBlock x:Name="TxtTagline" Style="{DynamicResource TextBlockStyle}" Margin="5 5 0 5" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"></TextBlock>
 
         <Grid Grid.Row="1" Margin="0 25 0 0" MaxWidth="1700">
 
@@ -53,6 +53,7 @@
                     <RowDefinition Height="auto"></RowDefinition>
                     <RowDefinition Height="auto"></RowDefinition>
                     <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="auto"></RowDefinition>
                 </Grid.RowDefinitions>
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Row="0">
@@ -152,6 +153,8 @@
                 </Grid>
 
                 <TextBlock x:Name="TxtOverview" Style="{DynamicResource TextBlockStyle}" Grid.Row="2" Margin="0 30 0 0" TextTrimming="CharacterEllipsis"></TextBlock>
+                
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" Grid.Row="3" Margin="0 20 0 0" x:Name="PnlTags"></StackPanel>
             </Grid>
         </Grid>
     </Grid>

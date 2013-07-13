@@ -31,7 +31,7 @@ namespace MediaBrowser.Theater.Vlc.Configuration
 
         public bool IsVisible(UserDto user)
         {
-            return true;
+            return user != null && user.Configuration.IsAdministrator;
         }
 
         public Type PageType

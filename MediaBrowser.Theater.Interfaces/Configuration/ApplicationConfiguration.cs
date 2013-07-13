@@ -56,6 +56,10 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
         /// <value>The height of the window.</value>
         public double? WindowHeight { get; set; }
 
+        public bool EnableHighQualityImageScaling { get; set; }
+
+        public bool EnableBackdrops { get; set; }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ApplicationConfiguration" /> class.
         /// </summary>
@@ -64,6 +68,9 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
         {
             ServerHostName = "localhost";
             ServerApiPort = 8096;
+
+            EnableHighQualityImageScaling = true;
+            EnableBackdrops = true;
 
             MediaPlayers = new PlayerConfiguration[] { };
         }

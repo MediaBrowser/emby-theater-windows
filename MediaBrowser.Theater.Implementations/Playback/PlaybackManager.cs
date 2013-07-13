@@ -142,13 +142,15 @@ namespace MediaBrowser.Theater.Implementations.Playback
         /// </summary>
         /// <param name="player">The player.</param>
         /// <param name="options">The options.</param>
-        private void OnPlaybackStarted(IMediaPlayer player, PlayOptions options)
+        private async void OnPlaybackStarted(IMediaPlayer player, PlayOptions options)
         {
             EventHelper.QueueEventIfNotNull(PlaybackStarted, this, new PlaybackStartEventArgs
             {
                 Options = options,
                 Player = player
             }, _logger);
+            
+            await new PlaybackProgressReporter(_apiClient, player, _logger).Start().ConfigureAwait(false);
         }
 
         /// <summary>

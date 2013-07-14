@@ -100,9 +100,9 @@
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MediaBrowser.ApiInteraction, Version=3.0.4942.32053, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.ApiInteraction, Version=3.0.4942.39187, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.ApiClient.3.0.0.146\lib\net45\MediaBrowser.ApiInteraction.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.ApiClient.3.0.0.147\lib\net45\MediaBrowser.ApiInteraction.dll</HintPath>
     </Reference>
     <Reference Include="MediaBrowser.Common, Version=3.0.4942.31909, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -187,6 +187,7 @@
     <Compile Include="Controls\WindowCommands.xaml.cs">
       <DependentUpon>WindowCommands.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EntryPoints\WebSocketEntryPoint.cs" />
     <Compile Include="HiddenWindow.xaml.cs">
       <DependentUpon>HiddenWindow.xaml</DependentUpon>
     </Compile>

@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.Dto;
+﻿using System.ComponentModel;
+using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using System;
 using System.Linq;
@@ -9,20 +10,51 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
     /// <summary>
     /// Interaction logic for ItemInfoFooter.xaml
     /// </summary>
-    public partial class ItemInfoFooter : BaseDetailsControl
+    public partial class ItemInfoFooter : INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public virtual void OnPropertyChanged(string name)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(name));
+            }
+        }
+
+        /// <summary>
+        /// The _item
+        /// </summary>
+        private BaseItemDto _item;
+        /// <summary>
+        /// Gets or sets the item.
+        /// </summary>
+        /// <value>The item.</value>
+        public BaseItemDto Item
+        {
+            get { return _item; }
+
+            set
+            {
+                _item = value;
+                OnPropertyChanged("Item");
+                OnItemChanged();
+            }
+        }
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="ItemInfoFooter" /> class.
         /// </summary>
         public ItemInfoFooter()
         {
             InitializeComponent();
+            DataContext = this;
         }
 
         /// <summary>
         /// Called when [item changed].
         /// </summary>
-        protected override void OnItemChanged()
+        protected void OnItemChanged()
         {
             if (Item == null)
             {

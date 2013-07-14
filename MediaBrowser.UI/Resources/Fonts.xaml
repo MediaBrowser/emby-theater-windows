@@ -6,13 +6,13 @@
     <FontFamily x:Key="DefaultFontFamily">Segoe UI SemiLight, Lucida Sans Unicode, Verdana</FontFamily>
     <FontWeight x:Key="DefaultFontWeight">Normal</FontWeight>
     <Brush x:Key="DefaultForeground">#000</Brush>
-    <System:Double x:Key="DefaultFontSize">28</System:Double>
+    <System:Double x:Key="DefaultFontSize">30</System:Double>
 
     <!--Default font for small text. Themes should override these as needed-->
     <FontFamily x:Key="SmallFontFamily">Segoe UI SemiLight, Lucida Sans Unicode, Verdana</FontFamily>
     <FontWeight x:Key="SmallFontWeight">Normal</FontWeight>
     <Brush x:Key="SmallForeground">#000</Brush>
-    <System:Double x:Key="SmallFontSize">24</System:Double>
+    <System:Double x:Key="SmallFontSize">26</System:Double>
 
     <!--Default font for h1 headers. Themes should override these as needed-->
     <System:Double x:Key="Heading1FontSize">54</System:Double>

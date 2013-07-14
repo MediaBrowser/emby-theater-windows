@@ -1,4 +1,5 @@
 ﻿using MediaBrowser.Theater.Interfaces.Playback;
+using MediaBrowser.Theater.Presentation.Playback;
 using System;
 using System.Threading;
 using System.Windows;
@@ -36,30 +37,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
 
             Loaded += NavigationBar_Loaded;
         }
-
-        /// <summary>
-        /// The _is mouse idle
-        /// </summary>
-        private bool _isMouseIdle = true;
-        /// <summary>
-        /// Gets or sets a value indicating whether this instance is mouse idle.
-        /// </summary>
-        /// <value><c>true</c> if this instance is mouse idle; otherwise, <c>false</c>.</value>
-        public bool IsMouseIdle
-        {
-            get { return _isMouseIdle; }
-            set
-            {
-                var changed = _isMouseIdle != value;
-
-                _isMouseIdle = value;
-
-                if (changed)
-                {
-                    Dispatcher.InvokeAsync(() => NavBarGrid.Visibility = value ? Visibility.Collapsed : Visibility.Visible);
-                }
-            }
-        }
         
         /// <summary>
         /// Handles the Loaded event of the NavigationBar control.
@@ -93,7 +70,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         async void PreviousChapterButton_Click(object sender, RoutedEventArgs e)
         {
-            //await CurrentPlayer.GoToPreviousChapter();
+            await CurrentPlayer.GoToPreviousChapter();
         }
 
         /// <summary>
@@ -103,7 +80,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         async void NextChapterButton_Click(object sender, RoutedEventArgs e)
         {
-            //await CurrentPlayer.GoToNextChapter();
+            await CurrentPlayer.GoToNextChapter();
         }
 
         /// <summary>
@@ -189,11 +166,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
             {
                 if (CurrentPlayer.IsMuted)
                 {
-                    await CurrentPlayer.Mute();
+                    await CurrentPlayer.UnMute();
                 }
                 else
                 {
-                    await CurrentPlayer.UnMute();
+                    await CurrentPlayer.Mute();
                 }
             }
         }

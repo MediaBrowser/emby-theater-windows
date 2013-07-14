@@ -109,16 +109,16 @@ namespace MediaBrowser.Theater.Core.Login
 
             UserName.Text = item.Name;
 
-            if (item.LastActivityDate.HasValue)
-            {
-                var date = item.LastActivityDate.Value.ToLocalTime();
+            //if (item.LastActivityDate.HasValue)
+            //{
+            //    var date = item.LastActivityDate.Value.ToLocalTime();
 
-                LastSeen.Text = "Last seen " + GetRelativeTimeText(date);
-            }
-            else
-            {
-                LastSeen.Text = string.Empty;
-            }
+            //    LastSeen.Text = "Last seen " + GetRelativeTimeText(date);
+            //}
+            //else
+            //{
+            //    LastSeen.Text = string.Empty;
+            //}
         }
 
         /// <summary>

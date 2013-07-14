@@ -73,6 +73,7 @@
     <Compile Include="Presentation\IHomePage.cs" />
     <Compile Include="Presentation\IPresentationManager.cs" />
     <Compile Include="Presentation\ISettingsPage.cs" />
+    <Compile Include="Presentation\IStartupEntryPoint.cs" />
     <Compile Include="Presentation\ITheaterApp.cs" />
     <Compile Include="Presentation\MessageBoxInfo.cs" />
     <Compile Include="Session\ISessionManager.cs" />

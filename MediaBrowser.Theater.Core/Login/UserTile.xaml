@@ -44,7 +44,6 @@
             </Grid.Background>
             <StackPanel Orientation="Vertical" Margin="10 5 0 10">
                 <TextBlock x:Name="UserName" Foreground="White" Style="{DynamicResource TextBlockStyle}"></TextBlock>
-                <TextBlock x:Name="LastSeen" Foreground="White" Style="{DynamicResource SmallTextBlockStyle}"></TextBlock>
             </StackPanel>
         </Grid>
 

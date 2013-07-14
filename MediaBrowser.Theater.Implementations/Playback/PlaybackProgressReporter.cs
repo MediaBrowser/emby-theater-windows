@@ -1,6 +1,5 @@
 ﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Logging;
-using MediaBrowser.Model.Net;
 using MediaBrowser.Theater.Interfaces.Playback;
 using System;
 using System.Threading;
@@ -45,13 +44,13 @@ namespace MediaBrowser.Theater.Implementations.Playback
 
                 if (_mediaPlayer.CanTrackProgress)
                 {
-                    _timer = new Timer(TimerCallback, null, 5000, 5000);
+                    _timer = new Timer(TimerCallback, null, 1000, 1000);
                 }
 
                 _mediaPlayer.MediaChanged += _mediaPlayer_MediaChanged;
                 _mediaPlayer.PlaybackCompleted += _mediaPlayer_PlaybackCompleted;
             }
-            catch (HttpException ex)
+            catch (Exception ex)
             {
                 _logger.ErrorException("Error sending playback start checking for {0}", ex, item.Name);
 
@@ -81,7 +80,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
                 {
                     await _apiClient.ReportPlaybackStoppedAsync(e.EndingMedia.Id, _apiClient.CurrentUserId, e.EndingPositionTicks);
                 }
-                catch (HttpException ex)
+                catch (Exception ex)
                 {
                     _logger.ErrorException("Error sending playback stopped checking for {0}", ex, e.EndingMedia.Name);
                 }
@@ -101,7 +100,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
                 {
                     await _apiClient.ReportPlaybackStoppedAsync(e.PreviousMedia.Id, _apiClient.CurrentUserId, e.EndingPositionTicks);
                 }
-                catch (HttpException ex)
+                catch (Exception ex)
                 {
                     _logger.ErrorException("Error sending playback stopped checking for {0}", ex, e.PreviousMedia.Name);
                 }
@@ -113,7 +112,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
                 {
                     await _apiClient.ReportPlaybackStartAsync(e.NewMedia.Id, _apiClient.CurrentUserId);
                 }
-                catch (HttpException ex)
+                catch (Exception ex)
                 {
                     _logger.ErrorException("Error sending playback start checking for {0}", ex, e.NewMedia.Name);
                 }
@@ -128,13 +127,18 @@ namespace MediaBrowser.Theater.Implementations.Playback
         {
             var item = _mediaPlayer.CurrentMedia;
 
-            _logger.Info("Sending playback progress checkin for {0}", item.Name);
+            if (item == null)
+            {
+                return;
+            }
+
+            _logger.Debug("Sending playback progress checkin for {0}", item.Name);
 
             try
             {
                 await _apiClient.ReportPlaybackProgressAsync(item.Id, _apiClient.CurrentUserId, _mediaPlayer.CurrentPositionTicks, _mediaPlayer.PlayState == PlayState.Paused);
             }
-            catch (HttpException ex)
+            catch (Exception ex)
             {
                 _logger.ErrorException("Error sending playback progress checking for {0}", ex, item.Name);
 

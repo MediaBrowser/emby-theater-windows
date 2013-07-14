@@ -94,7 +94,6 @@
     <Compile Include="Controls\BaseItemTile.xaml.cs">
       <DependentUpon>BaseItemTile.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\Details\BaseDetailsControl.cs" />
     <Compile Include="Controls\Details\ItemInfoFooter.xaml.cs">
       <DependentUpon>ItemInfoFooter.xaml</DependentUpon>
     </Compile>

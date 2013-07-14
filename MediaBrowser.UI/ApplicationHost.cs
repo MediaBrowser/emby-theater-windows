@@ -1,5 +1,4 @@
-﻿using System.Threading;
-using MediaBrowser.ApiInteraction;
+﻿using MediaBrowser.ApiInteraction;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Constants;
 using MediaBrowser.Common.Implementations;
@@ -35,6 +34,7 @@ using System.Net;
 using System.Net.Cache;
 using System.Net.Http;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MediaBrowser.UI
@@ -78,6 +78,27 @@ namespace MediaBrowser.UI
                 ConfigurationManager.CommonConfiguration.IsStartupWizardCompleted = true;
                 ConfigurationManager.SaveConfiguration();
             }
+
+            await RunStartupTasks().ConfigureAwait(false);
+        }
+
+        public override async Task RunStartupTasks()
+        {
+            await base.RunStartupTasks().ConfigureAwait(false);
+
+            Logger.Info("Core startup complete");
+
+            Parallel.ForEach(GetExports<IStartupEntryPoint>(), entryPoint =>
+            {
+                try
+                {
+                    entryPoint.Run();
+                }
+                catch (Exception ex)
+                {
+                    Logger.ErrorException("Error in {0}", ex, entryPoint.GetType().Name);
+                }
+            });
         }
 
         /// <summary>

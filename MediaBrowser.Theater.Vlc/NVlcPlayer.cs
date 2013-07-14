@@ -18,6 +18,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MediaBrowser.Theater.Interfaces.UserInput;
 using ILogger = MediaBrowser.Model.Logging.ILogger;
 
 namespace MediaBrowser.Theater.Vlc
@@ -55,6 +56,7 @@ namespace MediaBrowser.Theater.Vlc
         private readonly ILogger _logger;
         private readonly IPlaybackManager _playbackManager;
         private readonly ITheaterConfigurationManager _config;
+        private readonly IUserInputManager _userInput;
 
         /// <summary>
         /// The _task result
@@ -67,11 +69,12 @@ namespace MediaBrowser.Theater.Vlc
         /// <param name="hiddenWindow">The hidden window.</param>
         /// <param name="logManager">The log manager.</param>
         /// <param name="playbackManager">The playback manager.</param>
-        public NVlcPlayer(IHiddenWindow hiddenWindow, ILogManager logManager, IPlaybackManager playbackManager, ITheaterConfigurationManager config)
+        public NVlcPlayer(IHiddenWindow hiddenWindow, ILogManager logManager, IPlaybackManager playbackManager, ITheaterConfigurationManager config, IUserInputManager userInput)
         {
             _hiddenWindow = hiddenWindow;
             _playbackManager = playbackManager;
             _config = config;
+            _userInput = userInput;
 
             _logger = logManager.GetLogger(Name);
         }
@@ -249,6 +252,8 @@ namespace MediaBrowser.Theater.Vlc
                 }
 
                 _mediaListPlayer.MediaListPlayerEvents.MediaListPlayerNextItemSet += MediaListPlayerEvents_MediaListPlayerNextItemSet;
+
+                _userInput.KeyDown += _userInput_KeyDown;
             }
             catch (Exception ex)
             {
@@ -258,6 +263,38 @@ namespace MediaBrowser.Theater.Vlc
             }
 
             return _taskResult;
+        }
+
+        void _userInput_KeyDown(object sender, KeyEventArgs e)
+        {
+            switch (e.KeyCode)
+            {
+                case Keys.Pause:
+                     _mediaListPlayer.Pause();
+                    break;
+                case Keys.VolumeDown:
+                    _mediaListPlayer.InnerPlayer.Volume -= 5;
+                    break;
+                case Keys.VolumeUp:
+                    _mediaListPlayer.InnerPlayer.Volume += 5;
+                    _mediaListPlayer.InnerPlayer.Mute = false;
+                    break;
+                case Keys.VolumeMute:
+                    _mediaListPlayer.InnerPlayer.ToggleMute();
+                    break;
+                case Keys.MediaNextTrack:
+                    break;
+                case Keys.MediaPlayPause:
+                    _mediaListPlayer.Pause();
+                    break;
+                case Keys.MediaPreviousTrack:
+                    break;
+                case Keys.MediaStop:
+                    _mediaListPlayer.Stop();
+                    break;
+                default:
+                    return;
+            }
         }
 
         private AudioOutputDeviceType GetAudioDeviceType()
@@ -523,6 +560,8 @@ namespace MediaBrowser.Theater.Vlc
         /// </summary>
         private void DisposePlayer()
         {
+            _userInput.KeyDown -= _userInput_KeyDown;
+
             if (_mediaListPlayer != null)
             {
                 _mediaListPlayer.MediaListPlayerEvents.MediaListPlayerNextItemSet -= MediaListPlayerEvents_MediaListPlayerNextItemSet;

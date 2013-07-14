@@ -9,8 +9,10 @@ using MediaBrowser.Theater.Interfaces.UserInput;
 using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.UI.Controls;
 using MediaBrowser.UI.Implementations;
+using Microsoft.Expression.Media.Effects;
 using System;
 using System.ComponentModel;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -18,7 +20,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
-using Microsoft.Expression.Media.Effects;
 
 namespace MediaBrowser.UI
 {
@@ -52,8 +53,17 @@ namespace MediaBrowser.UI
 
                 if (changed)
                 {
-                    Dispatcher.InvokeAsync(() => Cursor = value ? Cursors.None : Cursors.Arrow);
-                    OnPropertyChanged("IsMouseIdle");
+                    Dispatcher.InvokeAsync(() =>
+                    {
+                        Cursor = value ? Cursors.None : Cursors.Arrow;
+                        OnPropertyChanged("IsMouseIdle");
+
+                        if (!value && _playbackManager.MediaPlayers.OfType<IInternalMediaPlayer>().Any(i => i.PlayState != PlayState.Idle))
+                        {
+                            ShowNowPlayingOverlay();
+                        }
+
+                    }, DispatcherPriority.Background);
                 }
             }
         }
@@ -66,6 +76,11 @@ namespace MediaBrowser.UI
         private readonly IUserInputManager _userInput;
         private readonly ITheaterConfigurationManager _config;
         private readonly ISessionManager _session;
+        private readonly IPlaybackManager _playbackManager;
+
+        private readonly object _nowPlayingOverlayTimerLock = new object();
+        private Timer _nowPlayingOverlayTimer;
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MainWindow" /> class.
@@ -79,6 +94,7 @@ namespace MediaBrowser.UI
             _userInput = userInput;
             _config = config;
             _session = session;
+            _playbackManager = playbackManager;
 
             Loaded += MainWindow_Loaded;
 
@@ -91,6 +107,23 @@ namespace MediaBrowser.UI
             _config.ConfigurationUpdated += _config_ConfigurationUpdated;
             _session.UserLoggedIn += _session_UserLoggedIn;
             _session.UserLoggedOut += _session_UserLoggedOut;
+            _playbackManager.PlaybackStarted += _playbackManager_PlaybackStarted;
+            _playbackManager.PlaybackCompleted += _playbackManager_PlaybackCompleted;
+        }
+
+        void _playbackManager_PlaybackStarted(object sender, PlaybackStartEventArgs e)
+        {
+            if (e.Player is IInternalMediaPlayer)
+            {
+                ShowNowPlayingOverlay();
+
+                _userInput.MouseMove += _userInput_MouseMove;
+            }
+        }
+
+        void _playbackManager_PlaybackCompleted(object sender, PlaybackStopEventArgs e)
+        {
+            _userInput.MouseMove -= _userInput_MouseMove;
         }
 
         void _session_UserLoggedOut(object sender, EventArgs e)
@@ -145,6 +178,7 @@ namespace MediaBrowser.UI
 
             RotatingBackdrops.Dispose();
             DisposeActivityTimer();
+            DisposeNowPlayingOverlayTimer();
 
             base.OnClosing(e);
         }
@@ -207,7 +241,7 @@ namespace MediaBrowser.UI
         /// Gets the page frame.
         /// </summary>
         /// <value>The page frame.</value>
-        private TransitionFrame PageFrame
+        internal TransitionFrame PageFrame
         {
             get
             {
@@ -371,6 +405,47 @@ namespace MediaBrowser.UI
             base.OnBrowserForward();
 
             NavigateForward();
+        }
+
+        private void ShowNowPlayingOverlay()
+        {
+            Dispatcher.InvokeAsync(() => NowPlayingOverlay.Visibility = Visibility.Visible, DispatcherPriority.Background);
+
+            lock (_nowPlayingOverlayTimerLock)
+            {
+                if (_nowPlayingOverlayTimer == null)
+                {
+                    _nowPlayingOverlayTimer = new Timer(OnNowPlayingOverlayTimerCallback, null, 5000, Timeout.Infinite);
+                }
+                else
+                {
+                    _nowPlayingOverlayTimer.Change(5000, Timeout.Infinite);
+                }
+            }
+        }
+
+        private void OnNowPlayingOverlayTimerCallback(object state)
+        {
+            HideNowPlayingOverlay();
+        }
+
+        private void HideNowPlayingOverlay()
+        {
+            Dispatcher.InvokeAsync(() => NowPlayingOverlay.Visibility = Visibility.Collapsed, DispatcherPriority.Background);
+
+            DisposeNowPlayingOverlayTimer();
+        }
+
+        private void DisposeNowPlayingOverlayTimer()
+        {
+            lock (_nowPlayingOverlayTimerLock)
+            {
+                if (_nowPlayingOverlayTimer != null)
+                {
+                    _nowPlayingOverlayTimer.Dispose();
+                    _nowPlayingOverlayTimer = null;
+                }
+            }
         }
     }
 }

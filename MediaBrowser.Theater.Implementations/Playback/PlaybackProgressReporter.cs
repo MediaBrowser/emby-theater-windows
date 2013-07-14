@@ -132,8 +132,6 @@ namespace MediaBrowser.Theater.Implementations.Playback
                 return;
             }
 
-            _logger.Debug("Sending playback progress checkin for {0}", item.Name);
-
             try
             {
                 await _apiClient.ReportPlaybackProgressAsync(item.Id, _apiClient.CurrentUserId, _mediaPlayer.CurrentPositionTicks, _mediaPlayer.PlayState == PlayState.Paused);

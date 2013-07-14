@@ -6,7 +6,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
 
-    <StackPanel MinWidth="530">
+    <StackPanel>
         <TextBlock x:Name="TxtVersion" Style="{DynamicResource TextBlockStyle}" HorizontalAlignment="Left"></TextBlock>
 
         <StackPanel x:Name="PanelUpToDate" Orientation="Horizontal" Margin="0 20 0 0" Visibility="Collapsed">
@@ -25,7 +25,7 @@
                     </Path.RenderTransform>
                 </Path>
             </Grid>
-            <TextBlock Style="{DynamicResource TextBlockStyle}" Margin="10 0 0 0">Media Browser Theater is up to date.</TextBlock>
+            <TextBlock Style="{DynamicResource TextBlockStyle}" Margin="10 0 0 0">Up to date.</TextBlock>
         </StackPanel>
 
         <StackPanel x:Name="PanelNewVersion" Orientation="Vertical" Margin="0 30 0 0" Visibility="Collapsed">

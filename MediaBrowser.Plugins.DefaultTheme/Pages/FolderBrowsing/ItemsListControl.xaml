@@ -5,7 +5,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                                          xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
                            xmlns:details="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Controls.Details"
-                            xmlns:folderBrowsing="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing"
                             mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     

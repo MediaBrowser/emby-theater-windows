@@ -160,10 +160,12 @@
             <DataTrigger Binding="{Binding Path=DisplayPreferences.ViewType}" Value="List">
                 <Setter Property="ItemTemplate" Value="{StaticResource ListPageListViewItemTemplate}"></Setter>
                 <Setter Property="ItemContainerStyle" Value="{DynamicResource HighlightedListBoxItemStyle}"></Setter>
+                <Setter Property="Margin" Value="0 -10"></Setter>
                 <Setter Property="ItemsPanel">
                     <Setter.Value>
                         <ItemsPanelTemplate>
-                            <VirtualizingStackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="30 30 30 150"></VirtualizingStackPanel>
+                            <controls:VirtualizingWrapPanel ItemHeight="{Binding ItemContainerHeight}" ItemWidth="{Binding ItemContainerWidth}" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="50 40">
+                            </controls:VirtualizingWrapPanel>
                         </ItemsPanelTemplate>
                     </Setter.Value>
                 </Setter>

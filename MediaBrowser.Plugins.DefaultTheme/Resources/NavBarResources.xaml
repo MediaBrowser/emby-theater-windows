@@ -207,16 +207,6 @@
         <Setter Property="VerticalAlignment" Value="Bottom"/>
         <Setter Property="Background" Value="#A6000000"/>
     </Style>
-    <Style TargetType="StackPanel" x:Key="NavBarGridLeftPanel">
-        <Setter Property="Grid.Column" Value="0"/>
-        <Setter Property="HorizontalAlignment" Value="Left"/>
-        <Setter Property="Orientation" Value="Horizontal"/>
-    </Style>
-    <Style TargetType="StackPanel" x:Key="NavBarGridCenterPanel">
-        <Setter Property="Grid.Column" Value="1"/>
-        <Setter Property="HorizontalAlignment" Value="Center"/>
-        <Setter Property="Orientation" Value="Horizontal"/>
-    </Style>
     <Style TargetType="StackPanel" x:Key="NavBarGridRightPanel">
         <Setter Property="Grid.Column" Value="2"/>
         <Setter Property="HorizontalAlignment" Value="Right"/>

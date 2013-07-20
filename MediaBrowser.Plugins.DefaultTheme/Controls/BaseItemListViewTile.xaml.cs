@@ -121,13 +121,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
                 return;
             }
 
-            MainGrid.Height = ViewModel.ImageDisplayHeight;
-
-            const int detailWidth = 1100;
-
-            MainGrid.Width = ViewModel.ImageDisplayWidth + detailWidth;
-            MainGrid.ColumnDefinitions[1].Width = new GridLength(detailWidth);
-
             await SetImageSource(item);
         }
 

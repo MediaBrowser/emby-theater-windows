@@ -43,7 +43,7 @@
                                     <BlurEffect Radius="12" KernelType="Gaussian"></BlurEffect>
                                 </Border.Effect>
                             </Border>
-                            <ContentPresenter Margin="12" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                            <ContentPresenter Margin="12" HorizontalAlignment="Stretch" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Stretch"/>
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
@@ -77,7 +77,7 @@
                                     <BlurEffect Radius="12" KernelType="Gaussian"></BlurEffect>
                                 </Border.Effect>
                             </Border>
-                            <ContentPresenter Margin="12" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                            <ContentPresenter Margin="12" HorizontalAlignment="Stretch" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Stretch"/>
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
@@ -153,7 +153,7 @@
                                     <BlurEffect Radius="12" KernelType="Gaussian"></BlurEffect>
                                 </Border.Effect>
                             </Border>
-                            <ContentPresenter Margin="12" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                            <ContentPresenter Margin="12" HorizontalAlignment="Stretch" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Stretch"/>
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>

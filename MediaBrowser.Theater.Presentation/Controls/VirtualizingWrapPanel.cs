@@ -339,27 +339,52 @@ namespace MediaBrowser.Theater.Presentation.Controls
             }
             base.InvalidateMeasure();
         }
+
+        private bool EnableAnimation
+        {
+            get
+            {
+                return false;
+                //ItemsControl itemsControl = ItemsControl.GetItemsOwner(this);
+
+                //return itemsControl != null && itemsControl.Items.Count < 15;
+            }
+        }
+
+        private Storyboard _yStoryboard;
         
         /// <summary>
         /// Sets the amount of vertical offset.
         /// </summary>
         public void SetVerticalOffset(double offset)
         {
-            OnVerticalOffsetPropertyChanged(new DependencyPropertyChangedEventArgs(VerticalOffsetProperty, contentOffset.Y, offset));
+            if (_yStoryboard != null)
+            {
+                _yStoryboard.Stop(this);
+                _yStoryboard = null;
+            }
 
-            //DoubleAnimation myDoubleAnimation = new DoubleAnimation();
-            //myDoubleAnimation.From = contentOffset.Y;
-            //myDoubleAnimation.To = offset;
-            //myDoubleAnimation.Duration = new Duration(TimeSpan.FromMilliseconds(1 * 500));
-            //myDoubleAnimation.AutoReverse = false;
-            //myDoubleAnimation.AccelerationRatio = 0;
-            //myDoubleAnimation.DecelerationRatio = 1;
+            if (EnableAnimation)
+            {
+                var animation = new DoubleAnimation();
+                animation.From = contentOffset.Y;
+                animation.To = offset;
+                animation.Duration = new Duration(TimeSpan.FromMilliseconds(1 * 500));
+                animation.AutoReverse = false;
+                animation.AccelerationRatio = 0;
+                animation.DecelerationRatio = 1;
 
-            //var myVerticalOffsetStoryboard = new Storyboard();
-            //myVerticalOffsetStoryboard.Children.Add(myDoubleAnimation);
-            //Storyboard.SetTargetProperty(myDoubleAnimation, new PropertyPath(VirtualizingWrapPanel.VerticalOffsetProperty));
+                _yStoryboard = new Storyboard();
+                _yStoryboard.Children.Add(animation);
+                Storyboard.SetTargetProperty(animation, new PropertyPath(VirtualizingWrapPanel.VerticalOffsetProperty));
 
-            //myVerticalOffsetStoryboard.Begin(this);
+                _yStoryboard.Begin(this);
+            }
+            else
+            {
+                OnVerticalOffsetPropertyChanged(new DependencyPropertyChangedEventArgs(VerticalOffsetProperty, contentOffset.Y, offset));
+            }
+
         }
 
         /// <summary>
@@ -398,35 +423,41 @@ namespace MediaBrowser.Theater.Presentation.Controls
             base.InvalidateMeasure();
         }
 
-        private Storyboard xStoryboard;
+        private Storyboard _xStoryboard;
 
         /// <summary>
         /// Sets the amount of horizontal offset.
         /// </summary>
         public void SetHorizontalOffset(double offset)
         {
-            //if (xStoryboard != null)
-            //{
-            //    xStoryboard.Stop(this);
-            //    xStoryboard = null;
-            //}
+            if (_xStoryboard != null)
+            {
+                _xStoryboard.Stop(this);
+                _xStoryboard = null;
+            }
 
-            OnHorizontalOffsetPropertyChanged(new DependencyPropertyChangedEventArgs(HorizontalOffsetProperty, contentOffset.X, offset));
+            if (EnableAnimation)
+            {
+                var animation = new DoubleAnimation();
+                animation.From = contentOffset.X;
+                animation.To = offset;
+                animation.Duration = new Duration(TimeSpan.FromMilliseconds(1 * 500));
+                animation.AutoReverse = false;
+                animation.AccelerationRatio = 0;
+                animation.DecelerationRatio = 1;
 
-            //var animation = new DoubleAnimation();
-            //animation.From = contentOffset.X;
-            //animation.To = offset;
-            //animation.Duration = new Duration(TimeSpan.FromMilliseconds(1 * 300));
-            //animation.AutoReverse = false;
-            //animation.AccelerationRatio = 0;
-            //animation.DecelerationRatio = 1;
+                _xStoryboard = new Storyboard();
+                _xStoryboard.Children.Add(animation);
+                Storyboard.SetTargetProperty(animation, new PropertyPath(VirtualizingWrapPanel.HorizontalOffsetProperty));
 
-            //xStoryboard = new Storyboard();
-            //xStoryboard.Children.Add(animation);
-            //Storyboard.SetTargetProperty(animation, new PropertyPath(VirtualizingWrapPanel.HorizontalOffsetProperty));
-
-            //xStoryboard.Begin(this, true);
+                _xStoryboard.Begin(this, true);
+            }
+            else
+            {
+                OnHorizontalOffsetPropertyChanged(new DependencyPropertyChangedEventArgs(HorizontalOffsetProperty, contentOffset.X, offset));
+            }
         }
+
         /// <summary>
         /// Note: Works only for vertical.
         /// </summary>
@@ -627,7 +658,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
 
                     if (this.Orientation == Orientation.Horizontal)
                     {
-                        var padding = ItemHeight / 3;
+                        var padding = ItemHeight / 2;
 
                         if (elementRectangle.Bottom > this.ViewportHeight)
                         {
@@ -641,7 +672,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
                     }
                     else
                     {
-                        var padding = ItemWidth / 3;
+                        var padding = ItemWidth / 2;
 
                         if (elementRectangle.Right > this.ViewportWidth)
                         {

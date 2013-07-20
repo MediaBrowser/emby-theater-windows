@@ -270,6 +270,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
 
         protected virtual double GetItemContainerWidth(Model.Entities.DisplayPreferences displayPreferences, double medianPrimaryImageAspectRatio)
         {
+            if (string.Equals(displayPreferences.ViewType, ViewTypes.List))
+            {
+                return 1500;
+            }
+
             // 14 = double the margin between items as defined in the resource file
             return displayPreferences.PrimaryImageWidth + 14;
         }
@@ -293,13 +298,13 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
 
         private async void UpdateLogo(BaseItemDto item)
         {
-            const int maxheight = 90;
+            const int maxheight = 80;
 
             if (item != null && item.HasLogo && Sidebar.Visibility == Visibility.Collapsed)
             {
                 ImgLogo.Source = await ImageManager.GetRemoteBitmapAsync(ApiClient.GetLogoImageUrl(item, new ImageOptions
                 {
-                    MaxHeight = maxheight,
+                    Height = maxheight,
                     ImageType = ImageType.Logo
                 }));
 
@@ -309,7 +314,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
             {
                 ImgLogo.Source = await ImageManager.GetRemoteBitmapAsync(ApiClient.GetArtImageUrl(item, new ImageOptions
                 {
-                    MaxHeight = maxheight,
+                    Height = maxheight,
                     ImageType = ImageType.Art
                 }));
 
@@ -319,7 +324,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
             {
                 ImgLogo.Source = await ImageManager.GetRemoteBitmapAsync(ApiClient.GetImageUrl(item, new ImageOptions
                 {
-                    MaxHeight = maxheight,
+                    Height = maxheight,
                     ImageType = ImageType.Disc
                 }));
 
@@ -329,7 +334,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
             {
                 ImgLogo.Source = await ImageManager.GetRemoteBitmapAsync(ApiClient.GetImageUrl(item, new ImageOptions
                 {
-                    MaxHeight = maxheight,
+                    Height = maxheight,
                     ImageType = ImageType.Box
                 }));
 
@@ -339,7 +344,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
             {
                 ImgLogo.Source = await ImageManager.GetRemoteBitmapAsync(ApiClient.GetImageUrl(item, new ImageOptions
                 {
-                    MaxHeight = maxheight,
+                    Height = maxheight,
                     ImageType = ImageType.BoxRear
                 }));
 

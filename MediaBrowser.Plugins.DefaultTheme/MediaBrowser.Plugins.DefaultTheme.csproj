@@ -38,14 +38,6 @@
     <RunPostBuildEvent>Always</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MediaBrowser.Common, Version=3.0.4942.31909, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.3.0.147\lib\net45\MediaBrowser.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="MediaBrowser.Model, Version=3.0.4942.31908, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.3.0.147\lib\net45\MediaBrowser.Model.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Expression.Effects, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\ThirdParty\Expression\Microsoft.Expression.Effects.dll</HintPath>

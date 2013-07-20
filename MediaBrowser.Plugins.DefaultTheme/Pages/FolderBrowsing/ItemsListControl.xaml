@@ -36,12 +36,9 @@
             </StackPanel>
         </Grid>
 
-        <Grid Grid.Row="2" Margin="25 0 25 20" x:Name="BottomGrid">
+        <Grid Grid.Row="2" Margin="25 0 25 20" x:Name="BottomGrid" Height="100">
 
-            <!-- This is just to make sure the bottom always has the same height -->
-            <Grid Height="100"></Grid>
-
-            <Image Name="ImgLogo" Stretch="None" HorizontalAlignment="Left" VerticalAlignment="Bottom"></Image>
+            <Image Name="ImgLogo" Stretch="Uniform" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0 20 0 0"></Image>
             <details:ItemInfoFooter x:Name="ItemInfoFooter" HorizontalAlignment="Right" VerticalAlignment="Bottom" VerticalContentAlignment="Center" KeyboardNavigation.IsTabStop="False"></details:ItemInfoFooter>
         </Grid>
     </Grid>

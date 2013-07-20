@@ -69,7 +69,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
         /// </summary>
         protected virtual void OnBrowserBack()
         {
-            
+
         }
 
         /// <summary>
@@ -120,7 +120,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
                 return true;
             }
 
-            if (e.Key == Key.BrowserBack/* || e.Key == Key.Back*/)
+            if (e.Key == Key.BrowserBack || e.Key == Key.Back)
             {
                 return true;
             }

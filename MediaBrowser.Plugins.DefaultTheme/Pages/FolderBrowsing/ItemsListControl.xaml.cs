@@ -199,16 +199,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
 
             ShowViewButton();
 
-            if (ParentItem.IsType("Season"))
-            {
-                TxtName.Visibility = Visibility.Visible;
-                TxtName.Text = ParentItem.Name;
-            }
-            else
-            {
-                TxtName.Visibility = Visibility.Collapsed;
-            }
-
             await pageTitleTask;
         }
 

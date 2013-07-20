@@ -58,12 +58,28 @@ namespace MediaBrowser.UI
                         Cursor = value ? Cursors.None : Cursors.Arrow;
                         OnPropertyChanged("IsMouseIdle");
 
-                        if (!value && _playbackManager.MediaPlayers.OfType<IInternalMediaPlayer>().Any(i => i.PlayState != PlayState.Idle))
-                        {
-                            ShowNowPlayingOverlay();
-                        }
+                        NowPlayingOverlayVisibility = !value && _playbackManager.MediaPlayers.OfType<IInternalMediaPlayer>().Any(i => i.PlayState != PlayState.Idle)
+                                                          ? Visibility.Visible
+                                                          : Visibility.Collapsed;
 
                     }, DispatcherPriority.Background);
+                }
+            }
+        }
+
+        private Visibility _nowPlayingOverlayVisibility = Visibility.Collapsed;
+        public Visibility NowPlayingOverlayVisibility
+        {
+            get { return _nowPlayingOverlayVisibility; }
+            set
+            {
+                var changed = _nowPlayingOverlayVisibility != value;
+
+                _nowPlayingOverlayVisibility = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("NowPlayingOverlayVisibility");
                 }
             }
         }
@@ -77,10 +93,6 @@ namespace MediaBrowser.UI
         private readonly ITheaterConfigurationManager _config;
         private readonly ISessionManager _session;
         private readonly IPlaybackManager _playbackManager;
-
-        private readonly object _nowPlayingOverlayTimerLock = new object();
-        private Timer _nowPlayingOverlayTimer;
-
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MainWindow" /> class.
@@ -115,8 +127,16 @@ namespace MediaBrowser.UI
         {
             if (e.Player is IInternalMediaPlayer)
             {
-                ShowNowPlayingOverlay();
+                Dispatcher.InvokeAsync(() =>
+                {
+                    OnPropertyChanged("IsMouseIdle");
 
+                    NowPlayingOverlayVisibility = !IsMouseIdle && _playbackManager.MediaPlayers.OfType<IInternalMediaPlayer>().Any(i => i.PlayState != PlayState.Idle)
+                                                      ? Visibility.Visible
+                                                      : Visibility.Collapsed;
+
+                }, DispatcherPriority.Background);
+                
                 _userInput.MouseMove += _userInput_MouseMove;
             }
         }
@@ -178,7 +198,6 @@ namespace MediaBrowser.UI
 
             RotatingBackdrops.Dispose();
             DisposeActivityTimer();
-            DisposeNowPlayingOverlayTimer();
 
             base.OnClosing(e);
         }
@@ -207,17 +226,22 @@ namespace MediaBrowser.UI
 
             _lastMouseMovePoint = pos;
 
-            _lastMouseInput = DateTime.Now;
+            OnMouseMove();
         }
 
         void _userInput_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            OnMouseMove();
+        }
+
+        private void OnMouseMove()
         {
             _lastMouseInput = DateTime.Now;
         }
 
         private void TimerCallback(object state)
         {
-            IsMouseIdle = (DateTime.Now - _lastMouseInput).TotalMilliseconds > 3000;
+            IsMouseIdle = (DateTime.Now - _lastMouseInput).TotalMilliseconds > 5100;
         }
 
         /// <summary>
@@ -405,47 +429,6 @@ namespace MediaBrowser.UI
             base.OnBrowserForward();
 
             NavigateForward();
-        }
-
-        private void ShowNowPlayingOverlay()
-        {
-            Dispatcher.InvokeAsync(() => NowPlayingOverlay.Visibility = Visibility.Visible, DispatcherPriority.Background);
-
-            lock (_nowPlayingOverlayTimerLock)
-            {
-                if (_nowPlayingOverlayTimer == null)
-                {
-                    _nowPlayingOverlayTimer = new Timer(OnNowPlayingOverlayTimerCallback, null, 5000, Timeout.Infinite);
-                }
-                else
-                {
-                    _nowPlayingOverlayTimer.Change(5000, Timeout.Infinite);
-                }
-            }
-        }
-
-        private void OnNowPlayingOverlayTimerCallback(object state)
-        {
-            HideNowPlayingOverlay();
-        }
-
-        private void HideNowPlayingOverlay()
-        {
-            Dispatcher.InvokeAsync(() => NowPlayingOverlay.Visibility = Visibility.Collapsed, DispatcherPriority.Background);
-
-            DisposeNowPlayingOverlayTimer();
-        }
-
-        private void DisposeNowPlayingOverlayTimer()
-        {
-            lock (_nowPlayingOverlayTimerLock)
-            {
-                if (_nowPlayingOverlayTimer != null)
-                {
-                    _nowPlayingOverlayTimer.Dispose();
-                    _nowPlayingOverlayTimer = null;
-                }
-            }
         }
     }
 }

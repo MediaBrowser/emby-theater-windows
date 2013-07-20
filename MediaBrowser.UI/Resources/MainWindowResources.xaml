@@ -41,8 +41,8 @@
                 <Setter Property="Visibility" Value="Visible" />
             </DataTrigger>
         </Style.Triggers>
-    </Style>
-
+    </Style>    
+    
     <!--Themes should override this to layout window content-->
     <ControlTemplate x:Key="PageContentTemplate">
         <controls:PageContainer x:Name="PageContainer"></controls:PageContainer>

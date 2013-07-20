@@ -182,8 +182,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.Movies
         {
             var size = TV.TV.GetImageSize();
 
-            SpotlightTile.ImageHeight = Convert.ToInt32(size.Height * 2 + 14);
-            SpotlightTile.ImageWidth = Convert.ToInt32(size.Width * 2 + 14);
+            SpotlightTile.ImageHeight = Convert.ToInt32(size.Height * 2 + 24);
+            SpotlightTile.ImageWidth = Convert.ToInt32(size.Width * 2 + 24);
 
             SpotlightTile.DataContext = new RotatingCollectionViewModel(ApiClient, ImageManager)
             {

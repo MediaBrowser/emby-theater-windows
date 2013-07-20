@@ -300,7 +300,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
 
                 int? selectedIndex = null;
 
-                if (AutoSelectFirstItemOnFirstLoad && isInitialLoad)
+                if (AutoSelectFirstItemOnFirstLoad && isInitialLoad && result.Items.Length > 0)
                 {
                     selectedIndex = 0;
                 }
@@ -323,6 +323,8 @@ namespace MediaBrowser.Theater.Presentation.Controls
                 if (selectedIndex.HasValue)
                 {
                     new ListFocuser(ItemsList).FocusAfterContainersGenerated(selectedIndex.Value);
+
+                    CurrentItem = ListItems[selectedIndex.Value].Item;
                 }
             }
             catch (HttpException)

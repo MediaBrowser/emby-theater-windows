@@ -5,11 +5,10 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                           mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid x:Name="NavBarGrid" Style="{DynamicResource NavBarGrid}">
+    
+    <Grid x:Name="NavBarGrid">
 
-        <Grid Style="{DynamicResource NavBarBackgroundGrid}"></Grid>
-
-        <Grid>
+        <Grid Style="{DynamicResource NavBarGrid}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"></RowDefinition>
                 <RowDefinition Height="auto"></RowDefinition>
@@ -20,7 +19,7 @@
                 <ColumnDefinition Width="1*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
-            <Grid x:Name="SeekGrid" Grid.Row="0" Grid.ColumnSpan="3" Margin="150 15 150 5" Visibility="Collapsed">
+            <Grid x:Name="SeekGrid" Grid.Row="0" Grid.ColumnSpan="3" Margin="450 20 50 5" Visibility="Collapsed">
 
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="auto"></ColumnDefinition>
@@ -43,11 +42,16 @@
                 <Button x:Name="StopButton" Style="{DynamicResource StopButton}" Visibility="Collapsed"></Button>
                 <Button x:Name="NextChapterButton" Style="{DynamicResource NextChapterButton}" Visibility="Collapsed"></Button>
             </StackPanel>
-            <StackPanel Style="{DynamicResource NavBarGridRightPanel}" Grid.Row="1">
-                <Button x:Name="MuteButton" Style="{DynamicResource MuteButton}" Visibility="Collapsed"></Button>
+            <StackPanel Style="{DynamicResource NavBarGridRightPanel}" Grid.Row="1" Margin="0 0 10 0">
                 <Button x:Name="VolumeDownButton" Style="{DynamicResource VolumeDownButton}" Visibility="Collapsed"></Button>
                 <Button x:Name="VolumeUpButton" Style="{DynamicResource VolumeUpButton}" Visibility="Collapsed"></Button>
+                <Button x:Name="MuteButton" Style="{DynamicResource MuteButton}" Visibility="Collapsed"></Button>
             </StackPanel>
         </Grid>
+
+        <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Left" Orientation="Horizontal" Margin="50 0 0 20">
+            <Image x:Name="NowPlayingImage" Stretch="Uniform" MaxWidth="300" MaxHeight="220"></Image>
+            <TextBlock x:Name="TxtNowPlayingName" Style="{DynamicResource TextBlockStyle}" Margin="15 0 0 0" VerticalAlignment="Bottom"></TextBlock>
+        </StackPanel>
     </Grid>
 </UserControl>

@@ -68,7 +68,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
                 throw new ArgumentNullException("options");
             }
 
-            if (options.Items == null || options.Items.Count == 0)
+            if (options.Items == null || options.Items.Count(i => i.LocationType != LocationType.Offline) == 0)
             {
                 throw new ArgumentException("At least one item must be supplied.");
             }
@@ -149,7 +149,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
                 Options = options,
                 Player = player
             }, _logger);
-            
+
             await new PlaybackProgressReporter(_apiClient, player, _logger).Start().ConfigureAwait(false);
         }
 
@@ -333,7 +333,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
                     return false;
                 }
             }
-            
+
             return true;
         }
 

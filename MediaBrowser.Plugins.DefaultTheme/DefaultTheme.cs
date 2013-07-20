@@ -4,7 +4,6 @@ using MediaBrowser.Model.Logging;
 using MediaBrowser.Plugins.DefaultTheme.Controls;
 using MediaBrowser.Plugins.DefaultTheme.Details;
 using MediaBrowser.Plugins.DefaultTheme.Header;
-using MediaBrowser.Plugins.DefaultTheme.Pages;
 using MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
@@ -77,6 +76,9 @@ namespace MediaBrowser.Plugins.DefaultTheme
             _logger = logManager.GetLogger(GetType().Name);
 
             NavigationBar.PlaybackManager = _playbackManager;
+            NavigationBar.ApiClient = _apiClient;
+            NavigationBar.ImageManager = _imageManager;
+
             TopRightPanel.SessionManager = _sessionManager;
             TopRightPanel.ApiClient = _apiClient;
             TopRightPanel.ImageManager = _imageManager;
@@ -93,6 +95,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         {
             var namespaceName = GetType().Namespace;
 
+            // These are going to be loaded no matter which theme is active
             _presentationManager.AddResourceDictionary(new ResourceDictionary
             {
                 Source = new Uri("pack://application:,,,/" + namespaceName + ";component/Resources/ListBoxItems.xaml", UriKind.Absolute)

@@ -123,7 +123,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
 
             MainGrid.Height = ViewModel.ImageDisplayHeight;
 
-            const int detailWidth = 900;
+            const int detailWidth = 1100;
 
             MainGrid.Width = ViewModel.ImageDisplayWidth + detailWidth;
             MainGrid.ColumnDefinitions[1].Width = new GridLength(detailWidth);

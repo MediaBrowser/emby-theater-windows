@@ -150,7 +150,15 @@ namespace MediaBrowser.Theater.Implementations.Presentation
         {
             var bitmap = await GetRemoteBitmapAsync(url);
 
-            return new Image { Source = bitmap };
+            var image = new Image { Source = bitmap };
+
+            var scalingMode = _config.Configuration.EnableHighQualityImageScaling
+                      ? BitmapScalingMode.Fant
+                      : BitmapScalingMode.LowQuality;
+
+            RenderOptions.SetBitmapScalingMode(image, scalingMode);
+
+            return image;
         }
 
         /// <summary>

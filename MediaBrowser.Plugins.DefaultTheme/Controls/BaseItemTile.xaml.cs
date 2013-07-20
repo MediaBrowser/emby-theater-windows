@@ -1,13 +1,14 @@
-﻿using System.Windows.Media;
-using MediaBrowser.Model.Dto;
+﻿using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Net;
+using MediaBrowser.Theater.Presentation.Extensions;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Controls
 {
@@ -23,15 +24,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         public BaseItemDtoViewModel ViewModel
         {
             get { return DataContext as BaseItemDtoViewModel; }
-        }
-
-        /// <summary>
-        /// Gets the item.
-        /// </summary>
-        /// <value>The item.</value>
-        private BaseItemDto Item
-        {
-            get { return ViewModel.Item; }
         }
 
         /// <summary>
@@ -53,9 +45,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         void BaseItemTile_Unloaded(object sender, RoutedEventArgs e)
         {
-            if (ViewModel != null)
+            var vm = ViewModel;
+
+            if (vm != null)
             {
-                ViewModel.PropertyChanged -= ViewModel_PropertyChanged;
+                vm.PropertyChanged -= ViewModel_PropertyChanged;
             }
         }
 
@@ -66,10 +60,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         void BaseItemTile_Loaded(object sender, RoutedEventArgs e)
         {
-            if (ViewModel != null)
+            var vm = ViewModel;
+
+            if (vm != null)
             {
-                ViewModel.PropertyChanged -= ViewModel_PropertyChanged;
-                ViewModel.PropertyChanged += ViewModel_PropertyChanged;
+                vm.PropertyChanged -= ViewModel_PropertyChanged;
+                vm.PropertyChanged += ViewModel_PropertyChanged;
             }
         }
 
@@ -82,10 +78,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         {
             OnItemChanged();
 
-            if (ViewModel != null)
+            var vm = ViewModel;
+
+            if (vm != null)
             {
-                ViewModel.PropertyChanged -= ViewModel_PropertyChanged;
-                ViewModel.PropertyChanged += ViewModel_PropertyChanged;
+                vm.PropertyChanged -= ViewModel_PropertyChanged;
+                vm.PropertyChanged += ViewModel_PropertyChanged;
             }
         }
 
@@ -96,7 +94,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         /// <param name="e">The <see cref="PropertyChangedEventArgs" /> instance containing the event data.</param>
         void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            ReloadImage(Item);
+            ReloadImage(ViewModel);
         }
 
         /// <summary>
@@ -104,18 +102,20 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         /// </summary>
         private void OnItemChanged()
         {
-            var item = Item;
+            var viewModel = ViewModel;
 
-            ReloadImage(item);
+            var item = viewModel.Item;
 
-            var nameVisibility = !string.Equals(ViewModel.ViewType, ViewTypes.Thumbstrip, StringComparison.OrdinalIgnoreCase) && !Item.IsType("Episode") && !Item.IsType("Audio") ? Visibility.Collapsed : Visibility.Visible;
+            ReloadImage(viewModel);
 
-            if (item.IsType("Person") || item.IsType("IndexFolder") || ViewModel.IsSpecialFeature)
+            var nameVisibility = !string.Equals(viewModel.ViewType, ViewTypes.Thumbstrip, StringComparison.OrdinalIgnoreCase) && !item.IsType("Episode") && !item.IsType("Audio") ? Visibility.Collapsed : Visibility.Visible;
+
+            if (item.IsType("Person") || item.IsType("IndexFolder") || viewModel.IsSpecialFeature)
             {
                 nameVisibility = Visibility.Visible;
             }
 
-            else if (ViewModel.IsLocalTrailer)
+            else if (viewModel.IsLocalTrailer)
             {
                 nameVisibility = Visibility.Collapsed;
             }
@@ -124,7 +124,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
 
             if (nameVisibility == Visibility.Visible)
             {
-                TxtName.Text = GetDisplayName(Item);
+                TxtName.Text = GetDisplayName(item);
             }
 
             var progressBarVisibility = Visibility.Collapsed;
@@ -140,7 +140,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
             Progress.Visibility = progressBarVisibility;
 
             var timeVisibility = Visibility.Collapsed;
-            if (ViewModel.IsSpecialFeature || ViewModel.IsLocalTrailer)
+            if (viewModel.IsSpecialFeature || viewModel.IsLocalTrailer)
             {
                 TxtTime.Text = GetMinutesString(item);
                 timeVisibility = Visibility.Visible;
@@ -150,9 +150,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
 
 
             var personRoleVisibility = Visibility.Collapsed;
-            if (!string.IsNullOrEmpty(ViewModel.PersonRole))
+            if (!string.IsNullOrEmpty(viewModel.PersonRole))
             {
-                TxtRole.Text = "as " + ViewModel.PersonRole;
+                TxtRole.Text = "as " + viewModel.PersonRole;
                 personRoleVisibility = Visibility.Visible;
             }
 
@@ -224,88 +224,109 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         /// <summary>
         /// Reloads the image.
         /// </summary>
-        private async void ReloadImage(BaseItemDto item)
+        private async void ReloadImage(BaseItemDtoViewModel viewModel)
         {
-            if (ViewModel.ImageDisplayWidth.Equals(0) || ViewModel.ImageDisplayWidth.Equals(0))
+            if (viewModel.ImageDisplayWidth.Equals(0) || viewModel.ImageDisplayWidth.Equals(0))
             {
                 return;
             }
 
-            MainGrid.Height = ViewModel.ImageDisplayHeight;
-
-            MainGrid.Width = ViewModel.ImageDisplayWidth;
-
-            await SetImageSource(item);
+            await SetImageSource(viewModel);
         }
 
         private static readonly Task TrueTaskResult = Task.FromResult(true);
 
-        private Task SetImageSource(BaseItemDto item)
+        private Task SetImageSource(BaseItemDtoViewModel viewModel)
         {
-            if (string.Equals(ViewModel.ViewType, ViewTypes.Thumbstrip, StringComparison.OrdinalIgnoreCase))
+            var item = ViewModel.Item;
+            
+            if (string.Equals(viewModel.ViewType, ViewTypes.Thumbstrip, StringComparison.OrdinalIgnoreCase))
             {
-                if (item.HasThumb)
-                {
-                    ItemImage.Stretch = Stretch.UniformToFill;
-
-                    var url = ViewModel.GetImageUrl(ImageType.Thumb);
-
-                    return SetImage(url);
-                }
                 if (item.BackdropCount > 0)
                 {
                     ItemImage.Stretch = Stretch.UniformToFill;
 
-                    var url = ViewModel.GetImageUrl(ImageType.Backdrop);
+                    var url = viewModel.GetImageUrl(ImageType.Backdrop);
 
-                    return SetImage(url);
+                    return SetImage(viewModel, url);
+                }
+                if (item.HasThumb)
+                {
+                    ItemImage.Stretch = Stretch.UniformToFill;
+
+                    var url = viewModel.GetImageUrl(ImageType.Thumb);
+
+                    return SetImage(viewModel, url);
                 }
             }
 
             if (item.HasPrimaryImage)
             {
-                ItemImage.Stretch = Stretch.Uniform;
+                ItemImage.Stretch = GetStretchForPrimaryImage(viewModel);
 
-                var url = ViewModel.GetImageUrl(ImageType.Primary);
+                var url = viewModel.GetImageUrl(ImageType.Primary);
 
-                return SetImage(url);
+                return SetImage(viewModel, url);
             }
 
-            SetDefaultImage();
+            SetDefaultImage(viewModel);
 
             return TrueTaskResult;
         }
 
-        private async Task SetImage(string url)
+        private Stretch GetStretchForPrimaryImage(BaseItemDtoViewModel viewModel)
+        {
+            var width = viewModel.ImageDisplayWidth;
+            var height = viewModel.ImageDisplayHeight;
+
+            var medianAspectRatio = AspectRatioHelper.GetAspectRatio(viewModel.ImageType, viewModel.MedianPrimaryImageAspectRatio);
+
+            var item = ViewModel.Item;
+
+            var currentAspectRatio = viewModel.ImageType == ImageType.Primary ? item.PrimaryImageAspectRatio ?? width / height : width / height;
+
+            // Preserve the exact AR if it deviates from the median significantly
+            var preserveExactAspectRatio = Math.Abs(currentAspectRatio - medianAspectRatio) > .25;
+
+            if (!preserveExactAspectRatio)
+            {
+                return Stretch.UniformToFill;
+            }
+            return Stretch.Uniform;
+        }
+
+        private async Task SetImage(BaseItemDtoViewModel viewModel, string url)
         {
             MainGrid.Background = null;
 
             try
             {
-                ItemImage.Source = await ViewModel.ImageManager.GetRemoteBitmapAsync(url);
+                ItemImage.Source = await viewModel.ImageManager.GetRemoteBitmapAsync(url);
             }
             catch (HttpException)
             {
-                SetDefaultImage();
+                SetDefaultImage(viewModel);
             }
         }
 
         /// <summary>
         /// Sets the default image.
         /// </summary>
-        private void SetDefaultImage()
+        private void SetDefaultImage(BaseItemDtoViewModel viewModel)
         {
-            if (Item.IsAudio || Item.IsType("MusicAlbum") || Item.IsType("MusicArtist"))
+            var item = ViewModel.Item;
+
+            if (item.IsAudio || item.IsType("MusicAlbum") || item.IsType("MusicArtist"))
             {
                 var imageUri = new Uri("../Resources/Images/AudioDefault.png", UriKind.Relative);
 
-                ItemImage.Source = ViewModel.ImageManager.GetBitmapImage(imageUri);
+                ItemImage.Source = viewModel.ImageManager.GetBitmapImage(imageUri);
             }
             else
             {
                 var imageUri = new Uri("../Resources/Images/VideoDefault.png", UriKind.Relative);
 
-                ItemImage.Source = ViewModel.ImageManager.GetBitmapImage(imageUri);
+                ItemImage.Source = viewModel.ImageManager.GetBitmapImage(imageUri);
             }
         }
     }

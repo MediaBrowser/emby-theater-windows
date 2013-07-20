@@ -6,11 +6,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="auto"></RowDefinition>
-            <RowDefinition Height="*"></RowDefinition>
-        </Grid.RowDefinitions>
-        <TextBlock x:Name="TxtPleaseWait" Style="{DynamicResource TextBlockStyle}" Grid.Row="0">Please wait...</TextBlock>
-        <StackPanel x:Name="CateogriesPanel" Orientation="Horizontal" Grid.Row="1"></StackPanel>
+        <TextBlock x:Name="TxtPleaseWait" Style="{DynamicResource TextBlockStyle}" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="200 100">Please wait...</TextBlock>
+        <StackPanel x:Name="CateogriesPanel" Orientation="Horizontal"></StackPanel>
     </Grid>
 </UserControl>

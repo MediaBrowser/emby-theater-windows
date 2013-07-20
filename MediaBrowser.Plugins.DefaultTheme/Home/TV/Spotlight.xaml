@@ -21,7 +21,7 @@
             <ColumnDefinition Width="auto"></ColumnDefinition>
         </Grid.ColumnDefinitions>
 
-        <controls1:ExtendedButton x:Name="BtnSpotlight" Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Grid.ColumnSpan="2" Style="{DynamicResource SpotlightButtonStyle}">
+        <controls1:ExtendedButton x:Name="BtnSpotlight" Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Grid.ColumnSpan="2" Style="{DynamicResource BaseItemButtonStyle}">
             <controls:MultiItemTile x:Name="SpotlightTile"></controls:MultiItemTile>
         </controls1:ExtendedButton>
 

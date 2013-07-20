@@ -5,6 +5,7 @@ using Declarations.Media;
 using Declarations.Players;
 using Implementation;
 using MediaBrowser.Common.Events;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
@@ -57,6 +58,7 @@ namespace MediaBrowser.Theater.Vlc
         private readonly IPlaybackManager _playbackManager;
         private readonly ITheaterConfigurationManager _config;
         private readonly IUserInputManager _userInput;
+        private readonly IApiClient _apiClient;
 
         /// <summary>
         /// The _task result
@@ -69,12 +71,13 @@ namespace MediaBrowser.Theater.Vlc
         /// <param name="hiddenWindow">The hidden window.</param>
         /// <param name="logManager">The log manager.</param>
         /// <param name="playbackManager">The playback manager.</param>
-        public NVlcPlayer(IHiddenWindow hiddenWindow, ILogManager logManager, IPlaybackManager playbackManager, ITheaterConfigurationManager config, IUserInputManager userInput)
+        public NVlcPlayer(IHiddenWindow hiddenWindow, ILogManager logManager, IPlaybackManager playbackManager, ITheaterConfigurationManager config, IUserInputManager userInput, IApiClient apiClient)
         {
             _hiddenWindow = hiddenWindow;
             _playbackManager = playbackManager;
             _config = config;
             _userInput = userInput;
+            _apiClient = apiClient;
 
             _logger = logManager.GetLogger(Name);
         }
@@ -240,7 +243,8 @@ namespace MediaBrowser.Theater.Vlc
                 _mediaListPlayer = _mediaPlayerFactory.CreateMediaListPlayer<IMediaListPlayer>(_mediaList);
                 _mediaListPlayer.InnerPlayer.WindowHandle = _windowsFormsPanel.Handle;
                 _mediaListPlayer.InnerPlayer.DeviceType = GetAudioDeviceType();
-
+                _mediaListPlayer.InnerPlayer.Events.PlayerPaused += Events_PlayerPaused;
+                _mediaListPlayer.InnerPlayer.Events.PlayerPlaying += Events_PlayerPaused;
                 _mediaListPlayer.InnerPlayer.Events.PlayerStopped += Events_PlayerStopped;
                 _mediaListPlayer.Play();
 
@@ -265,12 +269,17 @@ namespace MediaBrowser.Theater.Vlc
             return _taskResult;
         }
 
+        void Events_PlayerPaused(object sender, EventArgs e)
+        {
+            OnPlayStateChanged();
+        }
+
         void _userInput_KeyDown(object sender, KeyEventArgs e)
         {
             switch (e.KeyCode)
             {
                 case Keys.Pause:
-                     _mediaListPlayer.Pause();
+                    _mediaListPlayer.Pause();
                     break;
                 case Keys.VolumeDown:
                     _mediaListPlayer.InnerPlayer.Volume -= 5;
@@ -373,6 +382,15 @@ namespace MediaBrowser.Theater.Vlc
         /// <returns>System.String.</returns>
         private string GetPlayablePath(BaseItemDto item)
         {
+            if (item.LocationType == LocationType.Remote)
+            {
+                return GetStreamingUrl(item);
+            }
+            if (!File.Exists(item.Path) && !Directory.Exists(item.Path))
+            {
+                return GetStreamingUrl(item);
+            }
+
             if (item.VideoType.HasValue && item.VideoType.Value == VideoType.BluRay)
             {
                 var file = new DirectoryInfo(item.Path)
@@ -387,6 +405,17 @@ namespace MediaBrowser.Theater.Vlc
             }
 
             return item.Path;
+        }
+
+        private string GetStreamingUrl(BaseItemDto item)
+        {
+            // TODO: Add non-static url's for dvd + bluray
+
+            return _apiClient.GetVideoStreamUrl(new VideoStreamOptions
+            {
+                Static = true,
+                ItemId = item.Id
+            });
         }
 
         /// <summary>
@@ -574,6 +603,8 @@ namespace MediaBrowser.Theater.Vlc
 
             if (_mediaListPlayer != null && _mediaListPlayer.InnerPlayer != null)
             {
+                _mediaListPlayer.InnerPlayer.Events.PlayerPaused -= Events_PlayerPaused;
+                _mediaListPlayer.InnerPlayer.Events.PlayerPlaying -= Events_PlayerPaused;
                 _mediaListPlayer.InnerPlayer.Events.PlayerStopped -= Events_PlayerStopped;
                 _mediaListPlayer.InnerPlayer.Dispose();
             }

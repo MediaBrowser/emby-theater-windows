@@ -1,4 +1,7 @@
-﻿using MediaBrowser.Theater.Interfaces.Playback;
+﻿using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Dto;
+using MediaBrowser.Theater.Interfaces.Playback;
+using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Presentation.Playback;
 using System;
 using System.Threading;
@@ -15,6 +18,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
     public partial class NavigationBar : UserControl
     {
         internal static IPlaybackManager PlaybackManager { get; set; }
+        internal static IImageManager ImageManager { get; set; }
+        internal static IApiClient ApiClient { get; set; }
 
         /// <summary>
         /// Gets or sets the current player.
@@ -37,7 +42,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
 
             Loaded += NavigationBar_Loaded;
         }
-        
+
         /// <summary>
         /// Handles the Loaded event of the NavigationBar control.
         /// </summary>
@@ -62,7 +67,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
 
             CurrentPositionSlider.PreviewMouseUp += CurrentPositionSlider_PreviewMouseUp;
         }
-        
+
         /// <summary>
         /// Handles the Click event of the PreviousChapterButton control.
         /// </summary>
@@ -131,7 +136,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
                 CurrentPlayer = null;
                 ResetButtonVisibilities(null);
 
-                Dispatcher.InvokeAsync(() => TxtCurrentPosition.Text = string.Empty);
+                Dispatcher.InvokeAsync(() =>
+                {
+                    TxtCurrentPosition.Text = string.Empty;
+                    UpdateNowPlayingImage();
+                });
             }
         }
 
@@ -196,9 +205,49 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
 
                     TxtDuration.Text = GetTimeString(runtime);
 
+                    UpdateNowPlayingImage();
                 });
 
                 CurrentPositionTimer = new Timer(CurrentPositionTimerCallback, null, 250, 250);
+            }
+        }
+
+        private async void UpdateNowPlayingImage()
+        {
+            var player = CurrentPlayer;
+
+            if (CurrentPlayer == null)
+            {
+                NowPlayingImage.Visibility = Visibility.Collapsed;
+                TxtNowPlayingName.Visibility = Visibility.Collapsed;
+                return;
+            }
+
+            var media = player.CurrentMedia;
+
+            if (media != null && media.HasPrimaryImage)
+            {
+                NowPlayingImage.Visibility = Visibility.Visible;
+
+                NowPlayingImage.Source = await ImageManager.GetRemoteBitmapAsync(ApiClient.GetImageUrl(media, new ImageOptions
+                {
+
+                }));
+            }
+            else
+            {
+                NowPlayingImage.Visibility = Visibility.Collapsed;
+            }
+
+            if (media != null)
+            {
+                TxtNowPlayingName.Visibility = Visibility.Visible;
+
+                TxtNowPlayingName.Text = media.Name;
+            }
+            else
+            {
+                TxtNowPlayingName.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -275,7 +324,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
                 PreviousChapterButton.Visibility = canSeekChapters ? Visibility.Visible : Visibility.Collapsed;
             });
         }
-                
+
         /// <summary>
         /// The is position slider dragging
         /// </summary>

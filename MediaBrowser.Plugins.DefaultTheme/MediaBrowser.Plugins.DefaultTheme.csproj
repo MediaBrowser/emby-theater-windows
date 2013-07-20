@@ -503,39 +503,6 @@
     <Resource Include="Resources\Images\like.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Images\NavBar\BackButton.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Images\NavBar\MediaBack.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Images\NavBar\MediaFastForward.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Images\NavBar\MediaForward.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Images\NavBar\MediaRewind.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Images\NavBar\MuteButton.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Images\NavBar\PauseButton.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Images\NavBar\PlayButton.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Images\NavBar\StopButton.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Images\NavBar\VolumeDownButton.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Images\NavBar\VolumeUpButton.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Resources\Images\fresh.png" />
     <Resource Include="Resources\Images\rotten.png" />
   </ItemGroup>

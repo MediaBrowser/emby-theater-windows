@@ -111,27 +111,12 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         /// <returns>System.String.</returns>
         public string GetImageUrl(ImageType imageType, int? imageIndex = null)
         {
-            var width = ImageDisplayWidth;
-            var height = ImageDisplayHeight;
-
             var imageOptions = new ImageOptions
             {
                 ImageType = imageType,
                 ImageIndex = imageIndex,
-                Width = Convert.ToInt32(width)
+                Width = Convert.ToInt32(ImageDisplayWidth)
             };
-
-            var medianAspectRatio = AspectRatioHelper.GetAspectRatio(imageType, MedianPrimaryImageAspectRatio);
-
-            var currentAspectRatio = imageType == ImageType.Primary ? Item.PrimaryImageAspectRatio ?? width / height : width / height;
-
-            // Preserve the exact AR if it deviates from the median significantly
-            var preserveExactAspectRatio = Math.Abs(currentAspectRatio - medianAspectRatio) > .25;
-
-            if (!preserveExactAspectRatio)
-            {
-                imageOptions.Height = Convert.ToInt32(height);
-            }
 
             if (Item.IsType("Person"))
             {

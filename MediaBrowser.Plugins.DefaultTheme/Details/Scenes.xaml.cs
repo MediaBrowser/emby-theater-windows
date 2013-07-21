@@ -46,7 +46,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             var view = (ListCollectionView)CollectionViewSource.GetDefaultView(items);
             LstItems.ItemsSource = view;
 
-            items.AddRange(_item.Chapters.Take(9).Select(i => new ChapterInfoDtoViewModel(_apiClient, _imageManager)
+            items.AddRange(_item.Chapters.Select(i => new ChapterInfoDtoViewModel(_apiClient, _imageManager)
             {
                 Item = _item,
                 Chapter = i

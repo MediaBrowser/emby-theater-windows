@@ -50,20 +50,13 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
         private async void ReloadImage()
         {
-            const int width = 384;
-
-            var height = ChapterInfoDtoViewModel.GetChapterImageHeight(ViewModel.Item, width, 216);
-
-            ChapterImage.Width = width;
-            ChapterImage.Height = height;
-            ImageBorder.Width = width;
-            ImageBorder.Height = height;
-
             if (ChapterInfoDto.HasImage)
             {
                 try
                 {
-                    ChapterImage.Source = await ViewModel.GetImage(new ImageOptions());
+                    ChapterImage.Source = await ViewModel.GetImage(new ImageOptions
+                    {
+                    });
 
                     ChapterImage.Visibility = Visibility.Visible;
                     ImageBorder.Visibility = Visibility.Collapsed;

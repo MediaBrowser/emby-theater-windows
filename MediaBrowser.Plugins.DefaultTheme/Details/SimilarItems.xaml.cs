@@ -49,7 +49,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             var query = new SimilarItemsQuery
                 {
                     UserId = SessionManager.CurrentUser.Id,
-                    Limit = 8,
+                    Limit = 12,
                     Fields = new[]
                         {
                                  ItemFields.UserData,
@@ -69,7 +69,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             {
                 return ApiClient.GetSimilarTrailersAsync(query);
             }
-            if (_item.IsType("game"))
+            if (_item.IsGame)
             {
                 return ApiClient.GetSimilarGamesAsync(query);
             }

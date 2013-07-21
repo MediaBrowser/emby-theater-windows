@@ -40,8 +40,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 {
                     ParentId = _item.Id,
                     UserId = SessionManager.CurrentUser.Id,
-                    Fields = new[] { ItemFields.PrimaryImageAspectRatio },
-                    Limit = 8
+                    Fields = new[] { ItemFields.PrimaryImageAspectRatio }
                 });
 
             }

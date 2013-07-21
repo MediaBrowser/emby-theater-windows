@@ -29,7 +29,7 @@
             </Grid.RowDefinitions>
 
             <TextBlock Name="TxtName" Style="{DynamicResource TextBlockStyle}" Grid.Row="0"></TextBlock>
-            <TextBlock Name="TxtOverview" Style="{DynamicResource SmallTextBlockStyle}" Grid.Row="1" Foreground="#aaaaaa" TextTrimming="CharacterEllipsis"></TextBlock>
+            <TextBlock Name="TxtOverview" Style="{DynamicResource SmallTextBlockStyle}" Grid.Row="1" Foreground="#ccc" TextTrimming="CharacterEllipsis"></TextBlock>
 
             <details:ItemInfoFooter x:Name="ItemInfoFooter" Grid.Row="2" VerticalAlignment="Bottom" HorizontalAlignment="Right" EnableSmallText="True" VerticalContentAlignment="Center"></details:ItemInfoFooter>
         </Grid>

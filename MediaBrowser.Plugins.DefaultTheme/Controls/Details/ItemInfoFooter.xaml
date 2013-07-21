@@ -18,7 +18,7 @@
         <StackPanel Orientation="Horizontal" Name="PnlCriticRating">
             <Image x:Name="ImgRotten" Style="{DynamicResource RottenImage}" Margin="30 0 5 0"></Image>
             <Image x:Name="ImgFresh" Style="{DynamicResource FreshImage}" Margin="30 0 5 0"></Image>
-            <TextBlock Style="{DynamicResource TextBlockStyle}" x:Name="TxtCriticRating" VerticalAlignment="Center"></TextBlock>
+            <TextBlock Style="{DynamicResource TextBlockStyle}" x:Name="TxtCriticRating" VerticalAlignment="Center" Foreground="#ccc"></TextBlock>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Name="PnlCommunityRating" Margin="30 0 0 0">
             <Image x:Name="ImgCommunityRating1" Style="{DynamicResource CommunityRatingImage}"></Image>
@@ -29,27 +29,27 @@
         </StackPanel>
         <StackPanel Orientation="Horizontal" Name="PnlOfficialRating">
             <Border Style="{DynamicResource MediaInfoSeparator}"></Border>
-            <TextBlock Style="{DynamicResource TextBlockStyle}" x:Name="TxtOfficialRating" VerticalAlignment="Center"></TextBlock>
+            <TextBlock Style="{DynamicResource TextBlockStyle}" x:Name="TxtOfficialRating" VerticalAlignment="Center" Foreground="#ccc"></TextBlock>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Name="PnlRuntime">
             <Border Style="{DynamicResource MediaInfoSeparator}"></Border>
-            <TextBlock Style="{DynamicResource TextBlockStyle}" x:Name="TxtRuntime" VerticalAlignment="Center"></TextBlock>
+            <TextBlock Style="{DynamicResource TextBlockStyle}" x:Name="TxtRuntime" VerticalAlignment="Center" Foreground="#ccc"></TextBlock>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Name="PnlDate">
             <Border Style="{DynamicResource MediaInfoSeparator}"></Border>
-            <TextBlock Style="{DynamicResource TextBlockStyle}" x:Name="TxtDate" VerticalAlignment="Center"></TextBlock>
+            <TextBlock Style="{DynamicResource TextBlockStyle}" x:Name="TxtDate" VerticalAlignment="Center" Foreground="#ccc"></TextBlock>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Name="PnlVideoInfo">
             <Border Style="{DynamicResource MediaInfoSeparator}"></Border>
-            <TextBlock Style="{DynamicResource TextBlockStyle}" x:Name="TxtResolution" VerticalAlignment="Center"></TextBlock>
+            <TextBlock Style="{DynamicResource TextBlockStyle}" x:Name="TxtResolution" VerticalAlignment="Center" Foreground="#ccc"></TextBlock>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Name="PnlAudioCodec">
             <Border Style="{DynamicResource MediaInfoSeparator}"></Border>
-            <TextBlock Style="{DynamicResource TextBlockStyle}" x:Name="TxtAudioCodec" VerticalAlignment="Center"></TextBlock>
+            <TextBlock Style="{DynamicResource TextBlockStyle}" x:Name="TxtAudioCodec" VerticalAlignment="Center" Foreground="#ccc"></TextBlock>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Name="PnlAudioInfo">
             <Border Style="{DynamicResource MediaInfoSeparator}"></Border>
-            <TextBlock Style="{DynamicResource TextBlockStyle}" x:Name="TxtAudioChannels" VerticalAlignment="Center"></TextBlock>
+            <TextBlock Style="{DynamicResource TextBlockStyle}" x:Name="TxtAudioChannels" VerticalAlignment="Center" Foreground="#ccc"></TextBlock>
         </StackPanel>
 
     </StackPanel>

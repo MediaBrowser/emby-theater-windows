@@ -89,6 +89,24 @@ namespace MediaBrowser.Theater.Presentation.Controls
                 e.Handled = true;
             }
 
+            // Don't eat left/right if horizontal scrolling is disabled
+            if (e.Key == Key.Left || e.Key == Key.Right)
+            {
+                if (ScrollViewer.GetHorizontalScrollBarVisibility(this) == ScrollBarVisibility.Disabled)
+                {
+                    return;
+                }
+            }
+
+            // Don't eat up/down if vertical scrolling is disabled
+            if (e.Key == Key.Up || e.Key == Key.Down)
+            {
+                if (ScrollViewer.GetVerticalScrollBarVisibility(this) == ScrollBarVisibility.Disabled)
+                {
+                    return;
+                }
+            }
+
             base.OnKeyDown(e);
         }
 

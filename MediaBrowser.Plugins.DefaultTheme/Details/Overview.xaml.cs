@@ -23,17 +23,15 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
         private readonly IImageManager _imageManager;
 
         private readonly IApiClient _apiClient;
-        private readonly IScrollInfo _scrollPanel;
 
         private readonly IPlaybackManager _playbackManager;
         private readonly IPresentationManager _presentation;
 
-        public Overview(BaseItemDto item, IImageManager imageManager, IApiClient apiClient, IScrollInfo scrollPanel, IPlaybackManager playbackManager, IPresentationManager presentation)
+        public Overview(BaseItemDto item, IImageManager imageManager, IApiClient apiClient, IPlaybackManager playbackManager, IPresentationManager presentation)
         {
             _item = item;
             _imageManager = imageManager;
             _apiClient = apiClient;
-            _scrollPanel = scrollPanel;
             _playbackManager = playbackManager;
             _presentation = presentation;
             InitializeComponent();
@@ -43,12 +41,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
         {
             base.OnInitialized(e);
 
-            ReloadItem();
-
-            BtnPlay.GotKeyboardFocus += BtnPlay_GotKeyboardFocus;
-            BtnResume.GotKeyboardFocus += BtnPlay_GotKeyboardFocus;
-            BtnDislike.GotKeyboardFocus += BtnPlay_GotKeyboardFocus;
-            BtnPlayTrailer.GotKeyboardFocus += BtnPlay_GotKeyboardFocus;
+            ReloadItem();;
 
             BtnPlay.Click += BtnPlay_Click;
             BtnResume.Click += BtnResume_Click;
@@ -91,11 +84,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
         async void BtnPlay_Click(object sender, RoutedEventArgs e)
         {
             await _playbackManager.Play(new PlayOptions(_item));
-        }
-
-        void BtnPlay_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
-        {
-            _scrollPanel.SetHorizontalOffset(0);
         }
 
         private bool _isFirstLoad;

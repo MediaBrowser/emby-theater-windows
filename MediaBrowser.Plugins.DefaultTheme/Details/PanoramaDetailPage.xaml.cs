@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using System.Windows.Controls;
-using MediaBrowser.Model.ApiClient;
+﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Net;
@@ -11,10 +9,15 @@ using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.Theming;
+using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.Pages;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Details
 {
@@ -104,7 +107,117 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
         {
             base.OnInitialized(e);
 
+            MenuList.SelectionChanged += MenuList_SelectionChanged;
+
             LoadItem();
+        }
+
+        private Timer _selectionChangeTimer;
+        private readonly object _syncLock = new object();
+
+        void MenuList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            lock (_syncLock)
+            {
+                if (_selectionChangeTimer == null)
+                {
+                    _selectionChangeTimer = new Timer(OnSelectionTimerFired, null, 500, Timeout.Infinite);
+                }
+                else
+                {
+                    _selectionChangeTimer.Change(500, Timeout.Infinite);
+                }
+            }
+        }
+
+        private void OnSelectionTimerFired(object state)
+        {
+            Dispatcher.InvokeAsync(UpdatePageContent);
+        }
+
+        private void UpdatePageContent()
+        {
+            var item = MenuList.SelectedItem as string;
+
+            if (string.Equals(item, "overview"))
+            {
+                SetScrollDirection(ScrollDirection.Horizontal);
+
+                PageContent.Content = new Overview(_item, _imageManager, _apiClient, _playbackManager, _presentationManager);
+            }
+            else if (string.Equals(item, "trailers"))
+            {
+                SetScrollDirection(ScrollDirection.Horizontal);
+
+                PageContent.Content = new Trailers(new Model.Entities.DisplayPreferences
+                {
+                    PrimaryImageWidth = 384
+
+                }, _apiClient, _imageManager, _sessionManager, _nav, _presentationManager, _item, _playbackManager);
+            }
+            else if (string.Equals(item, "gallery"))
+            {
+                SetScrollDirection(ScrollDirection.Horizontal);
+
+                PageContent.Content = new Gallery(_imageManager, _apiClient, _nav, _themeManager)
+                {
+                    Item = Item
+                };
+            }
+            else if (string.Equals(item, "special features"))
+            {
+                SetScrollDirection(ScrollDirection.Horizontal);
+
+                PageContent.Content = new SpecialFeatures(new Model.Entities.DisplayPreferences
+                {
+                    PrimaryImageWidth = 384
+
+                }, _apiClient, _imageManager, _sessionManager, _nav, _presentationManager, _item, _playbackManager);
+            }
+            else if (string.Equals(item, "scenes"))
+            {
+                SetScrollDirection(ScrollDirection.Horizontal);
+
+                PageContent.Content = new Scenes(Item, _apiClient, _imageManager, _playbackManager);
+            }
+            else if (string.Equals(item, "similar"))
+            {
+                SetScrollDirection(ScrollDirection.Horizontal);
+
+                PageContent.Content = new SimilarItems(new Model.Entities.DisplayPreferences
+                {
+                    PrimaryImageWidth = 400
+
+                }, _apiClient, _imageManager, _sessionManager, _nav, _presentationManager, _item);
+            }
+            else if (string.Equals(item, "people"))
+            {
+                SetScrollDirection(ScrollDirection.Horizontal);
+
+                PageContent.Content = new People(new Model.Entities.DisplayPreferences
+                {
+                    PrimaryImageWidth = 400
+
+                }, _apiClient, _imageManager, _sessionManager, _nav, _presentationManager, _item);
+            }
+        }
+
+        private void SetScrollDirection(ScrollDirection direction)
+        {
+            if (direction == ScrollDirection.Horizontal)
+            {
+                System.Windows.Controls.ScrollViewer.SetHorizontalScrollBarVisibility(ScrollViewer, ScrollBarVisibility.Hidden);
+                System.Windows.Controls.ScrollViewer.SetVerticalScrollBarVisibility(ScrollViewer, ScrollBarVisibility.Disabled);
+                ScrollingPanel.CanHorizontallyScroll = true;
+                ScrollingPanel.CanVerticallyScroll = false;
+            }
+            else
+            {
+                System.Windows.Controls.ScrollViewer.SetHorizontalScrollBarVisibility(ScrollViewer, ScrollBarVisibility.Disabled);
+                System.Windows.Controls.ScrollViewer.SetVerticalScrollBarVisibility(ScrollViewer, ScrollBarVisibility.Hidden);
+                ScrollingPanel.CanHorizontallyScroll = false;
+                ScrollingPanel.CanVerticallyScroll = true;
+            }
         }
 
         protected override void FocusOnFirstLoad()
@@ -120,13 +233,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
             var pageTitleTask = PageTitlePanel.Current.SetPageTitle(Item);
 
-            RenderItem(Item);
-
             ItemInfoFooter.Item = Item;
 
             RenderDetailControls(Item);
-
-            await UpdateLogo(Item);
 
             await pageTitleTask;
         }
@@ -145,217 +254,71 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 allThemeMedia = new AllThemeMediaResult();
             }
 
-            DetailPanels.Children.Clear();
-            DetailPanels.ColumnDefinitions.Clear();
+            LoadMenuList(item, allThemeMedia);
 
-            DetailPanels.Children.Add(new Overview(_item, _imageManager, _apiClient, ScrollingPanel, _playbackManager, _presentationManager));
+            //if (allThemeMedia.ThemeVideosResult.TotalRecordCount > 0)
+            //{
+            //    DetailPanels.Children.Add(new ThemeVideos(new Model.Entities.DisplayPreferences
+            //    {
+            //        PrimaryImageWidth = 384
 
-            if (item.LocalTrailerCount > 1)
-            {
-                DetailPanels.Children.Add(new Trailers(new Model.Entities.DisplayPreferences
-                {
-                    PrimaryImageWidth = 384
+            //    }, _apiClient, _imageManager, _sessionManager, _nav, _presentationManager, allThemeMedia.ThemeVideosResult, "Theme Videos", _playbackManager));
+            //}
 
-                }, _apiClient, _imageManager, _sessionManager, _nav, _presentationManager, _item, _playbackManager));
-            }
+            //if (allThemeMedia.ThemeSongsResult.TotalRecordCount > 0)
+            //{
+            //    DetailPanels.Children.Add(new ThemeVideos(new Model.Entities.DisplayPreferences
+            //    {
+            //        PrimaryImageWidth = 384
+
+            //    }, _apiClient, _imageManager, _sessionManager, _nav, _presentationManager, allThemeMedia.ThemeSongsResult, "Theme Songs", _playbackManager));
+            //}
+        }
+
+        private void LoadMenuList(BaseItemDto item, AllThemeMediaResult themeMediaResult)
+        {
+            new ListFocuser(MenuList).FocusAfterContainersGenerated(0);
+
+            var views = new List<string>();
+
+            views.Add("overview");
 
             if (item.People.Length > 0)
             {
-                DetailPanels.Children.Add(new People(new Model.Entities.DisplayPreferences
-                {
-                    PrimaryImageWidth = 225
+                views.Add("people");
+            }
 
-                }, _apiClient, _imageManager, _sessionManager, _nav, _presentationManager, _item));
+            if (item.LocalTrailerCount > 1)
+            {
+                views.Add("trailers");
             }
 
             if (item.Chapters != null && item.Chapters.Count > 0)
             {
-                DetailPanels.Children.Add(new Scenes(item, _apiClient, _imageManager, _playbackManager));
+                views.Add("scenes");
             }
 
             if (item.SpecialFeatureCount > 0)
             {
-                DetailPanels.Children.Add(new SpecialFeatures(new Model.Entities.DisplayPreferences
-                {
-                    PrimaryImageWidth = 384
-
-                }, _apiClient, _imageManager, _sessionManager, _nav, _presentationManager, _item, _playbackManager));
+                views.Add("special features");
             }
 
-            if (item.IsType("movie") || item.IsType("trailer") || item.IsType("series") || item.IsType("album") || item.IsType("game"))
+            if (item.IsType("movie") || item.IsType("trailer") || item.IsType("series") || item.IsType("album") || item.IsGame)
             {
-                DetailPanels.Children.Add(new SimilarItems(new Model.Entities.DisplayPreferences
-                {
-                    PrimaryImageWidth = 220
-
-                }, _apiClient, _imageManager, _sessionManager, _nav, _presentationManager, _item));
+                views.Add("similar");
             }
 
-            if (allThemeMedia.ThemeVideosResult.TotalRecordCount > 0)
+            if (themeMediaResult.ThemeVideosResult.TotalRecordCount > 0 || themeMediaResult.ThemeSongsResult.TotalRecordCount > 0)
             {
-                DetailPanels.Children.Add(new ThemeVideos(new Model.Entities.DisplayPreferences
-                {
-                    PrimaryImageWidth = 384
-
-                }, _apiClient, _imageManager, _sessionManager, _nav, _presentationManager, allThemeMedia.ThemeVideosResult, "Theme Videos", _playbackManager));
-            }
-
-            if (allThemeMedia.ThemeSongsResult.TotalRecordCount > 0)
-            {
-                DetailPanels.Children.Add(new ThemeVideos(new Model.Entities.DisplayPreferences
-                {
-                    PrimaryImageWidth = 384
-
-                }, _apiClient, _imageManager, _sessionManager, _nav, _presentationManager, allThemeMedia.ThemeSongsResult, "Theme Songs", _playbackManager));
+                views.Add("themes");
             }
 
             if (Gallery.GetImages(item, _apiClient).Any())
             {
-                DetailPanels.Children.Add(new Gallery(_imageManager, _apiClient, _nav, _themeManager)
-                {
-                    Item = item
-                });
+                views.Add("gallery");
             }
 
-            var columnIndex = 0;
-
-            foreach (var child in DetailPanels.Children.OfType<UIElement>())
-            {
-                DetailPanels.ColumnDefinitions.Add(new ColumnDefinition());
-
-                Grid.SetColumn(child, columnIndex++);
-            }
-        }
-
-        /// <summary>
-        /// Updates the logo.
-        /// </summary>
-        /// <param name="item">The item.</param>
-        /// <returns>Task.</returns>
-        private async Task UpdateLogo(BaseItemDto item)
-        {
-            if (item != null && (item.HasArtImage || item.ParentArtImageTag.HasValue))
-            {
-                ImgLogo.Source = await _imageManager.GetRemoteBitmapAsync(_apiClient.GetArtImageUrl(item, new ImageOptions
-                {
-                    ImageType = ImageType.Art
-                }));
-
-                ImgLogo.Visibility = Visibility.Visible;
-            }
-            else if (item != null && item.HasDiscImage)
-            {
-                ImgLogo.Source = await _imageManager.GetRemoteBitmapAsync(_apiClient.GetImageUrl(item, new ImageOptions
-                {
-                    ImageType = ImageType.Disc
-                }));
-
-                ImgLogo.Visibility = Visibility.Visible;
-            }
-            else if (item != null && item.HasBoxImage)
-            {
-                ImgLogo.Source = await _imageManager.GetRemoteBitmapAsync(_apiClient.GetImageUrl(item, new ImageOptions
-                {
-                    ImageType = ImageType.Box
-                }));
-
-                ImgLogo.Visibility = Visibility.Visible;
-            }
-            else if (item != null && item.HasBoxRearImage)
-            {
-                ImgLogo.Source = await _imageManager.GetRemoteBitmapAsync(_apiClient.GetImageUrl(item, new ImageOptions
-                {
-                    ImageType = ImageType.BoxRear
-                }));
-
-                ImgLogo.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                // Just hide it so that it still takes up the same amount of space
-                ImgLogo.Visibility = Visibility.Hidden;
-            }
-        }
-
-        /// <summary>
-        /// Renders the item.
-        /// </summary>
-        private async void RenderItem(BaseItemDto item)
-        {
-            //Task<BitmapImage> primaryImageTask = null;
-
-            //if (Item.HasPrimaryImage)
-            //{
-            //    PrimaryImage.Visibility = Visibility.Visible;
-
-            //    primaryImageTask = _imageManager.GetRemoteBitmapAsync(ApiClient.GetImageUrl(Item, new ImageOptions
-            //    {
-            //        ImageType = ImageType.Primary
-            //    }));
-            //}
-            //else
-            //{
-            //    SetDefaultImage();
-            //}
-
-            //if (Item.IsType("movie") || Item.IsType("trailer"))
-            //{
-            //    TxtName.Visibility = Visibility.Collapsed;
-            //}
-            //else
-            //{
-            //    var name = Item.Name;
-
-            //    if (Item.IndexNumber.HasValue)
-            //    {
-            //        name = Item.IndexNumber.Value + " - " + name;
-
-            //        if (Item.ParentIndexNumber.HasValue)
-            //        {
-            //            name = Item.ParentIndexNumber.Value + "." + name;
-            //        }
-            //    }
-            //    TxtName.Text = name;
-
-            //    TxtName.Visibility = Visibility.Visible;
-            //}
-
-            //if (item.Taglines.Count > 0)
-            //{
-            //    Tagline.Visibility = Visibility.Visible;
-
-            //    Tagline.Text = Item.Taglines[0];
-            //}
-            //else
-            //{
-            //    Tagline.Visibility = Visibility.Collapsed;
-            //}
-
-            //BtnGallery.Visibility = ItemGallery.GetImages(Item, ApiClient).Count > 0 ? Visibility.Visible : Visibility.Collapsed;
-            //BtnTrailers.Visibility = Item.LocalTrailerCount > 0 ? Visibility.Visible : Visibility.Collapsed;
-            //BtnSpecialFeatures.Visibility = Item.SpecialFeatureCount > 0 ? Visibility.Visible : Visibility.Collapsed;
-            //BtnPerformers.Visibility = Item.People != null && Item.People.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
-            //BtnChapters.Visibility = Item.Chapters != null && Item.Chapters.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
-
-            //if (primaryImageTask != null)
-            //{
-            //    try
-            //    {
-            //        PrimaryImage.Source = await primaryImageTask;
-            //    }
-            //    catch (HttpException)
-            //    {
-            //        SetDefaultImage();
-            //    }
-            //}
-        }
-
-        /// <summary>
-        /// Sets the default image.
-        /// </summary>
-        private void SetDefaultImage()
-        {
-            //PrimaryImage.Visibility = Visibility.Collapsed;
+            MenuList.ItemsSource = CollectionViewSource.GetDefaultView(views);
         }
     }
 }

@@ -104,7 +104,7 @@
     </DataTemplate>
 
     <DataTemplate x:Key="ItemGalleryTemplate" DataType="{x:Type BitmapImage}">
-        <Image Source="{Binding}" Height="150" VerticalAlignment="Center" HorizontalAlignment="Center" Stretch="Uniform">
+        <Image Source="{Binding}" VerticalAlignment="Center" HorizontalAlignment="Center" Stretch="Uniform">
 
         </Image>
     </DataTemplate>

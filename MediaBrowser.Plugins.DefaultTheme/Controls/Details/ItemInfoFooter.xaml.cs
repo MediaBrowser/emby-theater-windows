@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Windows.Controls;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using System;
@@ -13,6 +14,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
     public partial class ItemInfoFooter : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
+
+        public bool EnableSmallText { get; set; }
 
         public virtual void OnPropertyChanged(string name)
         {
@@ -41,7 +44,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
                 OnItemChanged();
             }
         }
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ItemInfoFooter" /> class.
         /// </summary>
@@ -49,6 +52,33 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
         {
             InitializeComponent();
             DataContext = this;
+        }
+
+        protected override void OnInitialized(EventArgs e)
+        {
+            base.OnInitialized(e);
+
+            Loaded += ItemInfoFooter_Loaded;
+        }
+
+        void ItemInfoFooter_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (EnableSmallText)
+            {
+                SetSmallText();
+            }
+        }
+
+        private void SetSmallText()
+        {
+
+            TxtAudioChannels.SetResourceReference(TextBlock.StyleProperty, "SmallTextBlockStyle");
+            TxtAudioCodec.SetResourceReference(TextBlock.StyleProperty, "SmallTextBlockStyle");
+            TxtCriticRating.SetResourceReference(TextBlock.StyleProperty, "SmallTextBlockStyle");
+            TxtDate.SetResourceReference(TextBlock.StyleProperty, "SmallTextBlockStyle");
+            TxtOfficialRating.SetResourceReference(TextBlock.StyleProperty, "SmallTextBlockStyle");
+            TxtResolution.SetResourceReference(TextBlock.StyleProperty, "SmallTextBlockStyle");
+            TxtRuntime.SetResourceReference(TextBlock.StyleProperty, "SmallTextBlockStyle");
         }
 
         /// <summary>
@@ -144,7 +174,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
         /// <param name="item">The item.</param>
         private void UpdateOfficialRating(BaseItemDto item)
         {
-            if (!string.IsNullOrEmpty(item.OfficialRating))
+            if (!string.IsNullOrEmpty(item.OfficialRating) && !item.IsType("episode"))
             {
                 TxtOfficialRating.Text = item.OfficialRating;
                 PnlOfficialRating.Visibility = Visibility.Visible;

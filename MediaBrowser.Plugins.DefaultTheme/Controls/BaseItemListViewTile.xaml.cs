@@ -85,6 +85,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
             {
                 ViewModel.PropertyChanged -= ViewModel_PropertyChanged;
                 ViewModel.PropertyChanged += ViewModel_PropertyChanged;
+
+                ItemInfoFooter.Item = ViewModel.Item;
             }
         }
 

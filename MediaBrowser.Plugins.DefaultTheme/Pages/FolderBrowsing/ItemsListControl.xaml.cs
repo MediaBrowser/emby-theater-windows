@@ -266,13 +266,17 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
             Sidebar.Visibility = string.Equals(showSidebar, "1")
                                      ? Visibility.Visible
                                      : Visibility.Collapsed;
+
+            BottomGrid.Visibility = displayPreferences.ViewType == ViewTypes.List
+                                               ? Visibility.Collapsed
+                                               : Visibility.Visible;
         }
 
         protected virtual double GetItemContainerWidth(Model.Entities.DisplayPreferences displayPreferences, double medianPrimaryImageAspectRatio)
         {
             if (string.Equals(displayPreferences.ViewType, ViewTypes.List))
             {
-                return 1500;
+                return 1600;
             }
 
             // 14 = double the margin between items as defined in the resource file

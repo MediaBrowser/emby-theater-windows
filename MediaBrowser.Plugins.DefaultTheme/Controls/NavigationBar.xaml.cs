@@ -1,5 +1,6 @@
 ﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
+using MediaBrowser.Plugins.DefaultTheme.Details;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Presentation.Playback;
@@ -220,6 +221,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
             {
                 NowPlayingImage.Visibility = Visibility.Collapsed;
                 TxtNowPlayingName.Visibility = Visibility.Collapsed;
+                ImgLogo.Visibility = Visibility.Collapsed;
                 return;
             }
 
@@ -231,7 +233,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
 
                 NowPlayingImage.Source = await ImageManager.GetRemoteBitmapAsync(ApiClient.GetImageUrl(media, new ImageOptions
                 {
-
+                    MaxWidth = 300,
+                    MaxHeight = 300
                 }));
             }
             else
@@ -239,11 +242,32 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
                 NowPlayingImage.Visibility = Visibility.Collapsed;
             }
 
+            if (media != null && (media.HasLogo || !string.IsNullOrEmpty(media.ParentLogoItemId)))
+            {
+                ImgLogo.Visibility = Visibility.Visible;
+
+                ImgLogo.Source = await ImageManager.GetRemoteBitmapAsync(ApiClient.GetLogoImageUrl(media, new ImageOptions
+                {
+                    Height = 80
+                }));
+            }
+            else
+            {
+                ImgLogo.Visibility = Visibility.Collapsed;
+            }
+            
             if (media != null)
             {
                 TxtNowPlayingName.Visibility = Visibility.Visible;
 
-                TxtNowPlayingName.Text = media.Name;
+                if (media.IsType("episode"))
+                {
+                    TxtNowPlayingName.Text = PanoramaDetailPage.GetEpisodeTitle(media);
+                }
+                else
+                {
+                    TxtNowPlayingName.Text = media.Name;
+                }
             }
             else
             {

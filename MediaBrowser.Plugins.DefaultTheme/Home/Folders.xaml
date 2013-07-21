@@ -6,13 +6,11 @@
                                          xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
                                          mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid>
-        <controls:ExtendedListBox x:Name="LstCollectionFolders" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{DynamicResource HomePageListBoxItemTemplate}">
-            <controls:ExtendedListBox.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <WrapPanel Margin="40" Orientation="Vertical"></WrapPanel>
-                </ItemsPanelTemplate>
-            </controls:ExtendedListBox.ItemsPanel>
-        </controls:ExtendedListBox>
-    </Grid>
+    <controls:ExtendedListBox Margin="-25 -35" x:Name="LstCollectionFolders" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{DynamicResource HomePageListBoxItemTemplate}">
+        <controls:ExtendedListBox.ItemsPanel>
+            <ItemsPanelTemplate>
+                <UniformGrid Margin="40 35" Rows="3"></UniformGrid>
+            </ItemsPanelTemplate>
+        </controls:ExtendedListBox.ItemsPanel>
+    </controls:ExtendedListBox>
 </controls:BaseItemsControl>

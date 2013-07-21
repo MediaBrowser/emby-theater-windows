@@ -88,7 +88,7 @@
     </ControlTemplate>
 
     <ControlTemplate x:Key="NowPlayingOverlayTemplate">
-        <themecontrols:NavigationBar x:Name="NavigationBar" VerticalAlignment="Bottom"></themecontrols:NavigationBar>
+        <themecontrols:NavigationBar x:Name="NavigationBar"></themecontrols:NavigationBar>
     </ControlTemplate>
 
     <DataTemplate x:Key="ItemSpecialFeaturesTemplate" DataType="{x:Type viewModels:BaseItemDtoViewModel}">

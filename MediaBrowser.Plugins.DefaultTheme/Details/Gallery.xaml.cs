@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.ApiClient;
+﻿using System.Windows;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Net;
@@ -65,7 +66,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
         async void LstItems_ItemInvoked(object sender, ItemEventArgs<object> e)
         {
-            var images = GetImages(Item, _apiClient);
+            var images = GetImages(Item, _apiClient, Convert.ToInt32(SystemParameters.VirtualScreenWidth), null);
 
             var selectedIndex = LstItems.SelectedIndex;
 
@@ -79,7 +80,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
         /// </summary>
         protected async void OnItemChanged()
         {
-            var urls = GetImages(Item, _apiClient);
+            var urls = GetImages(Item, _apiClient, null, 280);
 
             var tasks = urls.Select(GetImage);
 
@@ -112,7 +113,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
         /// </summary>
         /// <param name="item">The item.</param>
         /// <returns>List{System.String}.</returns>
-        internal static List<string> GetImages(BaseItemDto item, IApiClient apiClient)
+        internal static List<string> GetImages(BaseItemDto item, IApiClient apiClient, int? imageWidth, int? imageHeight)
         {
             var images = new List<string> { };
 
@@ -123,7 +124,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                     images.Add(apiClient.GetImageUrl(item, new ImageOptions
                     {
                         ImageType = ImageType.Backdrop,
-                        ImageIndex = i
+                        ImageIndex = i,
+                        Width = imageWidth,
+                        Height = imageHeight
                     }));
                 }
             }
@@ -132,7 +135,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             {
                 images.Add(apiClient.GetImageUrl(item, new ImageOptions
                 {
-                    ImageType = ImageType.Thumb
+                    ImageType = ImageType.Thumb,
+                    Width = imageWidth,
+                    Height = imageHeight
                 }));
             }
 
@@ -140,7 +145,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             {
                 images.Add(apiClient.GetImageUrl(item, new ImageOptions
                 {
-                    ImageType = ImageType.Art
+                    ImageType = ImageType.Art,
+                    Width = imageWidth,
+                    Height = imageHeight
                 }));
             }
 
@@ -148,7 +155,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             {
                 images.Add(apiClient.GetImageUrl(item, new ImageOptions
                 {
-                    ImageType = ImageType.Disc
+                    ImageType = ImageType.Disc,
+                    Width = imageWidth,
+                    Height = imageHeight
                 }));
             }
 
@@ -156,7 +165,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             {
                 images.Add(apiClient.GetImageUrl(item, new ImageOptions
                 {
-                    ImageType = ImageType.Menu
+                    ImageType = ImageType.Menu,
+                    Width = imageWidth,
+                    Height = imageHeight
                 }));
             }
 
@@ -164,7 +175,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             {
                 images.Add(apiClient.GetImageUrl(item, new ImageOptions
                 {
-                    ImageType = ImageType.Box
+                    ImageType = ImageType.Box,
+                    Width = imageWidth,
+                    Height = imageHeight
                 }));
             }
 
@@ -172,7 +185,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             {
                 images.Add(apiClient.GetImageUrl(item, new ImageOptions
                 {
-                    ImageType = ImageType.Box
+                    ImageType = ImageType.Box,
+                    Width = imageWidth,
+                    Height = imageHeight
                 }));
             }
 
@@ -180,7 +195,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             {
                 images.Add(apiClient.GetImageUrl(item, new ImageOptions
                 {
-                    ImageType = ImageType.BoxRear
+                    ImageType = ImageType.BoxRear,
+                    Width = imageWidth,
+                    Height = imageHeight
                 }));
             }
 

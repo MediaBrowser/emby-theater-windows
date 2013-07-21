@@ -8,24 +8,12 @@
 
     <StackPanel Orientation="Horizontal" Name="PnlItemInfo" Visibility="Hidden">
 
-        <StackPanel Orientation="Horizontal" Name="PnlPersonalRating">
-            <!--This textblock is just to make sure the panel always takes up the same amount of vertical space, so that content never moves due to height changes -->
-            <TextBlock Style="{DynamicResource TextBlockStyle}" Visibility="Hidden" Text=" "></TextBlock>
-            <Image x:Name="ImgLike" Style="{DynamicResource LikeImage}"></Image>
-            <Image x:Name="ImgDislike" Style="{DynamicResource DislikeImage}"></Image>
-            <Image x:Name="ImgFavorite" Style="{DynamicResource FavoriteImage}"></Image>
-        </StackPanel>
-        <StackPanel Orientation="Horizontal" Name="PnlCriticRating">
-            <Image x:Name="ImgRotten" Style="{DynamicResource RottenImage}" Margin="30 0 5 0"></Image>
-            <Image x:Name="ImgFresh" Style="{DynamicResource FreshImage}" Margin="30 0 5 0"></Image>
-            <TextBlock Style="{DynamicResource TextBlockStyle}" x:Name="TxtCriticRating" VerticalAlignment="Center" Foreground="#ccc"></TextBlock>
-        </StackPanel>
-        <StackPanel Orientation="Horizontal" Name="PnlCommunityRating" Margin="30 0 0 0">
-            <Image x:Name="ImgCommunityRating1" Style="{DynamicResource CommunityRatingImage}"></Image>
-            <Image x:Name="ImgCommunityRating2" Style="{DynamicResource CommunityRatingImage}"></Image>
-            <Image x:Name="ImgCommunityRating3" Style="{DynamicResource CommunityRatingImage}"></Image>
-            <Image x:Name="ImgCommunityRating4" Style="{DynamicResource CommunityRatingImage}"></Image>
-            <Image x:Name="ImgCommunityRating5" Style="{DynamicResource CommunityRatingImage}"></Image>
+        <!--This textblock is just to make sure the panel always takes up the same amount of vertical space, so that content never moves due to height changes -->
+        <TextBlock Style="{DynamicResource TextBlockStyle}" Visibility="Hidden" Text=" "></TextBlock>
+
+        <StackPanel Orientation="Horizontal" Name="PnlDate">
+            <Border Style="{DynamicResource MediaInfoSeparator}"></Border>
+            <TextBlock Style="{DynamicResource TextBlockStyle}" x:Name="TxtDate" VerticalAlignment="Center" Foreground="#ccc"></TextBlock>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Name="PnlOfficialRating">
             <Border Style="{DynamicResource MediaInfoSeparator}"></Border>
@@ -34,10 +22,6 @@
         <StackPanel Orientation="Horizontal" Name="PnlRuntime">
             <Border Style="{DynamicResource MediaInfoSeparator}"></Border>
             <TextBlock Style="{DynamicResource TextBlockStyle}" x:Name="TxtRuntime" VerticalAlignment="Center" Foreground="#ccc"></TextBlock>
-        </StackPanel>
-        <StackPanel Orientation="Horizontal" Name="PnlDate">
-            <Border Style="{DynamicResource MediaInfoSeparator}"></Border>
-            <TextBlock Style="{DynamicResource TextBlockStyle}" x:Name="TxtDate" VerticalAlignment="Center" Foreground="#ccc"></TextBlock>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Name="PnlVideoInfo">
             <Border Style="{DynamicResource MediaInfoSeparator}"></Border>
@@ -50,6 +34,23 @@
         <StackPanel Orientation="Horizontal" Name="PnlAudioInfo">
             <Border Style="{DynamicResource MediaInfoSeparator}"></Border>
             <TextBlock Style="{DynamicResource TextBlockStyle}" x:Name="TxtAudioChannels" VerticalAlignment="Center" Foreground="#ccc"></TextBlock>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Name="PnlCommunityRating" Margin="30 0 0 0">
+            <Image x:Name="ImgCommunityRating1" Style="{DynamicResource CommunityRatingImage}"></Image>
+            <Image x:Name="ImgCommunityRating2" Style="{DynamicResource CommunityRatingImage}"></Image>
+            <Image x:Name="ImgCommunityRating3" Style="{DynamicResource CommunityRatingImage}"></Image>
+            <Image x:Name="ImgCommunityRating4" Style="{DynamicResource CommunityRatingImage}"></Image>
+            <Image x:Name="ImgCommunityRating5" Style="{DynamicResource CommunityRatingImage}"></Image>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Name="PnlCriticRating" Margin="30 0 0 0">
+            <Image x:Name="ImgRotten" Style="{DynamicResource RottenImage}" Margin="0 0 5 0"></Image>
+            <Image x:Name="ImgFresh" Style="{DynamicResource FreshImage}" Margin="0 0 5 0"></Image>
+            <TextBlock Style="{DynamicResource TextBlockStyle}" x:Name="TxtCriticRating" VerticalAlignment="Center" Foreground="#ccc"></TextBlock>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Name="PnlPersonalRating" Margin="30 0 0 0">
+            <Image x:Name="ImgLike" Style="{DynamicResource LikeImage}"></Image>
+            <Image x:Name="ImgDislike" Style="{DynamicResource DislikeImage}"></Image>
+            <Image x:Name="ImgFavorite" Style="{DynamicResource FavoriteImage}"></Image>
         </StackPanel>
 
     </StackPanel>

@@ -1,9 +1,10 @@
-﻿using System;
-using MediaBrowser.Model.ApiClient;
+﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
-using System.Windows.Controls;
-using System.Windows;
+using MediaBrowser.Model.Entities;
 using MediaBrowser.Theater.Interfaces.Presentation;
+using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
 {
@@ -42,6 +43,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
 
         private async void OnItemChanged(BaseItemDto item)
         {
+            UpdateLogo(item);
+
             if (item.HasLogo)
             {
                 LogoImage.Source = await _imageManager.GetRemoteBitmapAsync(_apiClient.GetLogoImageUrl(item, new ImageOptions
@@ -59,9 +62,31 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
             }
 
             TxtGenres.Visibility = item.Genres.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
-            TxtGenres.Text = string.Join(" / ", item.Genres.ToArray());
+            TxtGenres.Text = string.Join(" / ", item.Genres.Take(3).ToArray());
 
             TxtOverview.Text = item.Overview;
         }
+
+        private async void UpdateLogo(BaseItemDto item)
+        {
+            const int maxheight = 120;
+
+            if (item != null && (item.HasArtImage || item.ParentArtImageTag.HasValue))
+            {
+                ImgLogo.Source = await _imageManager.GetRemoteBitmapAsync(_apiClient.GetArtImageUrl(item, new ImageOptions
+                {
+                    Height = maxheight,
+                    ImageType = ImageType.Art
+                }));
+
+                ImgLogo.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                // Just hide it so that it still takes up the same amount of space
+                ImgLogo.Visibility = Visibility.Hidden;
+            }
+        }
+
     }
 }

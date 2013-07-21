@@ -73,10 +73,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
                 return;
             }
 
-            MainElement.Width = ViewModel.ImageDisplayWidth;
-            MainElement.Height = ViewModel.ImageDisplayHeight;
+            var viewModel = ViewModel;
 
-            ReloadImage(item);
+            MainElement.Width = viewModel.ImageDisplayWidth;
+            MainElement.Height = viewModel.ImageDisplayHeight;
+
+            ReloadImage(item, viewModel);
 
             if (item.CanResume && item.RunTimeTicks.HasValue)
             {
@@ -96,53 +98,59 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         /// <summary>
         /// Reloads the image.
         /// </summary>
-        private void ReloadImage(BaseItemDto item)
+        private void ReloadImage(BaseItemDto item, BaseItemDtoViewModel viewModel)
         {
-            if (ViewModel.ImageType == ImageType.Primary && item.HasPrimaryImage)
+            if (viewModel.ImageType == ImageType.Primary && item.HasPrimaryImage)
             {
-                var url = ViewModel.ApiClient.GetImageUrl(item, new ImageOptions
+                var url = viewModel.ApiClient.GetImageUrl(item, new ImageOptions
                 {
                     ImageType = ImageType.Primary,
-                    Height = Convert.ToInt32(ViewModel.ImageDisplayHeight)
+                    Height = Convert.ToInt32(viewModel.ImageDisplayHeight)
                 });
 
-                Image.Stretch = Stretch.Uniform;
-                SetImage(url);
+                Image.Stretch = viewModel.IsCloseToMedianPrimaryImageAspectRatio
+                                    ? Stretch.UniformToFill
+                                    : Stretch.Uniform;
+
+                SetImage(url, viewModel);
             }
             else if (item.BackdropCount > 0)
             {
-                var url = ViewModel.ApiClient.GetImageUrl(item, new ImageOptions
+                var url = viewModel.ApiClient.GetImageUrl(item, new ImageOptions
                 {
                     ImageType = ImageType.Backdrop,
-                    Height = Convert.ToInt32(ViewModel.ImageDisplayHeight),
-                    Width = Convert.ToInt32(ViewModel.ImageDisplayWidth)
+                    Height = Convert.ToInt32(viewModel.ImageDisplayHeight),
+                    Width = Convert.ToInt32(viewModel.ImageDisplayWidth)
                 });
 
                 Image.Stretch = Stretch.UniformToFill;
-                SetImage(url);
+                SetImage(url, viewModel);
             }
             else if (item.HasThumb)
             {
-                var url = ViewModel.ApiClient.GetImageUrl(item, new ImageOptions
+                var url = viewModel.ApiClient.GetImageUrl(item, new ImageOptions
                 {
                     ImageType = ImageType.Thumb,
-                    Height = Convert.ToInt32(ViewModel.ImageDisplayHeight),
-                    Width = Convert.ToInt32(ViewModel.ImageDisplayWidth)
+                    Height = Convert.ToInt32(viewModel.ImageDisplayHeight),
+                    Width = Convert.ToInt32(viewModel.ImageDisplayWidth)
                 });
 
                 Image.Stretch = Stretch.UniformToFill;
-                SetImage(url);
+                SetImage(url, viewModel);
             }
             else if (item.HasPrimaryImage)
             {
-                var url = ViewModel.ApiClient.GetImageUrl(item, new ImageOptions
+                var url = viewModel.ApiClient.GetImageUrl(item, new ImageOptions
                 {
                     ImageType = ImageType.Primary,
-                    Height = Convert.ToInt32(ViewModel.ImageDisplayHeight)
+                    Height = Convert.ToInt32(viewModel.ImageDisplayHeight)
                 });
 
-                Image.Stretch = Stretch.Uniform;
-                SetImage(url);
+                Image.Stretch = viewModel.IsCloseToMedianPrimaryImageAspectRatio
+                                    ? Stretch.UniformToFill
+                                    : Stretch.Uniform;
+
+                SetImage(url, viewModel);
             }
             else
             {
@@ -154,11 +162,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         /// Sets the image.
         /// </summary>
         /// <param name="url">The URL.</param>
-        private async void SetImage(string url)
+        /// <param name="viewModel">The view model.</param>
+        private async void SetImage(string url, BaseItemDtoViewModel viewModel)
         {
             try
             {
-                Image.Source = await ViewModel.ImageManager.GetRemoteBitmapAsync(url);
+                Image.Source = await viewModel.ImageManager.GetRemoteBitmapAsync(url);
                 Image.Visibility = Visibility.Visible;
                 DefaultImageGrid.Visibility = Visibility.Collapsed;
             }

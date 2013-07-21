@@ -1,7 +1,6 @@
 ﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
-using MediaBrowser.Model.Net;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Plugins.DefaultTheme.Header;
 using MediaBrowser.Theater.Interfaces.Navigation;
@@ -16,6 +15,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 
@@ -108,8 +108,16 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             base.OnInitialized(e);
 
             MenuList.SelectionChanged += MenuList_SelectionChanged;
+            Loaded += PanoramaDetailPage_Loaded;
 
             LoadItem();
+        }
+
+        async void PanoramaDetailPage_Loaded(object sender, RoutedEventArgs e)
+        {
+            await PageTitlePanel.Current.SetPageTitle(Item);
+
+            _presentationManager.SetBackdrops(Item);
         }
 
         private Timer _selectionChangeTimer;
@@ -141,7 +149,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
             if (string.Equals(item, "overview"))
             {
-                SetScrollDirection(ScrollDirection.Horizontal);
+                SetScrollDirection(null);
 
                 PageContent.Content = new Overview(_item, _imageManager, _apiClient, _playbackManager, _presentationManager);
             }
@@ -200,11 +208,48 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
                 }, _apiClient, _imageManager, _sessionManager, _nav, _presentationManager, _item);
             }
+            else if (string.Equals(item, "songs") || string.Equals(item, "seasons") || string.Equals(item, "episodes"))
+            {
+                SetScrollDirection(ScrollDirection.Horizontal);
+
+                PageContent.Content = new Children(new Model.Entities.DisplayPreferences
+                {
+                    PrimaryImageWidth = 400
+
+                }, _apiClient, _imageManager, _sessionManager, _nav, _presentationManager, _item);
+            }
+            else if (string.Equals(item, "themes"))
+            {
+                SetScrollDirection(ScrollDirection.Horizontal);
+
+                PageContent.Content = new ThemeVideos(new Model.Entities.DisplayPreferences
+                {
+                    PrimaryImageWidth = 384
+
+                }, _apiClient, _imageManager, _sessionManager, _nav, _presentationManager, _playbackManager, Item);
+            }
+            else if (string.Equals(item, "soundtrack") || string.Equals(item, "soundtracks"))
+            {
+                SetScrollDirection(ScrollDirection.Horizontal);
+
+                PageContent.Content = new Soundtracks(new Model.Entities.DisplayPreferences
+                {
+                    PrimaryImageWidth = 400
+
+                }, _apiClient, _imageManager, _sessionManager, _nav, _presentationManager, _item);
+            }
         }
 
-        private void SetScrollDirection(ScrollDirection direction)
+        private void SetScrollDirection(ScrollDirection? direction)
         {
-            if (direction == ScrollDirection.Horizontal)
+            if (direction == null)
+            {
+                System.Windows.Controls.ScrollViewer.SetHorizontalScrollBarVisibility(ScrollViewer, ScrollBarVisibility.Disabled);
+                System.Windows.Controls.ScrollViewer.SetVerticalScrollBarVisibility(ScrollViewer, ScrollBarVisibility.Disabled);
+                ScrollingPanel.CanHorizontallyScroll = false;
+                ScrollingPanel.CanVerticallyScroll = false;
+            }
+            else if (direction == ScrollDirection.Horizontal)
             {
                 System.Windows.Controls.ScrollViewer.SetHorizontalScrollBarVisibility(ScrollViewer, ScrollBarVisibility.Hidden);
                 System.Windows.Controls.ScrollViewer.SetVerticalScrollBarVisibility(ScrollViewer, ScrollBarVisibility.Disabled);
@@ -229,59 +274,100 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
         /// </summary>
         protected async void LoadItem()
         {
-            _presentationManager.SetBackdrops(Item);
-
-            var pageTitleTask = PageTitlePanel.Current.SetPageTitle(Item);
-
             ItemInfoFooter.Item = Item;
 
+            SetTitle(Item);
             RenderDetailControls(Item);
+        }
 
-            await pageTitleTask;
+        private void SetTitle(BaseItemDto item)
+        {
+            if (item.Taglines.Count > 0)
+            {
+                TxtName.Text = item.Taglines[0];
+                TxtName.Visibility = Visibility.Visible;
+            }
+            else if (item.IsType("episode"))
+            {
+                TxtName.Text = GetEpisodeTitle(item);
+                TxtName.Visibility = Visibility.Visible;
+            }
+            else if (item.IsType("audio"))
+            {
+                TxtName.Text = GetSongTitle(item);
+                TxtName.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                TxtName.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        internal static string GetEpisodeTitle(BaseItemDto item)
+        {
+            var title = item.Name;
+
+            if (item.IndexNumber.HasValue)
+            {
+                title = "Ep. " + item.IndexNumber.Value + ": " + title;
+            }
+
+            if (item.ParentIndexNumber.HasValue)
+            {
+                title = "Season " + item.ParentIndexNumber.Value + ", " + title;
+            }
+
+            return title;
+        }
+
+        private string GetSongTitle(BaseItemDto item)
+        {
+            return item.Name;
         }
 
         private async void RenderDetailControls(BaseItemDto item)
         {
-            AllThemeMediaResult allThemeMedia;
+            var themeMediaTask = _apiClient.GetAllThemeMediaAsync(_sessionManager.CurrentUser.Id, item.Id, false);
+            var criticReviewsTask = _apiClient.GetCriticReviews(item.Id);
 
             try
             {
-                allThemeMedia = await Task.Run(async () => await _apiClient.GetAllThemeMediaAsync(_sessionManager.CurrentUser.Id, item.Id, false).ConfigureAwait(false));
+                await Task.WhenAll(themeMediaTask, criticReviewsTask);
             }
-            catch (HttpException)
+            catch (Exception ex)
             {
-                // Don't let this blow up the page
-                allThemeMedia = new AllThemeMediaResult();
+                // Logged at lower levels
             }
 
-            LoadMenuList(item, allThemeMedia);
+            var allThemeMedia = themeMediaTask.IsCompleted ? themeMediaTask.Result : new AllThemeMediaResult();
+            var criticReviews = criticReviewsTask.IsCompleted ? criticReviewsTask.Result : new ItemReviewsResult();
 
-            //if (allThemeMedia.ThemeVideosResult.TotalRecordCount > 0)
-            //{
-            //    DetailPanels.Children.Add(new ThemeVideos(new Model.Entities.DisplayPreferences
-            //    {
-            //        PrimaryImageWidth = 384
-
-            //    }, _apiClient, _imageManager, _sessionManager, _nav, _presentationManager, allThemeMedia.ThemeVideosResult, "Theme Videos", _playbackManager));
-            //}
-
-            //if (allThemeMedia.ThemeSongsResult.TotalRecordCount > 0)
-            //{
-            //    DetailPanels.Children.Add(new ThemeVideos(new Model.Entities.DisplayPreferences
-            //    {
-            //        PrimaryImageWidth = 384
-
-            //    }, _apiClient, _imageManager, _sessionManager, _nav, _presentationManager, allThemeMedia.ThemeSongsResult, "Theme Songs", _playbackManager));
-            //}
+            LoadMenuList(item, allThemeMedia, criticReviews);
         }
 
-        private void LoadMenuList(BaseItemDto item, AllThemeMediaResult themeMediaResult)
+        private void LoadMenuList(BaseItemDto item, AllThemeMediaResult themeMediaResult, ItemReviewsResult reviewsResult)
         {
             new ListFocuser(MenuList).FocusAfterContainersGenerated(0);
 
             var views = new List<string>();
 
             views.Add("overview");
+
+            if (item.ChildCount > 0)
+            {
+                if (item.IsType("series"))
+                {
+                    views.Add("seasons");
+                }
+                else if (item.IsType("season"))
+                {
+                    views.Add("episodes");
+                }
+                else if (item.IsType("musicalbum"))
+                {
+                    views.Add("songs");
+                }
+            }
 
             if (item.People.Length > 0)
             {
@@ -303,9 +389,26 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 views.Add("special features");
             }
 
-            if (item.IsType("movie") || item.IsType("trailer") || item.IsType("series") || item.IsType("album") || item.IsGame)
+            if (item.IsType("movie") || item.IsType("trailer") || item.IsType("series") || item.IsType("musicalbum") || item.IsGame)
             {
                 views.Add("similar");
+            }
+
+            if (reviewsResult.TotalRecordCount > 0 || !string.IsNullOrEmpty(item.CriticRatingSummary))
+            {
+                views.Add("reviews");
+            }
+
+            if (item.SoundtrackIds != null)
+            {
+                if (item.SoundtrackIds.Length > 1)
+                {
+                    views.Add("soundtracks");
+                }
+                else if (item.SoundtrackIds.Length > 0)
+                {
+                    views.Add("soundtrack");
+                }
             }
 
             if (themeMediaResult.ThemeVideosResult.TotalRecordCount > 0 || themeMediaResult.ThemeSongsResult.TotalRecordCount > 0)
@@ -313,7 +416,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 views.Add("themes");
             }
 
-            if (Gallery.GetImages(item, _apiClient).Any())
+            if (Gallery.GetImages(item, _apiClient, null, null).Any())
             {
                 views.Add("gallery");
             }

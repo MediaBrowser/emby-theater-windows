@@ -6,51 +6,61 @@
                           mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
 
-    <Grid x:Name="NavBarGrid">
+    <Grid VerticalAlignment="Stretch">
+        <Image Name="ImgLogo" Stretch="Uniform" HorizontalAlignment="Left" VerticalAlignment="Top" Height="80" Margin="30 30 0 0" Opacity=".75"></Image>
 
-        <Grid Style="{DynamicResource NavBarGrid}">
+        <Grid x:Name="NavBarGrid" Background="#a6000000" VerticalAlignment="Bottom" HorizontalAlignment="Stretch">
+
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"></RowDefinition>
                 <RowDefinition Height="auto"></RowDefinition>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*"></ColumnDefinition>
-                <ColumnDefinition Width="1*"></ColumnDefinition>
-                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="auto"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
-            <Grid x:Name="SeekGrid" Grid.Row="0" Grid.ColumnSpan="3" Margin="450 20 50 5" Visibility="Collapsed">
+            <Grid x:Name="SeekGrid" Grid.Row="0" Grid.Column="1" Margin="30 20 50 0" Visibility="Collapsed">
 
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="auto"></ColumnDefinition>
                     <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                    <ColumnDefinition Width="auto"></ColumnDefinition>
                     <ColumnDefinition Width="auto"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
 
-                <TextBlock x:Name="TxtCurrentPosition" Grid.Column="0" Style="{DynamicResource TextBlockStyle}" Margin="0 0 10 0"></TextBlock>
-                <Slider x:Name="CurrentPositionSlider" Grid.Column="1" VerticalAlignment="Center" Minimum="0" Thumb.DragStarted="CurrentPositionSlider_DragStarted" Thumb.DragCompleted="CurrentPositionSlider_DragCompleted" IsMoveToPointEnabled="True"></Slider>
-                <TextBlock x:Name="TxtDuration" Grid.Column="2" Style="{DynamicResource TextBlockStyle}" Margin="10 0 0 0"></TextBlock>
+                <Slider x:Name="CurrentPositionSlider" Grid.Column="0" VerticalAlignment="Center" Minimum="0" Thumb.DragStarted="CurrentPositionSlider_DragStarted" Thumb.DragCompleted="CurrentPositionSlider_DragCompleted" IsMoveToPointEnabled="True"></Slider>
+                <TextBlock x:Name="TxtCurrentPosition" Grid.Column="1" Style="{DynamicResource TextBlockStyle}" Margin="10 0 0 0" VerticalAlignment="Center"></TextBlock>
+                <TextBlock Grid.Column="2" Style="{DynamicResource TextBlockStyle}" Margin="5 0 0 0" VerticalAlignment="Center" Text=" / "></TextBlock>
+                <TextBlock x:Name="TxtDuration" Grid.Column="3" Style="{DynamicResource TextBlockStyle}" Margin="5 0 0 0" VerticalAlignment="Center"></TextBlock>
 
             </Grid>
 
-            <StackPanel Style="{DynamicResource NavBarGridRightPanel}" Grid.Row="1" Margin="0 0 10 0">
+            <Grid x:Name="WidthPadder" Height="50" Width="300" Margin="40 0 0 20" Grid.Row="0" Grid.RowSpan="2" Grid.Column="0"></Grid>
+
+            <TextBlock x:Name="TxtNowPlayingName" Style="{DynamicResource TextBlockStyle}" Margin="30 0 0 20" VerticalAlignment="Bottom" HorizontalAlignment="Left" Grid.Row="1" Grid.Column="1"></TextBlock>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Grid.Row="1" Grid.Column="1">
                 <Button x:Name="PreviousChapterButton" Style="{DynamicResource PreviousChapterButton}" Visibility="Collapsed"></Button>
                 <Button x:Name="PlayButton" Style="{DynamicResource PlayButton}" Visibility="Collapsed"></Button>
                 <Button x:Name="PauseButton" Style="{DynamicResource PauseButton}" Visibility="Collapsed"></Button>
                 <Button x:Name="StopButton" Style="{DynamicResource StopButton}" Visibility="Collapsed"></Button>
                 <Button x:Name="NextChapterButton" Style="{DynamicResource NextChapterButton}" Visibility="Collapsed"></Button>
-                
+
                 <Grid Width="40"></Grid>
-                
+
                 <Button x:Name="VolumeDownButton" Style="{DynamicResource VolumeDownButton}" Visibility="Collapsed"></Button>
                 <Button x:Name="VolumeUpButton" Style="{DynamicResource VolumeUpButton}" Visibility="Collapsed"></Button>
                 <Button x:Name="MuteButton" Style="{DynamicResource MuteButton}" Visibility="Collapsed"></Button>
             </StackPanel>
+
         </Grid>
 
-        <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Left" Orientation="Horizontal" Margin="50 0 0 20">
-            <Image x:Name="NowPlayingImage" Stretch="Uniform" MaxWidth="300" MaxHeight="220"></Image>
-            <TextBlock x:Name="TxtNowPlayingName" Style="{DynamicResource TextBlockStyle}" Margin="15 0 0 0" VerticalAlignment="Bottom"></TextBlock>
-        </StackPanel>
+        <Grid Width="300" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="40 0 0 20">
+
+            <Image x:Name="NowPlayingImage" Stretch="None" Opacity=".9" HorizontalAlignment="Center"></Image>
+        </Grid>
+
     </Grid>
+
 </UserControl>

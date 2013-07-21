@@ -165,7 +165,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
                 }
             }
 
-            PnlPersonalRating.Visibility = Visibility.Hidden;
+            PnlPersonalRating.Visibility = Visibility.Collapsed;
         }
 
         /// <summary>

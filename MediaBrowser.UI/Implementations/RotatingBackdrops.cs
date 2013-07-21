@@ -148,8 +148,7 @@ namespace MediaBrowser.UI.Implementations
         {
             var urls = _apiClient.GetBackdropImageUrls(item, new ImageOptions
             {
-                MaxWidth = Convert.ToInt32(SystemParameters.VirtualScreenWidth),
-                MaxHeight = Convert.ToInt32(SystemParameters.VirtualScreenHeight)
+                Width = Convert.ToInt32(SystemParameters.VirtualScreenWidth)
             });
 
             SetBackdrops(urls);
@@ -176,11 +175,11 @@ namespace MediaBrowser.UI.Implementations
 
                 if (_backdropSetTimer == null)
                 {
-                    _backdropSetTimer = new Timer(OnPendingBackdropsTimerFired, null, 800, Timeout.Infinite);
+                    _backdropSetTimer = new Timer(OnPendingBackdropsTimerFired, null, 600, Timeout.Infinite);
                 }
                 else
                 {
-                    _backdropSetTimer.Change(800, Timeout.Infinite);
+                    _backdropSetTimer.Change(600, Timeout.Infinite);
                 }
             }
         }

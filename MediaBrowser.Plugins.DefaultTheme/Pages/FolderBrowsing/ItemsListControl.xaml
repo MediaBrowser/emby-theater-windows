@@ -36,10 +36,11 @@
             </StackPanel>
         </Grid>
 
-        <Grid Grid.Row="2" Margin="25 0 25 20" x:Name="BottomGrid" Height="100">
+        <Grid Grid.Row="2" Margin="25 25 25 20" x:Name="BottomGrid">
 
-            <Image Name="ImgLogo" Stretch="Uniform" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0 20 0 0"></Image>
+            <Image Name="ImgLogo" Stretch="Uniform" HorizontalAlignment="Left" VerticalAlignment="Bottom" Height="100"></Image>
             <details:ItemInfoFooter x:Name="ItemInfoFooter" HorizontalAlignment="Right" VerticalAlignment="Bottom" VerticalContentAlignment="Center" KeyboardNavigation.IsTabStop="False"></details:ItemInfoFooter>
+            
         </Grid>
     </Grid>
 </controls:BaseFolderControl>

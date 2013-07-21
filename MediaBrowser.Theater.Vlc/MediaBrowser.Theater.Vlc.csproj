@@ -43,13 +43,13 @@
     <Reference Include="LibVlcWrapper">
       <HintPath>..\ThirdParty\Taygeta\LibVlcWrapper.dll</HintPath>
     </Reference>
-    <Reference Include="MediaBrowser.Common, Version=3.0.4949.23934, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.Common, Version=3.0.4950.16798, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.3.0.150\lib\net45\MediaBrowser.Common.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.152\lib\net45\MediaBrowser.Common.dll</HintPath>
     </Reference>
-    <Reference Include="MediaBrowser.Model, Version=3.0.4949.23933, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.Model, Version=3.0.4950.16798, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.3.0.150\lib\net45\MediaBrowser.Model.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.152\lib\net45\MediaBrowser.Model.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Threading.Tasks">
       <HintPath>..\packages\Microsoft.Bcl.Async.1.0.16\lib\net45\Microsoft.Threading.Tasks.dll</HintPath>

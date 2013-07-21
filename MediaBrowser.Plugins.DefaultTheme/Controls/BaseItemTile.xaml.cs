@@ -276,19 +276,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
 
         private Stretch GetStretchForPrimaryImage(BaseItemDtoViewModel viewModel)
         {
-            var width = viewModel.ImageDisplayWidth;
-            var height = viewModel.ImageDisplayHeight;
-
-            var medianAspectRatio = AspectRatioHelper.GetAspectRatio(viewModel.ImageType, viewModel.MedianPrimaryImageAspectRatio);
-
-            var item = ViewModel.Item;
-
-            var currentAspectRatio = viewModel.ImageType == ImageType.Primary ? item.PrimaryImageAspectRatio ?? width / height : width / height;
-
-            // Preserve the exact AR if it deviates from the median significantly
-            var preserveExactAspectRatio = Math.Abs(currentAspectRatio - medianAspectRatio) > .25;
-
-            if (!preserveExactAspectRatio)
+            if (viewModel.IsCloseToMedianPrimaryImageAspectRatio)
             {
                 return Stretch.UniformToFill;
             }

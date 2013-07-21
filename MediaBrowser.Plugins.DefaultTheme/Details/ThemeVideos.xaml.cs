@@ -1,6 +1,6 @@
-﻿using System;
-using MediaBrowser.Model.ApiClient;
+﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
+using MediaBrowser.Model.Net;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
@@ -8,6 +8,8 @@ using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.ViewModels;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Details
@@ -17,18 +19,15 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
     /// </summary>
     public partial class ThemeVideos : BaseItemsControl
     {
-        private readonly ThemeMediaResult _mediaResult;
-
         private readonly IPlaybackManager _playbackManager;
+        private readonly BaseItemDto _parentItem;
 
-        public ThemeVideos(Model.Entities.DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IPresentationManager appWindow, ThemeMediaResult mediaResult, string title, IPlaybackManager playbackManager) 
+        public ThemeVideos(Model.Entities.DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IPresentationManager appWindow, IPlaybackManager playbackManager, BaseItemDto parentItem) 
             : base(displayPreferences, apiClient, imageManager, sessionManager, navigationManager, appWindow)
         {
-            _mediaResult = mediaResult;
             _playbackManager = playbackManager;
+            _parentItem = parentItem;
             InitializeComponent();
-
-            TxtTitle.Text = title;
         }
 
         protected override void OnInitialized(EventArgs e)
@@ -50,13 +49,25 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             get { return LstItems; }
         }
 
-        protected override Task<ItemsResult> GetItemsAsync()
+        protected override async Task<ItemsResult> GetItemsAsync()
         {
-            return Task.FromResult(new ItemsResult
+            AllThemeMediaResult allThemeMedia;
+
+            try
             {
-                TotalRecordCount = _mediaResult.TotalRecordCount,
-                Items = _mediaResult.Items
-            });
+                allThemeMedia = await ApiClient.GetAllThemeMediaAsync(SessionManager.CurrentUser.Id, _parentItem.Id, false).ConfigureAwait(false);
+            }
+            catch (HttpException)
+            {
+                // Don't let this blow up the page
+                allThemeMedia = new AllThemeMediaResult();
+            }
+
+            return new ItemsResult
+            {
+                TotalRecordCount = allThemeMedia.ThemeSongsResult.TotalRecordCount + allThemeMedia.ThemeVideosResult.TotalRecordCount,
+                Items = allThemeMedia.ThemeVideosResult.Items.Concat(allThemeMedia.ThemeSongsResult.Items).ToArray()
+            };
         }
 
         protected override bool SetBackdropsOnCurrentItemChanged

@@ -302,9 +302,14 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
 
         private async void UpdateLogo(BaseItemDto item)
         {
-            const int maxheight = 80;
+            const int maxheight = 100;
 
-            if (item != null && item.HasLogo && Sidebar.Visibility == Visibility.Collapsed)
+            if (BottomGrid.Visibility == Visibility.Collapsed || Sidebar.Visibility == Visibility.Visible)
+            {
+                ImgLogo.Visibility = Visibility.Collapsed;
+            }
+
+            else if (item != null && item.HasLogo && Sidebar.Visibility == Visibility.Collapsed)
             {
                 ImgLogo.Source = await ImageManager.GetRemoteBitmapAsync(ApiClient.GetLogoImageUrl(item, new ImageOptions
                 {

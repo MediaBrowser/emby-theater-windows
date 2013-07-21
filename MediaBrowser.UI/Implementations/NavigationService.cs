@@ -91,7 +91,7 @@ namespace MediaBrowser.UI.Implementations
         /// <returns>DispatcherOperation.</returns>
         public async Task NavigateToLoginPage()
         {
-            await App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(() => Navigate(new LoginPage(_apiClient, _imageManager, this, _sessionFactory(), _presentationManager)));
+            await App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(async () => await Navigate(new LoginPage(_apiClient, _imageManager, this, _sessionFactory(), _presentationManager)));
         }
 
         /// <summary>
@@ -137,7 +137,7 @@ namespace MediaBrowser.UI.Implementations
             // Grab it fresh from the server to make sure we have the full record
             item = await _apiClient.GetItemAsync(item.Id, _apiClient.CurrentUserId);
 
-            await Navigate(_themeManager.CurrentTheme.GetItemPage(item, context));
+            await App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(async () => await Navigate(_themeManager.CurrentTheme.GetItemPage(item, context)));
         }
 
         /// <summary>

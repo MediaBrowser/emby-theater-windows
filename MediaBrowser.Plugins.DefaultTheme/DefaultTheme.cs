@@ -139,7 +139,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// <returns>Page.</returns>
         public Page GetItemPage(BaseItemDto item, string context)
         {
-            if (item.IsFolder)
+            if (item.IsFolder && !item.IsType("series") && !item.IsType("musicalbum"))
             {
                 return new FolderPage(item, item.DisplayPreferencesId, _apiClient, _imageManager, _sessionManager, _presentationManager, _navService);
             }

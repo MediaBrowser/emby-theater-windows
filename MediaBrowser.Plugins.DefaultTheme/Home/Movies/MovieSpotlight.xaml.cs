@@ -161,7 +161,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.Movies
                         Item = items[index],
                         ImageDisplayWidth = Convert.ToInt32(size.Width),
                         ImageDisplayHeight = Convert.ToInt32(size.Height),
-                        MedianPrimaryImageAspectRatio = aspectRatio,
+                        PrimaryImageAspectRatio = aspectRatio,
                         ImageType = ImageType.Backdrop
                     };
                 }

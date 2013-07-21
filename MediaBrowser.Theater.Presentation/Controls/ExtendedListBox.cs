@@ -155,6 +155,11 @@ namespace MediaBrowser.Theater.Presentation.Controls
 
             var window = this.GetWindow();
 
+            if (window == null)
+            {
+                return;
+            }
+
             // If the cursor is currently hidden, don't bother reacting to it
             if (Cursor == Cursors.None || window.Cursor == Cursors.None)
             {

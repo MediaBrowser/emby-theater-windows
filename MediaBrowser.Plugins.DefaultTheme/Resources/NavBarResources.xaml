@@ -202,14 +202,4 @@
             </Setter.Value>
         </Setter>
     </Style>
-
-    <Style TargetType="Grid" x:Key="NavBarGrid">
-        <Setter Property="VerticalAlignment" Value="Bottom"/>
-        <Setter Property="Background" Value="#A6000000"/>
-    </Style>
-    <Style TargetType="StackPanel" x:Key="NavBarGridRightPanel">
-        <Setter Property="Grid.Column" Value="2"/>
-        <Setter Property="HorizontalAlignment" Value="Right"/>
-        <Setter Property="Orientation" Value="Horizontal"/>
-    </Style>
 </ResourceDictionary>

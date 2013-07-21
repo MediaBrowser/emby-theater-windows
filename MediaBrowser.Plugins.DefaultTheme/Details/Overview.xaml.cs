@@ -99,8 +99,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
         private void ReloadDetails()
         {
-            SetTitle();
-
             TxtOverview.Text = _item.Overview ?? string.Empty;
 
             var directors = _item.People.Where(i => string.Equals(i.Type, PersonType.Director, StringComparison.OrdinalIgnoreCase)).ToList();
@@ -120,7 +118,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             {
                 LblGenre.Visibility = TxtGenre.Visibility = Visibility.Visible;
 
-                TxtGenre.Text = string.Join("  •  ", _item.Genres.ToArray());
+                TxtGenre.Text = string.Join("  •  ", _item.Genres.Take(3).ToArray());
             }
             else
             {
@@ -131,14 +129,14 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             {
                 LblStudio.Visibility = TxtStudio.Visibility = Visibility.Visible;
 
-                TxtStudio.Text = string.Join("  •  ", _item.Studios.Select(i => i.Name).ToArray());
+                TxtStudio.Text = string.Join("  •  ", _item.Studios.Take(3).Select(i => i.Name).ToArray());
             }
             else
             {
                 LblStudio.Visibility = TxtStudio.Visibility = Visibility.Collapsed;
             }
 
-            if (_item.PremiereDate.HasValue)
+            if (_item.PremiereDate.HasValue && !_item.IsType("movie"))
             {
                 LblPremiereDate.Visibility = TxtPremiereDate.Visibility = Visibility.Visible;
 
@@ -172,38 +170,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             {
                 LblGameSystem.Visibility = TxtGameSystem.Visibility = Visibility.Collapsed;
             }
-
-            PnlTags.Children.Clear();
-
-            PnlTags.Visibility = _item.Tags.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
-
-            foreach (var tag in _item.Tags)
-            {
-                var textBlock = new TextBlock
-                {
-                    Text = tag
-                };
-
-                textBlock.SetResourceReference(TextBlock.StyleProperty, "TagTextBlock");
-
-                PnlTags.Children.Add(textBlock);
-            }
-        }
-
-        private void SetTitle()
-        {
-            if (_item.Taglines.Count > 0)
-            {
-                TxtTagline.Text = _item.Taglines[0];
-            }
-            else if (_item.IsType("Episode") || _item.IsType("Audio"))
-            {
-                TxtTagline.Text = _item.Name;
-            }
-            else
-            {
-                TxtTagline.Text = string.Empty;
-            }
         }
 
         private async void ReloadImage()
@@ -214,8 +180,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 {
                     PrimaryImage.Source = await _imageManager.GetRemoteBitmapAsync(_apiClient.GetImageUrl(_item, new ImageOptions
                     {
-                        ImageType = ImageType.Primary
+                        ImageType = ImageType.Primary,
+                        Width = 550
                     }));
+
+                    return;
                 }
                 catch (HttpException)
                 {
@@ -238,6 +207,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             if (userData.Played)
             {
                 ImgPlayed.Visibility = Visibility.Visible;
+                ImgNew.Visibility = Visibility.Collapsed;
             }
             else
             {

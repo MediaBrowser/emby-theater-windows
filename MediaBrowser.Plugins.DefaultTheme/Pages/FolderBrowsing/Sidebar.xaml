@@ -6,13 +6,14 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     
-    <Grid HorizontalAlignment="Left">
+    <Grid>
         
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
         </Grid.RowDefinitions>
         
         <Image x:Name="LogoImage" Stretch="Uniform" MaxWidth="500" MaxHeight="120" Grid.Row="0"></Image>
@@ -24,5 +25,7 @@
         <Border Background="#999" Height="2" Grid.Row="2" Margin="0 20 0 0"></Border>
         
         <TextBlock x:Name="TxtOverview" Style="{DynamicResource TextBlockStyle}" Grid.Row="3" Margin="0 20 0 0"></TextBlock>
+
+        <Image Name="ImgLogo" Stretch="Uniform" HorizontalAlignment="Left" VerticalAlignment="Bottom" Height="120" Grid.Row="4" Margin="0 20 0 -75"></Image>
     </Grid>
 </UserControl>

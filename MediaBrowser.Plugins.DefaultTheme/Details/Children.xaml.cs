@@ -12,13 +12,13 @@ using System.Threading.Tasks;
 namespace MediaBrowser.Plugins.DefaultTheme.Details
 {
     /// <summary>
-    /// Interaction logic for SimilarItems.xaml
+    /// Interaction logic for Children.xaml
     /// </summary>
-    public partial class SimilarItems : BaseItemsControl
+    public partial class Children : BaseItemsControl
     {
         private readonly BaseItemDto _item;
 
-        public SimilarItems(Model.Entities.DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IPresentationManager appWindow, BaseItemDto item)
+        public Children(Model.Entities.DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IPresentationManager appWindow, BaseItemDto item)
             : base(displayPreferences, apiClient, imageManager, sessionManager, navigationManager, appWindow)
         {
             _item = item;
@@ -39,17 +39,16 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
         void LstItems_ItemInvoked(object sender, ItemEventArgs<object> e)
         {
-            var item = (BaseItemDtoViewModel) e.Argument;
+            var item = (BaseItemDtoViewModel)e.Argument;
 
             NavigationManager.NavigateToItem(item.Item, string.Empty);
         }
 
         protected override Task<ItemsResult> GetItemsAsync()
         {
-            var query = new SimilarItemsQuery
+            var query = new ItemQuery
                 {
                     UserId = SessionManager.CurrentUser.Id,
-                    Limit = _item.IsGame || _item.IsType("musicalbum") ? 6 : 12,
                     Fields = new[]
                         {
                                  ItemFields.UserData,
@@ -62,27 +61,21 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                                  ItemFields.Overview,
                                  ItemFields.DisplayPreferencesId
                         },
-                        Id = _item.Id
+                    ParentId = _item.Id,
+                    SortBy = GetSortOrder()
                 };
 
-            if (_item.IsType("trailer"))
-            {
-                return ApiClient.GetSimilarTrailersAsync(query);
-            }
-            if (_item.IsGame)
-            {
-                return ApiClient.GetSimilarGamesAsync(query);
-            }
-            if (_item.IsType("musicalbum"))
-            {
-                return ApiClient.GetSimilarAlbumsAsync(query);
-            }
+            return ApiClient.GetItemsAsync(query);
+        }
+
+        private string[] GetSortOrder()
+        {
             if (_item.IsType("series"))
             {
-                return ApiClient.GetSimilarSeriesAsync(query);
+                
             }
 
-            return ApiClient.GetSimilarMoviesAsync(query);
+            return new[] {ItemSortBy.SortName};
         }
 
         protected override double GetImageDisplayHeight(Model.Entities.DisplayPreferences displayPreferences, double medianPrimaryImageAspectRatio)

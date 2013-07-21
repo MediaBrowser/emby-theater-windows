@@ -347,7 +347,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
                 ImageDisplayHeight = height,
                 ViewType = DisplayPreferences.ViewType,
                 Item = item,
-                MedianPrimaryImageAspectRatio = medianPrimaryImageAspectRatio
+                PrimaryImageAspectRatio = item.PrimaryImageAspectRatio
             };
         }
 

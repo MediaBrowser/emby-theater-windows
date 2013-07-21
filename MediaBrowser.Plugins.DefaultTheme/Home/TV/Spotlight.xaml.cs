@@ -163,7 +163,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.TV
                         Item = items[index],
                         ImageDisplayWidth = Convert.ToInt32(size.Width),
                         ImageDisplayHeight = Convert.ToInt32(size.Height),
-                        MedianPrimaryImageAspectRatio = aspectRatio
+                        PrimaryImageAspectRatio = aspectRatio
                     };
                 }
 

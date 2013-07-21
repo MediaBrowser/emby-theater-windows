@@ -2,7 +2,6 @@
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Theater.Interfaces.Presentation;
-using MediaBrowser.Theater.Presentation.Extensions;
 using System;
 
 namespace MediaBrowser.Theater.Presentation.ViewModels
@@ -22,22 +21,15 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         public bool IsSpecialFeature { get; set; }
         public bool IsLocalTrailer { get; set; }
 
-        /// <summary>
-        /// The _average primary image aspect ratio
-        /// </summary>
-        private double _medianPrimaryImageAspectRatio;
-        /// <summary>
-        /// Gets the aspect ratio that should be used if displaying the primary image
-        /// </summary>
-        /// <value>The average primary image aspect ratio.</value>
-        public double MedianPrimaryImageAspectRatio
+        private double? _primaryImageAspectRatio;
+        public double? PrimaryImageAspectRatio
         {
-            get { return _medianPrimaryImageAspectRatio; }
+            get { return _primaryImageAspectRatio; }
 
             set
             {
-                _medianPrimaryImageAspectRatio = value;
-                OnPropertyChanged("MedianPrimaryImageAspectRatio");
+                _primaryImageAspectRatio = value;
+                OnPropertyChanged("PrimaryImageAspectRatio");
             }
         }
 
@@ -58,7 +50,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 OnPropertyChanged("ImageType");
             }
         }
-        
+
 
         /// <summary>
         /// Gets or sets the width of the image.
@@ -67,7 +59,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         public double ImageDisplayWidth { get; set; }
 
         public double ImageDisplayHeight { get; set; }
-        
+
         public string ViewType { get; set; }
 
         public string PersonRole { get; set; }
@@ -103,6 +95,18 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
+        public bool IsCloseToMedianPrimaryImageAspectRatio
+        {
+            get
+            {
+                var layoutAspectRatio = ImageDisplayWidth / ImageDisplayHeight;
+                var currentAspectRatio = PrimaryImageAspectRatio ?? layoutAspectRatio;
+
+                // Preserve the exact AR if it deviates from the median significantly
+                return Math.Abs(currentAspectRatio - layoutAspectRatio) <= .25;
+            }
+        }
+
         /// <summary>
         /// Gets an image url that can be used to download an image from the api
         /// </summary>
@@ -118,6 +122,11 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 Width = Convert.ToInt32(ImageDisplayWidth)
             };
 
+            if (imageType != ImageType.Primary || IsCloseToMedianPrimaryImageAspectRatio)
+            {
+                imageOptions.Height = Convert.ToInt32(ImageDisplayHeight);
+            }
+
             if (Item.IsType("Person"))
             {
                 return ApiClient.GetPersonImageUrl(Item, imageOptions);
@@ -125,7 +134,5 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
             return ApiClient.GetImageUrl(Item, imageOptions);
         }
-
-
     }
 }

@@ -2,7 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Style TargetType="Button" x:Key="NavBarButton">
-        <Setter Property="Margin" Value="10 20 10 20"/>
+        <Setter Property="Margin" Value="10 0 10 0"/>
         <Setter Property="KeyboardNavigation.IsTabStop" Value="false"/>
         <Setter Property="Width" Value="40"/>
         <Setter Property="Height" Value="40"/>

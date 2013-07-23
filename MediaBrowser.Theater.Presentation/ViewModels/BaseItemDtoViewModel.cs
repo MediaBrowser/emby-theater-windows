@@ -63,6 +63,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         public string ViewType { get; set; }
 
         public string PersonRole { get; set; }
+        public string PersonType { get; set; }
 
         public void NotifyDisplayPreferencesChanged()
         {

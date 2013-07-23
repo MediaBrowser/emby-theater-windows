@@ -82,7 +82,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
         {
             var vm = base.CreateViewModel(item, medianPrimaryImageAspectRatio);
 
-            vm.IsLocalTrailer = true;
+            vm.IsSpecialFeature = true;
 
             return vm;
         }

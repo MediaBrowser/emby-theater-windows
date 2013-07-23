@@ -204,7 +204,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
                 PageContent.Content = new People(new Model.Entities.DisplayPreferences
                 {
-                    PrimaryImageWidth = 400
+                    PrimaryImageWidth = 200
 
                 }, _apiClient, _imageManager, _sessionManager, _nav, _presentationManager, _item);
             }

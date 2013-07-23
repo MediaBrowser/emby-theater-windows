@@ -148,19 +148,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
 
             TxtTime.Visibility = timeVisibility;
 
-
-            var personRoleVisibility = Visibility.Collapsed;
-            if (!string.IsNullOrEmpty(viewModel.PersonRole))
-            {
-                TxtRole.Text = "as " + viewModel.PersonRole;
-                personRoleVisibility = Visibility.Visible;
-            }
-
-            TxtRole.Visibility = personRoleVisibility;
-
             OverlayGrid.Visibility = nameVisibility == Visibility.Visible ||
                                      timeVisibility == Visibility.Visible ||
-                                     personRoleVisibility == Visibility.Visible ||
                                      progressBarVisibility == Visibility.Visible
                                          ? Visibility.Visible
                                          : Visibility.Collapsed;

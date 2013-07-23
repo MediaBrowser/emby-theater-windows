@@ -117,6 +117,10 @@
         <themecontrols:BaseItemListViewTile DataContext="{Binding}"></themecontrols:BaseItemListViewTile>
     </DataTemplate>
 
+    <DataTemplate x:Key="PersonInfoTemplate" DataType="{x:Type viewModels:BaseItemDtoViewModel}">
+        <themecontrols:PersonInfoTile DataContext="{Binding}"></themecontrols:PersonInfoTile>
+    </DataTemplate>
+
     <!--List Page ListBox. -->
     <Style TargetType="controls:ExtendedListBox" x:Key="ListPageListBoxStyle" BasedOn="{StaticResource ListBoxStyle}">
         <Style.Triggers>

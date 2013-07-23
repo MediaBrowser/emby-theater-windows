@@ -109,6 +109,9 @@
     <Compile Include="Controls\NavigationBar.xaml.cs">
       <DependentUpon>NavigationBar.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\PersonInfoTile.xaml.cs">
+      <DependentUpon>PersonInfoTile.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Converters\WatchedVisibilityConverter.cs" />
     <Compile Include="Details\Chapter.xaml.cs">
       <DependentUpon>Chapter.xaml</DependentUpon>
@@ -296,6 +299,10 @@
     <Page Include="Controls\NavigationBar.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\PersonInfoTile.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Details\Chapter.xaml">
       <SubType>Designer</SubType>

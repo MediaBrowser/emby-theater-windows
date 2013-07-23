@@ -80,7 +80,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
         /// </summary>
         protected async void OnItemChanged()
         {
-            var urls = GetImages(Item, _apiClient, null, 280);
+            var urls = GetImages(Item, _apiClient, null, 640);
 
             var tasks = urls.Select(GetImage);
 

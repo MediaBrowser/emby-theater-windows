@@ -178,7 +178,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
                 PageContent.Content = new SpecialFeatures(new Model.Entities.DisplayPreferences
                 {
-                    PrimaryImageWidth = 384
+                    PrimaryImageWidth = 576
 
                 }, _apiClient, _imageManager, _sessionManager, _nav, _presentationManager, _item, _playbackManager);
             }
@@ -204,7 +204,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
                 PageContent.Content = new People(new Model.Entities.DisplayPreferences
                 {
-                    PrimaryImageWidth = 200
+                    PrimaryImageWidth = 300
 
                 }, _apiClient, _imageManager, _sessionManager, _nav, _presentationManager, _item);
             }
@@ -224,7 +224,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
                 PageContent.Content = new ThemeVideos(new Model.Entities.DisplayPreferences
                 {
-                    PrimaryImageWidth = 384
+                    PrimaryImageWidth = 576
 
                 }, _apiClient, _imageManager, _sessionManager, _nav, _presentationManager, _playbackManager, Item);
             }

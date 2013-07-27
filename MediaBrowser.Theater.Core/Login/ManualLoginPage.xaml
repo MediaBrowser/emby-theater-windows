@@ -1,0 +1,34 @@
+﻿<pages:BasePage x:Class="MediaBrowser.Theater.Core.Login.ManualLoginPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                 xmlns:pages="clr-namespace:MediaBrowser.Theater.Presentation.Pages;assembly=MediaBrowser.Theater.Presentation"
+                xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
+                mc:Ignorable="d" 
+      d:DesignHeight="300" d:DesignWidth="300"
+	Title="ManualLoginPage">
+
+    <Grid HorizontalAlignment="Center" Width="900">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="please sign in >" Grid.Row="0" HorizontalAlignment="Left" Style="{DynamicResource Heading2TextBlockStyle}" Margin="0 30 0 0"></TextBlock>
+
+        <StackPanel Grid.Row="1" Orientation="Vertical" Margin="0 40 0 0">
+            
+            <TextBlock Style="{DynamicResource TextBlockStyle}" Text="Username"></TextBlock>
+            <controls:ExtendedTextBox x:Name="TxtUsername"></controls:ExtendedTextBox>
+
+            <TextBlock Style="{DynamicResource TextBlockStyle}" Text="Password" Margin="0 40 0 0"></TextBlock>
+            <controls:ExtendedTextBox x:Name="TxtPassword"></controls:ExtendedTextBox>
+
+            <Button x:Name="BtnSubmit" Margin="0 40 0 0">
+                <TextBlock Style="{DynamicResource TextBlockStyle}" Text="Sign In"></TextBlock>
+            </Button>
+        </StackPanel>
+    </Grid>
+</pages:BasePage>

@@ -32,9 +32,9 @@ namespace MediaBrowser.Theater.Interfaces.Session
         /// <summary>
         /// Logins the specified user.
         /// </summary>
-        /// <param name="user">The user.</param>
+        /// <param name="username">The username.</param>
         /// <param name="password">The password.</param>
         /// <returns>Task.</returns>
-        Task Login(UserDto user, string password);
+        Task Login(string username, string password);
     }
 }

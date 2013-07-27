@@ -54,32 +54,27 @@ namespace MediaBrowser.Theater.Implementations.Session
             _navService.ClearHistory();
         }
 
-        public async Task Login(UserDto user, string password)
+        public async Task Login(string username, string password)
         {
-            if (CurrentUser != null && !string.Equals(CurrentUser.Id, user.Id))
-            {
-                await Logout();
-            }
-
             using (var provider = SHA1.Create())
             {
                 var hash = provider.ComputeHash(Encoding.UTF8.GetBytes(password ?? string.Empty));
 
-                await _apiClient.AuthenticateUserAsync(user.Id, hash);
-            }
+                var result = await _apiClient.AuthenticateUserAsync(username, hash);
 
-            CurrentUser = user;
-            _apiClient.CurrentUserId = user.Id;
+                CurrentUser = result.User;
+                _apiClient.CurrentUserId = CurrentUser.Id;
+            }
 
             EventHelper.FireEventIfNotNull(UserLoggedIn, this, EventArgs.Empty, _logger);
 
-            var userConfig = await _config.GetUserTheaterConfiguration(user.Id);
+            var userConfig = await _config.GetUserTheaterConfiguration(CurrentUser.Id);
 
             var theme = _themeManager.Themes.FirstOrDefault(i => string.Equals(i.Name, userConfig.Theme)) ?? _themeManager.DefaultTheme;
 
             await _themeManager.LoadTheme(theme);
 
-            await _navService.NavigateToHomePage(user.Id);
+            await _navService.NavigateToHomePage(CurrentUser.Id);
 
             _navService.ClearHistory();
         }

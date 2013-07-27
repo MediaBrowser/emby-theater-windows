@@ -1,6 +1,7 @@
 ﻿using MediaBrowser.Common;
 using MediaBrowser.Common.Updates;
 using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Configuration;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Theater.Core.InternalPlayer;
 using MediaBrowser.Theater.Core.Login;
@@ -15,7 +16,6 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Controls;
-using Microsoft.Expression.Media.Effects;
 
 namespace MediaBrowser.UI.Implementations
 {
@@ -91,7 +91,16 @@ namespace MediaBrowser.UI.Implementations
         /// <returns>DispatcherOperation.</returns>
         public async Task NavigateToLoginPage()
         {
-            await App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(async () => await Navigate(new LoginPage(_apiClient, _imageManager, this, _sessionFactory(), _presentationManager)));
+            var systemConfig = await _apiClient.GetServerConfigurationAsync();
+
+            if (systemConfig.ManualLoginClients.Contains(ManualLoginCategory.MediaBrowserTheater))
+            {
+                await App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(async () => await Navigate(new ManualLoginPage(string.Empty, _sessionFactory(), _presentationManager)));
+            }
+            else
+            {
+                await App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(async () => await Navigate(new LoginPage(_apiClient, _imageManager, this, _sessionFactory(), _presentationManager)));
+            }
         }
 
         /// <summary>

@@ -1,16 +1,9 @@
-﻿using System;
-using System.Diagnostics;
+﻿using Microsoft.DirectX.PrivateImplementationDetails;
+using System;
 using System.Drawing;
-using System.IO;
-using System.Globalization;
-using System.Reflection;
-using System.Text.RegularExpressions;
 using System.Runtime.InteropServices;
-using System.Windows.Forms;
-using Microsoft.DirectX.PrivateImplementationDetails;
-using System.Threading;
 
-namespace MediaBrowser.UI.Playback.DirectShow
+namespace MediaBrowser.Theater.DirectShow
 {
     // when using the (1) bitmaps method, you can register a mouse callback
     // this callback will be called whenever a mouse event occurs

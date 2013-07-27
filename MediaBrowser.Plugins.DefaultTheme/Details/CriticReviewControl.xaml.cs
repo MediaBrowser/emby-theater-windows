@@ -44,7 +44,14 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
             TxtReview.Text = "\"" + review.Caption + "\"";
 
-            TxtReviewSource.Text = string.Format("{0}, {1}. {2}", review.ReviewerName ?? string.Empty, review.Publisher ?? string.Empty, review.Date.ToShortDateString());
+            var source = string.Format("{0}. {1}", review.Publisher ?? string.Empty, review.Date.ToShortDateString());
+
+            if (!string.IsNullOrEmpty(review.ReviewerName))
+            {
+                source = review.ReviewerName + ", " + source;
+            }
+
+            TxtReviewSource.Text = source;
 
             if (review.Likes.HasValue)
             {

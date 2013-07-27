@@ -1,21 +1,20 @@
-﻿using System;
-using System.Drawing;
-using System.Runtime.InteropServices;
-using System.Diagnostics;
-using System.Timers;
-using System.Windows.Forms;
-using System.IO;
-using DirectShowLib;
+﻿using DirectShowLib;
 using DirectShowLib.Dvd;
+using MediaBrowser.Model.Dto;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Globalization;
+using System.IO;
 using System.Net;
-using System.Threading;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Collections.Generic;
-using System.Globalization;
-using MediaBrowser.Model.Dto;
+using System.Threading;
+using System.Timers;
+using System.Windows.Forms;
 
-namespace MediaBrowser.UI.Playback.DirectShow
+namespace MediaBrowser.Theater.DirectShow
 {
     [ComImport, Guid("E1A8B82A-32CE-4B0D-BE0D-AA68C772E423")]
     public class MadVR
@@ -2556,7 +2555,7 @@ namespace MediaBrowser.UI.Playback.DirectShow
                 #endregion
 
                 #region Number
-                if (ToolBox.StringFunctions.IsNumeric(Command))
+                if (StringFunctions.IsNumeric(Command))
                 {
                     if (GoToTimeMenuIsShowing == true)
                     {
@@ -2929,7 +2928,7 @@ namespace MediaBrowser.UI.Playback.DirectShow
                     MadvrInterface.ShowMadVrBitmap("ChapterText", iText, 0, posyTB, 0, InfoBarTextPriority, madvr);
                 }
             }
-            else if (ToolBox.StringFunctions.IsNumeric(Input))
+            else if (StringFunctions.IsNumeric(Input))
             {
                 if (string.IsNullOrEmpty(GoToDigitOne))
                 {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace ToolBox
+namespace MediaBrowser.Theater.DirectShow
 {
     public class StringFunctions
     {

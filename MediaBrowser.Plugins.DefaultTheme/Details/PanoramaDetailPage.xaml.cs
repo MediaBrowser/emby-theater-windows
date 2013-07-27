@@ -238,6 +238,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
                 }, _apiClient, _imageManager, _sessionManager, _nav, _presentationManager, _item);
             }
+            else if (string.Equals(item, "reviews"))
+            {
+                SetScrollDirection(ScrollDirection.Horizontal);
+
+                PageContent.Content = new Reviews(_item, _apiClient, _presentationManager);
+            }
         }
 
         private void SetScrollDirection(ScrollDirection? direction)

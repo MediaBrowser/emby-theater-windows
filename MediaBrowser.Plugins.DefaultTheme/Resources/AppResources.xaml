@@ -109,6 +109,10 @@
         </Image>
     </DataTemplate>
 
+    <DataTemplate x:Key="CriticReviewsTemplate" DataType="{x:Type BitmapImage}">
+        <details:CriticReviewControl DataContext="{Binding}"></details:CriticReviewControl>
+    </DataTemplate>
+
     <DataTemplate x:Key="ListPageItemTemplate" DataType="{x:Type viewModels:BaseItemDtoViewModel}">
         <themecontrols:BaseItemTile DataContext="{Binding}"></themecontrols:BaseItemTile>
     </DataTemplate>

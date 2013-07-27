@@ -52,13 +52,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                     Limit = _item.IsGame || _item.IsType("musicalbum") ? 6 : 12,
                     Fields = new[]
                         {
-                                 ItemFields.UserData,
                                  ItemFields.PrimaryImageAspectRatio,
                                  ItemFields.DateCreated,
                                  ItemFields.MediaStreams,
                                  ItemFields.Taglines,
                                  ItemFields.Genres,
-                                 ItemFields.SeriesInfo,
                                  ItemFields.Overview,
                                  ItemFields.DisplayPreferencesId
                         },

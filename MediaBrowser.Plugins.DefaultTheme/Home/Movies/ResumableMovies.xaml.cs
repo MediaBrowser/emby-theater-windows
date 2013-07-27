@@ -70,10 +70,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.Movies
             {
                 Fields = new[]
                         {
-                            ItemFields.UserData,
                             ItemFields.PrimaryImageAspectRatio,
                             ItemFields.DateCreated,
-                            ItemFields.SeriesInfo,
                             ItemFields.DisplayPreferencesId
                         },
 

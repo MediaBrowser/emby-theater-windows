@@ -69,12 +69,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.Music
             {
                 Fields = new[]
                         {
-                            ItemFields.UserData,
                             ItemFields.PrimaryImageAspectRatio,
                             ItemFields.DateCreated,
-                            ItemFields.SeriesInfo,
-                            ItemFields.DisplayPreferencesId,
-                            ItemFields.AudioInfo
+                            ItemFields.DisplayPreferencesId
                         },
 
                 UserId = SessionManager.CurrentUser.Id,

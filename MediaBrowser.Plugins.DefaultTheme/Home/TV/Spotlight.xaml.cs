@@ -134,7 +134,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.TV
                 SortOrder = SortOrder.Descending,
                 Recursive = true,
                 ImageTypes = new[] { ImageType.Primary },
-                Fields = new[] { ItemFields.SeriesInfo },
                 Filters = new[] { ItemFilter.IsUnplayed }
             });
 

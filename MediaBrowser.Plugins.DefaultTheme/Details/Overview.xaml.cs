@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using MediaBrowser.Model.ApiClient;
+﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Net;
@@ -9,8 +8,6 @@ using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Input;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Details
 {
@@ -46,8 +43,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             BtnPlay.Click += BtnPlay_Click;
             BtnResume.Click += BtnResume_Click;
             BtnPlayTrailer.Click += BtnPlayTrailer_Click;
-
-            Loaded += Overview_Loaded;
         }
 
         private void ReloadItem()
@@ -84,17 +79,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
         async void BtnPlay_Click(object sender, RoutedEventArgs e)
         {
             await _playbackManager.Play(new PlayOptions(_item));
-        }
-
-        private bool _isFirstLoad;
-
-        void Overview_Loaded(object sender, RoutedEventArgs e)
-        {
-            if (_isFirstLoad)
-            {
-                BtnPlay.Focus();
-            }
-            _isFirstLoad = false;
         }
 
         private void ReloadDetails()

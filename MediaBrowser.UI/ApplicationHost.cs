@@ -170,12 +170,7 @@ namespace MediaBrowser.UI
         {
             var logger = LogManager.GetLogger("ApiClient");
 
-            ApiClient = new ApiClient(logger, new AsyncHttpClient(logger, new WebRequestHandler
-            {
-                AutomaticDecompression = DecompressionMethods.Deflate,
-                CachePolicy = new RequestCachePolicy(RequestCacheLevel.Revalidate)
-
-            }), TheaterConfigurationManager.Configuration.ServerHostName, TheaterConfigurationManager.Configuration.ServerApiPort, "Media Browser Theater", Environment.MachineName, Environment.MachineName, ApplicationVersion.ToString())
+            ApiClient = new ApiClient(logger, TheaterConfigurationManager.Configuration.ServerHostName, TheaterConfigurationManager.Configuration.ServerApiPort, "Media Browser Theater", Environment.MachineName, Environment.MachineName, ApplicationVersion.ToString())
             {
                 JsonSerializer = JsonSerializer,
                 ImageQuality = TheaterConfigurationManager.Configuration.DownloadCompressedImages

@@ -51,13 +51,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                     UserId = SessionManager.CurrentUser.Id,
                     Fields = new[]
                         {
-                                 ItemFields.UserData,
                                  ItemFields.PrimaryImageAspectRatio,
                                  ItemFields.DateCreated,
                                  ItemFields.MediaStreams,
                                  ItemFields.Taglines,
                                  ItemFields.Genres,
-                                 ItemFields.SeriesInfo,
                                  ItemFields.Overview,
                                  ItemFields.DisplayPreferencesId
                         },

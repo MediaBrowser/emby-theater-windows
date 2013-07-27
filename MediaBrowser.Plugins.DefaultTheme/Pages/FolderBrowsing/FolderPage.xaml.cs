@@ -46,7 +46,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
 
             try
             {
-                _displayPreferences = await _apiClient.GetDisplayPreferencesAsync(_displayPreferencesId);
+                _displayPreferences = await _apiClient.GetDisplayPreferencesAsync(_displayPreferencesId, _sessionManager.CurrentUser.Id, "DefaultTheme");
             }
             catch (HttpException)
             {

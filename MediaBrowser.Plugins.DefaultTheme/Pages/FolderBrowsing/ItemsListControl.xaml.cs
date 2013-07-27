@@ -123,13 +123,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
 
                 Fields = new[]
                         {
-                                 ItemFields.UserData,
                                  ItemFields.PrimaryImageAspectRatio,
                                  ItemFields.DateCreated,
                                  ItemFields.MediaStreams,
                                  ItemFields.Taglines,
                                  ItemFields.Genres,
-                                 ItemFields.SeriesInfo,
                                  ItemFields.Overview,
                                  ItemFields.DisplayPreferencesId
                         },
@@ -183,7 +181,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
 
             try
             {
-                await ApiClient.UpdateDisplayPreferencesAsync(DisplayPreferences);
+                await ApiClient.UpdateDisplayPreferencesAsync(DisplayPreferences, SessionManager.CurrentUser.Id, "DefaultTheme");
             }
             catch (HttpException)
             {

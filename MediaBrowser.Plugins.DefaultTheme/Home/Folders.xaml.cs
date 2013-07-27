@@ -75,10 +75,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
                 Fields = new[]
                         {
-                            ItemFields.UserData,
                             ItemFields.PrimaryImageAspectRatio,
                             ItemFields.DateCreated,
-                            ItemFields.SeriesInfo,
                             ItemFields.DisplayPreferencesId
                         },
 

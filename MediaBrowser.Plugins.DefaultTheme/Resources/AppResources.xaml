@@ -131,7 +131,7 @@
             <DataTrigger Binding="{Binding Path=DisplayPreferences.ViewType}" Value="{x:Null}">
                 <Setter Property="ItemTemplate" Value="{StaticResource ListPageItemTemplate}"></Setter>
                 <Setter Property="ItemContainerStyle" Value="{DynamicResource AnimatedListBoxItemStyle}"></Setter>
-                <Setter Property="Margin" Value="-20 -10"></Setter>
+                <Setter Property="Margin" Value="-20 -20"></Setter>
                 <Setter Property="ItemsPanel">
                     <Setter.Value>
                         <ItemsPanelTemplate>
@@ -144,11 +144,11 @@
             <DataTrigger Binding="{Binding Path=DisplayPreferences.ViewType}" Value="Poster">
                 <Setter Property="ItemTemplate" Value="{StaticResource ListPageItemTemplate}"></Setter>
                 <Setter Property="ItemContainerStyle" Value="{DynamicResource AnimatedListBoxItemStyle}"></Setter>
-                <Setter Property="Margin" Value="-20 -10"></Setter>
+                <Setter Property="Margin" Value="-20 -20"></Setter>
                 <Setter Property="ItemsPanel">
                     <Setter.Value>
                         <ItemsPanelTemplate>
-                            <controls:VirtualizingWrapPanel ItemHeight="{Binding ItemContainerHeight}" ItemWidth="{Binding ItemContainerWidth}" Orientation="{Binding WrapPanelOrientation}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="50 40">
+                            <controls:VirtualizingWrapPanel ItemHeight="{Binding ItemContainerHeight}" ItemWidth="{Binding ItemContainerWidth}" Orientation="{Binding WrapPanelOrientation}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="50 50">
                             </controls:VirtualizingWrapPanel>
                         </ItemsPanelTemplate>
                     </Setter.Value>
@@ -170,11 +170,11 @@
             <DataTrigger Binding="{Binding Path=DisplayPreferences.ViewType}" Value="List">
                 <Setter Property="ItemTemplate" Value="{StaticResource ListPageListViewItemTemplate}"></Setter>
                 <Setter Property="ItemContainerStyle" Value="{DynamicResource HighlightedListBoxItemStyle}"></Setter>
-                <Setter Property="Margin" Value="0 -10"></Setter>
+                <Setter Property="Margin" Value="0"></Setter>
                 <Setter Property="ItemsPanel">
                     <Setter.Value>
                         <ItemsPanelTemplate>
-                            <controls:VirtualizingWrapPanel ItemHeight="{Binding ItemContainerHeight}" ItemWidth="{Binding ItemContainerWidth}" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="50 40">
+                            <controls:VirtualizingWrapPanel ItemHeight="{Binding ItemContainerHeight}" ItemWidth="{Binding ItemContainerWidth}" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="20">
                             </controls:VirtualizingWrapPanel>
                         </ItemsPanelTemplate>
                     </Setter.Value>

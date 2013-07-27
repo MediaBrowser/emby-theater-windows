@@ -62,9 +62,11 @@
     <Compile Include="Configuration\UserConfigurationUpdatedEventArgs.cs" />
     <Compile Include="Configuration\UserTheaterConfiguration.cs" />
     <Compile Include="Configuration\VlcConfiguration.cs" />
+    <Compile Include="Navigation\NavigationEventArgs.cs" />
     <Compile Include="Playback\MediaChangeEventArgs.cs" />
     <Compile Include="Plugins\IHasThumbImage.cs" />
     <Compile Include="Presentation\IHomePage.cs" />
+    <Compile Include="Presentation\ISupportsThemeMedia.cs" />
     <Compile Include="Presentation\IPresentationManager.cs" />
     <Compile Include="Presentation\ISettingsPage.cs" />
     <Compile Include="Presentation\IStartupEntryPoint.cs" />

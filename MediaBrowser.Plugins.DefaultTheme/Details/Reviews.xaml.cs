@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.ApiClient;
+﻿using System.Linq;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Theater.Interfaces.Presentation;
@@ -51,7 +52,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
         private void LoadReviews(ItemReviewsResult result)
         {
-            LstItems.ItemsSource = CollectionViewSource.GetDefaultView(result.ItemReviews);
+            LstItems.ItemsSource = CollectionViewSource.GetDefaultView(result.ItemReviews.Where(i => !string.IsNullOrEmpty(i.Caption)));
         }
     }
 }

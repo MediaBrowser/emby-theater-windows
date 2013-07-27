@@ -80,14 +80,12 @@ namespace MediaBrowser.UI
             }
 
             await RunStartupTasks().ConfigureAwait(false);
-        }
-
-        public override async Task RunStartupTasks()
-        {
-            await base.RunStartupTasks().ConfigureAwait(false);
 
             Logger.Info("Core startup complete");
+        }
 
+        public void StartEntryPoints()
+        {
             Parallel.ForEach(GetExports<IStartupEntryPoint>(), entryPoint =>
             {
                 try
@@ -133,7 +131,7 @@ namespace MediaBrowser.UI
             ImageManager = new ImageManager(ApiClient, ApplicationPaths, TheaterConfigurationManager);
             RegisterSingleInstance(ImageManager);
 
-            NavigationService = new NavigationService(ThemeManager, () => PlaybackManager, ApiClient, PresentationManager, TheaterConfigurationManager, () => SessionManager, this, InstallationManager, ImageManager);
+            NavigationService = new NavigationService(ThemeManager, () => PlaybackManager, ApiClient, PresentationManager, TheaterConfigurationManager, () => SessionManager, this, InstallationManager, ImageManager, Logger);
             RegisterSingleInstance(NavigationService);
 
             PlaybackManager = new PlaybackManager(TheaterConfigurationManager, Logger, ApiClient, NavigationService, PresentationManager);

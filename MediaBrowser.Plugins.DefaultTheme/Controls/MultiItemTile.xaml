@@ -9,23 +9,15 @@
     
     <Grid x:Name="MainGrid" HorizontalAlignment="Left">
 
-        <Border>
-            <Border.Background>
-                <LinearGradientBrush SpreadMethod="Reflect" ColorInterpolationMode="SRgbLinearInterpolation" StartPoint="0,0" EndPoint="0,1" >
-                    <GradientStop Color="#ffCBCBCB" Offset="0" />
-                    <GradientStop Color="#ff545358" Offset="1" />
-                </LinearGradientBrush>
-            </Border.Background>
-            <controls2:TransitionControl x:Name="TileTransitionControl">
-                <controls2:TransitionControl.TransitionAnimation>
-                    <DoubleAnimation Duration="0:0:1.5" >
-                        <DoubleAnimation.EasingFunction>
-                            <ExponentialEase EasingMode="EaseInOut"></ExponentialEase>
-                        </DoubleAnimation.EasingFunction>
-                    </DoubleAnimation>
-                </controls2:TransitionControl.TransitionAnimation>
-            </controls2:TransitionControl>
-        </Border>
+        <controls2:TransitionControl x:Name="TileTransitionControl">
+            <controls2:TransitionControl.TransitionAnimation>
+                <DoubleAnimation Duration="0:0:1.5" >
+                    <DoubleAnimation.EasingFunction>
+                        <ExponentialEase EasingMode="EaseInOut"></ExponentialEase>
+                    </DoubleAnimation.EasingFunction>
+                </DoubleAnimation>
+            </controls2:TransitionControl.TransitionAnimation>
+        </controls2:TransitionControl>
 
         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
             <Grid.Background>

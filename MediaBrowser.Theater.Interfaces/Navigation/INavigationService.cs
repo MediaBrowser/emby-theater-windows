@@ -1,4 +1,5 @@
 ﻿using MediaBrowser.Model.Dto;
+using System;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 
@@ -9,6 +10,8 @@ namespace MediaBrowser.Theater.Interfaces.Navigation
     /// </summary>
     public interface INavigationService
     {
+        event EventHandler<NavigationEventArgs> Navigated;
+
         /// <summary>
         /// Navigates to home page.
         /// </summary>
@@ -50,7 +53,7 @@ namespace MediaBrowser.Theater.Interfaces.Navigation
         /// <param name="context">The context.</param>
         /// <returns>Task.</returns>
         Task NavigateToPerson(string name, string context = null);
-        
+
         /// <summary>
         /// Navigates the back.
         /// </summary>

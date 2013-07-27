@@ -24,7 +24,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
     /// <summary>
     /// Interaction logic for PanoramaDetailPage.xaml
     /// </summary>
-    public partial class PanoramaDetailPage : BasePage
+    public partial class PanoramaDetailPage : BasePage, ISupportsThemeMedia
     {
         /// <summary>
         /// Gets the API client.
@@ -97,6 +97,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 _item = value;
                 LoadItem();
             }
+        }
+
+        public string ThemeMediaItemId
+        {
+            get { return _item.Id; }
         }
 
         /// <summary>

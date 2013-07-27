@@ -90,7 +90,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
 
             // The rendering tier corresponds to the high-order word of the Tier property. 
             var renderingTier = (RenderCapability.Tier >> 16);
-            
+
             if (renderingTier != 2)
             {
                 CommandBindings.Clear();
@@ -145,7 +145,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
                 {
                     await Task.Delay(10);
                 }
-                
+
                 taskCompletionSource.TrySetResult(true);
             });
 
@@ -161,9 +161,17 @@ namespace MediaBrowser.Theater.Presentation.Controls
 
             if (CanGoBack)
             {
-                AnimateContent(() =>
+                AnimateContent(async () =>
                 {
+                    var current = Content;
+
                     GoBack();
+
+                    while (Content == current)
+                    {
+                        await Task.Delay(10);
+                    }
+
                     taskCompletionSource.TrySetResult(true);
 
                 }, false, true);
@@ -182,15 +190,23 @@ namespace MediaBrowser.Theater.Presentation.Controls
         public Task GoForwardWithTransition()
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
-            
+
             if (CanGoForward)
             {
-                AnimateContent(() =>
+                AnimateContent(async () =>
                 {
+                    var current = Content;
+
                     GoForward();
+
+                    while (Content == current)
+                    {
+                        await Task.Delay(10);
+                    }
+
                     taskCompletionSource.TrySetResult(true);
 
-                }, false);
+                }, false, true);
             }
             else
             {

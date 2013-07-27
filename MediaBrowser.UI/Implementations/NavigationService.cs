@@ -3,6 +3,7 @@ using MediaBrowser.Common.Updates;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Configuration;
 using MediaBrowser.Model.Dto;
+using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Core.InternalPlayer;
 using MediaBrowser.Theater.Core.Login;
 using MediaBrowser.Theater.Core.Settings;
@@ -24,6 +25,18 @@ namespace MediaBrowser.UI.Implementations
     /// </summary>
     internal class NavigationService : INavigationService
     {
+        public event EventHandler<NavigationEventArgs> Navigated
+        {
+            add
+            {
+                App.Instance.ApplicationWindow.Navigated += value;
+            }
+            remove
+            {
+                App.Instance.ApplicationWindow.Navigated -= value;
+            }
+        }
+
         /// <summary>
         /// The _theme manager
         /// </summary>
@@ -44,6 +57,7 @@ namespace MediaBrowser.UI.Implementations
         private readonly IApplicationHost _appHost;
 
         private readonly IImageManager _imageManager;
+        private readonly ILogger _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NavigationService" /> class.
@@ -52,7 +66,7 @@ namespace MediaBrowser.UI.Implementations
         /// <param name="playbackManagerFactory">The playback manager factory.</param>
         /// <param name="apiClient">The API client.</param>
         /// <param name="presentationManager">The presentation manager.</param>
-        public NavigationService(IThemeManager themeManager, Func<IPlaybackManager> playbackManagerFactory, IApiClient apiClient, IPresentationManager presentationManager, ITheaterConfigurationManager config, Func<ISessionManager> sessionFactory, IApplicationHost appHost, IInstallationManager installationManager, IImageManager imageManager)
+        public NavigationService(IThemeManager themeManager, Func<IPlaybackManager> playbackManagerFactory, IApiClient apiClient, IPresentationManager presentationManager, ITheaterConfigurationManager config, Func<ISessionManager> sessionFactory, IApplicationHost appHost, IInstallationManager installationManager, IImageManager imageManager, ILogger logger)
         {
             _themeManager = themeManager;
             _playbackManagerFactory = playbackManagerFactory;
@@ -63,7 +77,7 @@ namespace MediaBrowser.UI.Implementations
             _appHost = appHost;
             _installationManager = installationManager;
             _imageManager = imageManager;
-     
+            _logger = logger;
         }
 
         /// <summary>

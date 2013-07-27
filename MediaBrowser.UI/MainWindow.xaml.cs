@@ -1,7 +1,9 @@
 ﻿using MediaBrowser.Common;
+using MediaBrowser.Common.Events;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Interfaces.Configuration;
+using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
@@ -28,6 +30,8 @@ namespace MediaBrowser.UI
     /// </summary>
     public partial class MainWindow : BaseWindow
     {
+        internal event EventHandler<NavigationEventArgs> Navigated;
+
         private DateTime _lastMouseInput;
         /// <summary>
         /// Gets or sets the system activity timer.
@@ -136,7 +140,7 @@ namespace MediaBrowser.UI
                                                       : Visibility.Collapsed;
 
                 }, DispatcherPriority.Background);
-                
+
                 _userInput.MouseMove += _userInput_MouseMove;
             }
         }
@@ -276,23 +280,9 @@ namespace MediaBrowser.UI
             }
         }
 
-        /// <summary>
-        /// Navigates the specified page.
-        /// </summary>
-        /// <param name="page">The page.</param>
-        internal Task Navigate(Page page)
+        internal Page CurrentPage
         {
-            _logger.Info("Navigating to " + page.GetType().Name);
-            var task = new TaskCompletionSource<bool>();
-
-            Dispatcher.InvokeAsync(async () =>
-            {
-                await PageFrame.NavigateWithTransition(page);
-
-                task.TrySetResult(true);
-            });
-
-            return task.Task;
+            get { return PageFrame.Content as Page; }
         }
 
         private TransitionEffect GetTransitionEffect(string name)
@@ -342,6 +332,34 @@ namespace MediaBrowser.UI
         }
 
         /// <summary>
+        /// Navigates the specified page.
+        /// </summary>
+        /// <param name="page">The page.</param>
+        internal Task Navigate(Page page)
+        {
+            _logger.Info("Navigating to " + page.GetType().Name);
+            var task = new TaskCompletionSource<bool>();
+
+            Dispatcher.InvokeAsync(async () =>
+            {
+                var current = CurrentPage;
+
+                await PageFrame.NavigateWithTransition(page);
+
+                task.TrySetResult(true);
+
+                EventHelper.FireEventIfNotNull(Navigated, this, new NavigationEventArgs
+                {
+                    NewPage = page,
+                    OldPage = current
+
+                }, _logger);
+            });
+
+            return task.Task;
+        }
+
+        /// <summary>
         /// Navigates the back.
         /// </summary>
         internal Task NavigateBack()
@@ -352,7 +370,16 @@ namespace MediaBrowser.UI
             {
                 if (PageFrame.NavigationService.CanGoBack)
                 {
+                    var current = CurrentPage;
+
                     await PageFrame.GoBackWithTransition();
+
+                    EventHelper.FireEventIfNotNull(Navigated, this, new NavigationEventArgs
+                    {
+                        NewPage = CurrentPage,
+                        OldPage = current
+
+                    }, _logger);
                 }
                 task.TrySetResult(true);
             });
@@ -371,7 +398,16 @@ namespace MediaBrowser.UI
             {
                 if (PageFrame.NavigationService.CanGoForward)
                 {
+                    var current = CurrentPage;
+
                     await PageFrame.GoForwardWithTransition();
+
+                    EventHelper.FireEventIfNotNull(Navigated, this, new NavigationEventArgs
+                    {
+                        NewPage = CurrentPage,
+                        OldPage = current
+
+                    }, _logger);
                 }
                 task.TrySetResult(true);
             });

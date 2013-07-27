@@ -12,7 +12,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
     /// <summary>
     /// Interaction logic for FolderPage.xaml
     /// </summary>
-    public partial class FolderPage : BasePage
+    public partial class FolderPage : BasePage, ISupportsThemeMedia
     {
         private readonly string _displayPreferencesId;
 
@@ -60,5 +60,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
         protected override void FocusOnFirstLoad()
         {
         }
+
+        public string ThemeMediaItemId
+        {
+            get { return _parentItem.Id; }
+        }
+
     }
 }

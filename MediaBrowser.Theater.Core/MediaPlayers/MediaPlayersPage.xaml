@@ -13,7 +13,7 @@
     <Page.Resources>
         <DataTemplate x:Key="MediaPlayersListBoxItemTemplate" DataType="{x:Type mediaPlayers2:MediaPlayerViewModel}">
 
-            <Grid Width="1000">
+            <Grid Width="1200">
 
                 <Grid.Background>
                     <SolidColorBrush Color="#A6000000"></SolidColorBrush>

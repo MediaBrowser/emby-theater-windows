@@ -277,7 +277,7 @@ namespace MediaBrowser.Theater.Core.MediaPlayers
                 };
 
                 var textBlock = new TextBlock();
-                textBlock.SetResourceReference(TextBlock.StyleProperty, "TextBlockStyle");
+                textBlock.SetResourceReference(TextBlock.StyleProperty, "SmallTextBlockStyle");
                 textBlock.Text = ext;
 
                 checkbox.Content = textBlock;
@@ -319,6 +319,7 @@ namespace MediaBrowser.Theater.Core.MediaPlayers
         private static readonly string[] VideoFileExtensions = new[]
             {
                 ".mkv",
+                ".mk3d",
                 ".m2t",
                 ".m2ts",
                 ".ts",

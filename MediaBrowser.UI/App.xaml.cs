@@ -236,6 +236,8 @@ namespace MediaBrowser.UI
 
                 ShowApplicationWindow();
 
+                _compositionRoot.StartEntryPoints();
+
                 await LoadInitialPresentation().ConfigureAwait(false);
             }
             catch (Exception ex)

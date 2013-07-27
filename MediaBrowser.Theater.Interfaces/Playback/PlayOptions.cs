@@ -1,8 +1,8 @@
-﻿using System.Linq;
-using MediaBrowser.Model.Dto;
+﻿using MediaBrowser.Model.Dto;
+using MediaBrowser.Theater.Interfaces.Configuration;
 using System;
 using System.Collections.Generic;
-using MediaBrowser.Theater.Interfaces.Configuration;
+using System.Linq;
 
 namespace MediaBrowser.Theater.Interfaces.Playback
 {
@@ -68,12 +68,6 @@ namespace MediaBrowser.Theater.Interfaces.Playback
         public DateTime PlaybackStartTime { get; private set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether [show now playing view].
-        /// </summary>
-        /// <value><c>true</c> if [show now playing view]; otherwise, <c>false</c>.</value>
-        public bool ShowNowPlayingView { get; set; }
-
-        /// <summary>
         /// Gets or sets a value indicating whether [go full screen].
         /// </summary>
         /// <value><c>true</c> if [go full screen]; otherwise, <c>false</c>.</value>
@@ -98,7 +92,6 @@ namespace MediaBrowser.Theater.Interfaces.Playback
         public PlayOptions(IEnumerable<BaseItemDto> items)
         {
             GoFullScreen = true;
-            ShowNowPlayingView = true;
             Items = items.ToList();
         }
     }

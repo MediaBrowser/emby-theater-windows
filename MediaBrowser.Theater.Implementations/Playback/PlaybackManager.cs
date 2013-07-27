@@ -122,11 +122,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
 
             if (player is IInternalMediaPlayer)
             {
-                await _appWindow.Window.Dispatcher.InvokeAsync(() =>
-                {
-                    _appWindow.BackdropContainer.Visibility = Visibility.Collapsed;
-                    _appWindow.WindowOverlay.SetResourceReference(FrameworkElement.StyleProperty, "WindowBackgroundContentDuringPlayback");
-                });
+                await _appWindow.Window.Dispatcher.InvokeAsync(() => _appWindow.WindowOverlay.SetResourceReference(FrameworkElement.StyleProperty, "WindowBackgroundContentDuringPlayback"));
 
                 if (options.GoFullScreen)
                 {
@@ -161,11 +157,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
         {
             if (eventArgs.Player is IInternalMediaPlayer)
             {
-                await _appWindow.Window.Dispatcher.InvokeAsync(() =>
-                {
-                    _appWindow.BackdropContainer.Visibility = Visibility.Visible;
-                    _appWindow.WindowOverlay.SetResourceReference(FrameworkElement.StyleProperty, "WindowBackgroundContent");
-                });
+                await _appWindow.Window.Dispatcher.InvokeAsync(() => _appWindow.WindowOverlay.SetResourceReference(FrameworkElement.StyleProperty, "WindowBackgroundContent"));
             }
 
             EventHelper.QueueEventIfNotNull(PlaybackCompleted, this, eventArgs, _logger);

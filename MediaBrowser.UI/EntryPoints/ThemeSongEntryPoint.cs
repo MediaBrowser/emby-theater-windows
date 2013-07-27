@@ -42,6 +42,12 @@ namespace MediaBrowser.UI.EntryPoints
 
         async void _nav_Navigated(object sender, NavigationEventArgs e)
         {
+            // If something is already playing, and it's not a theme song, leave it alone
+            if (string.IsNullOrEmpty(_currentPlayingOwnerId) && _playback.MediaPlayers.Any(i => i.PlayState != PlayState.Idle))
+            {
+                return;
+            }
+
             var itemPage = e.NewPage as ISupportsThemeMedia;
 
             if (itemPage == null || _session.CurrentUser == null || string.IsNullOrEmpty(itemPage.ThemeMediaItemId))

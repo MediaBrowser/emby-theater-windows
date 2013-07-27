@@ -143,11 +143,29 @@ namespace MediaBrowser.UI
 
                 _userInput.MouseMove += _userInput_MouseMove;
             }
+
+            UpdateBackdropContainerVisibility();
         }
 
         void _playbackManager_PlaybackCompleted(object sender, PlaybackStopEventArgs e)
         {
             _userInput.MouseMove -= _userInput_MouseMove;
+            BackdropContainer.Visibility = Visibility.Visible;
+        }
+
+        private void UpdateBackdropContainerVisibility()
+        {
+            var visibility = _playbackManager.MediaPlayers.Any(i =>
+            {
+                var media = i.CurrentMedia;
+
+                return media != null && !media.IsAudio;
+
+            })
+                                               ? Visibility.Collapsed
+                                               : Visibility.Visible;
+
+            Dispatcher.InvokeAsync(() => BackdropContainer.Visibility = visibility);
         }
 
         void _session_UserLoggedOut(object sender, EventArgs e)

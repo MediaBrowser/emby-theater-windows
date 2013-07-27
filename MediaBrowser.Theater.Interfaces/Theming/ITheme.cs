@@ -20,6 +20,14 @@ namespace MediaBrowser.Theater.Interfaces.Theming
         Page GetItemPage(BaseItemDto item, string context);
 
         /// <summary>
+        /// Gets the person page.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <param name="context">The context.</param>
+        /// <returns>Page.</returns>
+        Page GetPersonPage(BaseItemDto item, string context);
+        
+        /// <summary>
         /// Shows the default error message.
         /// </summary>
         void ShowDefaultErrorMessage();

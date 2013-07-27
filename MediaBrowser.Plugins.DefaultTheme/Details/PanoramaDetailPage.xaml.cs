@@ -333,22 +333,48 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
         private async void RenderDetailControls(BaseItemDto item)
         {
-            var themeMediaTask = _apiClient.GetAllThemeMediaAsync(_sessionManager.CurrentUser.Id, item.Id, false);
-            var criticReviewsTask = _apiClient.GetCriticReviews(item.Id);
+            var themeMediaTask = GetThemeMedia(item);
+            var criticReviewsTask = GetCriticReviews(item);
+
+            await Task.WhenAll(themeMediaTask, criticReviewsTask);
+
+            LoadMenuList(item, themeMediaTask.Result, criticReviewsTask.Result);
+        }
+
+        private async Task<ItemReviewsResult> GetCriticReviews(BaseItemDto item)
+        {
+            if (item.IsPerson || item.IsStudio || item.IsArtist || item.IsGameGenre || item.IsMusicGenre || item.IsGenre)
+            {
+                return new ItemReviewsResult();
+            }
 
             try
             {
-                await Task.WhenAll(themeMediaTask, criticReviewsTask);
+                return await _apiClient.GetCriticReviews(item.Id);
             }
-            catch (Exception ex)
+            catch
             {
                 // Logged at lower levels
+                return new ItemReviewsResult();
+            }
+        }
+
+        private async Task<AllThemeMediaResult> GetThemeMedia(BaseItemDto item)
+        {
+            if (item.IsPerson || item.IsStudio || item.IsArtist || item.IsGameGenre || item.IsMusicGenre || item.IsGenre)
+            {
+                return new AllThemeMediaResult();
             }
 
-            var allThemeMedia = themeMediaTask.IsCompleted ? themeMediaTask.Result : new AllThemeMediaResult();
-            var criticReviews = criticReviewsTask.IsCompleted ? criticReviewsTask.Result : new ItemReviewsResult();
-
-            LoadMenuList(item, allThemeMedia, criticReviews);
+            try
+            {
+                return await _apiClient.GetAllThemeMediaAsync(_sessionManager.CurrentUser.Id, item.Id, false);
+            }
+            catch
+            {
+                // Logged at lower levels
+                return new AllThemeMediaResult();
+            }
         }
 
         private void LoadMenuList(BaseItemDto item, AllThemeMediaResult themeMediaResult, ItemReviewsResult reviewsResult)

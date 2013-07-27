@@ -150,6 +150,19 @@ namespace MediaBrowser.UI.Implementations
         }
 
         /// <summary>
+        /// Navigates to person.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="context">The context.</param>
+        /// <returns>Task.</returns>
+        public async Task NavigateToPerson(string name, string context = null)
+        {
+            var item = await _apiClient.GetPersonAsync(name, _sessionFactory().CurrentUser.Id);
+
+            await App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(async () => await Navigate(_themeManager.CurrentTheme.GetPersonPage(item, context)));
+        }
+
+        /// <summary>
         /// Navigates the back.
         /// </summary>
         /// <returns>DispatcherOperation.</returns>

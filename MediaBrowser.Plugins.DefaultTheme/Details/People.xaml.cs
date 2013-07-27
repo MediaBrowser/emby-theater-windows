@@ -33,6 +33,20 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             get { return LstItems; }
         }
 
+        protected override async void OnInitialized(EventArgs e)
+        {
+            base.OnInitialized(e);
+
+            LstItems.ItemInvoked += LstItems_ItemInvoked;
+        }
+
+        async void LstItems_ItemInvoked(object sender, ItemEventArgs<object> e)
+        {
+            var item = (BaseItemDtoViewModel)e.Argument;
+
+            await NavigationManager.NavigateToPerson(item.Item.Name);
+        }
+
         protected override Task<ItemsResult> GetItemsAsync()
         {
             return Task.FromResult(new ItemsResult

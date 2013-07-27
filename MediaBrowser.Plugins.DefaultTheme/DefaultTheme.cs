@@ -148,6 +148,17 @@ namespace MediaBrowser.Plugins.DefaultTheme
         }
 
         /// <summary>
+        /// Gets the person page.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <param name="context">The context.</param>
+        /// <returns>Page.</returns>
+        public Page GetPersonPage(BaseItemDto item, string context)
+        {
+            return new PanoramaDetailPage(item, _apiClient, _sessionManager, _presentationManager, _imageManager, _navService, _playbackManager, _themeManager);
+        }
+
+        /// <summary>
         /// Shows the default error message.
         /// </summary>
         /// <exception cref="System.NotImplementedException"></exception>

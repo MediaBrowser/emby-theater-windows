@@ -197,6 +197,16 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
 
             ShowViewButton();
 
+            if (ParentItem.IsType("season") && ParentItem.IndexNumber.HasValue)
+            {
+                TxtParentName.Text = "Season " + ParentItem.IndexNumber.Value;
+                TxtParentName.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                TxtParentName.Visibility = Visibility.Collapsed;
+            }
+
             await pageTitleTask;
         }
 

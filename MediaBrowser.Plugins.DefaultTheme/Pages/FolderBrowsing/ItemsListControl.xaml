@@ -11,12 +11,15 @@
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
         <Grid.RowDefinitions>
+            <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="auto"></RowDefinition>
         </Grid.RowDefinitions>
+        
+        <TextBlock x:Name="TxtParentName" Style="{DynamicResource TextBlockStyle}" Grid.Row="0" Margin="25 5 0 0"></TextBlock>
 
-        <Grid Grid.Row="0" Margin="0 25 0 0">
+        <Grid Grid.Row="1" Margin="0 25 0 0">
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto"></ColumnDefinition>
@@ -28,7 +31,7 @@
             </controls:ExtendedListBox>
         </Grid>
 
-        <Grid Grid.Row="1" Margin="0 0 0 100" Name="PnlThumbstripInfo">
+        <Grid Grid.Row="2" Margin="0 0 0 100" Name="PnlThumbstripInfo">
 
             <StackPanel Orientation="Vertical">
                 <TextBlock Style="{DynamicResource TextBlockStyle}" Foreground="OrangeRed" Name="TxtGenres" Margin="300 0 300 0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" HorizontalAlignment="Center"></TextBlock>
@@ -36,7 +39,7 @@
             </StackPanel>
         </Grid>
 
-        <Grid Grid.Row="2" Margin="25 25 25 20" x:Name="BottomGrid">
+        <Grid Grid.Row="3" Margin="25 25 25 20" x:Name="BottomGrid">
 
             <Image Name="ImgLogo" Stretch="Uniform" HorizontalAlignment="Left" VerticalAlignment="Bottom" Height="100"></Image>
             <details:ItemInfoFooter x:Name="ItemInfoFooter" HorizontalAlignment="Right" VerticalAlignment="Bottom" VerticalContentAlignment="Center" KeyboardNavigation.IsTabStop="False"></details:ItemInfoFooter>

@@ -28,6 +28,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.UserProfileMenu
 
             BtnClose.Click += BtnClose_Click;
             BtnLogout.Click += BtnLogout_Click;
+
+            DataContext = this;
         }
 
         async void BtnLogout_Click(object sender, RoutedEventArgs e)

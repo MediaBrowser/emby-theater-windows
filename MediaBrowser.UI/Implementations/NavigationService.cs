@@ -109,14 +109,46 @@ namespace MediaBrowser.UI.Implementations
 
             if (systemConfig.ManualLoginClients.Contains(ManualLoginCategory.MediaBrowserTheater))
             {
-                await App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(async () => await Navigate(new ManualLoginPage(string.Empty, _sessionFactory(), _presentationManager)));
+                await NavigateToManualLoginPage();
             }
             else
             {
-                await App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(async () => await Navigate(new LoginPage(_apiClient, _imageManager, this, _sessionFactory(), _presentationManager)));
+                await NavigateToVisualLoginPage();
             }
         }
 
+        private Task NavigateToVisualLoginPage()
+        {
+            var task = new TaskCompletionSource<bool>();
+
+            App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(async () =>
+            {
+
+                await Navigate(new LoginPage(_apiClient, _imageManager, this, _sessionFactory(), _presentationManager));
+
+                task.TrySetResult(true);
+
+            });
+
+            return task.Task;
+        }
+
+        private Task NavigateToManualLoginPage()
+        {
+            var task = new TaskCompletionSource<bool>();
+
+            App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(async () =>
+            {
+
+                await Navigate(new ManualLoginPage(string.Empty, _sessionFactory(), _presentationManager));
+
+                task.TrySetResult(true);
+
+            });
+
+            return task.Task;
+        }
+        
         /// <summary>
         /// Navigates to internal player page.
         /// </summary>

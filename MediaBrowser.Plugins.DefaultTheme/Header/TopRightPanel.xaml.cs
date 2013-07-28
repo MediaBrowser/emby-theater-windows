@@ -1,18 +1,20 @@
-﻿using System.Windows.Threading;
-using MediaBrowser.Model.ApiClient;
+﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
+using MediaBrowser.Plugins.DefaultTheme.UserProfileMenu;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
+using MediaBrowser.Theater.Presentation.Controls;
 using System;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Threading;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Header
 {
@@ -51,6 +53,13 @@ namespace MediaBrowser.Plugins.DefaultTheme.Header
 
             PlaybackManager.PlaybackStarted += PlaybackManager_PlaybackStarted;
             PlaybackManager.PlaybackCompleted += PlaybackManager_PlaybackCompleted;
+
+            CurrentUserButton.Click += CurrentUserButton_Click;
+        }
+
+        void CurrentUserButton_Click(object sender, RoutedEventArgs e)
+        {
+            new UserProfileWindow(SessionManager, ImageManager, ApiClient).ShowModal(this.GetWindow());
         }
 
         void TopRightPanel_Loaded(object sender, RoutedEventArgs e)

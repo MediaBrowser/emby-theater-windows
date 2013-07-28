@@ -150,7 +150,7 @@ namespace MediaBrowser.UI
         void _playbackManager_PlaybackCompleted(object sender, PlaybackStopEventArgs e)
         {
             _userInput.MouseMove -= _userInput_MouseMove;
-            BackdropContainer.Visibility = Visibility.Visible;
+            Dispatcher.InvokeAsync(() => BackdropContainer.Visibility = Visibility.Visible);
         }
 
         private void UpdateBackdropContainerVisibility()

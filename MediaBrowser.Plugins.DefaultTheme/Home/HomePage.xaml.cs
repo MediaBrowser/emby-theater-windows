@@ -1,6 +1,4 @@
-﻿using System.Threading;
-using System.Windows.Threading;
-using MediaBrowser.Model.ApiClient;
+﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Net;
@@ -8,62 +6,69 @@ using MediaBrowser.Plugins.DefaultTheme.Home.Apps;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
-using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.Pages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Threading;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Home
 {
     /// <summary>
     /// Interaction logic for HomePage.xaml
     /// </summary>
-    public partial class HomePage : BasePage
+    public partial class HomePage : BasePage, ISupportsItemBackdrops
     {
         /// <summary>
         /// Gets the API client.
         /// </summary>
         /// <value>The API client.</value>
-        protected IApiClient ApiClient { get; private set; }
+        private readonly IApiClient _apiClient;
+
         /// <summary>
         /// Gets the image manager.
         /// </summary>
         /// <value>The image manager.</value>
-        protected IImageManager ImageManager { get; private set; }
+        private readonly IImageManager _imageManager;
+
         /// <summary>
         /// Gets the session manager.
         /// </summary>
         /// <value>The session manager.</value>
-        protected ISessionManager SessionManager { get; private set; }
+        private readonly ISessionManager _sessionManager;
+
         /// <summary>
         /// Gets the application window.
         /// </summary>
         /// <value>The application window.</value>
-        protected IPresentationManager PresentationManager { get; private set; }
+        private readonly IPresentationManager _presentationManager;
+
         /// <summary>
         /// Gets the navigation manager.
         /// </summary>
         /// <value>The navigation manager.</value>
-        protected INavigationService NavigationManager { get; private set; }
+        private readonly INavigationService _navigationManager;
 
-        public BaseItemDto ParentItem { get; set; }
+        private readonly BaseItemDto _parentItem;
+
         public string DisplayPreferencesId { get; set; }
 
         private readonly ILogger _logger;
 
-        public HomePage(IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IPresentationManager applicationWindow, INavigationService navigationManager, ILogger logger)
+        public HomePage(BaseItemDto parentItem, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IPresentationManager applicationWindow, INavigationService navigationManager, ILogger logger)
         {
-            NavigationManager = navigationManager;
-            PresentationManager = applicationWindow;
-            SessionManager = sessionManager;
-            ImageManager = imageManager;
-            ApiClient = apiClient;
+            _navigationManager = navigationManager;
+            _presentationManager = applicationWindow;
+            _sessionManager = sessionManager;
+            _imageManager = imageManager;
+            _apiClient = apiClient;
             _logger = logger;
+            _parentItem = parentItem;
 
             InitializeComponent();
         }
@@ -75,9 +80,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             MenuList.SelectionChanged += MenuList_SelectionChanged;
 
-            ParentItem = await ApiClient.GetRootFolderAsync(SessionManager.CurrentUser.Id);
-
-            DisplayPreferencesId = ParentItem.DisplayPreferencesId;
+            DisplayPreferencesId = _parentItem.DisplayPreferencesId;
 
             new ListFocuser(MenuList).FocusAfterContainersGenerated(0);
 
@@ -85,7 +88,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             try
             {
-                var itemCounts = await ApiClient.GetItemCountsAsync(SessionManager.CurrentUser.Id);
+                var itemCounts = await _apiClient.GetItemCountsAsync(_sessionManager.CurrentUser.Id);
 
                 if (itemCounts.MovieCount > 0 || itemCounts.TrailerCount > 0)
                 {
@@ -108,10 +111,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             }
             catch (HttpException)
             {
-                PresentationManager.ShowDefaultErrorMessage();
+                _presentationManager.ShowDefaultErrorMessage();
             }
 
-            if (PresentationManager.GetApps(SessionManager.CurrentUser).Any())
+            if (_presentationManager.GetApps(_sessionManager.CurrentUser).Any())
             {
                 views.Add("apps");
             }
@@ -152,15 +155,15 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             if (string.Equals(item, "movies"))
             {
-                PageContent.Content = new Movies.Movies(ParentItem, ApiClient, ImageManager, SessionManager, NavigationManager, PresentationManager);
+                PageContent.Content = new Movies.Movies(_parentItem, _apiClient, _imageManager, _sessionManager, _navigationManager, _presentationManager);
             }
             else if (string.Equals(item, "tv"))
             {
-                PageContent.Content = new TV.TV(ParentItem, ApiClient, ImageManager, SessionManager, NavigationManager, PresentationManager);
+                PageContent.Content = new TV.TV(_parentItem, _apiClient, _imageManager, _sessionManager, _navigationManager, _presentationManager);
             }
             else if (string.Equals(item, "music"))
             {
-                PageContent.Content = new Music.Music(ParentItem, ApiClient, ImageManager, SessionManager, NavigationManager, PresentationManager);
+                PageContent.Content = new Music.Music(_parentItem, _apiClient, _imageManager, _sessionManager, _navigationManager, _presentationManager);
             }
             else if (string.Equals(item, "games"))
             {
@@ -168,33 +171,22 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             }
             else if (string.Equals(item, "apps"))
             {
-                PageContent.Content = new AppsControl(PresentationManager, SessionManager, _logger);
+                PageContent.Content = new AppsControl(_presentationManager, _sessionManager, _logger);
             }
             if (string.Equals(item, "media collections"))
             {
-                PageContent.Content = new Folders(ParentItem, new Model.Entities.DisplayPreferences
+                PageContent.Content = new Folders(_parentItem, new Model.Entities.DisplayPreferences
                 {
                     PrimaryImageHeight = 225,
                     PrimaryImageWidth = 400
 
-                }, ApiClient, ImageManager, SessionManager, NavigationManager, PresentationManager);
+                }, _apiClient, _imageManager, _sessionManager, _navigationManager, _presentationManager);
             }
         }
 
         void HomePage_Loaded(object sender, RoutedEventArgs e)
         {
-            PresentationManager.SetDefaultPageTitle();
-
-            var parent = ParentItem;
-
-            if (parent == null)
-            {
-                PresentationManager.ClearBackdrops();
-            }
-            else
-            {
-                PresentationManager.SetBackdrops(parent);
-            }
+            _presentationManager.SetDefaultPageTitle();
         }
 
         void HomePage_Unloaded(object sender, RoutedEventArgs e)
@@ -212,6 +204,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                     _selectionChangeTimer = null;
                 }
             }
+        }
+
+        public BaseItemDto BackdropItem
+        {
+            get { return _parentItem; }
         }
     }
 }

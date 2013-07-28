@@ -51,6 +51,7 @@ namespace MediaBrowser.Theater.Implementations.Session
             }
 
             await _navService.NavigateToLoginPage();
+
             _navService.ClearHistory();
         }
 

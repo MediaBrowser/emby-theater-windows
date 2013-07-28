@@ -46,7 +46,6 @@ namespace MediaBrowser.UI.StartupWizard
         void StartupWizardPage_Loaded(object sender, RoutedEventArgs e)
         {
             _presentation.SetDefaultPageTitle();
-            _presentation.ClearBackdrops();
         }
     }
 }

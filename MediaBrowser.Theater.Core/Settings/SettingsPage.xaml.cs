@@ -77,7 +77,6 @@ namespace MediaBrowser.Theater.Core.Settings
         void SettingsPage_Loaded(object sender, RoutedEventArgs e)
         {
             _presentationManager.SetDefaultPageTitle();
-            _presentationManager.ClearBackdrops();
         }
         
         private void LoadPluginSettingsList(IEnumerable<ISettingsPage> allSettingsPages)

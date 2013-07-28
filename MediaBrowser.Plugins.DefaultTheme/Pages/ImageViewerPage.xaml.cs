@@ -14,7 +14,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
     /// <summary>
     /// Interaction logic for ImageViewerPage.xaml
     /// </summary>
-    public partial class ImageViewerPage : BasePage
+    public partial class ImageViewerPage : BasePage, ISupportsThemeMedia
     {
         private const int RotationPeriodMs = 5000;
 
@@ -28,6 +28,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         private Timer CurrentItemTimer { get; set; }
 
         private readonly object _timerLock = new object();
+
+        private readonly string _ownerItemId;
 
         /// <summary>
         /// The _effects
@@ -54,12 +56,13 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         /// <value>The random.</value>
         private readonly Random _random = new Random(Guid.NewGuid().GetHashCode());
 
-        public ImageViewerPage(IThemeManager themeManager, string title, List<string> urls, IImageManager imageManager)
+        public ImageViewerPage(IThemeManager themeManager, string title, List<string> urls, IImageManager imageManager, string ownerItemId)
         {
             _themeManager = themeManager;
             _title = title;
             _urls = urls;
             _imageManager = imageManager;
+            _ownerItemId = ownerItemId;
             InitializeComponent();
         }
 
@@ -145,6 +148,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
         {
             ReloadTimer();
             _themeManager.CurrentTheme.SetGlobalContentVisibility(false);
+        }
+
+        public string ThemeMediaItemId
+        {
+            get { return _ownerItemId; }
         }
     }
 }

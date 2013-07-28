@@ -72,7 +72,6 @@ namespace MediaBrowser.Theater.Core.Plugins
         void HomePage_Loaded(object sender, RoutedEventArgs e)
         {
             _presentation.SetDefaultPageTitle();
-            _presentation.ClearBackdrops();
         }
     }
 }

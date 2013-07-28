@@ -12,7 +12,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
     /// <summary>
     /// Interaction logic for FolderPage.xaml
     /// </summary>
-    public partial class FolderPage : BasePage, ISupportsThemeMedia
+    public partial class FolderPage : BasePage, ISupportsThemeMedia, ISupportsBackdrops
     {
         private readonly string _displayPreferencesId;
 
@@ -65,6 +65,5 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
         {
             get { return _parentItem.Id; }
         }
-
     }
 }

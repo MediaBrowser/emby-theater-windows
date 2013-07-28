@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MediaBrowser.Model.Dto;
+using System.Windows.Controls;
 
 namespace MediaBrowser.Theater.Interfaces.Presentation
 {
@@ -6,6 +7,6 @@ namespace MediaBrowser.Theater.Interfaces.Presentation
     {
         string Name { get; }
 
-        Type PageType { get; }
+        Page GetHomePage(BaseItemDto rootFolder);
     }
 }

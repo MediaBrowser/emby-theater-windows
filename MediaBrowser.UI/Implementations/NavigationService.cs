@@ -144,9 +144,9 @@ namespace MediaBrowser.UI.Implementations
                 homePages.FirstOrDefault(i => string.Equals(i.Name, "Default")) ??
                 homePages.First();
 
-            var page = (Page)_appHost.CreateInstance(homePage.PageType);
+            var rootItem = await _apiClient.GetRootFolderAsync(_sessionFactory().CurrentUser.Id);
 
-            await Navigate(page);
+            await Navigate(homePage.GetHomePage(rootItem));
         }
 
         /// <summary>

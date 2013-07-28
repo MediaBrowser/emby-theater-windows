@@ -36,7 +36,6 @@ namespace MediaBrowser.Theater.Core.Login
 
         void LoginPage_Loaded(object sender, RoutedEventArgs e)
         {
-            PresentationManager.ClearBackdrops();
             PresentationManager.SetDefaultPageTitle();
         }
 

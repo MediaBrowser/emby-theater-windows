@@ -77,7 +77,6 @@ namespace MediaBrowser.Theater.Core.Plugins
         void InstalledPluginPage_Loaded(object sender, RoutedEventArgs e)
         {
             _presentationManager.SetDefaultPageTitle();
-            _presentationManager.ClearBackdrops();
 
             SelectUpdateLevel.SelectedValue = _plugin.Plugin.Configuration.UpdateClass.ToString();
 

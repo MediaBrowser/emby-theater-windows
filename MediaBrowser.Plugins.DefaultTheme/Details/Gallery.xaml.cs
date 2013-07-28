@@ -72,7 +72,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
             images = images.Skip(selectedIndex).Concat(images.Take(selectedIndex)).ToList();
 
-            await _nav.Navigate(new ImageViewerPage(_themeManager, Item.Name, images, _imageManager));
+            await _nav.Navigate(new ImageViewerPage(_themeManager, Item.Name, images, _imageManager, _item.Id));
         }
 
         /// <summary>

@@ -26,7 +26,7 @@
             <TextBlock Style="{DynamicResource TextBlockStyle}" Text="Password" Margin="0 40 0 0"></TextBlock>
             <controls:ExtendedTextBox x:Name="TxtPassword"></controls:ExtendedTextBox>
 
-            <Button x:Name="BtnSubmit" Margin="0 40 0 0">
+            <Button x:Name="BtnSubmit" Margin="0 40 0 0" IsDefault="True">
                 <TextBlock Style="{DynamicResource TextBlockStyle}" Text="Sign In"></TextBlock>
             </Button>
         </StackPanel>

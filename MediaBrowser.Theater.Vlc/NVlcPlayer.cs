@@ -253,6 +253,7 @@ namespace MediaBrowser.Theater.Vlc
                 _mediaListPlayer.InnerPlayer.Events.PlayerPaused += Events_PlayerPaused;
                 _mediaListPlayer.InnerPlayer.Events.PlayerPlaying += Events_PlayerPaused;
                 _mediaListPlayer.InnerPlayer.Events.PlayerStopped += Events_PlayerStopped;
+                _mediaListPlayer.InnerPlayer.Events.MediaEnded += Events_MediaEnded;
                 _mediaListPlayer.Play();
 
                 var position = options.StartPositionTicks;
@@ -274,6 +275,11 @@ namespace MediaBrowser.Theater.Vlc
             }
 
             return _taskResult;
+        }
+
+        async void Events_MediaEnded(object sender, EventArgs e)
+        {
+            await Stop();
         }
 
         void Events_PlayerPaused(object sender, EventArgs e)
@@ -613,6 +619,7 @@ namespace MediaBrowser.Theater.Vlc
                 _mediaListPlayer.InnerPlayer.Events.PlayerPaused -= Events_PlayerPaused;
                 _mediaListPlayer.InnerPlayer.Events.PlayerPlaying -= Events_PlayerPaused;
                 _mediaListPlayer.InnerPlayer.Events.PlayerStopped -= Events_PlayerStopped;
+                _mediaListPlayer.InnerPlayer.Events.MediaEnded -= Events_MediaEnded;
                 _mediaListPlayer.InnerPlayer.Dispose();
             }
 

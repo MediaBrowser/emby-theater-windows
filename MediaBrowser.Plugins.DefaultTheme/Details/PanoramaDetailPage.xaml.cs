@@ -24,7 +24,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
     /// <summary>
     /// Interaction logic for PanoramaDetailPage.xaml
     /// </summary>
-    public partial class PanoramaDetailPage : BasePage, ISupportsThemeMedia
+    public partial class PanoramaDetailPage : BasePage, ISupportsThemeMedia, ISupportsItemBackdrops
     {
         /// <summary>
         /// Gets the API client.
@@ -121,8 +121,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
         async void PanoramaDetailPage_Loaded(object sender, RoutedEventArgs e)
         {
             await PageTitlePanel.Current.SetPageTitle(Item);
-
-            _presentationManager.SetBackdrops(Item);
         }
 
         private Timer _selectionChangeTimer;
@@ -459,6 +457,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             }
 
             MenuList.ItemsSource = CollectionViewSource.GetDefaultView(views);
+        }
+
+        public BaseItemDto BackdropItem
+        {
+            get { return Item; }
         }
     }
 }

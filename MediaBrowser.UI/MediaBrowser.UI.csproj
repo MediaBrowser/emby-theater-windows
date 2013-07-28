@@ -181,6 +181,7 @@
     <Compile Include="Controls\WindowCommands.xaml.cs">
       <DependentUpon>WindowCommands.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EntryPoints\BackdropsEntryPoint.cs" />
     <Compile Include="EntryPoints\ThemeSongEntryPoint.cs" />
     <Compile Include="EntryPoints\WebSocketEntryPoint.cs" />
     <Compile Include="HiddenWindow.xaml.cs">

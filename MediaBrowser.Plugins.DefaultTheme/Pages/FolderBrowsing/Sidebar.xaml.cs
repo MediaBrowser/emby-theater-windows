@@ -61,7 +61,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
                 TxtTitle.Visibility = Visibility.Visible;
             }
 
-            TxtGenres.Visibility = item.Genres.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+            TxtGenres.Visibility = item.Genres.Count > 0 && !item.IsType("episode") && !item.IsType("season") ? Visibility.Visible : Visibility.Collapsed;
+
             TxtGenres.Text = string.Join(" / ", item.Genres.Take(3).ToArray());
 
             TxtOverview.Text = item.Overview;

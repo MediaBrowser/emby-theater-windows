@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaBrowser.Theater.Interf
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaBrowser.Theater.Implementations", "MediaBrowser.Theater.Implementations\MediaBrowser.Theater.Implementations.csproj", "{1BD67463-D86A-4851-BE42-4D9098ADB791}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaBrowser.Theater.Vlc", "MediaBrowser.Theater.Vlc\MediaBrowser.Theater.Vlc.csproj", "{7EAD6221-F3F6-4CAE-8BDC-906013195ACC}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaBrowser.Theater.Presentation", "MediaBrowser.Theater.Presentation\MediaBrowser.Theater.Presentation.csproj", "{14EDDB65-890E-40B5-8D29-414D0AED60C1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaBrowser.Theater.DirectShow", "MediaBrowser.Theater.DirectShow\MediaBrowser.Theater.DirectShow.csproj", "{64F2E2E9-F5F0-4437-90F3-804B9047ACD2}"
@@ -71,16 +69,6 @@ Global
 		{1BD67463-D86A-4851-BE42-4D9098ADB791}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{1BD67463-D86A-4851-BE42-4D9098ADB791}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{1BD67463-D86A-4851-BE42-4D9098ADB791}.Release|x86.ActiveCfg = Release|Any CPU
-		{7EAD6221-F3F6-4CAE-8BDC-906013195ACC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7EAD6221-F3F6-4CAE-8BDC-906013195ACC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7EAD6221-F3F6-4CAE-8BDC-906013195ACC}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{7EAD6221-F3F6-4CAE-8BDC-906013195ACC}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{7EAD6221-F3F6-4CAE-8BDC-906013195ACC}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{7EAD6221-F3F6-4CAE-8BDC-906013195ACC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7EAD6221-F3F6-4CAE-8BDC-906013195ACC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7EAD6221-F3F6-4CAE-8BDC-906013195ACC}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{7EAD6221-F3F6-4CAE-8BDC-906013195ACC}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{7EAD6221-F3F6-4CAE-8BDC-906013195ACC}.Release|x86.ActiveCfg = Release|Any CPU
 		{14EDDB65-890E-40B5-8D29-414D0AED60C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{14EDDB65-890E-40B5-8D29-414D0AED60C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{14EDDB65-890E-40B5-8D29-414D0AED60C1}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU

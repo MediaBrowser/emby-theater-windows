@@ -100,25 +100,25 @@
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MediaBrowser.ApiInteraction, Version=3.0.4957.12010, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.ApiInteraction, Version=3.0.4958.28497, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.ApiClient.3.0.0.169\lib\net45\MediaBrowser.ApiInteraction.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.ApiClient.3.0.0.171\lib\net45\MediaBrowser.ApiInteraction.dll</HintPath>
     </Reference>
-    <Reference Include="MediaBrowser.Common, Version=3.0.4957.11876, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.Common, Version=3.0.4958.28251, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.3.0.169\lib\net45\MediaBrowser.Common.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.170\lib\net45\MediaBrowser.Common.dll</HintPath>
     </Reference>
-    <Reference Include="MediaBrowser.Common.Implementations, Version=3.0.4957.11876, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.Common.Implementations, Version=3.0.4958.28252, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.Internal.3.0.169\lib\net45\MediaBrowser.Common.Implementations.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.Internal.3.0.170\lib\net45\MediaBrowser.Common.Implementations.dll</HintPath>
     </Reference>
     <Reference Include="MediaBrowser.IsoMounter, Version=1.0.4915.20167, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\MediaBrowser.IsoMounting.3.0.52\lib\net45\MediaBrowser.IsoMounter.dll</HintPath>
     </Reference>
-    <Reference Include="MediaBrowser.Model, Version=3.0.4957.11876, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.Model, Version=3.0.4958.28251, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.3.0.169\lib\net45\MediaBrowser.Model.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.170\lib\net45\MediaBrowser.Model.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Expression.Effects, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -314,6 +314,10 @@
       <Project>{a63f17c2-d5f9-416e-81fe-a80707bf8322}</Project>
       <Name>MediaBrowser.Theater.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\MediaBrowser.Theater.DirectShow\MediaBrowser.Theater.DirectShow.csproj">
+      <Project>{64f2e2e9-f5f0-4437-90f3-804b9047acd2}</Project>
+      <Name>MediaBrowser.Theater.DirectShow</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MediaBrowser.Theater.Implementations\MediaBrowser.Theater.Implementations.csproj">
       <Project>{1bd67463-d86a-4851-be42-4d9098adb791}</Project>
       <Name>MediaBrowser.Theater.Implementations</Name>
@@ -325,10 +329,6 @@
     <ProjectReference Include="..\MediaBrowser.Theater.Presentation\MediaBrowser.Theater.Presentation.csproj">
       <Project>{14eddb65-890e-40b5-8d29-414d0aed60c1}</Project>
       <Name>MediaBrowser.Theater.Presentation</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\MediaBrowser.Theater.Vlc\MediaBrowser.Theater.Vlc.csproj">
-      <Project>{7ead6221-f3f6-4cae-8bdc-906013195acc}</Project>
-      <Name>MediaBrowser.Theater.Vlc</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -372,9 +372,6 @@ xcopy "$(SolutionDir)..\Mediabrowser\Mediabrowser.Uninstaller\bin\Release\MediaB
 xcopy "$(SolutionDir)..\Mediabrowser\Mediabrowser.Uninstaller.Execute\bin\Release\MediaBrowser.Uninstaller.Execute.exe" "$(SolutionDir)..\Deploy\MBT\System\" /y
 xcopy "$(TargetDir)libvlc.dll" "$(SolutionDir)..\Deploy\MBT\System\" /y
 xcopy "$(TargetDir)libvlccore.dll" "$(SolutionDir)..\Deploy\MBT\System\" /y
-
-mkdir "$(SolutionDir)..\Deploy\MBT\System\plugins"
-xcopy "$(TargetDir)plugins" "$(SolutionDir)..\Deploy\MBT\System\plugins" /y /s
 
 //Pismo
 "$(SolutionDir)ThirdParty\7zip\7za" x  "$(SolutionDir)ThirdParty\Pismo-Install\pfm-168-mediabrowser-win.zip" -o"$(SolutionDir)..\Deploy\MBT\Pismo\" -y 

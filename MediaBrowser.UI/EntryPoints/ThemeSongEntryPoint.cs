@@ -85,7 +85,8 @@ namespace MediaBrowser.UI.EntryPoints
             return _playback.Play(new PlayOptions
             {
                 GoFullScreen = false,
-                Items = items.ToList()
+                Items = items.ToList(),
+                Shuffle = true
             });
         }
 

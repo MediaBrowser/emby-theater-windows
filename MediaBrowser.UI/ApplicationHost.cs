@@ -10,6 +10,7 @@ using MediaBrowser.Model.System;
 using MediaBrowser.Model.Updates;
 using MediaBrowser.Plugins.DefaultTheme;
 using MediaBrowser.Theater.Core.Login;
+using MediaBrowser.Theater.DirectShow;
 using MediaBrowser.Theater.Implementations.Configuration;
 using MediaBrowser.Theater.Implementations.Playback;
 using MediaBrowser.Theater.Implementations.Presentation;
@@ -24,15 +25,11 @@ using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Interfaces.UserInput;
 using MediaBrowser.Theater.Presentation.Playback;
-using MediaBrowser.Theater.Vlc;
 using MediaBrowser.UI.Implementations;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Cache;
-using System.Net.Http;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -221,9 +218,9 @@ namespace MediaBrowser.UI
             // Include composable parts in the running assembly
             yield return GetType().Assembly;
 
-            // Vlc assembly
-            yield return typeof(NVlcPlayer).Assembly;
-
+            // DirectShow assembly
+            yield return typeof(InternalDirectShowPlayer).Assembly;
+            
             // Presentation player assembly
             yield return typeof(GenericExternalPlayer).Assembly;
 

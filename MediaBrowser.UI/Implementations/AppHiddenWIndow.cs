@@ -1,4 +1,5 @@
 ﻿using MediaBrowser.Theater.Interfaces.Presentation;
+using System.Windows;
 using System.Windows.Forms.Integration;
 
 namespace MediaBrowser.UI.Implementations
@@ -15,6 +16,25 @@ namespace MediaBrowser.UI.Implementations
         public WindowsFormsHost WindowsFormsHost
         {
             get { return App.Instance.HiddenWindow.WindowsFormsHost; }
+        }
+
+        public double ContentWidth
+        {
+            get { return App.Instance.HiddenWindow.MainGrid.ActualWidth; }
+        }
+
+        public double ContentHeight
+        {
+            get { return App.Instance.HiddenWindow.MainGrid.ActualHeight; }
+        }
+
+        public event SizeChangedEventHandler SizeChanged
+        {
+            add { App.Instance.HiddenWindow.SizeChanged += value; }
+            remove
+            {
+                App.Instance.HiddenWindow.SizeChanged -= value;
+            }
         }
     }
 }

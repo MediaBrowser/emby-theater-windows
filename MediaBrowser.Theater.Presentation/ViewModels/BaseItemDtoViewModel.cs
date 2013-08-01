@@ -128,11 +128,6 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 imageOptions.Height = Convert.ToInt32(ImageDisplayHeight);
             }
 
-            if (Item.IsType("Person"))
-            {
-                return ApiClient.GetPersonImageUrl(Item, imageOptions);
-            }
-
             return ApiClient.GetImageUrl(Item, imageOptions);
         }
     }

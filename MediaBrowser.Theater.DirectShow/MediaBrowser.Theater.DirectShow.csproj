@@ -73,9 +73,12 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DirectShowPlayer.cs" />
+    <Compile Include="DirectShowPlayer.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Imports.cs" />
     <Compile Include="InternalDirectShowPlayer.cs" />
+    <Compile Include="MadvrInterface.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

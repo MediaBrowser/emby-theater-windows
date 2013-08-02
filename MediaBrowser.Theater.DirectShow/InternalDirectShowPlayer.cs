@@ -137,13 +137,6 @@ namespace MediaBrowser.Theater.DirectShow
 
         private Task PlayInternal(PlayOptions options)
         {
-            var panel = new Panel
-            {
-                BackColor = Color.Black
-            };
-
-            _hiddenWindow.WindowsFormsHost.Child = panel;
-
             CurrentPlaylistIndex = 0;
             CurrentPlayOptions = options;
 
@@ -151,7 +144,10 @@ namespace MediaBrowser.Theater.DirectShow
 
             try
             {
-                _mediaPlayer = new DirectShowPlayer(panel, _logger, _hiddenWindow, this);
+                _mediaPlayer = new DirectShowPlayer(_logger, _hiddenWindow, this);
+                _mediaPlayer.FormBorderStyle = FormBorderStyle.None;
+                _mediaPlayer.TopLevel = false;
+                _hiddenWindow.WindowsFormsHost.Child = _mediaPlayer;
 
                 _mediaPlayer.Play(options.Items.First());
 
@@ -255,7 +251,7 @@ namespace MediaBrowser.Theater.DirectShow
         {
             if (_mediaPlayer != null)
             {
-                _mediaPlayer.Dispose();
+                _presentation.Window.Dispatcher.InvokeAsync(() => _mediaPlayer.Dispose());
             }
         }
 

@@ -13,11 +13,15 @@ using System.Windows.Forms;
 
 namespace MediaBrowser.Theater.DirectShow
 {
-    public class DirectShowPlayer : IDisposable
+    public class DirectShowPlayer : Form
     {
+        private const int WM_APP = 0x8000;
+        private const int WM_GRAPHNOTIFY = WM_APP + 1;
+        private const int EC_COMPLETE = 0x01;
+
         private readonly ILogger _logger;
         private readonly IHiddenWindow _hiddenWindow;
-        private InternalDirectShowPlayer _playerWrapper;
+        private readonly InternalDirectShowPlayer _playerWrapper;
 
         private DirectShowLib.IGraphBuilder _graphBuilder;
 
@@ -47,13 +51,10 @@ namespace MediaBrowser.Theater.DirectShow
         // Caps bits for IMediaSeeking
         private AMSeekingSeekingCapabilities _mSeekCaps;
 
-        private readonly Control _owner;
-
         private BaseItemDto _item;
 
-        public DirectShowPlayer(Control owner, ILogger logger, IHiddenWindow hiddenWindow, InternalDirectShowPlayer playerWrapper)
+        public DirectShowPlayer(ILogger logger, IHiddenWindow hiddenWindow, InternalDirectShowPlayer playerWrapper)
         {
-            _owner = owner;
             _logger = logger;
             _hiddenWindow = hiddenWindow;
             _playerWrapper = playerWrapper;
@@ -75,7 +76,7 @@ namespace MediaBrowser.Theater.DirectShow
         {
             get
             {
-                if (_mediaSeeking != null)
+                if (_mediaSeeking != null && PlayState != PlayState.Idle)
                 {
                     long pos;
 
@@ -118,7 +119,7 @@ namespace MediaBrowser.Theater.DirectShow
             _basicAudio = _graphBuilder as DirectShowLib.IBasicAudio;
 
             // Set up event notification.
-            var hr = _mediaEventEx.SetNotifyWindow(_owner.Handle, 0x00008002, IntPtr.Zero);
+            var hr = _mediaEventEx.SetNotifyWindow(Handle, WM_GRAPHNOTIFY, IntPtr.Zero);
             DsError.ThrowExceptionForHR(hr);
         }
 
@@ -241,7 +242,7 @@ namespace MediaBrowser.Theater.DirectShow
             }
 
             // Set the number of streams.
-            pDisplay.SetVideoWindow(_owner.Handle);
+            pDisplay.SetVideoWindow(Handle);
 
             if (dwStreams > 1)
             {
@@ -324,6 +325,10 @@ namespace MediaBrowser.Theater.DirectShow
             // Clear global flags
             PlayState = PlayState.Idle;
 
+            var pos = CurrentPositionTicks;
+
+            CloseInterfaces();
+            
             _playerWrapper.OnPlaybackStopped(_item, CurrentPositionTicks);
         }
 
@@ -337,39 +342,36 @@ namespace MediaBrowser.Theater.DirectShow
             if (_mediaEventEx == null)
                 return;
 
-            // Process all queued events
-            while (_mediaEventEx.GetEvent(out evCode, out evParam1, out evParam2, 0) == 0)
+            try
             {
-                // Free memory associated with callback, since we're not using it
-                var hr = _mediaEventEx.FreeEventParams(evCode, evParam1, evParam2);
-
-                // If this is the end of the clip, close
-                if (evCode == EventCode.Complete)
+                // Process all queued events
+                while (_mediaEventEx.GetEvent(out evCode, out evParam1, out evParam2, 0) == 0)
                 {
-                    OnStopped();
+                    // Free memory associated with callback, since we're not using it
+                    var hr = _mediaEventEx.FreeEventParams(evCode, evParam1, evParam2);
+
+                    // If this is the end of the clip, close
+                    if (evCode == EventCode.Complete)
+                    {
+                        Stop();
+                    }
                 }
+            }
+            catch
+            {
+                
             }
         }
 
-        //protected override void WndProc(ref Message m)
-        //{
-        //    const int wmGraphNotify = 0x0400 + 13;
+        protected override void WndProc(ref Message m)
+        {
+            if (m.Msg == WM_GRAPHNOTIFY)
+            {
+                HandleGraphEvent();
+            }
 
-        //    switch (m.Msg)
-        //    {
-        //        case wmGraphNotify:
-        //            {
-        //                HandleGraphEvent();
-        //                break;
-        //            }
-        //    }
-
-        //    // Pass this message to the video window for notification of system changes
-        //    if (_videoWindow != null)
-        //        _videoWindow.NotifyOwnerMessage(m.HWnd, m.Msg, m.WParam, m.LParam);
-
-        //    base.WndProc(ref m);
-        //}
+            base.WndProc(ref m);
+        }
 
         private void CloseInterfaces()
         {
@@ -444,17 +446,6 @@ namespace MediaBrowser.Theater.DirectShow
             _mSeekCaps = 0;
 
             GC.Collect();
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool dispose)
-        {
-            CloseInterfaces();
         }
     }
 }

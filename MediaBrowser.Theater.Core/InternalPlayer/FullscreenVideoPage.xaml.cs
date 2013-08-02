@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Theater.Interfaces.Theming;
+﻿using MediaBrowser.Theater.Interfaces.Presentation;
+using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Presentation.Pages;
 using System.Windows;
 
@@ -7,7 +8,7 @@ namespace MediaBrowser.Theater.Core.InternalPlayer
     /// <summary>
     /// Interaction logic for FullscreenVideoPage.xaml
     /// </summary>
-    public partial class FullscreenVideoPage : BasePage
+    public partial class FullscreenVideoPage : BasePage, ISupportsThemeMedia, IFullscreenVideoPage
     {
         private readonly IThemeManager _themeManager;
 

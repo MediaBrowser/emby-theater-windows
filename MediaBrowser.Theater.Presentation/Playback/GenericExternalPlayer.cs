@@ -35,11 +35,6 @@ namespace MediaBrowser.Theater.Presentation.Playback
         private Process _currentProcess;
 
         /// <summary>
-        /// Occurs when [volume changed].
-        /// </summary>
-        public event EventHandler VolumeChanged;
-
-        /// <summary>
         /// Occurs when [play state changed].
         /// </summary>
         public event EventHandler PlayStateChanged;
@@ -128,15 +123,6 @@ namespace MediaBrowser.Theater.Presentation.Playback
         /// </summary>
         /// <value><c>true</c> if this instance can queue; otherwise, <c>false</c>.</value>
         public virtual bool CanQueue
-        {
-            get { return false; }
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether this instance can control volume.
-        /// </summary>
-        /// <value><c>true</c> if this instance can control volume; otherwise, <c>false</c>.</value>
-        public virtual bool CanControlVolume
         {
             get { return false; }
         }
@@ -350,55 +336,6 @@ namespace MediaBrowser.Theater.Presentation.Playback
         protected virtual void OnPlayerExited()
         {
 
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether this instance is muted.
-        /// </summary>
-        /// <value><c>true</c> if this instance is muted; otherwise, <c>false</c>.</value>
-        public virtual bool IsMuted
-        {
-            get { return false; }
-        }
-
-        /// <summary>
-        /// Gets the volume.
-        /// </summary>
-        /// <value>The volume.</value>
-        public virtual int Volume
-        {
-            get { return 100; }
-        }
-
-        /// <summary>
-        /// Sets the volume.
-        /// </summary>
-        /// <param name="volume">The volume.</param>
-        /// <returns>Task.</returns>
-        /// <exception cref="System.NotImplementedException"></exception>
-        public virtual Task SetVolume(int volume)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Mutes this instance.
-        /// </summary>
-        /// <returns>Task.</returns>
-        /// <exception cref="System.NotImplementedException"></exception>
-        public virtual Task Mute()
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Uns the mute.
-        /// </summary>
-        /// <returns>Task.</returns>
-        /// <exception cref="System.NotImplementedException"></exception>
-        public virtual Task UnMute()
-        {
-            throw new NotImplementedException();
         }
 
         /// <summary>

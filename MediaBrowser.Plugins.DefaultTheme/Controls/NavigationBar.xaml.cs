@@ -1,6 +1,7 @@
 ﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Plugins.DefaultTheme.Details;
+using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Presentation.Playback;
@@ -21,6 +22,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         internal static IPlaybackManager PlaybackManager { get; set; }
         internal static IImageManager ImageManager { get; set; }
         internal static IApiClient ApiClient { get; set; }
+        internal static INavigationService NavigationService { get; set; }
 
         /// <summary>
         /// Gets or sets the current player.
@@ -126,14 +128,16 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         /// <param name="e">The <see cref="PlaybackStartEventArgs" /> instance containing the event data.</param>
         void PlaybackManager_PlaybackCompleted(object sender, PlaybackStopEventArgs e)
         {
-            if (e.Player == CurrentPlayer)
+            var player = CurrentPlayer;
+
+            if (e.Player == player)
             {
                 if (CurrentPositionTimer != null)
                 {
                     CurrentPositionTimer.Dispose();
                 }
 
-                CurrentPlayer.PlayStateChanged -= CurrentPlayer_PlayStateChanged;
+                player.PlayStateChanged -= CurrentPlayer_PlayStateChanged;
                 CurrentPlayer = null;
                 ResetButtonVisibilities(null);
 
@@ -142,6 +146,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
                     TxtCurrentPosition.Text = string.Empty;
                     UpdateNowPlayingImage();
                 });
+
+                NavigationService.Navigated -= NavigationService_Navigated;
             }
         }
 
@@ -150,9 +156,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
-        async void VolumeUpButton_Click(object sender, RoutedEventArgs e)
+        void VolumeUpButton_Click(object sender, RoutedEventArgs e)
         {
-            await CurrentPlayer.SetVolume(CurrentPlayer.Volume + 3);
+            PlaybackManager.VolumeStepUp();
         }
 
         /// <summary>
@@ -160,9 +166,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
-        async void VolumeDownButton_Click(object sender, RoutedEventArgs e)
+        void VolumeDownButton_Click(object sender, RoutedEventArgs e)
         {
-            await CurrentPlayer.SetVolume(CurrentPlayer.Volume - 3);
+            PlaybackManager.VolumeStepDown();
         }
 
         /// <summary>
@@ -170,18 +176,15 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
-        async void MuteButton_Click(object sender, RoutedEventArgs e)
+        void MuteButton_Click(object sender, RoutedEventArgs e)
         {
-            if (CurrentPlayer.CanControlVolume)
+            if (PlaybackManager.IsMuted)
             {
-                if (CurrentPlayer.IsMuted)
-                {
-                    await CurrentPlayer.UnMute();
-                }
-                else
-                {
-                    await CurrentPlayer.Mute();
-                }
+                PlaybackManager.UnMute();
+            }
+            else
+            {
+                PlaybackManager.Mute();
             }
         }
 
@@ -207,10 +210,21 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
                     TxtDuration.Text = GetTimeString(runtime);
 
                     UpdateNowPlayingImage();
+
+                    GridLogo.Visibility = NavigationService.CurrentPage is IFullscreenVideoPage
+                                              ? Visibility.Visible
+                                              : Visibility.Collapsed;
                 });
 
                 CurrentPositionTimer = new Timer(CurrentPositionTimerCallback, null, 250, 250);
+
+                NavigationService.Navigated += NavigationService_Navigated;
             }
+        }
+
+        void NavigationService_Navigated(object sender, NavigationEventArgs e)
+        {
+            Dispatcher.InvokeAsync(() => GridLogo.Visibility = e.NewPage is IFullscreenVideoPage ? Visibility.Visible : Visibility.Collapsed);
         }
 
         private async void UpdateNowPlayingImage()
@@ -255,7 +269,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
             {
                 ImgLogo.Visibility = Visibility.Collapsed;
             }
-            
+
             if (media != null)
             {
                 TxtNowPlayingName.Visibility = Visibility.Visible;
@@ -335,9 +349,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
                 PauseButton.Visibility = player != null && player.CanPause && player.PlayState == PlayState.Playing ? Visibility.Visible : Visibility.Collapsed;
 
                 StopButton.Visibility = player != null ? Visibility.Visible : Visibility.Collapsed;
-                MuteButton.Visibility = player != null && player.CanControlVolume ? Visibility.Visible : Visibility.Collapsed;
-                VolumeUpButton.Visibility = player != null && player.CanControlVolume ? Visibility.Visible : Visibility.Collapsed;
-                VolumeDownButton.Visibility = player != null && player.CanControlVolume ? Visibility.Visible : Visibility.Collapsed;
+                MuteButton.Visibility = player != null ? Visibility.Visible : Visibility.Collapsed;
+                VolumeUpButton.Visibility = player != null ? Visibility.Visible : Visibility.Collapsed;
+                VolumeDownButton.Visibility = player != null ? Visibility.Visible : Visibility.Collapsed;
 
                 var isSeekabke = player != null && player.CanSeek && player.CurrentMedia != null;
                 SeekGrid.Visibility = isSeekabke ? Visibility.Visible : Visibility.Collapsed;

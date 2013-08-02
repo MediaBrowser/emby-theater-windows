@@ -48,11 +48,11 @@ namespace MediaBrowser.UI.EntryPoints
                 return;
             }
 
-            var itemPage = e.NewPage as ISupportsThemeMedia;
+            var itemPage = e.NewPage as ISupportsItemThemeMedia;
 
             if (itemPage == null || _session.CurrentUser == null || string.IsNullOrEmpty(itemPage.ThemeMediaItemId))
             {
-                if (!string.IsNullOrEmpty(_currentPlayingOwnerId))
+                if (!string.IsNullOrEmpty(_currentPlayingOwnerId) && !(e.NewPage is ISupportsThemeMedia))
                 {
                     await _playback.StopAllPlayback().ConfigureAwait(false);
                 }

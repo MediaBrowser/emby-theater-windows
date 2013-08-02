@@ -1,5 +1,4 @@
-﻿using MediaBrowser.Model.Dto;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -10,6 +9,52 @@ namespace MediaBrowser.Theater.Interfaces.Playback
     /// </summary>
     public interface IPlaybackManager
     {
+        /// <summary>
+        /// Occurs when [volume changed].
+        /// </summary>
+        event EventHandler VolumeChanged;
+
+        /// <summary>
+        /// Gets a value indicating whether this instance is muted.
+        /// </summary>
+        /// <value><c>true</c> if this instance is muted; otherwise, <c>false</c>.</value>
+        bool IsMuted { get; }
+
+        /// <summary>
+        /// Mutes this instance.
+        /// </summary>
+        /// <returns>Task.</returns>
+        void Mute();
+
+        /// <summary>
+        /// Uns the mute.
+        /// </summary>
+        /// <returns>Task.</returns>
+        void UnMute();
+
+        /// <summary>
+        /// Gets the volume.
+        /// </summary>
+        /// <value>The volume.</value>
+        float Volume { get; }
+
+        /// <summary>
+        /// Sets the volume.
+        /// </summary>
+        /// <param name="volume">The volume.</param>
+        /// <returns>Task.</returns>
+        void SetVolume(float volume);
+
+        /// <summary>
+        /// Volumes the step up.
+        /// </summary>
+        void VolumeStepUp();
+
+        /// <summary>
+        /// Volumes the step down.
+        /// </summary>
+        void VolumeStepDown();
+
         /// <summary>
         /// Occurs when [playback started].
         /// </summary>

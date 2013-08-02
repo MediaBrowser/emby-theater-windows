@@ -7,7 +7,10 @@
              d:DesignHeight="300" d:DesignWidth="300">
 
     <Grid VerticalAlignment="Stretch">
-        <Image Name="ImgLogo" Stretch="Uniform" HorizontalAlignment="Left" VerticalAlignment="Top" Height="80" Margin="30 30 0 0" Opacity=".8"></Image>
+        
+        <Grid x:Name="GridLogo">
+            <Image Name="ImgLogo" Stretch="Uniform" HorizontalAlignment="Left" VerticalAlignment="Top" Height="80" Margin="30 30 0 0" Opacity=".8"></Image>
+        </Grid>
 
         <Grid x:Name="NavBarGrid" Background="#c6000000" VerticalAlignment="Bottom" HorizontalAlignment="Stretch">
 

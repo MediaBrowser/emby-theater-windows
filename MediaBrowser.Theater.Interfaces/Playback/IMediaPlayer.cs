@@ -11,11 +11,6 @@ namespace MediaBrowser.Theater.Interfaces.Playback
     public interface IMediaPlayer
     {
         /// <summary>
-        /// Occurs when [volume changed].
-        /// </summary>
-        event EventHandler VolumeChanged;
-
-        /// <summary>
         /// Occurs when [play state changed].
         /// </summary>
         event EventHandler PlayStateChanged;
@@ -73,12 +68,6 @@ namespace MediaBrowser.Theater.Interfaces.Playback
         bool CanQueue { get; }
 
         /// <summary>
-        /// Gets a value indicating whether this instance can control volume.
-        /// </summary>
-        /// <value><c>true</c> if this instance can control volume; otherwise, <c>false</c>.</value>
-        bool CanControlVolume { get; }
-
-        /// <summary>
         /// Gets a value indicating whether this instance can track progress.
         /// </summary>
         /// <value><c>true</c> if this instance can track progress; otherwise, <c>false</c>.</value>
@@ -134,37 +123,6 @@ namespace MediaBrowser.Theater.Interfaces.Playback
         /// <param name="options">The options.</param>
         /// <returns>Task.</returns>
         Task Play(PlayOptions options);
-
-        /// <summary>
-        /// Gets a value indicating whether this instance is muted.
-        /// </summary>
-        /// <value><c>true</c> if this instance is muted; otherwise, <c>false</c>.</value>
-        bool IsMuted { get; }
-
-        /// <summary>
-        /// Gets the volume.
-        /// </summary>
-        /// <value>The volume.</value>
-        int Volume { get; }
-
-        /// <summary>
-        /// Sets the volume.
-        /// </summary>
-        /// <param name="volume">The volume.</param>
-        /// <returns>Task.</returns>
-        Task SetVolume(int volume);
-
-        /// <summary>
-        /// Mutes this instance.
-        /// </summary>
-        /// <returns>Task.</returns>
-        Task Mute();
-
-        /// <summary>
-        /// Uns the mute.
-        /// </summary>
-        /// <returns>Task.</returns>
-        Task UnMute();
 
         /// <summary>
         /// Pauses this instance.

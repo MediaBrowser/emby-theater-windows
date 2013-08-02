@@ -14,7 +14,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
     /// <summary>
     /// Interaction logic for ImageViewerPage.xaml
     /// </summary>
-    public partial class ImageViewerPage : BasePage, ISupportsThemeMedia
+    public partial class ImageViewerPage : BasePage, ISupportsItemThemeMedia
     {
         private const int RotationPeriodMs = 5000;
 

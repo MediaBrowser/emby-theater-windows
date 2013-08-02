@@ -78,6 +78,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
             NavigationBar.PlaybackManager = _playbackManager;
             NavigationBar.ApiClient = _apiClient;
             NavigationBar.ImageManager = _imageManager;
+            NavigationBar.NavigationService = navService;
 
             TopRightPanel.SessionManager = _sessionManager;
             TopRightPanel.ApiClient = _apiClient;

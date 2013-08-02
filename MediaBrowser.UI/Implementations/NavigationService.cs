@@ -242,5 +242,14 @@ namespace MediaBrowser.UI.Implementations
         {
             App.Instance.ApplicationWindow.RemovePagesFromHistory(count);
         }
+
+        /// <summary>
+        /// Gets the current page.
+        /// </summary>
+        /// <value>The current page.</value>
+        public Page CurrentPage
+        {
+            get { return App.Instance.ApplicationWindow.PageFrame.Content as Page; }
+        }
     }
 }

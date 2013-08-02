@@ -24,7 +24,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
     /// <summary>
     /// Interaction logic for PanoramaDetailPage.xaml
     /// </summary>
-    public partial class PanoramaDetailPage : BasePage, ISupportsThemeMedia, ISupportsItemBackdrops
+    public partial class PanoramaDetailPage : BasePage, ISupportsItemThemeMedia, ISupportsItemBackdrops
     {
         /// <summary>
         /// Gets the API client.

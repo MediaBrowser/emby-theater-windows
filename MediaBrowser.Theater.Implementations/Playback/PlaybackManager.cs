@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Common.Events;
+﻿using CoreAudioApi;
+using MediaBrowser.Common.Events;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
@@ -334,6 +335,71 @@ namespace MediaBrowser.Theater.Implementations.Playback
             var extensions = configuration.FileExtensions.Select(i => i.TrimStart('.'));
 
             return extensions.Contains(Path.GetExtension(path).TrimStart('.'), StringComparer.OrdinalIgnoreCase);
+        }
+
+        public event EventHandler VolumeChanged;
+
+        private MMDevice _audioDevice;
+        private MMDevice AudioDevice
+        {
+            get
+            {
+                if (_audioDevice == null)
+                {
+                    var devEnum = new MMDeviceEnumerator();
+
+                    _audioDevice = devEnum.GetDefaultAudioEndpoint(EDataFlow.eRender, ERole.eMultimedia);
+                    _audioDevice.AudioEndpointVolume.OnVolumeNotification += AudioEndpointVolume_OnVolumeNotification;
+                }
+                return _audioDevice;
+            }
+        }
+
+        void AudioEndpointVolume_OnVolumeNotification(AudioVolumeNotificationData data)
+        {
+            OnVolumeChanged();
+        }
+
+        public bool IsMuted
+        {
+            get { return AudioDevice.AudioEndpointVolume.Mute; }
+        }
+
+        public void Mute()
+        {
+            AudioDevice.AudioEndpointVolume.Mute = true;
+        }
+
+        public void UnMute()
+        {
+            AudioDevice.AudioEndpointVolume.Mute = false;
+        }
+
+        public float Volume
+        {
+            get { return AudioDevice.AudioEndpointVolume.MasterVolumeLevelScalar; }
+        }
+
+        public void SetVolume(float volume)
+        {
+            AudioDevice.AudioEndpointVolume.MasterVolumeLevelScalar = volume;
+
+            OnVolumeChanged();
+        }
+
+        private void OnVolumeChanged()
+        {
+            EventHelper.FireEventIfNotNull(VolumeChanged, this, EventArgs.Empty, _logger);
+        }
+
+        public void VolumeStepUp()
+        {
+            AudioDevice.AudioEndpointVolume.VolumeStepUp();
+        }
+
+        public void VolumeStepDown()
+        {
+            AudioDevice.AudioEndpointVolume.VolumeStepDown();
         }
     }
 }

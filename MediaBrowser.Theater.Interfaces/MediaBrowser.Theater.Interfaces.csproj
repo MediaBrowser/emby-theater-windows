@@ -65,6 +65,7 @@
     <Compile Include="Navigation\NavigationEventArgs.cs" />
     <Compile Include="Playback\MediaChangeEventArgs.cs" />
     <Compile Include="Plugins\IHasThumbImage.cs" />
+    <Compile Include="Presentation\IFullscreenVideoPage.cs" />
     <Compile Include="Presentation\IHomePage.cs" />
     <Compile Include="Presentation\ISupportsBackdrops.cs" />
     <Compile Include="Presentation\ISupportsThemeMedia.cs" />

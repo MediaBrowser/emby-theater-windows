@@ -79,11 +79,6 @@ namespace MediaBrowser.Theater.DirectShow
             get { return true; }
         }
 
-        public bool CanControlVolume
-        {
-            get { return true; }
-        }
-
         public bool CanTrackProgress
         {
             get { return true; }
@@ -264,31 +259,6 @@ namespace MediaBrowser.Theater.DirectShow
             }
         }
 
-        public bool IsMuted
-        {
-            get { return false; }
-        }
-
-        public int Volume
-        {
-            get { return 0; }
-        }
-
-        public Task SetVolume(int volume)
-        {
-            return Task.FromResult(true);
-        }
-
-        public Task Mute()
-        {
-            return Task.FromResult(true);
-        }
-
-        public Task UnMute()
-        {
-            return Task.FromResult(true);
-        }
-
         public Task Pause()
         {
             if (_mediaPlayer != null)
@@ -323,15 +293,6 @@ namespace MediaBrowser.Theater.DirectShow
                 _mediaPlayer.Seek(positionTicks);
             }
             return Task.FromResult(true);
-        }
-
-        /// <summary>
-        /// Occurs when [volume changed].
-        /// </summary>
-        public event EventHandler VolumeChanged;
-        protected void OnVolumeChanged()
-        {
-            EventHelper.FireEventIfNotNull(VolumeChanged, this, EventArgs.Empty, _logger);
         }
 
         /// <summary>

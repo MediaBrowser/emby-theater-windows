@@ -13,6 +13,12 @@ namespace MediaBrowser.Theater.Interfaces.Navigation
         event EventHandler<NavigationEventArgs> Navigated;
 
         /// <summary>
+        /// Gets the current page.
+        /// </summary>
+        /// <value>The current page.</value>
+        Page CurrentPage { get; }
+
+        /// <summary>
         /// Navigates to home page.
         /// </summary>
         /// <returns>Task.</returns>

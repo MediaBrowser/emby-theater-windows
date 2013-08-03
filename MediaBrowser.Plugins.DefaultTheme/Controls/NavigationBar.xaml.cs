@@ -1,6 +1,4 @@
 ﻿using MediaBrowser.Model.ApiClient;
-using MediaBrowser.Model.Dto;
-using MediaBrowser.Plugins.DefaultTheme.Details;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Presentation.Playback;
@@ -87,8 +85,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
                 CurrentPositionSlider.Maximum = runtime;
 
                 TxtDuration.Text = GetTimeString(runtime);
-
-                UpdateNowPlayingImage();
             });
 
             CurrentPositionTimer = new Timer(CurrentPositionTimerCallback, null, 250, 250);
@@ -206,53 +202,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
             else
             {
                 _playbackManager.Mute();
-            }
-        }
-
-        private async void UpdateNowPlayingImage()
-        {
-            var player = _mediaPlayer;
-
-            if (player == null)
-            {
-                NowPlayingImage.Visibility = Visibility.Collapsed;
-                TxtNowPlayingName.Visibility = Visibility.Collapsed;
-                return;
-            }
-
-            var media = player.CurrentMedia;
-
-            if (media != null && media.HasPrimaryImage)
-            {
-                NowPlayingImage.Visibility = Visibility.Visible;
-
-                NowPlayingImage.Source = await _imageManager.GetRemoteBitmapAsync(_apiClient.GetImageUrl(media, new ImageOptions
-                {
-                    MaxWidth = 300,
-                    MaxHeight = 300
-                }));
-            }
-            else
-            {
-                NowPlayingImage.Visibility = Visibility.Collapsed;
-            }
-
-            if (media != null)
-            {
-                TxtNowPlayingName.Visibility = Visibility.Visible;
-
-                if (media.IsType("episode"))
-                {
-                    TxtNowPlayingName.Text = PanoramaDetailPage.GetEpisodeTitle(media);
-                }
-                else
-                {
-                    TxtNowPlayingName.Text = media.Name;
-                }
-            }
-            else
-            {
-                TxtNowPlayingName.Visibility = Visibility.Collapsed;
             }
         }
 

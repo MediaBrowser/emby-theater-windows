@@ -75,6 +75,8 @@ namespace MediaBrowser.UI.EntryPoints
             {
                 return;
             }
+
+            _lastPlayedOwnerId = null;
             
             if (themeMediaResult.Items.Length > 0)
             {

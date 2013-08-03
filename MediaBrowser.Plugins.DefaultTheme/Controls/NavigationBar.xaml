@@ -37,8 +37,6 @@
 
             <Grid x:Name="WidthPadder" Height="50" Width="300" Margin="40 0 0 20" Grid.Row="0" Grid.RowSpan="2" Grid.Column="0"></Grid>
 
-            <TextBlock x:Name="TxtNowPlayingName" Style="{DynamicResource TextBlockStyle}" Margin="30 10 0 10" VerticalAlignment="Bottom" HorizontalAlignment="Left" Grid.Row="1" Grid.Column="1"></TextBlock>
-
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Grid.Row="1" Grid.Column="1" Margin="0 10 30 15">
                 <Button x:Name="PreviousChapterButton" Style="{DynamicResource PreviousChapterButton}" Visibility="Collapsed"></Button>
                 <Button x:Name="PlayButton" Style="{DynamicResource PlayButton}" Visibility="Collapsed"></Button>
@@ -53,11 +51,6 @@
                 <Button x:Name="MuteButton" Style="{DynamicResource MuteButton}" Visibility="Collapsed"></Button>
             </StackPanel>
 
-        </Grid>
-
-        <Grid Width="300" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="40 0 0 15">
-
-            <Image x:Name="NowPlayingImage" Stretch="None" Opacity=".9" HorizontalAlignment="Center"></Image>
         </Grid>
 
     </Grid>

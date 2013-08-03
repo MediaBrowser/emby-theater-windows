@@ -1,4 +1,5 @@
 ﻿using MediaBrowser.Model.Dto;
+using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using System.Windows;
 using System.Windows.Controls;
@@ -26,6 +27,12 @@ namespace MediaBrowser.Theater.Interfaces.Theming
         /// <param name="context">The context.</param>
         /// <returns>Page.</returns>
         Page GetPersonPage(BaseItemDto item, string context);
+
+        /// <summary>
+        /// Gets the fullscreen video page.
+        /// </summary>
+        /// <returns>Page.</returns>
+        Page GetFullscreenVideoPage();
         
         /// <summary>
         /// Shows the default error message.

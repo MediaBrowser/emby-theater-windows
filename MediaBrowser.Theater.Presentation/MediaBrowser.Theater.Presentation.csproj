@@ -91,6 +91,7 @@
     <Compile Include="Extensions\AspectRatioHelper.cs" />
     <Compile Include="Extensions\MedianExtension.cs" />
     <Compile Include="Extensions\MedianPrimaryImageAspectRatioExtension.cs" />
+    <Compile Include="Pages\BaseFullscreenVideoPage.cs" />
     <Compile Include="Pages\BasePage.cs" />
     <Compile Include="Playback\GenericExternalPlayer.cs" />
     <Compile Include="Playback\PlaybackExtensions.cs" />

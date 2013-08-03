@@ -1,39 +1,28 @@
 ﻿using MediaBrowser.Theater.Interfaces.Presentation;
-using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Interfaces.UserInput;
-using MediaBrowser.Theater.Presentation.Pages;
 using System;
 using System.Windows;
 using System.Windows.Forms;
 
-namespace MediaBrowser.Theater.Core.InternalPlayer
+namespace MediaBrowser.Theater.Presentation.Pages
 {
-    /// <summary>
-    /// Interaction logic for FullscreenVideoPage.xaml
-    /// </summary>
-    public partial class FullscreenVideoPage : BasePage, ISupportsThemeMedia, IFullscreenVideoPage
+    public abstract class BaseFullscreenVideoPage : BasePage, IFullscreenVideoPage, ISupportsThemeMedia
     {
-        private readonly IThemeManager _themeManager;
         private readonly IUserInputManager _userInputManager;
 
         private System.Threading.Timer _activityTimer;
-        
-        public FullscreenVideoPage(IThemeManager themeManager, IUserInputManager userInputManager)
-        {
-            _themeManager = themeManager;
-            _userInputManager = userInputManager;
-            InitializeComponent();
-
-            Loaded += FullscreenVideoPage_Loaded;
-            Unloaded += FullscreenVideoPage_Unloaded;
-        }
-
         private DateTime _lastMouseInput;
 
         /// <summary>
         /// The _is mouse idle
         /// </summary>
         private bool _isMouseIdle = true;
+
+        protected BaseFullscreenVideoPage(IUserInputManager userInputManager)
+        {
+            _userInputManager = userInputManager;
+        }
+
         /// <summary>
         /// Gets or sets a value indicating whether this instance is mouse idle.
         /// </summary>
@@ -61,6 +50,14 @@ namespace MediaBrowser.Theater.Core.InternalPlayer
             }
         }
 
+        protected override void OnInitialized(EventArgs e)
+        {
+            base.OnInitialized(e);
+
+            Loaded += FullscreenVideoPage_Loaded;
+            Unloaded += FullscreenVideoPage_Unloaded;
+        }
+
         void _userInputManager_MouseMove(object sender, MouseEventArgs e)
         {
             _lastMouseInput = DateTime.Now;
@@ -81,8 +78,6 @@ namespace MediaBrowser.Theater.Core.InternalPlayer
 
             _userInputManager.MouseMove -= _userInputManager_MouseMove;
             System.Windows.Forms.Cursor.Show();
-
-            _themeManager.CurrentTheme.SetGlobalContentVisibility(true);
         }
 
         void FullscreenVideoPage_Loaded(object sender, RoutedEventArgs e)
@@ -91,8 +86,6 @@ namespace MediaBrowser.Theater.Core.InternalPlayer
 
             _userInputManager.MouseMove += _userInputManager_MouseMove;
             System.Windows.Forms.Cursor.Hide();
-
-            _themeManager.CurrentTheme.SetGlobalContentVisibility(false);
         }
     }
 }

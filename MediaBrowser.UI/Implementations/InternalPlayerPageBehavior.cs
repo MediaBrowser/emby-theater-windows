@@ -1,5 +1,6 @@
 ﻿using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
+using MediaBrowser.Theater.Interfaces.Theming;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -23,17 +24,20 @@ namespace MediaBrowser.UI.Implementations
         /// </summary>
         private readonly INavigationService _nav;
 
+        private readonly IThemeManager _themeManager;
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="InternalPlayerPageBehavior"/> class.
         /// </summary>
         /// <param name="page">The page.</param>
         /// <param name="playbackManager">The playback manager.</param>
         /// <param name="nav">The nav.</param>
-        public InternalPlayerPageBehavior(Page page, IPlaybackManager playbackManager, INavigationService nav)
+        public InternalPlayerPageBehavior(Page page, IPlaybackManager playbackManager, INavigationService nav, IThemeManager themeManager)
         {
             _page = page;
             _playbackManager = playbackManager;
             _nav = nav;
+            _themeManager = themeManager;
         }
 
         /// <summary>
@@ -65,6 +69,8 @@ namespace MediaBrowser.UI.Implementations
         {
             App.Instance.ApplicationWindow.WindowBackgroundContent.Visibility = Visibility.Collapsed;
             App.Instance.ApplicationWindow.PageContent.Visibility = Visibility.Collapsed;
+
+            _themeManager.CurrentTheme.SetGlobalContentVisibility(false);
         }
 
         /// <summary>
@@ -80,6 +86,8 @@ namespace MediaBrowser.UI.Implementations
             
             App.Instance.ApplicationWindow.PageContent.Visibility = Visibility.Visible;
             App.Instance.ApplicationWindow.WindowBackgroundContent.Visibility = Visibility.Visible;
+
+            _themeManager.CurrentTheme.SetGlobalContentVisibility(true);
         }
     }
 }

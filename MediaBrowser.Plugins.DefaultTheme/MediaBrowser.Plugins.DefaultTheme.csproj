@@ -225,6 +225,9 @@
     <Compile Include="Details\PanoramaDetailPage.xaml.cs">
       <DependentUpon>PanoramaDetailPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Pages\FullscreenVideoPage.xaml.cs">
+      <DependentUpon>FullscreenVideoPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\ImageViewerPage.xaml.cs">
       <DependentUpon>ImageViewerPage.xaml</DependentUpon>
     </Compile>
@@ -458,6 +461,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Details\PanoramaDetailPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\FullscreenVideoPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

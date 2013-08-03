@@ -4,19 +4,20 @@ using MediaBrowser.Model.Logging;
 using MediaBrowser.Plugins.DefaultTheme.Controls;
 using MediaBrowser.Plugins.DefaultTheme.Details;
 using MediaBrowser.Plugins.DefaultTheme.Header;
+using MediaBrowser.Plugins.DefaultTheme.Pages;
 using MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.Theming;
+using MediaBrowser.Theater.Interfaces.UserInput;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
-using MediaBrowser.Theater.Interfaces.UserInput;
 
 namespace MediaBrowser.Plugins.DefaultTheme
 {
@@ -57,16 +58,6 @@ namespace MediaBrowser.Plugins.DefaultTheme
 
         private readonly IUserInputManager _userInput;
         
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DefaultTheme" /> class.
-        /// </summary>
-        /// <param name="playbackManager">The playback manager.</param>
-        /// <param name="imageManager">The image manager.</param>
-        /// <param name="apiClient">The API client.</param>
-        /// <param name="navService">The nav service.</param>
-        /// <param name="sessionManager">The session manager.</param>
-        /// <param name="presentationManager">The app window.</param>
-        /// <param name="logManager">The log manager.</param>
         public DefaultTheme(IPlaybackManager playbackManager, IImageManager imageManager, IApiClient apiClient, INavigationService navService, ISessionManager sessionManager, IPresentationManager presentationManager, ILogManager logManager, IThemeManager themeManager, IUserInputManager userInput)
         {
             _playbackManager = playbackManager;
@@ -282,6 +273,11 @@ namespace MediaBrowser.Plugins.DefaultTheme
         public string DefaultHomePageName
         {
             get { return "Default"; }
+        }
+
+        public Page GetFullscreenVideoPage()
+        {
+            return new FullscreenVideoPage(_userInput);
         }
     }
 }

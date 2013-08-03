@@ -172,7 +172,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         async void ViewButton_Click(object sender, RoutedEventArgs e)
         {
-            var menu = new DisplayPreferencesMenu
+            var menu = new DisplayPreferencesMenu(null, null)
             {
                 DisplayPreferencesContainer = this
             };
@@ -312,9 +312,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
         {
             const int maxheight = 100;
 
+            TxtBottomName.Text = item.Name;
+
             if (BottomGrid.Visibility == Visibility.Collapsed || Sidebar.Visibility == Visibility.Visible)
             {
                 ImgLogo.Visibility = Visibility.Collapsed;
+                TxtBottomName.Visibility = Visibility.Visible;
             }
 
             else if (item != null && item.HasLogo && Sidebar.Visibility == Visibility.Collapsed)
@@ -326,6 +329,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
                 }));
 
                 ImgLogo.Visibility = Visibility.Visible;
+                TxtBottomName.Visibility = Visibility.Collapsed;
             }
             else if (item != null && (item.HasArtImage || item.ParentArtImageTag.HasValue))
             {
@@ -336,41 +340,13 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
                 }));
 
                 ImgLogo.Visibility = Visibility.Visible;
-            }
-            else if (item != null && item.HasDiscImage)
-            {
-                ImgLogo.Source = await ImageManager.GetRemoteBitmapAsync(ApiClient.GetImageUrl(item, new ImageOptions
-                {
-                    Height = maxheight,
-                    ImageType = ImageType.Disc
-                }));
-
-                ImgLogo.Visibility = Visibility.Visible;
-            }
-            else if (item != null && item.HasBoxImage)
-            {
-                ImgLogo.Source = await ImageManager.GetRemoteBitmapAsync(ApiClient.GetImageUrl(item, new ImageOptions
-                {
-                    Height = maxheight,
-                    ImageType = ImageType.Box
-                }));
-
-                ImgLogo.Visibility = Visibility.Visible;
-            }
-            else if (item != null && item.HasBoxRearImage)
-            {
-                ImgLogo.Source = await ImageManager.GetRemoteBitmapAsync(ApiClient.GetImageUrl(item, new ImageOptions
-                {
-                    Height = maxheight,
-                    ImageType = ImageType.BoxRear
-                }));
-
-                ImgLogo.Visibility = Visibility.Visible;
+                TxtBottomName.Visibility = Visibility.Collapsed;
             }
             else
             {
                 // Just hide it so that it still takes up the same amount of space
                 ImgLogo.Visibility = Visibility.Hidden;
+                TxtBottomName.Visibility = Visibility.Visible;
             }
         }
 

@@ -1,5 +1,7 @@
-﻿using DirectShowLib;
+﻿using System.Linq;
+using DirectShowLib;
 using MediaBrowser.Model.Dto;
+using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
@@ -51,6 +53,8 @@ namespace MediaBrowser.Theater.DirectShow
         // Caps bits for IMediaSeeking
         private AMSeekingSeekingCapabilities _mSeekCaps;
 
+        private MadVR _madvr;
+
         private BaseItemDto _item;
 
         public DirectShowPlayer(ILogger logger, IHiddenWindow hiddenWindow, InternalDirectShowPlayer playerWrapper)
@@ -89,11 +93,11 @@ namespace MediaBrowser.Theater.DirectShow
             }
         }
 
-        public void Play(BaseItemDto item)
+        public void Play(BaseItemDto item, bool enableReclock, bool enableMadvr)
         {
             _item = item;
 
-            Initialize(item.Path, false);
+            Initialize(item.Path, enableReclock, enableMadvr);
 
             var hr = _mediaControl.Run();
             DsError.ThrowExceptionForHR(hr);
@@ -123,7 +127,7 @@ namespace MediaBrowser.Theater.DirectShow
             DsError.ThrowExceptionForHR(hr);
         }
 
-        private void Initialize(string path, bool enableReclock)
+        private void Initialize(string path, bool enableReclock, bool enableMadvr)
         {
             InitializeGraph();
 
@@ -131,14 +135,14 @@ namespace MediaBrowser.Theater.DirectShow
             DsError.ThrowExceptionForHR(hr);
 
             // Try to render the streams.
-            RenderStreams(_pSource, enableReclock);
+            RenderStreams(_pSource, enableReclock, enableMadvr);
 
             // Get the seeking capabilities.
             hr = _mediaSeeking.GetCapabilities(out _mSeekCaps);
             DsError.ThrowExceptionForHR(hr);
         }
 
-        private void RenderStreams(DirectShowLib.IBaseFilter pSource, bool enableReclock)
+        private void RenderStreams(DirectShowLib.IBaseFilter pSource, bool enableReclock, bool enableMadvr)
         {
             int hr;
 
@@ -149,13 +153,14 @@ namespace MediaBrowser.Theater.DirectShow
             }
 
             // Add video renderer
-            _mPEvr = (DirectShowLib.IBaseFilter)new EnhancedVideoRenderer();
-            hr = _graphBuilder.AddFilter(_mPEvr, "EVR");
-            DsError.ThrowExceptionForHR(hr);
+            if (_item.IsVideo)
+            {
+                _mPEvr = (DirectShowLib.IBaseFilter)new EnhancedVideoRenderer();
+                hr = _graphBuilder.AddFilter(_mPEvr, "EVR");
+                DsError.ThrowExceptionForHR(hr);
 
-            InitializeEvr(_mPEvr, 1, out _mPDisplay);
-
-            SetVideoWindow();
+                InitializeEvr(_mPEvr, 1);
+            }
 
             // Add audio renderer
             var useDefaultRenderer = true;
@@ -180,12 +185,15 @@ namespace MediaBrowser.Theater.DirectShow
                     _graphBuilder.AddFilter(aRenderer, "Default Audio Renderer");
                 }
             }
-
-            _lavvideo = new LAVVideo();
-            var vlavvideo = _lavvideo as DirectShowLib.IBaseFilter;
-            if (vlavvideo != null)
+            
+            if (_item.IsVideo)
             {
-                _graphBuilder.AddFilter(vlavvideo, "LAV Video Decoder");
+                _lavvideo = new LAVVideo();
+                var vlavvideo = _lavvideo as DirectShowLib.IBaseFilter;
+                if (vlavvideo != null)
+                {
+                    _graphBuilder.AddFilter(vlavvideo, "LAV Video Decoder");
+                }
             }
 
             _lavaudio = new LAVAudio();
@@ -193,6 +201,16 @@ namespace MediaBrowser.Theater.DirectShow
             if (vlavaudio != null)
             {
                 _graphBuilder.AddFilter(vlavaudio, "LAV Audio Decoder");
+            }
+
+            if (enableMadvr && _item.IsVideo)
+            {
+                _madvr = new MadVR();
+                var vmadvr = _madvr as DirectShowLib.IBaseFilter;
+                if (vmadvr != null)
+                {
+                    _graphBuilder.AddFilter(vmadvr, "MadVR Video Renderer");
+                }
             }
 
             DirectShowLib.IEnumPins pEnum;
@@ -212,15 +230,22 @@ namespace MediaBrowser.Theater.DirectShow
                 Marshal.ReleaseComObject(pins[0]);
             }
 
+            Marshal.ReleaseComObject(pEnum);
+
             if (pinsRendered == 0)
             {
                 throw new Exception("Could not render any streams from the source Uri");
             }
 
             _logger.Info("Completed RenderStreams with {0} pins.", pinsRendered);
+
+            if (_item.IsVideo)
+            {
+                SetVideoWindow();
+            }
         }
 
-        private void InitializeEvr(DirectShowLib.IBaseFilter pEvr, int dwStreams, out IMFVideoDisplayControl ppDisplay)
+        private void InitializeEvr(DirectShowLib.IBaseFilter pEvr, int dwStreams)
         {
             IMFVideoDisplayControl pDisplay;
 
@@ -251,29 +276,125 @@ namespace MediaBrowser.Theater.DirectShow
             }
 
             // Return the IMFVideoDisplayControl pointer to the caller.
-            ppDisplay = pDisplay;
+            _mPDisplay = pDisplay;
 
             _mPMixer = null;
         }
 
         private void SetVideoWindow()
         {
+            SetVideoPositions();
+            _hiddenWindow.SizeChanged += _hiddenWindow_SizeChanged;
+
+            _videoWindow.put_Owner(Handle);
+            _videoWindow.put_WindowStyle(DirectShowLib.WindowStyle.Child | DirectShowLib.WindowStyle.Visible | DirectShowLib.WindowStyle.ClipSiblings);
+            //_videoWindow.put_FullScreenMode(OABool.True);
+            _videoWindow.HideCursor(OABool.True);
+            SetExclusiveMode(false);
+        }
+
+        private void SetVideoPositions()
+        {
+            var screenWidth = Convert.ToInt32(_hiddenWindow.ContentWidth);
+            var screenHeight = Convert.ToInt32(_hiddenWindow.ContentHeight);
+
             // Set the display position to the entire window.
-            var rc = new MFRect(0, 0, Convert.ToInt32(_hiddenWindow.ContentWidth), Convert.ToInt32(_hiddenWindow.ContentHeight));
+            var rc = new MFRect(0, 0, screenWidth, screenHeight);
 
             _mPDisplay.SetVideoPosition(null, rc);
+            //_mPDisplay.SetFullscreen(true);
 
-            _hiddenWindow.SizeChanged += _hiddenWindow_SizeChanged;
+            // Get Aspect Ratio
+            int aspectX;
+            int aspectY;
+
+            decimal heightAsPercentOfWidth = 0;
+
+            var basicVideo2 = (IBasicVideo2)_graphBuilder;
+            basicVideo2.GetPreferredAspectRatio(out aspectX, out aspectY);
+
+            var sourceHeight = 0;
+            var sourceWidth = 0;
+
+            var videoStream = _item.MediaStreams.FirstOrDefault(i => i.Type == MediaStreamType.Video);
+
+            if (videoStream != null)
+            {
+                sourceWidth = videoStream.Width ?? 0;
+                sourceHeight = videoStream.Height ?? 0;
+            }
+
+            if (aspectX == 0 || aspectY == 0)
+            {
+                aspectX = sourceWidth;
+                aspectY = sourceHeight;
+            }
+
+            if (aspectX > 0 && aspectY > 0)
+            {
+                heightAsPercentOfWidth = decimal.Divide(aspectY, aspectX);
+            }
+
+            // Adjust Video Size
+            var iAdjustedHeight = 0;
+
+            if (aspectX > 0 && aspectY > 0)
+            {
+                var adjustedHeight = Convert.ToDouble(heightAsPercentOfWidth * screenWidth);
+                iAdjustedHeight = Convert.ToInt32(Math.Round(adjustedHeight));
+            }
+
+            //SET MADVR WINDOW TO FULL SCREEN AND SET POSITION
+            if (screenHeight >= iAdjustedHeight && iAdjustedHeight > 0)
+            {
+                double totalMargin = (screenHeight - iAdjustedHeight);
+                var topMargin = Convert.ToInt32(Math.Round(totalMargin / 2));
+                _basicVideo.SetDestinationPosition(0, topMargin, screenWidth, iAdjustedHeight);
+            }
+            else if (screenHeight < iAdjustedHeight && iAdjustedHeight > 0)
+            {
+                var adjustedWidth = Convert.ToDouble(screenHeight / heightAsPercentOfWidth);
+
+                var iAdjustedWidth = Convert.ToInt32(Math.Round(adjustedWidth));
+
+                if (iAdjustedWidth == 1919)
+                    iAdjustedWidth = 1920;
+
+                double totalMargin = (screenWidth - iAdjustedWidth);
+                var leftMargin = Convert.ToInt32(Math.Round(totalMargin / 2));
+                _basicVideo.SetDestinationPosition(leftMargin, 0, iAdjustedWidth, screenHeight);
+            }
+            else if (iAdjustedHeight == 0)
+            {
+                _videoWindow.SetWindowPosition(0, 0, screenWidth, screenHeight);
+            }
+            _videoWindow.SetWindowPosition(0, 0, screenWidth, screenHeight);
+        }
+
+        public void SetExclusiveMode(bool enable)
+        {
+            try
+            {
+                var inExclusiveMode = MadvrInterface.InExclusiveMode(_madvr);
+
+                if (inExclusiveMode && !enable)
+                {
+                    MadvrInterface.EnableExclusiveMode(false, _madvr);
+                }
+                else if (!inExclusiveMode && enable)
+                {
+                    MadvrInterface.EnableExclusiveMode(true, _madvr);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.ErrorException("Error changing exclusive mode", ex);
+            }
         }
 
         void _hiddenWindow_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            if (_mPDisplay != null)
-            {
-                var rc = new MFRect(0, 0, Convert.ToInt32(_hiddenWindow.ContentWidth), Convert.ToInt32(_hiddenWindow.ContentHeight));
-
-                _mPDisplay.SetVideoPosition(null, rc);
-            }
+            SetVideoPositions();
         }
 
         public void Pause()
@@ -328,15 +449,12 @@ namespace MediaBrowser.Theater.DirectShow
             var pos = CurrentPositionTicks;
 
             CloseInterfaces();
-            
+
             _playerWrapper.OnPlaybackStopped(_item, CurrentPositionTicks);
         }
 
         private void HandleGraphEvent()
         {
-            EventCode evCode;
-            IntPtr evParam1, evParam2;
-
             // Make sure that we don't access the media event interface
             // after it has already been released.
             if (_mediaEventEx == null)
@@ -344,6 +462,9 @@ namespace MediaBrowser.Theater.DirectShow
 
             try
             {
+                EventCode evCode;
+                IntPtr evParam1, evParam2;
+
                 // Process all queued events
                 while (_mediaEventEx.GetEvent(out evCode, out evParam1, out evParam2, 0) == 0)
                 {
@@ -359,7 +480,7 @@ namespace MediaBrowser.Theater.DirectShow
             }
             catch
             {
-                
+
             }
         }
 
@@ -398,6 +519,12 @@ namespace MediaBrowser.Theater.DirectShow
                 Marshal.ReleaseComObject(_lavvideo);
             }
             _lavvideo = null;
+            
+            if (_madvr != null)
+            {
+                Marshal.ReleaseComObject(_madvr);
+            }
+            _madvr = null;
 
             if (_defaultAudioRenderer != null)
             {

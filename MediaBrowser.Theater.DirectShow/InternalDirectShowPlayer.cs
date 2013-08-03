@@ -144,12 +144,18 @@ namespace MediaBrowser.Theater.DirectShow
 
             try
             {
-                _mediaPlayer = new DirectShowPlayer(_logger, _hiddenWindow, this);
-                _mediaPlayer.FormBorderStyle = FormBorderStyle.None;
-                _mediaPlayer.TopLevel = false;
+                _mediaPlayer = new DirectShowPlayer(_logger, _hiddenWindow, this)
+                {
+                    BackColor = Color.Black,
+                    FormBorderStyle = FormBorderStyle.None,
+                    TopLevel = false
+                };
+
                 _hiddenWindow.WindowsFormsHost.Child = _mediaPlayer;
 
-                _mediaPlayer.Play(options.Items.First());
+                var enableMadVr = options.Items.First().IsVideo;
+
+                _mediaPlayer.Play(options.Items.First(), false, enableMadVr);
 
                 var position = options.StartPositionTicks;
 

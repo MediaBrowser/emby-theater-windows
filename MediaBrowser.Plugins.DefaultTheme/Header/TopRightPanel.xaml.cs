@@ -7,6 +7,7 @@ using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
+using MediaBrowser.Theater.Interfaces.UserInput;
 using MediaBrowser.Theater.Presentation.Controls;
 using System;
 using System.Globalization;
@@ -29,6 +30,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Header
         internal static ILogger Logger { get; set; }
         internal static INavigationService Navigation { get; set; }
         internal static IPlaybackManager PlaybackManager { get; set; }
+        internal static IUserInputManager UserInputManager { get; set; }
 
         private Timer ClockTimer { get; set; }
 
@@ -59,7 +61,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Header
 
         void CurrentUserButton_Click(object sender, RoutedEventArgs e)
         {
-            new UserProfileWindow(SessionManager, ImageManager, ApiClient).ShowModal(this.GetWindow());
+            new UserProfileWindow(SessionManager, ImageManager, ApiClient, UserInputManager, PlaybackManager).ShowModal(this.GetWindow());
         }
 
         void TopRightPanel_Loaded(object sender, RoutedEventArgs e)

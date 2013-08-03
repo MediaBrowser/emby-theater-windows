@@ -16,6 +16,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
+using MediaBrowser.Theater.Interfaces.UserInput;
 
 namespace MediaBrowser.Plugins.DefaultTheme
 {
@@ -54,6 +55,8 @@ namespace MediaBrowser.Plugins.DefaultTheme
         private readonly ILogger _logger;
         private readonly IThemeManager _themeManager;
 
+        private readonly IUserInputManager _userInput;
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultTheme" /> class.
         /// </summary>
@@ -64,7 +67,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// <param name="sessionManager">The session manager.</param>
         /// <param name="presentationManager">The app window.</param>
         /// <param name="logManager">The log manager.</param>
-        public DefaultTheme(IPlaybackManager playbackManager, IImageManager imageManager, IApiClient apiClient, INavigationService navService, ISessionManager sessionManager, IPresentationManager presentationManager, ILogManager logManager, IThemeManager themeManager)
+        public DefaultTheme(IPlaybackManager playbackManager, IImageManager imageManager, IApiClient apiClient, INavigationService navService, ISessionManager sessionManager, IPresentationManager presentationManager, ILogManager logManager, IThemeManager themeManager, IUserInputManager userInput)
         {
             _playbackManager = playbackManager;
             _imageManager = imageManager;
@@ -73,6 +76,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
             _sessionManager = sessionManager;
             _presentationManager = presentationManager;
             _themeManager = themeManager;
+            _userInput = userInput;
             _logger = logManager.GetLogger(GetType().Name);
 
             NavigationBar.PlaybackManager = _playbackManager;
@@ -86,6 +90,8 @@ namespace MediaBrowser.Plugins.DefaultTheme
             TopRightPanel.Logger = _logger;
             TopRightPanel.Navigation = _navService;
             TopRightPanel.PlaybackManager = _playbackManager;
+            TopRightPanel.UserInputManager = _userInput;
+            
             PageTitlePanel.ApiClient = _apiClient;
             PageTitlePanel.ImageManager = _imageManager;
 
@@ -194,7 +200,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// <exception cref="System.NotImplementedException"></exception>
         public MessageBoxResult ShowMessage(MessageBoxInfo options, Window parentWindow)
         {
-            var win = new ModalWindow
+            var win = new ModalWindow(_userInput, _playbackManager)
             {
                 Caption = options.Caption,
                 Button = options.Button,

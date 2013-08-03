@@ -9,7 +9,7 @@
         <Setter Property="FontWeight" Value="{DynamicResource DefaultFontWeight}"/>
         <Setter Property="Foreground" Value="{DynamicResource DefaultForeground}"/>
         <Setter Property="BorderBrush" Value="#000000"/>
-        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BorderThickness" Value="0"/>
         <Style.Triggers>
             <Trigger Property="WindowState" Value="Maximized">
                 <Setter Property="BorderThickness" Value="7"/>
@@ -21,7 +21,7 @@
     <!--Themes may want to override this to adjust the backdrop image style-->
     <Style TargetType="Image" x:Key="BackdropImage">
         <Setter Property="Stretch" Value="UniformToFill"/>
-        <Setter Property="Opacity" Value=".15"/>
+        <Setter Property="Opacity" Value=".20"/>
     </Style>
 
     <Style TargetType="Grid" x:Key="DragBar">

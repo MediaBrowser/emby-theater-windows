@@ -1,4 +1,6 @@
-﻿using MediaBrowser.Theater.Presentation.Controls;
+﻿using MediaBrowser.Theater.Interfaces.Playback;
+using MediaBrowser.Theater.Interfaces.UserInput;
+using MediaBrowser.Theater.Presentation.Controls;
 using System.Windows;
 
 namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
@@ -8,18 +10,16 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
     /// </summary>
     public partial class DisplayPreferencesMenu : BaseModalWindow
     {
-        public IHasDisplayPreferences DisplayPreferencesContainer { get; set; }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DisplayPreferencesMenu" /> class.
-        /// </summary>
-        public DisplayPreferencesMenu()
+        public DisplayPreferencesMenu(IUserInputManager userInputManager, IPlaybackManager playbackManager) 
+            : base(userInputManager, playbackManager)
         {
             InitializeComponent();
 
             btnClose.Click += btnClose_Click;
             Loaded += DisplayPreferencesMenu_Loaded;
         }
+
+        public IHasDisplayPreferences DisplayPreferencesContainer { get; set; }
 
         void DisplayPreferencesMenu_Loaded(object sender, RoutedEventArgs e)
         {

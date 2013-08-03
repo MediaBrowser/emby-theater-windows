@@ -1,7 +1,11 @@
-﻿using System;
+﻿using System.Threading;
+using MediaBrowser.Theater.Interfaces.Playback;
+using MediaBrowser.Theater.Interfaces.UserInput;
+using System;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Threading;
 
 namespace MediaBrowser.Theater.Presentation.Controls
 {
@@ -10,10 +14,36 @@ namespace MediaBrowser.Theater.Presentation.Controls
     /// </summary>
     public abstract class BaseWindow : Window, INotifyPropertyChanged
     {
+        protected IUserInputManager UserInputManager { get; private set; }
+        protected IPlaybackManager PlaybackManager { get; private set; }
+
+        private Timer _activityTimer;
+
         /// <summary>
         /// Occurs when [property changed].
         /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BaseWindow" /> class.
+        /// </summary>
+        protected BaseWindow(IUserInputManager userInputManager, IPlaybackManager playbackManager)
+            : base()
+        {
+            UserInputManager = userInputManager;
+            PlaybackManager = playbackManager;
+
+            PlaybackManager.PlaybackStarted += _playbackManager_PlaybackStarted;
+            PlaybackManager.PlaybackCompleted += _playbackManager_PlaybackCompleted;
+
+            SizeChanged += MainWindow_SizeChanged;
+            Loaded += BaseWindow_Loaded;
+        }
+
+        void BaseWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            _activityTimer = new Timer(TimerCallback, null, 100, 100);
+        }
 
         /// <summary>
         /// Called when [property changed].
@@ -45,13 +75,112 @@ namespace MediaBrowser.Theater.Presentation.Controls
             }
         }
 
+        private DateTime _lastMouseInput;
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="BaseWindow" /> class.
+        /// The _is mouse idle
         /// </summary>
-        protected BaseWindow()
-            : base()
+        private bool _isMouseIdle = true;
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance is mouse idle.
+        /// </summary>
+        /// <value><c>true</c> if this instance is mouse idle; otherwise, <c>false</c>.</value>
+        public bool IsMouseIdle
         {
-            SizeChanged += MainWindow_SizeChanged;
+            get { return _isMouseIdle; }
+            set
+            {
+                var changed = _isMouseIdle != value;
+
+                _isMouseIdle = value;
+
+                if (changed)
+                {
+                    Dispatcher.InvokeAsync(() =>
+                    {
+                        Cursor = value ? Cursors.None : Cursors.Arrow;
+                        OnPropertyChanged("IsMouseIdle");
+
+                    }, DispatcherPriority.Background);
+                }
+            }
+        }
+
+        /// <summary>
+        /// The _last mouse move point
+        /// </summary>
+        private Point _lastMouseMovePoint;
+
+        /// <summary>
+        /// Handles OnMouseMove to auto-select the item that's being moused over
+        /// </summary>
+        /// <param name="e">Provides data for <see cref="T:System.Windows.Input.MouseEventArgs" />.</param>
+        protected override void OnMouseMove(MouseEventArgs e)
+        {
+            base.OnMouseMove(e);
+
+            // Store the last position for comparison purposes
+            // Even if the mouse is not moving this event will fire as elements are showing and hiding
+            var pos = e.GetPosition(this);
+
+            if (pos == _lastMouseMovePoint)
+            {
+                return;
+            }
+
+            _lastMouseMovePoint = pos;
+
+            OnMouseMove();
+        }
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            UserInputManager.MouseMove -= _userInput_MouseMove;
+            DisposeActivityTimer();
+
+            base.OnClosing(e);
+        }
+
+        void _userInput_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            OnMouseMove();
+        }
+
+        void _playbackManager_PlaybackStarted(object sender, PlaybackStartEventArgs e)
+        {
+            if (e.Player is IInternalMediaPlayer)
+            {
+                Dispatcher.InvokeAsync(() => OnPropertyChanged("IsMouseIdle"), DispatcherPriority.Background);
+
+                UserInputManager.MouseMove += _userInput_MouseMove;
+            }
+        }
+
+        void _playbackManager_PlaybackCompleted(object sender, PlaybackStopEventArgs e)
+        {
+            UserInputManager.MouseMove -= _userInput_MouseMove;
+        }
+
+        private void OnMouseMove()
+        {
+            _lastMouseInput = DateTime.Now;
+            IsMouseIdle = false;
+        }
+
+        private void TimerCallback(object state)
+        {
+            IsMouseIdle = (DateTime.Now - _lastMouseInput).TotalMilliseconds > 5000;
+        }
+
+        /// <summary>
+        /// Disposes the Activity Timer
+        /// </summary>
+        public void DisposeActivityTimer()
+        {
+            if (_activityTimer != null)
+            {
+                _activityTimer.Dispose();
+            }
         }
 
         /// <summary>

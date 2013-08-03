@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using MediaBrowser.Theater.Interfaces.Playback;
+using MediaBrowser.Theater.Interfaces.UserInput;
+using System.Windows;
 
 namespace MediaBrowser.Theater.Presentation.Controls
 {
@@ -7,6 +9,11 @@ namespace MediaBrowser.Theater.Presentation.Controls
     /// </summary>
     public class BaseModalWindow : BaseWindow
     {
+        public BaseModalWindow(IUserInputManager userInputManager, IPlaybackManager playbackManager)
+            : base(userInputManager, playbackManager)
+        {
+        }
+
         /// <summary>
         /// Shows the modal.
         /// </summary>

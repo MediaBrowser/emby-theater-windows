@@ -1,8 +1,9 @@
-﻿using System.Linq;
-using System.Windows.Input;
+﻿using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Theming;
+using MediaBrowser.Theater.Interfaces.UserInput;
 using MediaBrowser.Theater.Presentation.Controls;
 using System;
+using System.Linq;
 using System.Windows;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Controls
@@ -12,6 +13,14 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
     /// </summary>
     public partial class ModalWindow : BaseModalWindow
     {
+        public ModalWindow(IUserInputManager userInputManager, IPlaybackManager playbackManager)
+            : base(userInputManager, playbackManager)
+        {
+            InitializeComponent();
+
+            Loaded += ModalWindow_Loaded;
+        }
+
         public MessageBoxResult MessageBoxResult { get; set; }
 
         public string Text
@@ -52,14 +61,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
                 TxtCaption.Visibility = string.IsNullOrEmpty(value) ? Visibility.Collapsed : Visibility.Visible;
                 OnPropertyChanged("Caption");
             }
-        }
-
-        public ModalWindow()
-            : base()
-        {
-            InitializeComponent();
-
-            Loaded += ModalWindow_Loaded;
         }
 
         void ModalWindow_Loaded(object sender, RoutedEventArgs e)

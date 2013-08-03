@@ -68,7 +68,6 @@ namespace MediaBrowser.UI.Implementations
         void _page_Loaded(object sender, RoutedEventArgs e)
         {
             App.Instance.ApplicationWindow.WindowBackgroundContent.Visibility = Visibility.Collapsed;
-            App.Instance.ApplicationWindow.PageContent.Visibility = Visibility.Collapsed;
 
             _themeManager.CurrentTheme.SetGlobalContentVisibility(false);
         }
@@ -84,7 +83,6 @@ namespace MediaBrowser.UI.Implementations
             _page.Unloaded -= _page_Unloaded;
             _playbackManager.PlaybackCompleted -= _playbackManager_PlaybackCompleted;
             
-            App.Instance.ApplicationWindow.PageContent.Visibility = Visibility.Visible;
             App.Instance.ApplicationWindow.WindowBackgroundContent.Visibility = Visibility.Visible;
 
             _themeManager.CurrentTheme.SetGlobalContentVisibility(true);

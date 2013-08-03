@@ -3,6 +3,7 @@ using MediaBrowser.Theater.Interfaces.UserInput;
 using System;
 using System.Windows;
 using System.Windows.Forms;
+using System.Windows.Threading;
 
 namespace MediaBrowser.Theater.Presentation.Pages
 {
@@ -40,14 +41,31 @@ namespace MediaBrowser.Theater.Presentation.Pages
                 {
                     if (value)
                     {
-                        Dispatcher.InvokeAsync(System.Windows.Forms.Cursor.Hide);
+                        Dispatcher.InvokeAsync(HideCursor, DispatcherPriority.Background);
                     }
                     else
                     {
-                        Dispatcher.InvokeAsync(System.Windows.Forms.Cursor.Show);
+                        Dispatcher.InvokeAsync(ShowCursor, DispatcherPriority.Background);
                     }
                 }
             }
+        }
+
+        private void HideCursor()
+        {
+            System.Windows.Forms.Cursor.Hide();
+            OnMouseIdleChanged();
+        }
+
+        private void ShowCursor()
+        {
+            System.Windows.Forms.Cursor.Show();
+            OnMouseIdleChanged();
+        }
+        
+        protected virtual void OnMouseIdleChanged()
+        {
+            
         }
 
         protected override void OnInitialized(EventArgs e)

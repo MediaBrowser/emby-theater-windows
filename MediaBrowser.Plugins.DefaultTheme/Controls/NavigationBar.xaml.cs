@@ -1,7 +1,6 @@
 ﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Plugins.DefaultTheme.Details;
-using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Presentation.Playback;
@@ -11,6 +10,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using System.Windows.Threading;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Controls
 {
@@ -19,16 +19,15 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
     /// </summary>
     public partial class NavigationBar : UserControl
     {
-        internal static IPlaybackManager PlaybackManager { get; set; }
-        internal static IImageManager ImageManager { get; set; }
-        internal static IApiClient ApiClient { get; set; }
-        internal static INavigationService NavigationService { get; set; }
+        private readonly IPlaybackManager _playbackManager;
+        private readonly IImageManager _imageManager;
+        private readonly IApiClient _apiClient;
 
         /// <summary>
         /// Gets or sets the current player.
         /// </summary>
         /// <value>The current player.</value>
-        private IMediaPlayer CurrentPlayer { get; set; }
+        private readonly IInternalMediaPlayer _mediaPlayer;
 
         /// <summary>
         /// Gets or sets the current position timer.
@@ -39,8 +38,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         /// <summary>
         /// Initializes a new instance of the <see cref="NavigationBar" /> class.
         /// </summary>
-        public NavigationBar()
+        public NavigationBar(IPlaybackManager playbackManager, IImageManager imageManager, IApiClient apiClient, IInternalMediaPlayer mediaPlayer)
         {
+            _playbackManager = playbackManager;
+            _imageManager = imageManager;
+            _apiClient = apiClient;
+            _mediaPlayer = mediaPlayer;
             InitializeComponent();
 
             Loaded += NavigationBar_Loaded;
@@ -65,10 +68,30 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
             NextChapterButton.Click += NextChapterButton_Click;
             PreviousChapterButton.Click += PreviousChapterButton_Click;
 
-            PlaybackManager.PlaybackStarted += PlaybackManager_PlaybackStarted;
-            PlaybackManager.PlaybackCompleted += PlaybackManager_PlaybackCompleted;
+            _playbackManager.PlaybackCompleted += PlaybackManager_PlaybackCompleted;
 
             CurrentPositionSlider.PreviewMouseUp += CurrentPositionSlider_PreviewMouseUp;
+
+            LoadPlayer();
+        }
+
+        private void LoadPlayer()
+        {
+            _mediaPlayer.PlayStateChanged += CurrentPlayer_PlayStateChanged;
+
+            ResetButtonVisibilities(_mediaPlayer);
+
+            Dispatcher.InvokeAsync(() =>
+            {
+                var runtime = _mediaPlayer.CurrentMedia.RunTimeTicks ?? 0;
+                CurrentPositionSlider.Maximum = runtime;
+
+                TxtDuration.Text = GetTimeString(runtime);
+
+                UpdateNowPlayingImage();
+            });
+
+            CurrentPositionTimer = new Timer(CurrentPositionTimerCallback, null, 250, 250);
         }
 
         /// <summary>
@@ -78,7 +101,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         async void PreviousChapterButton_Click(object sender, RoutedEventArgs e)
         {
-            await CurrentPlayer.GoToPreviousChapter();
+            await _mediaPlayer.GoToPreviousChapter();
         }
 
         /// <summary>
@@ -88,7 +111,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         async void NextChapterButton_Click(object sender, RoutedEventArgs e)
         {
-            await CurrentPlayer.GoToNextChapter();
+            await _mediaPlayer.GoToNextChapter();
         }
 
         /// <summary>
@@ -98,7 +121,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         async void PauseButton_Click(object sender, RoutedEventArgs e)
         {
-            await CurrentPlayer.Pause();
+            await _mediaPlayer.Pause();
         }
 
         /// <summary>
@@ -108,7 +131,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         async void PlayButton_Click(object sender, RoutedEventArgs e)
         {
-            await CurrentPlayer.UnPause();
+            await _mediaPlayer.UnPause();
         }
 
         /// <summary>
@@ -118,7 +141,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         async void StopButton_Click(object sender, RoutedEventArgs e)
         {
-            await CurrentPlayer.Stop();
+            await _mediaPlayer.Stop();
         }
 
         /// <summary>
@@ -128,27 +151,25 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         /// <param name="e">The <see cref="PlaybackStartEventArgs" /> instance containing the event data.</param>
         void PlaybackManager_PlaybackCompleted(object sender, PlaybackStopEventArgs e)
         {
-            var player = CurrentPlayer;
+            //var player = _mediaPlayer;
 
-            if (e.Player == player)
-            {
-                if (CurrentPositionTimer != null)
-                {
-                    CurrentPositionTimer.Dispose();
-                }
+            //if (e.Player == player)
+            //{
+            //    if (CurrentPositionTimer != null)
+            //    {
+            //        CurrentPositionTimer.Dispose();
+            //    }
 
-                player.PlayStateChanged -= CurrentPlayer_PlayStateChanged;
-                CurrentPlayer = null;
-                ResetButtonVisibilities(null);
+            //    player.PlayStateChanged -= CurrentPlayer_PlayStateChanged;
+            //    CurrentPlayer = null;
+            //    ResetButtonVisibilities(null);
 
-                Dispatcher.InvokeAsync(() =>
-                {
-                    TxtCurrentPosition.Text = string.Empty;
-                    UpdateNowPlayingImage();
-                });
-
-                NavigationService.Navigated -= NavigationService_Navigated;
-            }
+            //    Dispatcher.InvokeAsync(() =>
+            //    {
+            //        TxtCurrentPosition.Text = string.Empty;
+            //        UpdateNowPlayingImage();
+            //    });
+            //}
         }
 
         /// <summary>
@@ -158,7 +179,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         void VolumeUpButton_Click(object sender, RoutedEventArgs e)
         {
-            PlaybackManager.VolumeStepUp();
+            _playbackManager.VolumeStepUp();
         }
 
         /// <summary>
@@ -168,7 +189,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         void VolumeDownButton_Click(object sender, RoutedEventArgs e)
         {
-            PlaybackManager.VolumeStepDown();
+            _playbackManager.VolumeStepDown();
         }
 
         /// <summary>
@@ -178,64 +199,24 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         void MuteButton_Click(object sender, RoutedEventArgs e)
         {
-            if (PlaybackManager.IsMuted)
+            if (_playbackManager.IsMuted)
             {
-                PlaybackManager.UnMute();
+                _playbackManager.UnMute();
             }
             else
             {
-                PlaybackManager.Mute();
+                _playbackManager.Mute();
             }
-        }
-
-        /// <summary>
-        /// Handles the PlaybackStarted event of the PlaybackManager control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="PlaybackStartEventArgs" /> instance containing the event data.</param>
-        void PlaybackManager_PlaybackStarted(object sender, PlaybackStartEventArgs e)
-        {
-            if (e.Player is IInternalMediaPlayer)
-            {
-                CurrentPlayer = e.Player;
-                CurrentPlayer.PlayStateChanged += CurrentPlayer_PlayStateChanged;
-
-                ResetButtonVisibilities(e.Player);
-
-                Dispatcher.InvokeAsync(() =>
-                {
-                    var runtime = e.Player.CurrentMedia.RunTimeTicks ?? 0;
-                    CurrentPositionSlider.Maximum = runtime;
-
-                    TxtDuration.Text = GetTimeString(runtime);
-
-                    UpdateNowPlayingImage();
-
-                    GridLogo.Visibility = NavigationService.CurrentPage is IFullscreenVideoPage
-                                              ? Visibility.Visible
-                                              : Visibility.Collapsed;
-                });
-
-                CurrentPositionTimer = new Timer(CurrentPositionTimerCallback, null, 250, 250);
-
-                NavigationService.Navigated += NavigationService_Navigated;
-            }
-        }
-
-        void NavigationService_Navigated(object sender, NavigationEventArgs e)
-        {
-            Dispatcher.InvokeAsync(() => GridLogo.Visibility = e.NewPage is IFullscreenVideoPage ? Visibility.Visible : Visibility.Collapsed);
         }
 
         private async void UpdateNowPlayingImage()
         {
-            var player = CurrentPlayer;
+            var player = _mediaPlayer;
 
-            if (CurrentPlayer == null)
+            if (player == null)
             {
                 NowPlayingImage.Visibility = Visibility.Collapsed;
                 TxtNowPlayingName.Visibility = Visibility.Collapsed;
-                ImgLogo.Visibility = Visibility.Collapsed;
                 return;
             }
 
@@ -245,7 +226,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
             {
                 NowPlayingImage.Visibility = Visibility.Visible;
 
-                NowPlayingImage.Source = await ImageManager.GetRemoteBitmapAsync(ApiClient.GetImageUrl(media, new ImageOptions
+                NowPlayingImage.Source = await _imageManager.GetRemoteBitmapAsync(_apiClient.GetImageUrl(media, new ImageOptions
                 {
                     MaxWidth = 300,
                     MaxHeight = 300
@@ -254,20 +235,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
             else
             {
                 NowPlayingImage.Visibility = Visibility.Collapsed;
-            }
-
-            if (media != null && (media.HasLogo || !string.IsNullOrEmpty(media.ParentLogoItemId)))
-            {
-                ImgLogo.Visibility = Visibility.Visible;
-
-                ImgLogo.Source = await ImageManager.GetRemoteBitmapAsync(ApiClient.GetLogoImageUrl(media, new ImageOptions
-                {
-                    Height = 80
-                }));
-            }
-            else
-            {
-                ImgLogo.Visibility = Visibility.Collapsed;
             }
 
             if (media != null)
@@ -297,7 +264,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         {
             var time = string.Empty;
 
-            var ticks = CurrentPlayer.CurrentPositionTicks;
+            var ticks = _mediaPlayer.CurrentPositionTicks;
 
             if (ticks.HasValue)
             {
@@ -334,7 +301,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
         void CurrentPlayer_PlayStateChanged(object sender, EventArgs e)
         {
-            ResetButtonVisibilities(CurrentPlayer);
+            ResetButtonVisibilities(_mediaPlayer);
         }
 
         /// <summary>
@@ -353,14 +320,15 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
                 VolumeUpButton.Visibility = player != null ? Visibility.Visible : Visibility.Collapsed;
                 VolumeDownButton.Visibility = player != null ? Visibility.Visible : Visibility.Collapsed;
 
-                var isSeekabke = player != null && player.CanSeek && player.CurrentMedia != null;
-                SeekGrid.Visibility = isSeekabke ? Visibility.Visible : Visibility.Collapsed;
+                var isSeekable = player != null && player.CanSeek && player.CurrentMedia != null;
+                SeekGrid.Visibility = isSeekable ? Visibility.Visible : Visibility.Collapsed;
 
-                var canSeekChapters = isSeekabke && player.CurrentMedia.Chapters != null && player.CurrentMedia.Chapters.Count > 1;
+                var canSeekChapters = isSeekable && player.CurrentMedia.Chapters != null && player.CurrentMedia.Chapters.Count > 1;
 
                 NextChapterButton.Visibility = canSeekChapters ? Visibility.Visible : Visibility.Collapsed;
                 PreviousChapterButton.Visibility = canSeekChapters ? Visibility.Visible : Visibility.Collapsed;
-            });
+
+            }, DispatcherPriority.Background);
         }
 
         /// <summary>
@@ -397,7 +365,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         /// <param name="e">The <see cref="MouseButtonEventArgs" /> instance containing the event data.</param>
         async void CurrentPositionSlider_PreviewMouseUp(object sender, MouseButtonEventArgs e)
         {
-            await CurrentPlayer.Seek(Convert.ToInt64(CurrentPositionSlider.Value));
+            await _mediaPlayer.Seek(Convert.ToInt64(CurrentPositionSlider.Value));
         }
     }
 }

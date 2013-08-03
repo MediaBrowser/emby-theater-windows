@@ -4,11 +4,14 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
           xmlns:pages="clr-namespace:MediaBrowser.Theater.Presentation.Pages;assembly=MediaBrowser.Theater.Presentation"
-          mc:Ignorable="d" 
+                               xmlns:controls="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Controls"
+                               mc:Ignorable="d" 
       d:DesignHeight="300" d:DesignWidth="300"
 	Title="FullscreenVideoPage">
 
-    <Grid>
+    <Grid x:Name="MainGrid">
+        <Image Name="ImgLogo" Stretch="Uniform" HorizontalAlignment="Left" VerticalAlignment="Top" Height="100" Margin="30 30 0 0"></Image>
 
+        <ContentControl x:Name="NavBarContent"></ContentControl>
     </Grid>
 </pages:BaseFullscreenVideoPage>

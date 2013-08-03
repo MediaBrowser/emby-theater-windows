@@ -8,10 +8,6 @@
 
     <Grid VerticalAlignment="Stretch">
         
-        <Grid x:Name="GridLogo">
-            <Image Name="ImgLogo" Stretch="Uniform" HorizontalAlignment="Left" VerticalAlignment="Top" Height="80" Margin="30 30 0 0" Opacity=".8"></Image>
-        </Grid>
-
         <Grid x:Name="NavBarGrid" Background="#c6000000" VerticalAlignment="Bottom" HorizontalAlignment="Stretch">
 
             <Grid.RowDefinitions>

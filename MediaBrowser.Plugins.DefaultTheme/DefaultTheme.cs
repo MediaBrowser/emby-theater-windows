@@ -70,11 +70,6 @@ namespace MediaBrowser.Plugins.DefaultTheme
             _userInput = userInput;
             _logger = logManager.GetLogger(GetType().Name);
 
-            NavigationBar.PlaybackManager = _playbackManager;
-            NavigationBar.ApiClient = _apiClient;
-            NavigationBar.ImageManager = _imageManager;
-            NavigationBar.NavigationService = navService;
-
             TopRightPanel.SessionManager = _sessionManager;
             TopRightPanel.ApiClient = _apiClient;
             TopRightPanel.ImageManager = _imageManager;
@@ -277,7 +272,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
 
         public Page GetFullscreenVideoPage()
         {
-            return new FullscreenVideoPage(_userInput);
+            return new FullscreenVideoPage(_userInput, _imageManager, _apiClient, _playbackManager);
         }
     }
 }

@@ -45,8 +45,6 @@
         <ContentControl x:Name="PageContent" Template="{DynamicResource PageContentTemplate}">
         </ContentControl>
 
-        <ContentControl x:Name="NowPlayingOverlay" Template="{DynamicResource NowPlayingOverlayTemplate}" Visibility="{Binding Path=ApplicationWindow.NowPlayingOverlayVisibility}"></ContentControl>
-
         <Grid.LayoutTransform>
             <ScaleTransform ScaleX="{Binding Path=ApplicationWindow.ContentScale}" ScaleY="{Binding Path=ApplicationWindow.ContentScale}" CenterX="0" CenterY="0" />
         </Grid.LayoutTransform>

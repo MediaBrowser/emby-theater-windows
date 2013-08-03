@@ -308,46 +308,60 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
             TxtGenres.Text = item != null && item.Genres != null ? string.Join(" / ", item.Genres.Take(3).ToArray()) : string.Empty;
         }
 
-        private async void UpdateLogo(BaseItemDto item)
+        private void UpdateLogo(BaseItemDto item)
         {
             const int maxheight = 100;
-
-            TxtBottomName.Text = item.Name;
 
             if (BottomGrid.Visibility == Visibility.Collapsed || Sidebar.Visibility == Visibility.Visible)
             {
                 ImgLogo.Visibility = Visibility.Collapsed;
-                TxtBottomName.Visibility = Visibility.Visible;
+                TxtBottomName.Visibility = Visibility.Collapsed;
             }
 
             else if (item != null && item.HasLogo && Sidebar.Visibility == Visibility.Collapsed)
             {
-                ImgLogo.Source = await ImageManager.GetRemoteBitmapAsync(ApiClient.GetLogoImageUrl(item, new ImageOptions
+                SetLogo(item, ApiClient.GetLogoImageUrl(item, new ImageOptions
                 {
                     Height = maxheight,
                     ImageType = ImageType.Logo
                 }));
-
-                ImgLogo.Visibility = Visibility.Visible;
-                TxtBottomName.Visibility = Visibility.Collapsed;
             }
             else if (item != null && (item.HasArtImage || item.ParentArtImageTag.HasValue))
             {
-                ImgLogo.Source = await ImageManager.GetRemoteBitmapAsync(ApiClient.GetArtImageUrl(item, new ImageOptions
+                SetLogo(item, ApiClient.GetArtImageUrl(item, new ImageOptions
                 {
                     Height = maxheight,
                     ImageType = ImageType.Art
                 }));
+            }
+            else
+            {
+                SetDefaultLogo(item);
+            }
+        }
+
+        private async void SetLogo(BaseItemDto item, string url)
+        {
+            try
+            {
+                ImgLogo.Source = await ImageManager.GetRemoteBitmapAsync(url);
 
                 ImgLogo.Visibility = Visibility.Visible;
                 TxtBottomName.Visibility = Visibility.Collapsed;
             }
-            else
+            catch
             {
-                // Just hide it so that it still takes up the same amount of space
-                ImgLogo.Visibility = Visibility.Hidden;
-                TxtBottomName.Visibility = Visibility.Visible;
+                SetDefaultLogo(item);
             }
+        }
+
+        private void SetDefaultLogo(BaseItemDto item)
+        {
+            TxtBottomName.Text = item.Name;
+
+            // Just hide it so that it still takes up the same amount of space
+            ImgLogo.Visibility = Visibility.Hidden;
+            TxtBottomName.Visibility = Visibility.Visible;
         }
 
         protected override double GetImageDisplayHeight(Model.Entities.DisplayPreferences displayPreferences, double medianPrimaryImageAspectRatio)

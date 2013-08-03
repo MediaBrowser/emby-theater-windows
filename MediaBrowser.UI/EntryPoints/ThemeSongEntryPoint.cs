@@ -21,6 +21,8 @@ namespace MediaBrowser.UI.EntryPoints
 
         private string _currentPlayingOwnerId;
 
+        private string _lastPlayedOwnerId;
+
         public ThemeSongEntryPoint(INavigationService nav, IPlaybackManager playback, IApiClient apiClient, ISessionManager session)
         {
             _nav = nav;
@@ -68,11 +70,18 @@ namespace MediaBrowser.UI.EntryPoints
                 return;
             }
 
+            // Don't replay the same one over and over
+            if (string.Equals(_lastPlayedOwnerId, themeMediaResult.OwnerId))
+            {
+                return;
+            }
+            
             if (themeMediaResult.Items.Length > 0)
             {
                 await Play(themeMediaResult.Items).ConfigureAwait(false);
 
                 _currentPlayingOwnerId = themeMediaResult.OwnerId;
+                _lastPlayedOwnerId = themeMediaResult.OwnerId;
             }
             else if (!string.IsNullOrEmpty(_currentPlayingOwnerId))
             {

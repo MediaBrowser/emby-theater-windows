@@ -99,6 +99,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
                     Dispatcher.InvokeAsync(() =>
                     {
                         Cursor = value ? Cursors.None : Cursors.Arrow;
+
                         OnPropertyChanged("IsMouseIdle");
 
                     }, DispatcherPriority.Background);

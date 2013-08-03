@@ -144,7 +144,7 @@ namespace MediaBrowser.Theater.DirectShow
 
             try
             {
-                _mediaPlayer = new DirectShowPlayer(_logger, _hiddenWindow, this)
+                _mediaPlayer = new DirectShowPlayer(_logger, _hiddenWindow, this, _userInput)
                 {
                     BackColor = Color.Black,
                     FormBorderStyle = FormBorderStyle.None,

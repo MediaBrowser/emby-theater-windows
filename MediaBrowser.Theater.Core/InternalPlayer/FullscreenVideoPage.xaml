@@ -6,7 +6,7 @@
                                  xmlns:pages="clr-namespace:MediaBrowser.Theater.Presentation.Pages;assembly=MediaBrowser.Theater.Presentation"
                                  mc:Ignorable="d" 
       d:DesignHeight="300" d:DesignWidth="300"
-	Title="FullscreenVideoPage">
+	Title="FullscreenVideoPage" Cursor="None">
 
     <Grid>
         

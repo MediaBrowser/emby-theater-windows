@@ -4,6 +4,7 @@ using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Navigation;
+using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.Theming;
 using System;
@@ -25,20 +26,24 @@ namespace MediaBrowser.Theater.Implementations.Session
         private readonly ILogger _logger;
         private readonly IThemeManager _themeManager;
         private readonly ITheaterConfigurationManager _config;
+        private readonly IPlaybackManager _playback;
 
-        public SessionManager(INavigationService navService, IApiClient apiClient, ILogger logger, IThemeManager themeManager, ITheaterConfigurationManager config)
+        public SessionManager(INavigationService navService, IApiClient apiClient, ILogger logger, IThemeManager themeManager, ITheaterConfigurationManager config, IPlaybackManager playback)
         {
             _navService = navService;
             _apiClient = apiClient;
             _logger = logger;
             _themeManager = themeManager;
             _config = config;
+            _playback = playback;
         }
 
         public UserDto CurrentUser { get; private set; }
 
         public async Task Logout()
         {
+            await _playback.StopAllPlayback();
+
             _apiClient.CurrentUserId = null;
 
             var previous = CurrentUser;

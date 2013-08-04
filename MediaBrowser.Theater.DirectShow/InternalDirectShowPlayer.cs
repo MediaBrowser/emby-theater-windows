@@ -3,6 +3,7 @@ using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
+using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.UserInput;
@@ -19,12 +20,14 @@ namespace MediaBrowser.Theater.DirectShow
     public class InternalDirectShowPlayer : IInternalMediaPlayer
     {
         private DirectShowPlayer _mediaPlayer;
+
         private readonly ILogger _logger;
         private readonly IHiddenWindow _hiddenWindow;
         private readonly IPresentationManager _presentation;
         private readonly IUserInputManager _userInput;
         private readonly IApiClient _apiClient;
         private readonly IPlaybackManager _playbackManager;
+        private readonly ITheaterConfigurationManager _config;
 
         private readonly Task _taskResult = Task.FromResult(true);
 
@@ -34,7 +37,7 @@ namespace MediaBrowser.Theater.DirectShow
 
         private List<BaseItemDto> _playlist = new List<BaseItemDto>();
 
-        public InternalDirectShowPlayer(ILogger logger, IHiddenWindow hiddenWindow, IPresentationManager presentation, IUserInputManager userInput, IApiClient apiClient, IPlaybackManager playbackManager)
+        public InternalDirectShowPlayer(ILogger logger, IHiddenWindow hiddenWindow, IPresentationManager presentation, IUserInputManager userInput, IApiClient apiClient, IPlaybackManager playbackManager, ITheaterConfigurationManager config)
         {
             _logger = logger;
             _hiddenWindow = hiddenWindow;
@@ -42,6 +45,7 @@ namespace MediaBrowser.Theater.DirectShow
             _userInput = userInput;
             _apiClient = apiClient;
             _playbackManager = playbackManager;
+            _config = config;
         }
 
         public IReadOnlyList<BaseItemDto> Playlist
@@ -153,9 +157,7 @@ namespace MediaBrowser.Theater.DirectShow
 
                 _hiddenWindow.WindowsFormsHost.Child = _mediaPlayer;
 
-                var enableMadVr = options.Items.First().IsVideo;
-
-                _mediaPlayer.Play(options.Items.First(), false, enableMadVr);
+                _mediaPlayer.Play(options.Items.First(), _config.Configuration.InternalPlayerConfiguration.EnableReclock, EnableMadvr(options));
 
                 var position = options.StartPositionTicks;
 
@@ -178,6 +180,33 @@ namespace MediaBrowser.Theater.DirectShow
             return _taskResult;
         }
 
+        /// <summary>
+        /// Enables the madvr.
+        /// </summary>
+        /// <param name="options">The options.</param>
+        /// <returns><c>true</c> if XXXX, <c>false</c> otherwise</returns>
+        private bool EnableMadvr(PlayOptions options)
+        {
+            var video = options.Items.First();
+
+            if (!video.IsVideo)
+            {
+                return false;
+            }
+
+            if (!_config.Configuration.InternalPlayerConfiguration.EnableMadvr)
+            {
+                return false;
+            }
+
+            if (!options.GoFullScreen && !_config.Configuration.InternalPlayerConfiguration.EnableMadvrForBackgroundVideos)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         void _userInput_KeyDown(object sender, KeyEventArgs e)
         {
             switch (e.KeyCode)
@@ -185,20 +214,17 @@ namespace MediaBrowser.Theater.DirectShow
                 case Keys.Pause:
                     _mediaPlayer.Pause();
                     break;
-                //case Keys.VolumeDown:
-                //    _mediaListPlayer.InnerPlayer.Volume -= 5;
-                //    break;
-                //case Keys.VolumeUp:
-                //    _mediaListPlayer.InnerPlayer.Volume += 5;
-                //    _mediaListPlayer.InnerPlayer.Mute = false;
-                //    break;
-                //case Keys.VolumeMute:
-                //    _mediaListPlayer.InnerPlayer.ToggleMute();
-                //    break;
                 case Keys.MediaNextTrack:
                     break;
                 case Keys.MediaPlayPause:
-                    _mediaPlayer.Pause();
+                    if (_mediaPlayer.PlayState == PlayState.Paused)
+                    {
+                        _mediaPlayer.Unpause();
+                    }
+                    else
+                    {
+                        _mediaPlayer.Pause();
+                    }
                     break;
                 case Keys.MediaPreviousTrack:
                     break;
@@ -318,7 +344,7 @@ namespace MediaBrowser.Theater.DirectShow
                 EndingPositionTicks = positionTicks
 
             };
-            
+
             EventHelper.FireEventIfNotNull(PlaybackCompleted, this, args, _logger);
 
             _playbackManager.ReportPlaybackCompleted(args);

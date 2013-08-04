@@ -45,6 +45,8 @@ namespace MediaBrowser.Theater.Core.Plugins
             {
                 var packages = await _packageManager.GetAvailablePackagesWithoutRegistrationInfo(CancellationToken.None);
 
+                packages = packages.Where(i => i.versions != null && i.versions.Count > 0);
+
                 var categories = packages
                     .Where(i => i.type == PackageType.UserInstalled && i.targetSystem == PackageTargetSystem.MBTheater)
                     .OrderBy(i => string.IsNullOrEmpty(i.category) ? "General" : i.category)

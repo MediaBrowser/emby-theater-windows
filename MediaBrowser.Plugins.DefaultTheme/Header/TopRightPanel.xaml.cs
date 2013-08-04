@@ -49,6 +49,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Header
 
             Loaded += TopRightPanel_Loaded;
             Unloaded += TopRightPanel_Unloaded;
+            FullscreenButton.Click += FullscreenButton_Click;
 
             SessionManager.UserLoggedIn += SessionManager_UserLoggedIn;
             SessionManager.UserLoggedOut += SessionManager_UserLoggedOut;
@@ -200,7 +201,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Header
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
-        async void NowPlaying_Click(object sender, RoutedEventArgs e)
+        async void FullscreenButton_Click(object sender, RoutedEventArgs e)
         {
             await Navigation.NavigateToInternalPlayerPage();
         }
@@ -213,7 +214,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Header
         /// <exception cref="System.NotImplementedException"></exception>
         async void PlaybackManager_PlaybackCompleted(object sender, PlaybackStopEventArgs e)
         {
-            await Dispatcher.InvokeAsync(() => NowPlayingButton.Visibility = Visibility.Collapsed);
+            await Dispatcher.InvokeAsync(() => FullscreenButton.Visibility = Visibility.Collapsed);
         }
 
         /// <summary>
@@ -225,7 +226,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Header
         {
             if (e.Player is IInternalMediaPlayer)
             {
-                await Dispatcher.InvokeAsync(() => NowPlayingButton.Visibility = Visibility.Visible);
+                await Dispatcher.InvokeAsync(() => FullscreenButton.Visibility = Visibility.Visible);
             }
         }
     }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -36,12 +37,25 @@ namespace MediaBrowser.Theater.Presentation.Pages
         {
             FocusManager.SetIsFocusScope(this, true);
 
-            NavigationService.Navigating -= NavigationService_Navigating;
-            NavigationService.Navigating += NavigationService_Navigating;
+            var nav = NavigationService;
+
+            nav.Navigating -= NavigationService_Navigating;
+            nav.Navigating += NavigationService_Navigating;
+
+            nav.Navigated -= NavigationService_Navigated;
+            nav.Navigated += NavigationService_Navigated;
 
             if (_lastFocused == null)
             {
                 FocusOnFirstLoad();
+            }
+        }
+
+        void NavigationService_Navigated(object sender, NavigationEventArgs e)
+        {
+            if (e.Content.Equals(this))
+            {
+                FocusManager.SetFocusedElement(this, _lastFocused);
             }
         }
 
@@ -60,14 +74,7 @@ namespace MediaBrowser.Theater.Presentation.Pages
         /// <param name="e">The <see cref="NavigatingCancelEventArgs"/> instance containing the event data.</param>
         void NavigationService_Navigating(object sender, NavigatingCancelEventArgs e)
         {
-            if (e.Content.Equals(this))
-            {
-                FocusManager.SetFocusedElement(this, _lastFocused);
-            }
-            else
-            {
-                _lastFocused = FocusManager.GetFocusedElement(this);
-            }
+            _lastFocused = FocusManager.GetFocusedElement(this);
         }
     }
 }

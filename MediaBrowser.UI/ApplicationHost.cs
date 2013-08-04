@@ -137,7 +137,7 @@ namespace MediaBrowser.UI
             PlaybackManager = new PlaybackManager(TheaterConfigurationManager, Logger, ApiClient, NavigationService, PresentationManager);
             RegisterSingleInstance(PlaybackManager);
 
-            SessionManager = new SessionManager(NavigationService, ApiClient, Logger, ThemeManager, TheaterConfigurationManager);
+            SessionManager = new SessionManager(NavigationService, ApiClient, Logger, ThemeManager, TheaterConfigurationManager, PlaybackManager);
             RegisterSingleInstance(SessionManager);
 
             RegisterSingleInstance(ApiClient);

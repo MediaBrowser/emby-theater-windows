@@ -43,17 +43,15 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
             _apiClient = apiClient;
             _mediaPlayer = mediaPlayer;
             InitializeComponent();
-
-            Loaded += NavigationBar_Loaded;
         }
 
-        /// <summary>
-        /// Handles the Loaded event of the NavigationBar control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
-        void NavigationBar_Loaded(object sender, RoutedEventArgs e)
+        protected override void OnInitialized(EventArgs e)
         {
+            base.OnInitialized(e);
+
+            Loaded += NavigationBar_Loaded;
+            Unloaded += NavigationBar_Unloaded;
+
             MuteButton.Click += MuteButton_Click;
 
             VolumeDownButton.PreviewMouseDown += VolumeDownButton_Click;
@@ -66,11 +64,24 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
             NextChapterButton.Click += NextChapterButton_Click;
             PreviousChapterButton.Click += PreviousChapterButton_Click;
 
+            CurrentPositionSlider.PreviewMouseUp += CurrentPositionSlider_PreviewMouseUp;
+        }
+
+        /// <summary>
+        /// Handles the Loaded event of the NavigationBar control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        void NavigationBar_Loaded(object sender, RoutedEventArgs e)
+        {
             _playbackManager.PlaybackCompleted += PlaybackManager_PlaybackCompleted;
 
-            CurrentPositionSlider.PreviewMouseUp += CurrentPositionSlider_PreviewMouseUp;
-
             LoadPlayer();
+        }
+
+        void NavigationBar_Unloaded(object sender, RoutedEventArgs e)
+        {
+            _playbackManager.PlaybackCompleted -= PlaybackManager_PlaybackCompleted;
         }
 
         private void LoadPlayer()
@@ -147,25 +158,22 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
         /// <param name="e">The <see cref="PlaybackStartEventArgs" /> instance containing the event data.</param>
         void PlaybackManager_PlaybackCompleted(object sender, PlaybackStopEventArgs e)
         {
-            //var player = _mediaPlayer;
+            if (e.Player == _mediaPlayer)
+            {
+                if (CurrentPositionTimer != null)
+                {
+                    CurrentPositionTimer.Dispose();
+                }
 
-            //if (e.Player == player)
-            //{
-            //    if (CurrentPositionTimer != null)
-            //    {
-            //        CurrentPositionTimer.Dispose();
-            //    }
+                _mediaPlayer.PlayStateChanged -= CurrentPlayer_PlayStateChanged;
 
-            //    player.PlayStateChanged -= CurrentPlayer_PlayStateChanged;
-            //    CurrentPlayer = null;
-            //    ResetButtonVisibilities(null);
+                ResetButtonVisibilities(null);
 
-            //    Dispatcher.InvokeAsync(() =>
-            //    {
-            //        TxtCurrentPosition.Text = string.Empty;
-            //        UpdateNowPlayingImage();
-            //    });
-            //}
+                Dispatcher.InvokeAsync(() =>
+                {
+                    TxtCurrentPosition.Text = string.Empty;
+                });
+            }
         }
 
         /// <summary>

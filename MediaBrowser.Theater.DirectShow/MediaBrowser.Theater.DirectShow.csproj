@@ -73,9 +73,13 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configuration\ConfigurationPage.xaml.cs">
+      <DependentUpon>ConfigurationPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="DirectShowPlayer.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Configuration\ConfigurationPageFactory.cs" />
     <Compile Include="Imports.cs" />
     <Compile Include="InternalDirectShowPlayer.cs" />
     <Compile Include="MadvrInterface.cs" />
@@ -109,11 +113,22 @@
       <Project>{cc3e6aed-e761-42de-a9be-e40ab246a5e0}</Project>
       <Name>MediaBrowser.Theater.Interfaces</Name>
     </ProjectReference>
+    <ProjectReference Include="..\MediaBrowser.Theater.Presentation\MediaBrowser.Theater.Presentation.csproj">
+      <Project>{14eddb65-890e-40b5-8d29-414d0aed60c1}</Project>
+      <Name>MediaBrowser.Theater.Presentation</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assemblies\DirectShowLib-2005.dll" />
     <Content Include="Assemblies\MediaFoundation.dll" />
     <Content Include="Assemblies\Microsoft.DirectX.AudioVideoPlayback.dll" />
+    <Resource Include="Resources\Images\config.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Configuration\ConfigurationPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

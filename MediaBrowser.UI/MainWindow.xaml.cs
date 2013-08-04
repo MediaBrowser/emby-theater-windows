@@ -39,18 +39,20 @@ namespace MediaBrowser.UI
         private readonly IPresentationManager _appWindow;
         private readonly ITheaterConfigurationManager _config;
         private readonly ISessionManager _session;
+        private readonly IPlaybackManager _playbackManager;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MainWindow" /> class.
         /// </summary>
-        public MainWindow(ILogger logger, IPlaybackManager playbackManager, IApiClient apiClient, IImageManager imageManager, IApplicationHost appHost, IPresentationManager appWindow, IUserInputManager userInput, ITheaterConfigurationManager config, ISessionManager session)
-            : base(userInput, playbackManager)
+        public MainWindow(ILogger logger, IPlaybackManager playbackManager, IApiClient apiClient, IImageManager imageManager, IApplicationHost appHost, IPresentationManager appWindow, IUserInputManager userInput, ITheaterConfigurationManager config, ISessionManager session, INavigationService nav)
+            : base(userInput, nav)
         {
             _logger = logger;
             _appHost = appHost;
             _appWindow = appWindow;
             _config = config;
             _session = session;
+            _playbackManager = playbackManager;
 
             Loaded += MainWindow_Loaded;
 
@@ -63,8 +65,8 @@ namespace MediaBrowser.UI
             _config.ConfigurationUpdated += _config_ConfigurationUpdated;
             _session.UserLoggedIn += _session_UserLoggedIn;
             _session.UserLoggedOut += _session_UserLoggedOut;
-            PlaybackManager.PlaybackStarted += _playbackManager_PlaybackStarted;
-            PlaybackManager.PlaybackCompleted += _playbackManager_PlaybackCompleted;
+            _playbackManager.PlaybackStarted += _playbackManager_PlaybackStarted;
+            _playbackManager.PlaybackCompleted += _playbackManager_PlaybackCompleted;
         }
 
         void _playbackManager_PlaybackStarted(object sender, PlaybackStartEventArgs e)
@@ -84,7 +86,7 @@ namespace MediaBrowser.UI
 
         private void UpdateBackdropContainerVisibility()
         {
-            var visibility = PlaybackManager.MediaPlayers.Any(i =>
+            var visibility = _playbackManager.MediaPlayers.Any(i =>
             {
                 var media = i.CurrentMedia;
 
@@ -143,7 +145,10 @@ namespace MediaBrowser.UI
 
         protected override void OnClosing(CancelEventArgs e)
         {
-            RotatingBackdrops.Dispose();
+            if (RotatingBackdrops != null)
+            {
+                RotatingBackdrops.Dispose();
+            }
 
             base.OnClosing(e);
         }

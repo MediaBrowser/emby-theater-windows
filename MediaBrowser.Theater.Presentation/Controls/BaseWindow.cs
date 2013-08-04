@@ -1,8 +1,9 @@
-﻿using System.Threading;
-using MediaBrowser.Theater.Interfaces.Playback;
+﻿using MediaBrowser.Theater.Interfaces.Navigation;
+using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.UserInput;
 using System;
 using System.ComponentModel;
+using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -14,8 +15,8 @@ namespace MediaBrowser.Theater.Presentation.Controls
     /// </summary>
     public abstract class BaseWindow : Window, INotifyPropertyChanged
     {
+        protected INavigationService NavigationManager { get; private set; }
         protected IUserInputManager UserInputManager { get; private set; }
-        protected IPlaybackManager PlaybackManager { get; private set; }
 
         private Timer _activityTimer;
 
@@ -27,22 +28,30 @@ namespace MediaBrowser.Theater.Presentation.Controls
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseWindow" /> class.
         /// </summary>
-        protected BaseWindow(IUserInputManager userInputManager, IPlaybackManager playbackManager)
+        protected BaseWindow(IUserInputManager userInputManager, INavigationService nav)
             : base()
         {
             UserInputManager = userInputManager;
-            PlaybackManager = playbackManager;
-
-            PlaybackManager.PlaybackStarted += _playbackManager_PlaybackStarted;
-            PlaybackManager.PlaybackCompleted += _playbackManager_PlaybackCompleted;
+            NavigationManager = nav;
 
             SizeChanged += MainWindow_SizeChanged;
             Loaded += BaseWindow_Loaded;
         }
 
+        void NavigationManager_Navigated(object sender, NavigationEventArgs e)
+        {
+            if (e.NewPage is IFullscreenVideoPage)
+            {
+                Dispatcher.InvokeAsync(() => OnPropertyChanged("IsMouseIdle"), DispatcherPriority.Background);
+
+                UserInputManager.MouseMove += _userInput_MouseMove;
+            }
+        }
+
         void BaseWindow_Loaded(object sender, RoutedEventArgs e)
         {
             _activityTimer = new Timer(TimerCallback, null, 100, 100);
+            NavigationManager.Navigated += NavigationManager_Navigated;
         }
 
         /// <summary>
@@ -136,6 +145,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
 
         protected override void OnClosing(CancelEventArgs e)
         {
+            NavigationManager.Navigated -= NavigationManager_Navigated;
             UserInputManager.MouseMove -= _userInput_MouseMove;
             DisposeActivityTimer();
 
@@ -145,21 +155,6 @@ namespace MediaBrowser.Theater.Presentation.Controls
         void _userInput_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             OnMouseMove();
-        }
-
-        void _playbackManager_PlaybackStarted(object sender, PlaybackStartEventArgs e)
-        {
-            if (e.Player is IInternalMediaPlayer)
-            {
-                Dispatcher.InvokeAsync(() => OnPropertyChanged("IsMouseIdle"), DispatcherPriority.Background);
-
-                UserInputManager.MouseMove += _userInput_MouseMove;
-            }
-        }
-
-        void _playbackManager_PlaybackCompleted(object sender, PlaybackStopEventArgs e)
-        {
-            UserInputManager.MouseMove -= _userInput_MouseMove;
         }
 
         private void OnMouseMove()

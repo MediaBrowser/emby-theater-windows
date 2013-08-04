@@ -217,7 +217,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls.Details
             {
                 var text = item.ProductionYear.Value.ToString();
 
-                if (item.EndDate.HasValue)
+                if (item.EndDate.HasValue && item.EndDate.Value.Year != item.ProductionYear)
                 {
                     text += "-" + item.EndDate.Value.Year;
                 }

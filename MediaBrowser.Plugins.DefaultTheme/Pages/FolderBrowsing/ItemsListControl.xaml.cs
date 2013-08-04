@@ -12,6 +12,7 @@ using MediaBrowser.Plugins.DefaultTheme.Header;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
+using MediaBrowser.Theater.Interfaces.UserInput;
 using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.Extensions;
 using MediaBrowser.Theater.Presentation.ViewModels;
@@ -49,9 +50,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
 
         private Sidebar _sidebarControl;
 
-        public ItemsListControl(BaseItemDto parentItem, Model.Entities.DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IPresentationManager appWindow)
+        private readonly IUserInputManager _userInput;
+
+        public ItemsListControl(BaseItemDto parentItem, Model.Entities.DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IPresentationManager appWindow, IUserInputManager userInput)
             : base(parentItem, displayPreferences, apiClient, imageManager, sessionManager, navigationManager, appWindow)
         {
+            _userInput = userInput;
             InitializeComponent();
         }
 
@@ -172,7 +176,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         async void ViewButton_Click(object sender, RoutedEventArgs e)
         {
-            var menu = new DisplayPreferencesMenu(null, null)
+            var menu = new DisplayPreferencesMenu(_userInput, NavigationManager)
             {
                 DisplayPreferencesContainer = this
             };

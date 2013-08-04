@@ -119,7 +119,7 @@ namespace MediaBrowser.UI
         /// </summary>
         private void ShowApplicationWindow()
         {
-            var win = new MainWindow(_logger, _compositionRoot.PlaybackManager, _compositionRoot.ApiClient, _compositionRoot.ImageManager, _compositionRoot, _compositionRoot.PresentationManager, _compositionRoot.UserInputManager, _compositionRoot.TheaterConfigurationManager, _compositionRoot.SessionManager);
+            var win = new MainWindow(_logger, _compositionRoot.PlaybackManager, _compositionRoot.ApiClient, _compositionRoot.ImageManager, _compositionRoot, _compositionRoot.PresentationManager, _compositionRoot.UserInputManager, _compositionRoot.TheaterConfigurationManager, _compositionRoot.SessionManager, _compositionRoot.NavigationService);
 
             var config = _compositionRoot.TheaterConfigurationManager.Configuration;
 

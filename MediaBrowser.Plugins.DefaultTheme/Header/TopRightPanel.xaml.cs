@@ -62,7 +62,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Header
 
         void CurrentUserButton_Click(object sender, RoutedEventArgs e)
         {
-            new UserProfileWindow(SessionManager, ImageManager, ApiClient, UserInputManager, PlaybackManager).ShowModal(this.GetWindow());
+            new UserProfileWindow(SessionManager, ImageManager, ApiClient, UserInputManager, Navigation).ShowModal(this.GetWindow());
         }
 
         void TopRightPanel_Loaded(object sender, RoutedEventArgs e)

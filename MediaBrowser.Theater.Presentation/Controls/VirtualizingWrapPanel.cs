@@ -352,7 +352,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
         }
 
         private Storyboard _yStoryboard;
-        
+
         /// <summary>
         /// Sets the amount of vertical offset.
         /// </summary>
@@ -699,12 +699,13 @@ namespace MediaBrowser.Theater.Presentation.Controls
             int childrenPerRow = this.GetHorizontalChildrenCountPerRow(this.contentExtent);
             firstVisibleItemIndex = (int)Math.Floor(this.HorizontalOffset / this.ItemWidth) * childrenPerRow;
             lastVisibleItemIndex = (int)Math.Ceiling((this.HorizontalOffset + this.ViewportWidth) / this.ItemWidth) * childrenPerRow - 1;
+
             this.AdjustVisibleRange(ref firstVisibleItemIndex, ref lastVisibleItemIndex);
         }
         private void AdjustVisibleRange(ref int firstVisibleItemIndex, ref int lastVisibleItemIndex)
         {
-            firstVisibleItemIndex--;
-            lastVisibleItemIndex++;
+            firstVisibleItemIndex -= 3;
+            lastVisibleItemIndex += 3;
             ItemsControl itemsControl = ItemsControl.GetItemsOwner(this);
             if (itemsControl != null)
             {
@@ -801,7 +802,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
         private int GetVerticalChildrenCountPerRow(Size availableSize)
         {
             int childrenCountPerRow;
-            if (availableSize.Width == double.PositiveInfinity)
+            if (double.IsPositiveInfinity(availableSize.Width))
             {
                 childrenCountPerRow = base.Children.Count;
             }
@@ -814,7 +815,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
         private int GetHorizontalChildrenCountPerRow(Size availableSize)
         {
             int childrenCountPerRow;
-            if (availableSize.Height == double.PositiveInfinity)
+            if (double.IsPositiveInfinity(availableSize.Height))
             {
                 childrenCountPerRow = base.Children.Count;
             }
@@ -832,7 +833,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
 
         private static bool AreClose(double value1, double value2)
         {
-            if (value1 == value2)
+            if (value1.Equals(value2))
             {
                 return true;
             }

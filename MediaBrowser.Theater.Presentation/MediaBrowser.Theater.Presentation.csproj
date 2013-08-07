@@ -85,8 +85,6 @@
     <Compile Include="Controls\TransitionControl.cs" />
     <Compile Include="Controls\TransitionFrame.cs" />
     <Compile Include="Controls\TreeHelper.cs" />
-    <Compile Include="Controls\UniformPanel.cs" />
-    <Compile Include="Controls\VirtualizingUniformPanel.cs" />
     <Compile Include="Controls\VirtualizingWrapPanel.cs" />
     <Compile Include="Extensions\AspectRatioHelper.cs" />
     <Compile Include="Extensions\MedianExtension.cs" />

@@ -541,6 +541,8 @@ namespace MediaBrowser.Theater.DirectShow
 
         private void DisposePlayer()
         {
+            _logger.Debug("Disposing player");
+
             if (_activityTimer != null)
             {
                 _activityTimer.Dispose();

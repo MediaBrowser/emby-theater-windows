@@ -93,6 +93,15 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
             }
 
             TxtName.Text = MultiItemTile.GetDisplayName(item);
+
+            if (item.IsType("trailer"))
+            {
+                TxtName.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                TxtName.Visibility = Visibility.Visible;
+            }
         }
 
         /// <summary>

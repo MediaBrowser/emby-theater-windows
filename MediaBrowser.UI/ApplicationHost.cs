@@ -24,6 +24,7 @@ using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Interfaces.UserInput;
+using MediaBrowser.Theater.Presentation.Pages;
 using MediaBrowser.Theater.Presentation.Playback;
 using MediaBrowser.UI.Implementations;
 using System;
@@ -151,6 +152,8 @@ namespace MediaBrowser.UI
         protected override void FindParts()
         {
             base.FindParts();
+
+            BasePage.Logger = Logger;
 
             ThemeManager.AddParts(GetExports<ITheme>());
             PresentationManager.AddParts(GetExports<ITheaterApp>(), GetExports<ISettingsPage>(), GetExports<IHomePage>());

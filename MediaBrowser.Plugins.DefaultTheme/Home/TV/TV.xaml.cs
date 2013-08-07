@@ -53,11 +53,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.TV
 
         internal static ImageSize GetImageSize()
         {
-            return new ImageSize
-            {
-                Width = 368,
-                Height = 207
-            };
+            return Movies.Movies.GetImageSize();
         }
 
         protected override async void OnInitialized(EventArgs e)

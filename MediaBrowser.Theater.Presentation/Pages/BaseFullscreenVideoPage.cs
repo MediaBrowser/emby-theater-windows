@@ -95,7 +95,11 @@ namespace MediaBrowser.Theater.Presentation.Pages
             }
 
             _userInputManager.MouseMove -= _userInputManager_MouseMove;
-            System.Windows.Forms.Cursor.Show();
+
+            if (!IsMouseIdle)
+            {
+                System.Windows.Forms.Cursor.Show();
+            }
         }
 
         void FullscreenVideoPage_Loaded(object sender, RoutedEventArgs e)

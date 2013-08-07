@@ -201,7 +201,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
                 }, _apiClient, _imageManager, _sessionManager, _nav, _presentationManager, _item);
             }
-            else if (string.Equals(item, "people"))
+            else if (string.Equals(item, "people") || string.Equals(item, "cast"))
             {
                 SetScrollDirection(ScrollDirection.Horizontal);
 
@@ -406,7 +406,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
             if (item.People.Length > 0)
             {
-                views.Add("people");
+                views.Add("cast");
             }
 
             if (item.LocalTrailerCount > 1)

@@ -1,5 +1,6 @@
 ﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
+using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Net;
 using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Playback;
@@ -23,6 +24,7 @@ namespace MediaBrowser.UI.Implementations
         private readonly IApiClient _apiClient;
         private readonly IPlaybackManager _playbackManager;
         private readonly ITheaterConfigurationManager _config;
+        private readonly ILogger _logger;
 
         private readonly object _rotationTimerLock = new object();
         private readonly object _initialSetTimerLock = new object();
@@ -38,7 +40,7 @@ namespace MediaBrowser.UI.Implementations
 
         private int _currentBackdropIndex;
 
-        public RotatingBackdrops(Dispatcher dispatcher, TransitionControl backdropContainer, IImageManager imageManager, IApiClient apiClient, IPlaybackManager playbackManager, ITheaterConfigurationManager config)
+        public RotatingBackdrops(Dispatcher dispatcher, TransitionControl backdropContainer, IImageManager imageManager, IApiClient apiClient, IPlaybackManager playbackManager, ITheaterConfigurationManager config, ILogger logger)
         {
             _dispatcher = dispatcher;
             _backdropContainer = backdropContainer;
@@ -46,6 +48,7 @@ namespace MediaBrowser.UI.Implementations
             _apiClient = apiClient;
             _playbackManager = playbackManager;
             _config = config;
+            _logger = logger;
 
             _config.UserConfigurationUpdated += _config_UserConfigurationUpdated;
         }
@@ -105,9 +108,9 @@ namespace MediaBrowser.UI.Implementations
         /// </summary>
         private async void OnBackdropIndexChanged()
         {
-            var currentBackdropIndex = CurrentBackdropIndex;
+            var index = CurrentBackdropIndex;
 
-            if (currentBackdropIndex == -1)
+            if (index == -1)
             {
                 // Setting this to null doesn't seem to clear out the content
                 // Have to check it for null or get startup errors
@@ -118,9 +121,28 @@ namespace MediaBrowser.UI.Implementations
                 return;
             }
 
+            if (index > 0)
+            {
+                // Don't display backdrops during video playback
+                if (_playbackManager.MediaPlayers.Any(p =>
+                {
+                    if (p.PlayState != PlayState.Idle)
+                    {
+                        var media = p.CurrentMedia;
+                        return media != null && (media.IsVideo || media.IsGame);
+                    }
+                    return false;
+                }))
+                {
+                    return;
+                }
+            }
+
+            _logger.Info("Setting backdtop to {0}", _currentBackdrops[index]);
+            
             try
             {
-                var bitmap = await _imageManager.GetRemoteBitmapAsync(_currentBackdrops[currentBackdropIndex]);
+                var bitmap = await _imageManager.GetRemoteBitmapAsync(_currentBackdrops[index]);
 
                 var img = new Image
                 {
@@ -133,7 +155,7 @@ namespace MediaBrowser.UI.Implementations
             }
             catch (HttpException)
             {
-                if (currentBackdropIndex == 0)
+                if (index == 0)
                 {
                     _backdropContainer.Content = new FrameworkElement();
                 }
@@ -207,13 +229,6 @@ namespace MediaBrowser.UI.Implementations
             if (backdrops == null || backdrops.Length == 0)
             {
                 CurrentBackdropIndex = -1;
-
-                // Setting this to null doesn't seem to clear out the content
-                // Have to check it for null or get startup errors
-                if (_backdropContainer.Content != null)
-                {
-                    _backdropContainer.Content = new FrameworkElement();
-                }
                 return;
             }
 
@@ -243,20 +258,6 @@ namespace MediaBrowser.UI.Implementations
 
         private void MoveToNextBackdrop()
         {
-            // Don't display backdrops during video playback
-            if (_playbackManager.MediaPlayers.Any(p =>
-            {
-                if (p.PlayState != PlayState.Idle)
-                {
-                    var media = p.CurrentMedia;
-                    return media != null && (media.IsVideo || media.IsGame);
-                }
-                return false;
-            }))
-            {
-                return;
-            }
-
             var backdrops = _currentBackdrops;
 
             var index = CurrentBackdropIndex + 1;

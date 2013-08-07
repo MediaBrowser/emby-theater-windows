@@ -1,9 +1,8 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using MediaBrowser.Model.Logging;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Navigation;
 
 namespace MediaBrowser.Theater.Presentation.Pages
 {
@@ -16,6 +15,8 @@ namespace MediaBrowser.Theater.Presentation.Pages
         /// The _last focused
         /// </summary>
         private IInputElement _lastFocused;
+
+        public static ILogger Logger { get; set; }
 
         /// <summary>
         /// Raises the <see cref="E:System.Windows.FrameworkElement.Initialized" /> event. This method is invoked whenever <see cref="P:System.Windows.FrameworkElement.IsInitialized" /> is set to true internally.
@@ -37,23 +38,11 @@ namespace MediaBrowser.Theater.Presentation.Pages
         {
             FocusManager.SetIsFocusScope(this, true);
 
-            var nav = NavigationService;
-
-            nav.Navigating -= NavigationService_Navigating;
-            nav.Navigating += NavigationService_Navigating;
-
-            nav.Navigated -= NavigationService_Navigated;
-            nav.Navigated += NavigationService_Navigated;
-
             if (_lastFocused == null)
             {
                 FocusOnFirstLoad();
             }
-        }
-
-        void NavigationService_Navigated(object sender, NavigationEventArgs e)
-        {
-            if (e.Content.Equals(this))
+            else
             {
                 FocusManager.SetFocusedElement(this, _lastFocused);
             }
@@ -67,14 +56,11 @@ namespace MediaBrowser.Theater.Presentation.Pages
             MoveFocus(new TraversalRequest(FocusNavigationDirection.First));
         }
 
-        /// <summary>
-        /// Handles the Navigating event of the NavigationService control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="NavigatingCancelEventArgs"/> instance containing the event data.</param>
-        void NavigationService_Navigating(object sender, NavigatingCancelEventArgs e)
+        protected override void OnPreviewGotKeyboardFocus(KeyboardFocusChangedEventArgs e)
         {
-            _lastFocused = FocusManager.GetFocusedElement(this);
+            _lastFocused = e.NewFocus;
+
+            base.OnPreviewGotKeyboardFocus(e);
         }
     }
 }

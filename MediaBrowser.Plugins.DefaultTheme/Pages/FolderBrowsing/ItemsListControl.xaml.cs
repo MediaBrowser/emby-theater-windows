@@ -318,29 +318,33 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
 
             if (BottomGrid.Visibility == Visibility.Collapsed || Sidebar.Visibility == Visibility.Visible)
             {
-                ImgLogo.Visibility = Visibility.Collapsed;
+                GridLogo.Visibility = Visibility.Collapsed;
                 TxtBottomName.Visibility = Visibility.Collapsed;
-            }
-
-            else if (item != null && item.HasLogo && Sidebar.Visibility == Visibility.Collapsed)
-            {
-                SetLogo(item, ApiClient.GetLogoImageUrl(item, new ImageOptions
-                {
-                    Height = maxheight,
-                    ImageType = ImageType.Logo
-                }));
-            }
-            else if (item != null && (item.HasArtImage || item.ParentArtImageTag.HasValue))
-            {
-                SetLogo(item, ApiClient.GetArtImageUrl(item, new ImageOptions
-                {
-                    Height = maxheight,
-                    ImageType = ImageType.Art
-                }));
             }
             else
             {
-                SetDefaultLogo(item);
+                GridLogo.Visibility = Visibility.Visible;
+
+                if (item != null && item.HasLogo && Sidebar.Visibility == Visibility.Collapsed)
+                {
+                    SetLogo(item, ApiClient.GetLogoImageUrl(item, new ImageOptions
+                    {
+                        Height = maxheight,
+                        ImageType = ImageType.Logo
+                    }));
+                }
+                else if (item != null && (item.HasArtImage || item.ParentArtImageTag.HasValue))
+                {
+                    SetLogo(item, ApiClient.GetArtImageUrl(item, new ImageOptions
+                    {
+                        Height = maxheight,
+                        ImageType = ImageType.Art
+                    }));
+                }
+                else
+                {
+                    SetDefaultLogo(item);
+                }
             }
         }
 

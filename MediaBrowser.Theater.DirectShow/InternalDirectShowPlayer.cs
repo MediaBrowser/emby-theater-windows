@@ -37,9 +37,9 @@ namespace MediaBrowser.Theater.DirectShow
 
         private List<BaseItemDto> _playlist = new List<BaseItemDto>();
 
-        public InternalDirectShowPlayer(ILogger logger, IHiddenWindow hiddenWindow, IPresentationManager presentation, IUserInputManager userInput, IApiClient apiClient, IPlaybackManager playbackManager, ITheaterConfigurationManager config)
+        public InternalDirectShowPlayer(ILogManager logManager, IHiddenWindow hiddenWindow, IPresentationManager presentation, IUserInputManager userInput, IApiClient apiClient, IPlaybackManager playbackManager, ITheaterConfigurationManager config)
         {
-            _logger = logger;
+            _logger = logManager.GetLogger("DirectShowPlayer");
             _hiddenWindow = hiddenWindow;
             _presentation = presentation;
             _userInput = userInput;
@@ -157,7 +157,7 @@ namespace MediaBrowser.Theater.DirectShow
 
                 _hiddenWindow.WindowsFormsHost.Child = _mediaPlayer;
 
-                _mediaPlayer.Play(options.Items.First(), _config.Configuration.InternalPlayerConfiguration.EnableReclock, EnableMadvr(options));
+                _mediaPlayer.Play(options.Items.First(), EnableReclock(options), EnableMadvr(options));
 
                 var position = options.StartPositionTicks;
 
@@ -200,6 +200,28 @@ namespace MediaBrowser.Theater.DirectShow
             }
 
             if (!options.GoFullScreen && !_config.Configuration.InternalPlayerConfiguration.EnableMadvrForBackgroundVideos)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Enables the madvr.
+        /// </summary>
+        /// <param name="options">The options.</param>
+        /// <returns><c>true</c> if XXXX, <c>false</c> otherwise</returns>
+        private bool EnableReclock(PlayOptions options)
+        {
+            var video = options.Items.First();
+
+            if (!video.IsVideo)
+            {
+                return false;
+            }
+
+            if (!_config.Configuration.InternalPlayerConfiguration.EnableReclock)
             {
                 return false;
             }
@@ -283,7 +305,12 @@ namespace MediaBrowser.Theater.DirectShow
         {
             if (_mediaPlayer != null)
             {
-                _presentation.Window.Dispatcher.InvokeAsync(() => _mediaPlayer.Dispose());
+                _presentation.Window.Dispatcher.InvokeAsync(() =>
+                {
+                    _mediaPlayer.Dispose();
+                    _hiddenWindow.WindowsFormsHost.Child = new Panel();
+
+                });
             }
         }
 

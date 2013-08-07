@@ -55,8 +55,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.Movies
         {
             return new ImageSize
             {
-                Width = 368,
-                Height = 207
+                Width = 320,
+                Height = 180
             };
         }
 
@@ -82,8 +82,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.Movies
 
             GridTrailers.Children.Add(new RecentTrailers(new Model.Entities.DisplayPreferences
             {
-                PrimaryImageWidth = 138,
-                PrimaryImageHeight = Convert.ToInt32(size.Height)
+                PrimaryImageWidth = 186,
+                PrimaryImageHeight = 279
 
             }, ApiClient, ImageManager, SessionManager, NavigationManager, PresentationManager));
         }

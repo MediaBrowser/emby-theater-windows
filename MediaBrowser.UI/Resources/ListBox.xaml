@@ -9,7 +9,7 @@
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="KeyboardNavigation.AcceptsReturn" Value="True"/>
         <Setter Property="KeyboardNavigation.DirectionalNavigation" Value="Once"/>
-        <Setter Property="VirtualizingPanel.CacheLength" Value="1,1"/>
+        <!--<Setter Property="VirtualizingPanel.CacheLength" Value="1,1"/>-->
         <Setter Property="VirtualizingPanel.CacheLengthUnit" Value="Page"/>
         <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True"/>
         <Setter Property="VirtualizingPanel.ScrollUnit" Value="Pixel"/>
@@ -40,7 +40,7 @@
                         <Grid x:Name="ContentGrid">
                             <Border x:Name="BdDropShadow" Margin="-10" BorderBrush="{DynamicResource SelectedItemHighlightColor}" BorderThickness="23" Background="Transparent" SnapsToDevicePixels="true" CornerRadius="1" Visibility="Hidden">
                                 <Border.Effect>
-                                    <BlurEffect Radius="12" KernelType="Gaussian"></BlurEffect>
+                                    <BlurEffect Radius="15" KernelType="Gaussian"></BlurEffect>
                                 </Border.Effect>
                             </Border>
                             <ContentPresenter Margin="12" HorizontalAlignment="Stretch" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Stretch"/>
@@ -74,7 +74,7 @@
                         <Grid x:Name="ContentGrid">
                             <Border x:Name="BdDropShadow" Margin="-10" BorderBrush="{DynamicResource SelectedItemHighlightColor}" BorderThickness="23" Background="Transparent" SnapsToDevicePixels="true" CornerRadius="1" Visibility="Hidden">
                                 <Border.Effect>
-                                    <BlurEffect Radius="12" KernelType="Gaussian"></BlurEffect>
+                                    <BlurEffect Radius="15" KernelType="Gaussian"></BlurEffect>
                                 </Border.Effect>
                             </Border>
                             <ContentPresenter Margin="12" HorizontalAlignment="Stretch" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Stretch"/>
@@ -150,7 +150,7 @@
                         <Grid x:Name="ContentGrid">
                             <Border x:Name="BdDropShadow" Margin="-10" BorderBrush="{DynamicResource SelectedItemHighlightColor}" BorderThickness="23" Background="Transparent" SnapsToDevicePixels="true" CornerRadius="1" Visibility="Hidden">
                                 <Border.Effect>
-                                    <BlurEffect Radius="12" KernelType="Gaussian"></BlurEffect>
+                                    <BlurEffect Radius="15" KernelType="Gaussian"></BlurEffect>
                                 </Border.Effect>
                             </Border>
                             <ContentPresenter Margin="12" HorizontalAlignment="Stretch" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Stretch"/>

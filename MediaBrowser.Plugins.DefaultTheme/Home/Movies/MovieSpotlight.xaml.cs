@@ -180,7 +180,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.Movies
 
         private void ReloadSpotlight(IEnumerable<BaseItemDto> items)
         {
-            var size = TV.TV.GetImageSize();
+            var size = Movies.GetImageSize();
 
             SpotlightTile.ImageHeight = Convert.ToInt32(size.Height * 2 + 24);
             SpotlightTile.ImageWidth = Convert.ToInt32(size.Width * 2 + 24);

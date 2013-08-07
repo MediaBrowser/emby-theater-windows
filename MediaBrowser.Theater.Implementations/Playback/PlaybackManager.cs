@@ -98,7 +98,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
         {
             if (options.Shuffle)
             {
-                options.Items = options.Items.OrderBy(i => new Guid()).ToList();
+                options.Items = options.Items.OrderBy(i => Guid.NewGuid()).ToList();
             }
 
             var firstItem = options.Items[0];

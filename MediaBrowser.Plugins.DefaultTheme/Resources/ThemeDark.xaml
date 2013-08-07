@@ -14,7 +14,7 @@
     </Style>
 
     <Style TargetType="Grid" x:Key="WindowBackgroundContentDuringPlayback">
-        <Setter Property="Opacity" Value=".75"/>
+        <Setter Property="Opacity" Value=".65"/>
         <Setter Property="Background">
             <Setter.Value>
                 <LinearGradientBrush SpreadMethod="Reflect" ColorInterpolationMode="SRgbLinearInterpolation" StartPoint="0,0" EndPoint="0,1" >

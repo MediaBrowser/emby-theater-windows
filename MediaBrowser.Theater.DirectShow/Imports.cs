@@ -32,4 +32,9 @@ namespace MediaBrowser.Theater.DirectShow
     internal class ReclockAudioRenderer
     {
     }
+
+    [ComImport, Guid("93A22E7A-5091-45EF-BA61-6DA26156A5D0")]
+    internal class XYVSFilter
+    {
+    }
 }

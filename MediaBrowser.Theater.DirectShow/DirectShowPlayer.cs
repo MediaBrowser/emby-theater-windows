@@ -1,4 +1,5 @@
-﻿using DirectShowLib;
+﻿using System.Collections.Generic;
+using DirectShowLib;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
@@ -39,6 +40,8 @@ namespace MediaBrowser.Theater.DirectShow
         private DirectShowLib.IBaseFilter _sourceFilter;
         private DirectShowLib.IFilterGraph2 _filterGraph;
         private DirectShowLib.IBaseFilter _pSource;
+
+        private XYVSFilter _xyVsFilter;
 
         private LAVAudio _lavaudio;
         private LAVVideo _lavvideo;
@@ -238,6 +241,13 @@ namespace MediaBrowser.Theater.DirectShow
                 {
                     _graphBuilder.AddFilter(vlavvideo, "LAV Video Decoder");
                 }
+
+                //_xyVsFilter = new XYVSFilter();
+                //var vxyVsFilter = _xyVsFilter as DirectShowLib.IBaseFilter;
+                //if (vxyVsFilter != null)
+                //{
+                //    _graphBuilder.AddFilter(vxyVsFilter, "xy-VSFilter");
+                //}
             }
 
             _lavaudio = new LAVAudio();
@@ -556,78 +566,143 @@ namespace MediaBrowser.Theater.DirectShow
         {
             _hiddenWindow.SizeChanged -= _hiddenWindow_SizeChanged;
 
-            // Relinquish ownership (IMPORTANT!) after hiding video window
-            var hr = _videoWindow.put_Visible(OABool.False);
+            int hr;
 
-            hr = _videoWindow.put_Owner(IntPtr.Zero);
-
-            if (_mediaEventEx != null)
+            if (_defaultAudioRenderer != null)
             {
-                hr = _mediaEventEx.SetNotifyWindow(IntPtr.Zero, 0, IntPtr.Zero);
+                _graphBuilder.RemoveFilter(_defaultAudioRenderer as DirectShowLib.IBaseFilter);
+
+                Marshal.ReleaseComObject(_defaultAudioRenderer);
+                _defaultAudioRenderer = null;
+            }
+
+            if (_reclockAudioRenderer != null)
+            {
+                _graphBuilder.RemoveFilter(_reclockAudioRenderer as DirectShowLib.IBaseFilter);
+
+                Marshal.ReleaseComObject(_reclockAudioRenderer);
+                _reclockAudioRenderer = null;
             }
 
             if (_lavaudio != null)
             {
+                _graphBuilder.RemoveFilter(_lavaudio as DirectShowLib.IBaseFilter);
+
                 Marshal.ReleaseComObject(_lavaudio);
+                _lavaudio = null;
             }
-            _lavaudio = null;
+
+            if (_xyVsFilter != null)
+            {
+                _graphBuilder.RemoveFilter(_xyVsFilter as DirectShowLib.IBaseFilter);
+
+                Marshal.ReleaseComObject(_xyVsFilter);
+                _xyVsFilter = null;
+            }
 
             if (_lavvideo != null)
             {
+                _graphBuilder.RemoveFilter(_lavvideo as DirectShowLib.IBaseFilter);
+
                 Marshal.ReleaseComObject(_lavvideo);
+                _lavvideo = null;
             }
-            _lavvideo = null;
 
             if (_madvr != null)
             {
+                _graphBuilder.RemoveFilter(_madvr as DirectShowLib.IBaseFilter);
+
                 Marshal.ReleaseComObject(_madvr);
+                _madvr = null;
             }
-            _madvr = null;
 
-            if (_defaultAudioRenderer != null)
+            if (_videoWindow != null)
             {
-                Marshal.ReleaseComObject(_defaultAudioRenderer);
-            }
-            _defaultAudioRenderer = null;
+                // Relinquish ownership (IMPORTANT!) after hiding video window
+                hr = _videoWindow.put_Visible(OABool.False);
 
-            if (_reclockAudioRenderer != null)
-            {
-                Marshal.ReleaseComObject(_reclockAudioRenderer);
+                hr = _videoWindow.put_Owner(IntPtr.Zero);
             }
-            _reclockAudioRenderer = null;
+
+            if (_mediaEventEx != null)
+            {
+                hr = _mediaEventEx.SetNotifyWindow(IntPtr.Zero, 0, IntPtr.Zero);
+                Marshal.ReleaseComObject(_mediaEventEx);
+                _mediaEventEx = null;
+            }
+
+            if (_mPDisplay != null)
+            {
+                Marshal.ReleaseComObject(_mPDisplay);
+                _mPDisplay = null;
+            }
 
             if (_filterGraph != null)
             {
                 Marshal.ReleaseComObject(_filterGraph);
+                _filterGraph = null;
             }
-            _filterGraph = null;
 
             if (_mPEvr != null)
             {
                 Marshal.ReleaseComObject(_mPEvr);
+                _mPEvr = null;
             }
-            _mPEvr = null;
 
-            // Release and zero DirectShow interfaces
-            _mediaEventEx = null;
-            _mediaSeeking = null;
-            _mediaPosition = null;
-            _mediaControl = null;
-            _basicAudio = null;
-            _basicVideo = null;
-            _videoWindow = null;
+            if (_mediaEventEx != null)
+            {
+                Marshal.ReleaseComObject(_mediaEventEx);
+                _mediaEventEx = null;
+            }
+
+            if (_mediaSeeking != null)
+            {
+                Marshal.ReleaseComObject(_mediaSeeking);
+                _mediaSeeking = null;
+            }
+
+            if (_mediaPosition != null)
+            {
+                Marshal.ReleaseComObject(_mediaPosition);
+                _mediaPosition = null;
+            }
+
+            if (_mediaControl != null)
+            {
+                Marshal.ReleaseComObject(_mediaControl);
+                _mediaControl = null;
+            }
+
+            if (_basicAudio != null)
+            {
+                Marshal.ReleaseComObject(_basicAudio);
+                _basicAudio = null;
+            }
+
+            if (_basicVideo != null)
+            {
+                Marshal.ReleaseComObject(_basicVideo);
+                _basicVideo = null;
+            }
 
             if (_sourceFilter != null)
             {
                 Marshal.ReleaseComObject(_sourceFilter);
+                _sourceFilter = null;
             }
 
-            _sourceFilter = null;
-
             if (_graphBuilder != null)
+            {
                 Marshal.ReleaseComObject(_graphBuilder);
+                _graphBuilder = null;
+            }
 
-            _graphBuilder = null;
+            if (_videoWindow != null)
+            {
+                Marshal.ReleaseComObject(_videoWindow);
+                _videoWindow = null;
+            }
+
             _mSeekCaps = 0;
 
             GC.Collect();

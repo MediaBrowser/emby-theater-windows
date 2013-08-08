@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Theater.Interfaces.Navigation;
+﻿using System.Windows.Interop;
+using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.UserInput;
 using System;
@@ -40,6 +41,8 @@ namespace MediaBrowser.Theater.Presentation.Controls
 
         void NavigationManager_Navigated(object sender, NavigationEventArgs e)
         {
+            UserInputManager.MouseMove -= _userInput_MouseMove;
+            
             if (e.NewPage is IFullscreenVideoPage)
             {
                 Dispatcher.InvokeAsync(() => OnPropertyChanged("IsMouseIdle"), DispatcherPriority.Background);

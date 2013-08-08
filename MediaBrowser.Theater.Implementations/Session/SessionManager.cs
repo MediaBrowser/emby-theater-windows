@@ -80,7 +80,7 @@ namespace MediaBrowser.Theater.Implementations.Session
 
             await _themeManager.LoadTheme(theme);
 
-            await _navService.NavigateToHomePage(CurrentUser.Id);
+            await _navService.NavigateToHomePage();
 
             _navService.ClearHistory();
         }

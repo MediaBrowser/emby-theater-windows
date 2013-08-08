@@ -91,7 +91,7 @@ namespace MediaBrowser.Theater.Core.Appearance
 
             await _themeManager.LoadTheme(_themeManager.Themes.First(i => string.Equals(i.Name, SelectTheme.SelectedItem.Text)));
 
-            await _nav.NavigateToHomePage(_session.CurrentUser.Id);
+            await _nav.NavigateToHomePage();
 
             _nav.ClearHistory();
         }

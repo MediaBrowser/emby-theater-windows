@@ -169,8 +169,10 @@ namespace MediaBrowser.UI.Implementations
         /// Navigates to home page.
         /// </summary>
         /// <returns>DispatcherOperation.</returns>
-        public async Task NavigateToHomePage(string userId)
+        public async Task NavigateToHomePage()
         {
+            var userId = _sessionFactory().CurrentUser.Id;
+
             var userConfig = await _config.GetUserTheaterConfiguration(userId);
 
             var homePages = _presentationManager.HomePages.ToList();
@@ -179,7 +181,7 @@ namespace MediaBrowser.UI.Implementations
                 homePages.FirstOrDefault(i => string.Equals(i.Name, "Default")) ??
                 homePages.First();
 
-            var rootItem = await _apiClient.GetRootFolderAsync(_sessionFactory().CurrentUser.Id);
+            var rootItem = await _apiClient.GetRootFolderAsync(userId);
 
             await Navigate(homePage.GetHomePage(rootItem));
         }

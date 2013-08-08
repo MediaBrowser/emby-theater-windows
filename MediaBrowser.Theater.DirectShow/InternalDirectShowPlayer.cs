@@ -165,8 +165,6 @@ namespace MediaBrowser.Theater.DirectShow
                 {
                     _mediaPlayer.Seek(position);
                 }
-
-                _userInput.KeyDown += _userInput_KeyDown;
             }
             catch (Exception ex)
             {
@@ -227,35 +225,6 @@ namespace MediaBrowser.Theater.DirectShow
             }
 
             return true;
-        }
-
-        void _userInput_KeyDown(object sender, KeyEventArgs e)
-        {
-            switch (e.KeyCode)
-            {
-                case Keys.Pause:
-                    _mediaPlayer.Pause();
-                    break;
-                case Keys.MediaNextTrack:
-                    break;
-                case Keys.MediaPlayPause:
-                    if (_mediaPlayer.PlayState == PlayState.Paused)
-                    {
-                        _mediaPlayer.Unpause();
-                    }
-                    else
-                    {
-                        _mediaPlayer.Pause();
-                    }
-                    break;
-                case Keys.MediaPreviousTrack:
-                    break;
-                case Keys.MediaStop:
-                    _mediaPlayer.Stop();
-                    break;
-                default:
-                    return;
-            }
         }
 
         /// <summary>

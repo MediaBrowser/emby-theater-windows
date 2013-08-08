@@ -22,7 +22,7 @@ namespace MediaBrowser.Theater.Interfaces.Navigation
         /// Navigates to home page.
         /// </summary>
         /// <returns>Task.</returns>
-        Task NavigateToHomePage(string userId);
+        Task NavigateToHomePage();
 
         /// <summary>
         /// Navigates the specified page.

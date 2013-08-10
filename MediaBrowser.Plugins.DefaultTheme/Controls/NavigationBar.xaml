@@ -8,7 +8,7 @@
 
     <Grid VerticalAlignment="Stretch">
 
-        <Grid x:Name="NavBarGrid" Background="#86000000" VerticalAlignment="Bottom" HorizontalAlignment="Stretch">
+        <Grid x:Name="NavBarGrid" Background="#76000000" VerticalAlignment="Bottom" HorizontalAlignment="Stretch">
 
             <StackPanel Orientation="Vertical">
 

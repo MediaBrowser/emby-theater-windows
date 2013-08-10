@@ -70,6 +70,8 @@ namespace MediaBrowser.Plugins.DefaultTheme
             _userInput = userInput;
             _logger = logManager.GetLogger(GetType().Name);
 
+            VolumeOsd.PlaybackManager = _playbackManager;
+            
             TopRightPanel.SessionManager = _sessionManager;
             TopRightPanel.ApiClient = _apiClient;
             TopRightPanel.ImageManager = _imageManager;

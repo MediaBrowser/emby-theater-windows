@@ -337,20 +337,38 @@ namespace MediaBrowser.Theater.Implementations.Playback
             return extensions.Contains(Path.GetExtension(path).TrimStart('.'), StringComparer.OrdinalIgnoreCase);
         }
 
-        public event EventHandler VolumeChanged;
+        private event EventHandler _volumeChanged;
+
+        public event EventHandler VolumeChanged
+        {
+            add
+            {
+                EnsureAudioDevice();
+                _volumeChanged += value;
+            }
+            remove
+            {
+                _volumeChanged -= value;
+            }
+        }
+
+        private void EnsureAudioDevice()
+        {
+            if (_audioDevice == null)
+            {
+                var devEnum = new MMDeviceEnumerator();
+
+                _audioDevice = devEnum.GetDefaultAudioEndpoint(EDataFlow.eRender, ERole.eMultimedia);
+                _audioDevice.AudioEndpointVolume.OnVolumeNotification += AudioEndpointVolume_OnVolumeNotification;
+            }
+        }
 
         private MMDevice _audioDevice;
         private MMDevice AudioDevice
         {
             get
             {
-                if (_audioDevice == null)
-                {
-                    var devEnum = new MMDeviceEnumerator();
-
-                    _audioDevice = devEnum.GetDefaultAudioEndpoint(EDataFlow.eRender, ERole.eMultimedia);
-                    _audioDevice.AudioEndpointVolume.OnVolumeNotification += AudioEndpointVolume_OnVolumeNotification;
-                }
+                EnsureAudioDevice();
                 return _audioDevice;
             }
         }
@@ -377,19 +395,19 @@ namespace MediaBrowser.Theater.Implementations.Playback
 
         public float Volume
         {
-            get { return AudioDevice.AudioEndpointVolume.MasterVolumeLevelScalar; }
+            get { return AudioDevice.AudioEndpointVolume.MasterVolumeLevelScalar * 100; }
         }
 
         public void SetVolume(float volume)
         {
-            AudioDevice.AudioEndpointVolume.MasterVolumeLevelScalar = volume;
+            AudioDevice.AudioEndpointVolume.MasterVolumeLevelScalar = volume / 100;
 
             OnVolumeChanged();
         }
 
         private void OnVolumeChanged()
         {
-            EventHelper.FireEventIfNotNull(VolumeChanged, this, EventArgs.Empty, _logger);
+            EventHelper.FireEventIfNotNull(_volumeChanged, this, EventArgs.Empty, _logger);
         }
 
         public void VolumeStepUp()

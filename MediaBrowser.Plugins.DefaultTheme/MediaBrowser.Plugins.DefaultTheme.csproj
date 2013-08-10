@@ -164,6 +164,9 @@
     <Compile Include="Header\TopRightPanel.xaml.cs">
       <DependentUpon>TopRightPanel.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Header\VolumeOsd.xaml.cs">
+      <DependentUpon>VolumeOsd.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Home\HomePageInfo.cs" />
     <Compile Include="Home\Apps\AppControl.xaml.cs">
       <DependentUpon>AppControl.xaml</DependentUpon>
@@ -384,6 +387,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Header\TopRightPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Header\VolumeOsd.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

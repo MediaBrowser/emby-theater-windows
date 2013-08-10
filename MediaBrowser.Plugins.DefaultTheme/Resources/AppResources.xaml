@@ -18,7 +18,7 @@
         <Setter Property="Height" Value="30" />
         <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
-    
+
     <Style TargetType="Image" x:Key="CommunityRatingImageFull" BasedOn="{StaticResource CommunityRatingImage}">
         <Setter Property="Source" Value="Images/starFull.png" />
     </Style>
@@ -66,24 +66,28 @@
     <!--Override PageContentTemplate-->
     <ControlTemplate x:Key="PageContentTemplate">
 
-        <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+        <Grid>
+            <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
 
-            <Grid.RowDefinitions>
-                <RowDefinition Height="auto"></RowDefinition>
-                <RowDefinition Height="*"></RowDefinition>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"></ColumnDefinition>
-                <ColumnDefinition Width="*"></ColumnDefinition>
-            </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
 
-            <header:PageTitlePanel VerticalAlignment="Top" HorizontalAlignment="Left" Margin="25 0 0 0" Grid.Column="0" Grid.Row="0"></header:PageTitlePanel>
+                <header:PageTitlePanel VerticalAlignment="Top" HorizontalAlignment="Left" Margin="25 0 0 0" Grid.Column="0" Grid.Row="0"></header:PageTitlePanel>
 
-            <header:TopRightPanel Grid.Column="1" Panel.ZIndex="3" Grid.Row="0" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0 0 30 0"></header:TopRightPanel>
+                <header:TopRightPanel Grid.Column="1" Panel.ZIndex="3" Grid.Row="0" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0 0 30 0"></header:TopRightPanel>
 
-            <!--Add the frame to hold the pages. The UI core expects this to appear somewhere within the template.-->
-            <controls:PageContainer x:Name="PageContainer" Grid.Row="1" Grid.ColumnSpan="2"></controls:PageContainer>
+                <!--Add the frame to hold the pages. The UI core expects this to appear somewhere within the template.-->
+                <controls:PageContainer x:Name="PageContainer" Grid.Row="1" Grid.ColumnSpan="2"></controls:PageContainer>
 
+            </Grid>
+
+            <header:VolumeOsd></header:VolumeOsd>
         </Grid>
     </ControlTemplate>
 

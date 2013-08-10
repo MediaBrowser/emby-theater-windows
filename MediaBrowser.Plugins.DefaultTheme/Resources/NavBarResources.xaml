@@ -146,7 +146,7 @@
 
     <Style TargetType="Button" x:Key="FastForwardButton" BasedOn="{StaticResource NavBarButton}">
         <Setter Property="ToolTip" Value="Fast forward"/>
-        <Setter Property="Margin" Value="10 0 15 0"/>
+        <Setter Property="Margin" Value="5 0 15 0"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate>

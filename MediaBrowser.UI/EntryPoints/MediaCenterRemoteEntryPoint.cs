@@ -3,6 +3,7 @@ using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.UserInput;
+using MediaBrowser.Theater.Presentation.Playback;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -290,10 +291,15 @@ namespace MediaBrowser.UI.EntryPoints
         {
             var activePlayer = _playback.MediaPlayers
                 .OfType<IInternalMediaPlayer>()
-                .FirstOrDefault(i => i.PlayState == PlayState.Playing);
+                .FirstOrDefault(i => i.PlayState != PlayState.Idle);
 
             if (activePlayer != null)
             {
+                if (activePlayer.PlayState == PlayState.Paused)
+                {
+                    return activePlayer.UnPause();
+                }
+
                 return activePlayer.Pause();
             }
 
@@ -312,11 +318,29 @@ namespace MediaBrowser.UI.EntryPoints
 
         private Task Rewind()
         {
+            var activePlayer = _playback.MediaPlayers
+             .OfType<IInternalMediaPlayer>()
+             .FirstOrDefault(i => i.PlayState != PlayState.Idle);
+
+            if (activePlayer != null)
+            {
+                return activePlayer.SkipBackward();
+            }
+            
             return _trueTaskResult;
         }
 
         private Task FastForward()
         {
+            var activePlayer = _playback.MediaPlayers
+             .OfType<IInternalMediaPlayer>()
+             .FirstOrDefault(i => i.PlayState != PlayState.Idle);
+
+            if (activePlayer != null)
+            {
+                return activePlayer.SkipForward();
+            }
+
             return _trueTaskResult;
         }
 

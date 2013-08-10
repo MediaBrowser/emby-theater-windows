@@ -55,8 +55,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.Movies
         {
             return new ImageSize
             {
-                Width = 320,
-                Height = 180
+                Width = 288,
+                Height = 162
             };
         }
 
@@ -78,12 +78,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.Movies
             GridSpotlight.Children.Add(spotlight);
 
             GridResume.Children.Add(new ResumableMovies(displayPreferences, ApiClient, ImageManager, SessionManager, NavigationManager, PresentationManager));
-            GridViews.Children.Add(new ResumableMovies(displayPreferences, ApiClient, ImageManager, SessionManager, NavigationManager, PresentationManager));
+            GridViews.Children.Add(new MovieViews(displayPreferences, ApiClient, ImageManager, SessionManager));
 
             GridTrailers.Children.Add(new RecentTrailers(new Model.Entities.DisplayPreferences
             {
-                PrimaryImageWidth = 186,
-                PrimaryImageHeight = 279
+                PrimaryImageWidth = 180,
+                PrimaryImageHeight = 270
 
             }, ApiClient, ImageManager, SessionManager, NavigationManager, PresentationManager));
         }

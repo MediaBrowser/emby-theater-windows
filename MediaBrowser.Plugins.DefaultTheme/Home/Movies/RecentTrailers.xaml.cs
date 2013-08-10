@@ -82,7 +82,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.Movies
 
                 Recursive = true,
 
-                Limit = 8
+                Limit = 6
             };
 
             return ApiClient.GetItemsAsync(query);

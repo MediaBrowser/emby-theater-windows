@@ -44,5 +44,43 @@ namespace MediaBrowser.Theater.Presentation.Playback
 
             return chapter != null ? player.Seek(chapter.StartPositionTicks) : NullTaskResult;
         }
+
+        /// <summary>
+        /// Skips the forward.
+        /// </summary>
+        /// <param name="player">The player.</param>
+        /// <returns>Task.</returns>
+        public static Task SkipForward(this IMediaPlayer player)
+        {
+            var current = player.CurrentPositionTicks ?? 0;
+
+            current += TimeSpan.FromSeconds(10).Ticks;
+
+            if (current < 0)
+            {
+                current = 0;
+            }
+
+            return player.Seek(current);
+        }
+
+        /// <summary>
+        /// Skips the backward.
+        /// </summary>
+        /// <param name="player">The player.</param>
+        /// <returns>Task.</returns>
+        public static Task SkipBackward(this IMediaPlayer player)
+        {
+            var current = player.CurrentPositionTicks ?? 0;
+
+            current -= TimeSpan.FromSeconds(10).Ticks;
+
+            if (current < 0)
+            {
+                current = 0;
+            }
+
+            return player.Seek(current);
+        }
     }
 }

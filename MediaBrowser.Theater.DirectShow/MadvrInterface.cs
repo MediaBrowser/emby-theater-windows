@@ -2,6 +2,7 @@
 using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace MediaBrowser.Theater.DirectShow
 {
@@ -154,13 +155,75 @@ namespace MediaBrowser.Theater.DirectShow
     public interface IMadVRExclusiveModeInfo
     {
         [PreserveSig]
-        void IsExclusiveModeActive([Out, MarshalAs(UnmanagedType.I1)] out bool Status);
+        //void IsExclusiveModeActive([Out, MarshalAs(UnmanagedType.I1)] out bool Status);
+        int IsExclusiveModeActive();
 
         [PreserveSig]
         void IsMadVRSeekbarEnabled([Out, MarshalAs(UnmanagedType.I1)] out bool Status);
     };
 
 
+    // ---------------------------------------------------------------------------
+    // IMadVRSettings
+    // ---------------------------------------------------------------------------
+
+    // this interface allows you to read and write madVR settings
+
+    // For each folder and value there exists both a short ID and a long
+    // description. The short ID will never change. The long description may be
+    // modified in a future version. So it's preferable to use the ID, but you can
+    // also address settings by using the clear text description.
+
+    // The "path" parameter can simply be set to the ID or to the description of
+    // the setting value. Alternatively you can use a partial or full path to the
+    // setting value. E.g. the following calls will all return the same value:
+    // (1) GetBoolean(L"dontDither", &boolVal);
+    // (2) GetBoolean(L"don't use dithering", &boolVal);
+    // (3) GetBoolean(L"tradeQuality\dontDither", &boolVal);
+    // (4) GetBoolean(L"performanceTweaks\trade quality for performance\dontDither", &boolVal);
+
+    // Using the full path can make sense if you want to access a specific profile.
+    // If you don't specify a path, you automatically access the currently active
+    // profile.
+    [ComImport, System.Security.SuppressUnmanagedCodeSecurity,
+    Guid("6F8A566C-4E19-439E-8F07-20E46ED06DEE"),
+    InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    public interface IMadVRSettings
+    {
+        // returns the revision number of the settings record
+        // the revision number is increased by 1 every time a setting changes
+        [PreserveSig]
+        int SettingsGetRevision(long revision);
+
+        // export the whole settings record to a binary data buffer
+        // the buffer is allocated by mvrSettings_Export by using LocalAlloc
+        // it's the caller's responsibility to free the buffer again by using LocalFree
+        [PreserveSig]
+        int SettingsExport([Out] out object[] buf, int size);
+
+        // import the settings from a binary data buffer
+        [PreserveSig]
+        int SettingsImport(object buf, int size);
+
+        // modify a specific value
+        [PreserveSig]
+        int SettingsSetString(string path, string value);
+        [PreserveSig]
+        int SettingsSetInteger(string path, int value);
+        [PreserveSig]
+        int SettingsSetBoolean(string path, int value);
+
+        // The buffer for mvrSettings_GetString must be provided by the caller and
+        // bufLenInChars set to the buffer's length (please note: 1 char -> 2 bytes).
+        // If the buffer is too small, the API fails and GetLastError returns
+        // ERROR_MORE_DATA. On return, bufLenInChars is set to the required buffer size.
+        // The buffer for mvrSettings_GetBinary is allocated by mvrSettings_GetBinary.
+        // The caller is responsible for freeing it by using LocalAlloc().
+        int SettingsGetString(string path, [Out] out string value, int bufLenInChars);
+        int SettingsGetInteger(string path, [Out] out int value);
+        int SettingsGetBoolean(string path, [Out] out IntPtr value);
+        int SettingsGetBinary(string path, object[] value, int bufLenInBytes);
+    }
 
     public class MadvrInterface
     {
@@ -171,168 +234,426 @@ namespace MediaBrowser.Theater.DirectShow
 
         public static void ShowMadVrMessage(string Message, uint DisplayTime, MadVR madvr)
         {
-            if (madvr == null)
-            {
-                return;
-            }
-            else
-            {
-                IMadVRTextOsd osd = (IMadVRTextOsd)madvr;
-                osd.OsdDisplayMessage(Message, DisplayTime);
-            }
+            var osd = (IMadVRTextOsd)madvr;
+            osd.OsdDisplayMessage(Message, DisplayTime);
         }
 
+        private static string CurrentName;
+        private static IntPtr CurrentLeftEye;
+        private static int CurrentPosX;
+        private static int CurrentPosY;
+        private static uint CurrentDuration;
+        private static int CurrentImagePriority;
+
+
+        public static bool startTransition = false;
         public static void ShowMadVrBitmap(string name, IntPtr leftEye, int Posx, int Posy, uint Duration, int ImagePriority, MadVR madvr)
         {
-            if (madvr == null)
-            {
-                return;
-            }
-
             IntPtr rightEye = IntPtr.Zero;
             uint colorkey = 0;
             reserved = IntPtr.Zero;
-
+            //mouseCallback = new OSDMOUSECALLBACK(OnMouseEvent);
             IMadVROsdServices osdServices = (IMadVROsdServices)madvr;
-            osdServices.OsdSetBitmap(name, leftEye, rightEye, colorkey, Posx, Posy, false, ImagePriority, Duration, 0, mouseCallback, callbackContext, reserved);
+
+            int ScreenBottom = 0;// Madvr_VideoPlayer.Plugin.Madvr_VideoPlayer.VideoPlayer.ScreenHeight;
+
+            if (Posy > (ScreenBottom / 2))
+            {
+                if (name != "transportTime")
+                {
+                    CurrentName = name;
+                    CurrentLeftEye = leftEye;
+                    CurrentPosX = Posx;
+                    CurrentPosY = Posy;
+                    CurrentDuration = Duration;
+                    CurrentImagePriority = ImagePriority;
+
+
+                    if (startTransition == false)
+                    {
+                        while (Posy < ScreenBottom)
+                        {
+                            osdServices.OsdSetBitmap(name, leftEye, rightEye, colorkey, Posx, ScreenBottom, false, ImagePriority, Duration, 0, mouseCallback, callbackContext, reserved);
+                            if (Posy < ScreenBottom)
+                            {
+                                ScreenBottom--;
+                            }
+                            if (Posy < ScreenBottom)
+                            {
+                                ScreenBottom--;
+                            }
+                            if (Posy < ScreenBottom)
+                            {
+                                ScreenBottom--;
+                            }
+                            if (Posy < ScreenBottom)
+                            {
+                                ScreenBottom--;
+                            }
+                            if (name == "iMovieInfoImage")
+                            {
+                                if (Posy < ScreenBottom)
+                                {
+                                    ScreenBottom--;
+                                }
+                                if (Posy < ScreenBottom)
+                                {
+                                    ScreenBottom--;
+                                }
+                                if (Posy < ScreenBottom)
+                                {
+                                    ScreenBottom--;
+                                }
+                                if (Posy < ScreenBottom)
+                                {
+                                    ScreenBottom--;
+                                }
+                            }
+
+                            Thread.Sleep(1);
+                        }
+                        osdServices.OsdSetBitmap(name, leftEye, rightEye, colorkey, Posx, ScreenBottom, false, ImagePriority, Duration, 0, mouseCallback, callbackContext, reserved);
+
+                        startTransition = true;
+                    }
+                    else
+                    {
+                        osdServices.OsdSetBitmap(name, leftEye, rightEye, colorkey, Posx, Posy, false, ImagePriority, Duration, 0, mouseCallback, callbackContext, reserved);
+                    }
+                }
+                else
+                {
+                    osdServices.OsdSetBitmap(name, leftEye, rightEye, colorkey, Posx, Posy, false, ImagePriority, Duration, 0, mouseCallback, callbackContext, reserved);
+                }
+            }
+            else
+            {
+                osdServices.OsdSetBitmap(name, leftEye, rightEye, colorkey, Posx, Posy, false, ImagePriority, Duration, 0, mouseCallback, callbackContext, reserved);
+            }
             if (name.ToLower().Contains("pause") || name.ToLower().StartsWith("pause"))
             {
                 osdServices.OsdRedrawFrame();
             }
-            //else if (Madvr_VideoPlayer.Plugin.Madvr_VideoPlayer.VideoPlayer.m_state == PlaybackState.Paused)
+            //else if (Madvr_VideoPlayer.Plugin.Madvr_VideoPlayer.VideoPlayer.m_state == "Paused")
             //{
             //    osdServices.OsdRedrawFrame();
             //}
         }
 
-        public static void ClearMadVrBitmap(string name, MadVR madvr)
+        public static void RedrawFrame(MadVR madvr)
         {
-            if (madvr == null)
-            {
-                return;
-            }
-
-            IntPtr leftEye = IntPtr.Zero;
-            IntPtr rightEye = IntPtr.Zero;
-            uint colorkey = 0;
-            int Posx = 0;
-            int Posy = 0;
-            uint Duration = 1;
-            int ImagePriority = 100;
-            reserved = IntPtr.Zero;
-
-            IMadVROsdServices osdServices = (IMadVROsdServices)madvr;
-            osdServices.OsdSetBitmap(name, leftEye, rightEye, colorkey, Posx, Posy, false, ImagePriority, Duration, 0, mouseCallback, callbackContext, reserved);
+            var osdServices = (IMadVROsdServices)madvr;
+            osdServices.OsdRedrawFrame();
         }
+
+        //public static void ClearMadVrBitmap(string name, MeediOS.Media.MadVR madvr)
+        //{
+        //    try
+        //    {
+        //        if (madvr == null)
+        //        {
+        //            Madvr_VideoPlayer.Plugin.WriteLog("[Madvr Interface] Showbitmap Interface error: madvr is null");
+        //            return;
+        //        }
+
+        //        IntPtr leftEye = IntPtr.Zero;
+        //        IntPtr rightEye = IntPtr.Zero;
+        //        uint colorkey = 0;
+        //        int Posx = 0;
+        //        int Posy = 0;
+        //        uint Duration = 1;
+        //        int ImagePriority = 100;
+        //        reserved = IntPtr.Zero;
+
+        //        IMadVROsdServices osdServices = (IMadVROsdServices)madvr;
+
+
+        //        //osdServices.OsdSetBitmap(name, leftEye, rightEye, colorkey, Posx, Posy, false, ImagePriority, Duration, 0, mouseCallback, callbackContext, reserved);
+
+        //        int ScreenBottom = Madvr_VideoPlayer.Plugin.Madvr_VideoPlayer.VideoPlayer.ScreenHeight;
+        //        if (CurrentPosY > (ScreenBottom / 2))
+        //        {
+        //            if (name != "transportTime")
+        //            {
+        //                if (startTransition == true
+        //                    && name == CurrentName
+        //                    && (Madvr_VideoPlayer.Plugin.ArrowDirection == "up" || Madvr_VideoPlayer.Plugin.ArrowDirection == "down"))
+        //                {
+        //                    while (CurrentPosY < ScreenBottom)
+        //                    {
+        //                        osdServices.OsdSetBitmap(CurrentName, CurrentLeftEye, rightEye, colorkey, CurrentPosX, CurrentPosY, false, CurrentImagePriority, CurrentDuration, 0, mouseCallback, callbackContext, reserved);
+        //                        if (CurrentPosY < ScreenBottom)
+        //                        {
+        //                            CurrentPosY++;
+        //                        }
+        //                        if (CurrentPosY < ScreenBottom)
+        //                        {
+        //                            CurrentPosY++;
+        //                        }
+        //                        if (CurrentPosY < ScreenBottom)
+        //                        {
+        //                            CurrentPosY++;
+        //                        }
+        //                        if (CurrentPosY < ScreenBottom)
+        //                        {
+        //                            CurrentPosY++;
+        //                        }
+        //                        if (name == "iMovieInfoImage")
+        //                        {
+        //                            if (CurrentPosY < ScreenBottom)
+        //                            {
+        //                                CurrentPosY++;
+        //                            }
+        //                            if (CurrentPosY < ScreenBottom)
+        //                            {
+        //                                CurrentPosY++;
+        //                            }
+        //                            if (CurrentPosY < ScreenBottom)
+        //                            {
+        //                                CurrentPosY++;
+        //                            }
+        //                            if (CurrentPosY < ScreenBottom)
+        //                            {
+        //                                CurrentPosY++;
+        //                            }
+        //                        }
+
+        //                        Thread.Sleep(1);
+        //                    }
+        //                    osdServices.OsdSetBitmap(name, leftEye, rightEye, colorkey, Posx, Posy, false, ImagePriority, Duration, 0, mouseCallback, callbackContext, reserved);
+
+        //                    startTransition = false;
+        //                }
+        //                else
+        //                {
+        //                    osdServices.OsdSetBitmap(name, leftEye, rightEye, colorkey, Posx, Posy, false, ImagePriority, Duration, 0, mouseCallback, callbackContext, reserved);
+        //                }
+        //            }
+        //            else
+        //            {
+        //                osdServices.OsdSetBitmap(name, leftEye, rightEye, colorkey, Posx, Posy, false, ImagePriority, Duration, 0, mouseCallback, callbackContext, reserved);
+        //            }
+        //        }
+        //        else
+        //        {
+        //            osdServices.OsdSetBitmap(name, leftEye, rightEye, colorkey, Posx, Posy, false, ImagePriority, Duration, 0, mouseCallback, callbackContext, reserved);
+        //        }
+
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Madvr_VideoPlayer.Plugin.WriteLog("[Madvr Interface] MadVr Clear Bitmap Error: " + e);
+        //    }
+        //}
 
         public static void EnableExclusiveMode(bool enable, MadVR madvr)
         {
-            if (madvr == null)
-            {
-                return;
-            }
+            var eModeControl = madvr as IMadVRExclusiveModeControl;
 
-            Int32 iEnable;
-            if (enable == true)
+            if (enable)
             {
-                iEnable = 1;
+                var size = Marshal.SizeOf(typeof(Int32));
+                var pBool = Marshal.AllocHGlobal(size);
+
+                Marshal.WriteInt32(pBool, 0, 1);  // last parameter 0 (FALSE), 1 (TRUE)
+
+                eModeControl.DisableExclusiveMode(pBool);
+
+                Marshal.FreeHGlobal(pBool);
+                pBool = IntPtr.Zero;
             }
-            else
+            else  //Works - Set to Windowed Mode
             {
-                iEnable = 0;
+                var size = Marshal.SizeOf(typeof(Int32));
+                var pBool = Marshal.AllocHGlobal(size);
+
+                Marshal.WriteInt32(pBool, 0, 0);  // last parameter 0 (FALSE), 1 (TRUE)
+
+                eModeControl.DisableExclusiveMode(pBool);
+
+                Marshal.FreeHGlobal(pBool);
+                pBool = IntPtr.Zero;
             }
-            int size = Marshal.SizeOf(iEnable);
-            IntPtr pBool = Marshal.AllocHGlobal(size);
-            Marshal.WriteInt32(pBool, 0, 1);  // last parameter 0 (FALSE), 1 (TRUE)
-            IMadVRExclusiveModeControl eModeControl = (IMadVRExclusiveModeControl)madvr;
-            eModeControl.DisableExclusiveMode(pBool);
-            Marshal.FreeHGlobal(pBool);
         }
 
         public static bool InExclusiveMode(MadVR madvr)
         {
-            try
-            {
-                IMadVRExclusiveModeInfo exclusiveInfo = (IMadVRExclusiveModeInfo)madvr;
-                bool status = false;
-                exclusiveInfo.IsExclusiveModeActive(out status);
-                return status;
-            }
-            catch (Exception)
-            {
-                return false;
-            }            
+            var exclusiveInfo = madvr as IMadVRExclusiveModeInfo;
+
+            return exclusiveInfo.IsExclusiveModeActive() == 1;
         }
 
-        public static bool MadvrSeekBarEnabled(MadVR madvr)
-        {
-            try
-            {
-                IMadVRExclusiveModeInfo exclusiveInfo = (IMadVRExclusiveModeInfo)madvr;
-                bool status = false;
-                exclusiveInfo.IsMadVRSeekbarEnabled(out status);
-                return status;
-            }
-            catch (Exception)
-            {
-                return false;
-            }            
-        }
+        //public static bool MadvrSeekBarEnabled(MeediOS.Media.MadVR madvr)
+        //{
+        //    try
+        //    {
+        //        IMadVRExclusiveModeInfo exclusiveInfo = (IMadVRExclusiveModeInfo)madvr;
+        //        bool status = false;
+        //        exclusiveInfo.IsMadVRSeekbarEnabled(out status);
+        //        return status;
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Madvr_VideoPlayer.Plugin.WriteLog("[Madvr Interface] Get madvr seek bar enabled interface error: " + e);
+        //    }
+        //    return false;
+        //}
 
-        public static void EnableMadvrSeekBar(bool enable, MadVR madvr)
-        {
-            if (madvr == null)
-            {
-                return;
-            }
+        //public static void EnableMadvrSeekBar(bool enable, MeediOS.Media.MadVR madvr)
+        //{
+        //    try
+        //    {
+        //        if (madvr == null)
+        //        {
+        //            Madvr_VideoPlayer.Plugin.WriteLog("[Madvr Interface] Madvr seek bar error: madvr is null");
+        //            return;
+        //        }
 
-            Int32 iEnable;
-            if (enable == true)
-            {
-                iEnable = 1;
-            }
-            else
-            {
-                iEnable = 0;
-            }
-            int size = Marshal.SizeOf(iEnable);
-            IntPtr pBool = Marshal.AllocHGlobal(size);
-            Marshal.WriteInt32(pBool, 0, 1);  // last parameter 0 (FALSE), 1 (TRUE)
-            IMadVRSeekbarControl mvrSeekbar = (IMadVRSeekbarControl)madvr;
-            mvrSeekbar.DisableSeekbar(pBool);
-            Marshal.FreeHGlobal(pBool);
-        }
+        //        Int32 iEnable;
+        //        if (enable == true)
+        //        {
+        //            iEnable = 1;
+        //        }
+        //        else
+        //        {
+        //            iEnable = 0;
+        //        }
+        //        int size = Marshal.SizeOf(iEnable);
+        //        IntPtr pBool = Marshal.AllocHGlobal(size);
+        //        Marshal.WriteInt32(pBool, 0, 1);  // last parameter 0 (FALSE), 1 (TRUE)
+        //        IMadVRSeekbarControl mvrSeekbar = (IMadVRSeekbarControl)madvr;
+        //        mvrSeekbar.DisableSeekbar(pBool);
+        //        Marshal.FreeHGlobal(pBool);
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Madvr_VideoPlayer.Plugin.WriteLog("[Madvr Interface] Exclusive mode interface: " + e);
+        //    }
+        //}
 
-        public static void SetRenderCallback(MadVR madvr)
-        {
-            IMadVROsdServices osdServices = (IMadVROsdServices)madvr;
-            osdServices.OsdSetRenderCallback("MeediosPlayer", osdRenderCallback, reserved);
-            IDirect3DDevice9 test;
-            osdRenderCallback.SetDevice(out test);
-        }
+        //public static void SetRenderCallback(MeediOS.Media.MadVR madvr)
+        //{
+        //    try
+        //    {
+        //        IMadVROsdServices osdServices = (IMadVROsdServices)madvr;
+        //        osdServices.OsdSetRenderCallback("MeediosPlayer", osdRenderCallback, reserved);
+        //        IDirect3DDevice9 test;
+        //        osdRenderCallback.SetDevice(out test);
 
-        public static Rectangle GetMediaDimensions(bool GetActiveVideo, MadVR madvr)
-        {
-            Rectangle FullOutput = new Rectangle();
-            Rectangle ActiveVideo = new Rectangle();
-            try
-            {
-                IMadVROsdServices osdServices = (IMadVROsdServices)madvr;
-                osdServices.OsdGetVideoRects(out FullOutput, out ActiveVideo);
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Madvr_VideoPlayer.Plugin.WriteLog("[Madvr Interface] Error setting callback: " + e);
+        //    }
+        //}
 
-                if (GetActiveVideo == true)
-                {
-                    return ActiveVideo;
-                }
-                else
-                {
-                    return FullOutput;
-                }
-            }
-            catch (Exception)
-            {
-                return FullOutput;
-            }            
-        }
+        //public static Rectangle GetMediaDimensions(bool GetActiveVideo, MeediOS.Media.MadVR madvr)
+        //{
+        //    if (madvr == null)
+        //    {
+        //        Madvr_VideoPlayer.Plugin.WriteLog("[Madvr Interface] Madvr is null");
+        //    }
+
+        //    Rectangle FullOutput = new Rectangle();
+        //    Rectangle ActiveVideo = new Rectangle();
+        //    try
+        //    {
+        //        IMadVROsdServices osdServices = (IMadVROsdServices)madvr;
+        //        osdServices.OsdGetVideoRects(out FullOutput, out ActiveVideo);
+
+        //        Madvr_VideoPlayer.Plugin.WriteLog("Active video width: " + ActiveVideo.Width.ToString());
+        //        Madvr_VideoPlayer.Plugin.WriteLog("Active video height: " + ActiveVideo.Height.ToString());
+        //        Madvr_VideoPlayer.Plugin.WriteLog("Active video left: " + ActiveVideo.Left.ToString());
+        //        Madvr_VideoPlayer.Plugin.WriteLog("Active video right: " + ActiveVideo.Right.ToString());
+        //        Madvr_VideoPlayer.Plugin.WriteLog("Active video top: " + ActiveVideo.Top.ToString());
+        //        Madvr_VideoPlayer.Plugin.WriteLog("Active video bottom: " + ActiveVideo.Bottom.ToString());
+
+        //        Madvr_VideoPlayer.Plugin.WriteLog("Full output width: " + FullOutput.Width.ToString());
+        //        Madvr_VideoPlayer.Plugin.WriteLog("Full output height: " + FullOutput.Height.ToString());
+        //        Madvr_VideoPlayer.Plugin.WriteLog("Full output left: " + FullOutput.Left.ToString());
+        //        Madvr_VideoPlayer.Plugin.WriteLog("Full output right: " + FullOutput.Right.ToString());
+        //        Madvr_VideoPlayer.Plugin.WriteLog("Full output top: " + FullOutput.Top.ToString());
+        //        Madvr_VideoPlayer.Plugin.WriteLog("Full output bottom: " + FullOutput.Bottom.ToString());
+
+        //        if (GetActiveVideo == true)
+        //        {
+        //            return ActiveVideo;
+        //        }
+        //        else
+        //        {
+        //            return FullOutput;
+        //        }
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Madvr_VideoPlayer.Plugin.WriteLog("[Madvr Interface] Error getting dimensions: " + e);
+        //    }
+        //    return FullOutput;
+        //}
+
+        //public static void GetMadvrSettings(MeediOS.Media.MadVR madvr)
+        //{
+        //    try
+        //    {
+        //        IMadVRSettings mvrSettings = (IMadVRSettings)madvr;
+        //        //string path = "decodeH264";
+        //        //string value = "";
+        //        //int bufferSize = 25;
+        //        //int decodeh264 = mvrSettings.SettingsGetString(path, out value, bufferSize);
+
+        //        string path = "autoActivateDeinterlacing";
+        //        IntPtr settingbool;
+        //        int autoActivateDeinterlacing = mvrSettings.SettingsGetBoolean(path, out settingbool);
+
+        //        Madvr_VideoPlayer.Plugin.WriteLog("Madvr Setting: " + path + ": " + settingbool.ToString());
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Madvr_VideoPlayer.Plugin.WriteLog("Madvr Setting Error: " + e);
+        //    }
+
+
+        //    try
+        //    {
+        //        Madvr_VideoPlayer.Plugin.WriteLog("Getting Madvr Setting");
+        //        SettingFilePath = "C:\\Users\\Administrator\\Desktop\\madVR\\settings.bin";
+        //        string s1;
+        //        byte b1;
+        //        int i1;
+        //        float f1;
+        //        double d1;
+        //        char[] ca;
+
+        //        using (BinaryReader binReader = new BinaryReader(File.Open(SettingFilePath, FileMode.Open)))
+        //        {
+        //            try
+        //            {
+
+
+        //                while (true)
+        //                {
+        //                    s1 = binReader.ReadString();
+        //                    b1 = binReader.ReadByte();
+        //                    i1 = binReader.ReadInt32();
+        //                    f1 = binReader.ReadSingle();
+        //                    d1 = binReader.ReadDouble();
+        //                    ca = binReader.ReadChars(5);
+
+        //                    //Console.WriteLine(f1);
+        //                    Madvr_VideoPlayer.Plugin.WriteLog("Madvr Setting: " + s1);
+        //                }
+        //            }
+        //            catch (EndOfStreamException ex)
+        //            {
+        //                // end of file reached
+        //            }
+        //        }
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Madvr_VideoPlayer.Plugin.WriteLog("Madvr Setting Error: " + e);
+        //    }
+
+        //}
     }
 }

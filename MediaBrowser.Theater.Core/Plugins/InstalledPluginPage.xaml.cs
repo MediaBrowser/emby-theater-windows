@@ -22,16 +22,14 @@ namespace MediaBrowser.Theater.Core.Plugins
         private readonly IInstallationManager _installationManager;
         private readonly INavigationService _nav;
 
-        private readonly IPackageManager _packageManager;
         private readonly IApplicationHost _appHost;
 
-        public InstalledPluginPage(InstalledPluginViewModel plugin, IPresentationManager presentationManager, IInstallationManager installationManager, INavigationService nav, IPackageManager packageManager, IApplicationHost appHost)
+        public InstalledPluginPage(InstalledPluginViewModel plugin, IPresentationManager presentationManager, IInstallationManager installationManager, INavigationService nav, IApplicationHost appHost)
         {
             _plugin = plugin;
             _presentationManager = presentationManager;
             _installationManager = installationManager;
             _nav = nav;
-            _packageManager = packageManager;
             _appHost = appHost;
 
             InitializeComponent();
@@ -67,7 +65,7 @@ namespace MediaBrowser.Theater.Core.Plugins
             {
                 _installationManager.UninstallPlugin(_plugin.Plugin);
 
-                await _nav.Navigate(new PluginsPage(_packageManager, _appHost, _nav, _presentationManager, _installationManager));
+                await _nav.Navigate(new PluginsPage(_appHost, _nav, _presentationManager, _installationManager));
 
                 // Remove both this page and the previous page from the history
                 _nav.RemovePagesFromHistory(2);

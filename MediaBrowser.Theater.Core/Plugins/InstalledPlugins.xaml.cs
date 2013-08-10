@@ -23,15 +23,13 @@ namespace MediaBrowser.Theater.Core.Plugins
         private readonly INavigationService _nav;
         private readonly IPresentationManager _presentationManager;
         private readonly IInstallationManager _installationManager;
-        private readonly IPackageManager _packageManager;
 
-        public InstalledPlugins(IApplicationHost appHost, INavigationService nav, IPresentationManager presentationManager, IInstallationManager installationManager, IPackageManager packageManager)
+        public InstalledPlugins(IApplicationHost appHost, INavigationService nav, IPresentationManager presentationManager, IInstallationManager installationManager)
         {
             _appHost = appHost;
             _nav = nav;
             _presentationManager = presentationManager;
             _installationManager = installationManager;
-            _packageManager = packageManager;
             InitializeComponent();
         }
 
@@ -81,7 +79,7 @@ namespace MediaBrowser.Theater.Core.Plugins
         {
             var viewModel = e.Argument as InstalledPluginViewModel;
 
-            await _nav.Navigate(new InstalledPluginPage(viewModel, _presentationManager, _installationManager, _nav, _packageManager, _appHost));
+            await _nav.Navigate(new InstalledPluginPage(viewModel, _presentationManager, _installationManager, _nav, _appHost));
         }
     }
 

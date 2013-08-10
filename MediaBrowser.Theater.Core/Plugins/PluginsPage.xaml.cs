@@ -17,15 +17,13 @@ namespace MediaBrowser.Theater.Core.Plugins
     /// </summary>
     public partial class PluginsPage : BasePage
     {
-        private readonly IPackageManager _packageManager;
         private readonly IPresentationManager _presentation;
         private readonly IApplicationHost _appHost;
         private readonly INavigationService _nav;
         private readonly IInstallationManager _installationManager;
 
-        public PluginsPage(IPackageManager packageManager, IApplicationHost appHost, INavigationService nav, IPresentationManager presentation, IInstallationManager installationManager)
+        public PluginsPage(IApplicationHost appHost, INavigationService nav, IPresentationManager presentation, IInstallationManager installationManager)
         {
-            _packageManager = packageManager;
             _appHost = appHost;
             _nav = nav;
             _presentation = presentation;
@@ -60,11 +58,11 @@ namespace MediaBrowser.Theater.Core.Plugins
             {
                 case "installed plugins":
 
-                    PageContent.Content = new InstalledPlugins(_appHost, _nav, _presentation, _installationManager, _packageManager);
+                    PageContent.Content = new InstalledPlugins(_appHost, _nav, _presentation, _installationManager);
                     break;
                 case "plugin catalog":
 
-                    PageContent.Content = new PluginCatalog(_packageManager, _presentation, _nav, _appHost, _installationManager);
+                    PageContent.Content = new PluginCatalog(_presentation, _nav, _appHost, _installationManager);
                     break;
             }
         }

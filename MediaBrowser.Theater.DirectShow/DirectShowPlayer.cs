@@ -214,12 +214,20 @@ namespace MediaBrowser.Theater.DirectShow
 
             if (enableReclock)
             {
-                _reclockAudioRenderer = new ReclockAudioRenderer();
-                var aRenderer = _reclockAudioRenderer as DirectShowLib.IBaseFilter;
-                if (aRenderer != null)
+                try
                 {
-                    _graphBuilder.AddFilter(aRenderer, "Reclock Audio Renderer");
-                    useDefaultRenderer = false;
+                    _reclockAudioRenderer = new ReclockAudioRenderer();
+                    var aRenderer = _reclockAudioRenderer as DirectShowLib.IBaseFilter;
+                    if (aRenderer != null)
+                    {
+                        hr = _graphBuilder.AddFilter(aRenderer, "Reclock Audio Renderer");
+                        DsError.ThrowExceptionForHR(hr);
+                        useDefaultRenderer = false;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.ErrorException("Error adding reclock filter", ex);
                 }
             }
 
@@ -235,35 +243,67 @@ namespace MediaBrowser.Theater.DirectShow
 
             if (_item.IsVideo)
             {
-                _lavvideo = new LAVVideo();
-                var vlavvideo = _lavvideo as DirectShowLib.IBaseFilter;
-                if (vlavvideo != null)
+                try
                 {
-                    _graphBuilder.AddFilter(vlavvideo, "LAV Video Decoder");
+                    _lavvideo = new LAVVideo();
+                    var vlavvideo = _lavvideo as DirectShowLib.IBaseFilter;
+                    if (vlavvideo != null)
+                    {
+                        hr = _graphBuilder.AddFilter(vlavvideo, "LAV Video Decoder");
+                        DsError.ThrowExceptionForHR(hr);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.ErrorException("Error adding LAV Video filter", ex);
                 }
 
-                //_xyVsFilter = new XYVSFilter();
-                //var vxyVsFilter = _xyVsFilter as DirectShowLib.IBaseFilter;
-                //if (vxyVsFilter != null)
-                //{
-                //    _graphBuilder.AddFilter(vxyVsFilter, "xy-VSFilter");
-                //}
+                try
+                {
+                    _xyVsFilter = new XYVSFilter();
+                    var vxyVsFilter = _xyVsFilter as DirectShowLib.IBaseFilter;
+                    if (vxyVsFilter != null)
+                    {
+                        hr = _graphBuilder.AddFilter(vxyVsFilter, "xy-VSFilter");
+                        DsError.ThrowExceptionForHR(hr);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.ErrorException("Error adding xy-VSFilter filter", ex);
+                }
             }
 
-            _lavaudio = new LAVAudio();
-            var vlavaudio = _lavaudio as DirectShowLib.IBaseFilter;
-            if (vlavaudio != null)
+            try
             {
-                _graphBuilder.AddFilter(vlavaudio, "LAV Audio Decoder");
+                _lavaudio = new LAVAudio();
+                var vlavaudio = _lavaudio as DirectShowLib.IBaseFilter;
+                if (vlavaudio != null)
+                {
+                    hr = _graphBuilder.AddFilter(vlavaudio, "LAV Audio Decoder");
+                    DsError.ThrowExceptionForHR(hr);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.ErrorException("Error adding LAV Audio filter", ex);
             }
 
             if (enableMadvr && _item.IsVideo)
             {
-                _madvr = new MadVR();
-                var vmadvr = _madvr as DirectShowLib.IBaseFilter;
-                if (vmadvr != null)
+                try
                 {
-                    _graphBuilder.AddFilter(vmadvr, "MadVR Video Renderer");
+                    _madvr = new MadVR();
+                    var vmadvr = _madvr as DirectShowLib.IBaseFilter;
+                    if (vmadvr != null)
+                    {
+                        hr = _graphBuilder.AddFilter(vmadvr, "MadVR Video Renderer");
+                        DsError.ThrowExceptionForHR(hr);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.ErrorException("Error adding MadVR filter", ex);
                 }
             }
 
@@ -345,7 +385,11 @@ namespace MediaBrowser.Theater.DirectShow
             //_videoWindow.put_FullScreenMode(OABool.True);
 
             _videoWindow.HideCursor(OABool.True);
-            SetExclusiveMode(false);
+
+            if (_madvr != null)
+            {
+                SetExclusiveMode(false);
+            }
         }
 
         private void SetVideoPositions()

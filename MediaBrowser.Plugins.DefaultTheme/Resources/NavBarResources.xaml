@@ -2,9 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Style TargetType="Button" x:Key="NavBarButton">
-        <Setter Property="Margin" Value="10 0 10 0"/>
+        <Setter Property="Margin" Value="15 0 15 0"/>
         <Setter Property="KeyboardNavigation.IsTabStop" Value="false"/>
-        <Setter Property="Width" Value="40"/>
         <Setter Property="Height" Value="40"/>
         <Setter Property="Padding" Value="0"/>
         <Setter Property="BorderThickness" Value="0"/>
@@ -21,18 +20,8 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate>
-                    <Grid>
-                        <Path Data="M48.166603,12.154001L55.979095,12.154001 55.979095,21.207295 65.0327,21.207295 65.034004,29.019703 55.979095,29.019703 55.980495,38.072998 48.167904,38.072998 48.166603,29.019003 39.114399,29.019703 39.112999,21.207295 48.167904,21.207295z M31.952999,0L31.952999,50.027001 15.98555,35.126191 0,35.126191 0,15.966104 15.98555,15.966104z" Stretch="Uniform" Fill="#FFFFFFFF" Width="30" Height="30" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
-                            <Path.RenderTransform>
-                                <TransformGroup>
-                                    <TransformGroup.Children>
-                                        <RotateTransform Angle="0" />
-                                        <ScaleTransform ScaleX="1" ScaleY="1" />
-                                    </TransformGroup.Children>
-                                </TransformGroup>
-                            </Path.RenderTransform>
-                        </Path>
-                    </Grid>
+                    <Path Style="{DynamicResource IconPath}" Data="M48.166603,12.154001L55.979095,12.154001 55.979095,21.207295 65.0327,21.207295 65.034004,29.019703 55.979095,29.019703 55.980495,38.072998 48.167904,38.072998 48.166603,29.019003 39.114399,29.019703 39.112999,21.207295 48.167904,21.207295z M31.952999,0L31.952999,50.027001 15.98555,35.126191 0,35.126191 0,15.966104 15.98555,15.966104z" Stretch="Uniform" Width="36" Height="36" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+                    </Path>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -43,18 +32,8 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate>
-                    <Grid>
-                        <Path Data="M39.043999,21.152001L64.987999,21.152001 64.987999,29.096001 39.043999,29.096001z M31.952999,0L31.952999,50.027001 15.9856,35.12619 0,35.12619 0,15.966104 15.9856,15.966104z" Stretch="Uniform" Fill="#FFFFFFFF" Width="30" Height="30" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
-                            <Path.RenderTransform>
-                                <TransformGroup>
-                                    <TransformGroup.Children>
-                                        <RotateTransform Angle="0" />
-                                        <ScaleTransform ScaleX="1" ScaleY="1" />
-                                    </TransformGroup.Children>
-                                </TransformGroup>
-                            </Path.RenderTransform>
-                        </Path>
-                    </Grid>
+                    <Path Style="{DynamicResource IconPath}" Data="M39.043999,21.152001L64.987999,21.152001 64.987999,29.096001 39.043999,29.096001z M31.952999,0L31.952999,50.027001 15.9856,35.12619 0,35.12619 0,15.966104 15.9856,15.966104z" Stretch="Uniform" Width="36" Height="36" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+                    </Path>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -65,18 +44,8 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate>
-                    <Grid>
-                        <Path Data="M45.671722,13.188L52.072849,19.589466 58.475178,13.188 64,18.711884 57.597572,25.113449 64,31.515116 58.475178,37.038998 52.072849,30.637533 45.671722,37.038998 40.147003,31.515116 46.549328,25.113449 40.147003,18.711884z M31.952999,0L31.952999,50.027 15.9856,35.12619 0,35.12619 0,15.966104 15.9856,15.966104z" Stretch="Uniform" Fill="#FFFFFFFF" Width="30" Height="30" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
-                            <Path.RenderTransform>
-                                <TransformGroup>
-                                    <TransformGroup.Children>
-                                        <RotateTransform Angle="0" />
-                                        <ScaleTransform ScaleX="1" ScaleY="1" />
-                                    </TransformGroup.Children>
-                                </TransformGroup>
-                            </Path.RenderTransform>
-                        </Path>
-                    </Grid>
+                    <Path Style="{DynamicResource IconPath}" Data="M45.671722,13.188L52.072849,19.589466 58.475178,13.188 64,18.711884 57.597572,25.113449 64,31.515116 58.475178,37.038998 52.072849,30.637533 45.671722,37.038998 40.147003,31.515116 46.549328,25.113449 40.147003,18.711884z M31.952999,0L31.952999,50.027 15.9856,35.12619 0,35.12619 0,15.966104 15.9856,15.966104z" Stretch="Uniform" Width="36" Height="36" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+                    </Path>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -87,18 +56,8 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate>
-                    <Grid>
-                        <Path Data="F1M1188.2,1715.23L1169.93,1728.57 1151.66,1741.9 1151.66,1715.23 1151.66,1688.57 1169.93,1701.9 1188.2,1715.23z" Stretch="Uniform" Fill="#FFFFFFFF" Width="22" Height="22" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
-                            <Path.RenderTransform>
-                                <TransformGroup>
-                                    <TransformGroup.Children>
-                                        <RotateTransform Angle="0" />
-                                        <ScaleTransform ScaleX="1" ScaleY="1" />
-                                    </TransformGroup.Children>
-                                </TransformGroup>
-                            </Path.RenderTransform>
-                        </Path>
-                    </Grid>
+                    <Path Style="{DynamicResource IconPath}" Data="F1M1188.2,1715.23L1169.93,1728.57 1151.66,1741.9 1151.66,1715.23 1151.66,1688.57 1169.93,1701.9 1188.2,1715.23z" Stretch="Uniform" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+                    </Path>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -109,18 +68,8 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate>
-                    <Grid>
-                        <Path Data="M27.270001,0L44.310001,0 44.310001,48.643002 27.270001,48.643002z M0,0L17.040001,0 17.040001,48.643002 0,48.643002z" Stretch="Uniform" Fill="#FFFFFFFF" Width="22" Height="22" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
-                            <Path.RenderTransform>
-                                <TransformGroup>
-                                    <TransformGroup.Children>
-                                        <RotateTransform Angle="0" />
-                                        <ScaleTransform ScaleX="1" ScaleY="1" />
-                                    </TransformGroup.Children>
-                                </TransformGroup>
-                            </Path.RenderTransform>
-                        </Path>
-                    </Grid>
+                    <Path Style="{DynamicResource IconPath}" Data="M27.270001,0L44.310001,0 44.310001,48.643002 27.270001,48.643002z M0,0L17.040001,0 17.040001,48.643002 0,48.643002z" Stretch="Uniform" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+                    </Path>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -131,18 +80,8 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate>
-                    <Grid>
-                        <Path Data="M0,0L64,0 64,64 0,64z" Stretch="Uniform" Fill="#FFFFFFFF" Width="22" Height="22" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
-                            <Path.RenderTransform>
-                                <TransformGroup>
-                                    <TransformGroup.Children>
-                                        <RotateTransform Angle="0" />
-                                        <ScaleTransform ScaleX="1" ScaleY="1" />
-                                    </TransformGroup.Children>
-                                </TransformGroup>
-                            </Path.RenderTransform>
-                        </Path>
-                    </Grid>
+                    <Path Style="{DynamicResource IconPath}" Data="M0,0L64,0 64,64 0,64z" Stretch="Uniform" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+                    </Path>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -153,18 +92,8 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate>
-                    <Grid>
-                        <Path Data="M0,0L15.908,0 15.908,20.125872 28.130381,13.333224 52.118999,0 52.118999,26.66655 52.118999,53.333 28.130381,39.999775 15.908,33.20718 15.908,53.333 0,53.333z" Stretch="Uniform" Fill="#FFFFFFFF" Width="22" Height="22" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
-                            <Path.RenderTransform>
-                                <TransformGroup>
-                                    <TransformGroup.Children>
-                                        <RotateTransform Angle="0" />
-                                        <ScaleTransform ScaleX="-1" ScaleY="-1" />
-                                    </TransformGroup.Children>
-                                </TransformGroup>
-                            </Path.RenderTransform>
-                        </Path>
-                    </Grid>
+                    <Path Style="{DynamicResource IconPath}" Data="M51.123999,0L63.451998,0 63.451998,53.695001 51.123999,53.695001 51.123999,31.916129 41.651199,37.180778 23.059999,47.514001 23.059999,34.696918 18.590899,37.180778 0,47.514001 0,26.847556 0,6.1810005 18.590899,16.514234 23.059999,18.998118 23.059999,6.1810005 41.651199,16.514234 51.123999,21.778933z" Stretch="Uniform" Width="30" Height="30" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+                    </Path>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -175,13 +104,36 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate>
+                    <Path Style="{DynamicResource IconPath}" Data="F1M1914.87,1166.52L1914.87,1185.06 1923.04,1180.35 1937.85,1171.8 1937.85,1182.85 1942.18,1180.35 1956.99,1171.8 1956.99,1205.99 1942.18,1197.44 1937.85,1194.94 1937.85,1205.99 1923.04,1197.44 1914.87,1192.73 1914.87,1211.27 1903.62,1211.27 1903.62,1166.52 1914.87,1166.52z" Stretch="Uniform" Width="30" Height="30" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+                    </Path>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="Button" x:Key="RewindButton" BasedOn="{StaticResource NavBarButton}">
+        <Setter Property="ToolTip" Value="Rewind"/>
+        <Setter Property="Margin" Value="5 0 15 0"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate>
                     <Grid>
-                        <Path Data="M0,0L15.908,0 15.908,20.125872 28.130381,13.333224 52.118999,0 52.118999,26.66655 52.118999,53.333 28.130381,39.999775 15.908,33.20718 15.908,53.333 0,53.333z" Stretch="Uniform" Fill="#FFFFFFFF" Width="22" Height="22" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+                        <Path Style="{DynamicResource IconPath}" Data="F1M-224.553,1265L-246.174,1283.52 -267.792,1302.04 -267.792,1265 -267.792,1227.97 -246.174,1246.49 -224.553,1265z" Stretch="Uniform" Height="24" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
                             <Path.RenderTransform>
                                 <TransformGroup>
                                     <TransformGroup.Children>
                                         <RotateTransform Angle="0" />
-                                        <ScaleTransform ScaleX="1" ScaleY="1" />
+                                        <ScaleTransform ScaleX="-1" ScaleY="1" />
+                                    </TransformGroup.Children>
+                                </TransformGroup>
+                            </Path.RenderTransform>
+                        </Path>
+                        <Path Style="{DynamicResource IconPath}" Data="F1M-224.553,1265L-246.174,1283.52 -267.792,1302.04 -267.792,1265 -267.792,1227.97 -246.174,1246.49 -224.553,1265z" Stretch="Uniform" Height="24" Margin="21,0,0,0" RenderTransformOrigin="0.5,0.5">
+                            <Path.RenderTransform>
+                                <TransformGroup>
+                                    <TransformGroup.Children>
+                                        <RotateTransform Angle="0" />
+                                        <ScaleTransform ScaleX="-1" ScaleY="1" />
                                     </TransformGroup.Children>
                                 </TransformGroup>
                             </Path.RenderTransform>
@@ -192,12 +144,18 @@
         </Setter>
     </Style>
 
-    <Style TargetType="Button" x:Key="BackButton" BasedOn="{StaticResource NavBarButton}">
-        <Setter Property="ToolTip" Value="Back"/>
+    <Style TargetType="Button" x:Key="FastForwardButton" BasedOn="{StaticResource NavBarButton}">
+        <Setter Property="ToolTip" Value="Fast forward"/>
+        <Setter Property="Margin" Value="10 0 15 0"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate>
-                    <Image x:Name="img" Source="..\Resources\Images\NavBar\BackButton.png" Stretch="None" />
+                    <Grid>
+                        <Path Style="{DynamicResource IconPath}" Data="F1M-224.553,1265L-246.174,1283.52 -267.792,1302.04 -267.792,1265 -267.792,1227.97 -246.174,1246.49 -224.553,1265z" Stretch="Uniform" Height="24" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+                        </Path>
+                        <Path Style="{DynamicResource IconPath}" Data="F1M-224.553,1265L-246.174,1283.52 -267.792,1302.04 -267.792,1265 -267.792,1227.97 -246.174,1246.49 -224.553,1265z" Stretch="Uniform" Height="24" Margin="21,0,0,0" RenderTransformOrigin="0.5,0.5">
+                        </Path>
+                    </Grid>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

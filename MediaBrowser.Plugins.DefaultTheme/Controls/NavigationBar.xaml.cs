@@ -52,11 +52,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
             Loaded += NavigationBar_Loaded;
             Unloaded += NavigationBar_Unloaded;
 
-            MuteButton.Click += MuteButton_Click;
-
-            VolumeDownButton.PreviewMouseDown += VolumeDownButton_Click;
-            VolumeUpButton.PreviewMouseDown += VolumeUpButton_Click;
-
             StopButton.Click += StopButton_Click;
             PlayButton.Click += PlayButton_Click;
             PauseButton.Click += PauseButton_Click;
@@ -65,6 +60,29 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
             PreviousChapterButton.Click += PreviousChapterButton_Click;
 
             CurrentPositionSlider.PreviewMouseUp += CurrentPositionSlider_PreviewMouseUp;
+
+            RewindButton.Click += RewindButton_Click;
+            FastForwardButton.Click += FastForwardButton_Click;
+        }
+
+        /// <summary>
+        /// Handles the Click event of the FastForwardButton control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        async void FastForwardButton_Click(object sender, RoutedEventArgs e)
+        {
+            await _mediaPlayer.SkipForward();
+        }
+
+        /// <summary>
+        /// Handles the Click event of the RewindButton control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        async void RewindButton_Click(object sender, RoutedEventArgs e)
+        {
+            await _mediaPlayer.SkipBackward();
         }
 
         /// <summary>
@@ -273,9 +291,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
                 PauseButton.Visibility = player != null && player.CanPause && player.PlayState == PlayState.Playing ? Visibility.Visible : Visibility.Collapsed;
 
                 StopButton.Visibility = player != null ? Visibility.Visible : Visibility.Collapsed;
-                MuteButton.Visibility = player != null ? Visibility.Visible : Visibility.Collapsed;
-                VolumeUpButton.Visibility = player != null ? Visibility.Visible : Visibility.Collapsed;
-                VolumeDownButton.Visibility = player != null ? Visibility.Visible : Visibility.Collapsed;
 
                 var isSeekable = player != null && player.CanSeek && player.CurrentMedia != null;
                 SeekGrid.Visibility = isSeekable ? Visibility.Visible : Visibility.Collapsed;
@@ -285,6 +300,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
                 NextChapterButton.Visibility = canSeekChapters ? Visibility.Visible : Visibility.Collapsed;
                 PreviousChapterButton.Visibility = canSeekChapters ? Visibility.Visible : Visibility.Collapsed;
 
+                RewindButton.Visibility = isSeekable ? Visibility.Visible : Visibility.Collapsed;
+                FastForwardButton.Visibility = isSeekable ? Visibility.Visible : Visibility.Collapsed;
+            
             }, DispatcherPriority.Background);
         }
 

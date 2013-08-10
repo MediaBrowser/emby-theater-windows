@@ -19,8 +19,8 @@
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Column="0" Grid.Row="0" Padding="10 0 0 0">What's New</TextBlock>
-        <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Column="1" Grid.Row="0" Padding="25 0 0 0">Views</TextBlock>
+        <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Column="0" Grid.Row="0" Padding="10 0 0 0">Spotlight</TextBlock>
+        <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Column="1" Grid.Row="0" Padding="10 0 0 0">Library</TextBlock>
 
         <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Column="2" Grid.Row="0" Padding="25 0 0 0">Resume</TextBlock>
         <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Column="3" Grid.Row="0" Padding="25 0 0 0">Latest Trailers</TextBlock>

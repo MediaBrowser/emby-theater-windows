@@ -1,5 +1,4 @@
-﻿using System.Windows.Threading;
-using MediaBrowser.Model.Dto;
+﻿using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Net;
 using MediaBrowser.Theater.Presentation.ViewModels;
@@ -9,6 +8,7 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Threading;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Controls
 {
@@ -52,6 +52,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
                 MainGrid.Height = value;
             }
         }
+
+        public string FixedTitle { get; set; }
 
         /// <summary>
         /// The _effects
@@ -160,7 +162,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
             {
                 // Setting this to null doesn't seem to clear out the content
                 TileTransitionControl.Content = new FrameworkElement();
-                TxtName.Text = null;
+                TxtName.Text = FixedTitle;
                 return;
             }
 
@@ -170,15 +172,13 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
             {
                 // Setting this to null doesn't seem to clear out the content
                 TileTransitionControl.Content = new FrameworkElement();
-                TxtName.Text = null;
+                TxtName.Text = FixedTitle;
                 return;
             }
 
             var img = new Image
             {
-                Stretch = Stretch.UniformToFill,
-                Width = ImageWidth,
-                Height = ImageHeight
+                Stretch = Stretch.UniformToFill
             };
 
             var url = GetImageSource(currentItem);
@@ -188,7 +188,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
                 try
                 {
                     img.Source = await ViewModel.ImageManager.GetRemoteBitmapAsync(url);
-                    TxtName.Text = GetDisplayName(currentItem);
+                    TxtName.Text = FixedTitle ?? GetDisplayName(currentItem);
                 }
                 catch (HttpException)
                 {

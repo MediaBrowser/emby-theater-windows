@@ -46,4 +46,26 @@
         <Setter Property="Margin" Value="0 0 10 10">
         </Setter>
     </Style>
+
+    <Style TargetType="Path" x:Key="IconPath">
+        <Setter Property="Fill">
+            <Setter.Value>
+                <LinearGradientBrush SpreadMethod="Reflect" ColorInterpolationMode="SRgbLinearInterpolation" StartPoint="0,0" EndPoint="0,1" >
+                    <GradientStop Color="#ffffffff" Offset="0" />
+                    <GradientStop Color="#ffc5c5c5" Offset="1" />
+                </LinearGradientBrush>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="RenderTransform">
+            <Setter.Value>
+                <TransformGroup>
+                    <TransformGroup.Children>
+                        <RotateTransform Angle="0" />
+                        <ScaleTransform ScaleX="1" ScaleY="1" />
+                    </TransformGroup.Children>
+                </TransformGroup>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
 </ResourceDictionary>

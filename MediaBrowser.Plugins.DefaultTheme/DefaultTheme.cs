@@ -118,7 +118,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         {
             var namespaceName = GetType().Namespace;
 
-            return new[] { ThemeColorResource, "NavBarResources", "AppResources", "DisplayPreferences" }.Select(i => new ResourceDictionary
+            return new[] { ThemeColorResource, "NavBarResources", "AppResources", "DisplayPreferences", "Slider" }.Select(i => new ResourceDictionary
             {
                 Source = new Uri("pack://application:,,,/" + namespaceName + ";component/Resources/" + i + ".xaml", UriKind.Absolute)
             });

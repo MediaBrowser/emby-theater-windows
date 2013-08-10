@@ -1,10 +1,8 @@
-﻿using System.Threading;
-using MediaBrowser.Model.ApiClient;
+﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using System;
-using System.Windows;
-using System.Windows.Threading;
+using System.Threading;
 
 namespace MediaBrowser.Theater.Presentation.ViewModels
 {
@@ -37,7 +35,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         /// <summary>
         /// Gets the timer that updates the current item
         /// </summary>
-        private Timer CurrentItemTimer { get; set; }
+        private Timer _currentItemTimer;
 
         private readonly object _timerLock = new object();
 
@@ -111,10 +109,10 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         {
             lock (_timerLock)
             {
-                if (CurrentItemTimer != null)
+                if (_currentItemTimer != null)
                 {
-                    CurrentItemTimer.Dispose();
-                    CurrentItemTimer = null;
+                    _currentItemTimer.Dispose();
+                    _currentItemTimer = null;
                 }
             }
         }
@@ -129,13 +127,13 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             {
                 lock (_timerLock)
                 {
-                    if (CurrentItemTimer == null)
+                    if (_currentItemTimer == null)
                     {
-                        CurrentItemTimer = new Timer(OnTimerFired, null, TimeSpan.FromMilliseconds(RotationPeriodMs), TimeSpan.FromMilliseconds(RotationPeriodMs));
+                        _currentItemTimer = new Timer(OnTimerFired, null, TimeSpan.FromMilliseconds(RotationPeriodMs), TimeSpan.FromMilliseconds(RotationPeriodMs));
                     }
                     else
                     {
-                        CurrentItemTimer.Change(TimeSpan.FromMilliseconds(RotationPeriodMs), TimeSpan.FromMilliseconds(RotationPeriodMs));
+                        _currentItemTimer.Change(TimeSpan.FromMilliseconds(RotationPeriodMs), TimeSpan.FromMilliseconds(RotationPeriodMs));
                     }
                 }
             }

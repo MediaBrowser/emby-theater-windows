@@ -38,12 +38,12 @@
                 <ControlTemplate TargetType="{x:Type ListBoxItem}">
                     <Border x:Name="Bd" SnapsToDevicePixels="true" RenderTransformOrigin="0.5,0.5" Padding="0">
                         <Grid x:Name="ContentGrid">
-                            <Border x:Name="BdDropShadow" Margin="-10" BorderBrush="{DynamicResource SelectedItemHighlightColor}" BorderThickness="23" Background="Transparent" SnapsToDevicePixels="true" CornerRadius="1" Visibility="Hidden">
+                            <Border x:Name="BdDropShadow" Margin="-12" BorderBrush="{DynamicResource SelectedItemHighlightColor}" BorderThickness="23" Background="Transparent" SnapsToDevicePixels="true" CornerRadius="1" Visibility="Hidden">
                                 <Border.Effect>
                                     <BlurEffect Radius="15" KernelType="Gaussian"></BlurEffect>
                                 </Border.Effect>
                             </Border>
-                            <ContentPresenter Margin="12" HorizontalAlignment="Stretch" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Stretch"/>
+                            <ContentPresenter Margin="10" HorizontalAlignment="Stretch" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Stretch"/>
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
@@ -72,12 +72,12 @@
                 <ControlTemplate TargetType="{x:Type Button}">
                     <Border x:Name="Bd" SnapsToDevicePixels="true" RenderTransformOrigin="0.5,0.5" Padding="0">
                         <Grid x:Name="ContentGrid">
-                            <Border x:Name="BdDropShadow" Margin="-10" BorderBrush="{DynamicResource SelectedItemHighlightColor}" BorderThickness="23" Background="Transparent" SnapsToDevicePixels="true" CornerRadius="1" Visibility="Hidden">
+                            <Border x:Name="BdDropShadow" Margin="-12" BorderBrush="{DynamicResource SelectedItemHighlightColor}" BorderThickness="23" Background="Transparent" SnapsToDevicePixels="true" CornerRadius="1" Visibility="Hidden">
                                 <Border.Effect>
                                     <BlurEffect Radius="15" KernelType="Gaussian"></BlurEffect>
                                 </Border.Effect>
                             </Border>
-                            <ContentPresenter Margin="12" HorizontalAlignment="Stretch" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Stretch"/>
+                            <ContentPresenter Margin="10" HorizontalAlignment="Stretch" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Stretch"/>
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
@@ -148,12 +148,12 @@
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
                         <Grid x:Name="ContentGrid">
-                            <Border x:Name="BdDropShadow" Margin="-10" BorderBrush="{DynamicResource SelectedItemHighlightColor}" BorderThickness="23" Background="Transparent" SnapsToDevicePixels="true" CornerRadius="1" Visibility="Hidden">
+                            <Border x:Name="BdDropShadow" Margin="-12" BorderBrush="{DynamicResource SelectedItemHighlightColor}" BorderThickness="23" Background="Transparent" SnapsToDevicePixels="true" CornerRadius="1" Visibility="Hidden">
                                 <Border.Effect>
                                     <BlurEffect Radius="15" KernelType="Gaussian"></BlurEffect>
                                 </Border.Effect>
                             </Border>
-                            <ContentPresenter Margin="12" HorizontalAlignment="Stretch" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Stretch"/>
+                            <ContentPresenter Margin="10" HorizontalAlignment="Stretch" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Stretch"/>
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>

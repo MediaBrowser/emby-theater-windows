@@ -16,15 +16,13 @@ namespace MediaBrowser.Theater.Core.Plugins
     /// </summary>
     public partial class PluginCatalog : UserControl
     {
-        private readonly IPackageManager _packageManager;
         private readonly IPresentationManager _presentation;
         private readonly INavigationService _nav;
         private readonly IApplicationHost _appHost;
         private readonly IInstallationManager _installationManager;
 
-        public PluginCatalog(IPackageManager packageManager, IPresentationManager presentation, INavigationService nav, IApplicationHost appHost, IInstallationManager installationManager)
+        public PluginCatalog(IPresentationManager presentation, INavigationService nav, IApplicationHost appHost, IInstallationManager installationManager)
         {
-            _packageManager = packageManager;
             _presentation = presentation;
             _nav = nav;
             _appHost = appHost;
@@ -43,7 +41,7 @@ namespace MediaBrowser.Theater.Core.Plugins
         {
             try
             {
-                var packages = await _packageManager.GetAvailablePackagesWithoutRegistrationInfo(CancellationToken.None);
+                var packages = await _installationManager.GetAvailablePackagesWithoutRegistrationInfo(CancellationToken.None);
 
                 packages = packages.Where(i => i.versions != null && i.versions.Count > 0);
 

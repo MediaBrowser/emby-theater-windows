@@ -7,7 +7,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     
-    <Grid x:Name="MainGrid" HorizontalAlignment="Left">
+    <Grid x:Name="MainGrid">
 
         <controls2:TransitionControl x:Name="TileTransitionControl">
             <controls2:TransitionControl.TransitionAnimation>
@@ -23,7 +23,7 @@
             <Grid.Background>
                 <SolidColorBrush Color="#A6000000"></SolidColorBrush>
             </Grid.Background>
-            <TextBlock x:Name="TxtName" Margin="10 5 10 10" TextWrapping="NoWrap" Style="{DynamicResource TextBlockStyle}" Foreground="White" TextTrimming="CharacterEllipsis"></TextBlock>
+            <TextBlock x:Name="TxtName" Margin="10 5 10 10" TextWrapping="NoWrap" Style="{DynamicResource SmallTextBlockStyle}" Foreground="White" TextTrimming="CharacterEllipsis"></TextBlock>
         </Grid>
     </Grid>
 </UserControl>

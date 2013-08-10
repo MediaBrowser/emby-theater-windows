@@ -2,10 +2,10 @@
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Constants;
 using MediaBrowser.Common.Implementations;
+using MediaBrowser.Common.Implementations.IO;
 using MediaBrowser.Common.Implementations.ScheduledTasks;
-using MediaBrowser.Common.IO;
-using MediaBrowser.IsoMounter;
 using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.IO;
 using MediaBrowser.Model.System;
 using MediaBrowser.Model.Updates;
 using MediaBrowser.Plugins.DefaultTheme;
@@ -55,6 +55,7 @@ namespace MediaBrowser.UI
         public ISessionManager SessionManager { get; private set; }
         public IPresentationManager PresentationManager { get; private set; }
         public IUserInputManager UserInputManager { get; private set; }
+        private IIsoManager IsoManager { get; set; }
 
         public ConfigurationManager TheaterConfigurationManager
         {
@@ -124,7 +125,8 @@ namespace MediaBrowser.UI
 
             RegisterSingleInstance<ITheaterConfigurationManager>(TheaterConfigurationManager);
 
-            RegisterSingleInstance<IIsoManager>(new PismoIsoManager(Logger));
+            IsoManager = new IsoManager();
+            RegisterSingleInstance(IsoManager);
 
             ImageManager = new ImageManager(ApiClient, ApplicationPaths, TheaterConfigurationManager);
             RegisterSingleInstance(ImageManager);
@@ -159,6 +161,8 @@ namespace MediaBrowser.UI
             PresentationManager.AddParts(GetExports<ITheaterApp>(), GetExports<ISettingsPage>(), GetExports<IHomePage>());
 
             PlaybackManager.AddParts(GetExports<IMediaPlayer>());
+
+            IsoManager.AddParts(GetExports<IIsoMounter>().ToArray());
         }
 
         /// <summary>
@@ -258,7 +262,7 @@ namespace MediaBrowser.UI
 
         public override async Task<CheckForUpdateResult> CheckForApplicationUpdate(CancellationToken cancellationToken, IProgress<double> progress)
         {
-            var availablePackages = await PackageManager.GetAvailablePackagesWithoutRegistrationInfo(CancellationToken.None).ConfigureAwait(false);
+            var availablePackages = await InstallationManager.GetAvailablePackagesWithoutRegistrationInfo(CancellationToken.None).ConfigureAwait(false);
             var version = InstallationManager.GetLatestCompatibleVersion(availablePackages, Constants.MbTheaterPkgName, ConfigurationManager.CommonConfiguration.SystemUpdateLevel);
 
             return version != null ? new CheckForUpdateResult { AvailableVersion = version.version, IsUpdateAvailable = version.version > ApplicationVersion, Package = version } :

@@ -48,6 +48,9 @@
         <controls:PageContainer x:Name="PageContainer"></controls:PageContainer>
     </ControlTemplate>
 
+    <ControlTemplate x:Key="VolumeOsdTemplate">
+    </ControlTemplate>
+
     <ControlTemplate x:Key="NowPlayingOverlayTemplate">
     </ControlTemplate>
 </ResourceDictionary>

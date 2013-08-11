@@ -5,7 +5,8 @@
                     xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
                     xmlns:converters="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Converters"
                     xmlns:header="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Header"
-                    xmlns:details="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Details">
+                    xmlns:details="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Details"
+                    xmlns:osd="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Osd">
 
     <!--Define all the standard converters here in one place-->
     <converters:WatchedVisibilityConverter x:Key="WatchedVisibilityConverter"></converters:WatchedVisibilityConverter>
@@ -86,9 +87,12 @@
                 <controls:PageContainer x:Name="PageContainer" Grid.Row="1" Grid.ColumnSpan="2"></controls:PageContainer>
 
             </Grid>
-
-            <header:VolumeOsd></header:VolumeOsd>
         </Grid>
+    </ControlTemplate>
+
+    <!--Override PageContentTemplate-->
+    <ControlTemplate x:Key="VolumeOsdTemplate">
+        <osd:VolumeOsd DataContext="{Binding}"></osd:VolumeOsd>
     </ControlTemplate>
 
     <DataTemplate x:Key="ItemSpecialFeaturesTemplate" DataType="{x:Type viewModels:BaseItemDtoViewModel}">

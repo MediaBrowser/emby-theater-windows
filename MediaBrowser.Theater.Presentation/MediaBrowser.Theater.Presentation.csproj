@@ -115,6 +115,7 @@
     <Compile Include="ViewModels\ViewTypes.cs" />
     <Compile Include="Controls\BaseModalWindow.cs" />
     <Compile Include="Controls\BaseWindow.cs" />
+    <Compile Include="ViewModels\VolumeOsdViewModel.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

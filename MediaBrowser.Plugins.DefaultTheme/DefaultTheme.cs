@@ -29,7 +29,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// <summary>
         /// The _playback manager
         /// </summary>
-        private readonly IPlaybackManager _playbackManager;
+        internal static IPlaybackManager PlaybackManager;
         /// <summary>
         /// The _api client
         /// </summary>
@@ -57,10 +57,10 @@ namespace MediaBrowser.Plugins.DefaultTheme
         private readonly IThemeManager _themeManager;
 
         private readonly IUserInputManager _userInput;
-        
+
         public DefaultTheme(IPlaybackManager playbackManager, IImageManager imageManager, IApiClient apiClient, INavigationService navService, ISessionManager sessionManager, IPresentationManager presentationManager, ILogManager logManager, IThemeManager themeManager, IUserInputManager userInput)
         {
-            _playbackManager = playbackManager;
+            PlaybackManager = playbackManager;
             _imageManager = imageManager;
             _apiClient = apiClient;
             _navService = navService;
@@ -70,15 +70,13 @@ namespace MediaBrowser.Plugins.DefaultTheme
             _userInput = userInput;
             _logger = logManager.GetLogger(GetType().Name);
 
-            VolumeOsd.PlaybackManager = _playbackManager;
-            
             TopRightPanel.SessionManager = _sessionManager;
             TopRightPanel.ApiClient = _apiClient;
             TopRightPanel.ImageManager = _imageManager;
             TopRightPanel.Logger = _logger;
             TopRightPanel.Navigation = _navService;
-            TopRightPanel.PlaybackManager = _playbackManager;
-            
+            TopRightPanel.PlaybackManager = PlaybackManager;
+
             PageTitlePanel.ApiClient = _apiClient;
             PageTitlePanel.ImageManager = _imageManager;
 
@@ -138,7 +136,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
                 return new FolderPage(item, item.DisplayPreferencesId, _apiClient, _imageManager, _sessionManager, _presentationManager, _navService);
             }
 
-            return new PanoramaDetailPage(item, _apiClient, _sessionManager, _presentationManager, _imageManager, _navService, _playbackManager, _themeManager);
+            return new PanoramaDetailPage(item, _apiClient, _sessionManager, _presentationManager, _imageManager, _navService, PlaybackManager, _themeManager);
         }
 
         /// <summary>
@@ -149,7 +147,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// <returns>Page.</returns>
         public Page GetPersonPage(BaseItemDto item, string context)
         {
-            return new PanoramaDetailPage(item, _apiClient, _sessionManager, _presentationManager, _imageManager, _navService, _playbackManager, _themeManager);
+            return new PanoramaDetailPage(item, _apiClient, _sessionManager, _presentationManager, _imageManager, _navService, PlaybackManager, _themeManager);
         }
 
         /// <summary>
@@ -273,7 +271,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
 
         public Page GetFullscreenVideoPage()
         {
-            return new FullscreenVideoPage(_userInput, _imageManager, _apiClient, _playbackManager);
+            return new FullscreenVideoPage(_userInput, _imageManager, _apiClient, PlaybackManager);
         }
     }
 }

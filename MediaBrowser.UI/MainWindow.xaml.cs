@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Common;
+﻿using System.Windows.Media.Animation;
+using MediaBrowser.Common;
 using MediaBrowser.Common.Events;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Logging;
@@ -9,6 +10,7 @@ using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.UserInput;
 using MediaBrowser.Theater.Presentation.Controls;
+using MediaBrowser.Theater.Presentation.ViewModels;
 using MediaBrowser.UI.Controls;
 using MediaBrowser.UI.Implementations;
 using Microsoft.Expression.Media.Effects;
@@ -70,6 +72,18 @@ namespace MediaBrowser.UI
             _session.UserLoggedOut += _session_UserLoggedOut;
             _playbackManager.PlaybackStarted += _playbackManager_PlaybackStarted;
             _playbackManager.PlaybackCompleted += _playbackManager_PlaybackCompleted;
+
+            Timeline.DesiredFrameRateProperty.OverrideMetadata(
+                typeof(Timeline),
+                new FrameworkPropertyMetadata { DefaultValue = 30 }
+            );
+        }
+
+        protected override void OnInitialized(EventArgs e)
+        {
+            base.OnInitialized(e);
+
+            VolumeOsd.DataContext = new VolumeOsdViewModel(_playbackManager);
         }
 
         void _playbackManager_PlaybackStarted(object sender, PlaybackStartEventArgs e)

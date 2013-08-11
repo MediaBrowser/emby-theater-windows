@@ -138,6 +138,11 @@ namespace MediaBrowser.UI.Implementations
                 }
             }
 
+            if (_backdropContainer.Content == null)
+            {
+                _backdropContainer.Content = new FrameworkElement();
+            }
+            
             _logger.Info("Setting backdtop to {0}", _currentBackdrops[index]);
             
             try
@@ -197,11 +202,11 @@ namespace MediaBrowser.UI.Implementations
 
                 if (_backdropSetTimer == null)
                 {
-                    _backdropSetTimer = new Timer(OnPendingBackdropsTimerFired, null, 600, Timeout.Infinite);
+                    _backdropSetTimer = new Timer(OnPendingBackdropsTimerFired, null, 1000, Timeout.Infinite);
                 }
                 else
                 {
-                    _backdropSetTimer.Change(600, Timeout.Infinite);
+                    _backdropSetTimer.Change(1000, Timeout.Infinite);
                 }
             }
         }

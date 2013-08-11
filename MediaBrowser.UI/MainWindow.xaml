@@ -30,7 +30,7 @@
 
         <controls2:TransitionControl x:Name="BackdropContainer">
             <controls2:TransitionControl.TransitionAnimation>
-                <DoubleAnimation Duration="0:0:2" >
+                <DoubleAnimation Duration="0:0:1.5" >
                     <DoubleAnimation.EasingFunction>
                         <ExponentialEase EasingMode="EaseInOut"></ExponentialEase>
                     </DoubleAnimation.EasingFunction>

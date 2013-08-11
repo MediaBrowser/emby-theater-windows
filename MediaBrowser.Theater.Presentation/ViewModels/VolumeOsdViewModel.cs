@@ -17,8 +17,13 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             get { return _volume; }
             set
             {
-                OnPropertyChanged("Volume");
+                var changed = !_volume.Equals(value);
                 _volume = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("Volume");
+                }
             }
         }
 
@@ -28,8 +33,14 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             get { return _isMuted; }
             set
             {
-                OnPropertyChanged("IsMuted");
+                var changed = !_isMuted.Equals(value);
+                
                 _isMuted = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("IsMuted");
+                }
             }
         }
 
@@ -39,8 +50,13 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             get { return _isRecentlyUpdated; }
             set
             {
-                OnPropertyChanged("IsRecentlyUpdated");
+                var changed = !_isRecentlyUpdated.Equals(value);
                 _isRecentlyUpdated = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("IsRecentlyUpdated");
+                }
             }
         }
 

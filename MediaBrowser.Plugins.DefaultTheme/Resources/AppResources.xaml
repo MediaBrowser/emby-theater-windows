@@ -3,16 +3,8 @@
                     xmlns:themecontrols="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Controls"
                     xmlns:viewModels="clr-namespace:MediaBrowser.Theater.Presentation.ViewModels;assembly=MediaBrowser.Theater.Presentation"
                     xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
-                    xmlns:converters="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Converters"
                     xmlns:header="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Header"
-                    xmlns:details="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Details"
-                    xmlns:osd="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Osd">
-
-    <!--Define all the standard converters here in one place-->
-    <converters:WatchedVisibilityConverter x:Key="WatchedVisibilityConverter"></converters:WatchedVisibilityConverter>
-    <converters:FavoriteVisibilityConverter x:Key="FavoriteVisibilityConverter"></converters:FavoriteVisibilityConverter>
-    <converters:LikeVisibilityConverter x:Key="LikeVisibilityConverter"></converters:LikeVisibilityConverter>
-    <converters:DislikeVisibilityConverter x:Key="DislikeVisibilityConverter"></converters:DislikeVisibilityConverter>
+                    xmlns:details="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Details">
 
     <Style TargetType="Image" x:Key="CommunityRatingImage">
         <Setter Property="Stretch" Value="Uniform"/>
@@ -88,11 +80,6 @@
 
             </Grid>
         </Grid>
-    </ControlTemplate>
-
-    <!--Override PageContentTemplate-->
-    <ControlTemplate x:Key="VolumeOsdTemplate">
-        <osd:VolumeOsd DataContext="{Binding}"></osd:VolumeOsd>
     </ControlTemplate>
 
     <DataTemplate x:Key="ItemSpecialFeaturesTemplate" DataType="{x:Type viewModels:BaseItemDtoViewModel}">

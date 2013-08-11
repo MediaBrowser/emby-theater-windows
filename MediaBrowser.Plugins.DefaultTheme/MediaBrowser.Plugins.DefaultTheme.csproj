@@ -104,7 +104,6 @@
     <Compile Include="Controls\PersonInfoTile.xaml.cs">
       <DependentUpon>PersonInfoTile.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Converters\WatchedVisibilityConverter.cs" />
     <Compile Include="Details\Chapter.xaml.cs">
       <DependentUpon>Chapter.xaml</DependentUpon>
     </Compile>
@@ -163,9 +162,6 @@
     </Compile>
     <Compile Include="Header\TopRightPanel.xaml.cs">
       <DependentUpon>TopRightPanel.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Osd\VolumeOsd.xaml.cs">
-      <DependentUpon>VolumeOsd.xaml</DependentUpon>
     </Compile>
     <Compile Include="Home\HomePageInfo.cs" />
     <Compile Include="Home\Apps\AppControl.xaml.cs">
@@ -390,10 +386,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Osd\VolumeOsd.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Home\Apps\AppControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -524,6 +516,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Resources\ThemeLight.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\VolumeOsd.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

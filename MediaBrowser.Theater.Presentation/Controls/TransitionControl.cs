@@ -93,28 +93,29 @@ namespace MediaBrowser.Theater.Presentation.Controls
 
             var transitionControl = (TransitionControl)dp;
 
-            if (DesignerProperties.GetIsInDesignMode(transitionControl))
-                return;
-
             // The rendering tier corresponds to the high-order word of the Tier property. 
             var renderingTier = (RenderCapability.Tier >> 16);
 
             if (oldContent != null && newContent != null && transitionControl.IsVisible && renderingTier == 2)
             {
-                transitionControl.AnimateContent(oldContent, newContent);
+                transitionControl.AnimateContent(newContent);
             }
             else if (newContent != null)
             {
-                transitionControl.Content = newContent;
+                transitionControl.SetContent(newContent);
             }
+        }
+
+        private void SetContent(object newContent)
+        {
+            _contentPresenter.Content = newContent;
         }
 
         /// <summary>
         /// Animates the content.
         /// </summary>
-        /// <param name="oldContent">The old content.</param>
         /// <param name="newContent">The new content.</param>
-        private void AnimateContent(object oldContent, object newContent)
+        private void AnimateContent(object newContent)
         {
             FrameworkElement oldContentVisual;
 

@@ -352,6 +352,9 @@ namespace MediaBrowser.Theater.Implementations.Playback
             }
         }
 
+        private bool _lastMuteValue;
+        private float _lastVolumeValue;
+
         private void EnsureAudioDevice()
         {
             if (_audioDevice == null)
@@ -360,6 +363,9 @@ namespace MediaBrowser.Theater.Implementations.Playback
 
                 _audioDevice = devEnum.GetDefaultAudioEndpoint(EDataFlow.eRender, ERole.eMultimedia);
                 _audioDevice.AudioEndpointVolume.OnVolumeNotification += AudioEndpointVolume_OnVolumeNotification;
+
+                _lastMuteValue = _audioDevice.AudioEndpointVolume.Mute;
+                _lastVolumeValue = _audioDevice.AudioEndpointVolume.MasterVolumeLevelScalar;
             }
         }
 
@@ -407,7 +413,16 @@ namespace MediaBrowser.Theater.Implementations.Playback
 
         private void OnVolumeChanged()
         {
-            EventHelper.FireEventIfNotNull(_volumeChanged, this, EventArgs.Empty, _logger);
+            if (_lastMuteValue != _audioDevice.AudioEndpointVolume.Mute)
+            {
+                _lastMuteValue = _audioDevice.AudioEndpointVolume.Mute;
+                EventHelper.FireEventIfNotNull(_volumeChanged, this, EventArgs.Empty, _logger);
+            }
+            else if (!_lastVolumeValue.Equals(_audioDevice.AudioEndpointVolume.MasterVolumeLevelScalar))
+            {
+                _lastVolumeValue = _audioDevice.AudioEndpointVolume.MasterVolumeLevelScalar;
+                EventHelper.FireEventIfNotNull(_volumeChanged, this, EventArgs.Empty, _logger);
+            }
         }
 
         public void VolumeStepUp()

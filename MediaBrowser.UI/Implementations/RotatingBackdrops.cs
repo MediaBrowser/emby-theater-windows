@@ -202,11 +202,11 @@ namespace MediaBrowser.UI.Implementations
 
                 if (_backdropSetTimer == null)
                 {
-                    _backdropSetTimer = new Timer(OnPendingBackdropsTimerFired, null, 1000, Timeout.Infinite);
+                    _backdropSetTimer = new Timer(OnPendingBackdropsTimerFired, null, 500, Timeout.Infinite);
                 }
                 else
                 {
-                    _backdropSetTimer.Change(1000, Timeout.Infinite);
+                    _backdropSetTimer.Change(500, Timeout.Infinite);
                 }
             }
         }

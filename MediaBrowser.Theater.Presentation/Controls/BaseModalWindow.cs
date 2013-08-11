@@ -1,6 +1,4 @@
-﻿using MediaBrowser.Theater.Interfaces.Navigation;
-using MediaBrowser.Theater.Interfaces.UserInput;
-using System.Windows;
+﻿using System.Windows;
 
 namespace MediaBrowser.Theater.Presentation.Controls
 {
@@ -9,8 +7,8 @@ namespace MediaBrowser.Theater.Presentation.Controls
     /// </summary>
     public class BaseModalWindow : BaseWindow
     {
-        public BaseModalWindow(IUserInputManager userInputManager, INavigationService nav)
-            : base(userInputManager, nav)
+        public BaseModalWindow()
+            : base()
         {
         }
 

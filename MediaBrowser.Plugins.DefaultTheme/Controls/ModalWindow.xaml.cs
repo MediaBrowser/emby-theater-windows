@@ -1,6 +1,4 @@
-﻿using MediaBrowser.Theater.Interfaces.Navigation;
-using MediaBrowser.Theater.Interfaces.Theming;
-using MediaBrowser.Theater.Interfaces.UserInput;
+﻿using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Presentation.Controls;
 using System;
 using System.Linq;
@@ -13,8 +11,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
     /// </summary>
     public partial class ModalWindow : BaseModalWindow
     {
-        public ModalWindow(IUserInputManager userInputManager, INavigationService nav)
-            : base(userInputManager, nav)
+        public ModalWindow()
+            : base()
         {
             InitializeComponent();
 

@@ -1,8 +1,4 @@
-﻿using System.Windows.Interop;
-using MediaBrowser.Theater.Interfaces.Navigation;
-using MediaBrowser.Theater.Interfaces.Presentation;
-using MediaBrowser.Theater.Interfaces.UserInput;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Threading;
 using System.Windows;
@@ -16,9 +12,6 @@ namespace MediaBrowser.Theater.Presentation.Controls
     /// </summary>
     public abstract class BaseWindow : Window, INotifyPropertyChanged
     {
-        protected INavigationService NavigationManager { get; private set; }
-        protected IUserInputManager UserInputManager { get; private set; }
-
         private Timer _activityTimer;
 
         /// <summary>
@@ -29,32 +22,16 @@ namespace MediaBrowser.Theater.Presentation.Controls
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseWindow" /> class.
         /// </summary>
-        protected BaseWindow(IUserInputManager userInputManager, INavigationService nav)
+        protected BaseWindow()
             : base()
         {
-            UserInputManager = userInputManager;
-            NavigationManager = nav;
-
             SizeChanged += MainWindow_SizeChanged;
             Loaded += BaseWindow_Loaded;
-        }
-
-        void NavigationManager_Navigated(object sender, NavigationEventArgs e)
-        {
-            UserInputManager.MouseMove -= _userInput_MouseMove;
-            
-            if (e.NewPage is IFullscreenVideoPage)
-            {
-                Dispatcher.InvokeAsync(() => OnPropertyChanged("IsMouseIdle"), DispatcherPriority.Background);
-
-                UserInputManager.MouseMove += _userInput_MouseMove;
-            }
         }
 
         void BaseWindow_Loaded(object sender, RoutedEventArgs e)
         {
             _activityTimer = new Timer(TimerCallback, null, 100, 100);
-            NavigationManager.Navigated += NavigationManager_Navigated;
         }
 
         /// <summary>
@@ -108,17 +85,62 @@ namespace MediaBrowser.Theater.Presentation.Controls
 
                 if (changed)
                 {
-                    Dispatcher.InvokeAsync(() =>
+                    if (value)
                     {
-                        Cursor = value ? Cursors.None : Cursors.Arrow;
-
-                        OnPropertyChanged("IsMouseIdle");
-
-                    }, DispatcherPriority.Background);
+                        HideCursor();
+                    }
+                    else
+                    {
+                        ShowCursor();
+                    }
                 }
             }
         }
 
+        private static int _showHideCount = 0;
+        private readonly object _cursorLock = new object();
+
+        protected void HideCursor()
+        {
+            Dispatcher.InvokeAsync(() =>
+            {
+                Cursor = Cursors.None;
+
+                lock (_cursorLock)
+                {
+                    while (_showHideCount > -1)
+                    {
+                        System.Windows.Forms.Cursor.Hide();
+                        _showHideCount--;
+                    }
+                }
+
+                OnPropertyChanged("IsMouseIdle");
+
+            }, DispatcherPriority.Background);
+            
+        }
+
+        protected void ShowCursor()
+        {
+            Dispatcher.InvokeAsync(() =>
+            {
+                Cursor = Cursors.Arrow;
+
+                lock (_cursorLock)
+                {
+                    while (_showHideCount < 0)
+                    {
+                        System.Windows.Forms.Cursor.Show();
+                        _showHideCount++;
+                    }
+                }
+
+                OnPropertyChanged("IsMouseIdle");
+
+            }, DispatcherPriority.Background);
+        }
+        
         /// <summary>
         /// The _last mouse move point
         /// </summary>
@@ -148,19 +170,12 @@ namespace MediaBrowser.Theater.Presentation.Controls
 
         protected override void OnClosing(CancelEventArgs e)
         {
-            NavigationManager.Navigated -= NavigationManager_Navigated;
-            UserInputManager.MouseMove -= _userInput_MouseMove;
             DisposeActivityTimer();
 
             base.OnClosing(e);
         }
 
-        void _userInput_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
-        {
-            OnMouseMove();
-        }
-
-        private void OnMouseMove()
+        protected void OnMouseMove()
         {
             _lastMouseInput = DateTime.Now;
             IsMouseIdle = false;
@@ -168,7 +183,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
 
         private void TimerCallback(object state)
         {
-            IsMouseIdle = (DateTime.Now - _lastMouseInput).TotalMilliseconds > 5000;
+            IsMouseIdle = (DateTime.Now - _lastMouseInput).TotalMilliseconds > 4000;
         }
 
         /// <summary>

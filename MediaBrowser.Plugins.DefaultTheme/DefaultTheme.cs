@@ -78,7 +78,6 @@ namespace MediaBrowser.Plugins.DefaultTheme
             TopRightPanel.Logger = _logger;
             TopRightPanel.Navigation = _navService;
             TopRightPanel.PlaybackManager = _playbackManager;
-            TopRightPanel.UserInputManager = _userInput;
             
             PageTitlePanel.ApiClient = _apiClient;
             PageTitlePanel.ImageManager = _imageManager;
@@ -136,7 +135,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         {
             if (item.IsFolder && !item.IsType("series") && !item.IsType("musicalbum"))
             {
-                return new FolderPage(item, item.DisplayPreferencesId, _apiClient, _imageManager, _sessionManager, _presentationManager, _navService, _userInput);
+                return new FolderPage(item, item.DisplayPreferencesId, _apiClient, _imageManager, _sessionManager, _presentationManager, _navService);
             }
 
             return new PanoramaDetailPage(item, _apiClient, _sessionManager, _presentationManager, _imageManager, _navService, _playbackManager, _themeManager);
@@ -188,7 +187,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// <exception cref="System.NotImplementedException"></exception>
         public MessageBoxResult ShowMessage(MessageBoxInfo options, Window parentWindow)
         {
-            var win = new ModalWindow(_userInput, _navService)
+            var win = new ModalWindow()
             {
                 Caption = options.Caption,
                 Button = options.Button,

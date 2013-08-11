@@ -40,6 +40,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages
 
             Loaded += FullscreenVideoPage_Loaded;
             Unloaded += FullscreenVideoPage_Unloaded;
+            MainGrid.Visibility = Visibility.Visible;
         }
 
         protected override void OnMouseIdleChanged()

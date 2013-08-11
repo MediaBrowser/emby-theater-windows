@@ -1,8 +1,4 @@
-﻿using System.Globalization;
-using System.Linq;
-using System.Windows;
-using System.Windows.Controls;
-using MediaBrowser.Model.ApiClient;
+﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Net;
@@ -12,12 +8,14 @@ using MediaBrowser.Plugins.DefaultTheme.Header;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
-using MediaBrowser.Theater.Interfaces.UserInput;
 using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.Extensions;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
 {
@@ -50,12 +48,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
 
         private Sidebar _sidebarControl;
 
-        private readonly IUserInputManager _userInput;
-
-        public ItemsListControl(BaseItemDto parentItem, Model.Entities.DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IPresentationManager appWindow, IUserInputManager userInput)
+        public ItemsListControl(BaseItemDto parentItem, Model.Entities.DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigationManager, IPresentationManager appWindow)
             : base(parentItem, displayPreferences, apiClient, imageManager, sessionManager, navigationManager, appWindow)
         {
-            _userInput = userInput;
             InitializeComponent();
         }
 
@@ -176,7 +171,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         async void ViewButton_Click(object sender, RoutedEventArgs e)
         {
-            var menu = new DisplayPreferencesMenu(_userInput, NavigationManager)
+            var menu = new DisplayPreferencesMenu()
             {
                 DisplayPreferencesContainer = this
             };

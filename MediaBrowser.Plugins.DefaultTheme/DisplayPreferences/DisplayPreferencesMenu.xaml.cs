@@ -1,6 +1,4 @@
-﻿using MediaBrowser.Theater.Interfaces.Navigation;
-using MediaBrowser.Theater.Interfaces.UserInput;
-using MediaBrowser.Theater.Presentation.Controls;
+﻿using MediaBrowser.Theater.Presentation.Controls;
 using System.Windows;
 
 namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
@@ -10,8 +8,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferences
     /// </summary>
     public partial class DisplayPreferencesMenu : BaseModalWindow
     {
-        public DisplayPreferencesMenu(IUserInputManager userInputManager, INavigationService nav) 
-            : base(userInputManager, nav)
+        public DisplayPreferencesMenu() 
+            : base()
         {
             InitializeComponent();
 

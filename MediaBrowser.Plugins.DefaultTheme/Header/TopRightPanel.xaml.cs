@@ -30,7 +30,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Header
         internal static ILogger Logger { get; set; }
         internal static INavigationService Navigation { get; set; }
         internal static IPlaybackManager PlaybackManager { get; set; }
-        internal static IUserInputManager UserInputManager { get; set; }
 
         private Timer ClockTimer { get; set; }
 
@@ -62,7 +61,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Header
 
         void CurrentUserButton_Click(object sender, RoutedEventArgs e)
         {
-            new UserProfileWindow(SessionManager, ImageManager, ApiClient, UserInputManager, Navigation).ShowModal(this.GetWindow());
+            new UserProfileWindow(SessionManager, ImageManager, ApiClient).ShowModal(this.GetWindow());
         }
 
         void TopRightPanel_Loaded(object sender, RoutedEventArgs e)

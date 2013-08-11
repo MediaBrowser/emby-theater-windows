@@ -24,7 +24,7 @@
             <Grid Margin="0 30 0 0">
 
                 <!-- Any content -->
-                <ProgressBar x:Name="VolumeSlider" VerticalAlignment="Center" Minimum="0" Maximum="100" Value="50" Height="24" Background="#666666" BorderBrush="#666666" BorderThickness="1" Padding="1">
+                <ProgressBar x:Name="VolumeSlider" VerticalAlignment="Center" Minimum="0" Maximum="100" Value="50" Height="24" Background="#a6292929" BorderBrush="#a6333333" BorderThickness="2" Padding="1">
                     <ProgressBar.Foreground>
                         <LinearGradientBrush SpreadMethod="Reflect" ColorInterpolationMode="SRgbLinearInterpolation" StartPoint="0,0" EndPoint="0,1" >
                             <GradientStop Color="#7EDC3D" Offset="0" />

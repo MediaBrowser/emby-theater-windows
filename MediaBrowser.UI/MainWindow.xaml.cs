@@ -15,7 +15,6 @@ using Microsoft.Expression.Media.Effects;
 using System;
 using System.ComponentModel;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -40,12 +39,14 @@ namespace MediaBrowser.UI
         private readonly ITheaterConfigurationManager _config;
         private readonly ISessionManager _session;
         private readonly IPlaybackManager _playbackManager;
+        protected INavigationService NavigationManager { get; private set; }
+        protected IUserInputManager UserInputManager { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MainWindow" /> class.
         /// </summary>
         public MainWindow(ILogger logger, IPlaybackManager playbackManager, IApiClient apiClient, IImageManager imageManager, IApplicationHost appHost, IPresentationManager appWindow, IUserInputManager userInput, ITheaterConfigurationManager config, ISessionManager session, INavigationService nav)
-            : base(userInput, nav)
+            : base()
         {
             _logger = logger;
             _appHost = appHost;
@@ -53,6 +54,8 @@ namespace MediaBrowser.UI
             _config = config;
             _session = session;
             _playbackManager = playbackManager;
+            UserInputManager = userInput;
+            NavigationManager = nav;
 
             Loaded += MainWindow_Loaded;
 
@@ -121,6 +124,8 @@ namespace MediaBrowser.UI
 
         void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            NavigationManager.Navigated += NavigationManager_Navigated;
+            
             DataContext = App.Instance;
 
             DragBar.MouseDown += DragableGridMouseDown;
@@ -143,8 +148,31 @@ namespace MediaBrowser.UI
             }
         }
 
+        void NavigationManager_Navigated(object sender, NavigationEventArgs e)
+        {
+            UserInputManager.MouseMove -= _userInput_MouseMove;
+
+            if (e.NewPage is IFullscreenVideoPage)
+            {
+                UserInputManager.MouseMove += _userInput_MouseMove;
+
+                if (IsMouseIdle)
+                {
+                    HideCursor();
+                }
+            }
+        }
+
+        void _userInput_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            OnMouseMove();
+        }
+        
         protected override void OnClosing(CancelEventArgs e)
         {
+            NavigationManager.Navigated -= NavigationManager_Navigated;
+            UserInputManager.MouseMove -= _userInput_MouseMove;
+
             if (RotatingBackdrops != null)
             {
                 RotatingBackdrops.Dispose();

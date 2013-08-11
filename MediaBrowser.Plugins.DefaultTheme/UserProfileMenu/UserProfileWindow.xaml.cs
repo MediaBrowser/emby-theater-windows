@@ -1,10 +1,8 @@
 ﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Net;
-using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
-using MediaBrowser.Theater.Interfaces.UserInput;
 using MediaBrowser.Theater.Presentation.Controls;
 using System.Windows;
 
@@ -19,8 +17,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.UserProfileMenu
         private readonly IImageManager _imageManager;
         private readonly IApiClient _apiClient;
 
-        public UserProfileWindow(ISessionManager session, IImageManager imageManager, IApiClient apiClient, IUserInputManager userInput, INavigationService nav)
-            : base(userInput, nav)
+        public UserProfileWindow(ISessionManager session, IImageManager imageManager, IApiClient apiClient)
+            : base()
         {
             _session = session;
             _imageManager = imageManager;

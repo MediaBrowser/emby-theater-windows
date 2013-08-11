@@ -1,11 +1,9 @@
-﻿using System.Collections.Generic;
-using DirectShowLib;
+﻿using DirectShowLib;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
-using MediaBrowser.Theater.Interfaces.UserInput;
 using MediaFoundation;
 using MediaFoundation.EVR;
 using MediaFoundation.Misc;
@@ -26,7 +24,6 @@ namespace MediaBrowser.Theater.DirectShow
         private readonly ILogger _logger;
         private readonly IHiddenWindow _hiddenWindow;
         private readonly InternalDirectShowPlayer _playerWrapper;
-        private readonly IUserInputManager _userInputManager;
 
         private DirectShowLib.IGraphBuilder _graphBuilder;
 
@@ -62,14 +59,11 @@ namespace MediaBrowser.Theater.DirectShow
 
         private BaseItemDto _item;
 
-        private System.Threading.Timer _activityTimer;
-
-        public DirectShowPlayer(ILogger logger, IHiddenWindow hiddenWindow, InternalDirectShowPlayer playerWrapper, IUserInputManager userInputManager)
+        public DirectShowPlayer(ILogger logger, IHiddenWindow hiddenWindow, InternalDirectShowPlayer playerWrapper)
         {
             _logger = logger;
             _hiddenWindow = hiddenWindow;
             _playerWrapper = playerWrapper;
-            _userInputManager = userInputManager;
         }
 
         private PlayState _playstate;
@@ -101,42 +95,6 @@ namespace MediaBrowser.Theater.DirectShow
             }
         }
 
-        private DateTime _lastMouseInput;
-
-        /// <summary>
-        /// The _is mouse idle
-        /// </summary>
-        private bool _isMouseIdle = true;
-        /// <summary>
-        /// Gets or sets a value indicating whether this instance is mouse idle.
-        /// </summary>
-        /// <value><c>true</c> if this instance is mouse idle; otherwise, <c>false</c>.</value>
-        public bool IsMouseIdle
-        {
-            get { return _isMouseIdle; }
-            set
-            {
-                var changed = _isMouseIdle != value;
-
-                _isMouseIdle = value;
-
-                if (changed && _videoWindow != null)
-                {
-                    _videoWindow.HideCursor((value ? OABool.True : OABool.False));
-                }
-            }
-        }
-
-        void _userInputManager_MouseMove(object sender, MouseEventArgs e)
-        {
-            _lastMouseInput = DateTime.Now;
-        }
-
-        private void TimerCallback(object state)
-        {
-            IsMouseIdle = (DateTime.Now - _lastMouseInput).TotalMilliseconds > 5000;
-        }
-
         public void Play(BaseItemDto item, bool enableReclock, bool enableMadvr)
         {
             _item = item;
@@ -147,9 +105,6 @@ namespace MediaBrowser.Theater.DirectShow
             DsError.ThrowExceptionForHR(hr);
 
             PlayState = PlayState.Playing;
-
-            _userInputManager.MouseMove += _userInputManager_MouseMove;
-            _activityTimer = new System.Threading.Timer(TimerCallback, null, 100, 100);
         }
 
         private void InitializeGraph()
@@ -384,8 +339,6 @@ namespace MediaBrowser.Theater.DirectShow
             _videoWindow.put_WindowStyle(DirectShowLib.WindowStyle.Child | DirectShowLib.WindowStyle.Visible | DirectShowLib.WindowStyle.ClipSiblings);
             //_videoWindow.put_FullScreenMode(OABool.True);
 
-            _videoWindow.HideCursor(OABool.True);
-
             if (_madvr != null)
             {
                 SetExclusiveMode(false);
@@ -596,12 +549,6 @@ namespace MediaBrowser.Theater.DirectShow
         private void DisposePlayer()
         {
             _logger.Debug("Disposing player");
-
-            if (_activityTimer != null)
-            {
-                _activityTimer.Dispose();
-                _activityTimer = null;
-            }
 
             CloseInterfaces();
         }

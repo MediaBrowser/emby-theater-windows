@@ -39,28 +39,9 @@ namespace MediaBrowser.Theater.Presentation.Pages
 
                 if (changed)
                 {
-                    if (value)
-                    {
-                        Dispatcher.InvokeAsync(HideCursor, DispatcherPriority.Background);
-                    }
-                    else
-                    {
-                        Dispatcher.InvokeAsync(ShowCursor, DispatcherPriority.Background);
-                    }
+                    Dispatcher.InvokeAsync(OnMouseIdleChanged, DispatcherPriority.Background);
                 }
             }
-        }
-
-        private void HideCursor()
-        {
-            System.Windows.Forms.Cursor.Hide();
-            OnMouseIdleChanged();
-        }
-
-        private void ShowCursor()
-        {
-            System.Windows.Forms.Cursor.Show();
-            OnMouseIdleChanged();
         }
         
         protected virtual void OnMouseIdleChanged()
@@ -83,7 +64,7 @@ namespace MediaBrowser.Theater.Presentation.Pages
 
         private void TimerCallback(object state)
         {
-            IsMouseIdle = (DateTime.Now - _lastMouseInput).TotalMilliseconds > 5000;
+            IsMouseIdle = (DateTime.Now - _lastMouseInput).TotalMilliseconds > 4000;
         }
 
         void FullscreenVideoPage_Unloaded(object sender, RoutedEventArgs e)
@@ -95,11 +76,6 @@ namespace MediaBrowser.Theater.Presentation.Pages
             }
 
             _userInputManager.MouseMove -= _userInputManager_MouseMove;
-
-            if (!IsMouseIdle)
-            {
-                System.Windows.Forms.Cursor.Show();
-            }
         }
 
         void FullscreenVideoPage_Loaded(object sender, RoutedEventArgs e)
@@ -107,7 +83,6 @@ namespace MediaBrowser.Theater.Presentation.Pages
             _activityTimer = new System.Threading.Timer(TimerCallback, null, 100, 100);
 
             _userInputManager.MouseMove += _userInputManager_MouseMove;
-            System.Windows.Forms.Cursor.Hide();
         }
     }
 }

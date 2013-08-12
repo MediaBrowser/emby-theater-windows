@@ -434,15 +434,5 @@ namespace MediaBrowser.Theater.Presentation.Playback
         {
             get { return true; }
         }
-
-        public Task Rewind()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task FastForward()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

@@ -68,6 +68,9 @@
       <DependentUpon>AppearancePage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Appearance\AppearancePageFactory.cs" />
+    <Compile Include="FullscreenVideo\FullscreenVideoPage.xaml.cs">
+      <DependentUpon>FullscreenVideoPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="General\GeneralSettingsPage.xaml.cs">
       <DependentUpon>GeneralSettingsPage.xaml</DependentUpon>
     </Compile>
@@ -152,6 +155,10 @@
     <Page Include="Appearance\AppearancePage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="FullscreenVideo\FullscreenVideoPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="General\GeneralSettingsPage.xaml">
       <Generator>MSBuild:Compile</Generator>

@@ -482,15 +482,18 @@ namespace MediaBrowser.Theater.DirectShow
 
         public void Seek(long ticks)
         {
-            // In Directx time is measured in 100 nanoseconds. 
-            var pos = new DsLong(ticks);
+            if (_mediaSeeking != null)
+            {
+                // In Directx time is measured in 100 nanoseconds. 
+                var pos = new DsLong(ticks);
 
-            long duration;
+                long duration;
 
-            var hr = _mediaSeeking.GetDuration(out duration);
+                var hr = _mediaSeeking.GetDuration(out duration);
 
-            // Seek to the position
-            hr = _mediaSeeking.SetPositions(new DsLong(ticks), AMSeekingSeekingFlags.AbsolutePositioning, new DsLong(duration), AMSeekingSeekingFlags.AbsolutePositioning);
+                // Seek to the position
+                hr = _mediaSeeking.SetPositions(new DsLong(ticks), AMSeekingSeekingFlags.AbsolutePositioning, new DsLong(duration), AMSeekingSeekingFlags.AbsolutePositioning);
+            }
         }
 
         private void OnStopped()

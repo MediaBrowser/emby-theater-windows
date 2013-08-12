@@ -1,7 +1,7 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Style TargetType="Button" x:Key="NavBarButton">
+    <Style TargetType="Button" x:Key="TransportButton">
         <Setter Property="Margin" Value="15 0 15 0"/>
         <Setter Property="KeyboardNavigation.IsTabStop" Value="false"/>
         <Setter Property="Height" Value="40"/>
@@ -15,7 +15,7 @@
         </Style.Triggers>
     </Style>
 
-    <Style TargetType="Button" x:Key="VolumeUpButton" BasedOn="{StaticResource NavBarButton}">
+    <Style TargetType="Button" x:Key="VolumeButton" BasedOn="{StaticResource TransportButton}">
         <Setter Property="ToolTip" Value="Increase Volume"/>
         <Setter Property="Template">
             <Setter.Value>
@@ -27,31 +27,7 @@
         </Setter>
     </Style>
 
-    <Style TargetType="Button" x:Key="VolumeDownButton" BasedOn="{StaticResource NavBarButton}">
-        <Setter Property="ToolTip" Value="Decrease Volume"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate>
-                    <Path Style="{DynamicResource IconPath}" Data="M39.043999,21.152001L64.987999,21.152001 64.987999,29.096001 39.043999,29.096001z M31.952999,0L31.952999,50.027001 15.9856,35.12619 0,35.12619 0,15.966104 15.9856,15.966104z" Stretch="Uniform" Width="36" Height="36" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
-                    </Path>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <Style TargetType="Button" x:Key="MuteButton" BasedOn="{StaticResource NavBarButton}">
-        <Setter Property="ToolTip" Value="Mute"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate>
-                    <Path Style="{DynamicResource IconPath}" Data="M45.671722,13.188L52.072849,19.589466 58.475178,13.188 64,18.711884 57.597572,25.113449 64,31.515116 58.475178,37.038998 52.072849,30.637533 45.671722,37.038998 40.147003,31.515116 46.549328,25.113449 40.147003,18.711884z M31.952999,0L31.952999,50.027 15.9856,35.12619 0,35.12619 0,15.966104 15.9856,15.966104z" Stretch="Uniform" Width="36" Height="36" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
-                    </Path>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <Style TargetType="Button" x:Key="PlayButton" BasedOn="{StaticResource NavBarButton}">
+    <Style TargetType="Button" x:Key="PlayButton" BasedOn="{StaticResource TransportButton}">
         <Setter Property="ToolTip" Value="Play"/>
         <Setter Property="Template">
             <Setter.Value>
@@ -63,7 +39,7 @@
         </Setter>
     </Style>
 
-    <Style TargetType="Button" x:Key="PauseButton" BasedOn="{StaticResource NavBarButton}">
+    <Style TargetType="Button" x:Key="PauseButton" BasedOn="{StaticResource TransportButton}">
         <Setter Property="ToolTip" Value="Pause"/>
         <Setter Property="Template">
             <Setter.Value>
@@ -75,7 +51,7 @@
         </Setter>
     </Style>
 
-    <Style TargetType="Button" x:Key="StopButton" BasedOn="{StaticResource NavBarButton}">
+    <Style TargetType="Button" x:Key="StopButton" BasedOn="{StaticResource TransportButton}">
         <Setter Property="ToolTip" Value="Stop"/>
         <Setter Property="Template">
             <Setter.Value>
@@ -87,7 +63,7 @@
         </Setter>
     </Style>
 
-    <Style TargetType="Button" x:Key="NextChapterButton" BasedOn="{StaticResource NavBarButton}">
+    <Style TargetType="Button" x:Key="NextChapterButton" BasedOn="{StaticResource TransportButton}">
         <Setter Property="ToolTip" Value="Next Chapter"/>
         <Setter Property="Template">
             <Setter.Value>
@@ -99,7 +75,7 @@
         </Setter>
     </Style>
 
-    <Style TargetType="Button" x:Key="PreviousChapterButton" BasedOn="{StaticResource NavBarButton}">
+    <Style TargetType="Button" x:Key="PreviousChapterButton" BasedOn="{StaticResource TransportButton}">
         <Setter Property="ToolTip" Value="Previous Chapter"/>
         <Setter Property="Template">
             <Setter.Value>
@@ -111,8 +87,8 @@
         </Setter>
     </Style>
 
-    <Style TargetType="Button" x:Key="RewindButton" BasedOn="{StaticResource NavBarButton}">
-        <Setter Property="ToolTip" Value="Rewind"/>
+    <Style TargetType="Button" x:Key="SkipBackwardButton" BasedOn="{StaticResource TransportButton}">
+        <Setter Property="ToolTip" Value="Skip back"/>
         <Setter Property="Margin" Value="5 0 15 0"/>
         <Setter Property="Template">
             <Setter.Value>
@@ -144,8 +120,8 @@
         </Setter>
     </Style>
 
-    <Style TargetType="Button" x:Key="FastForwardButton" BasedOn="{StaticResource NavBarButton}">
-        <Setter Property="ToolTip" Value="Fast forward"/>
+    <Style TargetType="Button" x:Key="SkipForwardButton" BasedOn="{StaticResource TransportButton}">
+        <Setter Property="ToolTip" Value="Skip forward"/>
         <Setter Property="Margin" Value="5 0 15 0"/>
         <Setter Property="Template">
             <Setter.Value>
@@ -160,4 +136,5 @@
             </Setter.Value>
         </Setter>
     </Style>
+
 </ResourceDictionary>

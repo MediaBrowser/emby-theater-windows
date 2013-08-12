@@ -1,0 +1,114 @@
+﻿<UserControl x:Class="MediaBrowser.Plugins.DefaultTheme.Osd.FullscreenVideoTransportOsd"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid>
+
+        <Image Name="ImgLogo" Stretch="Uniform" HorizontalAlignment="Left" VerticalAlignment="Top" Height="100" Margin="25 20 0 0"></Image>
+
+        <Grid Background="#86000000" VerticalAlignment="Bottom" HorizontalAlignment="Stretch">
+
+            <StackPanel Orientation="Vertical">
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 20 0 0">
+
+                    <Button x:Name="PreviousChapterButton" Command="{Binding PreviousChapterCommand}">
+                        <Button.Style>
+                            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource PreviousChapterButton}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SupportsChapters}" Value="False">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+
+                    <Button x:Name="SkipBackwardButton" Command="{Binding SkipBackwardCommand}">
+                        <Button.Style>
+                            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource SkipBackwardButton}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding CanSeek}" Value="False">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+
+                    <Button x:Name="PlayButton" Command="{Binding PlayCommand}">
+                        <Button.Style>
+                            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource PlayButton}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding CanPressPlay}" Value="False">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+
+                    <Button x:Name="PauseButton" Command="{Binding PauseCommand}">
+                        <Button.Style>
+                            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource PauseButton}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding CanPause}" Value="False">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+
+                    <Button x:Name="StopButton" Style="{DynamicResource StopButton}" Command="{Binding StopCommand}"></Button>
+
+                    <Button x:Name="SkipForwardButton" Command="{Binding SkipForwardCommand}">
+                        <Button.Style>
+                            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource SkipForwardButton}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding CanSeek}" Value="False">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+
+                    <Button x:Name="NextChapterButton" Command="{Binding NextChapterCommand}">
+                        <Button.Style>
+                            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource NextChapterButton}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SupportsChapters}" Value="False">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+
+                </StackPanel>
+
+                <Grid x:Name="SeekGrid" Margin="300 20 300 20">
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="auto"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+
+                    <Slider x:Name="CurrentPositionSlider" Grid.Column="0" VerticalAlignment="Center" Minimum="0" IsMoveToPointEnabled="True" Maximum="{Binding DurationTicks}" Thumb.DragStarted="CurrentPositionSlider_DragStarted" Thumb.DragCompleted="CurrentPositionSlider_DragCompleted"></Slider>
+
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 0 0 5">
+                        <TextBlock x:Name="TxtCurrentPosition" Style="{DynamicResource SmallTextBlockStyle}" Margin="20 0 0 0" VerticalAlignment="Center" Foreground="#fff" Text="{Binding DisplayPosition}"></TextBlock>
+                        <TextBlock Style="{DynamicResource SmallTextBlockStyle}" Margin="5 0 0 0" VerticalAlignment="Center" Text=" / " Foreground="#fff"></TextBlock>
+                        <TextBlock x:Name="TxtDuration" Style="{DynamicResource SmallTextBlockStyle}" Margin="5 0 0 0" VerticalAlignment="Center" Foreground="#fff" Text="{Binding DisplayDuration}"></TextBlock>
+                    </StackPanel>
+
+                </Grid>
+            </StackPanel>
+
+        </Grid>
+    </Grid>
+</UserControl>

@@ -155,10 +155,10 @@ namespace MediaBrowser.UI.EntryPoints
                     ExecuteCommand(PreviousTrack);
                     return true;
                 case APPCOMMAND_MEDIA_REWIND:
-                    ExecuteCommand(Rewind);
+                    ExecuteCommand(SkipBackward);
                     return true;
                 case APPCOMMAND_MEDIA_FAST_FORWARD:
-                    ExecuteCommand(FastForward);
+                    ExecuteCommand(SkipForward);
                     return true;
                 case APPCOMMAND_CLOSE:
                     ExecuteCommand(Close);
@@ -316,7 +316,7 @@ namespace MediaBrowser.UI.EntryPoints
             return _trueTaskResult;
         }
 
-        private Task Rewind()
+        private Task SkipBackward()
         {
             var activePlayer = _playback.MediaPlayers
              .OfType<IInternalMediaPlayer>()
@@ -330,7 +330,7 @@ namespace MediaBrowser.UI.EntryPoints
             return _trueTaskResult;
         }
 
-        private Task FastForward()
+        private Task SkipForward()
         {
             var activePlayer = _playback.MediaPlayers
              .OfType<IInternalMediaPlayer>()

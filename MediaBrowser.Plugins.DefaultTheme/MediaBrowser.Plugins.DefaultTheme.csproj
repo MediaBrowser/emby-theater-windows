@@ -98,9 +98,6 @@
     <Compile Include="Controls\MultiItemTile.xaml.cs">
       <DependentUpon>MultiItemTile.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\NavigationBar.xaml.cs">
-      <DependentUpon>NavigationBar.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Controls\PersonInfoTile.xaml.cs">
       <DependentUpon>PersonInfoTile.xaml</DependentUpon>
     </Compile>
@@ -215,6 +212,9 @@
     <Compile Include="Home\HomePage.xaml.cs">
       <DependentUpon>HomePage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Osd\FullscreenVideoTransportOsd.xaml.cs">
+      <DependentUpon>FullscreenVideoTransportOsd.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\FolderBrowsing\FolderPage.xaml.cs">
       <DependentUpon>FolderPage.xaml</DependentUpon>
     </Compile>
@@ -226,9 +226,6 @@
     </Compile>
     <Compile Include="Details\PanoramaDetailPage.xaml.cs">
       <DependentUpon>PanoramaDetailPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\FullscreenVideoPage.xaml.cs">
-      <DependentUpon>FullscreenVideoPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\ImageViewerPage.xaml.cs">
       <DependentUpon>ImageViewerPage.xaml</DependentUpon>
@@ -301,10 +298,6 @@
     <Page Include="Controls\MultiItemTile.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\NavigationBar.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\PersonInfoTile.xaml">
       <SubType>Designer</SubType>
@@ -454,6 +447,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Osd\FullscreenVideoTransportOsd.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Pages\FolderBrowsing\FolderPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -467,10 +464,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Details\PanoramaDetailPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Pages\FullscreenVideoPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -499,10 +492,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Resources\NavBarResources.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Resources\Popups.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -516,6 +505,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Resources\ThemeLight.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\TransportOsd.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

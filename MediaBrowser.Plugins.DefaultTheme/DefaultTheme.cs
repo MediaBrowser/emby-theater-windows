@@ -4,7 +4,6 @@ using MediaBrowser.Model.Logging;
 using MediaBrowser.Plugins.DefaultTheme.Controls;
 using MediaBrowser.Plugins.DefaultTheme.Details;
 using MediaBrowser.Plugins.DefaultTheme.Header;
-using MediaBrowser.Plugins.DefaultTheme.Pages;
 using MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
@@ -117,9 +116,10 @@ namespace MediaBrowser.Plugins.DefaultTheme
         {
             var namespaceName = GetType().Namespace;
 
-            return new[] { ThemeColorResource, "NavBarResources", "AppResources", "VolumeOsd", "DisplayPreferences", "Slider" }.Select(i => new ResourceDictionary
+            return new[] { ThemeColorResource, "AppResources", "VolumeOsd", "TransportOsd", "DisplayPreferences", "Slider" }.Select(i => new ResourceDictionary
             {
                 Source = new Uri("pack://application:,,,/" + namespaceName + ";component/Resources/" + i + ".xaml", UriKind.Absolute)
+
             });
         }
 
@@ -267,11 +267,6 @@ namespace MediaBrowser.Plugins.DefaultTheme
         public string DefaultHomePageName
         {
             get { return "Default"; }
-        }
-
-        public Page GetFullscreenVideoPage()
-        {
-            return new FullscreenVideoPage(_userInput, _imageManager, _apiClient, PlaybackManager);
         }
     }
 }

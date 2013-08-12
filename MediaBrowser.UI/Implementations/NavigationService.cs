@@ -4,6 +4,7 @@ using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Configuration;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
+using MediaBrowser.Theater.Core.FullscreenVideo;
 using MediaBrowser.Theater.Core.Login;
 using MediaBrowser.Theater.Core.Settings;
 using MediaBrowser.Theater.Interfaces.Configuration;
@@ -158,9 +159,9 @@ namespace MediaBrowser.UI.Implementations
         /// <returns>DispatcherOperation.</returns>
         public Task NavigateToInternalPlayerPage()
         {
-            var page = _themeManager.CurrentTheme.GetFullscreenVideoPage();
+            var page = new FullscreenVideoPage(_userInputManager, _playbackManagerFactory(), this, _themeManager, _apiClient, _imageManager);
 
-            new InternalPlayerPageBehavior(page, _playbackManagerFactory(), this, _themeManager).AdjustPresentationForPlayback();
+            new InternalPlayerPageBehavior(page).AdjustPresentationForPlayback();
 
             return Navigate(page);
         }

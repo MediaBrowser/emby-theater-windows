@@ -4,7 +4,8 @@
                     xmlns:viewModels="clr-namespace:MediaBrowser.Theater.Presentation.ViewModels;assembly=MediaBrowser.Theater.Presentation"
                     xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
                     xmlns:header="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Header"
-                    xmlns:details="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Details">
+                    xmlns:details="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Details"
+                    xmlns:osd="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Osd">
 
     <Style TargetType="Image" x:Key="CommunityRatingImage">
         <Setter Property="Stretch" Value="Uniform"/>
@@ -55,6 +56,10 @@
         <Setter Property="HorizontalAlignment" Value="Left"/>
         <Setter Property="Stretch" Value="Uniform"/>
     </Style>
+
+    <ControlTemplate x:Key="FullscreenVideoOsdTemplate">
+        <osd:FullscreenVideoTransportOsd DataContext="{Binding}"></osd:FullscreenVideoTransportOsd>
+    </ControlTemplate>
 
     <!--Override PageContentTemplate-->
     <ControlTemplate x:Key="PageContentTemplate">

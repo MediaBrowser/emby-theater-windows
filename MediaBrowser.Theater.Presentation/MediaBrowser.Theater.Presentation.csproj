@@ -89,7 +89,6 @@
     <Compile Include="Extensions\AspectRatioHelper.cs" />
     <Compile Include="Extensions\MedianExtension.cs" />
     <Compile Include="Extensions\MedianPrimaryImageAspectRatioExtension.cs" />
-    <Compile Include="Pages\BaseFullscreenVideoPage.cs" />
     <Compile Include="Pages\BasePage.cs" />
     <Compile Include="Playback\GenericExternalPlayer.cs" />
     <Compile Include="Playback\PlaybackExtensions.cs" />
@@ -106,9 +105,11 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="ViewModels\RelayCommand.cs" />
     <Compile Include="ViewModels\BaseItemDtoViewModel.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
     <Compile Include="ViewModels\ChapterInfoDtoViewModel.cs" />
+    <Compile Include="ViewModels\TransportOsdViewModel.cs" />
     <Compile Include="ViewModels\RotatingCollectionViewModel.cs" />
     <Compile Include="ViewModels\RangeObservableCollection.cs" />
     <Compile Include="ViewModels\UserDtoViewModel.cs" />

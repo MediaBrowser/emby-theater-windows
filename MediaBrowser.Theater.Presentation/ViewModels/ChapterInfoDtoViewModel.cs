@@ -39,9 +39,14 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
             set
             {
+                var changed = _chapter != value;
                 _chapter = value;
-                OnPropertyChanged("Chapter");
-                OnPropertyChanged("TimeString");
+
+                if (changed)
+                {
+                    OnPropertyChanged("Chapter");
+                    OnPropertyChanged("TimeString");
+                }
             }
         }
 
@@ -60,8 +65,13 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
             set
             {
+                var changed = _item != value;
                 _item = value;
-                OnPropertyChanged("Item");
+
+                if (changed)
+                {
+                    OnPropertyChanged("Item");
+                }
             }
         }
 

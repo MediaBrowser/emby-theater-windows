@@ -91,8 +91,14 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
             set
             {
+                var changed = _item != value;
+
                 _item = value;
-                OnPropertyChanged("Item");
+
+                if (changed)
+                {
+                    OnPropertyChanged("Item");
+                }
             }
         }
 

@@ -91,7 +91,7 @@ namespace MediaBrowser.Theater.Implementations.Presentation
         /// <param name="url">The URL.</param>
         /// <returns>Task{BitmapImage}.</returns>
         /// <exception cref="System.ArgumentNullException">url</exception>
-        public async Task<BitmapImage> GetRemoteBitmapAsync(string url)
+        public async Task<BitmapImage> GetRemoteBitmapAsync(string url, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(url))
             {
@@ -111,6 +111,8 @@ namespace MediaBrowser.Theater.Implementations.Presentation
                     // Cache file doesn't exist or is currently being written to.
                 }
 
+                cancellationToken.ThrowIfCancellationRequested();
+
                 var semaphore = GetImageFileLock(cachePath);
                 await semaphore.WaitAsync().ConfigureAwait(false);
 
@@ -128,8 +130,10 @@ namespace MediaBrowser.Theater.Implementations.Presentation
 
                 try
                 {
-                    using (var httpStream = await _apiClient.GetImageStreamAsync(url).ConfigureAwait(false))
+                    using (var httpStream = await _apiClient.GetImageStreamAsync(url, cancellationToken).ConfigureAwait(false))
                     {
+                        cancellationToken.ThrowIfCancellationRequested();
+                        
                         return await GetBitmapImageAsync(httpStream, cachePath).ConfigureAwait(false);
                     }
                 }
@@ -145,10 +149,11 @@ namespace MediaBrowser.Theater.Implementations.Presentation
         /// Gets the remote image async.
         /// </summary>
         /// <param name="url">The URL.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Task{Image}.</returns>
-        public async Task<Image> GetRemoteImageAsync(string url)
+        public async Task<Image> GetRemoteImageAsync(string url, CancellationToken cancellationToken)
         {
-            var bitmap = await GetRemoteBitmapAsync(url);
+            var bitmap = await GetRemoteBitmapAsync(url, cancellationToken);
 
             var image = new Image { Source = bitmap };
 

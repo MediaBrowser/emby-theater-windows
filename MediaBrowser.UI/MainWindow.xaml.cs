@@ -73,10 +73,10 @@ namespace MediaBrowser.UI
             _playbackManager.PlaybackStarted += _playbackManager_PlaybackStarted;
             _playbackManager.PlaybackCompleted += _playbackManager_PlaybackCompleted;
 
-            Timeline.DesiredFrameRateProperty.OverrideMetadata(
-                typeof(Timeline),
-                new FrameworkPropertyMetadata { DefaultValue = 30 }
-            );
+            //Timeline.DesiredFrameRateProperty.OverrideMetadata(
+            //    typeof(Timeline),
+            //    new FrameworkPropertyMetadata { DefaultValue = 30 }
+            //);
         }
 
         protected override void OnInitialized(EventArgs e)

@@ -1,11 +1,11 @@
-﻿using System;
-using System.Windows.Controls.Primitives;
-using System.Windows.Input;
-using MediaBrowser.Model.Dto;
+﻿using MediaBrowser.Model.Dto;
 using MediaBrowser.Theater.Presentation.ViewModels;
+using System;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using System.Windows.Input;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Osd
 {

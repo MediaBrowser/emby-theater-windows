@@ -25,7 +25,9 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         public ICommand StopCommand { get; private set; }
         public ICommand PlayCommand { get; private set; }
 
-        private DispatcherTimer CurrentPositionTimer { get; set; }
+        private Timer _currentPositionTimer;
+
+        private Dispatcher _currentDispatcher;
 
         private IMediaPlayer _mediaPlayer;
         public IMediaPlayer MediaPlayer
@@ -186,21 +188,21 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
-        private bool _canPressPlay;
-        public bool CanPressPlay
+        private bool _canPlay;
+        public bool CanPlay
         {
             get
             {
-                return _canPressPlay;
+                return _canPlay;
             }
             set
             {
-                var changed = !bool.Equals(_canPressPlay, value);
-                _canPressPlay = value;
+                var changed = !bool.Equals(_canPlay, value);
+                _canPlay = value;
 
                 if (changed)
                 {
-                    OnPropertyChanged("CanPressPlay");
+                    OnPropertyChanged("CanPlay");
                 }
             }
         }
@@ -249,7 +251,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             ApiClient = apiClient;
             PlaybackManager = playbackManager;
 
-            MediaPlayer = playbackManager.MediaPlayers.FirstOrDefault(i => i.PlayState != PlayState.Idle);
+            _currentDispatcher = Dispatcher.CurrentDispatcher;
 
             PauseCommand = new RelayCommand(Pause);
             StopCommand = new RelayCommand(Stop);
@@ -258,6 +260,8 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             NextChapterCommand = new RelayCommand(NextChapter);
             PreviousChapterCommand = new RelayCommand(PreviousChapter);
             PlayCommand = new RelayCommand(Play);
+
+            MediaPlayer = playbackManager.MediaPlayers.FirstOrDefault(i => i.PlayState != PlayState.Idle);
         }
 
         private void RemovePlayerEvents(IMediaPlayer player)
@@ -320,16 +324,11 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                     player.MediaChanged += player_MediaChanged;
                     player.PlayStateChanged += player_PlayStateChanged;
 
-                    if (CurrentPositionTimer == null)
+                    if (_currentPositionTimer == null)
                     {
-                        var timer = new DispatcherTimer(DispatcherPriority.Background)
-                        {
-                            Interval = TimeSpan.FromMilliseconds(250)
-                        };
+                        var timer = new Timer(PositionTimerCallback, null, 0, 250);
 
-                        timer.Tick += timer_Tick;
-                        timer.Start();
-                        CurrentPositionTimer = timer;
+                        _currentPositionTimer = timer;
                     }
                 }
                 else
@@ -343,9 +342,9 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
-        void timer_Tick(object sender, EventArgs e)
+        private void PositionTimerCallback(object state)
         {
-            UpdatePosition(MediaPlayer);
+            _currentDispatcher.InvokeAsync(() => UpdatePosition(MediaPlayer));
         }
 
         void player_PlayStateChanged(object sender, EventArgs e)
@@ -360,7 +359,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         private void UpdatePauseValues(IMediaPlayer player)
         {
-            CanPressPlay = IsPaused = player != null && player.PlayState == PlayState.Paused;
+            CanPlay = IsPaused = player != null && player.PlayState == PlayState.Paused;
 
             CanPause = player != null && player.CanPause && player.PlayState == PlayState.Playing;
         }
@@ -446,10 +445,10 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         private void DisposeCurrentPositionTimer()
         {
-            if (CurrentPositionTimer != null)
+            if (_currentPositionTimer != null)
             {
-                CurrentPositionTimer.Tick -= timer_Tick;
-                CurrentPositionTimer.Stop();
+                _currentPositionTimer.Dispose();
+                _currentPositionTimer = null;
             }
         }
     }

@@ -13,7 +13,7 @@
 
             <StackPanel Orientation="Vertical">
 
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 20 0 0">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 25 0 0">
 
                     <Button x:Name="PreviousChapterButton" Command="{Binding PreviousChapterCommand}">
                         <Button.Style>
@@ -43,7 +43,7 @@
                         <Button.Style>
                             <Style TargetType="{x:Type Button}" BasedOn="{StaticResource PlayButton}">
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding CanPressPlay}" Value="False">
+                                    <DataTrigger Binding="{Binding CanPlay}" Value="False">
                                         <Setter Property="Visibility" Value="Collapsed" />
                                     </DataTrigger>
                                 </Style.Triggers>
@@ -91,7 +91,7 @@
 
                 </StackPanel>
 
-                <Grid x:Name="SeekGrid" Margin="300 20 300 20">
+                <Grid x:Name="SeekGrid" Margin="300 15 300 20">
 
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"></ColumnDefinition>
@@ -100,10 +100,10 @@
 
                     <Slider x:Name="CurrentPositionSlider" Grid.Column="0" VerticalAlignment="Center" Minimum="0" IsMoveToPointEnabled="True" Maximum="{Binding DurationTicks}" Thumb.DragStarted="CurrentPositionSlider_DragStarted" Thumb.DragCompleted="CurrentPositionSlider_DragCompleted"></Slider>
 
-                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 0 0 5">
-                        <TextBlock x:Name="TxtCurrentPosition" Style="{DynamicResource SmallTextBlockStyle}" Margin="20 0 0 0" VerticalAlignment="Center" Foreground="#fff" Text="{Binding DisplayPosition}"></TextBlock>
-                        <TextBlock Style="{DynamicResource SmallTextBlockStyle}" Margin="5 0 0 0" VerticalAlignment="Center" Text=" / " Foreground="#fff"></TextBlock>
-                        <TextBlock x:Name="TxtDuration" Style="{DynamicResource SmallTextBlockStyle}" Margin="5 0 0 0" VerticalAlignment="Center" Foreground="#fff" Text="{Binding DisplayDuration}"></TextBlock>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 0 0 3">
+                        <TextBlock x:Name="TxtCurrentPosition" Style="{DynamicResource TextBlockStyle}" Margin="20 0 0 0" VerticalAlignment="Center" Foreground="#fff" Text="{Binding DisplayPosition}"></TextBlock>
+                        <TextBlock Style="{DynamicResource TextBlockStyle}" Margin="5 0 0 0" VerticalAlignment="Center" Text=" / " Foreground="#fff"></TextBlock>
+                        <TextBlock x:Name="TxtDuration" Style="{DynamicResource TextBlockStyle}" Margin="5 0 0 0" VerticalAlignment="Center" Foreground="#fff" Text="{Binding DisplayDuration}"></TextBlock>
                     </StackPanel>
 
                 </Grid>

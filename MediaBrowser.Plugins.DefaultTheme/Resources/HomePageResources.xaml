@@ -4,7 +4,7 @@
                     xmlns:viewModels="clr-namespace:MediaBrowser.Theater.Presentation.ViewModels;assembly=MediaBrowser.Theater.Presentation">
 
     <DataTemplate x:Key="HomePageListBoxItemTemplate" DataType="{x:Type viewModels:BaseItemDtoViewModel}">
-        <themecontrols:HomePageTile DataContext="{Binding Mode=OneWay}"></themecontrols:HomePageTile>
+        <themecontrols:HomePageTile DataContext="{Binding}"></themecontrols:HomePageTile>
     </DataTemplate>
 
     <Style x:Key="HomePageListBoxItemStyle" TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource ListBoxItemStyle}">
@@ -25,4 +25,17 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <DataTemplate x:Key="AppListBoxItemTemplate" DataType="{x:Type viewModels:AppViewModel}">
+        <Grid>
+            <ContentControl Content="{Binding TileImage}" Width="480" Height="270"></ContentControl>
+
+            <Grid Background="#a6000000" VerticalAlignment="Bottom" HorizontalAlignment="Stretch">
+
+                <TextBlock x:Name="TxtName" Style="{DynamicResource TextBlockStyle}" Foreground="White"  Margin="10 5 10 10" Text="{Binding Name}"></TextBlock>
+
+            </Grid>
+        </Grid>
+    </DataTemplate>
+
 </ResourceDictionary>

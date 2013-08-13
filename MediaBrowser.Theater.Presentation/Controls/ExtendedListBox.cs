@@ -196,7 +196,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
 
                 if (listBoxItem != null && !listBoxItem.IsFocused)
                 {
-                    listBoxItem.Focus();
+                    //listBoxItem.Focus();
 
                     SelectedIndex = ItemContainerGenerator.IndexFromContainer(listBoxItem);
                 }
@@ -221,6 +221,21 @@ namespace MediaBrowser.Theater.Presentation.Controls
             }
 
             return ItemContainerGenerator.ItemFromContainer(dep);
+        }
+
+        protected override DependencyObject GetContainerForItemOverride()
+        {
+            return new ExtendedListBoxItem();
+        }
+    }
+
+    public class ExtendedListBoxItem : ListBoxItem
+    {
+        protected override void OnSelected(RoutedEventArgs e)
+        {
+            base.OnSelected(e);
+
+            Focus();
         }
     }
 }

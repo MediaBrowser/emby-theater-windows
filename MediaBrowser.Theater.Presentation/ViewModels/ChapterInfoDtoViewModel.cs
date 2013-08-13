@@ -1,10 +1,12 @@
 ﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
+using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using System;
-using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media.Imaging;
 
 namespace MediaBrowser.Theater.Presentation.ViewModels
@@ -12,18 +14,91 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
     /// <summary>
     /// Class ChapterInfoDtoViewModel
     /// </summary>
-    public class ChapterInfoDtoViewModel : BaseViewModel
+    public class ChapterInfoDtoViewModel : BaseViewModel, IDisposable
     {
         /// <summary>
         /// Gets the API client.
         /// </summary>
         /// <value>The API client.</value>
-        public IApiClient ApiClient { get; private set; }
+        private readonly IApiClient _apiClient;
+
         /// <summary>
         /// Gets the image manager.
         /// </summary>
         /// <value>The image manager.</value>
-        public IImageManager ImageManager { get; private set; }
+        private readonly IImageManager _imageManager;
+        private readonly IPlaybackManager _playbackManager;
+
+        public ChapterInfoDtoViewModel(IApiClient apiClient, IImageManager imageManager, IPlaybackManager playbackManager)
+        {
+            _imageManager = imageManager;
+            _playbackManager = playbackManager;
+            _apiClient = apiClient;
+        }
+
+        private CancellationTokenSource _imageCancellationTokenSource = null;
+
+        private BitmapImage _image;
+        public BitmapImage Image
+        {
+            get
+            {
+                var img = _image;
+
+                if (img == null && _imageCancellationTokenSource == null)
+                {
+                    DownloadImage();
+                }
+
+                return _image;
+            }
+
+            private set
+            {
+                var changed = !Equals(_image, value);
+
+                _image = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("Image");
+                }
+            }
+        }
+
+        private bool _hasImage;
+        public bool HasImage
+        {
+            get { return _hasImage; }
+
+            set
+            {
+                var changed = _hasImage != value;
+                _hasImage = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("HasImage");
+                }
+            }
+        }
+
+        private int? _imageDownloadWidth;
+        public int? ImageDownloadWidth
+        {
+            get { return _imageDownloadWidth; }
+
+            set
+            {
+                var changed = _imageDownloadWidth != value;
+                _imageDownloadWidth = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("ImageDownloadWidth");
+                }
+            }
+        }
 
         /// <summary>
         /// The _item
@@ -49,7 +124,6 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 }
             }
         }
-
 
         /// <summary>
         /// The _item
@@ -89,51 +163,62 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
-        public ChapterInfoDtoViewModel(IApiClient apiClient, IImageManager imageManager)
+        public async void DownloadImage()
         {
-            ImageManager = imageManager;
-            ApiClient = apiClient;
-        }
+            _imageCancellationTokenSource = new CancellationTokenSource();
 
-        public Task<BitmapImage> GetImage(ImageOptions options)
-        {
-            options.ImageIndex = Item.Chapters.IndexOf(Chapter);
-            options.ImageType = ImageType.Chapter;
-            options.Tag = Chapter.ImageTag;
-
-            return ImageManager.GetRemoteBitmapAsync(ApiClient.GetImageUrl(Item, options));
-        }
-
-        /// <summary>
-        /// Gets the height of the chapter image.
-        /// </summary>
-        /// <param name="item">The item.</param>
-        /// <param name="width">The width.</param>
-        /// <param name="defaultHeight">The default height.</param>
-        /// <returns>System.Double.</returns>
-        public static double GetChapterImageHeight(BaseItemDto item, double width, double defaultHeight)
-        {
-            var height = defaultHeight;
-
-            if (item.MediaStreams != null)
+            if (Chapter.ImageTag.HasValue)
             {
-                var videoStream = item.MediaStreams.FirstOrDefault(s => s.Type == MediaStreamType.Video);
-
-                if (videoStream != null)
+                try
                 {
-                    double streamHeight = videoStream.Height ?? 0;
-                    double streamWidth = videoStream.Width ?? 0;
-
-                    if (streamHeight > 0 && streamWidth > 0)
+                    var options = new ImageOptions
                     {
-                        var aspectRatio = streamWidth / streamHeight;
+                        Width = _imageDownloadWidth,
+                        ImageIndex = Item.Chapters.IndexOf(Chapter),
+                        ImageType = ImageType.Chapter,
+                        Tag = Chapter.ImageTag
+                    };
 
-                        height = width / aspectRatio;
-                    }
+                    Image = await _imageManager.GetRemoteBitmapAsync(_apiClient.GetImageUrl(Item, options), _imageCancellationTokenSource.Token);
+
+                    DisposeCancellationTokenSource();
+
+                    HasImage = true;
+                }
+                catch
+                {
+                    // Logged at lower levels
+                    HasImage = false;
                 }
             }
+            else
+            {
+                HasImage = false;
+            }
 
-            return height;
+        }
+
+        public void Dispose()
+        {
+            DisposeCancellationTokenSource();
+        }
+
+        private void DisposeCancellationTokenSource()
+        {
+            if (_imageCancellationTokenSource != null)
+            {
+                _imageCancellationTokenSource.Cancel();
+                _imageCancellationTokenSource.Dispose();
+                _imageCancellationTokenSource = null;
+            }
+        }
+
+        public Task Play()
+        {
+            return _playbackManager.Play(new PlayOptions(_item)
+            {
+                StartPositionTicks = Chapter.StartPositionTicks
+            });
         }
     }
 }

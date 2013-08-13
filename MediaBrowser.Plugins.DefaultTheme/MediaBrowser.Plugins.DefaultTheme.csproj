@@ -101,9 +101,6 @@
     <Compile Include="Controls\PersonInfoTile.xaml.cs">
       <DependentUpon>PersonInfoTile.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Details\Chapter.xaml.cs">
-      <DependentUpon>Chapter.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Details\Children.xaml.cs">
       <DependentUpon>Children.xaml</DependentUpon>
     </Compile>
@@ -161,10 +158,7 @@
       <DependentUpon>TopRightPanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="Home\HomePageInfo.cs" />
-    <Compile Include="Home\Apps\AppControl.xaml.cs">
-      <DependentUpon>AppControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Home\Apps\AppsControl.xaml.cs">
+    <Compile Include="Home\AppsControl.xaml.cs">
       <DependentUpon>AppsControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Home\Folders.xaml.cs">
@@ -303,10 +297,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Details\Chapter.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Details\Children.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -379,11 +369,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Home\Apps\AppControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Home\Apps\AppsControl.xaml">
+    <Page Include="Home\AppsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -477,6 +463,10 @@
       <ContainsDesignTimeResources>true</ContainsDesignTimeResources>
     </Page>
     <Page Include="Resources\AppResources.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\Details.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

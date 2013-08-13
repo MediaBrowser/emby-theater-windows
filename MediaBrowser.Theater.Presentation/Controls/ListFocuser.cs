@@ -12,7 +12,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
         /// <summary>
         /// The _list box
         /// </summary>
-        private readonly ListBox _listBox;
+        private readonly ItemsControl _listBox;
 
         /// <summary>
         /// The _index
@@ -23,7 +23,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
         /// Initializes a new instance of the <see cref="ListFocuser"/> class.
         /// </summary>
         /// <param name="listBox">The list box.</param>
-        public ListFocuser(ListBox listBox)
+        public ListFocuser(ItemsControl listBox)
         {
             _listBox = listBox;
         }
@@ -37,7 +37,17 @@ namespace MediaBrowser.Theater.Presentation.Controls
             _index = index;
 
             _listBox.ItemContainerGenerator.StatusChanged -= ItemContainerGenerator_StatusChanged;
-            _listBox.ItemContainerGenerator.StatusChanged += ItemContainerGenerator_StatusChanged;
+
+            var item = _listBox.ItemContainerGenerator.ContainerFromIndex(_index) as ListBoxItem;
+
+            if (item != null)
+            {
+                item.Focus();
+            }
+            else
+            {
+                _listBox.ItemContainerGenerator.StatusChanged += ItemContainerGenerator_StatusChanged;
+            }
         }
 
         /// <summary>

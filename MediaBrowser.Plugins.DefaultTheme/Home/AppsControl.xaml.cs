@@ -1,15 +1,14 @@
 ﻿using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
-using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
-using System.Windows;
+using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Data;
 
-namespace MediaBrowser.Plugins.DefaultTheme.Home.Apps
+namespace MediaBrowser.Plugins.DefaultTheme.Home
 {
     /// <summary>
     /// Interaction logic for AppsControl.xaml
@@ -34,33 +33,19 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home.Apps
 
             LstItems.ItemInvoked += LstItems_ItemInvoked;
 
-            var items = new RangeObservableCollection<ITheaterApp>();
+            var items = new RangeObservableCollection<AppViewModel>();
             var view = (ListCollectionView)CollectionViewSource.GetDefaultView(items);
             LstItems.ItemsSource = view;
 
-            items.AddRange(_presentation.GetApps(_session.CurrentUser));
+            items.AddRange(_presentation.GetApps(_session.CurrentUser)
+                .Select(i => new AppViewModel(_presentation, _logger) { App = i }));
         }
 
-        async void LstItems_ItemInvoked(object sender, ItemEventArgs<object> e)
+        void LstItems_ItemInvoked(object sender, ItemEventArgs<object> e)
         {
-            var app = (ITheaterApp) e.Argument;
+            var app = (AppViewModel)e.Argument;
 
-            try
-            {
-                await app.Launch();
-            }
-            catch (Exception ex)
-            {
-                _logger.ErrorException("Error launching app {0}", ex, app.Name);
-
-                _presentation.ShowMessage(new MessageBoxInfo
-                {
-                    Button = MessageBoxButton.OK,
-                    Caption = "Error",
-                    Icon = MessageBoxIcon.Error,
-                    Text = ex.Message
-                });
-            }
+            app.Launch();
         }
     }
 }

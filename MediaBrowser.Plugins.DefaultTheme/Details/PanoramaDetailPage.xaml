@@ -29,7 +29,7 @@
             </controls:ExtendedListBox.ItemsPanel>
         </controls:ExtendedListBox>
         
-        <controls:ExtendedScrollViewer x:Name="ScrollViewer" Grid.Row="2" Margin="70 30 40 0" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalAlignment="Top" HorizontalAlignment="Center" CanContentScroll="True">
+        <controls:ExtendedScrollViewer x:Name="ScrollViewer" Grid.Row="2" Margin="70 30 40 0" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalAlignment="Stretch" HorizontalAlignment="Center" CanContentScroll="True">
             <controls:ScrollingPanel x:Name="ScrollingPanel" CanHorizontallyScroll="True" CanVerticallyScroll="False" HorizontalAlignment="Stretch">
                 <ContentControl x:Name="PageContent">
 

@@ -82,7 +82,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
             {
                 throw new ArgumentNullException("displayPreferences");
             }
-
+           
             NavigationManager = navigationManager;
             SessionManager = sessionManager;
             ImageManager = imageManager;

@@ -105,6 +105,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="ViewModels\AppViewModel.cs" />
     <Compile Include="ViewModels\RelayCommand.cs" />
     <Compile Include="ViewModels\BaseItemDtoViewModel.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
@@ -113,6 +114,7 @@
     <Compile Include="ViewModels\RotatingCollectionViewModel.cs" />
     <Compile Include="ViewModels\RangeObservableCollection.cs" />
     <Compile Include="ViewModels\UserDtoViewModel.cs" />
+    <Compile Include="ViewModels\UserListViewModel.cs" />
     <Compile Include="ViewModels\ViewTypes.cs" />
     <Compile Include="Controls\BaseModalWindow.cs" />
     <Compile Include="Controls\BaseWindow.cs" />

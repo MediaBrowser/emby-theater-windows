@@ -4,7 +4,6 @@
                     xmlns:viewModels="clr-namespace:MediaBrowser.Theater.Presentation.ViewModels;assembly=MediaBrowser.Theater.Presentation"
                     xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
                     xmlns:header="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Header"
-                    xmlns:details="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Details"
                     xmlns:osd="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Osd">
 
     <Style TargetType="Image" x:Key="CommunityRatingImage">
@@ -86,28 +85,6 @@
             </Grid>
         </Grid>
     </ControlTemplate>
-
-    <DataTemplate x:Key="ItemSpecialFeaturesTemplate" DataType="{x:Type viewModels:BaseItemDtoViewModel}">
-        <themecontrols:BaseItemTile DataContext="{Binding}"></themecontrols:BaseItemTile>
-    </DataTemplate>
-
-    <DataTemplate x:Key="ItemPerformersTemplate" DataType="{x:Type viewModels:BaseItemDtoViewModel}">
-        <themecontrols:BaseItemTile DataContext="{Binding}"></themecontrols:BaseItemTile>
-    </DataTemplate>
-
-    <DataTemplate x:Key="ItemChaptersTemplate" DataType="{x:Type viewModels:ChapterInfoDtoViewModel}">
-        <details:Chapter DataContext="{Binding}"></details:Chapter>
-    </DataTemplate>
-
-    <DataTemplate x:Key="ItemGalleryTemplate" DataType="{x:Type BitmapImage}">
-        <Image Source="{Binding}" VerticalAlignment="Center" HorizontalAlignment="Center" Stretch="Uniform">
-
-        </Image>
-    </DataTemplate>
-
-    <DataTemplate x:Key="CriticReviewsTemplate" DataType="{x:Type BitmapImage}">
-        <details:CriticReviewControl DataContext="{Binding}"></details:CriticReviewControl>
-    </DataTemplate>
 
     <DataTemplate x:Key="ListPageItemTemplate" DataType="{x:Type viewModels:BaseItemDtoViewModel}">
         <themecontrols:BaseItemTile DataContext="{Binding}"></themecontrols:BaseItemTile>

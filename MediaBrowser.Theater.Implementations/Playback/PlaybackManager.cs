@@ -361,7 +361,16 @@ namespace MediaBrowser.Theater.Implementations.Playback
             {
                 var devEnum = new MMDeviceEnumerator();
 
-                _audioDevice = devEnum.GetDefaultAudioEndpoint(EDataFlow.eRender, ERole.eMultimedia);
+                try
+                {
+                    _audioDevice = devEnum.GetDefaultAudioEndpoint(EDataFlow.eRender, ERole.eMultimedia);
+                }
+                catch (Exception ex)
+                {
+                    _logger.ErrorException("Error attempting to discover default audio device", ex);
+                    return;
+                }
+
                 _audioDevice.AudioEndpointVolume.OnVolumeNotification += AudioEndpointVolume_OnVolumeNotification;
 
                 _lastMuteValue = _audioDevice.AudioEndpointVolume.Mute;
@@ -386,29 +395,62 @@ namespace MediaBrowser.Theater.Implementations.Playback
 
         public bool IsMuted
         {
-            get { return AudioDevice.AudioEndpointVolume.Mute; }
+            get
+            {
+                var audioDevice = AudioDevice;
+
+                if (audioDevice != null)
+                {
+                    return audioDevice.AudioEndpointVolume.Mute;
+                }
+                
+                return false;
+            }
         }
 
         public void Mute()
         {
-            AudioDevice.AudioEndpointVolume.Mute = true;
+            var audioDevice = AudioDevice;
+
+            if (audioDevice != null)
+            {
+                audioDevice.AudioEndpointVolume.Mute = true;
+            }
         }
 
         public void UnMute()
         {
-            AudioDevice.AudioEndpointVolume.Mute = false;
+            var audioDevice = AudioDevice;
+
+            if (audioDevice != null)
+            {
+                audioDevice.AudioEndpointVolume.Mute = false;
+            }
         }
 
         public float Volume
         {
-            get { return AudioDevice.AudioEndpointVolume.MasterVolumeLevelScalar * 100; }
+            get
+            {
+                var audioDevice = AudioDevice;
+
+                if (audioDevice != null)
+                {
+                    return audioDevice.AudioEndpointVolume.MasterVolumeLevelScalar * 100;
+                }
+
+                return 0;
+            }
         }
 
         public void SetVolume(float volume)
         {
-            AudioDevice.AudioEndpointVolume.MasterVolumeLevelScalar = volume / 100;
+            var audioDevice = AudioDevice;
 
-            OnVolumeChanged();
+            if (audioDevice != null)
+            {
+                audioDevice.AudioEndpointVolume.MasterVolumeLevelScalar = volume / 100;
+            }
         }
 
         private void OnVolumeChanged()
@@ -427,12 +469,22 @@ namespace MediaBrowser.Theater.Implementations.Playback
 
         public void VolumeStepUp()
         {
-            AudioDevice.AudioEndpointVolume.VolumeStepUp();
+            var audioDevice = AudioDevice;
+
+            if (audioDevice != null)
+            {
+                audioDevice.AudioEndpointVolume.VolumeStepUp();
+            }
         }
 
         public void VolumeStepDown()
         {
-            AudioDevice.AudioEndpointVolume.VolumeStepDown();
+            var audioDevice = AudioDevice;
+
+            if (audioDevice != null)
+            {
+                audioDevice.AudioEndpointVolume.VolumeStepDown();
+            }
         }
     }
 }

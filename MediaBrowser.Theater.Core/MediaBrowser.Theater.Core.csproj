@@ -81,9 +81,6 @@
     <Compile Include="Login\ManualLoginPage.xaml.cs">
       <DependentUpon>ManualLoginPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Login\UserTile.xaml.cs">
-      <DependentUpon>UserTile.xaml</DependentUpon>
-    </Compile>
     <Compile Include="MediaPlayers\ConfigureMediaPlayerPage.xaml.cs">
       <DependentUpon>ConfigureMediaPlayerPage.xaml</DependentUpon>
     </Compile>
@@ -171,10 +168,6 @@
     <Page Include="Login\ManualLoginPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Login\UserTile.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="MediaPlayers\ConfigureMediaPlayerPage.xaml">
       <Generator>MSBuild:Compile</Generator>

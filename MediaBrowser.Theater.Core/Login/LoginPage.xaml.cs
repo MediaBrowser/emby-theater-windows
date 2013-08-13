@@ -8,12 +8,8 @@ using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.Pages;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
-using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Data;
-using System.Windows.Input;
 
 namespace MediaBrowser.Theater.Core.Login
 {
@@ -28,9 +24,6 @@ namespace MediaBrowser.Theater.Core.Login
         protected ISessionManager SessionManager { get; private set; }
         protected IPresentationManager PresentationManager { get; private set; }
 
-        private RangeObservableCollection<UserDtoViewModel> _listItems;
-        private ListCollectionView _listCollectionView;
-
         public LoginPage(IApiClient apiClient, IImageManager imageManager, INavigationService navigationManager, ISessionManager sessionManager, IPresentationManager presentationManager)
         {
             PresentationManager = presentationManager;
@@ -42,71 +35,19 @@ namespace MediaBrowser.Theater.Core.Login
             InitializeComponent();
         }
 
-        protected override async void OnInitialized(System.EventArgs e)
+        protected override async void OnInitialized(EventArgs e)
         {
             base.OnInitialized(e);
 
-            lstUsers.ItemInvoked += ItemsList_ItemInvoked;
+            DataContext = new UserListViewModel(PresentationManager, ApiClient, ImageManager, LstUsers);
+
+            LstUsers.ItemInvoked += ItemsList_ItemInvoked;
             Loaded += LoginPage_Loaded;
-
-            _listItems = new RangeObservableCollection<UserDtoViewModel>();
-            _listCollectionView = (ListCollectionView)CollectionViewSource.GetDefaultView(_listItems);
-
-            lstUsers.ItemsSource = _listCollectionView;
-
-            await ReloadUsers(true);
         }
 
         void LoginPage_Loaded(object sender, RoutedEventArgs e)
         {
             PresentationManager.SetDefaultPageTitle();
-        }
-
-        /// <summary>
-        /// Reloads the users.
-        /// </summary>
-        /// <returns>Task.</returns>
-        protected async Task ReloadUsers(bool isInitialLoad)
-        {
-            // Record the current item
-            var currentItem = _listCollectionView.CurrentItem as UserDtoViewModel;
-
-            try
-            {
-                var users = await ApiClient.GetPublicUsersAsync();
-
-                int? selectedIndex = null;
-
-                if (isInitialLoad)
-                {
-                    selectedIndex = 0;
-                }
-                else if (currentItem != null)
-                {
-                    var index = Array.FindIndex(users, i => string.Equals(i.Id, currentItem.User.Id));
-
-                    if (index != -1)
-                    {
-                        selectedIndex = index;
-                    }
-                }
-
-                _listItems.Clear();
-
-                _listItems.AddRange(users.Select(i => new UserDtoViewModel(ApiClient, ImageManager) { User = i }));
-
-                MoveFocus(new TraversalRequest(FocusNavigationDirection.First));
-
-                if (selectedIndex.HasValue)
-                {
-                    new ListFocuser(lstUsers).FocusAfterContainersGenerated(selectedIndex.Value);
-                }
-
-            }
-            catch (HttpException)
-            {
-                PresentationManager.ShowDefaultErrorMessage();
-            }
         }
 
         /// <summary>

@@ -30,7 +30,7 @@
 
         <controls2:TransitionControl x:Name="BackdropContainer">
             <controls2:TransitionControl.TransitionAnimation>
-                <DoubleAnimation Duration="0:0:1.5" >
+                <DoubleAnimation Duration="0:0:2" >
                 </DoubleAnimation>
             </controls2:TransitionControl.TransitionAnimation>
             <controls2:TransitionControl.TransitionType>
@@ -46,7 +46,7 @@
         </ContentControl>
         
         <Grid.LayoutTransform>
-            <ScaleTransform ScaleX="{Binding Path=ApplicationWindow.ContentScale}" ScaleY="{Binding Path=ApplicationWindow.ContentScale}" CenterX="0" CenterY="0" />
+            <ScaleTransform ScaleX="{Binding Path=ContentScale}" ScaleY="{Binding Path=ApplicationWindow.ContentScale}" CenterX="0" CenterY="0" />
         </Grid.LayoutTransform>
     </Grid>
 </controls2:BaseWindow>

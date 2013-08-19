@@ -16,7 +16,7 @@
                 </LinearGradientBrush>
             </Grid.Background>
 
-            <Image Source="{Binding ThumbUri}" Width="320" Height="180" Stretch="Uniform" Grid.Row="0">
+            <Image Source="{Binding ThumbUri}" Width="304" Height="171" Stretch="Uniform" Grid.Row="0">
 
             </Image>
 

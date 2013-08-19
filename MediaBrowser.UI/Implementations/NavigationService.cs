@@ -5,6 +5,7 @@ using MediaBrowser.Model.Configuration;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Core.FullscreenVideo;
+using MediaBrowser.Theater.Core.ImageViewer;
 using MediaBrowser.Theater.Core.Login;
 using MediaBrowser.Theater.Core.Settings;
 using MediaBrowser.Theater.Interfaces.Configuration;
@@ -14,6 +15,7 @@ using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Interfaces.UserInput;
+using MediaBrowser.Theater.Interfaces.ViewModels;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -61,7 +63,7 @@ namespace MediaBrowser.UI.Implementations
         private readonly ILogger _logger;
 
         private readonly IUserInputManager _userInputManager;
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="NavigationService" /> class.
         /// </summary>
@@ -152,7 +154,7 @@ namespace MediaBrowser.UI.Implementations
 
             return task.Task;
         }
-        
+
         /// <summary>
         /// Navigates to internal player page.
         /// </summary>
@@ -256,6 +258,11 @@ namespace MediaBrowser.UI.Implementations
         public Page CurrentPage
         {
             get { return App.Instance.ApplicationWindow.PageFrame.Content as Page; }
+        }
+
+        public Task NavigateToImageViewer(ImageViewerViewModel viewModel)
+        {
+            return Navigate(new ImageViewerPage(_themeManager, viewModel));
         }
     }
 }

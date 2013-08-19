@@ -283,7 +283,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
         /// </summary>
         protected async void LoadItem()
         {
-            ItemInfoFooter.Item = Item;
+            //ItemInfoFooter.Item = Item;
 
             SetTitle(Item);
             RenderDetailControls(Item);

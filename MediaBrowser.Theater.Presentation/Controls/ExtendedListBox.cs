@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -10,12 +11,19 @@ namespace MediaBrowser.Theater.Presentation.Controls
     /// Extends the ListBox to provide auto-focus behavior when items are moused over
     /// This also adds an ItemInvoked event that is fired when an item is clicked or invoked using the enter key
     /// </summary>
-    public class ExtendedListBox : ListBox
+    public class ExtendedListBox : ListBox, ICommandSource
     {
         /// <summary>
         /// Fired when an item is clicked or invoked using the enter key
         /// </summary>
         public event EventHandler<ItemEventArgs<object>> ItemInvoked;
+
+        static ExtendedListBox()
+        {
+            CommandProperty = DependencyProperty.Register("Command", typeof(ICommand), typeof(ExtendedListBox), new FrameworkPropertyMetadata(null, new PropertyChangedCallback(ExtendedListBox.OnCommandChanged)));
+            CommandParameterProperty = DependencyProperty.Register("CommandParameter", typeof(object), typeof(ExtendedListBox), new FrameworkPropertyMetadata(null));
+            CommandTargetProperty = DependencyProperty.Register("CommandTarget", typeof(IInputElement), typeof(ExtendedListBox), new FrameworkPropertyMetadata(null));
+        }
 
         /// <summary>
         /// Called when [item invoked].
@@ -23,6 +31,13 @@ namespace MediaBrowser.Theater.Presentation.Controls
         /// <param name="boundObject">The bound object.</param>
         protected virtual void OnItemInvoked(object boundObject)
         {
+            var cmd = Command;
+
+            if (cmd != null)
+            {
+                cmd.Execute(boundObject);
+            }
+
             if (ItemInvoked != null)
             {
                 ItemInvoked(this, new ItemEventArgs<object> { Argument = boundObject });
@@ -196,9 +211,9 @@ namespace MediaBrowser.Theater.Presentation.Controls
 
                 if (listBoxItem != null && !listBoxItem.IsFocused)
                 {
-                    //listBoxItem.Focus();
+                    listBoxItem.Focus();
 
-                    SelectedIndex = ItemContainerGenerator.IndexFromContainer(listBoxItem);
+                    SelectedItem = ItemContainerGenerator.ItemFromContainer(listBoxItem);
                 }
             }
         }
@@ -226,6 +241,128 @@ namespace MediaBrowser.Theater.Presentation.Controls
         protected override DependencyObject GetContainerForItemOverride()
         {
             return new ExtendedListBoxItem();
+        }
+
+        public static readonly DependencyProperty CommandParameterProperty;
+        public static readonly DependencyProperty CommandProperty;
+        public static readonly DependencyProperty CommandTargetProperty;
+
+        [Bindable(true), Category("Action"), Localizability(LocalizationCategory.NeverLocalize)]
+        public ICommand Command
+        {
+            get
+            {
+                return (ICommand)GetValue(CommandProperty);
+            }
+            set
+            {
+                SetValue(CommandProperty, value);
+            }
+        }
+
+        [Bindable(true), Category("Action"), Localizability(LocalizationCategory.NeverLocalize)]
+        public object CommandParameter
+        {
+            get
+            {
+                return GetValue(CommandParameterProperty);
+            }
+            set
+            {
+                SetValue(CommandParameterProperty, value);
+            }
+        }
+
+        [Bindable(true), Category("Action")]
+        public IInputElement CommandTarget
+        {
+            get
+            {
+                return (IInputElement)GetValue(CommandTargetProperty);
+            }
+            set
+            {
+                SetValue(CommandTargetProperty, value);
+            }
+        }
+
+        private bool CanExecute
+        {
+            get
+            {
+                return true;
+                //return !base.ReadControlFlag(Control.ControlBoolFlags.CommandDisabled);
+            }
+            set
+            {
+                if (value != CanExecute)
+                {
+                    //base.WriteControlFlag(Control.ControlBoolFlags.CommandDisabled, !value);
+                    //base.CoerceValue(UIElement.IsEnabledProperty);
+                }
+            }
+        }
+        
+        private static void OnCommandChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var buttonBase = (ExtendedListBox)d;
+            buttonBase.OnCommandChanged((ICommand)e.OldValue, (ICommand)e.NewValue);
+        }
+
+        private void OnCommandChanged(ICommand oldCommand, ICommand newCommand)
+        {
+            if (oldCommand != null)
+            {
+                UnhookCommand(oldCommand);
+            }
+            if (newCommand != null)
+            {
+                HookCommand(newCommand);
+            }
+        }
+        private void UnhookCommand(ICommand command)
+        {
+            CanExecuteChangedEventManager.RemoveHandler(command, OnCanExecuteChanged);
+            UpdateCanExecute();
+        }
+        private void HookCommand(ICommand command)
+        {
+            CanExecuteChangedEventManager.AddHandler(command, OnCanExecuteChanged);
+            UpdateCanExecute();
+        }
+        private void UpdateCanExecute()
+        {
+            if (Command != null)
+            {
+                CanExecute = CanExecuteCommandSource(this);
+                return;
+            }
+            CanExecute = true;
+        }
+        private void OnCanExecuteChanged(object sender, EventArgs e)
+        {
+            UpdateCanExecute();
+        }
+
+        internal static bool CanExecuteCommandSource(ICommandSource commandSource)
+        {
+            var command = commandSource.Command;
+            if (command == null)
+            {
+                return false;
+            }
+            var commandParameter = commandSource.CommandParameter;
+            var inputElement = commandSource.CommandTarget;
+            var routedCommand = command as RoutedCommand;
+            if (routedCommand != null)
+            {
+                if (inputElement == null)
+                {
+                    inputElement = (commandSource as IInputElement);
+                }
+                return routedCommand.CanExecute(commandParameter, inputElement);
+            }
+            return command.CanExecute(commandParameter);
         }
     }
 

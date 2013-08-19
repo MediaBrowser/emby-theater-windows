@@ -1,6 +1,7 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation">
+                    xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
+                    xmlns:System="clr-namespace:System;assembly=mscorlib">
 
     <!--Default Window style. -->
     <Style TargetType="Window" x:Key="MainWindow">
@@ -18,10 +19,12 @@
         </Style.Triggers>
     </Style>
 
+    <System:Double x:Key="BackdropOpacity">.3</System:Double>
+
     <!--Themes may want to override this to adjust the backdrop image style-->
     <Style TargetType="Image" x:Key="BackdropImage">
         <Setter Property="Stretch" Value="UniformToFill"/>
-        <Setter Property="Opacity" Value=".25"/>
+        <Setter Property="Opacity" Value="{DynamicResource BackdropOpacity}"/>
     </Style>
 
     <Style TargetType="Grid" x:Key="DragBar">
@@ -30,19 +33,18 @@
         <Setter Property="VerticalAlignment" Value="Top"/>
         <Setter Property="Panel.ZIndex" Value="1"/>
     </Style>
-    <Style TargetType="UserControl" x:Key="WindowCommands">
+    <Style TargetType="Grid" x:Key="WindowCommandsContainer">
         <Setter Property="Margin" Value="0 10 0 0"/>
         <Setter Property="HorizontalAlignment" Value="Right"/>
         <Setter Property="VerticalAlignment" Value="Top"/>
         <Setter Property="Panel.ZIndex" Value="2"/>
-        <Setter Property="Visibility" Value="Collapsed" />
         <Style.Triggers>
-            <DataTrigger Binding="{Binding Path=ApplicationWindow.IsMouseIdle}" Value="false">
-                <Setter Property="Visibility" Value="Visible" />
+            <DataTrigger Binding="{Binding IsMouseIdle}" Value="True">
+                <Setter Property="Visibility" Value="Collapsed" />
             </DataTrigger>
         </Style.Triggers>
-    </Style>    
-    
+    </Style>
+
     <!--Themes should override this to layout window content-->
     <ControlTemplate x:Key="PageContentTemplate">
         <controls:PageContainer x:Name="PageContainer"></controls:PageContainer>

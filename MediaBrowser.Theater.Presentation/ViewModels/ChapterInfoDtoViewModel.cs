@@ -3,17 +3,20 @@ using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
+using MediaBrowser.Theater.Interfaces.Reflection;
 using System;
+using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Media.Imaging;
+using MediaBrowser.Theater.Interfaces.ViewModels;
 
 namespace MediaBrowser.Theater.Presentation.ViewModels
 {
     /// <summary>
     /// Class ChapterInfoDtoViewModel
     /// </summary>
+    [TypeDescriptionProvider(typeof(HyperTypeDescriptionProvider))]
     public class ChapterInfoDtoViewModel : BaseViewModel, IDisposable
     {
         /// <summary>

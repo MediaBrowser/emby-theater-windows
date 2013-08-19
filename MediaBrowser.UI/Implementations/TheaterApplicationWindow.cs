@@ -146,7 +146,6 @@ namespace MediaBrowser.UI.Implementations
 
         public void ShowNotification(string caption, string text, BitmapImage icon)
         {
-            _themeManager.CurrentTheme.ShowNotification(caption, text, icon);
         }
 
         public void SetPageTitle(string title)

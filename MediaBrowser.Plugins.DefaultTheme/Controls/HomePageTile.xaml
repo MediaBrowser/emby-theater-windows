@@ -40,7 +40,7 @@
 
             <TextBlock x:Name="TxtName" Foreground="White" Margin="10 5 10 10" TextWrapping="NoWrap" Style="{DynamicResource SmallTextBlockStyle}" TextTrimming="CharacterEllipsis" Grid.Row="0"></TextBlock>
 
-            <ProgressBar Name="Progress" Maximum="100" Value="40" Margin="10 0 10 10" Style="{DynamicResource ResumeProgressBar}" Grid.Row="1" Visibility="Collapsed"></ProgressBar>
+            <ProgressBar Name="Progress" Maximum="100" Value="40" Margin="10 0 10 10" Style="{StaticResource ResumeProgressBar}" Grid.Row="1" Visibility="Collapsed"></ProgressBar>
         </Grid>
     </Grid>
 </UserControl>

@@ -260,13 +260,9 @@ namespace MediaBrowser.UI
             return new ConfigurationManager(ApplicationPaths, LogManager, XmlSerializer);
         }
 
-        public override async Task<CheckForUpdateResult> CheckForApplicationUpdate(CancellationToken cancellationToken, IProgress<double> progress)
+        protected override string ApplicationUpdatePackageName
         {
-            var availablePackages = await InstallationManager.GetAvailablePackagesWithoutRegistrationInfo(CancellationToken.None).ConfigureAwait(false);
-            var version = InstallationManager.GetLatestCompatibleVersion(availablePackages, Constants.MbTheaterPkgName, ConfigurationManager.CommonConfiguration.SystemUpdateLevel);
-
-            return version != null ? new CheckForUpdateResult { AvailableVersion = version.version, IsUpdateAvailable = version.version > ApplicationVersion, Package = version } :
-                       new CheckForUpdateResult { AvailableVersion = ApplicationVersion, IsUpdateAvailable = false };
+            get { return Constants.MbTheaterPkgName; }
         }
     }
 }

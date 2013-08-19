@@ -3,6 +3,7 @@ using MediaBrowser.Model.Dto;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using System;
 using System.Threading;
+using MediaBrowser.Theater.Interfaces.ViewModels;
 
 namespace MediaBrowser.Theater.Presentation.ViewModels
 {

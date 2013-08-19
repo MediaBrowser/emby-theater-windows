@@ -1,17 +1,19 @@
-﻿using System.Windows;
-using MediaBrowser.Model.ApiClient;
+﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Net;
-using MediaBrowser.Plugins.DefaultTheme.Pages;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Theming;
+using MediaBrowser.Theater.Interfaces.ViewModels;
 using MediaBrowser.Theater.Presentation.Controls;
+using MediaBrowser.Theater.Presentation.Pages;
+using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media.Imaging;
@@ -72,7 +74,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
             images = images.Skip(selectedIndex).Concat(images.Take(selectedIndex)).ToList();
 
-            await _nav.Navigate(new ImageViewerPage(_themeManager, Item.Name, images, _imageManager, _item.Id));
+            var initialImages = images.Select(i => new ImageViewerImage { Url = i, Caption = Item.Name });
+
+            var vm = new ImageViewerViewModel(Dispatcher, _imageManager, initialImages);
+
+            await _nav.NavigateToImageViewer(vm);
         }
 
         /// <summary>

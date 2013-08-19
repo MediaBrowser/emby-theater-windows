@@ -1,16 +1,20 @@
-﻿using System.Threading;
-using System.Windows.Input;
-using System.Windows.Threading;
-using MediaBrowser.Model.ApiClient;
+﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
-using System;
-using System.Linq;
+using MediaBrowser.Theater.Interfaces.Reflection;
+using MediaBrowser.Theater.Interfaces.ViewModels;
 using MediaBrowser.Theater.Presentation.Playback;
+using System;
+using System.ComponentModel;
+using System.Linq;
+using System.Threading;
+using System.Windows.Input;
+using System.Windows.Threading;
 
 namespace MediaBrowser.Theater.Presentation.ViewModels
 {
+    [TypeDescriptionProvider(typeof(HyperTypeDescriptionProvider))]
     public class TransportOsdViewModel : BaseViewModel, IDisposable
     {
         public IApiClient ApiClient { get; private set; }
@@ -27,7 +31,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         private Timer _currentPositionTimer;
 
-        private Dispatcher _currentDispatcher;
+        private readonly Dispatcher _currentDispatcher;
 
         private IMediaPlayer _mediaPlayer;
         public IMediaPlayer MediaPlayer

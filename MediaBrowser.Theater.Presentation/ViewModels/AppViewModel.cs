@@ -1,14 +1,18 @@
 ﻿using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Interfaces.Presentation;
+using MediaBrowser.Theater.Interfaces.Reflection;
 using MediaBrowser.Theater.Interfaces.Theming;
 using System;
+using System.ComponentModel;
 using System.Windows;
+using MediaBrowser.Theater.Interfaces.ViewModels;
 
 namespace MediaBrowser.Theater.Presentation.ViewModels
 {
     /// <summary>
     /// Class AppViewModel
     /// </summary>
+    [TypeDescriptionProvider(typeof(HyperTypeDescriptionProvider))]
     public class AppViewModel : BaseViewModel
     {
         /// <summary>

@@ -26,6 +26,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
             : base()
         {
             SizeChanged += MainWindow_SizeChanged;
+            StateChanged += BaseWindow_StateChanged;
             Loaded += BaseWindow_Loaded;
         }
 
@@ -59,8 +60,14 @@ namespace MediaBrowser.Theater.Presentation.Controls
             get { return _contentScale; }
             private set
             {
+                var changed = !_contentScale.Equals(value);
+
                 _contentScale = value;
-                OnPropertyChanged("ContentScale");
+
+                if (changed)
+                {
+                    OnPropertyChanged("ContentScale");
+                }
             }
         }
 
@@ -104,6 +111,11 @@ namespace MediaBrowser.Theater.Presentation.Controls
         {
             Dispatcher.InvokeAsync(() =>
             {
+                if (!IsActive)
+                {
+                    return;
+                }
+
                 Cursor = Cursors.None;
 
                 lock (_cursorLock)
@@ -205,6 +217,11 @@ namespace MediaBrowser.Theater.Presentation.Controls
         void MainWindow_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             ContentScale = e.NewSize.Height / 1080;
+        }
+
+        void BaseWindow_StateChanged(object sender, EventArgs e)
+        {
+            ContentScale = Height / 1080;
         }
 
         /// <summary>

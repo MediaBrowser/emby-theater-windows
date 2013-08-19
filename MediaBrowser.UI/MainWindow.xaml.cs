@@ -1,5 +1,4 @@
-﻿using System.Windows.Media.Animation;
-using MediaBrowser.Common;
+﻿using MediaBrowser.Common;
 using MediaBrowser.Common.Events;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Logging;
@@ -11,7 +10,6 @@ using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.UserInput;
 using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.ViewModels;
-using MediaBrowser.UI.Controls;
 using MediaBrowser.UI.Implementations;
 using Microsoft.Expression.Media.Effects;
 using System;
@@ -33,7 +31,7 @@ namespace MediaBrowser.UI
     {
         internal event EventHandler<NavigationEventArgs> Navigated;
 
-        internal RotatingBackdrops RotatingBackdrops { get; private set; }
+        internal RotatingBackdropsViewModel RotatingBackdrops { get; private set; }
 
         private readonly ILogger _logger;
         private readonly IApplicationHost _appHost;
@@ -63,9 +61,8 @@ namespace MediaBrowser.UI
 
             InitializeComponent();
 
-            RotatingBackdrops = new RotatingBackdrops(Dispatcher, BackdropContainer, imageManager, apiClient, playbackManager, _config, _logger);
+            RotatingBackdrops = new RotatingBackdropsViewModel(apiClient, _config, imageManager, playbackManager, logger);
 
-            WindowCommands.ApplicationHost = _appHost;
             _config.UserConfigurationUpdated += _config_UserConfigurationUpdated;
             _config.ConfigurationUpdated += _config_ConfigurationUpdated;
             _session.UserLoggedIn += _session_UserLoggedIn;
@@ -77,13 +74,6 @@ namespace MediaBrowser.UI
             //    typeof(Timeline),
             //    new FrameworkPropertyMetadata { DefaultValue = 30 }
             //);
-        }
-
-        protected override void OnInitialized(EventArgs e)
-        {
-            base.OnInitialized(e);
-
-            VolumeOsd.DataContext = new VolumeOsdViewModel(_playbackManager);
         }
 
         void _playbackManager_PlaybackStarted(object sender, PlaybackStartEventArgs e)
@@ -138,9 +128,13 @@ namespace MediaBrowser.UI
 
         void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            DataContext = this;
+
+            WindowCommands.DataContext = new WindowCommandsViewModel(this, _appHost);
+            VolumeOsd.DataContext = new VolumeOsdViewModel(_playbackManager);
+            BackdropContainer.DataContext = RotatingBackdrops;
+
             NavigationManager.Navigated += NavigationManager_Navigated;
-            
-            DataContext = App.Instance;
 
             DragBar.MouseDown += DragableGridMouseDown;
 

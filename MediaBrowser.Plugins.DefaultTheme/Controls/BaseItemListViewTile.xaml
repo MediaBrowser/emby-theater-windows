@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:details="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Controls.Details"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
 
@@ -25,13 +24,10 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"></RowDefinition>
                 <RowDefinition Height="*"></RowDefinition>
-                <RowDefinition Height="auto"></RowDefinition>
             </Grid.RowDefinitions>
 
             <TextBlock Name="TxtName" Style="{DynamicResource TextBlockStyle}" Grid.Row="0"></TextBlock>
             <TextBlock Name="TxtOverview" Style="{DynamicResource SmallTextBlockStyle}" Grid.Row="1" Foreground="#ccc" TextTrimming="CharacterEllipsis"></TextBlock>
-
-            <details:ItemInfoFooter x:Name="ItemInfoFooter" Grid.Row="2" VerticalAlignment="Bottom" HorizontalAlignment="Right" EnableSmallText="True" VerticalContentAlignment="Center"></details:ItemInfoFooter>
         </Grid>
     </Grid>
 </UserControl>

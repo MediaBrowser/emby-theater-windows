@@ -29,6 +29,8 @@ namespace MediaBrowser.Theater.Presentation.Pages
             Loaded += BasePage_Loaded;
         }
 
+        private IDisposable _disposableDataContext;
+
         /// <summary>
         /// Handles the Loaded event of the BasePage control.
         /// </summary>
@@ -36,6 +38,8 @@ namespace MediaBrowser.Theater.Presentation.Pages
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         void BasePage_Loaded(object sender, RoutedEventArgs e)
         {
+            _disposableDataContext = DataContext as IDisposable;
+
             FocusManager.SetIsFocusScope(this, true);
 
             if (_lastFocused == null)
@@ -61,6 +65,14 @@ namespace MediaBrowser.Theater.Presentation.Pages
             _lastFocused = e.NewFocus;
 
             base.OnPreviewGotKeyboardFocus(e);
+        }
+
+        ~BasePage()
+        {
+            if (_disposableDataContext != null)
+            {
+                _disposableDataContext.Dispose();
+            }
         }
     }
 }

@@ -38,21 +38,12 @@
     <!--Default font for h2 headers. Themes should override these as needed-->
     <Brush x:Key="Heading2Foreground">#ffffff</Brush>
 
-    <Style TargetType="TextBlock" x:Key="TagTextBlock" BasedOn="{StaticResource SmallTextBlockStyle}">
-        <Setter Property="Background" Value="#a6444444">
-        </Setter>
-        <Setter Property="Padding" Value="10">
-        </Setter>
-        <Setter Property="Margin" Value="0 0 10 10">
-        </Setter>
-    </Style>
-
     <Style TargetType="Path" x:Key="IconPath">
         <Setter Property="Fill">
             <Setter.Value>
                 <LinearGradientBrush SpreadMethod="Reflect" ColorInterpolationMode="SRgbLinearInterpolation" StartPoint="0,0" EndPoint="0,1" >
                     <GradientStop Color="#ffffffff" Offset="0" />
-                    <GradientStop Color="#ffbfbfbf" Offset="1" />
+                    <GradientStop Color="#ffcfcfcf" Offset="1" />
                 </LinearGradientBrush>
             </Setter.Value>
         </Setter>

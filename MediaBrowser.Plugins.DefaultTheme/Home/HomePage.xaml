@@ -11,7 +11,7 @@
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <controls:ExtendedListBox x:Name="MenuList" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" Grid.Row="0" HorizontalAlignment="Center" Margin="20 50 20 20" ItemContainerStyle="{DynamicResource HomePageListBoxItemStyle}">
+        <controls:ExtendedListBox x:Name="MenuList" ItemsSource="{Binding Sections}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" Grid.Row="0" HorizontalAlignment="Center" Margin="20 50 20 20" ItemContainerStyle="{StaticResource HomePageListBoxItemStyle}">
             <controls:ExtendedListBox.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" />
@@ -21,7 +21,72 @@
 
         <controls:ExtendedScrollViewer x:Name="ScrollViewer" Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalAlignment="Top" HorizontalAlignment="Center" CanContentScroll="True">
             <controls:ScrollingPanel x:Name="ScrollingPanel" CanHorizontallyScroll="True" CanVerticallyScroll="False" HorizontalAlignment="Stretch">
-                <ContentControl x:Name="PageContent" Margin="100 40 100 40"></ContentControl>
+                <ContentControl x:Name="PageContent" Margin="100 40 100 40" Focusable="False">
+                    <ContentControl.Style>
+                        <Style TargetType="{x:Type ContentControl}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding CurrentSection}" Value="movies">
+                                    <Setter Property="Content">
+                                        <Setter.Value>
+                                            <Grid></Grid>
+                                        </Setter.Value>
+                                    </Setter>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding CurrentSection}" Value="tv">
+                                    <Setter Property="Content">
+                                        <Setter.Value>
+                                            <Grid></Grid>
+                                        </Setter.Value>
+                                    </Setter>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding CurrentSection}" Value="music">
+                                    <Setter Property="Content">
+                                        <Setter.Value>
+                                            <Grid></Grid>
+                                        </Setter.Value>
+                                    </Setter>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding CurrentSection}" Value="apps">
+                                    <Setter Property="Content">
+                                        <Setter.Value>
+                                            <Grid>
+                                                <controls:ExtendedListBox Margin="-40 -30 -40 -35" DataContext="{Binding ContentViewModel}" ItemsSource="{Binding ListCollectionView}" Command="{Binding LaunchCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource AppListBoxItemTemplate}">
+                                                    <controls:ExtendedListBox.ItemsPanel>
+                                                        <ItemsPanelTemplate>
+                                                            <UniformGrid Margin="40 35" Rows="2"></UniformGrid>
+                                                        </ItemsPanelTemplate>
+                                                    </controls:ExtendedListBox.ItemsPanel>
+                                                </controls:ExtendedListBox>
+                                            </Grid>
+                                        </Setter.Value>
+                                    </Setter>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding CurrentSection}" Value="media collections">
+                                    <Setter Property="Content">
+                                        <Setter.Value>
+                                            <Grid>
+                                                <controls:ExtendedListBox Margin="-25 -35" DataContext="{Binding ContentViewModel}" ItemsSource="{Binding ListCollectionView}" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource HomePageItemTemplate}">
+                                                    <controls:ExtendedListBox.ItemsPanel>
+                                                        <ItemsPanelTemplate>
+                                                            <UniformGrid Margin="40 35" Rows="3"></UniformGrid>
+                                                        </ItemsPanelTemplate>
+                                                    </controls:ExtendedListBox.ItemsPanel>
+                                                </controls:ExtendedListBox>
+                                            </Grid>
+                                        </Setter.Value>
+                                    </Setter>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding CurrentSection}" Value="games">
+                                    <Setter Property="Content">
+                                        <Setter.Value>
+                                            <Grid></Grid>
+                                        </Setter.Value>
+                                    </Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ContentControl.Style>
+                </ContentControl>
             </controls:ScrollingPanel>
         </controls:ExtendedScrollViewer>
     </Grid>

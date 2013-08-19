@@ -1,6 +1,7 @@
 ﻿using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Net;
+using MediaBrowser.Plugins.DefaultTheme.ListPage;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
@@ -86,8 +87,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
             {
                 ViewModel.PropertyChanged -= ViewModel_PropertyChanged;
                 ViewModel.PropertyChanged += ViewModel_PropertyChanged;
-
-                ItemInfoFooter.Item = ViewModel.Item;
             }
         }
 
@@ -110,7 +109,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
 
             ReloadImage(item);
 
-            TxtName.Text = BaseItemTile.GetDisplayName(item);
+            TxtName.Text = FolderPage.GetDisplayName(item);
             TxtOverview.Text = item.Overview;
         }
 

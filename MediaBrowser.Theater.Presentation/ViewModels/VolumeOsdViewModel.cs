@@ -1,9 +1,13 @@
 ﻿using MediaBrowser.Theater.Interfaces.Playback;
+using MediaBrowser.Theater.Interfaces.Reflection;
 using System;
+using System.ComponentModel;
 using System.Threading;
+using MediaBrowser.Theater.Interfaces.ViewModels;
 
 namespace MediaBrowser.Theater.Presentation.ViewModels
 {
+    [TypeDescriptionProvider(typeof(HyperTypeDescriptionProvider))]
     public class VolumeOsdViewModel : BaseViewModel, IDisposable
     {
         private readonly IPlaybackManager _playbackManager;

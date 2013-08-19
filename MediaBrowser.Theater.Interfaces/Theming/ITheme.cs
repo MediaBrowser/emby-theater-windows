@@ -2,7 +2,6 @@
 using MediaBrowser.Theater.Interfaces.Presentation;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media.Imaging;
 
 namespace MediaBrowser.Theater.Interfaces.Theming
 {
@@ -38,14 +37,6 @@ namespace MediaBrowser.Theater.Interfaces.Theming
         /// <param name="options">The options.</param>
         /// <returns>MessageBoxResult.</returns>
         MessageBoxResult ShowMessage(MessageBoxInfo options);
-
-        /// <summary>
-        /// Shows the notification.
-        /// </summary>
-        /// <param name="caption">The caption.</param>
-        /// <param name="text">The text.</param>
-        /// <param name="icon">The icon.</param>
-        void ShowNotification(string caption, string text, BitmapImage icon);
 
         /// <summary>
         /// Sets the page title.

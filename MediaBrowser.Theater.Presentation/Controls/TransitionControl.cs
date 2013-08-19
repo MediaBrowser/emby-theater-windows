@@ -56,7 +56,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
         /// </summary>
         public static readonly DependencyProperty TransitionTypeProperty =
             DependencyProperty.Register("TransitionType", typeof(TransitionEffect), typeof(TransitionControl),
-            new UIPropertyMetadata(new BlindsTransitionEffect()));
+            new UIPropertyMetadata(null));
 
         #endregion DP TransitionType
 

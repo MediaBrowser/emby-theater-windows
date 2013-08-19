@@ -4,7 +4,7 @@ using MediaBrowser.Model.Logging;
 using MediaBrowser.Plugins.DefaultTheme.Controls;
 using MediaBrowser.Plugins.DefaultTheme.Details;
 using MediaBrowser.Plugins.DefaultTheme.Header;
-using MediaBrowser.Plugins.DefaultTheme.Pages.FolderBrowsing;
+using MediaBrowser.Plugins.DefaultTheme.ListPage;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
@@ -86,12 +86,6 @@ namespace MediaBrowser.Plugins.DefaultTheme
         {
             var namespaceName = GetType().Namespace;
 
-            // These are going to be loaded no matter which theme is active
-            _presentationManager.AddResourceDictionary(new ResourceDictionary
-            {
-                Source = new Uri("pack://application:,,,/" + namespaceName + ";component/Resources/ListBoxItems.xaml", UriKind.Absolute)
-            });
-
             _presentationManager.AddResourceDictionary(new ResourceDictionary
             {
                 Source = new Uri("pack://application:,,,/" + namespaceName + ";component/Resources/Popups.xaml", UriKind.Absolute)
@@ -116,7 +110,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         {
             var namespaceName = GetType().Namespace;
 
-            return new[] { ThemeColorResource, "AppResources", "Details", "VolumeOsd", "TransportOsd", "DisplayPreferences", "Slider" }.Select(i => new ResourceDictionary
+            return new[] { ThemeColorResource, "AppResources", "Details", "VolumeOsd", "TransportOsd", "DisplayPreferences" }.Select(i => new ResourceDictionary
             {
                 Source = new Uri("pack://application:,,,/" + namespaceName + ";component/Resources/" + i + ".xaml", UriKind.Absolute)
 
@@ -199,17 +193,6 @@ namespace MediaBrowser.Plugins.DefaultTheme
         }
 
         /// <summary>
-        /// Shows the notification.
-        /// </summary>
-        /// <param name="caption">The caption.</param>
-        /// <param name="text">The text.</param>
-        /// <param name="icon">The icon.</param>
-        public void ShowNotification(string caption, string text, BitmapImage icon)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
         /// Sets the page title.
         /// </summary>
         /// <param name="title">The title.</param>
@@ -248,11 +231,6 @@ namespace MediaBrowser.Plugins.DefaultTheme
             foreach (var resource in _globalResources)
             {
                 _presentationManager.RemoveResourceDictionary(resource);
-            }
-
-            foreach (var resource in _globalResources.OfType<IDisposable>())
-            {
-                resource.Dispose();
             }
 
             _globalResources.Clear();

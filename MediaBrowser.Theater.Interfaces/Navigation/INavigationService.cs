@@ -2,6 +2,7 @@
 using System;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using MediaBrowser.Theater.Interfaces.ViewModels;
 
 namespace MediaBrowser.Theater.Interfaces.Navigation
 {
@@ -69,6 +70,8 @@ namespace MediaBrowser.Theater.Interfaces.Navigation
         /// Navigates the forward.
         /// </summary>
         Task NavigateForward();
+
+        Task NavigateToImageViewer(ImageViewerViewModel viewModel);
 
         /// <summary>
         /// Clears the history.

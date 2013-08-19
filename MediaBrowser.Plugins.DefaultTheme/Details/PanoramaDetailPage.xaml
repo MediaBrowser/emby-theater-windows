@@ -4,8 +4,8 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                                  xmlns:pages="clr-namespace:MediaBrowser.Theater.Presentation.Pages;assembly=MediaBrowser.Theater.Presentation"
-                xmlns:details="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Controls.Details"
                 xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
+                xmlns:details="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Controls"
                 mc:Ignorable="d" 
       d:DesignHeight="300" d:DesignWidth="300"
 	Title="PanoramaDetailPage">
@@ -18,7 +18,7 @@
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="auto"></RowDefinition>
         </Grid.RowDefinitions>
-        
+
         <TextBlock Name="TxtName" Style="{DynamicResource TextBlockStyle}" HorizontalAlignment="Center" Margin="200 15 200 0" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"></TextBlock>
 
         <controls:ExtendedListBox x:Name="MenuList" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" Grid.Row="1" HorizontalAlignment="Center" Margin="20 30 20 0" ItemContainerStyle="{DynamicResource DetailPageMenuListBoxItemStyle}">
@@ -28,7 +28,7 @@
                 </ItemsPanelTemplate>
             </controls:ExtendedListBox.ItemsPanel>
         </controls:ExtendedListBox>
-        
+
         <controls:ExtendedScrollViewer x:Name="ScrollViewer" Grid.Row="2" Margin="70 30 40 0" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalAlignment="Stretch" HorizontalAlignment="Center" CanContentScroll="True">
             <controls:ScrollingPanel x:Name="ScrollingPanel" CanHorizontallyScroll="True" CanVerticallyScroll="False" HorizontalAlignment="Stretch">
                 <ContentControl x:Name="PageContent">

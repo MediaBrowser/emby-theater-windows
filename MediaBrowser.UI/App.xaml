@@ -12,7 +12,9 @@
                 <ResourceDictionary Source="Resources/ListBox.xaml" />
                 <ResourceDictionary Source="Resources/Checkbox.xaml" />
                 <ResourceDictionary Source="Resources/RadioButton.xaml" />
+                <ResourceDictionary Source="Resources/Slider.xaml" />
                 <ResourceDictionary Source="Resources/MainWindowResources.xaml" />
+                <ResourceDictionary Source="Resources/WindowCommands.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MediaBrowser.Theater.Core;component/Resources/Settings.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MediaBrowser.Theater.Core;component/Resources/Login.xaml" />
             </ResourceDictionary.MergedDictionaries>

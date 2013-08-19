@@ -2,15 +2,19 @@
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Theater.Interfaces.Presentation;
+using MediaBrowser.Theater.Interfaces.Reflection;
 using System;
+using System.ComponentModel;
 using System.Threading;
 using System.Windows.Media.Imaging;
+using MediaBrowser.Theater.Interfaces.ViewModels;
 
 namespace MediaBrowser.Theater.Presentation.ViewModels
 {
     /// <summary>
     /// Class UserDtoViewModel
     /// </summary>
+    [TypeDescriptionProvider(typeof(HyperTypeDescriptionProvider))]
     public class UserDtoViewModel : BaseViewModel, IDisposable
     {
         /// <summary>

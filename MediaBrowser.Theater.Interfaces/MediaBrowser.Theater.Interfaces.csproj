@@ -32,13 +32,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MediaBrowser.Common, Version=3.0.4972.28759, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.Common, Version=3.0.4977.37920, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.3.0.178\lib\net45\MediaBrowser.Common.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.181\lib\net45\MediaBrowser.Common.dll</HintPath>
     </Reference>
-    <Reference Include="MediaBrowser.Model, Version=3.0.4972.28759, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.Model, Version=3.0.4977.37919, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.3.0.178\lib\net45\MediaBrowser.Model.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.181\lib\net45\MediaBrowser.Model.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -74,6 +74,9 @@
     <Compile Include="Presentation\IStartupEntryPoint.cs" />
     <Compile Include="Presentation\ITheaterApp.cs" />
     <Compile Include="Presentation\MessageBoxInfo.cs" />
+    <Compile Include="Reflection\ChainingPropertyDescriptor.cs" />
+    <Compile Include="Reflection\HyperTypeDescriptionProvider.cs" />
+    <Compile Include="Reflection\HyperTypeDescriptor.cs" />
     <Compile Include="Session\ISessionManager.cs" />
     <Compile Include="Navigation\INavigationService.cs" />
     <Compile Include="Playback\IExternalMediaPlayer.cs" />
@@ -91,6 +94,8 @@
     <Compile Include="Theming\IThemeManager.cs" />
     <Compile Include="Presentation\MessageBoxIcon.cs" />
     <Compile Include="UserInput\IUserInputManager.cs" />
+    <Compile Include="ViewModels\BaseViewModel.cs" />
+    <Compile Include="ViewModels\ImageViewerViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

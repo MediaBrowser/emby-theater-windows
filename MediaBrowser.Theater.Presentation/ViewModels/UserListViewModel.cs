@@ -1,14 +1,17 @@
 ﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Net;
 using MediaBrowser.Theater.Interfaces.Presentation;
+using MediaBrowser.Theater.Interfaces.Reflection;
 using System;
+using System.ComponentModel;
 using System.Linq;
-using System.Windows.Controls;
 using System.Windows.Data;
+using MediaBrowser.Theater.Interfaces.ViewModels;
 
 namespace MediaBrowser.Theater.Presentation.ViewModels
 {
-    public class UserListViewModel : BaseViewModel
+    [TypeDescriptionProvider(typeof(HyperTypeDescriptionProvider))]
+    public class UserListViewModel : BaseViewModel, IDisposable
     {
         public IPresentationManager PresentationManager { get; private set; }
         public IApiClient ApiClient { get; private set; }
@@ -20,7 +23,16 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         private ListCollectionView _listCollectionView;
         public ListCollectionView ListCollectionView
         {
-            get { return _listCollectionView; }
+            get
+            {
+                if (_listCollectionView == null)
+                {
+                    _listCollectionView = new ListCollectionView(_listItems);
+                    ReloadUsers(true);
+                }
+
+                return _listCollectionView;
+            }
 
             set
             {
@@ -34,17 +46,11 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
-        private readonly ListBox _listBox;
-
-        public UserListViewModel(IPresentationManager presentationManager, IApiClient apiClient, IImageManager imageManager, ListBox listBox)
+        public UserListViewModel(IPresentationManager presentationManager, IApiClient apiClient, IImageManager imageManager)
         {
             ImageManager = imageManager;
-            _listBox = listBox;
             ApiClient = apiClient;
             PresentationManager = presentationManager;
-            ListCollectionView = new ListCollectionView(_listItems);
-
-            ReloadUsers(true);
         }
 
         private async void ReloadUsers(bool isInitialLoad)
@@ -78,13 +84,20 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
                 if (selectedIndex.HasValue)
                 {
-                    //new ListFocuser(_listBox).FocusAfterContainersGenerated(selectedIndex.Value);
                     ListCollectionView.MoveCurrentToPosition(selectedIndex.Value);
                 }
             }
             catch (HttpException)
             {
                 PresentationManager.ShowDefaultErrorMessage();
+            }
+        }
+
+        public void Dispose()
+        {
+            foreach (var item in _listItems.ToList())
+            {
+                item.Dispose();
             }
         }
     }

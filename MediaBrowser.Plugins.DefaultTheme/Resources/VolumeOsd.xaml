@@ -45,9 +45,10 @@
 
             <Border.Style>
                 <Style TargetType="{x:Type Border}">
+                    <Setter Property="Visibility" Value="Collapsed" />
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding IsRecentlyUpdated}" Value="False">
-                            <Setter Property="Visibility" Value="Collapsed" />
+                        <DataTrigger Binding="{Binding IsRecentlyUpdated}" Value="True">
+                            <Setter Property="Visibility" Value="Visible" />
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>

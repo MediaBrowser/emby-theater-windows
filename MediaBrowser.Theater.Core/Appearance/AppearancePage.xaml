@@ -17,7 +17,6 @@
             <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="auto"></RowDefinition>
-            <RowDefinition Height="auto"></RowDefinition>
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
@@ -56,10 +55,7 @@
         <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Row="3" Grid.Column="0" Margin="0 30 0 0">Page transition:</TextBlock>
         <controls:SelectList x:Name="SelectNavigationTransition" Margin="40 30 0 0" Grid.Row="3" Grid.Column="1"></controls:SelectList>
 
-        <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Row="4" Grid.Column="0" Margin="0 30 0 0">Backdrop transition:</TextBlock>
-        <controls:SelectList x:Name="SelectBackdropTransition" Margin="40 30 0 0" Grid.Row="4" Grid.Column="1"></controls:SelectList>
-
-        <Button x:Name="BtnApply" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Margin="0 60 0 0">
+        <Button x:Name="BtnApply" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Margin="0 60 0 0">
             <TextBlock Style="{DynamicResource TextBlockStyle}">Apply</TextBlock>
         </Button>
     </Grid>

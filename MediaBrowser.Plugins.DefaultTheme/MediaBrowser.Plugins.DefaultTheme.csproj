@@ -38,13 +38,13 @@
     <RunPostBuildEvent>Always</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MediaBrowser.Common, Version=3.0.4972.28759, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.Common, Version=3.0.4977.37920, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.3.0.178\lib\net45\MediaBrowser.Common.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.181\lib\net45\MediaBrowser.Common.dll</HintPath>
     </Reference>
-    <Reference Include="MediaBrowser.Model, Version=3.0.4972.28759, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.Model, Version=3.0.4977.37919, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.3.0.178\lib\net45\MediaBrowser.Model.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.181\lib\net45\MediaBrowser.Model.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Expression.Effects, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -83,10 +83,7 @@
     <Compile Include="Controls\BaseItemListViewTile.xaml.cs">
       <DependentUpon>BaseItemListViewTile.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\BaseItemTile.xaml.cs">
-      <DependentUpon>BaseItemTile.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\Details\ItemInfoFooter.xaml.cs">
+    <Compile Include="Controls\ItemInfoFooter.xaml.cs">
       <DependentUpon>ItemInfoFooter.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\HomePageTile.xaml.cs">
@@ -137,18 +134,16 @@
     <Compile Include="Details\Trailers.xaml.cs">
       <DependentUpon>Trailers.xaml</DependentUpon>
     </Compile>
-    <Compile Include="DisplayPreferences\BaseDisplayPreferencesPage.cs" />
-    <Compile Include="DisplayPreferences\DisplayPreferencesMenu.xaml.cs">
+    <Compile Include="DisplayPreferencesMenu\DisplayPreferencesMenu.xaml.cs">
       <DependentUpon>DisplayPreferencesMenu.xaml</DependentUpon>
     </Compile>
-    <Compile Include="DisplayPreferences\IHasDisplayPreferences.cs" />
-    <Compile Include="DisplayPreferences\MainPage.xaml.cs">
+    <Compile Include="DisplayPreferencesMenu\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="DisplayPreferences\SortMenuPage.xaml.cs">
+    <Compile Include="DisplayPreferencesMenu\SortMenuPage.xaml.cs">
       <DependentUpon>SortMenuPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="DisplayPreferences\ViewMenuPage.xaml.cs">
+    <Compile Include="DisplayPreferencesMenu\ViewMenuPage.xaml.cs">
       <DependentUpon>ViewMenuPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Header\PageTitlePanel.xaml.cs">
@@ -157,13 +152,9 @@
     <Compile Include="Header\TopRightPanel.xaml.cs">
       <DependentUpon>TopRightPanel.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Home\GamesViewModel.cs" />
     <Compile Include="Home\HomePageInfo.cs" />
-    <Compile Include="Home\AppsControl.xaml.cs">
-      <DependentUpon>AppsControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Home\Folders.xaml.cs">
-      <DependentUpon>Folders.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="Home\HomePageViewModel.cs" />
     <Compile Include="Home\Movies\Movies.xaml.cs">
       <DependentUpon>Movies.xaml</DependentUpon>
     </Compile>
@@ -178,18 +169,6 @@
     </Compile>
     <Compile Include="Home\Movies\ResumableMovies.xaml.cs">
       <DependentUpon>ResumableMovies.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Home\Music\LatestAlbums.xaml.cs">
-      <DependentUpon>LatestAlbums.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Home\Music\LatestMusicVideos.xaml.cs">
-      <DependentUpon>LatestMusicVideos.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Home\Music\LatestSongs.xaml.cs">
-      <DependentUpon>LatestSongs.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Home\Music\Music.xaml.cs">
-      <DependentUpon>Music.xaml</DependentUpon>
     </Compile>
     <Compile Include="Home\TV\NextUp.xaml.cs">
       <DependentUpon>NextUp.xaml</DependentUpon>
@@ -209,20 +188,14 @@
     <Compile Include="Osd\FullscreenVideoTransportOsd.xaml.cs">
       <DependentUpon>FullscreenVideoTransportOsd.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\FolderBrowsing\FolderPage.xaml.cs">
+    <Compile Include="ListPage\FolderPage.xaml.cs">
       <DependentUpon>FolderPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\FolderBrowsing\ItemsListControl.xaml.cs">
-      <DependentUpon>ItemsListControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\FolderBrowsing\Sidebar.xaml.cs">
+    <Compile Include="ListPage\Sidebar.xaml.cs">
       <DependentUpon>Sidebar.xaml</DependentUpon>
     </Compile>
     <Compile Include="Details\PanoramaDetailPage.xaml.cs">
       <DependentUpon>PanoramaDetailPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\ImageViewerPage.xaml.cs">
-      <DependentUpon>ImageViewerPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -273,11 +246,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\BaseItemTile.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\Details\ItemInfoFooter.xaml">
+    <Page Include="Controls\ItemInfoFooter.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -345,19 +314,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="DisplayPreferences\DisplayPreferencesMenu.xaml">
+    <Page Include="DisplayPreferencesMenu\DisplayPreferencesMenu.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="DisplayPreferences\MainPage.xaml">
+    <Page Include="DisplayPreferencesMenu\MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="DisplayPreferences\SortMenuPage.xaml">
+    <Page Include="DisplayPreferencesMenu\SortMenuPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="DisplayPreferences\ViewMenuPage.xaml">
+    <Page Include="DisplayPreferencesMenu\ViewMenuPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -366,14 +335,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Header\TopRightPanel.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Home\AppsControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Home\Folders.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -394,22 +355,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Home\Movies\ResumableMovies.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Home\Music\LatestAlbums.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Home\Music\LatestMusicVideos.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Home\Music\LatestSongs.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Home\Music\Music.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -437,23 +382,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Pages\FolderBrowsing\FolderPage.xaml">
+    <Page Include="ListPage\FolderPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Pages\FolderBrowsing\ItemsListControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Pages\FolderBrowsing\Sidebar.xaml">
+    <Page Include="ListPage\Sidebar.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Details\PanoramaDetailPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Pages\ImageViewerPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -478,15 +415,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Resources\ListBoxItems.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Resources\Popups.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Resources\Slider.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -512,9 +441,6 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Images\VideoDefault.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Resources\Images\starEmpty.png" />
     <Resource Include="Resources\Images\starFull.png" />
     <Resource Include="Resources\Images\starHalf.png" />
@@ -531,9 +457,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\ViewMenu\Close.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Images\AudioDefault.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\dislike.png" />

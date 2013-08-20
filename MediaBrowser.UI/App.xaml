@@ -15,6 +15,8 @@
                 <ResourceDictionary Source="Resources/Slider.xaml" />
                 <ResourceDictionary Source="Resources/MainWindowResources.xaml" />
                 <ResourceDictionary Source="Resources/WindowCommands.xaml" />
+                <ResourceDictionary Source="Resources/Modals.xaml" />
+                <ResourceDictionary Source="Resources/MessageBox.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MediaBrowser.Theater.Core;component/Resources/Settings.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MediaBrowser.Theater.Core;component/Resources/Login.xaml" />
             </ResourceDictionary.MergedDictionaries>

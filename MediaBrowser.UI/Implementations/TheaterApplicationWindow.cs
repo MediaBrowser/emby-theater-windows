@@ -1,6 +1,7 @@
 ﻿using MediaBrowser.Common.Events;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
+using MediaBrowser.Theater.Core.Modals;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Theming;
 using System;
@@ -134,14 +135,46 @@ namespace MediaBrowser.UI.Implementations
             HomePages = homePages;
         }
 
+        /// <summary>
+        /// Shows the default error message.
+        /// </summary>
+        /// <exception cref="System.NotImplementedException"></exception>
         public void ShowDefaultErrorMessage()
         {
-            _themeManager.CurrentTheme.ShowDefaultErrorMessage();
+            ShowMessage(new MessageBoxInfo
+            {
+                Caption = "Error",
+                Text = "There was an error processing the request.",
+                Icon = MessageBoxIcon.Error,
+                Button = MessageBoxButton.OK
+
+            });
         }
 
+        /// <summary>
+        /// Shows the message.
+        /// </summary>
+        /// <param name="options">The options.</param>
+        /// <returns>MessageBoxResult.</returns>
         public MessageBoxResult ShowMessage(MessageBoxInfo options)
         {
-            return _themeManager.CurrentTheme.ShowMessage(options);
+            return ShowMessage(options, Window);
+        }
+
+        /// <summary>
+        /// Shows the message.
+        /// </summary>
+        /// <param name="options">The options.</param>
+        /// <param name="parentWindow">The parent window.</param>
+        /// <returns>MessageBoxResult.</returns>
+        /// <exception cref="System.NotImplementedException"></exception>
+        public MessageBoxResult ShowMessage(MessageBoxInfo options, Window parentWindow)
+        {
+            var win = new MessageBoxWindow(options);
+
+            win.ShowModal(parentWindow);
+
+            return win.MessageBoxResult;
         }
 
         public void ShowNotification(string caption, string text, BitmapImage icon)
@@ -173,7 +206,7 @@ namespace MediaBrowser.UI.Implementations
         public void RemoveResourceDictionary(ResourceDictionary resource)
         {
             _logger.Info("Removing resource {0}", resource.GetType().Name);
-            
+
             Application.Current.Resources.MergedDictionaries.Remove(resource);
         }
     }

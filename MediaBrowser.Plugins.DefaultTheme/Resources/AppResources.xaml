@@ -102,7 +102,7 @@
                         <Setter Property="Stretch" Value="UniformToFill"></Setter>
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding HasImage}" Value="False">
-                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Setter Property="Visibility" Value="Hidden" />
                             </DataTrigger>
                             <DataTrigger Binding="{Binding DownloadPrimaryImageAtExactSize}" Value="False">
                                 <Setter Property="Stretch" Value="Uniform" />
@@ -117,7 +117,7 @@
                     <Style TargetType="{x:Type Border}">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding HasImage}" Value="True">
-                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Setter Property="Visibility" Value="Hidden" />
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
@@ -206,10 +206,10 @@
                     <Style TargetType="{x:Type Grid}">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding IsOffline}" Value="True">
-                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Setter Property="Visibility" Value="Hidden" />
                             </DataTrigger>
                             <DataTrigger Binding="{Binding IsPlayed}" Value="False">
-                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Setter Property="Visibility" Value="Hidden" />
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
@@ -233,13 +233,13 @@
                     <Style TargetType="{x:Type Grid}">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding IsOffline}" Value="True">
-                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Setter Property="Visibility" Value="Hidden" />
                             </DataTrigger>
                             <DataTrigger Binding="{Binding IsFolder}" Value="True">
-                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Setter Property="Visibility" Value="Hidden" />
                             </DataTrigger>
                             <DataTrigger Binding="{Binding IsNew}" Value="False">
-                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Setter Property="Visibility" Value="Hidden" />
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
@@ -254,13 +254,13 @@
                     <Style TargetType="{x:Type StackPanel}">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding IsOffline}" Value="True">
-                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Setter Property="Visibility" Value="Hidden" />
                             </DataTrigger>
                             <DataTrigger Binding="{Binding IsFolder}" Value="False">
-                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Setter Property="Visibility" Value="Hidden" />
                             </DataTrigger>
                             <DataTrigger Binding="{Binding RecentlyAddedItemCount}" Value="0">
-                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Setter Property="Visibility" Value="Hidden" />
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
@@ -276,7 +276,7 @@
                     <Style TargetType="{x:Type Grid}">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding IsOffline}" Value="False">
-                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Setter Property="Visibility" Value="Hidden" />
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>

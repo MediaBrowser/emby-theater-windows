@@ -2,11 +2,11 @@
 using MediaBrowser.Model.Net;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Reflection;
+using MediaBrowser.Theater.Interfaces.ViewModels;
 using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Data;
-using MediaBrowser.Theater.Interfaces.ViewModels;
 
 namespace MediaBrowser.Theater.Presentation.ViewModels
 {

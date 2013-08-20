@@ -86,12 +86,6 @@
     <Compile Include="Controls\ItemInfoFooter.xaml.cs">
       <DependentUpon>ItemInfoFooter.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\HomePageTile.xaml.cs">
-      <DependentUpon>HomePageTile.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\ModalWindow.xaml.cs">
-      <DependentUpon>ModalWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Controls\MultiItemTile.xaml.cs">
       <DependentUpon>MultiItemTile.xaml</DependentUpon>
     </Compile>
@@ -155,33 +149,6 @@
     <Compile Include="Home\GamesViewModel.cs" />
     <Compile Include="Home\HomePageInfo.cs" />
     <Compile Include="Home\HomePageViewModel.cs" />
-    <Compile Include="Home\Movies\Movies.xaml.cs">
-      <DependentUpon>Movies.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Home\Movies\MovieSpotlight.xaml.cs">
-      <DependentUpon>MovieSpotlight.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Home\Movies\MovieViews.xaml.cs">
-      <DependentUpon>MovieViews.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Home\Movies\RecentTrailers.xaml.cs">
-      <DependentUpon>RecentTrailers.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Home\Movies\ResumableMovies.xaml.cs">
-      <DependentUpon>ResumableMovies.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Home\TV\NextUp.xaml.cs">
-      <DependentUpon>NextUp.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Home\TV\ResumableEpisodes.xaml.cs">
-      <DependentUpon>ResumableEpisodes.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Home\TV\Spotlight.xaml.cs">
-      <DependentUpon>Spotlight.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Home\TV\TV.xaml.cs">
-      <DependentUpon>TV.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Home\HomePage.xaml.cs">
       <DependentUpon>HomePage.xaml</DependentUpon>
     </Compile>
@@ -249,14 +216,6 @@
     <Page Include="Controls\ItemInfoFooter.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\HomePageTile.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\ModalWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\MultiItemTile.xaml">
       <SubType>Designer</SubType>
@@ -338,42 +297,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Home\Movies\Movies.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Home\Movies\MovieSpotlight.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Home\Movies\MovieViews.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Home\Movies\RecentTrailers.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Home\Movies\ResumableMovies.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Home\TV\NextUp.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Home\TV\ResumableEpisodes.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Home\TV\Spotlight.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Home\TV\TV.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Home\HomePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -412,10 +335,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Resources\HomePageResources.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Resources\Popups.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

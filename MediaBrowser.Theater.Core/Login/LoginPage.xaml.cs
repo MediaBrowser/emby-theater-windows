@@ -35,11 +35,13 @@ namespace MediaBrowser.Theater.Core.Login
             InitializeComponent();
         }
 
-        protected override async void OnInitialized(EventArgs e)
+        private UserListViewModel _viewModel;
+
+        protected override void OnInitialized(EventArgs e)
         {
             base.OnInitialized(e);
 
-            DataContext = new UserListViewModel(PresentationManager, ApiClient, ImageManager);
+            DataContext = _viewModel = new UserListViewModel(PresentationManager, ApiClient, ImageManager);
 
             LstUsers.ItemInvoked += ItemsList_ItemInvoked;
             Loaded += LoginPage_Loaded;
@@ -86,6 +88,11 @@ namespace MediaBrowser.Theater.Core.Login
                     PresentationManager.ShowDefaultErrorMessage();
                 }
             }
+        }
+
+        ~LoginPage()
+        {
+            _viewModel.Dispose();
         }
     }
 }

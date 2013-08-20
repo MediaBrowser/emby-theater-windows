@@ -3,6 +3,15 @@
                     xmlns:themecontrols="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Controls"
                     xmlns:viewModels="clr-namespace:MediaBrowser.Theater.Presentation.ViewModels;assembly=MediaBrowser.Theater.Presentation">
 
+    <Style TargetType="ProgressBar" x:Key="ResumeProgressBar">
+        <Setter Property="Foreground" Value="#cc3333"/>
+        <Setter Property="Background" Value="Black"/>
+        <Setter Property="BorderBrush" Value="#666666"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Height" Value="20"/>
+        <Setter Property="Opacity" Value=".7"/>
+    </Style>
+
     <DataTemplate x:Key="HomePageItemTemplate" DataType="{x:Type viewModels:ItemViewModel}">
 
         <Grid Height="{Binding ImageDisplayHeight}" Width="{Binding ImageDisplayWidth}">
@@ -85,10 +94,6 @@
             </Grid>
         </Grid>
 
-    </DataTemplate>
-
-    <DataTemplate x:Key="HomePageListBoxItemTemplate" DataType="{x:Type viewModels:BaseItemDtoViewModel}">
-        <themecontrols:HomePageTile DataContext="{Binding}"></themecontrols:HomePageTile>
     </DataTemplate>
 
     <Style x:Key="HomePageListBoxItemStyle" TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource ListBoxItemStyle}">

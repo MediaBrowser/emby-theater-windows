@@ -1,7 +1,6 @@
 ﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
-using MediaBrowser.Plugins.DefaultTheme.Controls;
 using MediaBrowser.Plugins.DefaultTheme.Details;
 using MediaBrowser.Plugins.DefaultTheme.Header;
 using MediaBrowser.Plugins.DefaultTheme.ListPage;
@@ -10,13 +9,11 @@ using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.Theming;
-using MediaBrowser.Theater.Interfaces.UserInput;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media.Imaging;
 
 namespace MediaBrowser.Plugins.DefaultTheme
 {
@@ -55,9 +52,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         private readonly ILogger _logger;
         private readonly IThemeManager _themeManager;
 
-        private readonly IUserInputManager _userInput;
-
-        public DefaultTheme(IPlaybackManager playbackManager, IImageManager imageManager, IApiClient apiClient, INavigationService navService, ISessionManager sessionManager, IPresentationManager presentationManager, ILogManager logManager, IThemeManager themeManager, IUserInputManager userInput)
+        public DefaultTheme(IPlaybackManager playbackManager, IImageManager imageManager, IApiClient apiClient, INavigationService navService, ISessionManager sessionManager, IPresentationManager presentationManager, ILogManager logManager, IThemeManager themeManager)
         {
             PlaybackManager = playbackManager;
             _imageManager = imageManager;
@@ -66,7 +61,6 @@ namespace MediaBrowser.Plugins.DefaultTheme
             _sessionManager = sessionManager;
             _presentationManager = presentationManager;
             _themeManager = themeManager;
-            _userInput = userInput;
             _logger = logManager.GetLogger(GetType().Name);
 
             TopRightPanel.SessionManager = _sessionManager;
@@ -78,23 +72,6 @@ namespace MediaBrowser.Plugins.DefaultTheme
 
             PageTitlePanel.ApiClient = _apiClient;
             PageTitlePanel.ImageManager = _imageManager;
-
-            _presentationManager.WindowLoaded += _presentationManager_WindowLoaded;
-        }
-
-        void _presentationManager_WindowLoaded(object sender, EventArgs e)
-        {
-            var namespaceName = GetType().Namespace;
-
-            _presentationManager.AddResourceDictionary(new ResourceDictionary
-            {
-                Source = new Uri("pack://application:,,,/" + namespaceName + ";component/Resources/Popups.xaml", UriKind.Absolute)
-            });
-
-            _presentationManager.AddResourceDictionary(new ResourceDictionary
-            {
-                Source = new Uri("pack://application:,,,/" + namespaceName + ";component/Resources/HomePageResources.xaml", UriKind.Absolute)
-            });
         }
 
         protected virtual string ThemeColorResource
@@ -110,7 +87,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         {
             var namespaceName = GetType().Namespace;
 
-            return new[] { ThemeColorResource, "AppResources", "Details", "VolumeOsd", "TransportOsd", "DisplayPreferences" }.Select(i => new ResourceDictionary
+            return new[] { ThemeColorResource, "AppResources", "HomePageResources", "Details", "VolumeOsd", "TransportOsd", "DisplayPreferences" }.Select(i => new ResourceDictionary
             {
                 Source = new Uri("pack://application:,,,/" + namespaceName + ";component/Resources/" + i + ".xaml", UriKind.Absolute)
 
@@ -142,54 +119,6 @@ namespace MediaBrowser.Plugins.DefaultTheme
         public Page GetPersonPage(BaseItemDto item, string context)
         {
             return new PanoramaDetailPage(item, _apiClient, _sessionManager, _presentationManager, _imageManager, _navService, PlaybackManager, _themeManager);
-        }
-
-        /// <summary>
-        /// Shows the default error message.
-        /// </summary>
-        /// <exception cref="System.NotImplementedException"></exception>
-        public void ShowDefaultErrorMessage()
-        {
-            ShowMessage(new MessageBoxInfo
-            {
-                Caption = "Error",
-                Text = "There was an error processing the request.",
-                Icon = MessageBoxIcon.Error,
-                Button = MessageBoxButton.OK
-
-            });
-        }
-
-        /// <summary>
-        /// Shows the message.
-        /// </summary>
-        /// <param name="options">The options.</param>
-        /// <returns>MessageBoxResult.</returns>
-        public MessageBoxResult ShowMessage(MessageBoxInfo options)
-        {
-            return ShowMessage(options, _presentationManager.Window);
-        }
-
-        /// <summary>
-        /// Shows the message.
-        /// </summary>
-        /// <param name="options">The options.</param>
-        /// <param name="parentWindow">The parent window.</param>
-        /// <returns>MessageBoxResult.</returns>
-        /// <exception cref="System.NotImplementedException"></exception>
-        public MessageBoxResult ShowMessage(MessageBoxInfo options, Window parentWindow)
-        {
-            var win = new ModalWindow()
-            {
-                Caption = options.Caption,
-                Button = options.Button,
-                MessageBoxImage = options.Icon,
-                Text = options.Text
-            };
-
-            win.ShowModal(parentWindow);
-
-            return win.MessageBoxResult;
         }
 
         /// <summary>

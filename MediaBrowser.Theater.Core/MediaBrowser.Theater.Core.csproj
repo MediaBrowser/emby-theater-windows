@@ -99,6 +99,9 @@
       <DependentUpon>MediaPlayersPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="MediaPlayers\MediaPlayersPageFactory.cs" />
+    <Compile Include="Modals\MessageBoxWindow.xaml.cs">
+      <DependentUpon>MessageBoxWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="NetworkSettings\NetworkSettingsPage.xaml.cs">
       <DependentUpon>NetworkSettingsPage.xaml</DependentUpon>
     </Compile>
@@ -189,6 +192,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="MediaPlayers\MediaPlayersPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Modals\MessageBoxWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

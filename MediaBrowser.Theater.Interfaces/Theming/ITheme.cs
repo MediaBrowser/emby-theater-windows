@@ -25,18 +25,6 @@ namespace MediaBrowser.Theater.Interfaces.Theming
         /// <param name="context">The context.</param>
         /// <returns>Page.</returns>
         Page GetPersonPage(BaseItemDto item, string context);
-        
-        /// <summary>
-        /// Shows the default error message.
-        /// </summary>
-        void ShowDefaultErrorMessage();
-
-        /// <summary>
-        /// Shows the message.
-        /// </summary>
-        /// <param name="options">The options.</param>
-        /// <returns>MessageBoxResult.</returns>
-        MessageBoxResult ShowMessage(MessageBoxInfo options);
 
         /// <summary>
         /// Sets the page title.

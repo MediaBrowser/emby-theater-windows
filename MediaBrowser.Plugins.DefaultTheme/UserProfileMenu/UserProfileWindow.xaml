@@ -6,18 +6,19 @@
         AllowsTransparency="True"
         Background="Transparent"
         Style="{DynamicResource ModalWindow}">
-    <Grid>
+    
+    <Grid x:Name="MainGrid">
         <Grid Style="{DynamicResource ModalOverlayStyle}">
 
         </Grid>
-        <Grid Style="{DynamicResource ModalContentStyle}" HorizontalAlignment="Right" VerticalAlignment="Stretch">
+        <Grid Style="{DynamicResource ModalContentStyle}" HorizontalAlignment="Right" VerticalAlignment="Stretch" x:Name="ContentGrid">
 
             <StackPanel Margin="50 50 50 0" Orientation="Vertical" MinWidth="350">
 
                 <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
 
 
-                    <Grid DataContext="{Binding User}">
+                    <Grid>
                         <Grid.Style>
                             <Style TargetType="{x:Type Grid}">
                                 <Style.Triggers>
@@ -41,7 +42,7 @@
                         </Path>
                     </Grid>
 
-                    <Image Height="54" Stretch="Uniform" VerticalAlignment="Center" DataContext="{Binding User}" Source="{Binding Image}">
+                    <Image Height="54" Stretch="Uniform" VerticalAlignment="Center" Source="{Binding Image}">
                         <Image.Style>
                             <Style TargetType="{x:Type Image}">
                                 <Style.Triggers>
@@ -53,7 +54,7 @@
                         </Image.Style>
                     </Image>
 
-                    <TextBlock Style="{DynamicResource Heading2TextBlockStyle}" Margin="20 0 0 0" DataContext="{Binding User}" Text="{Binding Username}"></TextBlock>
+                    <TextBlock Style="{DynamicResource Heading2TextBlockStyle}" Margin="20 0 0 0" Text="{Binding Username}"></TextBlock>
                 </StackPanel>
 
                 <Button x:Name="BtnClose" HorizontalAlignment="Left" Margin="0 50 0 0">
@@ -72,7 +73,7 @@
                     </StackPanel>
                 </Button>
 
-                <Button x:Name="BtnLogout" HorizontalAlignment="Left" Margin="0 30 0 0" DataContext="{Binding User}" Command="{Binding LogoutCommand}">
+                <Button x:Name="BtnLogout" HorizontalAlignment="Left" Margin="0 30 0 0" Command="{Binding LogoutCommand}">
                     <StackPanel Orientation="Horizontal">
                         <Path Data="M34.201,35.752792L36.154999,37.072937 36.154999,61.028999 26.27,61.028999 26.27,58.465 34.201,58.465z M18.94405,30.222998C17.962244,30.222998 17.167,31.018967 17.167,32.00045 17.167,32.982033 17.962244,33.778 18.94405,33.778 19.925556,33.778 20.721001,32.982033 20.721001,32.00045 20.721001,31.018967 19.925556,30.222998 18.94405,30.222998z M44.257435,25.653L44.257435,29.183289 51.842999,29.183289 51.842999,35.705292 44.257435,35.705292 44.257435,39.237999 34.201,32.444984z M26.27,3.8619995L36.154999,3.8619995 36.154999,27.81745 34.201,29.137484 34.201,6.2989998 26.27,6.2989998z M24.27,0L24.27,64 0,60 0,4.0000029z" Stretch="Uniform" Fill="#FFFFFFFF" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
                             <Path.RenderTransform>

@@ -1,10 +1,12 @@
-﻿using System.ComponentModel;
+﻿using MediaBrowser.Theater.Interfaces.Reflection;
+using System.ComponentModel;
 
 namespace MediaBrowser.Theater.Interfaces.ViewModels
 {
     /// <summary>
     /// Represents a base ViewModel
     /// </summary>
+    [TypeDescriptionProvider(typeof(HyperTypeDescriptionProvider))]
     public abstract class BaseViewModel : INotifyPropertyChanged
     {
         /// <summary>

@@ -98,6 +98,7 @@
     <Compile Include="Details\CriticReviewControl.xaml.cs">
       <DependentUpon>CriticReviewControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Details\DetailPageViewModel.cs" />
     <Compile Include="Details\Gallery.xaml.cs">
       <DependentUpon>Gallery.xaml</DependentUpon>
     </Compile>
@@ -152,6 +153,7 @@
     <Compile Include="Home\HomePage.xaml.cs">
       <DependentUpon>HomePage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Home\TabbedViewModel.cs" />
     <Compile Include="Osd\FullscreenVideoTransportOsd.xaml.cs">
       <DependentUpon>FullscreenVideoTransportOsd.xaml</DependentUpon>
     </Compile>

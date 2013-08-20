@@ -1,7 +1,6 @@
 ﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
-using MediaBrowser.Model.Net;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Plugins.DefaultTheme.Controls;
 using MediaBrowser.Theater.Interfaces.Navigation;
@@ -12,14 +11,11 @@ using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Data;
-using System.Windows.Threading;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Home
 {
-    public class HomePageViewModel : BaseViewModel, IDisposable
+    public class HomePageViewModel : TabbedViewModel
     {
         private readonly IPresentationManager _presentationManager;
         private readonly IApiClient _apiClient;
@@ -27,51 +23,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         private readonly ILogger _logger;
         private readonly IImageManager _imageManager;
         private readonly INavigationService _nav;
-
-        private Timer _selectionChangeTimer;
-        private readonly object _syncLock = new object();
-
-        private ListCollectionView _sections;
-        public ListCollectionView Sections
-        {
-            get { return _sections; }
-
-            private set
-            {
-                _sections = value;
-
-                OnPropertyChanged("Sections");
-            }
-        }
-
-        private BaseViewModel _contentViewModel;
-        public BaseViewModel ContentViewModel
-        {
-            get { return _contentViewModel; }
-
-            private set
-            {
-                var old = _contentViewModel;
-
-                var changed = !Equals(old, value);
-
-                _contentViewModel = value;
-
-                if (changed)
-                {
-                    OnPropertyChanged("ContentViewModel");
-
-                    var disposable = old as IDisposable;
-
-                    if (disposable != null)
-                    {
-                        disposable.Dispose();
-                    }
-                }
-            }
-        }
-
-        private readonly Dispatcher _dispatcher;
 
         public HomePageViewModel(IPresentationManager presentationManager, IApiClient apiClient, ISessionManager sessionManager, ILogger logger, IImageManager imageManager, INavigationService nav)
         {
@@ -81,29 +32,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             _logger = logger;
             _imageManager = imageManager;
             _nav = nav;
-
-            _dispatcher = Dispatcher.CurrentDispatcher;
-
-            Sections = (ListCollectionView)CollectionViewSource.GetDefaultView(_sectionNames);
-
-            ReloadSections();
-
-            Sections.CurrentChanged += Sections_CurrentChanged;
         }
 
-        private readonly RangeObservableCollection<string> _sectionNames = new RangeObservableCollection<string>();
-
-        public string CurrentSection
-        {
-            get
-            {
-                var sections = Sections;
-
-                return sections == null ? null : sections.CurrentItem as string;
-            }
-        }
-
-        private async void ReloadSections()
+        protected override async Task<IEnumerable<string>> GetSectionNames()
         {
             var views = new List<string>();
 
@@ -130,9 +61,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 //    views.Add("games");
                 //}
             }
-            catch (HttpException)
+            catch (Exception ex)
             {
-                _presentationManager.ShowDefaultErrorMessage();
+                _logger.ErrorException("Error getting item counts", ex);
             }
 
             if (_presentationManager.GetApps(_sessionManager.CurrentUser).Any())
@@ -142,66 +73,33 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             views.Add("media collections");
 
-            _sectionNames.Clear();
-            _sectionNames.AddRange(views);
-
-            Sections.MoveCurrentToPosition(0);
-            OnPropertyChanged("CurrentSection");
+            return views;
         }
 
-        void Sections_CurrentChanged(object sender, EventArgs e)
+        protected override BaseViewModel GetContentViewModel(string section)
         {
-            lock (_syncLock)
+            if (string.Equals(section, "apps"))
             {
-                if (_selectionChangeTimer == null)
-                {
-                    _selectionChangeTimer = new Timer(OnSelectionTimerFired, null, 400, Timeout.Infinite);
-                }
-                else
-                {
-                    _selectionChangeTimer.Change(400, Timeout.Infinite);
-                }
+                return new AppListViewModel(_presentationManager, _sessionManager, _logger);
             }
-        }
-
-        private void OnSelectionTimerFired(object state)
-        {
-            _dispatcher.InvokeAsync(UpdateCurrentSection);
-        }
-
-        private void UpdateCurrentSection()
-        {
-            ContentViewModel = null;
-
-            OnPropertyChanged("CurrentSection");
-
-            ReloadContentViewModel();
-        }
-
-        private void ReloadContentViewModel()
-        {
-            var name = CurrentSection;
-
-            if (string.Equals(name, "apps"))
-            {
-                ContentViewModel = new AppListViewModel(_presentationManager, _sessionManager, _logger);
-            }
-            else if (string.Equals(name, "media collections"))
+            if (string.Equals(section, "media collections"))
             {
                 var vm = new ItemListViewModel(GetMediaCollectionsAsync, _presentationManager, _imageManager, _apiClient, _sessionManager, _nav)
                 {
-                     ImageDisplayWidth = 400,
-                     ImageDisplayHeightGenerator = v => 225,
-                     DisplayNameGenerator = MultiItemTile.GetDisplayName
+                    ImageDisplayWidth = 400,
+                    ImageDisplayHeightGenerator = v => 225,
+                    DisplayNameGenerator = MultiItemTile.GetDisplayName
                 };
 
-                ContentViewModel = vm;
-           
+                return vm;
+
             }
-            else if (string.Equals(name, "games"))
+            if (string.Equals(section, "games"))
             {
-                ContentViewModel = new GamesViewModel();
+                return new GamesViewModel();
             }
+
+            return null;
         }
 
         private Task<ItemsResult> GetMediaCollectionsAsync(DisplayPreferences displayPreferences)
@@ -223,30 +121,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             };
 
             return _apiClient.GetItemsAsync(query);
-        }
-
-        public void Dispose()
-        {
-            DisposeTimer();
-
-            var disposable = ContentViewModel as IDisposable;
-
-            if (disposable != null)
-            {
-                disposable.Dispose();
-            }
-        }
-
-        private void DisposeTimer()
-        {
-            lock (_syncLock)
-            {
-                if (_selectionChangeTimer != null)
-                {
-                    _selectionChangeTimer.Dispose();
-                    _selectionChangeTimer = null;
-                }
-            }
         }
     }
 }

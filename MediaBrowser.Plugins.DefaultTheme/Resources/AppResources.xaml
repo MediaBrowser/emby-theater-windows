@@ -112,7 +112,7 @@
                 </Image.Style>
             </Image>
 
-            <Border BorderThickness="3" BorderBrush="#888" CornerRadius="1">
+            <Border Background="#a6000000" Padding="10 0">
                 <Border.Style>
                     <Style TargetType="{x:Type Border}">
                         <Style.Triggers>
@@ -123,7 +123,7 @@
                     </Style>
                 </Border.Style>
 
-                <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding DisplayName}" VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
+                <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding DisplayName}" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="White"></TextBlock>
             </Border>
 
             <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Orientation="Vertical">

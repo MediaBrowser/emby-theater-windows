@@ -5,7 +5,6 @@ using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Presentation.Pages;
-using System;
 using System.Windows;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Home
@@ -63,15 +62,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             _viewModel = new HomePageViewModel(applicationWindow, apiClient, sessionManager, _logger, imageManager, _navigationManager);
 
             InitializeComponent();
-        }
-
-        protected override void OnInitialized(EventArgs e)
-        {
-            DataContext = _viewModel;
 
             Loaded += HomePage_Loaded;
-
-            base.OnInitialized(e);
+            
+            DataContext = _viewModel;
         }
 
         void HomePage_Loaded(object sender, RoutedEventArgs e)

@@ -14,8 +14,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.UserProfileMenu
     /// </summary>
     public partial class UserProfileWindow : BaseModalWindow
     {
-        public UserDtoViewModel User { get; private set; }
-
         private readonly ISessionManager _session;
 
         public UserProfileWindow(ISessionManager session, IImageManager imageManager, IApiClient apiClient)
@@ -30,13 +28,13 @@ namespace MediaBrowser.Plugins.DefaultTheme.UserProfileMenu
 
             BtnClose.Click += BtnClose_Click;
 
-            User = new UserDtoViewModel(apiClient, imageManager, session)
+            ContentGrid.DataContext = new UserDtoViewModel(apiClient, imageManager, session)
             {
                 User = session.CurrentUser,
                 ImageDownloadHeight = 54
             };
 
-            DataContext = this;
+            MainGrid.DataContext = this;
         }
 
         void BtnClose_Click(object sender, RoutedEventArgs e)

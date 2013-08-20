@@ -1,10 +1,11 @@
 ﻿using MediaBrowser.Model.ApiClient;
-using MediaBrowser.Model.Dto;
-using MediaBrowser.Model.Net;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Presentation.Controls;
+using MediaBrowser.Theater.Presentation.ViewModels;
+using System;
 using System.Windows;
+using System.Windows.Input;
 
 namespace MediaBrowser.Plugins.DefaultTheme.UserProfileMenu
 {
@@ -13,31 +14,29 @@ namespace MediaBrowser.Plugins.DefaultTheme.UserProfileMenu
     /// </summary>
     public partial class UserProfileWindow : BaseModalWindow
     {
+        public UserDtoViewModel User { get; private set; }
+
         private readonly ISessionManager _session;
-        private readonly IImageManager _imageManager;
-        private readonly IApiClient _apiClient;
 
         public UserProfileWindow(ISessionManager session, IImageManager imageManager, IApiClient apiClient)
             : base()
         {
             _session = session;
-            _imageManager = imageManager;
-            _apiClient = apiClient;
+
             InitializeComponent();
 
             Loaded += UserProfileWindow_Loaded;
+            Unloaded += UserProfileWindow_Unloaded;
 
             BtnClose.Click += BtnClose_Click;
-            BtnLogout.Click += BtnLogout_Click;
+
+            User = new UserDtoViewModel(apiClient, imageManager, session)
+            {
+                User = session.CurrentUser,
+                ImageDownloadHeight = 54
+            };
 
             DataContext = this;
-        }
-
-        async void BtnLogout_Click(object sender, RoutedEventArgs e)
-        {
-            await _session.Logout();
-
-            CloseModal();
         }
 
         void BtnClose_Click(object sender, RoutedEventArgs e)
@@ -47,43 +46,19 @@ namespace MediaBrowser.Plugins.DefaultTheme.UserProfileMenu
 
         void UserProfileWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            SetUserImage();
+            MoveFocus(new TraversalRequest(FocusNavigationDirection.First));
 
-            BtnClose.Focus();
-
-            TxtUsername.Text = _session.CurrentUser.Name;
+            _session.UserLoggedOut += _session_UserLoggedOut;
         }
 
-        private async void SetUserImage()
+        void UserProfileWindow_Unloaded(object sender, RoutedEventArgs e)
         {
-            if (_session.CurrentUser.HasPrimaryImage)
-            {
-                try
-                {
-                    UserImage.Source = await _imageManager.GetRemoteBitmapAsync(_apiClient.GetUserImageUrl(_session.CurrentUser, new ImageOptions
-                    {
-                        Height = 54
-                    }));
-
-                    UserDefaultImage.Visibility = Visibility.Collapsed;
-                    UserImage.Visibility = Visibility.Visible;
-
-                    return;
-                }
-                catch (HttpException)
-                {
-                    // Logged at lower levels
-                }
-            }
-
-            SetDefaultUserImage();
+            _session.UserLoggedOut -= _session_UserLoggedOut;
         }
 
-        private void SetDefaultUserImage()
+        void _session_UserLoggedOut(object sender, EventArgs e)
         {
-            UserDefaultImage.Visibility = Visibility.Visible;
-            UserImage.Visibility = Visibility.Collapsed;
+            CloseModal();
         }
-
     }
 }

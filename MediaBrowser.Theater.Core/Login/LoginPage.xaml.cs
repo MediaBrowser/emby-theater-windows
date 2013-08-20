@@ -41,7 +41,7 @@ namespace MediaBrowser.Theater.Core.Login
         {
             base.OnInitialized(e);
 
-            DataContext = _viewModel = new UserListViewModel(PresentationManager, ApiClient, ImageManager);
+            DataContext = _viewModel = new UserListViewModel(PresentationManager, ApiClient, ImageManager, SessionManager);
 
             LstUsers.ItemInvoked += ItemsList_ItemInvoked;
             Loaded += LoginPage_Loaded;

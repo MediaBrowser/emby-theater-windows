@@ -17,7 +17,17 @@
                 <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
 
 
-                    <Grid x:Name="UserDefaultImage" Visibility="Collapsed">
+                    <Grid DataContext="{Binding User}">
+                        <Grid.Style>
+                            <Style TargetType="{x:Type Grid}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding HasImage}" Value="True">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Grid.Style>
+                        
                         <Grid Width="54" Height="54" />
                         <Path Data="M15.930851,36.710608C22.14356,36.647291 30.005098,41.570198 30.005098,41.570198 38.080673,46.45562 45.657448,38.281082 45.657448,38.281082 48.847534,35.288968 53.432121,42.865801 53.432121,42.865801 59.214702,51.040343 59.414001,64.000004 59.414001,64.000004L0,64.000004C2.092523,41.669198 12.360659,37.482978 12.360659,37.482978 13.423015,36.951675 14.64142,36.723749 15.930851,36.710608z M33.0965,0C42.015587,0 49.245998,7.8997269 49.245998,17.644449 49.245998,27.390621 42.015587,35.288998 33.0965,35.288999 24.177311,35.288998 16.947,27.390621 16.947,17.644449 16.947,7.8997269 24.177311,0 33.0965,0z" Stretch="Uniform" Fill="#FFFFFFFF" Width="54" Height="54" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
                             <Path.RenderTransform>
@@ -31,9 +41,19 @@
                         </Path>
                     </Grid>
 
-                    <Image x:Name="UserImage" Visibility="Collapsed" Height="54" Stretch="Uniform" VerticalAlignment="Center"></Image>
+                    <Image Height="54" Stretch="Uniform" VerticalAlignment="Center" DataContext="{Binding User}" Source="{Binding Image}">
+                        <Image.Style>
+                            <Style TargetType="{x:Type Image}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding HasImage}" Value="False">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Image.Style>
+                    </Image>
 
-                    <TextBlock x:Name="TxtUsername" Style="{DynamicResource Heading2TextBlockStyle}" Margin="20 0 0 0"></TextBlock>
+                    <TextBlock Style="{DynamicResource Heading2TextBlockStyle}" Margin="20 0 0 0" DataContext="{Binding User}" Text="{Binding Username}"></TextBlock>
                 </StackPanel>
 
                 <Button x:Name="BtnClose" HorizontalAlignment="Left" Margin="0 50 0 0">
@@ -52,7 +72,7 @@
                     </StackPanel>
                 </Button>
 
-                <Button x:Name="BtnLogout" HorizontalAlignment="Left" Margin="0 30 0 0">
+                <Button x:Name="BtnLogout" HorizontalAlignment="Left" Margin="0 30 0 0" DataContext="{Binding User}" Command="{Binding LogoutCommand}">
                     <StackPanel Orientation="Horizontal">
                         <Path Data="M34.201,35.752792L36.154999,37.072937 36.154999,61.028999 26.27,61.028999 26.27,58.465 34.201,58.465z M18.94405,30.222998C17.962244,30.222998 17.167,31.018967 17.167,32.00045 17.167,32.982033 17.962244,33.778 18.94405,33.778 19.925556,33.778 20.721001,32.982033 20.721001,32.00045 20.721001,31.018967 19.925556,30.222998 18.94405,30.222998z M44.257435,25.653L44.257435,29.183289 51.842999,29.183289 51.842999,35.705292 44.257435,35.705292 44.257435,39.237999 34.201,32.444984z M26.27,3.8619995L36.154999,3.8619995 36.154999,27.81745 34.201,29.137484 34.201,6.2989998 26.27,6.2989998z M24.27,0L24.27,64 0,60 0,4.0000029z" Stretch="Uniform" Fill="#FFFFFFFF" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
                             <Path.RenderTransform>

@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.ApiClient;
+﻿using System.Windows.Input;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Theater.Interfaces.Presentation;
@@ -7,6 +8,7 @@ using System;
 using System.ComponentModel;
 using System.Threading;
 using System.Windows.Media.Imaging;
+using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.ViewModels;
 
 namespace MediaBrowser.Theater.Presentation.ViewModels
@@ -29,15 +31,33 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         /// <value>The image manager.</value>
         private readonly IImageManager _imageManager;
 
+        private readonly ISessionManager _session;
+        
+        public ICommand LogoutCommand { get; private set; }
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="UserDtoViewModel"/> class.
+        /// Initializes a new instance of the <see cref="UserDtoViewModel" /> class.
         /// </summary>
         /// <param name="apiClient">The API client.</param>
         /// <param name="imageManager">The image manager.</param>
-        public UserDtoViewModel(IApiClient apiClient, IImageManager imageManager)
+        /// <param name="session">The session.</param>
+        public UserDtoViewModel(IApiClient apiClient, IImageManager imageManager, ISessionManager session)
         {
             _apiClient = apiClient;
             _imageManager = imageManager;
+            _session = session;
+
+            LogoutCommand = new RelayCommand(Logout);
+        }
+
+        private async void Logout(object commandParameter)
+        {
+            if (_session.CurrentUser == null || !string.Equals(User.Id, _session.CurrentUser.Id))
+            {
+                throw new InvalidOperationException("The user is not logged in.");
+            }
+
+            await _session.Logout();
         }
 
         public string Username
@@ -135,6 +155,23 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
+        private int? _imageDownloadHeight;
+        public int? ImageDownloadHeight
+        {
+            get { return _imageDownloadHeight; }
+
+            set
+            {
+                var changed = _imageDownloadHeight != value;
+                _imageDownloadHeight = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("ImageDownloadHeight");
+                }
+            }
+        }
+
         public async void DownloadImage()
         {
             _imageCancellationTokenSource = new CancellationTokenSource();
@@ -146,6 +183,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                     var options = new ImageOptions
                     {
                         Width = ImageDownloadWidth,
+                        Height = ImageDownloadHeight,
                         ImageType = ImageType.Primary
                     };
 

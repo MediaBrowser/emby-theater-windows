@@ -17,7 +17,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
     /// Class ChapterInfoDtoViewModel
     /// </summary>
     [TypeDescriptionProvider(typeof(HyperTypeDescriptionProvider))]
-    public class ChapterInfoDtoViewModel : BaseViewModel, IDisposable
+    public class ChapterInfoViewModel : BaseViewModel, IDisposable
     {
         /// <summary>
         /// Gets the API client.
@@ -32,7 +32,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         private readonly IImageManager _imageManager;
         private readonly IPlaybackManager _playbackManager;
 
-        public ChapterInfoDtoViewModel(IApiClient apiClient, IImageManager imageManager, IPlaybackManager playbackManager)
+        public ChapterInfoViewModel(IApiClient apiClient, IImageManager imageManager, IPlaybackManager playbackManager)
         {
             _imageManager = imageManager;
             _playbackManager = playbackManager;
@@ -82,6 +82,23 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 if (changed)
                 {
                     OnPropertyChanged("HasImage");
+                }
+            }
+        }
+
+        private bool _isImageLoading = true;
+        public bool IsImageLoading
+        {
+            get { return _isImageLoading; }
+
+            set
+            {
+                var changed = _isImageLoading != value;
+                _isImageLoading = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("IsImageLoading");
                 }
             }
         }
@@ -187,16 +204,19 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                     DisposeCancellationTokenSource();
 
                     HasImage = true;
+                    IsImageLoading = false;
                 }
                 catch
                 {
                     // Logged at lower levels
                     HasImage = false;
+                    IsImageLoading = false;
                 }
             }
             else
             {
                 HasImage = false;
+                IsImageLoading = false;
             }
 
         }

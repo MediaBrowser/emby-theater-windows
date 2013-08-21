@@ -401,7 +401,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         {
             try
             {
-                DisplayPreferences = await ApiClient.GetDisplayPreferencesAsync(DisplayPreferencesId, SessionManager.CurrentUser.Id, "DefaultTheme");
+                DisplayPreferences = await ApiClient.GetDisplayPreferencesAsync(DisplayPreferencesId, SessionManager.CurrentUser.Id, "DefaultTheme", CancellationToken.None);
             }
             catch
             {

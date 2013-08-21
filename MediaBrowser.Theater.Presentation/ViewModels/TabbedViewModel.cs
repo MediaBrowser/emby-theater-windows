@@ -1,5 +1,4 @@
 ﻿using MediaBrowser.Theater.Interfaces.ViewModels;
-using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -7,7 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Threading;
 
-namespace MediaBrowser.Plugins.DefaultTheme.Home
+namespace MediaBrowser.Theater.Presentation.ViewModels
 {
     public abstract class TabbedViewModel : BaseViewModel, IDisposable
     {

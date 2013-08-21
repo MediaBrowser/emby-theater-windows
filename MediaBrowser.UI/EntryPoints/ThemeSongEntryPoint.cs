@@ -8,6 +8,7 @@ using MediaBrowser.Theater.Interfaces.Session;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MediaBrowser.UI.EntryPoints
@@ -103,7 +104,7 @@ namespace MediaBrowser.UI.EntryPoints
 
         private async Task<ThemeMediaResult> GetThemeMedia(string itemId)
         {
-            var themeMediaResult = await _apiClient.GetAllThemeMediaAsync(_session.CurrentUser.Id, itemId, true).ConfigureAwait(false);
+            var themeMediaResult = await _apiClient.GetAllThemeMediaAsync(_session.CurrentUser.Id, itemId, true, CancellationToken.None).ConfigureAwait(false);
 
             if (themeMediaResult.ThemeVideosResult.Items.Length > 0)
             {

@@ -3,11 +3,12 @@ using MediaBrowser.Model.Net;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.ViewModels;
 using System.Linq;
+using System.Threading;
 using System.Windows.Data;
 
 namespace MediaBrowser.Theater.Presentation.ViewModels
 {
-    public class CriticReviewsViewModel : BaseViewModel
+    public class CriticReviewListViewModel : BaseViewModel
     {
         public IPresentationManager PresentationManager { get; private set; }
         public IApiClient ApiClient { get; private set; }
@@ -44,7 +45,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         private readonly string _itemId;
 
-        public CriticReviewsViewModel(IPresentationManager presentationManager, IApiClient apiClient, IImageManager imageManager, string itemId)
+        public CriticReviewListViewModel(IPresentationManager presentationManager, IApiClient apiClient, IImageManager imageManager, string itemId)
         {
             ImageManager = imageManager;
             _itemId = itemId;
@@ -52,29 +53,41 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             PresentationManager = presentationManager;
         }
 
+        private CancellationTokenSource _reviewsCancellationTokenSource;
+
         private async void ReloadReviews()
         {
+            var cancellationTokenSource = _reviewsCancellationTokenSource = new CancellationTokenSource();
+
             try
             {
-                var result = await ApiClient.GetCriticReviews(_itemId);
+                var result = await ApiClient.GetCriticReviews(_itemId, cancellationTokenSource.Token);
 
                 _listItems.Clear();
 
                 _listItems.AddRange(result.ItemReviews.Select(i => new ItemReviewViewModel { Review = i }));
-
-                if (result.ItemReviews.Length > 0)
-                {
-                    Reviews.MoveCurrentToPosition(0);
-                }
             }
             catch (HttpException)
             {
                 PresentationManager.ShowDefaultErrorMessage();
             }
+            finally
+            {
+                cancellationTokenSource.Dispose();
+
+                if (cancellationTokenSource == _reviewsCancellationTokenSource)
+                {
+                    _reviewsCancellationTokenSource = null;
+                }
+            }
         }
 
         public void Dispose()
         {
+            if (_reviewsCancellationTokenSource != null)
+            {
+                _reviewsCancellationTokenSource.Dispose();
+            }
         }
     }
 }

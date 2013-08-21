@@ -2,13 +2,14 @@
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Plugins.DefaultTheme.Home;
+using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.ViewModels;
 using MediaBrowser.Theater.Presentation.ViewModels;
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Details
@@ -19,6 +20,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
         private readonly ISessionManager _sessionManager;
         private readonly IImageManager _imageManager;
         private readonly IPresentationManager _presentationManager;
+        private readonly IPlaybackManager _playback;
 
         private ItemViewModel _itemViewModel;
         public ItemViewModel ItemViewModel
@@ -34,12 +36,13 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             }
         }
 
-        public DetailPageViewModel(ItemViewModel item, IApiClient apiClient, ISessionManager sessionManager, IImageManager imageManager, IPresentationManager presentationManager)
+        public DetailPageViewModel(ItemViewModel item, IApiClient apiClient, ISessionManager sessionManager, IImageManager imageManager, IPresentationManager presentationManager, IPlaybackManager playback)
         {
             _apiClient = apiClient;
             _sessionManager = sessionManager;
             _imageManager = imageManager;
             _presentationManager = presentationManager;
+            _playback = playback;
             ItemViewModel = item;
         }
 
@@ -137,7 +140,14 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
         {
             if (string.Equals(section, "reviews"))
             {
-                return new CriticReviewsViewModel(_presentationManager, _apiClient, _imageManager, _itemViewModel.Item.Id);
+                return new CriticReviewListViewModel(_presentationManager, _apiClient, _imageManager, _itemViewModel.Item.Id);
+            }
+            if (string.Equals(section, "scenes"))
+            {
+                return new ChapterInfoListViewModel(_apiClient, _imageManager, _playback)
+                {
+                    Item = _itemViewModel.Item
+                };
             }
 
             return null;
@@ -152,7 +162,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
             try
             {
-                return await _apiClient.GetCriticReviews(item.Id);
+                return await _apiClient.GetCriticReviews(item.Id, CancellationToken.None);
             }
             catch
             {
@@ -170,7 +180,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
             try
             {
-                return await _apiClient.GetAllThemeMediaAsync(_sessionManager.CurrentUser.Id, item.Id, false);
+                return await _apiClient.GetAllThemeMediaAsync(_sessionManager.CurrentUser.Id, item.Id, false, CancellationToken.None);
             }
             catch
             {

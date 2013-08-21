@@ -25,7 +25,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// <summary>
         /// The _playback manager
         /// </summary>
-        internal static IPlaybackManager PlaybackManager;
+        private readonly IPlaybackManager _playbackManager;
         /// <summary>
         /// The _api client
         /// </summary>
@@ -50,17 +50,15 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// The _logger
         /// </summary>
         private readonly ILogger _logger;
-        private readonly IThemeManager _themeManager;
 
-        public DefaultTheme(IPlaybackManager playbackManager, IImageManager imageManager, IApiClient apiClient, INavigationService navService, ISessionManager sessionManager, IPresentationManager presentationManager, ILogManager logManager, IThemeManager themeManager)
+        public DefaultTheme(IPlaybackManager playbackManager, IImageManager imageManager, IApiClient apiClient, INavigationService navService, ISessionManager sessionManager, IPresentationManager presentationManager, ILogManager logManager)
         {
-            PlaybackManager = playbackManager;
+            _playbackManager = playbackManager;
             _imageManager = imageManager;
             _apiClient = apiClient;
             _navService = navService;
             _sessionManager = sessionManager;
             _presentationManager = presentationManager;
-            _themeManager = themeManager;
             _logger = logManager.GetLogger(GetType().Name);
 
             TopRightPanel.SessionManager = _sessionManager;
@@ -68,7 +66,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
             TopRightPanel.ImageManager = _imageManager;
             TopRightPanel.Logger = _logger;
             TopRightPanel.Navigation = _navService;
-            TopRightPanel.PlaybackManager = PlaybackManager;
+            TopRightPanel.PlaybackManager = _playbackManager;
 
             PageTitlePanel.ApiClient = _apiClient;
             PageTitlePanel.ImageManager = _imageManager;
@@ -107,7 +105,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
                 return new FolderPage(item, item.DisplayPreferencesId, _apiClient, _imageManager, _sessionManager, _presentationManager, _navService);
             }
 
-            return new PanoramaDetailPage(item, _apiClient, _sessionManager, _imageManager, _presentationManager);
+            return new PanoramaDetailPage(item, _apiClient, _sessionManager, _imageManager, _presentationManager, _playbackManager);
         }
 
         /// <summary>
@@ -118,7 +116,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// <returns>Page.</returns>
         public Page GetPersonPage(BaseItemDto item, string context)
         {
-            return new PanoramaDetailPage(item, _apiClient, _sessionManager, _imageManager, _presentationManager);
+            return new PanoramaDetailPage(item, _apiClient, _sessionManager, _imageManager, _presentationManager, _playbackManager);
         }
 
         /// <summary>

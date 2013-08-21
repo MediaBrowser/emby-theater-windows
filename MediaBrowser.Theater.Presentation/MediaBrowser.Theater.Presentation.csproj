@@ -34,13 +34,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MediaBrowser.Common, Version=3.0.4977.37920, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.Common, Version=3.0.4981.30948, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.3.0.181\lib\net45\MediaBrowser.Common.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.183\lib\net45\MediaBrowser.Common.dll</HintPath>
     </Reference>
-    <Reference Include="MediaBrowser.Model, Version=3.0.4977.37919, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.Model, Version=3.0.4981.30948, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.3.0.181\lib\net45\MediaBrowser.Model.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.183\lib\net45\MediaBrowser.Model.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Expression.Effects, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -86,7 +86,8 @@
     <Compile Include="Controls\TransitionFrame.cs" />
     <Compile Include="Controls\TreeHelper.cs" />
     <Compile Include="Controls\VirtualizingWrapPanel.cs" />
-    <Compile Include="ViewModels\CriticReviewsViewModel.cs" />
+    <Compile Include="ViewModels\ChapterInfoListViewModel.cs" />
+    <Compile Include="ViewModels\CriticReviewListViewModel.cs" />
     <Compile Include="ViewModels\DisplayPreferencesViewModel.cs" />
     <Compile Include="Extensions\AspectRatioHelper.cs" />
     <Compile Include="Extensions\MedianExtension.cs" />
@@ -115,8 +116,9 @@
     <Compile Include="ViewModels\MessageBoxViewModel.cs" />
     <Compile Include="ViewModels\RelayCommand.cs" />
     <Compile Include="ViewModels\BaseItemDtoViewModel.cs" />
-    <Compile Include="ViewModels\ChapterInfoDtoViewModel.cs" />
+    <Compile Include="ViewModels\ChapterInfoViewModel.cs" />
     <Compile Include="ViewModels\RotatingBackdropsViewModel.cs" />
+    <Compile Include="ViewModels\TabbedViewModel.cs" />
     <Compile Include="ViewModels\TransportOsdViewModel.cs" />
     <Compile Include="ViewModels\RotatingCollectionViewModel.cs" />
     <Compile Include="ViewModels\RangeObservableCollection.cs" />

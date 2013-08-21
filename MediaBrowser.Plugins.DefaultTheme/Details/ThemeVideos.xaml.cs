@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.ApiClient;
+﻿using System.Threading;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Net;
 using MediaBrowser.Model.Querying;
@@ -55,7 +56,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
             try
             {
-                allThemeMedia = await ApiClient.GetAllThemeMediaAsync(SessionManager.CurrentUser.Id, _parentItem.Id, false).ConfigureAwait(false);
+                allThemeMedia = await ApiClient.GetAllThemeMediaAsync(SessionManager.CurrentUser.Id, _parentItem.Id, false, CancellationToken.None).ConfigureAwait(false);
             }
             catch (HttpException)
             {

@@ -86,6 +86,7 @@
     <Compile Include="Controls\TransitionFrame.cs" />
     <Compile Include="Controls\TreeHelper.cs" />
     <Compile Include="Controls\VirtualizingWrapPanel.cs" />
+    <Compile Include="ViewModels\CriticReviewsViewModel.cs" />
     <Compile Include="ViewModels\DisplayPreferencesViewModel.cs" />
     <Compile Include="Extensions\AspectRatioHelper.cs" />
     <Compile Include="Extensions\MedianExtension.cs" />
@@ -109,6 +110,7 @@
     <Compile Include="ViewModels\AppListViewModel.cs" />
     <Compile Include="ViewModels\AppViewModel.cs" />
     <Compile Include="ViewModels\ItemListViewModel.cs" />
+    <Compile Include="ViewModels\ItemReviewViewModel.cs" />
     <Compile Include="ViewModels\ItemViewModel.cs" />
     <Compile Include="ViewModels\MessageBoxViewModel.cs" />
     <Compile Include="ViewModels\RelayCommand.cs" />

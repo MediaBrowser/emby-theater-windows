@@ -1,5 +1,4 @@
 ﻿using MediaBrowser.Model.ApiClient;
-using MediaBrowser.Model.Net;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Reflection;
 using MediaBrowser.Theater.Interfaces.Session;
@@ -22,28 +21,28 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         private readonly RangeObservableCollection<UserDtoViewModel> _listItems =
             new RangeObservableCollection<UserDtoViewModel>();
         
-        private ListCollectionView _listCollectionView;
-        public ListCollectionView ListCollectionView
+        private ListCollectionView _users;
+        public ListCollectionView Users
         {
             get
             {
-                if (_listCollectionView == null)
+                if (_users == null)
                 {
-                    _listCollectionView = new ListCollectionView(_listItems);
+                    _users = new ListCollectionView(_listItems);
                     ReloadUsers(true);
                 }
 
-                return _listCollectionView;
+                return _users;
             }
 
             set
             {
-                var changed = _listCollectionView != value;
-                _listCollectionView = value;
+                var changed = _users != value;
+                _users = value;
 
                 if (changed)
                 {
-                    OnPropertyChanged("ListCollectionView");
+                    OnPropertyChanged("Users");
                 }
             }
         }
@@ -59,7 +58,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         private async void ReloadUsers(bool isInitialLoad)
         {
             // Record the current item
-            var currentItem = _listCollectionView.CurrentItem as UserDtoViewModel;
+            var currentItem = _users.CurrentItem as UserDtoViewModel;
 
             try
             {
@@ -87,10 +86,10 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
                 if (selectedIndex.HasValue)
                 {
-                    ListCollectionView.MoveCurrentToPosition(selectedIndex.Value);
+                    Users.MoveCurrentToPosition(selectedIndex.Value);
                 }
             }
-            catch (HttpException)
+            catch (Exception)
             {
                 PresentationManager.ShowDefaultErrorMessage();
             }

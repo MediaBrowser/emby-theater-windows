@@ -21,7 +21,7 @@
 
         <TextBlock Name="TxtName" Style="{DynamicResource TextBlockStyle}" HorizontalAlignment="Center" Margin="200 15 200 0" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"></TextBlock>
 
-        <controls:ExtendedListBox x:Name="MenuList" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" Grid.Row="1" HorizontalAlignment="Center" Margin="20 30 20 0" ItemContainerStyle="{DynamicResource DetailPageMenuListBoxItemStyle}">
+        <controls:ExtendedListBox x:Name="MenuList" ItemsSource="{Binding Sections}" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" Grid.Row="1" HorizontalAlignment="Center" Margin="20 30 20 0" ItemContainerStyle="{DynamicResource DetailPageMenuListBoxItemStyle}">
             <controls:ExtendedListBox.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" />
@@ -29,17 +29,70 @@
             </controls:ExtendedListBox.ItemsPanel>
         </controls:ExtendedListBox>
 
-        <controls:ExtendedScrollViewer x:Name="ScrollViewer" Grid.Row="2" Margin="70 30 40 0" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalAlignment="Stretch" HorizontalAlignment="Center" CanContentScroll="True">
-            <controls:ScrollingPanel x:Name="ScrollingPanel" CanHorizontallyScroll="True" CanVerticallyScroll="False" HorizontalAlignment="Stretch">
-                <ContentControl x:Name="PageContent">
+        <controls:ExtendedScrollViewer x:Name="ScrollViewer" Grid.Row="2" Margin="70 30 40 0" VerticalAlignment="Stretch" HorizontalAlignment="Center" CanContentScroll="True">
 
+            <controls:ExtendedScrollViewer.Style>
+                <Style TargetType="{x:Type controls:ExtendedScrollViewer}">
+
+                    <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Hidden"></Setter>
+                    <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"></Setter>
+
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding CurrentSection}" Value="overview">
+                            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"></Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </controls:ExtendedScrollViewer.Style>
+
+            <controls:ScrollingPanel x:Name="ScrollingPanel" CanHorizontallyScroll="True" CanVerticallyScroll="False" HorizontalAlignment="Stretch">
+                <controls:ScrollingPanel.Style>
+                    <Style TargetType="{x:Type controls:ScrollingPanel}">
+                        <Setter Property="CanHorizontallyScroll" Value="True"></Setter>
+                        <Setter Property="CanVerticallyScroll" Value="False"></Setter>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding CurrentSection}" Value="overview">
+                                <Setter Property="CanHorizontallyScroll" Value="False"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </controls:ScrollingPanel.Style>
+                <ContentControl>
+                    <ContentControl.Style>
+                        <Style TargetType="{x:Type ContentControl}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding CurrentSection}" Value="overview">
+                                    <Setter Property="Content">
+                                        <Setter.Value>
+                                            <Grid></Grid>
+                                        </Setter.Value>
+                                    </Setter>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding CurrentSection}" Value="reviews">
+                                    <Setter Property="Content">
+                                        <Setter.Value>
+                                            <Grid>
+                                                <controls:ExtendedListBox Margin="-25 -15 -25 -15" DataContext="{Binding ContentViewModel}" ItemsSource="{Binding Reviews}" x:Name="LstItems" KeyboardNavigation.DirectionalNavigation="Continue" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{DynamicResource CriticReviewsTemplate}">
+                                                    <controls:ExtendedListBox.ItemsPanel>
+                                                        <ItemsPanelTemplate>
+                                                            <UniformGrid Rows="2" Margin="40 35"></UniformGrid>
+                                                        </ItemsPanelTemplate>
+                                                    </controls:ExtendedListBox.ItemsPanel>
+                                                </controls:ExtendedListBox>
+                                            </Grid>
+                                        </Setter.Value>
+                                    </Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ContentControl.Style>
                 </ContentControl>
             </controls:ScrollingPanel>
         </controls:ExtendedScrollViewer>
 
         <Grid Grid.Row="3" Margin="25 0 25 20">
 
-            <details:ItemInfoFooter x:Name="ItemInfoFooter" HorizontalAlignment="Right" VerticalAlignment="Bottom"></details:ItemInfoFooter>
+            <details:ItemInfoFooter x:Name="ItemInfoFooter" HorizontalAlignment="Right" VerticalAlignment="Bottom" DataContext="{Binding ItemViewModel}"></details:ItemInfoFooter>
 
         </Grid>
 

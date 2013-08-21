@@ -60,6 +60,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             }
         }
 
+        private string _currentSection;
         public string CurrentSection
         {
             get
@@ -67,6 +68,19 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 var sections = Sections;
 
                 return sections == null ? null : sections.CurrentItem as string;
+            }
+            set
+            {
+                var changed = !string.Equals(_currentSection, value);
+
+                _currentSection = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("CurrentSection");
+
+                    ContentViewModel = GetContentViewModel(CurrentSection);
+                }
             }
         }
 
@@ -111,11 +125,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         private void UpdateCurrentSection()
         {
-            ContentViewModel = null;
-
-            OnPropertyChanged("CurrentSection");
-
-            ContentViewModel = GetContentViewModel(CurrentSection);
+            CurrentSection = Sections.CurrentItem as string;
         }
 
         private async Task ReloadSections()
@@ -126,7 +136,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             _sectionNames.AddRange(views);
 
             Sections.MoveCurrentToPosition(0);
-            OnPropertyChanged("CurrentSection");
         }
 
         protected abstract Task<IEnumerable<string>> GetSectionNames();

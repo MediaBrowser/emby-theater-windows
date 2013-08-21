@@ -220,6 +220,9 @@ namespace MediaBrowser.Theater.Presentation.Controls
         { SetHorizontalOffset(HorizontalOffset + ViewportWidth); }
         #endregion
 
+        public static readonly DependencyProperty CanHorizontallyScrollProperty = DependencyProperty.Register("CanHorizontallyScroll", typeof(bool), typeof(ScrollingPanel), new PropertyMetadata(false, new PropertyChangedCallback(ScrollingPanel.OnCanScrollPropertyChanged)));
+        public static readonly DependencyProperty CanVerticallyScrollProperty = DependencyProperty.Register("CanVerticallyScroll", typeof(bool), typeof(ScrollingPanel), new PropertyMetadata(false, new PropertyChangedCallback(ScrollingPanel.OnCanScrollPropertyChanged)));
+
         /// <summary>
         /// Gets or sets a <see cref="T:System.Windows.Controls.ScrollViewer" /> element that controls scrolling behavior.
         /// </summary>
@@ -232,15 +235,44 @@ namespace MediaBrowser.Theater.Presentation.Controls
         /// </summary>
         /// <value><c>true</c> if this instance can horizontally scroll; otherwise, <c>false</c>.</value>
         /// <returns>true if scrolling is possible; otherwise, false. This property has no default value.</returns>
-        public bool CanHorizontallyScroll { get; set; }
+        public bool CanHorizontallyScroll
+        {
+            get
+            {
+                return (bool)base.GetValue(ScrollingPanel.CanHorizontallyScrollProperty);
+            }
+            set
+            {
+                base.SetValue(ScrollingPanel.CanHorizontallyScrollProperty, value);
+            }
+        }
 
         /// <summary>
         /// Gets or sets a value that indicates whether scrolling on the vertical axis is possible.
         /// </summary>
         /// <value><c>true</c> if this instance can vertically scroll; otherwise, <c>false</c>.</value>
         /// <returns>true if scrolling is possible; otherwise, false. This property has no default value.</returns>
-        public bool CanVerticallyScroll { get; set; }
+        public bool CanVerticallyScroll
+        {
+            get
+            {
+                return (bool)base.GetValue(ScrollingPanel.CanVerticallyScrollProperty);
+            }
+            set
+            {
+                base.SetValue(ScrollingPanel.CanVerticallyScrollProperty, value);
+            }
+        }
 
+        private static void OnCanScrollPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            UIElement panel = d as UIElement;
+            if (panel != null)
+            {
+                panel.InvalidateMeasure();
+            }
+        }
+        
         /// <summary>
         /// Gets the vertical size of the extent.
         /// </summary>

@@ -59,7 +59,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         public Page GetHomePage(BaseItemDto rootFolder)
         {
-            return new HomePage(rootFolder, _apiClient, _imageManager, _sessionManager, _presentationManager, _navigationManager, _logger);
+            var page = new HomePage(rootFolder, _presentationManager)
+            {
+                DataContext = new HomePageViewModel(_presentationManager, _apiClient, _sessionManager, _logger, _imageManager, _navigationManager)
+            };
+
+            return page;
         }
     }
 }

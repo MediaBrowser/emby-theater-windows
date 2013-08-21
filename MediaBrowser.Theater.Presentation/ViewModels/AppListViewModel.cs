@@ -30,24 +30,24 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
             LaunchCommand = new RelayCommand(Launch);
             
-            ListCollectionView = new ListCollectionView(_listItems);
+            Apps = new ListCollectionView(_listItems);
 
             ReloadApps();
         }
 
-        private ListCollectionView _listCollectionView;
-        public ListCollectionView ListCollectionView
+        private ListCollectionView _apps;
+        public ListCollectionView Apps
         {
-            get { return _listCollectionView; }
+            get { return _apps; }
 
             set
             {
-                var changed = _listCollectionView != value;
-                _listCollectionView = value;
+                var changed = _apps != value;
+                _apps = value;
 
                 if (changed)
                 {
-                    OnPropertyChanged("ListCollectionView");
+                    OnPropertyChanged("Apps");
                 }
             }
         }

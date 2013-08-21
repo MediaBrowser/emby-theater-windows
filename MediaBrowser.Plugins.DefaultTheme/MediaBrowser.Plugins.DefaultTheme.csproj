@@ -95,9 +95,6 @@
     <Compile Include="Details\Children.xaml.cs">
       <DependentUpon>Children.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Details\CriticReviewControl.xaml.cs">
-      <DependentUpon>CriticReviewControl.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Details\DetailPageViewModel.cs" />
     <Compile Include="Details\Gallery.xaml.cs">
       <DependentUpon>Gallery.xaml</DependentUpon>
@@ -107,9 +104,6 @@
     </Compile>
     <Compile Include="Details\People.xaml.cs">
       <DependentUpon>People.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Details\Reviews.xaml.cs">
-      <DependentUpon>Reviews.xaml</DependentUpon>
     </Compile>
     <Compile Include="Details\Scenes.xaml.cs">
       <DependentUpon>Scenes.xaml</DependentUpon>
@@ -231,10 +225,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Details\CriticReviewControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Details\Gallery.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -244,10 +234,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Details\People.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Details\Reviews.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

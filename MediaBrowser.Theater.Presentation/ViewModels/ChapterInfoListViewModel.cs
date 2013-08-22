@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Data;
+using System.Windows.Input;
 
 namespace MediaBrowser.Theater.Presentation.ViewModels
 {
@@ -15,6 +16,9 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
         private readonly IPlaybackManager _playback;
+        private readonly IPresentationManager _presentationManager;
+
+        public ICommand PlayCommand { get; private set; }
 
         private readonly RangeObservableCollection<ChapterInfoViewModel> _listItems =
          new RangeObservableCollection<ChapterInfoViewModel>();
@@ -75,12 +79,15 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
-        public ChapterInfoListViewModel(IApiClient apiClient, IImageManager imageManager, IPlaybackManager playback)
+        public ChapterInfoListViewModel(IApiClient apiClient, IImageManager imageManager, IPlaybackManager playback, IPresentationManager presentationManager)
         {
             _apiClient = apiClient;
             _imageManager = imageManager;
             _playback = playback;
+            _presentationManager = presentationManager;
             _chapters = new ListCollectionView(_listItems);
+
+            PlayCommand = new RelayCommand(Play);
         }
 
         private void ReloadChapters(BaseItemDto item)
@@ -120,6 +127,24 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             if (selectedIndex.HasValue)
             {
                 Chapters.MoveCurrentToPosition(selectedIndex.Value);
+            }
+        }
+
+        private async void Play(object commandParameter)
+        {
+            var chapter = (ChapterInfoViewModel)commandParameter;
+
+            try
+            {
+                await _playback.Play(new PlayOptions
+                {
+                    Items = new List<BaseItemDto>() { Item },
+                    StartPositionTicks = chapter.Chapter.StartPositionTicks
+                });
+            }
+            catch
+            {
+                _presentationManager.ShowDefaultErrorMessage();
             }
         }
 

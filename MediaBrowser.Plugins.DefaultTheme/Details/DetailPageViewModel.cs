@@ -144,7 +144,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             }
             if (string.Equals(section, "scenes"))
             {
-                return new ChapterInfoListViewModel(_apiClient, _imageManager, _playback)
+                return new ChapterInfoListViewModel(_apiClient, _imageManager, _playback, _presentationManager)
                 {
                     Item = _itemViewModel.Item
                 };

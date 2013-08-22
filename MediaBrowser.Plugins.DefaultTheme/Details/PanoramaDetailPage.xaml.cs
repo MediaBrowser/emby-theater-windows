@@ -1,10 +1,6 @@
-﻿using MediaBrowser.Model.ApiClient;
-using MediaBrowser.Model.Dto;
+﻿using MediaBrowser.Model.Dto;
 using MediaBrowser.Plugins.DefaultTheme.Header;
-using MediaBrowser.Theater.Interfaces.Navigation;
-using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
-using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Presentation.Pages;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using System.Windows;
@@ -18,18 +14,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
     {
         private readonly ItemViewModel _itemViewModel;
 
-        public PanoramaDetailPage(BaseItemDto item, IApiClient apiClient, ISessionManager sessionManager, IImageManager imageManager, IPresentationManager presentation, IPlaybackManager playback, INavigationService navigation)
+        public PanoramaDetailPage(ItemViewModel itemViewModel)
         {
+            _itemViewModel = itemViewModel;
             InitializeComponent();
 
             Loaded += PanoramaDetailPage_Loaded;
-
-            _itemViewModel = new ItemViewModel(apiClient, imageManager)
-            {
-                Item = item
-            };
-
-            DataContext = new DetailPageViewModel(_itemViewModel, apiClient, sessionManager, imageManager, presentation, playback, navigation);
 
             SetTitle(_itemViewModel.Item);
         }

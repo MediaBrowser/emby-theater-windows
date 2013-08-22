@@ -131,7 +131,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 views.Add("themes");
             }
 
-            if (Gallery.GetImages(item, _apiClient, null, null).Any())
+            if (GalleryViewModel.GetImages(item, _apiClient, null, null).Any())
             {
                 views.Add("gallery");
             }
@@ -159,6 +159,14 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 {
                     Item = _itemViewModel.Item,
                     ImageWidth = 300
+                };
+            }
+            if (string.Equals(section, "gallery"))
+            {
+                return new GalleryViewModel(_apiClient, _imageManager, _navigation)
+                {
+                    ImageHeight = 640,
+                    Item = _itemViewModel.Item
                 };
             }
 

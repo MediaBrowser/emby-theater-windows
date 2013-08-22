@@ -133,11 +133,11 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
         
         private CancellationTokenSource _imageDownloadCancellationTokenSource;
 
-        public ImageViewerViewModel(Dispatcher dispatcher, IImageManager imageManager, IEnumerable<ImageViewerImage> initialImages)
+        public ImageViewerViewModel(IImageManager imageManager, IEnumerable<ImageViewerImage> initialImages)
         {
             _images.AddRange(initialImages);
 
-            _dispatcher = dispatcher;
+            _dispatcher = Dispatcher.CurrentDispatcher;
             _imageManager = imageManager;
         }
 

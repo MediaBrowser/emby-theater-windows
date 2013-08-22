@@ -69,23 +69,6 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
-        private bool _hasImage;
-        public bool HasImage
-        {
-            get { return _hasImage; }
-
-            set
-            {
-                var changed = _hasImage != value;
-                _hasImage = value;
-
-                if (changed)
-                {
-                    OnPropertyChanged("HasImage");
-                }
-            }
-        }
-
         private bool _isImageLoading = true;
         public bool IsImageLoading
         {
@@ -99,6 +82,23 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 if (changed)
                 {
                     OnPropertyChanged("IsImageLoading");
+                }
+            }
+        }
+
+        private bool _hasImage;
+        public bool HasImage
+        {
+            get { return _hasImage; }
+
+            set
+            {
+                var changed = _hasImage != value;
+                _hasImage = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("HasImage");
                 }
             }
         }
@@ -199,18 +199,25 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                         Tag = Chapter.ImageTag
                     };
 
-                    Image = await _imageManager.GetRemoteBitmapAsync(_apiClient.GetImageUrl(Item, options), _imageCancellationTokenSource.Token);
-
-                    DisposeCancellationTokenSource();
+                    Image = await _imageManager.GetRemoteBitmapAsync(_apiClient.GetImageUrl(Item, options),
+                                                           _imageCancellationTokenSource.Token);
 
                     HasImage = true;
                     IsImageLoading = false;
+                }
+                catch (OperationCanceledException)
+                {
+
                 }
                 catch
                 {
                     // Logged at lower levels
                     HasImage = false;
                     IsImageLoading = false;
+                }
+                finally
+                {
+                    DisposeCancellationTokenSource();
                 }
             }
             else

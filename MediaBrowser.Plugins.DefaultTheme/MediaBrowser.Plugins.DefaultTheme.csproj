@@ -93,9 +93,6 @@
       <DependentUpon>Children.xaml</DependentUpon>
     </Compile>
     <Compile Include="Details\DetailPageViewModel.cs" />
-    <Compile Include="Details\Gallery.xaml.cs">
-      <DependentUpon>Gallery.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Details\Overview.xaml.cs">
       <DependentUpon>Overview.xaml</DependentUpon>
     </Compile>
@@ -208,10 +205,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Details\Children.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Details\Gallery.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

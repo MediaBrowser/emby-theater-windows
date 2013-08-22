@@ -1,15 +1,15 @@
-﻿using System.Windows.Input;
-using MediaBrowser.Model.ApiClient;
+﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Reflection;
+using MediaBrowser.Theater.Interfaces.Session;
+using MediaBrowser.Theater.Interfaces.ViewModels;
 using System;
 using System.ComponentModel;
 using System.Threading;
+using System.Windows.Input;
 using System.Windows.Media.Imaging;
-using MediaBrowser.Theater.Interfaces.Session;
-using MediaBrowser.Theater.Interfaces.ViewModels;
 
 namespace MediaBrowser.Theater.Presentation.ViewModels
 {
@@ -138,36 +138,36 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
-        private int? _imageDownloadWidth;
-        public int? ImageDownloadWidth
+        private int? _imageWidth;
+        public int? ImageWidth
         {
-            get { return _imageDownloadWidth; }
+            get { return _imageWidth; }
 
             set
             {
-                var changed = _imageDownloadWidth != value;
-                _imageDownloadWidth = value;
+                var changed = _imageWidth != value;
+                _imageWidth = value;
 
                 if (changed)
                 {
-                    OnPropertyChanged("ImageDownloadWidth");
+                    OnPropertyChanged("ImageWidth");
                 }
             }
         }
 
-        private int? _imageDownloadHeight;
-        public int? ImageDownloadHeight
+        private int? _imageHeight;
+        public int? ImageHeight
         {
-            get { return _imageDownloadHeight; }
+            get { return _imageHeight; }
 
             set
             {
-                var changed = _imageDownloadHeight != value;
-                _imageDownloadHeight = value;
+                var changed = _imageHeight != value;
+                _imageHeight = value;
 
                 if (changed)
                 {
-                    OnPropertyChanged("ImageDownloadHeight");
+                    OnPropertyChanged("ImageHeight");
                 }
             }
         }
@@ -182,8 +182,8 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 {
                     var options = new ImageOptions
                     {
-                        Width = ImageDownloadWidth,
-                        Height = ImageDownloadHeight,
+                        Width = ImageWidth,
+                        Height = ImageHeight,
                         ImageType = ImageType.Primary
                     };
 

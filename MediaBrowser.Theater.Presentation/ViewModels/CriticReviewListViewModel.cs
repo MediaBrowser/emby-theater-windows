@@ -18,7 +18,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             new RangeObservableCollection<ItemReviewViewModel>();
 
         private ListCollectionView _reviews;
-        public ListCollectionView Reviews
+        public ListCollectionView ListCollectionView
         {
             get
             {
@@ -38,7 +38,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
                 if (changed)
                 {
-                    OnPropertyChanged("Reviews");
+                    OnPropertyChanged("ListCollectionView");
                 }
             }
         }

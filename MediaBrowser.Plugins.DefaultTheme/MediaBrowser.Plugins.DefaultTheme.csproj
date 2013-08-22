@@ -89,9 +89,6 @@
     <Compile Include="Controls\MultiItemTile.xaml.cs">
       <DependentUpon>MultiItemTile.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\PersonInfoTile.xaml.cs">
-      <DependentUpon>PersonInfoTile.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Details\Children.xaml.cs">
       <DependentUpon>Children.xaml</DependentUpon>
     </Compile>
@@ -101,9 +98,6 @@
     </Compile>
     <Compile Include="Details\Overview.xaml.cs">
       <DependentUpon>Overview.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Details\People.xaml.cs">
-      <DependentUpon>People.xaml</DependentUpon>
     </Compile>
     <Compile Include="Details\SimilarItems.xaml.cs">
       <DependentUpon>SimilarItems.xaml</DependentUpon>
@@ -213,10 +207,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\PersonInfoTile.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Details\Children.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -226,10 +216,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Details\Overview.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Details\People.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

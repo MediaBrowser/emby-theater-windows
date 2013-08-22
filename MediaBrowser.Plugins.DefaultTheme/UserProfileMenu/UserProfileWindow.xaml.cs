@@ -31,7 +31,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.UserProfileMenu
             ContentGrid.DataContext = new UserDtoViewModel(apiClient, imageManager, session)
             {
                 User = session.CurrentUser,
-                ImageDownloadHeight = 54
+                ImageHeight = 54
             };
 
             MainGrid.DataContext = this;

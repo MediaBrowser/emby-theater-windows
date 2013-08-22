@@ -2,6 +2,7 @@
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Plugins.DefaultTheme.Home;
+using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
@@ -21,6 +22,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
         private readonly IImageManager _imageManager;
         private readonly IPresentationManager _presentationManager;
         private readonly IPlaybackManager _playback;
+        private readonly INavigationService _navigation;
 
         private ItemViewModel _itemViewModel;
         public ItemViewModel ItemViewModel
@@ -36,13 +38,14 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             }
         }
 
-        public DetailPageViewModel(ItemViewModel item, IApiClient apiClient, ISessionManager sessionManager, IImageManager imageManager, IPresentationManager presentationManager, IPlaybackManager playback)
+        public DetailPageViewModel(ItemViewModel item, IApiClient apiClient, ISessionManager sessionManager, IImageManager imageManager, IPresentationManager presentationManager, IPlaybackManager playback, INavigationService navigation)
         {
             _apiClient = apiClient;
             _sessionManager = sessionManager;
             _imageManager = imageManager;
             _presentationManager = presentationManager;
             _playback = playback;
+            _navigation = navigation;
             ItemViewModel = item;
         }
 
@@ -146,7 +149,16 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             {
                 return new ChapterInfoListViewModel(_apiClient, _imageManager, _playback, _presentationManager)
                 {
-                    Item = _itemViewModel.Item
+                    Item = _itemViewModel.Item,
+                    ImageWidth = 380
+                };
+            }
+            if (string.Equals(section, "cast"))
+            {
+                return new ItemPersonListViewModel(_apiClient, _imageManager, _presentationManager, _navigation)
+                {
+                    Item = _itemViewModel.Item,
+                    ImageWidth = 300
                 };
             }
 

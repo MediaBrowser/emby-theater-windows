@@ -105,7 +105,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
                 return new FolderPage(item, item.DisplayPreferencesId, _apiClient, _imageManager, _sessionManager, _presentationManager, _navService);
             }
 
-            return new PanoramaDetailPage(item, _apiClient, _sessionManager, _imageManager, _presentationManager, _playbackManager);
+            return new PanoramaDetailPage(item, _apiClient, _sessionManager, _imageManager, _presentationManager, _playbackManager, _navService);
         }
 
         /// <summary>
@@ -116,7 +116,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// <returns>Page.</returns>
         public Page GetPersonPage(BaseItemDto item, string context)
         {
-            return new PanoramaDetailPage(item, _apiClient, _sessionManager, _imageManager, _presentationManager, _playbackManager);
+            return new PanoramaDetailPage(item, _apiClient, _sessionManager, _imageManager, _presentationManager, _playbackManager, _navService);
         }
 
         /// <summary>

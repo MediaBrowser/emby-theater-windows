@@ -61,11 +61,26 @@
                     <ContentControl.Style>
                         <Style TargetType="{x:Type ContentControl}">
                             <Style.Triggers>
+                                <DataTrigger Binding="{Binding CurrentSection}" Value="cast">
+                                    <Setter Property="Content">
+                                        <Setter.Value>
+                                            <Grid>
+                                                <controls:ExtendedListBox Margin="-25 0 -25 0" DataContext="{Binding ContentViewModel}" ItemsSource="{Binding ListCollectionView}" Command="{Binding NavigateCommand}" KeyboardNavigation.DirectionalNavigation="Continue" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{DynamicResource PersonInfoTemplate}">
+                                                    <controls:ExtendedListBox.ItemsPanel>
+                                                        <ItemsPanelTemplate>
+                                                            <UniformGrid Rows="2" Margin="40 35"></UniformGrid>
+                                                        </ItemsPanelTemplate>
+                                                    </controls:ExtendedListBox.ItemsPanel>
+                                                </controls:ExtendedListBox>
+                                            </Grid>
+                                        </Setter.Value>
+                                    </Setter>
+                                </DataTrigger>
                                 <DataTrigger Binding="{Binding CurrentSection}" Value="scenes">
                                     <Setter Property="Content">
                                         <Setter.Value>
                                             <Grid>
-                                                <controls:ExtendedListBox Margin="-20 -15 -20 -15" DataContext="{Binding ContentViewModel}" ItemsSource="{Binding Chapters}" Command="{Binding PlayCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{DynamicResource ItemChaptersTemplate}">
+                                                <controls:ExtendedListBox Margin="-20 -15 -20 -15" DataContext="{Binding ContentViewModel}" ItemsSource="{Binding ListCollectionView}" Command="{Binding PlayCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{DynamicResource ItemChaptersTemplate}">
                                                     <controls:ExtendedListBox.ItemsPanel>
                                                         <ItemsPanelTemplate>
                                                             <UniformGrid Rows="3" Margin="40 35"></UniformGrid>
@@ -80,7 +95,7 @@
                                     <Setter Property="Content">
                                         <Setter.Value>
                                             <Grid>
-                                                <controls:ExtendedListBox Margin="-25 -15 -25 -15" DataContext="{Binding ContentViewModel}" ItemsSource="{Binding Reviews}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{DynamicResource CriticReviewsTemplate}">
+                                                <controls:ExtendedListBox Margin="-25 -15 -25 -15" DataContext="{Binding ContentViewModel}" ItemsSource="{Binding ListCollectionView}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{DynamicResource CriticReviewsTemplate}">
                                                     <controls:ExtendedListBox.ItemsPanel>
                                                         <ItemsPanelTemplate>
                                                             <UniformGrid Rows="2" Margin="40 35"></UniformGrid>

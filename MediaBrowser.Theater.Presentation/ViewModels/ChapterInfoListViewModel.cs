@@ -42,25 +42,25 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
-        private int? _imageDownloadWidth;
-        public int? ImageDownloadWidth
+        private int? _imageWidth;
+        public int? ImageWidth
         {
-            get { return _imageDownloadWidth; }
+            get { return _imageWidth; }
 
             set
             {
-                var changed = _imageDownloadWidth != value;
-                _imageDownloadWidth = value;
+                var changed = _imageWidth != value;
+                _imageWidth = value;
 
                 if (changed)
                 {
-                    OnPropertyChanged("ImageDownloadWidth");
+                    OnPropertyChanged("ImageWidth");
                 }
             }
         }
 
         private ListCollectionView _chapters;
-        public ListCollectionView Chapters
+        public ListCollectionView ListCollectionView
         {
             get
             {
@@ -74,7 +74,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
                 if (changed)
                 {
-                    OnPropertyChanged("Chapters");
+                    OnPropertyChanged("ListCollectionView");
                 }
             }
         }
@@ -121,12 +121,12 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             {
                 Chapter = i,
                 Item = item,
-                ImageDownloadWidth = ImageDownloadWidth
+                ImageWidth = ImageWidth
             }));
 
             if (selectedIndex.HasValue)
             {
-                Chapters.MoveCurrentToPosition(selectedIndex.Value);
+                ListCollectionView.MoveCurrentToPosition(selectedIndex.Value);
             }
         }
 

@@ -103,19 +103,19 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
-        private int? _imageDownloadWidth;
-        public int? ImageDownloadWidth
+        private int? _imageWidth;
+        public int? ImageWidth
         {
-            get { return _imageDownloadWidth; }
+            get { return _imageWidth; }
 
             set
             {
-                var changed = _imageDownloadWidth != value;
-                _imageDownloadWidth = value;
+                var changed = _imageWidth != value;
+                _imageWidth = value;
 
                 if (changed)
                 {
-                    OnPropertyChanged("ImageDownloadWidth");
+                    OnPropertyChanged("ImageWidth");
                 }
             }
         }
@@ -193,7 +193,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 {
                     var options = new ImageOptions
                     {
-                        Width = _imageDownloadWidth,
+                        Width = ImageWidth,
                         ImageIndex = Item.Chapters.IndexOf(Chapter),
                         ImageType = ImageType.Chapter,
                         Tag = Chapter.ImageTag

@@ -111,6 +111,8 @@
     <Compile Include="ViewModels\AppListViewModel.cs" />
     <Compile Include="ViewModels\AppViewModel.cs" />
     <Compile Include="ViewModels\ItemListViewModel.cs" />
+    <Compile Include="ViewModels\ItemPersonListViewModel.cs" />
+    <Compile Include="ViewModels\ItemPersonViewModel.cs" />
     <Compile Include="ViewModels\ItemReviewViewModel.cs" />
     <Compile Include="ViewModels\ItemViewModel.cs" />
     <Compile Include="ViewModels\MessageBoxViewModel.cs" />

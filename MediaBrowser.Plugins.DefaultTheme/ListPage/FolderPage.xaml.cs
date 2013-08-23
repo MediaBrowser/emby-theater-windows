@@ -1,9 +1,11 @@
 ﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
+using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Plugins.DefaultTheme.Header;
 using MediaBrowser.Theater.Interfaces.Navigation;
+using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Presentation.Controls;
@@ -31,14 +33,18 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
         private readonly ISessionManager _sessionManager;
         private readonly IPresentationManager _presentationManager;
         private readonly INavigationService _navigationManager;
+        private readonly IPlaybackManager _playbackManager;
+        private readonly ILogger _logger;
 
         private readonly BaseItemDto _parentItem;
 
         private ItemListViewModel _viewModel;
 
-        public FolderPage(BaseItemDto parent, string displayPreferencesId, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IPresentationManager applicationWindow, INavigationService navigationManager)
+        public FolderPage(BaseItemDto parent, string displayPreferencesId, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IPresentationManager applicationWindow, INavigationService navigationManager, IPlaybackManager playbackManager, ILogger logger)
         {
             _navigationManager = navigationManager;
+            _playbackManager = playbackManager;
+            _logger = logger;
             _presentationManager = applicationWindow;
             _sessionManager = sessionManager;
             _imageManager = imageManager;
@@ -57,7 +63,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
             Loaded += FolderPage_Loaded;
             Unloaded += FolderPage_Unloaded;
 
-            DataContext = _viewModel = new ItemListViewModel(GetItemsAsync, _presentationManager, _imageManager, _apiClient, _sessionManager, _navigationManager)
+            DataContext = _viewModel = new ItemListViewModel(GetItemsAsync, _presentationManager, _imageManager, _apiClient, _sessionManager, _navigationManager, _playbackManager, _logger)
             {
                 DisplayPreferencesId = _displayPreferencesId,
                 ItemContainerHeight = 200,
@@ -129,7 +135,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
 
         void _viewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (string.Equals(e.PropertyName, "ViewType") || string.Equals(e.PropertyName, "ImageDisplayWidth") || string.Equals(e.PropertyName, "MedianPrimaryImageAspectRatio"))
+            if (string.Equals(e.PropertyName, "ViewType") || string.Equals(e.PropertyName, "ImageWidth") || string.Equals(e.PropertyName, "MedianPrimaryImageAspectRatio"))
             {
                 _viewModel.ItemContainerWidth = GetItemContainerWidth(_viewModel.ViewType, _viewModel.ImageDisplayWidth);
                 _viewModel.ItemContainerHeight = GetItemContainerHeight(_viewModel);

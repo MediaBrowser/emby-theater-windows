@@ -1,7 +1,6 @@
 ﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Querying;
-using MediaBrowser.Plugins.DefaultTheme.Home;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
@@ -168,6 +167,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                     ImageHeight = 640,
                     Item = _itemViewModel.Item
                 };
+            }
+            if (string.Equals(section, "overview"))
+            {
+                return _itemViewModel;
             }
 
             return null;

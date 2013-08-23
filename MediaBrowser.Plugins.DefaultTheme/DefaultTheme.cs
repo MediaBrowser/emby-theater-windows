@@ -103,12 +103,13 @@ namespace MediaBrowser.Plugins.DefaultTheme
         {
             if (item.IsFolder && !item.IsType("series") && !item.IsType("musicalbum"))
             {
-                return new FolderPage(item, item.DisplayPreferencesId, _apiClient, _imageManager, _sessionManager, _presentationManager, _navService);
+                return new FolderPage(item, item.DisplayPreferencesId, _apiClient, _imageManager, _sessionManager, _presentationManager, _navService, _playbackManager, _logger);
             }
 
-            var itemViewModel = new ItemViewModel(_apiClient, _imageManager)
+            var itemViewModel = new ItemViewModel(_apiClient, _imageManager, _playbackManager, _presentationManager, _logger)
             {
-                Item = item
+                Item = item,
+                ImageWidth = 550
             };
 
             return new PanoramaDetailPage(itemViewModel)

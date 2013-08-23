@@ -1,37 +1,54 @@
 ﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
+using MediaBrowser.Model.Logging;
+using MediaBrowser.Model.Net;
+using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Reflection;
+using MediaBrowser.Theater.Interfaces.ViewModels;
 using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using System.Windows.Media.Imaging;
-using MediaBrowser.Theater.Interfaces.ViewModels;
 
 namespace MediaBrowser.Theater.Presentation.ViewModels
 {
     [TypeDescriptionProvider(typeof(HyperTypeDescriptionProvider))]
     public class ItemViewModel : BaseViewModel, IDisposable
     {
-        /// <summary>
-        /// Gets the API client.
-        /// </summary>
-        /// <value>The API client.</value>
         private readonly IApiClient _apiClient;
-
-        /// <summary>
-        /// Gets the image manager.
-        /// </summary>
-        /// <value>The image manager.</value>
         private readonly IImageManager _imageManager;
+        private readonly IPlaybackManager _playbackManager;
+        private readonly IPresentationManager _presentation;
+        private readonly ILogger _logger;
 
-        public ItemViewModel(IApiClient apiClient, IImageManager imageManager)
+        public ICommand PlayCommand { get; private set; }
+        public ICommand ResumeCommand { get; private set; }
+        public ICommand PlayTrailerCommand { get; private set; }
+
+        public ICommand ToggleLikesCommand { get; private set; }
+        public ICommand ToggleDislikesCommand { get; private set; }
+        public ICommand ToggleIsFavoriteCommand { get; private set; }
+        
+        public ItemViewModel(IApiClient apiClient, IImageManager imageManager, IPlaybackManager playbackManager, IPresentationManager presentation, ILogger logger)
         {
             _apiClient = apiClient;
             _imageManager = imageManager;
+            _playbackManager = playbackManager;
+            _presentation = presentation;
+            _logger = logger;
+
+            PlayCommand = new RelayCommand(Play);
+            ResumeCommand = new RelayCommand(Resume);
+            PlayTrailerCommand = new RelayCommand(PlayTrailer);
+
+            ToggleLikesCommand = new RelayCommand(ToggleLikes);
+            ToggleDislikesCommand = new RelayCommand(ToggleDislikes);
+            ToggleIsFavoriteCommand = new RelayCommand(ToggleIsFavorite);
         }
 
         private BaseItemDto _item;
@@ -50,16 +67,10 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                     OnPropertyChanged("Item");
                     OnPropertyChanged("ItemType");
                     OnPropertyChanged("IsFolder");
-                    OnPropertyChanged("IsPlayed");
-                    OnPropertyChanged("IsInProgress");
                     OnPropertyChanged("IsNew");
                     OnPropertyChanged("RecentlyAddedItemCount");
                     OnPropertyChanged("IsOffline");
-                    OnPropertyChanged("PlayedPercentage");
                     OnPropertyChanged("DurationShortTimeString");
-                    OnPropertyChanged("IsLiked");
-                    OnPropertyChanged("IsDisliked");
-                    OnPropertyChanged("IsFavorite");
                     OnPropertyChanged("CommunityRating");
                     OnPropertyChanged("CriticRating");
                     OnPropertyChanged("HasPositiveCriticRating");
@@ -73,8 +84,46 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                     OnPropertyChanged("Tagline");
                     OnPropertyChanged("Overview");
                     OnPropertyChanged("MediaType");
+                    OnPropertyChanged("CanPlay");
+                    OnPropertyChanged("HasTrailer");
+                    OnPropertyChanged("Players");
+                    OnPropertyChanged("GameSystem");
+
+                    RefreshUserDataFields();
                 }
             }
+        }
+
+        private void RefreshUserDataFields()
+        {
+            OnPropertyChanged("PlayedPercentage");
+            OnPropertyChanged("CanResume");
+            OnPropertyChanged("IsLiked");
+            OnPropertyChanged("IsDisliked");
+            OnPropertyChanged("IsFavorite");
+            OnPropertyChanged("IsInProgress");
+            OnPropertyChanged("IsPlayed");
+        }
+
+        public bool CanPlay
+        {
+            get
+            {
+                return _item != null && !_item.IsFolder;
+            }
+        }
+
+        public bool CanResume
+        {
+            get
+            {
+                return _item != null && !_item.IsFolder && _item.UserData != null && _item.UserData.PlaybackPositionTicks > 0;
+            }
+        }
+
+        public bool HasTrailer
+        {
+            get { return _item != null && _item.LocalTrailerCount > 0; }
         }
 
         private ImageType[] _preferredImageTypes = new[] { ImageType.Primary };
@@ -286,6 +335,16 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             get { return _item == null ? null : _item.MediaType; }
         }
 
+        public string GameSystem
+        {
+            get { return _item == null ? null : _item.GameSystem; }
+        }
+
+        public int? Players
+        {
+            get { return _item == null ? null : _item.Players; }
+        }
+
         public string DurationShortTimeString
         {
             get { return _item == null ? null : GetMinutesString(_item); }
@@ -389,7 +448,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         public bool IsFavorite
         {
-            get { return _item != null && _item.UserData != null && _item.UserData.Likes.HasValue && _item.UserData.IsFavorite; }
+            get { return _item != null && _item.UserData != null && _item.UserData.IsFavorite; }
         }
 
         public bool IsInProgress
@@ -484,48 +543,48 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
-        private double _imageDisplayWidth;
-        public double ImageDisplayWidth
+        private int? _imageWidth;
+        public int? ImageWidth
         {
-            get { return _imageDisplayWidth; }
+            get { return _imageWidth; }
 
             set
             {
-                var changed = !double.Equals(_imageDisplayWidth, value);
+                var changed = _imageWidth != value;
 
-                _imageDisplayWidth = value;
+                _imageWidth = value;
 
                 if (changed)
                 {
-                    OnPropertyChanged("ImageDisplayWidth");
+                    OnPropertyChanged("ImageWidth");
                 }
             }
         }
 
-        private double _imageDisplayHeight;
-        public double ImageDisplayHeight
+        private int? _imageHeight;
+        public int? ImageHeight
         {
-            get { return _imageDisplayHeight; }
+            get { return _imageHeight; }
 
             set
             {
-                var changed = !double.Equals(_imageDisplayHeight, value);
+                var changed = _imageHeight != value;
 
-                _imageDisplayHeight = value;
+                _imageHeight = value;
 
                 if (changed)
                 {
-                    OnPropertyChanged("ImageDisplayHeight");
+                    OnPropertyChanged("ImageHeight");
                 }
             }
         }
 
-        public void SetDisplayPreferences(double imageDisplayWidth, double imageDisplayHeight, string viewType)
+        public void SetDisplayPreferences(int imageDisplayWidth, int imageDisplayHeight, string viewType)
         {
-            var changed = !imageDisplayHeight.Equals(ImageDisplayHeight) || !imageDisplayWidth.Equals(ImageDisplayWidth) || !string.Equals(viewType, ViewType);
+            var changed = !imageDisplayHeight.Equals(ImageHeight ?? 0) || !imageDisplayWidth.Equals(ImageWidth ?? 0) || !string.Equals(viewType, ViewType);
 
-            ImageDisplayHeight = imageDisplayHeight;
-            ImageDisplayWidth = imageDisplayWidth;
+            ImageHeight = imageDisplayHeight;
+            ImageWidth = imageDisplayWidth;
             ViewType = viewType;
 
             if (changed)
@@ -553,13 +612,13 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             {
                 ImageType = imageType,
                 ImageIndex = imageIndex,
-                Width = Convert.ToInt32(ImageDisplayWidth)
+                Width = ImageWidth
             };
 
             if ((imageType == ImageType.Primary && DownloadPrimaryImageAtExactSize)
                 || (imageType != ImageType.Primary && DownloadImagesAtExactSize))
             {
-                imageOptions.Height = Convert.ToInt32(ImageDisplayHeight);
+                imageOptions.Height = ImageHeight;
             }
 
             return _apiClient.GetImageUrl(Item, imageOptions);
@@ -603,7 +662,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 }
                 catch (OperationCanceledException)
                 {
-                    
+
                 }
                 catch
                 {
@@ -639,6 +698,105 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             return _imageManager.GetRemoteBitmapAsync(url, cancellationToken);
         }
 
+        private async void Play(object commandParameter)
+        {
+            await _playbackManager.Play(new PlayOptions(_item));
+        }
+
+        private async void Resume(object commandParameter)
+        {
+            await _playbackManager.Play(new PlayOptions(_item)
+            {
+                StartPositionTicks = _item.UserData.PlaybackPositionTicks
+            });
+        }
+
+        private async void PlayTrailer(object commandParameter)
+        {
+            try
+            {
+                var trailers = await _apiClient.GetLocalTrailersAsync(_apiClient.CurrentUserId, _item.Id);
+
+                await _playbackManager.Play(new PlayOptions(trailers.First()));
+            }
+            catch (HttpException)
+            {
+                _presentation.ShowDefaultErrorMessage();
+            }
+        }
+
+        private async void ToggleLikes(object commandParameter)
+        {
+            if (IsLiked)
+            {
+                ClearUserItemRating();
+                return;
+            }
+
+            try
+            {
+                _item.UserData = await _apiClient.UpdateUserItemRatingAsync(_item.Id, _apiClient.CurrentUserId, true);
+
+                RefreshUserDataFields();
+            }
+            catch
+            {
+                _presentation.ShowDefaultErrorMessage();
+            }
+        }
+
+        private async void ToggleDislikes(object commandParameter)
+        {
+            if (IsDisliked)
+            {
+                ClearUserItemRating();
+                return;
+            }
+
+            try
+            {
+                _item.UserData = await _apiClient.UpdateUserItemRatingAsync(_item.Id, _apiClient.CurrentUserId, false);
+
+                RefreshUserDataFields();
+            }
+            catch
+            {
+                _presentation.ShowDefaultErrorMessage();
+            }
+        }
+
+        private async void ToggleIsFavorite(object commandParameter)
+        {
+            try
+            {
+                _item.UserData = await _apiClient.UpdateFavoriteStatusAsync(_item.Id, _apiClient.CurrentUserId, !IsFavorite);
+
+                RefreshUserDataFields();
+            }
+            catch (Exception ex)
+            {
+                _logger.ErrorException("Error updating favorite status", ex);
+                
+                _presentation.ShowDefaultErrorMessage();
+            }
+        }
+
+        private async void ClearUserItemRating()
+        {
+            try
+            {
+                _item.UserData = await _apiClient.ClearUserItemRatingAsync(_item.Id, _apiClient.CurrentUserId);
+
+                RefreshUserDataFields();
+            }
+            catch (Exception ex)
+            {
+                _logger.ErrorException("Error clearing user rating", ex);
+
+                _presentation.ShowDefaultErrorMessage();
+            }
+        }
+        
         public void Dispose()
         {
             DisposeCancellationTokenSource();

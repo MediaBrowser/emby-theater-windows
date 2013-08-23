@@ -41,7 +41,7 @@
         <Setter Property="Width" Value="12" />
         <Setter Property="CornerRadius" Value="2" />
         <Setter Property="Background" Value="#cc3333" />
-        <Setter Property="Margin" Value="25 0 5 0" />
+        <Setter Property="Margin" Value="25 4 5 0" />
         <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
 

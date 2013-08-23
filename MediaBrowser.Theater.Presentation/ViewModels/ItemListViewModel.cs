@@ -1,9 +1,11 @@
 ﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
+using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Net;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Theater.Interfaces.Navigation;
+using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Reflection;
 using MediaBrowser.Theater.Interfaces.Session;
@@ -23,11 +25,13 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
     [TypeDescriptionProvider(typeof(HyperTypeDescriptionProvider))]
     public class ItemListViewModel : BaseViewModel, IDisposable
     {
-        private IPresentationManager PresentationManager { get; set; }
-        private IApiClient ApiClient { get; set; }
-        private IImageManager ImageManager { get; set; }
-        private ISessionManager SessionManager { get; set; }
-        private INavigationService NavigationService { get; set; }
+        private readonly IPresentationManager _presentationManager;
+        private readonly IApiClient _apiClient;
+        private readonly IImageManager _imageManager;
+        private readonly ISessionManager _sessionManager;
+        private readonly INavigationService _navigationService;
+        private readonly IPlaybackManager _playbackManager;
+        private readonly ILogger _logger;
 
         private Timer _selectionChangeTimer;
         private readonly object _syncLock = new object();
@@ -41,15 +45,17 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         private readonly Dispatcher _dispatcher;
 
-        public ItemListViewModel(Func<DisplayPreferences, Task<ItemsResult>> getItemsDelegate, IPresentationManager presentationManager, IImageManager imageManager, IApiClient apiClient, ISessionManager sessionManager, INavigationService navigationService)
+        public ItemListViewModel(Func<DisplayPreferences, Task<ItemsResult>> getItemsDelegate, IPresentationManager presentationManager, IImageManager imageManager, IApiClient apiClient, ISessionManager sessionManager, INavigationService navigationService, IPlaybackManager playbackManager, ILogger logger)
         {
             _getItemsDelegate = getItemsDelegate;
-            NavigationService = navigationService;
-            SessionManager = sessionManager;
-            ApiClient = apiClient;
-            ImageManager = imageManager;
+            _navigationService = navigationService;
+            _playbackManager = playbackManager;
+            _logger = logger;
+            _sessionManager = sessionManager;
+            _apiClient = apiClient;
+            _imageManager = imageManager;
             _dispatcher = Dispatcher.CurrentDispatcher;
-            PresentationManager = presentationManager;
+            _presentationManager = presentationManager;
 
             NavigateCommand = new RelayCommand(Navigate);
         }
@@ -190,7 +196,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
                 if (changed)
                 {
-                    OnPropertyChanged("ImageDisplayWidth");
+                    OnPropertyChanged("ImageWidth");
                 }
             }
         }
@@ -326,13 +332,15 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 _listItems.Clear();
 
                 var imageTypes = GetPreferredImageTypes();
-                var imageDisplayHeight = GetImageDisplayHeight();
 
-                _listItems.AddRange(items.Select(i => new ItemViewModel(ApiClient, ImageManager)
+                var childWidth = Convert.ToInt32(ImageDisplayWidth);
+                var imageDisplayHeight = Convert.ToInt32(GetImageDisplayHeight());
+
+                _listItems.AddRange(items.Select(i => new ItemViewModel(_apiClient, _imageManager, _playbackManager, _presentationManager, _logger)
                 {
                     DownloadPrimaryImageAtExactSize = IsCloseToMedianPrimaryImageAspectRatio(i),
-                    ImageDisplayHeight = imageDisplayHeight,
-                    ImageDisplayWidth = ImageDisplayWidth,
+                    ImageHeight = imageDisplayHeight,
+                    ImageWidth = childWidth,
                     Item = i,
                     ViewType = ViewType,
                     DisplayName = DisplayNameGenerator == null ? i.Name : DisplayNameGenerator(i),
@@ -347,7 +355,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
             catch (HttpException)
             {
-                PresentationManager.ShowDefaultErrorMessage();
+                _presentationManager.ShowDefaultErrorMessage();
             }
         }
 
@@ -372,7 +380,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
             if (item != null)
             {
-                PresentationManager.SetBackdrops(item.Item);
+                _presentationManager.SetBackdrops(item.Item);
             }
 
             lock (_syncLock)
@@ -401,7 +409,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         {
             try
             {
-                DisplayPreferences = await ApiClient.GetDisplayPreferencesAsync(DisplayPreferencesId, SessionManager.CurrentUser.Id, "DefaultTheme", CancellationToken.None);
+                DisplayPreferences = await _apiClient.GetDisplayPreferencesAsync(DisplayPreferencesId, _sessionManager.CurrentUser.Id, "DefaultTheme", CancellationToken.None);
             }
             catch
             {
@@ -422,10 +430,13 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             var imageTypes = GetPreferredImageTypes();
             var imageDisplayHeight = GetImageDisplayHeight();
 
+            var newWidth = Convert.ToInt32(ImageDisplayWidth);
+            var newHeight = Convert.ToInt32(imageDisplayHeight);
+
             foreach (var item in _listItems.ToList())
             {
                 item.PreferredImageTypes = imageTypes;
-                item.SetDisplayPreferences(ImageDisplayWidth, imageDisplayHeight, ViewType);
+                item.SetDisplayPreferences(newWidth, newHeight, ViewType);
             }
         }
 
@@ -453,11 +464,11 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             {
                 try
                 {
-                    await NavigationService.NavigateToItem(item.Item);
+                    await _navigationService.NavigateToItem(item.Item);
                 }
                 catch
                 {
-                    PresentationManager.ShowDefaultErrorMessage();
+                    _presentationManager.ShowDefaultErrorMessage();
                 }
             }
         }

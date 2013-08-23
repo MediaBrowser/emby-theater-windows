@@ -4,6 +4,7 @@ using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Plugins.DefaultTheme.Controls;
 using MediaBrowser.Theater.Interfaces.Navigation;
+using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.ViewModels;
@@ -23,8 +24,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         private readonly ILogger _logger;
         private readonly IImageManager _imageManager;
         private readonly INavigationService _nav;
+        private readonly IPlaybackManager _playbackManager;
 
-        public HomePageViewModel(IPresentationManager presentationManager, IApiClient apiClient, ISessionManager sessionManager, ILogger logger, IImageManager imageManager, INavigationService nav)
+        public HomePageViewModel(IPresentationManager presentationManager, IApiClient apiClient, ISessionManager sessionManager, ILogger logger, IImageManager imageManager, INavigationService nav, IPlaybackManager playbackManager)
         {
             _presentationManager = presentationManager;
             _apiClient = apiClient;
@@ -32,6 +34,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             _logger = logger;
             _imageManager = imageManager;
             _nav = nav;
+            _playbackManager = playbackManager;
         }
 
         protected override async Task<IEnumerable<string>> GetSectionNames()
@@ -84,7 +87,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             }
             if (string.Equals(section, "media collections"))
             {
-                var vm = new ItemListViewModel(GetMediaCollectionsAsync, _presentationManager, _imageManager, _apiClient, _sessionManager, _nav)
+                var vm = new ItemListViewModel(GetMediaCollectionsAsync, _presentationManager, _imageManager, _apiClient, _sessionManager, _nav, _playbackManager, _logger)
                 {
                     ImageDisplayWidth = 400,
                     ImageDisplayHeightGenerator = v => 225,

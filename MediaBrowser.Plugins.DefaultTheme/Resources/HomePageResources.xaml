@@ -14,7 +14,7 @@
 
     <DataTemplate x:Key="HomePageItemTemplate" DataType="{x:Type viewModels:ItemViewModel}">
 
-        <Grid Height="{Binding ImageDisplayHeight}" Width="{Binding ImageDisplayWidth}">
+        <Grid Height="{Binding ImageHeight}" Width="{Binding ImageWidth}">
 
             <Image Stretch="UniformToFill" Source="{Binding Image}">
                 <Image.Style>

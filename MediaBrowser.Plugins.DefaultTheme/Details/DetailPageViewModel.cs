@@ -168,6 +168,14 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                     Item = _itemViewModel.Item
                 };
             }
+            //if (string.Equals(section, "similar"))
+            //{
+            //    return new ItemListViewModel(_apiClient, _imageManager, _navigation)
+            //    {
+            //        ImageHeight = 640,
+            //        Item = _itemViewModel.Item
+            //    };
+            //}
             if (string.Equals(section, "overview"))
             {
                 return _itemViewModel;

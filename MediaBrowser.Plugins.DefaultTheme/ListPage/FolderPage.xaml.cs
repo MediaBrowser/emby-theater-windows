@@ -71,7 +71,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                 ImageDisplayHeightGenerator = GetImageDisplayHeight,
                 ImageDisplayWidth = 200,
                 DisplayNameGenerator = GetDisplayName,
-                PreferredImageTypesGenerator = GetPreferredImageTypes
+
+                PreferredImageTypesGenerator = vm => string.Equals(vm.ViewType, ViewTypes.Thumbstrip) ? new[] { ImageType.Backdrop, ImageType.Thumb, ImageType.Primary } : new[] { ImageType.Primary }
             };
 
             OnParentItemChanged();
@@ -128,11 +129,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
             return name;
         }
 
-        private ImageType[] GetPreferredImageTypes(ItemListViewModel viewModel)
-        {
-            return string.Equals(viewModel.ViewType, ViewTypes.Thumbstrip) ? new[] { ImageType.Backdrop, ImageType.Thumb, ImageType.Primary } : new[] { ImageType.Primary };
-        }
-
         void _viewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (string.Equals(e.PropertyName, "ViewType") || string.Equals(e.PropertyName, "ImageWidth") || string.Equals(e.PropertyName, "MedianPrimaryImageAspectRatio"))
@@ -160,7 +156,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
 
         private void UpdateFields(BaseItemDto item)
         {
-            TxtGenres.Text = item != null && item.Genres != null ? string.Join(" / ", item.Genres.Take(3).ToArray()) : string.Empty;
+            TxtGenres.Text = item != null && item.Genres != null ? string.Join(" • ", item.Genres.Take(3).ToArray()) : string.Empty;
         }
 
         private Task<ItemsResult> GetItemsAsync(DisplayPreferences displayPreferences)

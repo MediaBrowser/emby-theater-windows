@@ -290,17 +290,198 @@
                         </TextBlock.Style>
                     </TextBlock>
 
-                    <TextBlock x:Name="LblDirector" Style="{DynamicResource TextBlockStyle}" Grid.Row="1" Grid.Column="0" Margin="0 5 0 0">director</TextBlock>
-                    <TextBlock x:Name="TxtDirector" Style="{DynamicResource TextBlockStyle}" Grid.Row="1" Grid.Column="1" Margin="50 5 0 0"></TextBlock>
+                    <TextBlock Grid.Row="1" Grid.Column="0" Margin="0 5 0 0">
+                        <TextBlock.Style>
+                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
+                                <Setter Property="Text" Value="directors" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding DirectorCount}" Value="1">
+                                        <Setter Property="Text" Value="director" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding DirectorCount}" Value="0">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding ItemType}" Value="Episode">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
 
-                    <TextBlock x:Name="LblGenre" Style="{DynamicResource TextBlockStyle}" Grid.Row="2" Grid.Column="0" Margin="0 5 0 0">genre</TextBlock>
-                    <TextBlock x:Name="TxtGenre" Style="{DynamicResource TextBlockStyle}" Grid.Row="2" Grid.Column="1" Margin="50 5 0 0"></TextBlock>
+                    <ItemsControl Grid.Row="1" Grid.Column="1" Margin="50 5 0 0" ItemsSource="{Binding Directors}">
+                        <ItemsControl.Style>
+                            <Style TargetType="{x:Type ItemsControl}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding DirectorCount}" Value="0">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding ItemType}" Value="Episode">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ItemsControl.Style>
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal"></WrapPanel>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Style="{DynamicResource TextBlockStyle}" x:Name="Delimiter" Text=" • "/>
+                                    <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding .}"/>
+                                </StackPanel>
+                                <DataTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource PreviousData}}" Value="{x:Null}">
+                                        <Setter Property="Visibility" TargetName="Delimiter" Value="Collapsed"/>
+                                    </DataTrigger>
+                                </DataTemplate.Triggers>
+                            </DataTemplate>
 
-                    <TextBlock x:Name="LblStudio" Style="{DynamicResource TextBlockStyle}" Grid.Row="3" Grid.Column="0" Margin="0 5 0 0">studio</TextBlock>
-                    <TextBlock x:Name="TxtStudio" Style="{DynamicResource TextBlockStyle}" Grid.Row="3" Grid.Column="1" Margin="50 5 0 0"></TextBlock>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
 
-                    <TextBlock x:Name="LblPremiereDate" Style="{DynamicResource TextBlockStyle}" Grid.Row="4" Grid.Column="0" Margin="0 5 0 0">premiered</TextBlock>
-                    <TextBlock x:Name="TxtPremiereDate" Style="{DynamicResource TextBlockStyle}" Grid.Row="4" Grid.Column="1" Margin="50 5 0 0"></TextBlock>
+                    <TextBlock Grid.Row="2" Grid.Column="0" Margin="0 5 0 0">
+                        <TextBlock.Style>
+                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
+                                <Setter Property="Text" Value="genres" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding GenreCount}" Value="1">
+                                        <Setter Property="Text" Value="genre" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding GenreCount}" Value="0">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding ItemType}" Value="Episode">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+
+                    <ItemsControl Grid.Row="2" Grid.Column="1" Margin="50 5 0 0" ItemsSource="{Binding Genres}">
+                        <ItemsControl.Style>
+                            <Style TargetType="{x:Type ItemsControl}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding GenreCount}" Value="0">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding ItemType}" Value="Episode">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ItemsControl.Style>
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal"></WrapPanel>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Style="{DynamicResource TextBlockStyle}" x:Name="Delimiter" Text=" • "/>
+                                    <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding .}"/>
+                                </StackPanel>
+                                <DataTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource PreviousData}}" Value="{x:Null}">
+                                        <Setter Property="Visibility" TargetName="Delimiter" Value="Collapsed"/>
+                                    </DataTrigger>
+                                </DataTemplate.Triggers>
+                            </DataTemplate>
+
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <TextBlock Grid.Row="3" Grid.Column="0" Margin="0 5 0 0">
+                        <TextBlock.Style>
+                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
+                                <Setter Property="Text" Value="studios" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding StudioCount}" Value="1">
+                                        <Setter Property="Text" Value="studio" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding StudioCount}" Value="0">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding ItemType}" Value="Episode">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                    
+                    <ItemsControl Grid.Row="3" Grid.Column="1" Margin="50 5 0 0" ItemsSource="{Binding StudioNames}">
+                        <ItemsControl.Style>
+                            <Style TargetType="{x:Type ItemsControl}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding StudioCount}" Value="0">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding ItemType}" Value="Episode">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ItemsControl.Style>
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal"></WrapPanel>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Style="{DynamicResource TextBlockStyle}" x:Name="Delimiter" Text=" • "/>
+                                    <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding .}"/>
+                                </StackPanel>
+                                <DataTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource PreviousData}}" Value="{x:Null}">
+                                        <Setter Property="Visibility" TargetName="Delimiter" Value="Collapsed"/>
+                                    </DataTrigger>
+                                </DataTemplate.Triggers>
+                            </DataTemplate>
+
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <TextBlock Grid.Row="4" Grid.Column="0" Margin="0 5 0 0">
+                        <TextBlock.Style>
+                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
+                                <Setter Property="Text" Value="premiered" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding PremieresInFuture}" Value="true">
+                                        <Setter Property="Text" Value="premieres" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding PremiereDate}" Value="{x:Null}">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding ItemType}" Value="Movie">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+
+                    <TextBlock Grid.Row="4" Grid.Column="1" Margin="50 5 0 0" Text="{Binding PremiereShortDate}">
+                        <TextBlock.Style>
+                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding PremiereDate}" Value="{x:Null}">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding ItemType}" Value="Movie">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
 
                     <TextBlock Grid.Row="5" Grid.Column="0" Margin="0 5 0 0" Text="players">
                         <TextBlock.Style>
@@ -527,7 +708,7 @@
                 <Setter Property="Content">
                     <Setter.Value>
                         <Grid>
-                            <controls:ExtendedListBox Margin="-20 -15 -20 -15" DataContext="{Binding ContentViewModel}" ItemsSource="{Binding ListCollectionView}" Command="{Binding NavigateCommand}" KeyboardNavigation.DirectionalNavigation="Continue" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource PersonInfoTemplate}">
+                            <controls:ExtendedListBox Margin="-20 -15 -20 -15" DataContext="{Binding ContentViewModel}" ItemsSource="{Binding ListCollectionView}" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource PersonInfoTemplate}">
                                 <controls:ExtendedListBox.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <UniformGrid Rows="2" Margin="40 35"></UniformGrid>
@@ -573,6 +754,21 @@
                     <Setter.Value>
                         <Grid>
                             <controls:ExtendedListBox Margin="-20 -15 -20 -15" DataContext="{Binding ContentViewModel}" ItemsSource="{Binding ListCollectionView}" Command="{Binding OpenImageViewerCommand}" KeyboardNavigation.DirectionalNavigation="Continue" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource ItemGalleryTemplate}">
+                                <controls:ExtendedListBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Rows="2" Margin="40 35"></UniformGrid>
+                                    </ItemsPanelTemplate>
+                                </controls:ExtendedListBox.ItemsPanel>
+                            </controls:ExtendedListBox>
+                        </Grid>
+                    </Setter.Value>
+                </Setter>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding CurrentSection}" Value="similar">
+                <Setter Property="Content">
+                    <Setter.Value>
+                        <Grid>
+                            <controls:ExtendedListBox Margin="-20 -15 -20 -15" DataContext="{Binding ContentViewModel}" ItemsSource="{Binding ListCollectionView}" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{DynamicResource ListItemTemplate}">
                                 <controls:ExtendedListBox.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <UniformGrid Rows="2" Margin="40 35"></UniformGrid>

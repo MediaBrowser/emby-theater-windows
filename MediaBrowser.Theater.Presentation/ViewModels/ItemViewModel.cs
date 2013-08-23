@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.ApiClient;
+﻿using System.Collections.Generic;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
@@ -33,7 +34,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         public ICommand ToggleLikesCommand { get; private set; }
         public ICommand ToggleDislikesCommand { get; private set; }
         public ICommand ToggleIsFavoriteCommand { get; private set; }
-        
+
         public ItemViewModel(IApiClient apiClient, IImageManager imageManager, IPlaybackManager playbackManager, IPresentationManager presentation, ILogger logger)
         {
             _apiClient = apiClient;
@@ -88,6 +89,11 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                     OnPropertyChanged("HasTrailer");
                     OnPropertyChanged("Players");
                     OnPropertyChanged("GameSystem");
+                    OnPropertyChanged("PremiereShortDate");
+                    OnPropertyChanged("PremieresInFuture");
+                    OnPropertyChanged("PremiereDate");
+                    OnPropertyChanged("Genres");
+                    OnPropertyChanged("GenreCount");
 
                     RefreshUserDataFields();
                 }
@@ -318,6 +324,60 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
                 return null;
             }
+        }
+
+        public int StudioCount
+        {
+            get { return _item == null ? 0 : _item.Studios.Length; }
+        }
+
+        public List<string> StudioNames
+        {
+            get { return _item == null ? null : _item.Studios.Select(i => i.Name).Take(3).ToList(); }
+        }
+
+        public int DirectorCount
+        {
+            get { return _item == null ? 0 : Directors.Count; }
+        }
+
+        public List<string> Directors
+        {
+            get
+            {
+                return _item == null ? 
+                    null : 
+                    _item.People
+                    .Where(i => string.Equals(i.Type, PersonType.Director, StringComparison.OrdinalIgnoreCase) || string.Equals(i.Role, PersonType.Director, StringComparison.OrdinalIgnoreCase))
+                    .Select(i => i.Name)
+                    .Take(3)
+                    .ToList();
+            }
+        }
+
+        public int GenreCount
+        {
+            get { return _item == null ? 0 : _item.Genres.Count; }
+        }
+
+        public List<string> Genres
+        {
+            get { return _item == null ? null : _item.Genres.Take(3).ToList(); }
+        }
+
+        public bool PremieresInFuture
+        {
+            get { return _item != null && _item.PremiereDate.HasValue && _item.PremiereDate.Value > DateTime.UtcNow; }
+        }
+
+        public string PremiereShortDate
+        {
+            get { return _item == null || !_item.PremiereDate.HasValue ? null : _item.PremiereDate.Value.ToLocalTime().ToShortDateString(); }
+        }
+
+        public DateTime? PremiereDate
+        {
+            get { return _item == null ? null : _item.PremiereDate; }
         }
 
         public string ItemType
@@ -776,7 +836,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             catch (Exception ex)
             {
                 _logger.ErrorException("Error updating favorite status", ex);
-                
+
                 _presentation.ShowDefaultErrorMessage();
             }
         }
@@ -796,7 +856,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 _presentation.ShowDefaultErrorMessage();
             }
         }
-        
+
         public void Dispose()
         {
             DisposeCancellationTokenSource();

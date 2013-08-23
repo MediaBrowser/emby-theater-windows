@@ -93,9 +93,6 @@
       <DependentUpon>Children.xaml</DependentUpon>
     </Compile>
     <Compile Include="Details\DetailPageViewModel.cs" />
-    <Compile Include="Details\SimilarItems.xaml.cs">
-      <DependentUpon>SimilarItems.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Details\Soundtracks.xaml.cs">
       <DependentUpon>Soundtracks.xaml</DependentUpon>
     </Compile>
@@ -202,10 +199,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Details\Children.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Details\SimilarItems.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

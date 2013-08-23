@@ -32,8 +32,6 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
 
             ChkEnableReclock.IsChecked = config.EnableReclock;
             ChkEnableMadvr.IsChecked = config.EnableMadvr;
-            ChkEnableMadvrForBackgroundVideos.IsChecked = config.EnableMadvrForBackgroundVideos;
-
         }
 
         void GeneralSettingsPage_Unloaded(object sender, RoutedEventArgs e)
@@ -42,7 +40,6 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
 
             config.EnableReclock = ChkEnableReclock.IsChecked ?? false;
             config.EnableMadvr = ChkEnableMadvr.IsChecked ?? false;
-            config.EnableMadvrForBackgroundVideos = ChkEnableMadvrForBackgroundVideos.IsChecked ?? false;
 
             _config.SaveConfiguration();
         }

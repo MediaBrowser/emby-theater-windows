@@ -94,6 +94,10 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                     OnPropertyChanged("PremiereDate");
                     OnPropertyChanged("Genres");
                     OnPropertyChanged("GenreCount");
+                    OnPropertyChanged("StudioNames");
+                    OnPropertyChanged("StudioCount");
+                    OnPropertyChanged("Directors");
+                    OnPropertyChanged("DirectorCount");
 
                     RefreshUserDataFields();
                 }

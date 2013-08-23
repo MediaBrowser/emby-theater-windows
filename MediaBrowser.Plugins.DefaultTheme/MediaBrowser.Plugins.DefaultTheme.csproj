@@ -76,10 +76,6 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configuration\ConfigurationPage.xaml.cs">
-      <DependentUpon>ConfigurationPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Configuration\PageFactory.cs" />
     <Compile Include="Controls\BaseItemListViewTile.xaml.cs">
       <DependentUpon>BaseItemListViewTile.xaml</DependentUpon>
     </Compile>
@@ -182,10 +178,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Configuration\ConfigurationPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Controls\BaseItemListViewTile.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

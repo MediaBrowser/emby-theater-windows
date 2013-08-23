@@ -197,7 +197,7 @@ namespace MediaBrowser.Theater.DirectShow
                 return false;
             }
 
-            if (!options.GoFullScreen && !_config.Configuration.InternalPlayerConfiguration.EnableMadvrForBackgroundVideos)
+            if (!options.GoFullScreen)
             {
                 return false;
             }

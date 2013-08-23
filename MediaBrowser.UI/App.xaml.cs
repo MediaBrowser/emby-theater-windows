@@ -1,17 +1,14 @@
-﻿using System.Windows.Interop;
-using MediaBrowser.ApiInteraction;
+﻿using MediaBrowser.ApiInteraction;
 using MediaBrowser.Common.Constants;
 using MediaBrowser.Common.Implementations.Updates;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Net;
 using MediaBrowser.Model.System;
-using MediaBrowser.Plugins.DefaultTheme;
 using MediaBrowser.Theater.Implementations.Configuration;
 using MediaBrowser.UI.StartupWizard;
 using Microsoft.Win32;
 using System;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -119,7 +116,7 @@ namespace MediaBrowser.UI
         /// </summary>
         private void ShowApplicationWindow()
         {
-            var win = new MainWindow(_logger, _compositionRoot.PlaybackManager, _compositionRoot.ApiClient, _compositionRoot.ImageManager, _compositionRoot, _compositionRoot.PresentationManager, _compositionRoot.UserInputManager, _compositionRoot.TheaterConfigurationManager, _compositionRoot.SessionManager, _compositionRoot.NavigationService);
+            var win = new MainWindow(_logger, _compositionRoot.PlaybackManager, _compositionRoot.ApiClient, _compositionRoot.ImageManager, _compositionRoot, _compositionRoot.PresentationManager, _compositionRoot.UserInputManager, _compositionRoot.TheaterConfigurationManager, _compositionRoot.NavigationService);
 
             var config = _compositionRoot.TheaterConfigurationManager.Configuration;
 

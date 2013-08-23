@@ -19,10 +19,7 @@
         <CheckBox x:Name="ChkEnableMadvr" Margin="0 30 0 0" VerticalAlignment="Center">
             <TextBlock Style="{DynamicResource TextBlockStyle}">Enable Madvr *</TextBlock>
         </CheckBox>
-
-        <CheckBox x:Name="ChkEnableMadvrForBackgroundVideos" Margin="0 30 0 0" VerticalAlignment="Center">
-            <TextBlock Style="{DynamicResource TextBlockStyle}">Enable Madvr for background videos *</TextBlock>
-        </CheckBox>
+        
         <TextBlock Style="{DynamicResource Heading2TextBlockStyle}" Margin="0 60 0 0">* Separate installation required</TextBlock>
     </StackPanel>
 </pages:BasePage>

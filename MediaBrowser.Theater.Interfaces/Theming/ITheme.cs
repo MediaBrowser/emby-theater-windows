@@ -1,6 +1,7 @@
-﻿using MediaBrowser.Model.Dto;
-using MediaBrowser.Theater.Interfaces.Presentation;
+﻿using System.Collections.Generic;
 using System.Windows;
+using MediaBrowser.Model.Dto;
+using MediaBrowser.Model.Entities;
 using System.Windows.Controls;
 
 namespace MediaBrowser.Theater.Interfaces.Theming
@@ -18,6 +19,15 @@ namespace MediaBrowser.Theater.Interfaces.Theming
         /// <returns>Page.</returns>
         Page GetItemPage(BaseItemDto item, string context);
 
+        /// <summary>
+        /// Gets the folder page.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <param name="displayPreferences">The display preferences.</param>
+        /// <param name="context">The context.</param>
+        /// <returns>Page.</returns>
+        Page GetFolderPage(BaseItemDto item, DisplayPreferences displayPreferences, string context);
+        
         /// <summary>
         /// Gets the person page.
         /// </summary>
@@ -64,5 +74,11 @@ namespace MediaBrowser.Theater.Interfaces.Theming
         /// </summary>
         /// <value>The default name of the home page.</value>
         string DefaultHomePageName { get; }
+
+        /// <summary>
+        /// Gets the resources.
+        /// </summary>
+        /// <returns>List{ResourceDictionary}.</returns>
+        IEnumerable<ResourceDictionary> GetResources();
     }
 }

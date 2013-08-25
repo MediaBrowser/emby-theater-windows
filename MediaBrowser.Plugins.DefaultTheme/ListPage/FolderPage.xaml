@@ -36,9 +36,6 @@
                             <DataTrigger Binding="{Binding ShowSidebar}" Value="False">
                                 <Setter Property="Visibility" Value="Collapsed" />
                             </DataTrigger>
-                            <DataTrigger Binding="{Binding CurrentItem}" Value="{x:Null}">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                            </DataTrigger>
                         </Style.Triggers>
                     </Style>
                 </Grid.Style>
@@ -66,25 +63,70 @@
                 </Style>
             </Grid.Style>
             <StackPanel Orientation="Vertical">
-                <TextBlock Style="{DynamicResource TextBlockStyle}" Foreground="OrangeRed" Name="TxtGenres" Margin="300 0 300 0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" HorizontalAlignment="Center"></TextBlock>
-                <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding Tagline}" Margin="300 20 300 0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" HorizontalAlignment="Center"></TextBlock>
+
+                <ItemsControl Margin="300 0 300 0" HorizontalAlignment="Center" DataContext="{Binding CurrentItem}" ItemsSource="{Binding Genres}">
+                    <ItemsControl.Style>
+                        <Style TargetType="{x:Type ItemsControl}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding GenreCount}" Value="0">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding ItemType}" Value="Episode">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ItemsControl.Style>
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal"></WrapPanel>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Foreground="OrangeRed" Style="{DynamicResource TextBlockStyle}" x:Name="Delimiter" Text=" • "/>
+                                <TextBlock Foreground="OrangeRed" Style="{DynamicResource TextBlockStyle}" Text="{Binding .}"/>
+                            </StackPanel>
+                            <DataTemplate.Triggers>
+                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource PreviousData}}" Value="{x:Null}">
+                                    <Setter Property="Visibility" TargetName="Delimiter" Value="Collapsed"/>
+                                </DataTrigger>
+                            </DataTemplate.Triggers>
+                        </DataTemplate>
+
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                
+                <TextBlock DataContext="{Binding CurrentItem}" Style="{DynamicResource TextBlockStyle}" Text="{Binding Tagline}" Margin="300 20 300 0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" HorizontalAlignment="Center"></TextBlock>
+            
             </StackPanel>
         </Grid>
 
-        <Grid Grid.Row="3" Margin="25 25 25 15" x:Name="BottomGrid">
+        <Grid Grid.Row="3" Margin="25 25 25 15">
 
             <Grid HorizontalAlignment="Left" VerticalAlignment="Bottom">
                 <Grid.Style>
                     <Style TargetType="{x:Type Grid}">
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding ShowSidebar}" Value="False">
+                            <DataTrigger Binding="{Binding ShowSidebar}" Value="True">
                                 <Setter Property="Visibility" Value="Collapsed" />
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
                 </Grid.Style>
 
-                <TextBlock x:Name="TxtBottomName" VerticalAlignment="Bottom" DataContext="{Binding CurrentItem}" Text="{Binding DisplayName}" Style="{DynamicResource TextBlockStyle}"></TextBlock>
+                <TextBlock VerticalAlignment="Bottom" DataContext="{Binding CurrentItem}" Text="{Binding DisplayName}">
+                    <TextBlock.Style>
+                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Visibility, ElementName=ImgLogo}" Value="Visible">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
 
                 <Grid Height="100">
                     <Image Name="ImgLogo" Stretch="Uniform" MaxWidth="700" VerticalAlignment="Bottom"></Image>

@@ -14,7 +14,6 @@ using MediaBrowser.Theater.Presentation.Pages;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
 using System.ComponentModel;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -26,7 +25,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
     /// </summary>
     public partial class FolderPage : BasePage, ISupportsItemThemeMedia, ISupportsBackdrops
     {
-        private readonly string _displayPreferencesId;
+        private readonly DisplayPreferences _displayPreferences;
 
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
@@ -38,9 +37,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
 
         private readonly BaseItemDto _parentItem;
 
-        private ItemListViewModel _viewModel;
+        private readonly ItemListViewModel _viewModel;
 
-        public FolderPage(BaseItemDto parent, string displayPreferencesId, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IPresentationManager applicationWindow, INavigationService navigationManager, IPlaybackManager playbackManager, ILogger logger)
+        public FolderPage(BaseItemDto parent, DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IPresentationManager applicationWindow, INavigationService navigationManager, IPlaybackManager playbackManager, ILogger logger)
         {
             _navigationManager = navigationManager;
             _playbackManager = playbackManager;
@@ -50,30 +49,26 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
             _imageManager = imageManager;
             _apiClient = apiClient;
 
-            _displayPreferencesId = displayPreferencesId;
+            _displayPreferences = displayPreferences;
             _parentItem = parent;
 
             InitializeComponent();
-        }
-
-        protected override async void OnInitialized(EventArgs e)
-        {
-            base.OnInitialized(e);
 
             Loaded += FolderPage_Loaded;
             Unloaded += FolderPage_Unloaded;
 
-            DataContext = _viewModel = new ItemListViewModel(GetItemsAsync, _presentationManager, _imageManager, _apiClient, _sessionManager, _navigationManager, _playbackManager, _logger)
+            _viewModel = new ItemListViewModel(GetItemsAsync, _presentationManager, _imageManager, _apiClient, _sessionManager, _navigationManager, _playbackManager, _logger)
             {
-                DisplayPreferencesId = _displayPreferencesId,
-                ItemContainerHeight = 200,
-                ItemContainerWidth = 200,
                 ImageDisplayHeightGenerator = GetImageDisplayHeight,
-                ImageDisplayWidth = 200,
                 DisplayNameGenerator = GetDisplayName,
-
                 PreferredImageTypesGenerator = vm => string.Equals(vm.ViewType, ViewTypes.Thumbstrip) ? new[] { ImageType.Backdrop, ImageType.Thumb, ImageType.Primary } : new[] { ImageType.Primary }
             };
+
+            _viewModel.PropertyChanged += _viewModel_PropertyChanged;
+
+            _viewModel.DisplayPreferences = _displayPreferences;
+
+            DataContext = _viewModel;
 
             OnParentItemChanged();
         }
@@ -97,14 +92,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
 
         void FolderPage_Unloaded(object sender, RoutedEventArgs e)
         {
-            _viewModel.PropertyChanged -= _viewModel_PropertyChanged;
             HideViewButton();
         }
 
         async void FolderPage_Loaded(object sender, RoutedEventArgs e)
         {
-            _viewModel.PropertyChanged += _viewModel_PropertyChanged;
-
             if (_parentItem != null)
             {
                 ShowViewButton();
@@ -133,33 +125,25 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
         {
             if (string.Equals(e.PropertyName, "ViewType") || string.Equals(e.PropertyName, "ImageWidth") || string.Equals(e.PropertyName, "MedianPrimaryImageAspectRatio"))
             {
-                _viewModel.ItemContainerWidth = GetItemContainerWidth(_viewModel.ViewType, _viewModel.ImageDisplayWidth);
+                _viewModel.ItemContainerWidth = _viewModel.ImageDisplayWidth + 20;
                 _viewModel.ItemContainerHeight = GetItemContainerHeight(_viewModel);
-
             }
 
             if (string.Equals(e.PropertyName, "CurrentItem"))
             {
-                var item = _viewModel.CurrentItem;
+                var currentViewModel = _viewModel.CurrentItem;
 
-                UpdateFields(item == null ? null : item.Item);
-
-                if (item != null)
+                if (currentViewModel != null)
                 {
-                    if (item.Item != null)
+                    if (currentViewModel.Item != null)
                     {
-                        UpdateLogo(item.Item);
+                        UpdateLogo(currentViewModel.Item);
                     }
                 }
             }
         }
 
-        private void UpdateFields(BaseItemDto item)
-        {
-            TxtGenres.Text = item != null && item.Genres != null ? string.Join(" • ", item.Genres.Take(3).ToArray()) : string.Empty;
-        }
-
-        private Task<ItemsResult> GetItemsAsync(DisplayPreferences displayPreferences)
+        private Task<ItemsResult> GetItemsAsync()
         {
             var query = new ItemQuery
             {
@@ -179,11 +163,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
 
                 UserId = _sessionManager.CurrentUser.Id,
 
-                SortBy = !String.IsNullOrEmpty(displayPreferences.SortBy)
-                        ? new[] { displayPreferences.SortBy }
+                SortBy = !String.IsNullOrEmpty(_displayPreferences.SortBy)
+                        ? new[] { _displayPreferences.SortBy }
                         : new[] { ItemSortBy.SortName },
 
-                SortOrder = displayPreferences.SortOrder
+                SortOrder = _displayPreferences.SortOrder
             };
 
             return _apiClient.GetItemsAsync(query);
@@ -192,17 +176,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
         public string ThemeMediaItemId
         {
             get { return _parentItem.Id; }
-        }
-
-        private double GetItemContainerWidth(string viewType, double imageDisplayWidth)
-        {
-            if (String.Equals(viewType, ViewTypes.List))
-            {
-                return 1600;
-            }
-
-            // 14 = double the margin between items as defined in the resource file
-            return imageDisplayWidth + 20;
         }
 
         private double GetItemContainerHeight(ItemListViewModel viewModel)
@@ -266,7 +239,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
             {
                 if (item != null && item.HasLogo)
                 {
-                    SetLogo(item, _apiClient.GetLogoImageUrl(item, new ImageOptions
+                    SetLogo(_apiClient.GetLogoImageUrl(item, new ImageOptions
                     {
                         Height = maxheight,
                         ImageType = ImageType.Logo
@@ -274,7 +247,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                 }
                 else if (item != null && (item.HasArtImage || item.ParentArtImageTag.HasValue))
                 {
-                    SetLogo(item, _apiClient.GetArtImageUrl(item, new ImageOptions
+                    SetLogo(_apiClient.GetArtImageUrl(item, new ImageOptions
                     {
                         Height = maxheight,
                         ImageType = ImageType.Art
@@ -282,14 +255,15 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                 }
                 else
                 {
-                    SetDefaultLogo(item);
+                    // Just hide it so that it still takes up the same amount of space
+                    ImgLogo.Visibility = Visibility.Hidden;
                 }
             }
         }
 
         private CancellationTokenSource _logoCancellationTokenSource;
 
-        private async void SetLogo(BaseItemDto item, string url)
+        private async void SetLogo(string url)
         {
             if (_logoCancellationTokenSource != null)
             {
@@ -310,23 +284,16 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                 ImgLogo.Source = img;
 
                 ImgLogo.Visibility = Visibility.Visible;
-                TxtBottomName.Visibility = Visibility.Collapsed;
             }
             catch (OperationCanceledException)
             {
                 Logger.Debug("Image download cancelled: {0}", url);
             }
-            catch
+            catch (Exception ex)
             {
-                SetDefaultLogo(item);
+                // Just hide it so that it still takes up the same amount of space
+                ImgLogo.Visibility = Visibility.Hidden;
             }
-        }
-
-        private void SetDefaultLogo(BaseItemDto item)
-        {
-            // Just hide it so that it still takes up the same amount of space
-            ImgLogo.Visibility = Visibility.Hidden;
-            TxtBottomName.Visibility = Visibility.Visible;
         }
 
         /// <summary>

@@ -1,5 +1,6 @@
 ﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
+using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Plugins.DefaultTheme.Details;
 using MediaBrowser.Plugins.DefaultTheme.Header;
@@ -73,20 +74,15 @@ namespace MediaBrowser.Plugins.DefaultTheme
             PageTitlePanel.ImageManager = _imageManager;
         }
 
-        protected virtual string ThemeColorResource
-        {
-            get { return "ThemeDark"; }
-        }
-
         /// <summary>
         /// Gets the global resources.
         /// </summary>
         /// <returns>IEnumerable{ResourceDictionary}.</returns>
-        private IEnumerable<ResourceDictionary> GetGlobalResources()
+        public IEnumerable<ResourceDictionary> GetResources()
         {
             var namespaceName = GetType().Namespace;
 
-            return new[] { ThemeColorResource, "AppResources", "HomePageResources", "Details", "VolumeOsd", "TransportOsd", "DisplayPreferences" }.Select(i => new ResourceDictionary
+            return new[] { "AppResources", "HomePageResources", "Details", "VolumeOsd", "TransportOsd", "DisplayPreferences" }.Select(i => new ResourceDictionary
             {
                 Source = new Uri("pack://application:,,,/" + namespaceName + ";component/Resources/" + i + ".xaml", UriKind.Absolute)
 
@@ -101,11 +97,6 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// <returns>Page.</returns>
         public Page GetItemPage(BaseItemDto item, string context)
         {
-            if (item.IsFolder && !item.IsType("series") && !item.IsType("musicalbum"))
-            {
-                return new FolderPage(item, item.DisplayPreferencesId, _apiClient, _imageManager, _sessionManager, _presentationManager, _navService, _playbackManager, _logger);
-            }
-
             var itemViewModel = new ItemViewModel(_apiClient, _imageManager, _playbackManager, _presentationManager, _logger)
             {
                 Item = item,
@@ -114,8 +105,25 @@ namespace MediaBrowser.Plugins.DefaultTheme
 
             return new PanoramaDetailPage(itemViewModel)
             {
-                DataContext = new DetailPageViewModel(itemViewModel, _apiClient, _sessionManager, _imageManager, _presentationManager, _playbackManager, _navService)
+                DataContext = new DetailPageViewModel(itemViewModel, _apiClient, _sessionManager, _imageManager, _presentationManager, _playbackManager, _navService, _logger)
             };
+        }
+
+        /// <summary>
+        /// Gets the folder page.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <param name="displayPreferences">The display preferences.</param>
+        /// <param name="context">The context.</param>
+        /// <returns>Page.</returns>
+        public Page GetFolderPage(BaseItemDto item, DisplayPreferences displayPreferences, string context)
+        {
+            if (!item.IsType("series") && !item.IsType("musicalbum"))
+            {
+                return new FolderPage(item, displayPreferences, _apiClient, _imageManager, _sessionManager, _presentationManager, _navService, _playbackManager, _logger);
+            }
+
+            return GetItemPage(item, context);
         }
 
         /// <summary>
@@ -151,26 +159,32 @@ namespace MediaBrowser.Plugins.DefaultTheme
             get { return "Default"; }
         }
 
-        private List<ResourceDictionary> _globalResources;
+        private string ThemeColorResource
+        {
+            get { return "ThemeDark"; }
+        }
+
+        private ResourceDictionary _skinColorResource;
 
         public void Load()
         {
-            _globalResources = GetGlobalResources().ToList();
+            var namespaceName = GetType().Namespace;
 
-            foreach (var resource in _globalResources)
+            _skinColorResource = new ResourceDictionary
             {
-                _presentationManager.AddResourceDictionary(resource);
-            }
+                Source = new Uri("pack://application:,,,/" + namespaceName + ";component/Resources/" + ThemeColorResource + ".xaml", UriKind.Absolute)
+
+            };
+
+            _presentationManager.AddResourceDictionary(_skinColorResource);
         }
 
         public void Unload()
         {
-            foreach (var resource in _globalResources)
+            if (_skinColorResource != null)
             {
-                _presentationManager.RemoveResourceDictionary(resource);
+                _presentationManager.AddResourceDictionary(_skinColorResource);
             }
-
-            _globalResources.Clear();
         }
 
         public void SetGlobalContentVisibility(bool visible)

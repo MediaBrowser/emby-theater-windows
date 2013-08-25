@@ -704,8 +704,10 @@ namespace MediaBrowser.Theater.Presentation.Controls
         }
         private void AdjustVisibleRange(ref int firstVisibleItemIndex, ref int lastVisibleItemIndex)
         {
-            firstVisibleItemIndex -= 3;
-            lastVisibleItemIndex += 3;
+            var range = 3;
+
+            firstVisibleItemIndex -= range;
+            lastVisibleItemIndex += range;
             ItemsControl itemsControl = ItemsControl.GetItemsOwner(this);
             if (itemsControl != null)
             {

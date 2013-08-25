@@ -1,8 +1,10 @@
-﻿using MediaBrowser.Common;
+﻿using System.Threading;
+using MediaBrowser.Common;
 using MediaBrowser.Common.Updates;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Configuration;
 using MediaBrowser.Model.Dto;
+using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Core.FullscreenVideo;
 using MediaBrowser.Theater.Core.ImageViewer;
@@ -200,7 +202,26 @@ namespace MediaBrowser.UI.Implementations
             // Grab it fresh from the server to make sure we have the full record
             item = await _apiClient.GetItemAsync(item.Id, _apiClient.CurrentUserId);
 
-            await App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(async () => await Navigate(_themeManager.CurrentTheme.GetItemPage(item, context)));
+            if (item.IsFolder)
+            {
+                DisplayPreferences displayPreferences;
+
+                try
+                {
+                    displayPreferences = await _apiClient.GetDisplayPreferencesAsync(item.DisplayPreferencesId, _sessionFactory().CurrentUser.Id, "DefaultTheme", CancellationToken.None);
+                }
+                catch
+                {
+                    // Already logged at lower levels
+                    displayPreferences = new DisplayPreferences() { Id = new Guid(item.DisplayPreferencesId) };
+                }
+
+                await App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(async () => await Navigate(_themeManager.CurrentTheme.GetFolderPage(item, displayPreferences, context)));
+            }
+            else
+            {
+                await App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(async () => await Navigate(_themeManager.CurrentTheme.GetItemPage(item, context)));
+            }
         }
 
         /// <summary>

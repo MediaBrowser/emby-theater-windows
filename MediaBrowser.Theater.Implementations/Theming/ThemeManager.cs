@@ -1,14 +1,23 @@
-﻿using MediaBrowser.Theater.Interfaces.Theming;
+﻿using MediaBrowser.Theater.Interfaces.Presentation;
+using MediaBrowser.Theater.Interfaces.Theming;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace MediaBrowser.Theater.Implementations.Theming
 {
     public class ThemeManager : IThemeManager
     {
+        private readonly Func<IPresentationManager> _presentationManager;
+
         public event EventHandler<EventArgs> ThemeLoaded;
+
+        public ThemeManager(Func<IPresentationManager> presentationManager)
+        {
+            _presentationManager = presentationManager;
+        }
 
         public void AddParts(IEnumerable<ITheme> themes)
         {
@@ -38,19 +47,49 @@ namespace MediaBrowser.Theater.Implementations.Theming
 
             if (_currentTheme != null)
             {
-                _currentTheme.Unload();
+                UnloadThemeInternal(_currentTheme);
                 hadThemePrior = true;
             }
 
-            _currentTheme = theme;
-
-            _currentTheme.Load();
+            LoadThemeInternal(theme);
 
             if (hadThemePrior)
             {
                 // TODO: Figure out how to determine when this has completed
                 await Task.Delay(10);
             }
+        }
+
+        private List<ResourceDictionary> _themeResources;
+
+        private void LoadThemeInternal(ITheme theme)
+        {
+            _themeResources = theme.GetResources().ToList();
+
+            var presentationManager = _presentationManager();
+
+            foreach (var resource in _themeResources)
+            {
+                presentationManager.AddResourceDictionary(resource);
+            }
+
+            theme.Load();
+
+            _currentTheme = theme;
+        }
+
+        private void UnloadThemeInternal(ITheme theme)
+        {
+            var presentationManager = _presentationManager();
+
+            foreach (var resource in _themeResources)
+            {
+                presentationManager.RemoveResourceDictionary(resource);
+            }
+
+            _themeResources = null;
+            
+            theme.Unload();
         }
 
         public Task LoadDefaultTheme()

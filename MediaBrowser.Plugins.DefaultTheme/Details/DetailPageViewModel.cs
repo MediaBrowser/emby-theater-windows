@@ -1,5 +1,7 @@
 ﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
+using MediaBrowser.Model.Entities;
+using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
@@ -22,6 +24,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
         private readonly IPresentationManager _presentationManager;
         private readonly IPlaybackManager _playback;
         private readonly INavigationService _navigation;
+        private readonly ILogger _logger;
 
         private ItemViewModel _itemViewModel;
         public ItemViewModel ItemViewModel
@@ -37,7 +40,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             }
         }
 
-        public DetailPageViewModel(ItemViewModel item, IApiClient apiClient, ISessionManager sessionManager, IImageManager imageManager, IPresentationManager presentationManager, IPlaybackManager playback, INavigationService navigation)
+        public DetailPageViewModel(ItemViewModel item, IApiClient apiClient, ISessionManager sessionManager, IImageManager imageManager, IPresentationManager presentationManager, IPlaybackManager playback, INavigationService navigation, ILogger logger)
         {
             _apiClient = apiClient;
             _sessionManager = sessionManager;
@@ -45,6 +48,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             _presentationManager = presentationManager;
             _playback = playback;
             _navigation = navigation;
+            _logger = logger;
             ItemViewModel = item;
         }
 
@@ -168,14 +172,14 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                     Item = _itemViewModel.Item
                 };
             }
-            //if (string.Equals(section, "similar"))
-            //{
-            //    return new ItemListViewModel(_apiClient, _imageManager, _navigation)
-            //    {
-            //        ImageHeight = 640,
-            //        Item = _itemViewModel.Item
-            //    };
-            //}
+            if (string.Equals(section, "similar"))
+            {
+                return new ItemListViewModel(GetSimilarItemsAsync, _presentationManager, _imageManager, _apiClient, _sessionManager, _navigation, _playback, _logger)
+                {
+                    ImageDisplayWidth = 400,
+                    EnableBackdropsForCurrentItem = false
+                };
+            }
             if (string.Equals(section, "overview"))
             {
                 return _itemViewModel;
@@ -218,6 +222,47 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 // Logged at lower levels
                 return new AllThemeMediaResult();
             }
+        }
+
+        private Task<ItemsResult> GetSimilarItemsAsync()
+        {
+            var item = ItemViewModel.Item;
+            
+            var query = new SimilarItemsQuery
+            {
+                UserId = _sessionManager.CurrentUser.Id,
+                Limit = item.IsGame || item.IsType("musicalbum") ? 6 : 12,
+                Fields = new[]
+                        {
+                                 ItemFields.PrimaryImageAspectRatio,
+                                 ItemFields.DateCreated,
+                                 ItemFields.MediaStreams,
+                                 ItemFields.Taglines,
+                                 ItemFields.Genres,
+                                 ItemFields.Overview,
+                                 ItemFields.DisplayPreferencesId
+                        },
+                Id = item.Id
+            };
+
+            if (item.IsType("trailer"))
+            {
+                return _apiClient.GetSimilarTrailersAsync(query);
+            }
+            if (item.IsGame)
+            {
+                return _apiClient.GetSimilarGamesAsync(query);
+            }
+            if (item.IsType("musicalbum"))
+            {
+                return _apiClient.GetSimilarAlbumsAsync(query);
+            }
+            if (item.IsType("series"))
+            {
+                return _apiClient.GetSimilarSeriesAsync(query);
+            }
+
+            return _apiClient.GetSimilarMoviesAsync(query);
         }
     }
 }

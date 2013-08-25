@@ -76,9 +76,6 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controls\BaseItemListViewTile.xaml.cs">
-      <DependentUpon>BaseItemListViewTile.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Controls\ItemInfoFooter.xaml.cs">
       <DependentUpon>ItemInfoFooter.xaml</DependentUpon>
     </Compile>
@@ -91,12 +88,6 @@
     <Compile Include="Details\DetailPageViewModel.cs" />
     <Compile Include="Details\Soundtracks.xaml.cs">
       <DependentUpon>Soundtracks.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Details\SpecialFeatures.xaml.cs">
-      <DependentUpon>SpecialFeatures.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Details\ThemeVideos.xaml.cs">
-      <DependentUpon>ThemeVideos.xaml</DependentUpon>
     </Compile>
     <Compile Include="Details\Trailers.xaml.cs">
       <DependentUpon>Trailers.xaml</DependentUpon>
@@ -178,10 +169,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Controls\BaseItemListViewTile.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Controls\ItemInfoFooter.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -195,14 +182,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Details\Soundtracks.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Details\SpecialFeatures.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Details\ThemeVideos.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -115,7 +115,7 @@ namespace MediaBrowser.UI
 
             await base.RegisterResources().ConfigureAwait(false);
 
-            ThemeManager = new ThemeManager();
+            ThemeManager = new ThemeManager(() => PresentationManager);
             RegisterSingleInstance(ThemeManager);
 
             PresentationManager = new TheaterApplicationWindow(Logger, ThemeManager);

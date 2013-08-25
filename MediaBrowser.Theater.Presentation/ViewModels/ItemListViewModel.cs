@@ -36,17 +36,21 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         private Timer _selectionChangeTimer;
         private readonly object _syncLock = new object();
 
-        private readonly Func<DisplayPreferences, Task<ItemsResult>> _getItemsDelegate;
+        private readonly Func<Task<ItemsResult>> _getItemsDelegate;
 
         private readonly RangeObservableCollection<ItemViewModel> _listItems =
             new RangeObservableCollection<ItemViewModel>();
 
         public ICommand NavigateCommand { get; private set; }
 
+        public bool EnableBackdropsForCurrentItem { get; set; }
+
         private readonly Dispatcher _dispatcher;
 
-        public ItemListViewModel(Func<DisplayPreferences, Task<ItemsResult>> getItemsDelegate, IPresentationManager presentationManager, IImageManager imageManager, IApiClient apiClient, ISessionManager sessionManager, INavigationService navigationService, IPlaybackManager playbackManager, ILogger logger)
+        public ItemListViewModel(Func<Task<ItemsResult>> getItemsDelegate, IPresentationManager presentationManager, IImageManager imageManager, IApiClient apiClient, ISessionManager sessionManager, INavigationService navigationService, IPlaybackManager playbackManager, ILogger logger)
         {
+            EnableBackdropsForCurrentItem = true;
+
             _getItemsDelegate = getItemsDelegate;
             _navigationService = navigationService;
             _playbackManager = playbackManager;
@@ -63,8 +67,6 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         public Func<BaseItemDto, string> DisplayNameGenerator { get; set; }
         public Func<ItemListViewModel, double> ImageDisplayHeightGenerator { get; set; }
         public Func<ItemListViewModel, ImageType[]> PreferredImageTypesGenerator { get; set; }
-
-        public string DisplayPreferencesId { get; set; }
 
         private ListCollectionView _listCollectionView;
         public ListCollectionView ListCollectionView
@@ -274,6 +276,8 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 if (changed)
                 {
                     OnPropertyChanged("DisplayPreferences");
+
+                    ReloadDisplayPreferencesValues();
                 }
             }
         }
@@ -298,17 +302,12 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         private async Task ReloadItems(bool isInitialLoad)
         {
-            if (isInitialLoad && !string.IsNullOrEmpty(DisplayPreferencesId))
-            {
-                await ReloadDisplayPreferences();
-            }
-
             // Record the current item
             var currentItem = _listCollectionView.CurrentItem as ItemViewModel;
 
             try
             {
-                var result = await _getItemsDelegate(DisplayPreferences);
+                var result = await _getItemsDelegate();
                 var items = result.Items;
 
                 int? selectedIndex = null;
@@ -366,7 +365,17 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         public double DefaultImageDisplayHeight
         {
-            get { return DisplayPreferences == null ? ImageDisplayWidth : DisplayPreferences.PrimaryImageHeight; }
+            get
+            {
+                if (MedianPrimaryImageAspectRatio.HasValue)
+                {
+                    double height = ImageDisplayWidth;
+
+                    return height / MedianPrimaryImageAspectRatio.Value;
+                }
+
+                return DisplayPreferences == null ? ImageDisplayWidth : DisplayPreferences.PrimaryImageHeight;
+            }
         }
 
         private double GetImageDisplayHeight()
@@ -376,11 +385,14 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         void _listCollectionView_CurrentChanged(object sender, EventArgs e)
         {
-            var item = ListCollectionView.CurrentItem as ItemViewModel;
-
-            if (item != null)
+            if (EnableBackdropsForCurrentItem)
             {
-                _presentationManager.SetBackdrops(item.Item);
+                var item = ListCollectionView.CurrentItem as ItemViewModel;
+
+                if (item != null)
+                {
+                    _presentationManager.SetBackdrops(item.Item);
+                }
             }
 
             lock (_syncLock)
@@ -403,21 +415,6 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         private void UpdateCurrentItem()
         {
             CurrentItem = ListCollectionView.CurrentItem as ItemViewModel;
-        }
-
-        private async Task ReloadDisplayPreferences()
-        {
-            try
-            {
-                DisplayPreferences = await _apiClient.GetDisplayPreferencesAsync(DisplayPreferencesId, _sessionManager.CurrentUser.Id, "DefaultTheme", CancellationToken.None);
-            }
-            catch
-            {
-                // Already logged at lower levels
-                return;
-            }
-
-            ReloadDisplayPreferencesValues();
         }
 
         private void ReloadDisplayPreferencesValues()
@@ -485,6 +482,11 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             foreach (var item in _listItems.ToList())
             {
                 item.Dispose();
+            }
+
+            if (_displayPreferences != null)
+            {
+                _displayPreferences.PropertyChanged += _displayPreferences_PropertyChanged;
             }
         }
 

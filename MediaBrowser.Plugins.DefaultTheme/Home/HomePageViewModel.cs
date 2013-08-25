@@ -105,7 +105,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             return null;
         }
 
-        private Task<ItemsResult> GetMediaCollectionsAsync(DisplayPreferences displayPreferences)
+        private Task<ItemsResult> GetMediaCollectionsAsync()
         {
             var query = new ItemQuery
             {

@@ -60,7 +60,7 @@ namespace MediaBrowser.Theater.Core.ImageViewer
         {
             if (string.Equals(e.PropertyName, "CurrentImage"))
             {
-                await Task.Delay(500);
+                await Task.Delay(1000);
 
                 TransitionControl.TransitionType = _effects[_random.Next(0, _effects.Length)];
             }

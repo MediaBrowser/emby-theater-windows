@@ -1,6 +1,5 @@
 ﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
-using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Theater.Interfaces.Navigation;
@@ -180,6 +179,22 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                     EnableBackdropsForCurrentItem = false
                 };
             }
+            if (string.Equals(section, "special features"))
+            {
+                return new ItemListViewModel(GetSpecialFeatures, _presentationManager, _imageManager, _apiClient, _sessionManager, _navigation, _playback, _logger)
+                {
+                    ImageDisplayWidth = 576,
+                    EnableBackdropsForCurrentItem = false
+                };
+            }
+            if (string.Equals(section, "themes"))
+            {
+                return new ItemListViewModel(GetConvertedThemeMediaResult, _presentationManager, _imageManager, _apiClient, _sessionManager, _navigation, _playback, _logger)
+                {
+                    ImageDisplayWidth = 576,
+                    EnableBackdropsForCurrentItem = false
+                };
+            }
             if (string.Equals(section, "overview"))
             {
                 return _itemViewModel;
@@ -224,10 +239,21 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             }
         }
 
+        private async Task<ItemsResult> GetConvertedThemeMediaResult()
+        {
+            var allThemeMedia = await GetThemeMedia(ItemViewModel.Item);
+
+            return new ItemsResult
+            {
+                TotalRecordCount = allThemeMedia.ThemeSongsResult.TotalRecordCount + allThemeMedia.ThemeVideosResult.TotalRecordCount,
+                Items = allThemeMedia.ThemeVideosResult.Items.Concat(allThemeMedia.ThemeSongsResult.Items).ToArray()
+            };
+        }
+
         private Task<ItemsResult> GetSimilarItemsAsync()
         {
             var item = ItemViewModel.Item;
-            
+
             var query = new SimilarItemsQuery
             {
                 UserId = _sessionManager.CurrentUser.Id,
@@ -235,12 +261,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 Fields = new[]
                         {
                                  ItemFields.PrimaryImageAspectRatio,
-                                 ItemFields.DateCreated,
-                                 ItemFields.MediaStreams,
-                                 ItemFields.Taglines,
-                                 ItemFields.Genres,
-                                 ItemFields.Overview,
-                                 ItemFields.DisplayPreferencesId
+                                 ItemFields.DateCreated
                         },
                 Id = item.Id
             };
@@ -263,6 +284,19 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             }
 
             return _apiClient.GetSimilarMoviesAsync(query);
+        }
+
+        private async Task<ItemsResult> GetSpecialFeatures()
+        {
+            var item = ItemViewModel.Item;
+
+            var items = await _apiClient.GetSpecialFeaturesAsync(_sessionManager.CurrentUser.Id, item.Id);
+
+            return new ItemsResult
+            {
+                TotalRecordCount = items.Length,
+                Items = items
+            };
         }
     }
 }

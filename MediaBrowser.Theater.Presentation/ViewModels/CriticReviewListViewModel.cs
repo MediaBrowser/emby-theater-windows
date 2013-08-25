@@ -65,7 +65,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
                 _listItems.Clear();
 
-                _listItems.AddRange(result.ItemReviews.Select(i => new ItemReviewViewModel { Review = i }));
+                _listItems.AddRange(result.ItemReviews.Where(i => !string.IsNullOrEmpty(i.Caption)).Select(i => new ItemReviewViewModel { Review = i }));
             }
             catch (HttpException)
             {

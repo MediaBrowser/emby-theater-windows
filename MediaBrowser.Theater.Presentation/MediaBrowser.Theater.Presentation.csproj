@@ -82,6 +82,7 @@
     <Compile Include="Controls\SelectList.xaml.cs">
       <DependentUpon>SelectList.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\TextBlockCharacterCasing.cs" />
     <Compile Include="Controls\TransitionControl.cs" />
     <Compile Include="Controls\TransitionFrame.cs" />
     <Compile Include="Controls\TreeHelper.cs" />

@@ -1,7 +1,6 @@
-﻿using System;
-using MediaBrowser.Model.Entities;
-using MediaBrowser.Theater.Presentation.Pages;
+﻿using MediaBrowser.Theater.Presentation.Pages;
 using MediaBrowser.Theater.Presentation.ViewModels;
+using System;
 using System.Windows;
 
 namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferencesMenu
@@ -41,13 +40,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferencesMenu
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         void radioThumbstrip_Click(object sender, RoutedEventArgs e)
         {
-            var width = Math.Max(_displayPreferencesViewModel.PrimaryImageWidth, 600);
-            width = Math.Min(width, 400);
-            _displayPreferencesViewModel.PrimaryImageWidth = width;
+            _displayPreferencesViewModel.PrimaryImageWidth = 600;
 
-            _displayPreferencesViewModel.ScrollDirection = ScrollDirection.Horizontal;
             _displayPreferencesViewModel.ViewType = ViewTypes.Thumbstrip;
-            _displayPreferencesViewModel.ShowSidebar = false;
         }
 
         /// <summary>
@@ -57,9 +52,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferencesMenu
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         void radioPoster_Click(object sender, RoutedEventArgs e)
         {
-            var width = Math.Max(_displayPreferencesViewModel.PrimaryImageWidth, 600);
-            width = Math.Min(width, 400);
-            _displayPreferencesViewModel.PrimaryImageWidth = width;
+            _displayPreferencesViewModel.PrimaryImageWidth = 240;
 
             _displayPreferencesViewModel.ViewType = ViewTypes.Poster;
         }
@@ -75,9 +68,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferencesMenu
             width = Math.Min(width, 400);
             _displayPreferencesViewModel.PrimaryImageWidth = width;
 
-            _displayPreferencesViewModel.ScrollDirection = ScrollDirection.Vertical;
             _displayPreferencesViewModel.ViewType = ViewTypes.List;
-            _displayPreferencesViewModel.ShowSidebar = true;
         }
 
         /// <summary>

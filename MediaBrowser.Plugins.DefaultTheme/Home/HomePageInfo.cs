@@ -5,7 +5,7 @@ using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
-using System.Windows.Controls;
+using System.Windows;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Home
 {
@@ -36,7 +36,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             get { return "Default"; }
         }
 
-        public Page GetHomePage(BaseItemDto rootFolder)
+        public FrameworkElement GetHomePage(BaseItemDto rootFolder)
         {
             var page = new HomePage(rootFolder, _presentationManager)
             {

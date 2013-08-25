@@ -46,7 +46,7 @@
             </controls:ExtendedListBox>
         </Grid>
 
-        <Grid Grid.Row="2" Margin="0 0 0 100" Name="PnlThumbstripInfo">
+        <Grid Grid.Row="2" Name="PnlThumbstripInfo">
             <Grid.Style>
                 <Style TargetType="{x:Type Grid}">
                     <Style.Triggers>
@@ -63,6 +63,8 @@
                 </Style>
             </Grid.Style>
             <StackPanel Orientation="Vertical">
+
+                <TextBlock DataContext="{Binding CurrentItem}" Style="{DynamicResource Heading1TextBlockStyle}" Text="{Binding DisplayName, Converter={controls:UpperCaseConverter}}" Margin="25 20 25 0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" HorizontalAlignment="Center" FontFamily="Segoe UI" FontWeight="ExtraBold" FontSize="180" Foreground="#ccc" Opacity=".9"></TextBlock>
 
                 <ItemsControl Margin="300 0 300 0" HorizontalAlignment="Center" DataContext="{Binding CurrentItem}" ItemsSource="{Binding Genres}">
                     <ItemsControl.Style>
@@ -97,9 +99,7 @@
 
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
-                
-                <TextBlock DataContext="{Binding CurrentItem}" Style="{DynamicResource TextBlockStyle}" Text="{Binding Tagline}" Margin="300 20 300 0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" HorizontalAlignment="Center"></TextBlock>
-            
+
             </StackPanel>
         </Grid>
 
@@ -109,7 +109,7 @@
                 <Grid.Style>
                     <Style TargetType="{x:Type Grid}">
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding ShowSidebar}" Value="True">
+                            <DataTrigger Binding="{Binding Visibility, ElementName=Sidebar}" Value="Visible">
                                 <Setter Property="Visibility" Value="Collapsed" />
                             </DataTrigger>
                         </Style.Triggers>
@@ -129,7 +129,7 @@
                 </TextBlock>
 
                 <Grid Height="100">
-                    <Image Name="ImgLogo" Stretch="Uniform" MaxWidth="700" VerticalAlignment="Bottom"></Image>
+                    <Image Name="ImgLogo" Stretch="Uniform" MaxWidth="700" MaxHeight="100" VerticalAlignment="Bottom"></Image>
                 </Grid>
             </Grid>
 

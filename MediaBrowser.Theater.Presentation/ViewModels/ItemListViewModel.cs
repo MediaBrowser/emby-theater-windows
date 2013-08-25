@@ -417,12 +417,18 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             CurrentItem = ListCollectionView.CurrentItem as ItemViewModel;
         }
 
+        public Func<ItemListViewModel, bool> ShowSidebarGenerator { get; set; }
+        public Func<ItemListViewModel, ScrollDirection> ScrollDirectionGenerator { get; set; }
+
         private void ReloadDisplayPreferencesValues()
         {
-            ViewType = DisplayPreferences.ViewType;
-            ImageDisplayWidth = DisplayPreferences.PrimaryImageWidth;
-            ScrollDirection = DisplayPreferences.ScrollDirection;
-            ShowSidebar = DisplayPreferences.ShowSidebar;
+            var displayPreferences = DisplayPreferences;
+
+            ViewType = displayPreferences.ViewType;
+            ImageDisplayWidth = displayPreferences.PrimaryImageWidth;
+
+            ScrollDirection = ScrollDirectionGenerator == null ? displayPreferences.ScrollDirection : ScrollDirectionGenerator(this);
+            ShowSidebar = ShowSidebarGenerator == null ? displayPreferences.ShowSidebar : ShowSidebarGenerator(this);
 
             var imageTypes = GetPreferredImageTypes();
             var imageDisplayHeight = GetImageDisplayHeight();

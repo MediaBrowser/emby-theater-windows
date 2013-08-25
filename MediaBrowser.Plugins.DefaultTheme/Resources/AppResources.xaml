@@ -48,7 +48,7 @@
     <!--Item logos. -->
     <Style TargetType="Image" x:Key="ItemLogo">
         <Setter Property="Margin" Value="0 10 0 0"/>
-        <Setter Property="MaxHeight" Value="100"/>
+        <Setter Property="MaxHeight" Value="80"/>
         <Setter Property="MaxWidth" Value="700"/>
         <Setter Property="VerticalAlignment" Value="Top"/>
         <Setter Property="HorizontalAlignment" Value="Left"/>
@@ -149,7 +149,7 @@
                                     <Setter Property="Visibility" Value="Visible" />
                                 </DataTrigger>
                                 <DataTrigger Binding="{Binding ViewType}" Value="Thumbstrip">
-                                    <Setter Property="Visibility" Value="Visible" />
+                                    <Setter Property="Visibility" Value="Collapsed" />
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
@@ -375,12 +375,12 @@
             </DataTrigger>
 
 
-            <DataTrigger Binding="{Binding ScrollDirection}" Value="Horizontal">
+            <DataTrigger Binding="{Binding ScrollDirection}" Value="Vertical">
                 <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"></Setter>
                 <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Hidden"></Setter>
             </DataTrigger>
 
-            <DataTrigger Binding="{Binding ScrollDirection}" Value="Vertical">
+            <DataTrigger Binding="{Binding ScrollDirection}" Value="Horizontal">
                 <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Hidden"></Setter>
                 <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"></Setter>
             </DataTrigger>

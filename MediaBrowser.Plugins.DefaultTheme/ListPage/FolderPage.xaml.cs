@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.ApiClient;
+﻿using System.Linq;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
@@ -61,7 +62,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
             {
                 ImageDisplayHeightGenerator = GetImageDisplayHeight,
                 DisplayNameGenerator = GetDisplayName,
-                PreferredImageTypesGenerator = vm => string.Equals(vm.ViewType, ViewTypes.Thumbstrip) ? new[] { ImageType.Backdrop, ImageType.Thumb, ImageType.Primary } : new[] { ImageType.Primary }
+                PreferredImageTypesGenerator = GetPreferredImageTypes,
+
+                ShowSidebarGenerator = GetShowSidebar,
+                ScrollDirectionGenerator = GetScrollDirection
             };
 
             _viewModel.PropertyChanged += _viewModel_PropertyChanged;
@@ -71,6 +75,44 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
             DataContext = _viewModel;
 
             OnParentItemChanged();
+        }
+
+        private ScrollDirection GetScrollDirection(ItemListViewModel viewModel)
+        {
+            if (string.Equals(viewModel.ViewType, ViewTypes.List))
+            {
+                return ScrollDirection.Vertical;
+            }
+            if (string.Equals(viewModel.ViewType, ViewTypes.Thumbstrip))
+            {
+                return ScrollDirection.Horizontal;
+            }
+
+            return viewModel.DisplayPreferences == null
+                       ? ScrollDirection.Horizontal
+                       : viewModel.DisplayPreferences.ScrollDirection;
+        }
+
+        private ImageType[] GetPreferredImageTypes(ItemListViewModel viewModel)
+        {
+            return string.Equals(viewModel.ViewType, ViewTypes.Thumbstrip)
+                       ? new[] {ImageType.Backdrop, ImageType.Thumb, ImageType.Primary}
+                       : new[] {ImageType.Primary};
+        }
+
+
+        private bool GetShowSidebar(ItemListViewModel viewModel)
+        {
+            if (string.Equals(viewModel.ViewType, ViewTypes.List))
+            {
+                return true;
+            }
+            if (string.Equals(viewModel.ViewType, ViewTypes.Thumbstrip))
+            {
+                return false;
+            }
+
+            return viewModel.DisplayPreferences != null && viewModel.DisplayPreferences.ShowSidebar;
         }
 
         protected async void OnParentItemChanged()
@@ -190,21 +232,20 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
             var imageDisplayWidth = viewModel.ImageDisplayWidth;
             var medianPrimaryImageAspectRatio = viewModel.MedianPrimaryImageAspectRatio ?? 0;
 
-            if (String.Equals(viewType, ViewTypes.Thumbstrip) || String.Equals(viewType, ViewTypes.List))
+            var imageType = GetPreferredImageTypes(viewModel).First();
+
+            if (imageType == ImageType.Backdrop || imageType == ImageType.Screenshot || imageType == ImageType.Thumb)
             {
                 double height = imageDisplayWidth;
                 return height / AspectRatioHelper.GetAspectRatio(ImageType.Backdrop, medianPrimaryImageAspectRatio);
             }
 
-            if (!medianPrimaryImageAspectRatio.Equals(0))
+            if (!medianPrimaryImageAspectRatio.Equals(0) && imageType == ImageType.Primary)
             {
-                if (String.IsNullOrEmpty(viewType) || String.Equals(viewType, ViewTypes.Poster))
-                {
-                    double height = imageDisplayWidth;
-                    height /= medianPrimaryImageAspectRatio;
+                double height = imageDisplayWidth;
+                height /= medianPrimaryImageAspectRatio;
 
-                    return height;
-                }
+                return height;
             }
 
             return viewModel.DefaultImageDisplayHeight;
@@ -233,15 +274,19 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
 
         private void UpdateLogo(BaseItemDto item)
         {
-            const int maxheight = 100;
-
             if (Sidebar.Visibility != Visibility.Visible)
             {
-                if (item != null && item.HasLogo)
+                if (item != null && string.Equals(_viewModel.ViewType, ViewTypes.Thumbstrip) && (item.HasArtImage || item.ParentArtImageTag.HasValue))
+                {
+                    SetLogo(_apiClient.GetArtImageUrl(item, new ImageOptions
+                    {
+                        ImageType = ImageType.Art
+                    }));
+                } 
+                else if (item != null && item.HasLogo)
                 {
                     SetLogo(_apiClient.GetLogoImageUrl(item, new ImageOptions
                     {
-                        Height = maxheight,
                         ImageType = ImageType.Logo
                     }));
                 }
@@ -249,7 +294,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                 {
                     SetLogo(_apiClient.GetArtImageUrl(item, new ImageOptions
                     {
-                        Height = maxheight,
                         ImageType = ImageType.Art
                     }));
                 }

@@ -143,6 +143,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
         protected override BaseViewModel GetContentViewModel(string section)
         {
+            if (string.Equals(section, "overview"))
+            {
+                return _itemViewModel;
+            }
             if (string.Equals(section, "reviews"))
             {
                 return new CriticReviewListViewModel(_presentationManager, _apiClient, _imageManager, _itemViewModel.Item.Id);
@@ -195,9 +199,13 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                     EnableBackdropsForCurrentItem = false
                 };
             }
-            if (string.Equals(section, "overview"))
+            if (string.Equals(section, "soundtrack") || string.Equals(section, "soundtracks"))
             {
-                return _itemViewModel;
+                return new ItemListViewModel(GetSoundtracks, _presentationManager, _imageManager, _apiClient, _sessionManager, _navigation, _playback, _logger)
+                {
+                    ImageDisplayWidth = 400,
+                    EnableBackdropsForCurrentItem = false
+                };
             }
 
             return null;
@@ -284,6 +292,30 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             }
 
             return _apiClient.GetSimilarMoviesAsync(query);
+        }
+
+        private Task<ItemsResult> GetSoundtracks()
+        {
+            var item = ItemViewModel.Item;
+     
+            var query = new ItemQuery
+            {
+                UserId = _sessionManager.CurrentUser.Id,
+                Fields = new[]
+                        {
+                                 ItemFields.PrimaryImageAspectRatio,
+                                 ItemFields.DateCreated,
+                                 ItemFields.MediaStreams,
+                                 ItemFields.Taglines,
+                                 ItemFields.Genres,
+                                 ItemFields.Overview,
+                                 ItemFields.DisplayPreferencesId
+                        },
+                Ids = item.SoundtrackIds,
+                SortBy = new[] { ItemSortBy.SortName }
+            };
+
+            return _apiClient.GetItemsAsync(query);
         }
 
         private async Task<ItemsResult> GetSpecialFeatures()

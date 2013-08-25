@@ -199,7 +199,7 @@ namespace MediaBrowser.UI
         /// Navigates the specified page.
         /// </summary>
         /// <param name="page">The page.</param>
-        internal Task Navigate(Page page)
+        internal Task Navigate(FrameworkElement page)
         {
             _logger.Info("Navigating to " + page.GetType().Name);
             var task = new TaskCompletionSource<bool>();

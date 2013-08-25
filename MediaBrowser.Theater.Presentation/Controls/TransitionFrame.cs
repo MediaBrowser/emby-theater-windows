@@ -133,7 +133,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
         /// Navigates the with transition.
         /// </summary>
         /// <param name="page">The page.</param>
-        public Task NavigateWithTransition(Page page)
+        public Task NavigateWithTransition(object page)
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
 

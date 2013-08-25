@@ -15,7 +15,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
 
 namespace MediaBrowser.Plugins.DefaultTheme
 {
@@ -95,7 +94,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// <param name="item">The item.</param>
         /// <param name="context">The context.</param>
         /// <returns>Page.</returns>
-        public Page GetItemPage(BaseItemDto item, string context)
+        public FrameworkElement GetItemPage(BaseItemDto item, string context)
         {
             var itemViewModel = new ItemViewModel(_apiClient, _imageManager, _playbackManager, _presentationManager, _logger)
             {
@@ -116,7 +115,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// <param name="displayPreferences">The display preferences.</param>
         /// <param name="context">The context.</param>
         /// <returns>Page.</returns>
-        public Page GetFolderPage(BaseItemDto item, DisplayPreferences displayPreferences, string context)
+        public FrameworkElement GetFolderPage(BaseItemDto item, DisplayPreferences displayPreferences, string context)
         {
             if (!item.IsType("series") && !item.IsType("musicalbum"))
             {
@@ -132,7 +131,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// <param name="item">The item.</param>
         /// <param name="context">The context.</param>
         /// <returns>Page.</returns>
-        public Page GetPersonPage(BaseItemDto item, string context)
+        public FrameworkElement GetPersonPage(BaseItemDto item, string context)
         {
             return GetItemPage(item, context);
         }

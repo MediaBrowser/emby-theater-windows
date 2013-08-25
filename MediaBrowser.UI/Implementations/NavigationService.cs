@@ -1,4 +1,5 @@
 ﻿using System.Threading;
+using System.Windows;
 using MediaBrowser.Common;
 using MediaBrowser.Common.Updates;
 using MediaBrowser.Model.ApiClient;
@@ -93,7 +94,7 @@ namespace MediaBrowser.UI.Implementations
         /// </summary>
         /// <param name="page">The page.</param>
         /// <returns>DispatcherOperation.</returns>
-        public Task Navigate(Page page)
+        public Task Navigate(FrameworkElement page)
         {
             return App.Instance.ApplicationWindow.Navigate(page);
         }

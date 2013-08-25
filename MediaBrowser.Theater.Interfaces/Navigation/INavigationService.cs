@@ -1,8 +1,9 @@
 ﻿using MediaBrowser.Model.Dto;
+using MediaBrowser.Theater.Interfaces.ViewModels;
 using System;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
-using MediaBrowser.Theater.Interfaces.ViewModels;
 
 namespace MediaBrowser.Theater.Interfaces.Navigation
 {
@@ -29,7 +30,7 @@ namespace MediaBrowser.Theater.Interfaces.Navigation
         /// Navigates the specified page.
         /// </summary>
         /// <param name="page">The page.</param>
-        Task Navigate(Page page);
+        Task Navigate(FrameworkElement page);
 
         /// <summary>
         /// Navigates to settings page.

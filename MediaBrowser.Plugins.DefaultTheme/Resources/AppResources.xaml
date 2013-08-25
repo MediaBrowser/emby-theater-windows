@@ -117,7 +117,7 @@
                     <Style TargetType="{x:Type Border}">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding HasImage}" Value="True">
-                                <Setter Property="Visibility" Value="Hidden" />
+                                <Setter Property="Visibility" Value="Collapsed" />
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>

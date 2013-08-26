@@ -51,8 +51,9 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// The _logger
         /// </summary>
         private readonly ILogger _logger;
+        private readonly IThemeManager _themeManager;
 
-        public DefaultTheme(IPlaybackManager playbackManager, IImageManager imageManager, IApiClient apiClient, INavigationService navService, ISessionManager sessionManager, IPresentationManager presentationManager, ILogManager logManager)
+        public DefaultTheme(IPlaybackManager playbackManager, IImageManager imageManager, IApiClient apiClient, INavigationService navService, ISessionManager sessionManager, IPresentationManager presentationManager, ILogManager logManager, IThemeManager themeManager)
         {
             _playbackManager = playbackManager;
             _imageManager = imageManager;
@@ -60,6 +61,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
             _navService = navService;
             _sessionManager = sessionManager;
             _presentationManager = presentationManager;
+            _themeManager = themeManager;
             _logger = logManager.GetLogger(GetType().Name);
 
             TopRightPanel.SessionManager = _sessionManager;
@@ -119,7 +121,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         {
             if (!item.IsType("series") && !item.IsType("musicalbum"))
             {
-                return new FolderPage(item, displayPreferences, _apiClient, _imageManager, _sessionManager, _presentationManager, _navService, _playbackManager, _logger);
+                return new FolderPage(item, displayPreferences, _apiClient, _imageManager, _sessionManager, _presentationManager, _navService, _playbackManager, _logger, _themeManager);
             }
 
             return GetItemPage(item, context);

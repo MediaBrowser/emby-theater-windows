@@ -94,7 +94,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Osd
                 {
                     ImgLogo.Source = await viewModel.ImageManager.GetRemoteBitmapAsync(viewModel.ApiClient.GetLogoImageUrl(media, new ImageOptions
                     {
-                        Height = 100
                     }));
 
                     ImgLogo.Visibility = Visibility.Visible;

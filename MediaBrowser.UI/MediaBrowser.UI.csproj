@@ -100,6 +100,9 @@
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Ionic.Zip">
+      <HintPath>..\packages\DotNetZip.1.9.1.8\lib\net20\Ionic.Zip.dll</HintPath>
+    </Reference>
     <Reference Include="MediaBrowser.ApiInteraction, Version=3.0.4982.37901, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\MediaBrowser.ApiClient.3.0.0.186\lib\net45\MediaBrowser.ApiInteraction.dll</HintPath>
@@ -187,6 +190,7 @@
       <DependentUpon>HiddenWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Implementations\AppHiddenWIndow.cs" />
+    <Compile Include="Implementations\DotNetZipClient.cs" />
     <Compile Include="Implementations\InternalPlayerPageBehavior.cs" />
     <Compile Include="Implementations\NavigationService.cs" />
     <Compile Include="Implementations\TheaterApplicationWindow.cs" />

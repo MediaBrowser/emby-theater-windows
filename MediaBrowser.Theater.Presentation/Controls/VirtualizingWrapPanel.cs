@@ -624,12 +624,15 @@ namespace MediaBrowser.Theater.Presentation.Controls
         /// <returns>The used size.</returns>
         protected override Size ArrangeOverride(Size finalSize)
         {
-            bool isHorizontal = this.Orientation == Orientation.Horizontal;
-            this.InvalidateScrollInfo(finalSize);
-            int i = 0;
-            foreach (object item in base.Children)
+            var isHorizontal = Orientation == Orientation.Horizontal;
+            InvalidateScrollInfo(finalSize);
+            var i = 0;
+
+            var count = isHorizontal ? GetVerticalChildrenCountPerRow(finalSize) : GetHorizontalChildrenCountPerRow(finalSize);
+            
+            foreach (var item in Children)
             {
-                this.ArrangeChild(isHorizontal, finalSize, i++, item as UIElement);
+                ArrangeChild(isHorizontal, i++, item as UIElement, count);
             }
             return finalSize;
         }
@@ -736,16 +739,15 @@ namespace MediaBrowser.Theater.Presentation.Controls
                 }
             }
         }
-        private void ArrangeChild(bool isHorizontal, Size finalSize, int index, UIElement child)
+        private void ArrangeChild(bool isHorizontal, int index, UIElement child, int countPerRow)
         {
             if (child == null)
             {
                 return;
             }
-            int count = isHorizontal ? this.GetVerticalChildrenCountPerRow(finalSize) : this.GetHorizontalChildrenCountPerRow(finalSize);
             int itemIndex = base.ItemContainerGenerator.IndexFromGeneratorPosition(new GeneratorPosition(index, 0));
-            int row = isHorizontal ? (itemIndex / count) : (itemIndex % count);
-            int column = isHorizontal ? (itemIndex % count) : (itemIndex / count);
+            int row = isHorizontal ? (itemIndex / countPerRow) : (itemIndex % countPerRow);
+            int column = isHorizontal ? (itemIndex % countPerRow) : (itemIndex / countPerRow);
             Rect rect = new Rect((double)column * this.ItemWidth, (double)row * this.ItemHeight, this.ItemWidth, this.ItemHeight);
             if (isHorizontal)
             {

@@ -88,6 +88,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                     OnPropertyChanged("CanPlay");
                     OnPropertyChanged("HasTrailer");
                     OnPropertyChanged("Players");
+                    OnPropertyChanged("SeriesDateRange");
                     OnPropertyChanged("GameSystem");
                     OnPropertyChanged("PremiereShortDate");
                     OnPropertyChanged("PremieresInFuture");
@@ -402,6 +403,32 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         public string GameSystem
         {
             get { return _item == null ? null : _item.GameSystem; }
+        }
+
+        public string SeriesDateRange
+        {
+            get
+            {
+                var item = _item;
+
+                if (item != null && item.ProductionYear.HasValue)
+                {
+                    var text = item.ProductionYear.Value.ToString();
+
+                    if (item.EndDate.HasValue && item.EndDate.Value.Year != item.ProductionYear)
+                    {
+                        text += "-" + item.EndDate.Value.Year;
+                    }
+                    else if (item.Status.HasValue && item.Status.Value == SeriesStatus.Continuing)
+                    {
+                        text += "-Present";
+                    }
+
+                    return text;
+                }
+
+                return null;
+            }
         }
 
         public int? Players

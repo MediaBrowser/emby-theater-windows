@@ -44,6 +44,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         public ICommand NavigateCommand { get; private set; }
 
         public bool EnableBackdropsForCurrentItem { get; set; }
+        public bool AutoSelectFirstItem { get; set; }
 
         private readonly Dispatcher _dispatcher;
 
@@ -312,7 +313,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
                 int? selectedIndex = null;
 
-                if (isInitialLoad)
+                if (isInitialLoad && AutoSelectFirstItem)
                 {
                     selectedIndex = 0;
                 }

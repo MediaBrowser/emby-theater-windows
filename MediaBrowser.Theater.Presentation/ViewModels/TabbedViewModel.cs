@@ -108,11 +108,11 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             {
                 if (_selectionChangeTimer == null)
                 {
-                    _selectionChangeTimer = new Timer(OnSelectionTimerFired, null, 400, Timeout.Infinite);
+                    _selectionChangeTimer = new Timer(OnSelectionTimerFired, null, 600, Timeout.Infinite);
                 }
                 else
                 {
-                    _selectionChangeTimer.Change(400, Timeout.Infinite);
+                    _selectionChangeTimer.Change(600, Timeout.Infinite);
                 }
             }
         }

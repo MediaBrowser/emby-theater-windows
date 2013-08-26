@@ -90,6 +90,9 @@ namespace MediaBrowser.Theater.Core.Settings
                 .Where(i => i.Category == SettingsPageCategory.Plugin);
 
             items.AddRange(pages);
+
+            TxtPluginSettings.Visibility =
+                GridPluginSettings.Visibility = items.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
         }
 
         private void LoadSystemSettingsList(IEnumerable<ISettingsPage> allSettingsPages)

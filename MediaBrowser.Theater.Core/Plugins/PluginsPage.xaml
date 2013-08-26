@@ -36,7 +36,7 @@
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <controls:ExtendedListBox x:Name="MenuList" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" Grid.Row="0" HorizontalAlignment="Center" Margin="20 0 20 0" ItemContainerStyle="{DynamicResource MenuListBoxItemStyle}">
+        <controls:ExtendedListBox x:Name="MenuList" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" Grid.Row="0" HorizontalAlignment="Center" Margin="20 60 20 0" ItemContainerStyle="{DynamicResource MenuListBoxItemStyle}">
             <controls:ExtendedListBox.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" />
@@ -44,9 +44,9 @@
             </controls:ExtendedListBox.ItemsPanel>
         </controls:ExtendedListBox>
 
-        <controls:ExtendedScrollViewer x:Name="ScrollViewer" Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalAlignment="Center" HorizontalAlignment="Center" CanContentScroll="True">
+        <controls:ExtendedScrollViewer x:Name="ScrollViewer" Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalAlignment="Stretch" HorizontalAlignment="Center" CanContentScroll="True">
             <controls:ScrollingPanel x:Name="ScrollingPanel" CanHorizontallyScroll="True" CanVerticallyScroll="False" HorizontalAlignment="Stretch">
-                <ContentControl x:Name="PageContent" Margin="100 40 100 50"></ContentControl>
+                <ContentControl x:Name="PageContent" Margin="100 40 100 40"></ContentControl>
             </controls:ScrollingPanel>
         </controls:ExtendedScrollViewer>
     </Grid>

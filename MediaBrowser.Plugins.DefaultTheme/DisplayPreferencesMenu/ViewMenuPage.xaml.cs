@@ -64,9 +64,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferencesMenu
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         void radioList_Click(object sender, RoutedEventArgs e)
         {
-            var width = Math.Max(_displayPreferencesViewModel.PrimaryImageWidth, 640);
-            width = Math.Min(width, 400);
-            _displayPreferencesViewModel.PrimaryImageWidth = width;
+            _displayPreferencesViewModel.PrimaryImageWidth = 140;
 
             _displayPreferencesViewModel.ViewType = ViewTypes.List;
         }

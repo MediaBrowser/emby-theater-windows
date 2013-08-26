@@ -209,7 +209,7 @@ namespace MediaBrowser.UI.Implementations
 
                 try
                 {
-                    displayPreferences = await _apiClient.GetDisplayPreferencesAsync(item.DisplayPreferencesId, _sessionFactory().CurrentUser.Id, "DefaultTheme", CancellationToken.None);
+                    displayPreferences = await _apiClient.GetDisplayPreferencesAsync(item.DisplayPreferencesId, _sessionFactory().CurrentUser.Id, "MBT-" + _themeManager.CurrentTheme.Name, CancellationToken.None);
                 }
                 catch
                 {

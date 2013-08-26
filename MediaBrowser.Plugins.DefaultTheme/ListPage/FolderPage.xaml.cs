@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using MediaBrowser.Model.ApiClient;
+﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
@@ -9,12 +8,14 @@ using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
+using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.Extensions;
 using MediaBrowser.Theater.Presentation.Pages;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
 using System.ComponentModel;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -34,17 +35,19 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
         private readonly IPresentationManager _presentationManager;
         private readonly INavigationService _navigationManager;
         private readonly IPlaybackManager _playbackManager;
+        private readonly IThemeManager _themeManager;
         private readonly ILogger _logger;
 
         private readonly BaseItemDto _parentItem;
 
         private readonly ItemListViewModel _viewModel;
 
-        public FolderPage(BaseItemDto parent, DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IPresentationManager applicationWindow, INavigationService navigationManager, IPlaybackManager playbackManager, ILogger logger)
+        public FolderPage(BaseItemDto parent, DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IPresentationManager applicationWindow, INavigationService navigationManager, IPlaybackManager playbackManager, ILogger logger, IThemeManager themeManager)
         {
             _navigationManager = navigationManager;
             _playbackManager = playbackManager;
             _logger = logger;
+            _themeManager = themeManager;
             _presentationManager = applicationWindow;
             _sessionManager = sessionManager;
             _imageManager = imageManager;
@@ -65,7 +68,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                 PreferredImageTypesGenerator = GetPreferredImageTypes,
 
                 ShowSidebarGenerator = GetShowSidebar,
-                ScrollDirectionGenerator = GetScrollDirection
+                ScrollDirectionGenerator = GetScrollDirection,
+
+                AutoSelectFirstItem = true
             };
 
             _viewModel.PropertyChanged += _viewModel_PropertyChanged;
@@ -95,9 +100,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
 
         private ImageType[] GetPreferredImageTypes(ItemListViewModel viewModel)
         {
-            return string.Equals(viewModel.ViewType, ViewTypes.Thumbstrip)
-                       ? new[] {ImageType.Backdrop, ImageType.Thumb, ImageType.Primary}
-                       : new[] {ImageType.Primary};
+            return string.Equals(viewModel.ViewType, ViewTypes.Thumbstrip) || string.Equals(viewModel.ViewType, ViewTypes.List)
+                       ? new[] { ImageType.Backdrop, ImageType.Thumb, ImageType.Primary }
+                       : new[] { ImageType.Primary };
         }
 
 
@@ -222,13 +227,24 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
 
         private double GetItemContainerHeight(ItemListViewModel viewModel)
         {
-            // 14 = double the margin between items as defined in the resource file
-            return GetImageDisplayHeight(viewModel) + 20;
+            var height = GetImageDisplayHeight(viewModel);
+
+            // Add the bottom border
+            if (string.Equals(viewModel.ViewType, ViewTypes.List))
+            {
+                height += 12;
+            }
+            else
+            {
+                // 20 = double the margin between items as defined in the resource file
+                height += 20;
+            }
+
+            return height;
         }
 
         private double GetImageDisplayHeight(ItemListViewModel viewModel)
         {
-            var viewType = viewModel.ViewType;
             var imageDisplayWidth = viewModel.ImageDisplayWidth;
             var medianPrimaryImageAspectRatio = viewModel.MedianPrimaryImageAspectRatio ?? 0;
 
@@ -282,7 +298,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                     {
                         ImageType = ImageType.Art
                     }));
-                } 
+                }
                 else if (item != null && item.HasLogo)
                 {
                     SetLogo(_apiClient.GetLogoImageUrl(item, new ImageOptions
@@ -348,7 +364,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
         void ViewButton_Click(object sender, RoutedEventArgs e)
         {
             var viewModel = new DisplayPreferencesViewModel(_viewModel.DisplayPreferences, _apiClient,
-                                                            _presentationManager, _sessionManager);
+                                                            _presentationManager, _sessionManager, _themeManager);
 
             var menu = new DisplayPreferencesMenu.DisplayPreferencesMenu(viewModel);
 

@@ -6,6 +6,7 @@ using MediaBrowser.Theater.Interfaces.Session;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Interfaces.ViewModels;
 
 namespace MediaBrowser.Theater.Presentation.ViewModels
@@ -18,18 +19,20 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         private readonly IApiClient _apiClient;
         private readonly IPresentationManager _presentation;
         private readonly ISessionManager _session;
+        private readonly IThemeManager _themeManager;
 
         public ICommand SaveCommand { get; private set; }
         public ICommand IncreaseImageSizeCommand { get; private set; }
         public ICommand DecreaseImageSizeCommand { get; private set; }
         public ICommand ToggleScrollDirectionCommand { get; private set; }
 
-        public DisplayPreferencesViewModel(DisplayPreferences displayPreferences, IApiClient apiClient, IPresentationManager presentation, ISessionManager session)
+        public DisplayPreferencesViewModel(DisplayPreferences displayPreferences, IApiClient apiClient, IPresentationManager presentation, ISessionManager session, IThemeManager themeManager)
         {
             DisplayPreferences = displayPreferences;
             _apiClient = apiClient;
             _presentation = presentation;
             _session = session;
+            _themeManager = themeManager;
 
             SaveCommand = new RelayCommand(obj => Save());
             IncreaseImageSizeCommand = new RelayCommand(obj => IncreaseImageSize());
@@ -137,7 +140,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         {
             try
             {
-                await _apiClient.UpdateDisplayPreferencesAsync(DisplayPreferences, _session.CurrentUser.Id, "DefaultTheme");
+                await _apiClient.UpdateDisplayPreferencesAsync(DisplayPreferences, _session.CurrentUser.Id, "MBT-" + _themeManager.CurrentTheme.Name);
             }
             catch
             {

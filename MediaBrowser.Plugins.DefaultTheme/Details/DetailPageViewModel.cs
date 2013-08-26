@@ -207,6 +207,14 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                     EnableBackdropsForCurrentItem = false
                 };
             }
+            if (string.Equals(section, "seasons") || string.Equals(section, "episodes") || string.Equals(section, "songs"))
+            {
+                return new ItemListViewModel(GetChildren, _presentationManager, _imageManager, _apiClient, _sessionManager, _navigation, _playback, _logger)
+                {
+                    ImageDisplayWidth = 400,
+                    EnableBackdropsForCurrentItem = false
+                };
+            }
 
             return null;
         }
@@ -304,14 +312,28 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 Fields = new[]
                         {
                                  ItemFields.PrimaryImageAspectRatio,
-                                 ItemFields.DateCreated,
-                                 ItemFields.MediaStreams,
-                                 ItemFields.Taglines,
-                                 ItemFields.Genres,
-                                 ItemFields.Overview,
-                                 ItemFields.DisplayPreferencesId
+                                 ItemFields.DateCreated
                         },
                 Ids = item.SoundtrackIds,
+                SortBy = new[] { ItemSortBy.SortName }
+            };
+
+            return _apiClient.GetItemsAsync(query);
+        }
+
+        private Task<ItemsResult> GetChildren()
+        {
+            var item = ItemViewModel.Item;
+
+            var query = new ItemQuery
+            {
+                UserId = _sessionManager.CurrentUser.Id,
+                Fields = new[]
+                        {
+                                 ItemFields.PrimaryImageAspectRatio,
+                                 ItemFields.DateCreated
+                        },
+                ParentId = item.Id,
                 SortBy = new[] { ItemSortBy.SortName }
             };
 

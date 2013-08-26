@@ -52,7 +52,7 @@
     </UserControl.Resources>
 
     <Grid>
-        <controls:ExtendedListBox Margin="-40 -30 -40 -35" Grid.Row="1" x:Name="LstItems" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{DynamicResource PluginListBoxItemTemplate}">
+        <controls:ExtendedListBox Margin="-40 -30 -40 -35" Grid.Row="1" x:Name="LstItems" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{DynamicResource PluginListBoxItemTemplate}">
             <controls:ExtendedListBox.ItemsPanel>
                 <ItemsPanelTemplate>
                     <WrapPanel Margin="40 35" Orientation="Vertical"></WrapPanel>
@@ -60,6 +60,6 @@
             </controls:ExtendedListBox.ItemsPanel>
         </controls:ExtendedListBox>
 
-        <TextBlock x:Name="TxtNoPlugins" Style="{DynamicResource TextBlockStyle}" Margin="300 40 0 0" Visibility="Collapsed" HorizontalAlignment="Center">There are currently no plugins installed. Try browsing the plugin catalog for list of available plugins.</TextBlock>
+        <TextBlock x:Name="TxtNoPlugins" Margin="0 50 0 0" Style="{DynamicResource TextBlockStyle}" Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Top" TextWrapping="Wrap" Text="There are currently no plugins installed. Try browsing the plugin catalog for list of available plugins."></TextBlock>
     </Grid>
 </UserControl>

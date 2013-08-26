@@ -7,7 +7,6 @@ using MediaBrowser.Common.Implementations.ScheduledTasks;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.IO;
 using MediaBrowser.Model.System;
-using MediaBrowser.Model.Updates;
 using MediaBrowser.Plugins.DefaultTheme;
 using MediaBrowser.Theater.Core.Login;
 using MediaBrowser.Theater.DirectShow;
@@ -32,7 +31,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace MediaBrowser.UI

@@ -196,8 +196,7 @@ namespace MediaBrowser.UI.Implementations
         public IEnumerable<IApp> GetApps(UserDto user)
         {
             return AppFactories
-                .SelectMany(i => i.AppTypes)
-                .Select(i => (IApp)_appHost.CreateInstance(i));
+                .SelectMany(i => i.GetApps());
         }
 
         public void AddResourceDictionary(ResourceDictionary resource)

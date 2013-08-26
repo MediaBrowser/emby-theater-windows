@@ -646,8 +646,8 @@
         </Grid>
     </DataTemplate>
 
-    <DataTemplate x:Key="ItemGalleryTemplate" DataType="{x:Type BitmapImage}">
-        <Image Source="{Binding}" VerticalAlignment="Center" HorizontalAlignment="Center" Stretch="Uniform">
+    <DataTemplate x:Key="ItemGalleryTemplate" DataType="{x:Type viewModels:GalleryImageViewModel}">
+        <Image Source="{Binding Image}" VerticalAlignment="Center" HorizontalAlignment="Center" Stretch="Uniform">
 
         </Image>
     </DataTemplate>

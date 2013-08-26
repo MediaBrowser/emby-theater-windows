@@ -1,19 +1,15 @@
 ﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
-using MediaBrowser.Model.Net;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
-using System.Windows.Media.Imaging;
 
 namespace MediaBrowser.Theater.Presentation.ViewModels
 {
@@ -24,7 +20,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         private readonly INavigationService _navigation;
 
         public ICommand OpenImageViewerCommand { get; private set; }
-        
+
         /// <summary>
         /// The _item
         /// </summary>
@@ -47,8 +43,8 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                     OnPropertyChanged("Item");
                 }
             }
-        }        
-        
+        }
+
         private int? _imageWidth;
         public int? ImageWidth
         {
@@ -83,7 +79,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
-        private readonly RangeObservableCollection<BitmapImage> _listItems = new RangeObservableCollection<BitmapImage>();
+        private readonly RangeObservableCollection<GalleryImageViewModel> _listItems = new RangeObservableCollection<GalleryImageViewModel>();
 
         private ListCollectionView _listCollectionView;
 
@@ -121,45 +117,13 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
-        private CancellationTokenSource _imageCancellationTokenSource = null;
-        
         private async void ReloadList()
         {
             var urls = GetImages(Item, _apiClient, ImageWidth, ImageHeight);
 
-            _imageCancellationTokenSource = new CancellationTokenSource();
-
-            var tasks = urls.Select(i => GetImage(i, _imageCancellationTokenSource.Token));
-
-            try
-            {
-                var results = await Task.WhenAll(tasks);
-
-                var images = results.Where(i => i != null).ToList();
-
-                _listItems.AddRange(images);
-            }
-            catch (OperationCanceledException)
-            {
-            }
-            finally
-            {
-                DisposeCancellationTokenSource();
-            }
+            _listItems.AddRange(urls.Select(i => new GalleryImageViewModel(_imageManager) { ImageUrl = i }));
         }
 
-        private async Task<BitmapImage> GetImage(string url, CancellationToken cancellationToken)
-        {
-            try
-            {
-                return await _imageManager.GetRemoteBitmapAsync(url, cancellationToken);
-            }
-            catch (HttpException)
-            {
-                return null;
-            }
-        }
-        
         /// <summary>
         /// Gets the images.
         /// </summary>
@@ -261,7 +225,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         private async void OpenImageViewer(object commandParameter)
         {
-            var image = (BitmapImage)commandParameter;
+            var image = (GalleryImageViewModel)commandParameter;
 
             var images = GetImages(Item, _apiClient, Convert.ToInt32(SystemParameters.VirtualScreenWidth), null);
 
@@ -278,16 +242,9 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         public void Dispose()
         {
-            DisposeCancellationTokenSource();
-        }
-
-        private void DisposeCancellationTokenSource()
-        {
-            if (_imageCancellationTokenSource != null)
+            foreach (var item in _listItems.ToList())
             {
-                _imageCancellationTokenSource.Cancel();
-                _imageCancellationTokenSource.Dispose();
-                _imageCancellationTokenSource = null;
+                item.Dispose();
             }
         }
     }

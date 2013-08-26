@@ -189,14 +189,16 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
                     Image = await _imageManager.GetRemoteBitmapAsync(_apiClient.GetUserImageUrl(User, options), _imageCancellationTokenSource.Token);
 
-                    DisposeCancellationTokenSource();
-
                     HasImage = true;
                 }
                 catch
                 {
                     // Logged at lower levels
                     HasImage = false;
+                }
+                finally
+                {
+                    DisposeCancellationTokenSource();
                 }
             }
             else

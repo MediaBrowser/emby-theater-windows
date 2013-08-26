@@ -111,6 +111,7 @@
     </Compile>
     <Compile Include="ViewModels\AppListViewModel.cs" />
     <Compile Include="ViewModels\AppViewModel.cs" />
+    <Compile Include="ViewModels\GalleryImageViewModel.cs" />
     <Compile Include="ViewModels\GalleryViewModel.cs" />
     <Compile Include="ViewModels\ItemListViewModel.cs" />
     <Compile Include="ViewModels\ItemPersonListViewModel.cs" />

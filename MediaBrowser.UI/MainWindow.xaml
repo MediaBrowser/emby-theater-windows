@@ -32,7 +32,7 @@
 
         <controls2:TransitionControl x:Name="BackdropContainer" Content="{Binding CurrentImage}">
             <controls2:TransitionControl.TransitionAnimation>
-                <DoubleAnimation Duration="0:0:1.2" >
+                <DoubleAnimation Duration="0:0:1.5" >
                 </DoubleAnimation>
             </controls2:TransitionControl.TransitionAnimation>
             <controls2:TransitionControl.TransitionType>

@@ -215,6 +215,14 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                     EnableBackdropsForCurrentItem = false
                 };
             }
+            if (string.Equals(section, "trailers"))
+            {
+                return new ItemListViewModel(GetTrailers, _presentationManager, _imageManager, _apiClient, _sessionManager, _navigation, _playback, _logger)
+                {
+                    ImageDisplayWidth = 384,
+                    EnableBackdropsForCurrentItem = false
+                };
+            }
 
             return null;
         }
@@ -319,6 +327,19 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             };
 
             return _apiClient.GetItemsAsync(query);
+        }
+
+        private async Task<ItemsResult> GetTrailers()
+        {
+            var item = ItemViewModel.Item;
+
+            var items = await _apiClient.GetLocalTrailersAsync(_sessionManager.CurrentUser.Id, item.Id);
+
+            return new ItemsResult
+            {
+                Items = items,
+                TotalRecordCount = items.Length
+            };
         }
 
         private Task<ItemsResult> GetChildren()

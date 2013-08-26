@@ -83,9 +83,6 @@
       <DependentUpon>MultiItemTile.xaml</DependentUpon>
     </Compile>
     <Compile Include="Details\DetailPageViewModel.cs" />
-    <Compile Include="Details\Trailers.xaml.cs">
-      <DependentUpon>Trailers.xaml</DependentUpon>
-    </Compile>
     <Compile Include="DisplayPreferencesMenu\DisplayPreferencesMenu.xaml.cs">
       <DependentUpon>DisplayPreferencesMenu.xaml</DependentUpon>
     </Compile>
@@ -168,10 +165,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\MultiItemTile.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Details\Trailers.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

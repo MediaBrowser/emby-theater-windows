@@ -36,12 +36,12 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         /// <summary>
         /// The _app
         /// </summary>
-        private ITheaterApp _app;
+        private IApp _app;
         /// <summary>
         /// Gets or sets the app.
         /// </summary>
         /// <value>The app.</value>
-        public ITheaterApp App
+        public IApp App
         {
             get { return _app; }
 

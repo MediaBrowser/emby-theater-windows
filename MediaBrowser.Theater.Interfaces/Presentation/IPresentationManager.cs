@@ -17,7 +17,7 @@ namespace MediaBrowser.Theater.Interfaces.Presentation
         /// <param name="user">The user.</param>
         /// <returns>IEnumerable{ITheaterApp}.</returns>
         /// <value>The apps.</value>
-        IEnumerable<ITheaterApp> GetApps(UserDto user);
+        IEnumerable<IApp> GetApps(UserDto user);
 
         /// <summary>
         /// Gets the settings pages.
@@ -105,10 +105,10 @@ namespace MediaBrowser.Theater.Interfaces.Presentation
         /// <summary>
         /// Adds the parts.
         /// </summary>
-        /// <param name="apps">The apps.</param>
+        /// <param name="appFactories">The app factories.</param>
         /// <param name="settingsPages">The settings pages.</param>
         /// <param name="homePages">The home pages.</param>
-        void AddParts(IEnumerable<ITheaterApp> apps, IEnumerable<ISettingsPage> settingsPages, IEnumerable<IHomePage> homePages);
+        void AddParts(IEnumerable<IAppFactory> appFactories, IEnumerable<ISettingsPage> settingsPages, IEnumerable<IHomePage> homePages);
 
         /// <summary>
         /// Adds the resource dictionary.

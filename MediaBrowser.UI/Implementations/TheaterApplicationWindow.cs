@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Common.Events;
+﻿using MediaBrowser.Common;
+using MediaBrowser.Common.Events;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Core.Modals;
@@ -22,16 +23,18 @@ namespace MediaBrowser.UI.Implementations
         /// </summary>
         private readonly ILogger _logger;
         private readonly IThemeManager _themeManager;
+        private readonly IApplicationHost _appHost;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TheaterApplicationWindow" /> class.
         /// </summary>
         /// <param name="logger">The logger.</param>
         /// <param name="themeManager">The theme manager.</param>
-        public TheaterApplicationWindow(ILogger logger, IThemeManager themeManager)
+        public TheaterApplicationWindow(ILogger logger, IThemeManager themeManager, IApplicationHost appHost)
         {
             _logger = logger;
             _themeManager = themeManager;
+            _appHost = appHost;
         }
 
         public IEnumerable<IHomePage> HomePages { get; private set; }
@@ -114,7 +117,7 @@ namespace MediaBrowser.UI.Implementations
         /// Gets the apps.
         /// </summary>
         /// <value>The apps.</value>
-        private IEnumerable<ITheaterApp> Apps { get; set; }
+        private IEnumerable<IAppFactory> AppFactories { get; set; }
 
         /// <summary>
         /// Gets the settings pages.
@@ -128,9 +131,9 @@ namespace MediaBrowser.UI.Implementations
         /// <param name="apps">The apps.</param>
         /// <param name="settingsPages">The settings pages.</param>
         /// <param name="homePages">The home pages.</param>
-        public void AddParts(IEnumerable<ITheaterApp> apps, IEnumerable<ISettingsPage> settingsPages, IEnumerable<IHomePage> homePages)
+        public void AddParts(IEnumerable<IAppFactory> apps, IEnumerable<ISettingsPage> settingsPages, IEnumerable<IHomePage> homePages)
         {
-            Apps = apps;
+            AppFactories = apps;
             SettingsPages = settingsPages;
             HomePages = homePages;
         }
@@ -147,7 +150,6 @@ namespace MediaBrowser.UI.Implementations
                 Text = "There was an error processing the request.",
                 Icon = MessageBoxIcon.Error,
                 Button = MessageBoxButton.OK
-
             });
         }
 
@@ -191,9 +193,11 @@ namespace MediaBrowser.UI.Implementations
             _themeManager.CurrentTheme.SetDefaultPageTitle();
         }
 
-        public IEnumerable<ITheaterApp> GetApps(UserDto user)
+        public IEnumerable<IApp> GetApps(UserDto user)
         {
-            return Apps;
+            return AppFactories
+                .SelectMany(i => i.AppTypes)
+                .Select(i => (IApp)_appHost.CreateInstance(i));
         }
 
         public void AddResourceDictionary(ResourceDictionary resource)

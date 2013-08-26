@@ -65,6 +65,7 @@
     <Compile Include="Navigation\NavigationEventArgs.cs" />
     <Compile Include="Playback\MediaChangeEventArgs.cs" />
     <Compile Include="Plugins\IHasThumbImage.cs" />
+    <Compile Include="Presentation\IAppFactory.cs" />
     <Compile Include="Presentation\IFullscreenVideoPage.cs" />
     <Compile Include="Presentation\IHomePage.cs" />
     <Compile Include="Presentation\ISupportsBackdrops.cs" />
@@ -72,7 +73,7 @@
     <Compile Include="Presentation\IPresentationManager.cs" />
     <Compile Include="Presentation\ISettingsPage.cs" />
     <Compile Include="Presentation\IStartupEntryPoint.cs" />
-    <Compile Include="Presentation\ITheaterApp.cs" />
+    <Compile Include="Presentation\IApp.cs" />
     <Compile Include="Presentation\MessageBoxInfo.cs" />
     <Compile Include="Reflection\ChainingPropertyDescriptor.cs" />
     <Compile Include="Reflection\HyperTypeDescriptionProvider.cs" />

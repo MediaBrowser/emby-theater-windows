@@ -118,7 +118,7 @@ namespace MediaBrowser.UI
             ThemeManager = new ThemeManager(() => PresentationManager);
             RegisterSingleInstance(ThemeManager);
 
-            PresentationManager = new TheaterApplicationWindow(Logger, ThemeManager);
+            PresentationManager = new TheaterApplicationWindow(Logger, ThemeManager, this);
             RegisterSingleInstance(PresentationManager);
 
             RegisterSingleInstance(ApplicationPaths);
@@ -158,7 +158,7 @@ namespace MediaBrowser.UI
             BasePage.Logger = Logger;
 
             ThemeManager.AddParts(GetExports<ITheme>());
-            PresentationManager.AddParts(GetExports<ITheaterApp>(), GetExports<ISettingsPage>(), GetExports<IHomePage>());
+            PresentationManager.AddParts(GetExports<IAppFactory>(), GetExports<ISettingsPage>(), GetExports<IHomePage>());
 
             PlaybackManager.AddParts(GetExports<IMediaPlayer>());
 

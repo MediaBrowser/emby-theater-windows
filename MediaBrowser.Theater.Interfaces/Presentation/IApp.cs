@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace MediaBrowser.Theater.Interfaces.Presentation
@@ -6,7 +7,7 @@ namespace MediaBrowser.Theater.Interfaces.Presentation
     /// <summary>
     /// Interface ITheaterApp
     /// </summary>
-    public interface ITheaterApp
+    public interface IApp : IDisposable
     {
         /// <summary>
         /// Gets the name.

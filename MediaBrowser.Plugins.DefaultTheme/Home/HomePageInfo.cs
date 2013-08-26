@@ -38,12 +38,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         public FrameworkElement GetHomePage(BaseItemDto rootFolder)
         {
-            var page = new HomePage(rootFolder, _presentationManager)
+            return new HomePage(rootFolder, _presentationManager)
             {
                 DataContext = new HomePageViewModel(_presentationManager, _apiClient, _sessionManager, _logger, _imageManager, _navigationManager, _playbackManager)
             };
-
-            return page;
         }
     }
 }

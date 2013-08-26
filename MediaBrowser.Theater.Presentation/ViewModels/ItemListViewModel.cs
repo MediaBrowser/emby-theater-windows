@@ -42,6 +42,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             new RangeObservableCollection<ItemViewModel>();
 
         public ICommand NavigateCommand { get; private set; }
+        public ICommand PlayCommand { get; private set; }
 
         public bool EnableBackdropsForCurrentItem { get; set; }
         public bool AutoSelectFirstItem { get; set; }
@@ -63,6 +64,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             _presentationManager = presentationManager;
 
             NavigateCommand = new RelayCommand(Navigate);
+            PlayCommand = new RelayCommand(Play);
         }
 
         public Func<BaseItemDto, string> DisplayNameGenerator { get; set; }
@@ -460,7 +462,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             return Math.Abs(currentAspectRatio - layoutAspectRatio) <= .25;
         }
 
-        public async void Navigate(object commandParameter)
+        private async void Navigate(object commandParameter)
         {
             var item = commandParameter as ItemViewModel;
 
@@ -474,6 +476,16 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 {
                     _presentationManager.ShowDefaultErrorMessage();
                 }
+            }
+        }
+
+        private void Play(object commandParameter)
+        {
+            var item = commandParameter as ItemViewModel;
+
+            if (item != null)
+            {
+                item.Play();
             }
         }
 

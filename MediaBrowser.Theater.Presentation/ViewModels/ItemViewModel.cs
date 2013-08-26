@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using MediaBrowser.Model.ApiClient;
+﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
@@ -9,6 +8,7 @@ using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Reflection;
 using MediaBrowser.Theater.Interfaces.ViewModels;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading;
@@ -43,9 +43,9 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             _presentation = presentation;
             _logger = logger;
 
-            PlayCommand = new RelayCommand(Play);
-            ResumeCommand = new RelayCommand(Resume);
-            PlayTrailerCommand = new RelayCommand(PlayTrailer);
+            PlayCommand = new RelayCommand(o => Play());
+            ResumeCommand = new RelayCommand(o => Resume());
+            PlayTrailerCommand = new RelayCommand(o => PlayTrailer());
 
             ToggleLikesCommand = new RelayCommand(ToggleLikes);
             ToggleDislikesCommand = new RelayCommand(ToggleDislikes);
@@ -789,20 +789,34 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             return _imageManager.GetRemoteBitmapAsync(url, cancellationToken);
         }
 
-        private async void Play(object commandParameter)
+        public async void Play()
         {
-            await _playbackManager.Play(new PlayOptions(_item));
-        }
-
-        private async void Resume(object commandParameter)
-        {
-            await _playbackManager.Play(new PlayOptions(_item)
+            try
             {
-                StartPositionTicks = _item.UserData.PlaybackPositionTicks
-            });
+                await _playbackManager.Play(new PlayOptions(_item));
+            }
+            catch (HttpException)
+            {
+                _presentation.ShowDefaultErrorMessage();
+            }
         }
 
-        private async void PlayTrailer(object commandParameter)
+        public async void Resume()
+        {
+            try
+            {
+                await _playbackManager.Play(new PlayOptions(_item)
+                {
+                    StartPositionTicks = _item.UserData.PlaybackPositionTicks
+                });
+            }
+            catch (HttpException)
+            {
+                _presentation.ShowDefaultErrorMessage();
+            }
+        }
+
+        public async void PlayTrailer()
         {
             try
             {

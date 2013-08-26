@@ -1,5 +1,5 @@
-﻿using System;
-using MediaBrowser.Model.Dto;
+﻿using MediaBrowser.Model.Dto;
+using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media.Imaging;
@@ -25,6 +25,10 @@ namespace MediaBrowser.Theater.Interfaces.Presentation
         /// <value>The settings pages.</value>
         IEnumerable<ISettingsPage> SettingsPages { get; }
 
+        /// <summary>
+        /// Gets the home pages.
+        /// </summary>
+        /// <value>The home pages.</value>
         IEnumerable<IHomePage> HomePages { get; }
 
         /// <summary>

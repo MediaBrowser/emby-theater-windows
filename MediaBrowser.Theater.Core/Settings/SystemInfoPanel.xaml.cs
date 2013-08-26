@@ -102,7 +102,7 @@ namespace MediaBrowser.Theater.Core.Settings
                     PanelNewVersion.Visibility = Visibility.Visible;
                     PanelUpToDate.Visibility = Visibility.Collapsed;
 
-                    TxtNewVersion.Text = "Update now to version " + update.AvailableVersion + ".";
+                    TxtNewVersion.Text = "Update now to version " + update.AvailableVersion;
                 }
                 else
                 {

@@ -105,7 +105,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         {
             try
             {
-                TileImage = App.GetTileImage();
+                TileImage = App.GetThumbImage();
             }
             catch (Exception ex)
             {

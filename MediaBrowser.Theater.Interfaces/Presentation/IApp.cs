@@ -22,9 +22,9 @@ namespace MediaBrowser.Theater.Interfaces.Presentation
         Task Launch();
 
         /// <summary>
-        /// Gets the tile image.
+        /// Gets the thumb image.
         /// </summary>
         /// <returns>FrameworkElement.</returns>
-        FrameworkElement GetTileImage();
+        FrameworkElement GetThumbImage();
     }
 }

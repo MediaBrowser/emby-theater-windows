@@ -21,10 +21,10 @@
         <StackPanel Grid.Row="1" Orientation="Vertical" Margin="0 40 0 0">
             
             <TextBlock Style="{DynamicResource TextBlockStyle}" Text="Username"></TextBlock>
-            <controls:ExtendedTextBox x:Name="TxtUsername"></controls:ExtendedTextBox>
+            <TextBox x:Name="TxtUsername"></TextBox>
 
             <TextBlock Style="{DynamicResource TextBlockStyle}" Text="Password" Margin="0 40 0 0"></TextBlock>
-            <controls:ExtendedTextBox x:Name="TxtPassword"></controls:ExtendedTextBox>
+            <TextBox x:Name="TxtPassword"></TextBox>
 
             <Button x:Name="BtnSubmit" Margin="0 40 0 0" IsDefault="True">
                 <TextBlock Style="{DynamicResource TextBlockStyle}" Text="Sign In"></TextBlock>

@@ -67,12 +67,12 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Behaviors\SuppressBackKeyBehavior.cs" />
     <Compile Include="Controls\BaseFolderControl.cs" />
     <Compile Include="Controls\BaseItemsControl.cs" />
     <Compile Include="Controls\ExtendedButton.cs" />
     <Compile Include="Controls\ExtendedListBox.cs" />
     <Compile Include="Controls\ExtendedScrollViewer.cs" />
-    <Compile Include="Controls\ExtendedTextBox.cs" />
     <Compile Include="Controls\ItemEventArgs.cs" />
     <Compile Include="Controls\ListFocuser.cs" />
     <Compile Include="Controls\PageContainer.xaml.cs">

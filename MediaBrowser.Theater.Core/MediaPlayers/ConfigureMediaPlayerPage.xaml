@@ -67,7 +67,7 @@
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Grid.Column="0" Style="{DynamicResource TextBlockStyle}" Width="400">Player path:</TextBlock>
-                <controls:ExtendedTextBox x:Name="TxtPath" Grid.Column="1"></controls:ExtendedTextBox>
+                <TextBox x:Name="TxtPath" Grid.Column="1"></TextBox>
             </Grid>
             <Grid x:Name="PanelPlayerArgs" Margin="0 20 0 0">
 
@@ -82,7 +82,7 @@
                 </Grid.RowDefinitions>
 
                 <TextBlock Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Style="{DynamicResource TextBlockStyle}" Width="400">Command line arguments:</TextBlock>
-                <controls:ExtendedTextBox x:Name="TxtArgs" Grid.Column="1" Grid.Row="0"></controls:ExtendedTextBox>
+                <TextBox x:Name="TxtArgs" Grid.Column="1" Grid.Row="0"></TextBox>
                 <TextBlock Grid.Column="1" Grid.Row="1" Style="{DynamicResource SmallTextBlockStyle}" Margin="5 0 0 0">The arguments should contain {0} to represent the path to the media.</TextBlock>
             </Grid>
             <CheckBox x:Name="ChkClosePlayerOnStop" Margin="0 20 0 0">

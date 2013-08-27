@@ -11,12 +11,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
         {
             var str = value as string;
 
-            if (str != null)
-            {
-                return str.ToUpper();
-            }
-
-            return value;
+            return str != null ? str.ToUpper() : value;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

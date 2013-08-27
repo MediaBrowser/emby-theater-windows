@@ -116,7 +116,7 @@ namespace MediaBrowser.UI
 
             await base.RegisterResources().ConfigureAwait(false);
 
-            MediaFilters = new MediaFilters();
+            MediaFilters = new MediaFilters(HttpClient, Logger);
 
             ThemeManager = new ThemeManager(() => PresentationManager);
             RegisterSingleInstance(ThemeManager);

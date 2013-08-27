@@ -203,6 +203,12 @@
     <Compile Include="StartupWizard\StartupWizardPage2.xaml.cs">
       <DependentUpon>StartupWizardPage2.xaml</DependentUpon>
     </Compile>
+    <Compile Include="StartupWizard\StartupWizardXyVsFilter.xaml.cs">
+      <DependentUpon>StartupWizardXyVsFilter.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="StartupWizard\StartupWizardLav.xaml.cs">
+      <DependentUpon>StartupWizardLav.xaml</DependentUpon>
+    </Compile>
     <Page Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -286,6 +292,14 @@
     <Page Include="StartupWizard\StartupWizardPage2.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="StartupWizard\StartupWizardXyVsFilter.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="StartupWizard\StartupWizardLav.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>

@@ -91,6 +91,7 @@
     <Compile Include="Presentation\IHiddenWindow.cs" />
     <Compile Include="Presentation\IImageManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="System\IMediaFilters.cs" />
     <Compile Include="Theming\ITheme.cs" />
     <Compile Include="Theming\IThemeManager.cs" />
     <Compile Include="Presentation\MessageBoxIcon.cs" />

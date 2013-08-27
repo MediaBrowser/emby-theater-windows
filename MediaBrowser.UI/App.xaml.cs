@@ -5,6 +5,7 @@ using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Net;
 using MediaBrowser.Model.System;
 using MediaBrowser.Theater.Implementations.Configuration;
+using MediaBrowser.Theater.Interfaces.System;
 using MediaBrowser.UI.StartupWizard;
 using Microsoft.Win32;
 using System;
@@ -35,7 +36,7 @@ namespace MediaBrowser.UI
         /// Gets or sets the composition root.
         /// </summary>
         /// <value>The composition root.</value>
-        private ApplicationHost _compositionRoot;
+        private ApplicationHost _appHost;
 
         /// <summary>
         /// Gets the instance.
@@ -116,9 +117,9 @@ namespace MediaBrowser.UI
         /// </summary>
         private void ShowApplicationWindow()
         {
-            var win = new MainWindow(_logger, _compositionRoot.PlaybackManager, _compositionRoot.ApiClient, _compositionRoot.ImageManager, _compositionRoot, _compositionRoot.PresentationManager, _compositionRoot.UserInputManager, _compositionRoot.TheaterConfigurationManager, _compositionRoot.NavigationService);
+            var win = new MainWindow(_logger, _appHost.PlaybackManager, _appHost.ApiClient, _appHost.ImageManager, _appHost, _appHost.PresentationManager, _appHost.UserInputManager, _appHost.TheaterConfigurationManager, _appHost.NavigationService);
 
-            var config = _compositionRoot.TheaterConfigurationManager.Configuration;
+            var config = _appHost.TheaterConfigurationManager.Configuration;
 
             // Restore window position/size
             if (config.WindowState.HasValue)
@@ -219,21 +220,21 @@ namespace MediaBrowser.UI
         {
             try
             {
-                _compositionRoot = new ApplicationHost();
+                _appHost = new ApplicationHost();
 
-                _logger = _compositionRoot.LogManager.GetLogger("App");
+                _logger = _appHost.LogManager.GetLogger("App");
 
-                await _compositionRoot.Init();
+                await _appHost.Init();
 
                 // Load default theme
-                await _compositionRoot.ThemeManager.LoadDefaultTheme();
+                await _appHost.ThemeManager.LoadDefaultTheme();
 
                 HiddenWindow = new HiddenWindow();
                 HiddenWindow.Show();
 
                 ShowApplicationWindow();
 
-                _compositionRoot.StartEntryPoints();
+                _appHost.StartEntryPoints();
 
                 await LoadInitialPresentation().ConfigureAwait(false);
             }
@@ -260,13 +261,13 @@ namespace MediaBrowser.UI
 
             try
             {
-                systemInfo = await _compositionRoot.ApiClient.GetSystemInfoAsync().ConfigureAwait(false);
+                systemInfo = await _appHost.ApiClient.GetSystemInfoAsync().ConfigureAwait(false);
 
                 foundServer = true;
             }
             catch (HttpException ex)
             {
-                _logger.ErrorException("Error connecting to server using saved connection information. Host: {0}, Port {1}", ex, _compositionRoot.ApiClient.ServerHostName, _compositionRoot.ApiClient.ServerApiPort);
+                _logger.ErrorException("Error connecting to server using saved connection information. Host: {0}, Port {1}", ex, _appHost.ApiClient.ServerHostName, _appHost.ApiClient.ServerApiPort);
             }
 
             if (!foundServer)
@@ -277,10 +278,10 @@ namespace MediaBrowser.UI
 
                     var parts = address.ToString().Split(':');
 
-                    _compositionRoot.ApiClient.ServerHostName = parts[0];
-                    _compositionRoot.ApiClient.ServerApiPort = address.Port;
+                    _appHost.ApiClient.ServerHostName = parts[0];
+                    _appHost.ApiClient.ServerApiPort = address.Port;
 
-                    systemInfo = await _compositionRoot.ApiClient.GetSystemInfoAsync().ConfigureAwait(false);
+                    systemInfo = await _appHost.ApiClient.GetSystemInfoAsync().ConfigureAwait(false);
 
                     foundServer = true;
                 }
@@ -290,16 +291,30 @@ namespace MediaBrowser.UI
                 }
             }
 
-            if (!foundServer)
+            var mediaFilters = _appHost.MediaFilters;
+
+            if (!foundServer || !AreRequiredMediaFiltersInstalled(mediaFilters))
             {
                 // Show connection wizard
-                await Dispatcher.InvokeAsync(async () => await _compositionRoot.NavigationService.Navigate(new StartupWizardPage(_compositionRoot.NavigationService, _compositionRoot.TheaterConfigurationManager, _compositionRoot.ApiClient, _compositionRoot.PresentationManager, _logger)));
+                await Dispatcher.InvokeAsync(async () => await _appHost.NavigationService.Navigate(new StartupWizardPage(_appHost.NavigationService, _appHost.TheaterConfigurationManager, _appHost.ApiClient, _appHost.PresentationManager, _logger, mediaFilters)));
             }
             else
             {
                 // TODO: Open web socket using systemInfo
 
-                await _compositionRoot.NavigationService.NavigateToLoginPage();
+                await _appHost.NavigationService.NavigateToLoginPage();
+            }
+        }
+
+        private bool AreRequiredMediaFiltersInstalled(IMediaFilters mediaFilters)
+        {
+            try
+            {
+                return mediaFilters.IsLavFiltersInstalled() && mediaFilters.IsXyVsFilterInstalled();
+            }
+            catch
+            {
+                return false;
             }
         }
 
@@ -351,20 +366,20 @@ namespace MediaBrowser.UI
             if (win != null)
             {
                 // Save window position
-                var config = _compositionRoot.TheaterConfigurationManager.Configuration;
+                var config = _appHost.TheaterConfigurationManager.Configuration;
                 config.WindowState = win.WindowState;
                 config.WindowTop = win.Top;
                 config.WindowLeft = win.Left;
                 config.WindowWidth = win.Width;
                 config.WindowHeight = win.Height;
-                _compositionRoot.TheaterConfigurationManager.SaveConfiguration();
+                _appHost.TheaterConfigurationManager.SaveConfiguration();
             }
 
             ReleaseMutex();
 
             base.OnExit(e);
 
-            _compositionRoot.Dispose();
+            _appHost.Dispose();
         }
 
         /// <summary>
@@ -390,7 +405,7 @@ namespace MediaBrowser.UI
         {
             Dispatcher.Invoke(ReleaseMutex);
 
-            _compositionRoot.Dispose();
+            _appHost.Dispose();
 
             System.Windows.Forms.Application.Restart();
 

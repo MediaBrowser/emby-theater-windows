@@ -29,9 +29,11 @@
         </StackPanel>
 
         <StackPanel Grid.Row="4" Orientation="Horizontal" Margin="0 40 0 0" HorizontalAlignment="Right">
-            <Button x:Name="BtnBack" Content="Back">
+            <Button x:Name="BtnBack">
+                <TextBlock Style="{DynamicResource TextBlockStyle}">Back</TextBlock>
             </Button>
-            <Button x:Name="BtnNext" Content="Next" Margin="30 0 0 0">
+            <Button x:Name="BtnNext" Margin="30 0 0 0">
+                <TextBlock Style="{DynamicResource TextBlockStyle}">Next</TextBlock>
             </Button>
         </StackPanel>
 

@@ -27,7 +27,7 @@
 
         <StackPanel Grid.Row="4" Orientation="Horizontal" Margin="0 40 0 0" HorizontalAlignment="Right">
             <Button x:Name="BtnNext">
-                Next
+                <TextBlock Style="{DynamicResource TextBlockStyle}">Next</TextBlock>
             </Button>
         </StackPanel>
 

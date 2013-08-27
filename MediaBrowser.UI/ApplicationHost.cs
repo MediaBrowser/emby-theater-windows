@@ -14,6 +14,7 @@ using MediaBrowser.Theater.Implementations.Configuration;
 using MediaBrowser.Theater.Implementations.Playback;
 using MediaBrowser.Theater.Implementations.Presentation;
 using MediaBrowser.Theater.Implementations.Session;
+using MediaBrowser.Theater.Implementations.System;
 using MediaBrowser.Theater.Implementations.Theming;
 using MediaBrowser.Theater.Implementations.UserInput;
 using MediaBrowser.Theater.Interfaces.Configuration;
@@ -21,6 +22,7 @@ using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
+using MediaBrowser.Theater.Interfaces.System;
 using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Interfaces.UserInput;
 using MediaBrowser.Theater.Presentation.Pages;
@@ -54,6 +56,7 @@ namespace MediaBrowser.UI
         public IPresentationManager PresentationManager { get; private set; }
         public IUserInputManager UserInputManager { get; private set; }
         private IIsoManager IsoManager { get; set; }
+        public IMediaFilters MediaFilters { get; private set; }
 
         public ConfigurationManager TheaterConfigurationManager
         {
@@ -112,6 +115,8 @@ namespace MediaBrowser.UI
             ReloadApiClient();
 
             await base.RegisterResources().ConfigureAwait(false);
+
+            MediaFilters = new MediaFilters();
 
             ThemeManager = new ThemeManager(() => PresentationManager);
             RegisterSingleInstance(ThemeManager);

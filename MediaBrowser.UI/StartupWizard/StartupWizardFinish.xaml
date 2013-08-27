@@ -21,9 +21,11 @@
         <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Row="1" Margin="0 40 0 0">Click finish to begin enjoying Media Browser Theater.</TextBlock>
 
         <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0 40 0 0" HorizontalAlignment="Right">
-            <Button x:Name="BtnBack" Content="Back">
+            <Button x:Name="BtnBack">
+                <TextBlock Style="{DynamicResource TextBlockStyle}">Back</TextBlock>
             </Button>
-            <Button x:Name="BtnFinish" Content="Finish" Margin="30 0 0 0">
+            <Button x:Name="BtnFinish" Margin="30 0 0 0">
+                <TextBlock Style="{DynamicResource TextBlockStyle}">Finish</TextBlock>
             </Button>
         </StackPanel>
 

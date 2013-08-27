@@ -3,7 +3,7 @@
                     xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation">
 
     <Color x:Key="AccentColor">#1ba1e2</Color>
-    
+
     <SolidColorBrush x:Key="ButtonBackground" Color="#202020" />
     <SolidColorBrush x:Key="ButtonBackgroundHover" Color="#3e3e42" />
     <SolidColorBrush x:Key="ButtonBackgroundPressed" Color="#1ba1e2" />

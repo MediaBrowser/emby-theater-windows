@@ -97,6 +97,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="Session\SessionManager.cs" />
+    <Compile Include="System\MediaFilters.cs" />
     <Compile Include="Theming\ThemeManager.cs" />
     <Compile Include="UserInput\GlobalEventProvider.cs">
       <SubType>Component</SubType>

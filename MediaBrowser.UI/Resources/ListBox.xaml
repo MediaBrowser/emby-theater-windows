@@ -43,7 +43,7 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsFocused" Value="true">
-                            <Setter Property="Background" TargetName="Bd" Value="#e6555555"/>
+                            <Setter Property="Background" TargetName="Bd" Value="#a6000000"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

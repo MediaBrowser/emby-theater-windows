@@ -68,8 +68,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Behaviors\SuppressBackKeyBehavior.cs" />
-    <Compile Include="Controls\BaseFolderControl.cs" />
-    <Compile Include="Controls\BaseItemsControl.cs" />
     <Compile Include="Controls\ExtendedButton.cs" />
     <Compile Include="Controls\ExtendedListBox.cs" />
     <Compile Include="Controls\ExtendedScrollViewer.cs" />
@@ -87,6 +85,7 @@
     <Compile Include="Controls\TransitionFrame.cs" />
     <Compile Include="Controls\TreeHelper.cs" />
     <Compile Include="Controls\VirtualizingWrapPanel.cs" />
+    <Compile Include="Interop\WebBrowserHelper.cs" />
     <Compile Include="ViewModels\ChapterInfoListViewModel.cs" />
     <Compile Include="ViewModels\CriticReviewListViewModel.cs" />
     <Compile Include="ViewModels\DisplayPreferencesViewModel.cs" />

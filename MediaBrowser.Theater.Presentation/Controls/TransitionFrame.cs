@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using MediaBrowser.Theater.Presentation.Interop;
 using Microsoft.Expression.Media.Effects;
 using System;
 using System.Windows;
@@ -13,6 +14,17 @@ namespace MediaBrowser.Theater.Presentation.Controls
     /// </summary>
     public class TransitionFrame : Frame
     {
+        protected override void OnInitialized(EventArgs e)
+        {
+            base.OnInitialized(e);
+
+            Loaded += TransitionFrame_Loaded;
+        }
+
+        void TransitionFrame_Loaded(object sender, RoutedEventArgs e)
+        {
+            WebBrowserHelper.DisableFrameNavigationSound();
+        }
         /// <summary>
         /// The _content presenter
         /// </summary>

@@ -7,11 +7,6 @@ namespace MediaBrowser.Theater.Presentation.Controls
     /// </summary>
     public class BaseModalWindow : BaseWindow
     {
-        public BaseModalWindow()
-            : base()
-        {
-        }
-
         /// <summary>
         /// Shows the modal.
         /// </summary>

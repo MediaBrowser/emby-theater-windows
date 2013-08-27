@@ -16,26 +16,12 @@ namespace MediaBrowser.Theater.Interfaces.System
         bool IsXyVsFilterInstalled();
 
         /// <summary>
-        /// Determines whether [is xy vs sub filter installed].
-        /// </summary>
-        /// <returns><c>true</c> if [is xy vs sub filter installed]; otherwise, <c>false</c>.</returns>
-        bool IsXyVsSubFilterInstalled();
-
-        /// <summary>
         /// Installs the xy vs filter.
         /// </summary>
         /// <param name="progress">The progress.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Task.</returns>
         Task InstallXyVsFilter(IProgress<double> progress, CancellationToken cancellationToken);
-
-        /// <summary>
-        /// Installs the xy sub filter.
-        /// </summary>
-        /// <param name="progress">The progress.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>Task.</returns>
-        Task InstallXySubFilter(IProgress<double> progress, CancellationToken cancellationToken);
 
         /// <summary>
         /// Determines whether [is lav filters installed].

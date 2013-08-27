@@ -158,8 +158,6 @@ namespace MediaBrowser.UI
         {
             base.FindParts();
 
-            BasePage.Logger = Logger;
-
             ThemeManager.AddParts(GetExports<ITheme>());
             PresentationManager.AddParts(GetExports<IAppFactory>(), GetExports<ISettingsPage>(), GetExports<IHomePage>());
 

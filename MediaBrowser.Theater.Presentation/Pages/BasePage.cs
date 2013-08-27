@@ -1,5 +1,4 @@
-﻿using MediaBrowser.Model.Logging;
-using System;
+﻿using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -15,8 +14,6 @@ namespace MediaBrowser.Theater.Presentation.Pages
         /// The _last focused
         /// </summary>
         private IInputElement _lastFocused;
-
-        public static ILogger Logger { get; set; }
 
         /// <summary>
         /// Raises the <see cref="E:System.Windows.FrameworkElement.Initialized" /> event. This method is invoked whenever <see cref="P:System.Windows.FrameworkElement.IsInitialized" /> is set to true internally.

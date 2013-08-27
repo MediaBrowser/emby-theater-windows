@@ -347,7 +347,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
             }
             catch (OperationCanceledException)
             {
-                Logger.Debug("Image download cancelled: {0}", url);
+                _logger.Debug("Image download cancelled: {0}", url);
             }
             catch (Exception ex)
             {

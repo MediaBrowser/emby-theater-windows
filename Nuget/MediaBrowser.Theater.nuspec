@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>MediaBrowser.Theater</id>
-        <version>3.0.66</version>
+        <version>3.0.67</version>
         <title>MediaBrowser.Theater</title>
         <authors>Media Browser Team</authors>
         <owners>ebr,Luke,scottisafool</owners>
@@ -12,7 +12,7 @@
         <description>Contains components required to build plugins for Media Browser Theater.</description>
         <copyright>Copyright © Media Browser 2013</copyright>
         <dependencies>
-            <dependency id="MediaBrowser.Common" version="3.0.184" />
+            <dependency id="MediaBrowser.Common" version="3.0.187" />
         </dependencies>
     </metadata>
     <files>

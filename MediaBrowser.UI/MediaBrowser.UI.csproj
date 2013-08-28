@@ -398,10 +398,9 @@ mkdir "$(SolutionDir)..\Deploy\MBT\System"
 rmdir "$(SolutionDir)..\Deploy\MBT\Pismo" /s /q
 mkdir "$(SolutionDir)..\Deploy\MBT\Pismo"
 xcopy "$(TargetDir)$(TargetFileName)" "$(SolutionDir)..\Deploy\MBT\System\" /y
-xcopy "$(SolutionDir)..\Mediabrowser\Mediabrowser.Uninstaller\bin\Release\MediaBrowser.Uninstaller.exe.config" "$(SolutionDir)..\Deploy\MBT\System\" /y
-xcopy "$(SolutionDir)..\Mediabrowser\Mediabrowser.Uninstaller.Execute\bin\Release\MediaBrowser.Uninstaller.Execute.exe.config" "$(SolutionDir)..\Deploy\MBT\System\" /y
-xcopy "$(SolutionDir)..\Mediabrowser\Mediabrowser.Uninstaller\bin\Release\MediaBrowser.Uninstaller.exe" "$(SolutionDir)..\Deploy\MBT\System\" /y
-xcopy "$(SolutionDir)..\Mediabrowser\Mediabrowser.Uninstaller.Execute\bin\Release\MediaBrowser.Uninstaller.Execute.exe" "$(SolutionDir)..\Deploy\MBT\System\" /y
+xcopy "$(SolutionDir)..\Mediabrowser\Installation\MediaBrowser.Uninstaller.exe" "$(SolutionDir)..\Deploy\Server\System\" /y
+xcopy "$(SolutionDir)..\Mediabrowser\Installation\MediaBrowser.InstallUtil.dll" "$(SolutionDir)..\Deploy\Server\System\" /y
+xcopy "$(SolutionDir)..\Mediabrowser\Installation\MediaBrowser.Updater.exe" "$(SolutionDir)..\Deploy\Server\System\" /y
 xcopy "$(TargetDir)libvlc.dll" "$(SolutionDir)..\Deploy\MBT\System\" /y
 xcopy "$(TargetDir)libvlccore.dll" "$(SolutionDir)..\Deploy\MBT\System\" /y
 

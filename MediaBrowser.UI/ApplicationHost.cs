@@ -25,7 +25,6 @@ using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.System;
 using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Interfaces.UserInput;
-using MediaBrowser.Theater.Presentation.Pages;
 using MediaBrowser.Theater.Presentation.Playback;
 using MediaBrowser.UI.Implementations;
 using System;
@@ -118,10 +117,10 @@ namespace MediaBrowser.UI
 
             MediaFilters = new MediaFilters(HttpClient, Logger);
 
-            ThemeManager = new ThemeManager(() => PresentationManager);
+            ThemeManager = new ThemeManager(() => PresentationManager, Logger);
             RegisterSingleInstance(ThemeManager);
 
-            PresentationManager = new TheaterApplicationWindow(Logger, ThemeManager, this);
+            PresentationManager = new TheaterApplicationWindow(Logger, ThemeManager);
             RegisterSingleInstance(PresentationManager);
 
             RegisterSingleInstance(ApplicationPaths);

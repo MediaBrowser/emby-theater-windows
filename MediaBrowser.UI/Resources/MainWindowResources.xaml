@@ -46,9 +46,9 @@
     </Style>
 
     <!--Themes should override this to layout window content-->
-    <ControlTemplate x:Key="PageContentTemplate">
+    <DataTemplate x:Key="PageContentTemplate">
         <controls:PageContainer x:Name="PageContainer"></controls:PageContainer>
-    </ControlTemplate>
+    </DataTemplate>
 
     <ControlTemplate x:Key="VolumeOsdTemplate">
     </ControlTemplate>

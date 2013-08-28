@@ -1,4 +1,7 @@
-﻿using MediaBrowser.Theater.Interfaces.Presentation;
+﻿using MediaBrowser.Common.Events;
+using MediaBrowser.Model.Logging;
+using MediaBrowser.Theater.Interfaces;
+using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Theming;
 using System;
 using System.Collections.Generic;
@@ -10,13 +13,16 @@ namespace MediaBrowser.Theater.Implementations.Theming
 {
     public class ThemeManager : IThemeManager
     {
+        private readonly ILogger _logger;
         private readonly Func<IPresentationManager> _presentationManager;
 
-        public event EventHandler<EventArgs> ThemeLoaded;
+        public event EventHandler<ItemEventArgs<ITheme>> ThemeLoaded;
+        public event EventHandler<ItemEventArgs<ITheme>> ThemeUnloaded;
 
-        public ThemeManager(Func<IPresentationManager> presentationManager)
+        public ThemeManager(Func<IPresentationManager> presentationManager, ILogger logger)
         {
             _presentationManager = presentationManager;
+            _logger = logger;
         }
 
         public void AddParts(IEnumerable<ITheme> themes)
@@ -58,6 +64,8 @@ namespace MediaBrowser.Theater.Implementations.Theming
                 // TODO: Figure out how to determine when this has completed
                 await Task.Delay(10);
             }
+
+            EventHelper.FireEventIfNotNull(ThemeLoaded, this, new ItemEventArgs<ITheme> { Argument = theme }, _logger);
         }
 
         private List<ResourceDictionary> _themeResources;
@@ -88,8 +96,10 @@ namespace MediaBrowser.Theater.Implementations.Theming
             }
 
             _themeResources = null;
-            
+
             theme.Unload();
+
+            EventHelper.FireEventIfNotNull(ThemeUnloaded, this, new ItemEventArgs<ITheme> { Argument = theme }, _logger);
         }
 
         public Task LoadDefaultTheme()

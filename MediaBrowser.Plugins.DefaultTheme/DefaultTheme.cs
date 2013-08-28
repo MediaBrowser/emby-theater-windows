@@ -10,6 +10,7 @@ using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.Theming;
+using MediaBrowser.Theater.Interfaces.ViewModels;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -53,8 +54,12 @@ namespace MediaBrowser.Plugins.DefaultTheme
         private readonly ILogger _logger;
         private readonly IThemeManager _themeManager;
 
+        public static DefaultTheme Current;
+
         public DefaultTheme(IPlaybackManager playbackManager, IImageManager imageManager, IApiClient apiClient, INavigationService navService, ISessionManager sessionManager, IPresentationManager presentationManager, ILogManager logManager, IThemeManager themeManager)
         {
+            Current = this;
+
             _playbackManager = playbackManager;
             _imageManager = imageManager;
             _apiClient = apiClient;
@@ -70,9 +75,6 @@ namespace MediaBrowser.Plugins.DefaultTheme
             TopRightPanel.Logger = _logger;
             TopRightPanel.Navigation = _navService;
             TopRightPanel.PlaybackManager = _playbackManager;
-
-            PageTitlePanel.ApiClient = _apiClient;
-            PageTitlePanel.ImageManager = _imageManager;
         }
 
         /// <summary>
@@ -138,23 +140,6 @@ namespace MediaBrowser.Plugins.DefaultTheme
             return GetItemPage(item, context);
         }
 
-        /// <summary>
-        /// Sets the page title.
-        /// </summary>
-        /// <param name="title">The title.</param>
-        public void SetPageTitle(string title)
-        {
-            PageTitlePanel.Current.SetPageTitle(title);
-        }
-
-        /// <summary>
-        /// Sets the default page title.
-        /// </summary>
-        public void SetDefaultPageTitle()
-        {
-            PageTitlePanel.Current.SetDefaultPageTitle();
-        }
-
         public virtual string Name
         {
             get { return "Default"; }
@@ -188,15 +173,18 @@ namespace MediaBrowser.Plugins.DefaultTheme
             }
         }
 
-        public void SetGlobalContentVisibility(bool visible)
-        {
-            TopRightPanel.Current.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
-            PageTitlePanel.Current.MainGrid.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
-        }
-
         public string DefaultHomePageName
         {
             get { return "Default"; }
+        }
+
+        internal DefaultThemePageContentViewModel PageContentDataContext { get; private set; }
+
+        public PageContentViewModel CreatePageContentDataContext()
+        {
+            PageContentDataContext = new DefaultThemePageContentViewModel(_apiClient, _imageManager);
+
+            return PageContentDataContext;
         }
     }
 }

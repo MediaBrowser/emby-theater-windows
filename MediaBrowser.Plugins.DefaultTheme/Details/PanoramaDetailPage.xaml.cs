@@ -1,5 +1,4 @@
 ﻿using MediaBrowser.Model.Dto;
-using MediaBrowser.Plugins.DefaultTheme.Header;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Presentation.Pages;
 using MediaBrowser.Theater.Presentation.ViewModels;
@@ -29,9 +28,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             get { return _itemViewModel.Item.Id; }
         }
 
-        async void PanoramaDetailPage_Loaded(object sender, RoutedEventArgs e)
+        void PanoramaDetailPage_Loaded(object sender, RoutedEventArgs e)
         {
-            await PageTitlePanel.Current.SetPageTitle(_itemViewModel.Item);
+            DefaultTheme.Current.PageContentDataContext.SetPageTitle(_itemViewModel.Item);
         }
 
         private void SetTitle(BaseItemDto item)

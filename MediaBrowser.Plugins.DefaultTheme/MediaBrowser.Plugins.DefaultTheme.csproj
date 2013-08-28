@@ -82,6 +82,7 @@
     <Compile Include="Controls\MultiItemTile.xaml.cs">
       <DependentUpon>MultiItemTile.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DefaultThemePageContentViewModel.cs" />
     <Compile Include="Details\DetailPageViewModel.cs" />
     <Compile Include="DisplayPreferencesMenu\DisplayPreferencesMenu.xaml.cs">
       <DependentUpon>DisplayPreferencesMenu.xaml</DependentUpon>
@@ -94,9 +95,6 @@
     </Compile>
     <Compile Include="DisplayPreferencesMenu\ViewMenuPage.xaml.cs">
       <DependentUpon>ViewMenuPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Header\PageTitlePanel.xaml.cs">
-      <DependentUpon>PageTitlePanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="Header\TopRightPanel.xaml.cs">
       <DependentUpon>TopRightPanel.xaml</DependentUpon>
@@ -183,10 +181,6 @@
     <Page Include="DisplayPreferencesMenu\ViewMenuPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Header\PageTitlePanel.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Header\TopRightPanel.xaml">
       <SubType>Designer</SubType>

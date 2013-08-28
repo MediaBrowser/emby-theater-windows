@@ -41,7 +41,7 @@
         </controls2:TransitionControl>
 
         <!--Themes will supply this template to outline the window structure.-->
-        <ContentControl x:Name="PageContent" Template="{DynamicResource PageContentTemplate}">
+        <ContentControl x:Name="PageContent" ContentTemplate="{DynamicResource PageContentTemplate}">
         </ContentControl>
 
         <ContentControl x:Name="VolumeOsd" Template="{DynamicResource VolumeOsdTemplate}">

@@ -120,9 +120,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
             return viewModel.DisplayPreferences != null && viewModel.DisplayPreferences.ShowSidebar;
         }
 
-        protected async void OnParentItemChanged()
+        protected void OnParentItemChanged()
         {
-            var pageTitleTask = PageTitlePanel.Current.SetPageTitle(_parentItem);
+            DefaultTheme.Current.PageContentDataContext.SetPageTitle(_parentItem);
 
             if (_parentItem.IsType("season") && _parentItem.IndexNumber.HasValue)
             {
@@ -133,8 +133,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
             {
                 TxtParentName.Visibility = Visibility.Collapsed;
             }
-
-            await pageTitleTask;
         }
 
         void FolderPage_Unloaded(object sender, RoutedEventArgs e)
@@ -142,13 +140,13 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
             HideViewButton();
         }
 
-        async void FolderPage_Loaded(object sender, RoutedEventArgs e)
+        void FolderPage_Loaded(object sender, RoutedEventArgs e)
         {
             if (_parentItem != null)
             {
                 ShowViewButton();
 
-                await PageTitlePanel.Current.SetPageTitle(_parentItem);
+                DefaultTheme.Current.PageContentDataContext.SetPageTitle(_parentItem);
             }
             else
             {

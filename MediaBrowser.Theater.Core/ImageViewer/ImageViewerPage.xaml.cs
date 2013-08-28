@@ -15,7 +15,7 @@ namespace MediaBrowser.Theater.Core.ImageViewer
     /// </summary>
     public partial class ImageViewerPage : BasePage, ISupportsThemeMedia
     {
-        private readonly IThemeManager _themeManager;
+        private readonly IPresentationManager _presentation;
 
         /// <summary>
         /// The _effects
@@ -40,9 +40,9 @@ namespace MediaBrowser.Theater.Core.ImageViewer
         /// <value>The random.</value>
         private readonly Random _random = new Random(Guid.NewGuid().GetHashCode());
 
-        public ImageViewerPage(IThemeManager themeManager, ImageViewerViewModel viewModel)
+        public ImageViewerPage(IPresentationManager presentation, ImageViewerViewModel viewModel)
         {
-            _themeManager = themeManager;
+            _presentation = presentation;
             InitializeComponent();
 
             DataContext = viewModel;
@@ -72,7 +72,7 @@ namespace MediaBrowser.Theater.Core.ImageViewer
 
             viewModel.PropertyChanged -= vm_PropertyChanged;
             viewModel.StopRotating();
-            _themeManager.CurrentTheme.SetGlobalContentVisibility(true);
+            _presentation.SetGlobalThemeContentVisibility(true);
         }
 
         void ImageViewerPage_Loaded(object sender, RoutedEventArgs e)
@@ -81,7 +81,7 @@ namespace MediaBrowser.Theater.Core.ImageViewer
 
             viewModel.PropertyChanged += vm_PropertyChanged;
             viewModel.StartRotating();
-            _themeManager.CurrentTheme.SetGlobalContentVisibility(false);
+            _presentation.SetGlobalThemeContentVisibility(false);
         }
     }
 }

@@ -62,6 +62,7 @@
     <Compile Include="Configuration\ApplicationConfiguration.cs" />
     <Compile Include="Configuration\UserConfigurationUpdatedEventArgs.cs" />
     <Compile Include="Configuration\UserTheaterConfiguration.cs" />
+    <Compile Include="ItemEventArgs.cs" />
     <Compile Include="Navigation\NavigationEventArgs.cs" />
     <Compile Include="Playback\MediaChangeEventArgs.cs" />
     <Compile Include="Plugins\IHasThumbImage.cs" />
@@ -98,6 +99,7 @@
     <Compile Include="UserInput\IUserInputManager.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
     <Compile Include="ViewModels\ImageViewerViewModel.cs" />
+    <Compile Include="ViewModels\PageContentViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

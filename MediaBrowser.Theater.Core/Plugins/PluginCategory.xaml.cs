@@ -1,6 +1,7 @@
 ﻿using MediaBrowser.Common;
 using MediaBrowser.Common.Updates;
 using MediaBrowser.Model.Updates;
+using MediaBrowser.Theater.Interfaces;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.ViewModels;

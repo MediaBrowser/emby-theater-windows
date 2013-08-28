@@ -1,5 +1,6 @@
 ﻿using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
+using MediaBrowser.Theater.Interfaces.ViewModels;
 using System.Collections.Generic;
 using System.Windows;
 
@@ -36,17 +37,6 @@ namespace MediaBrowser.Theater.Interfaces.Theming
         FrameworkElement GetPersonPage(BaseItemDto item, string context);
 
         /// <summary>
-        /// Sets the page title.
-        /// </summary>
-        /// <param name="title">The title.</param>
-        void SetPageTitle(string title);
-
-        /// <summary>
-        /// Sets the default page title.
-        /// </summary>
-        void SetDefaultPageTitle();
-
-        /// <summary>
         /// Gets the name.
         /// </summary>
         /// <value>The name.</value>
@@ -63,12 +53,6 @@ namespace MediaBrowser.Theater.Interfaces.Theming
         void Unload();
 
         /// <summary>
-        /// Sets the global content visibility.
-        /// </summary>
-        /// <param name="visible">if set to <c>true</c> [visible].</param>
-        void SetGlobalContentVisibility(bool visible);
-
-        /// <summary>
         /// Gets the default name of the home page.
         /// </summary>
         /// <value>The default name of the home page.</value>
@@ -79,5 +63,11 @@ namespace MediaBrowser.Theater.Interfaces.Theming
         /// </summary>
         /// <returns>List{ResourceDictionary}.</returns>
         IEnumerable<ResourceDictionary> GetResources();
+
+        /// <summary>
+        /// Gets the page content view model.
+        /// </summary>
+        /// <returns>PageContentViewModel.</returns>
+        PageContentViewModel CreatePageContentDataContext();
     }
 }

@@ -1,10 +1,10 @@
 ﻿using MediaBrowser.Common;
 using MediaBrowser.Common.Plugins;
 using MediaBrowser.Common.Updates;
+using MediaBrowser.Theater.Interfaces;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Plugins;
 using MediaBrowser.Theater.Interfaces.Presentation;
-using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
 using System.Linq;

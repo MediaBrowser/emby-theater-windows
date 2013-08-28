@@ -1,5 +1,6 @@
 ﻿using MediaBrowser.Common;
 using MediaBrowser.Common.Updates;
+using MediaBrowser.Theater.Interfaces;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;

@@ -164,7 +164,7 @@ namespace MediaBrowser.UI.Implementations
         /// <returns>DispatcherOperation.</returns>
         public Task NavigateToInternalPlayerPage()
         {
-            var page = new FullscreenVideoPage(_userInputManager, _playbackManagerFactory(), this, _themeManager, _apiClient, _imageManager);
+            var page = new FullscreenVideoPage(_userInputManager, _playbackManagerFactory(), this, _presentationManager, _apiClient, _imageManager);
 
             new InternalPlayerPageBehavior(page).AdjustPresentationForPlayback();
 
@@ -284,7 +284,7 @@ namespace MediaBrowser.UI.Implementations
 
         public Task NavigateToImageViewer(ImageViewerViewModel viewModel)
         {
-            return Navigate(new ImageViewerPage(_themeManager, viewModel));
+            return Navigate(new ImageViewerPage(_presentationManager, viewModel));
         }
     }
 }

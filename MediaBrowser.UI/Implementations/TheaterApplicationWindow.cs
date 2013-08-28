@@ -1,10 +1,11 @@
-﻿using MediaBrowser.Common;
-using MediaBrowser.Common.Events;
+﻿using MediaBrowser.Common.Events;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Core.Modals;
+using MediaBrowser.Theater.Interfaces;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Theming;
+using MediaBrowser.Theater.Interfaces.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,18 +24,32 @@ namespace MediaBrowser.UI.Implementations
         /// </summary>
         private readonly ILogger _logger;
         private readonly IThemeManager _themeManager;
-        private readonly IApplicationHost _appHost;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TheaterApplicationWindow" /> class.
         /// </summary>
         /// <param name="logger">The logger.</param>
         /// <param name="themeManager">The theme manager.</param>
-        public TheaterApplicationWindow(ILogger logger, IThemeManager themeManager, IApplicationHost appHost)
+        public TheaterApplicationWindow(ILogger logger, IThemeManager themeManager)
         {
             _logger = logger;
             _themeManager = themeManager;
-            _appHost = appHost;
+
+            _themeManager.ThemeUnloaded += _themeManager_ThemeUnloaded;
+            _themeManager.ThemeLoaded += _themeManager_ThemeLoaded;
+        }
+
+        void _themeManager_ThemeLoaded(object sender, ItemEventArgs<ITheme> e)
+        {
+            if (App.Instance.ApplicationWindow != null)
+            {
+                App.Instance.ApplicationWindow.PageContent.Content = e.Argument.CreatePageContentDataContext();
+            }
+        }
+
+        void _themeManager_ThemeUnloaded(object sender, ItemEventArgs<ITheme> e)
+        {
+            App.Instance.ApplicationWindow.PageContent.Content = null;
         }
 
         public IEnumerable<IHomePage> HomePages { get; private set; }
@@ -79,6 +94,7 @@ namespace MediaBrowser.UI.Implementations
         /// </summary>
         internal void OnWindowLoaded()
         {
+            App.Instance.ApplicationWindow.PageContent.Content = _themeManager.CurrentTheme.CreatePageContentDataContext();
             EventHelper.FireEventIfNotNull(WindowLoaded, null, EventArgs.Empty, _logger);
         }
 
@@ -185,12 +201,23 @@ namespace MediaBrowser.UI.Implementations
 
         public void SetPageTitle(string title)
         {
-            _themeManager.CurrentTheme.SetPageTitle(title);
+            var viewModel = App.Instance.ApplicationWindow.PageContent.Content as PageContentViewModel;
+
+            if (viewModel != null)
+            {
+                viewModel.PageTitle = title;
+                viewModel.ShowDefaultPageTitle = false;
+            }
         }
 
         public void SetDefaultPageTitle()
         {
-            _themeManager.CurrentTheme.SetDefaultPageTitle();
+            var viewModel = App.Instance.ApplicationWindow.PageContent.Content as PageContentViewModel;
+
+            if (viewModel != null)
+            {
+                viewModel.ShowDefaultPageTitle = true;
+            }
         }
 
         public IEnumerable<IApp> GetApps(UserDto user)
@@ -211,6 +238,16 @@ namespace MediaBrowser.UI.Implementations
             _logger.Info("Removing resource {0}", resource.GetType().Name);
 
             Application.Current.Resources.MergedDictionaries.Remove(resource);
+        }
+
+        public void SetGlobalThemeContentVisibility(bool visible)
+        {
+            var viewModel = App.Instance.ApplicationWindow.PageContent.Content as PageContentViewModel;
+
+            if (viewModel != null)
+            {
+                viewModel.ShowGlobalContent = visible;
+            }
         }
     }
 }

@@ -121,5 +121,11 @@ namespace MediaBrowser.Theater.Interfaces.Presentation
         /// </summary>
         /// <param name="resource">The resource.</param>
         void RemoveResourceDictionary(ResourceDictionary resource);
+
+        /// <summary>
+        /// Sets the global content visibility.
+        /// </summary>
+        /// <param name="visible">if set to <c>true</c> [visible].</param>
+        void SetGlobalThemeContentVisibility(bool visible);
     }
 }

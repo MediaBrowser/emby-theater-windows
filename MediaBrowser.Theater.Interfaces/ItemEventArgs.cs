@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MediaBrowser.Theater.Presentation.Controls
+namespace MediaBrowser.Theater.Interfaces
 {
     /// <summary>
     /// Provides a generic EventArgs subclass that can hold any kind of object

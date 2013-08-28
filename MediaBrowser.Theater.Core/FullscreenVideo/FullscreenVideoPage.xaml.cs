@@ -22,7 +22,7 @@ namespace MediaBrowser.Theater.Core.FullscreenVideo
     public partial class FullscreenVideoPage : BasePage, IFullscreenVideoPage, ISupportsThemeMedia
     {
         private readonly IUserInputManager _userInputManager;
-        private readonly IThemeManager _themeManager;
+        private readonly IPresentationManager _presentation;
         private readonly IPlaybackManager _playbackManager;
         private readonly INavigationService _nav;
 
@@ -36,13 +36,13 @@ namespace MediaBrowser.Theater.Core.FullscreenVideo
         private readonly object _overlayTimerLock = new object();
 
         private TransportOsdViewModel _viewModel;
-        
-        public FullscreenVideoPage(IUserInputManager userInputManager, IPlaybackManager playbackManager, INavigationService nav, IThemeManager themeManager, IApiClient apiClient, IImageManager imageManager)
+
+        public FullscreenVideoPage(IUserInputManager userInputManager, IPlaybackManager playbackManager, INavigationService nav, IPresentationManager presentation, IApiClient apiClient, IImageManager imageManager)
         {
             _userInputManager = userInputManager;
             _playbackManager = playbackManager;
             _nav = nav;
-            _themeManager = themeManager;
+            _presentation = presentation;
             _apiClient = apiClient;
             _imageManager = imageManager;
 
@@ -135,7 +135,7 @@ namespace MediaBrowser.Theater.Core.FullscreenVideo
             _activityTimer = new Timer(TimerCallback, null, 100, 100);
 
             _userInputManager.MouseMove += _userInputManager_MouseMove;
-            _themeManager.CurrentTheme.SetGlobalContentVisibility(false);
+            _presentation.SetGlobalThemeContentVisibility(false);
             _playbackManager.PlaybackCompleted += _playbackManager_PlaybackCompleted;
 
             Osd.DataContext = _viewModel = new TransportOsdViewModel(_playbackManager, _apiClient, _imageManager);
@@ -152,7 +152,7 @@ namespace MediaBrowser.Theater.Core.FullscreenVideo
             DisposeOsdTimer();
 
             _userInputManager.MouseMove -= _userInputManager_MouseMove;
-            _themeManager.CurrentTheme.SetGlobalContentVisibility(true);
+            _presentation.SetGlobalThemeContentVisibility(true);
             _playbackManager.PlaybackCompleted -= _playbackManager_PlaybackCompleted;
 
             if (_viewModel != null)

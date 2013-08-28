@@ -32,6 +32,8 @@ namespace MediaBrowser.Theater.Presentation.Controls
 
         void BaseWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            IsMouseIdle = true;
+            
             _activityTimer = new Timer(TimerCallback, null, 100, 100);
         }
 
@@ -76,7 +78,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
         /// <summary>
         /// The _is mouse idle
         /// </summary>
-        private bool _isMouseIdle = true;
+        private bool _isMouseIdle = false;
         /// <summary>
         /// Gets or sets a value indicating whether this instance is mouse idle.
         /// </summary>
@@ -156,7 +158,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
         /// <summary>
         /// The _last mouse move point
         /// </summary>
-        private Point _lastMouseMovePoint;
+        private Point? _lastMouseMovePoint;
 
         /// <summary>
         /// Handles OnMouseMove to auto-select the item that's being moused over
@@ -170,7 +172,13 @@ namespace MediaBrowser.Theater.Presentation.Controls
             // Even if the mouse is not moving this event will fire as elements are showing and hiding
             var pos = e.GetPosition(this);
 
-            if (pos == _lastMouseMovePoint)
+            if (!_lastMouseMovePoint.HasValue)
+            {
+                _lastMouseMovePoint = pos;
+                return;
+            }
+          
+            if (pos == _lastMouseMovePoint.Value)
             {
                 return;
             }

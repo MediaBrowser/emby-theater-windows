@@ -12,7 +12,11 @@ namespace MediaBrowser.Theater.Interfaces.Theming
         /// <summary>
         /// Occurs when [theme loaded].
         /// </summary>
-        event EventHandler<EventArgs> ThemeLoaded;
+        event EventHandler<ItemEventArgs<ITheme>> ThemeLoaded;
+        /// <summary>
+        /// Occurs when [theme unloaded].
+        /// </summary>
+        event EventHandler<ItemEventArgs<ITheme>> ThemeUnloaded;
 
         /// <summary>
         /// Adds the parts.

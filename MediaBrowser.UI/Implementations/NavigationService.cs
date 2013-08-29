@@ -1,6 +1,4 @@
-﻿using System.Threading;
-using System.Windows;
-using MediaBrowser.Common;
+﻿using MediaBrowser.Common;
 using MediaBrowser.Common.Updates;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Configuration;
@@ -21,7 +19,9 @@ using MediaBrowser.Theater.Interfaces.UserInput;
 using MediaBrowser.Theater.Interfaces.ViewModels;
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace MediaBrowser.UI.Implementations
@@ -209,7 +209,7 @@ namespace MediaBrowser.UI.Implementations
 
                 try
                 {
-                    displayPreferences = await _apiClient.GetDisplayPreferencesAsync(item.DisplayPreferencesId, _sessionFactory().CurrentUser.Id, "MBT-" + _themeManager.CurrentTheme.Name, CancellationToken.None);
+                    displayPreferences = await _presentationManager.GetDisplayPreferences(item.DisplayPreferencesId, CancellationToken.None);
                 }
                 catch
                 {

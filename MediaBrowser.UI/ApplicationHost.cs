@@ -120,7 +120,7 @@ namespace MediaBrowser.UI
             ThemeManager = new ThemeManager(() => PresentationManager, Logger);
             RegisterSingleInstance(ThemeManager);
 
-            PresentationManager = new TheaterApplicationWindow(Logger, ThemeManager);
+            PresentationManager = new TheaterApplicationWindow(Logger, ThemeManager, ApiClient, () => SessionManager);
             RegisterSingleInstance(PresentationManager);
 
             RegisterSingleInstance(ApplicationPaths);

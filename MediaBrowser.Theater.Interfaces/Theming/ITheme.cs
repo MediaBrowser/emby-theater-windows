@@ -3,6 +3,7 @@ using MediaBrowser.Model.Entities;
 using MediaBrowser.Theater.Interfaces.ViewModels;
 using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace MediaBrowser.Theater.Interfaces.Theming
 {
@@ -17,7 +18,7 @@ namespace MediaBrowser.Theater.Interfaces.Theming
         /// <param name="item">The item.</param>
         /// <param name="context">The context.</param>
         /// <returns>Page.</returns>
-        FrameworkElement GetItemPage(BaseItemDto item, string context);
+        Page GetItemPage(BaseItemDto item, string context);
 
         /// <summary>
         /// Gets the folder page.
@@ -26,7 +27,7 @@ namespace MediaBrowser.Theater.Interfaces.Theming
         /// <param name="displayPreferences">The display preferences.</param>
         /// <param name="context">The context.</param>
         /// <returns>Page.</returns>
-        FrameworkElement GetFolderPage(BaseItemDto item, DisplayPreferences displayPreferences, string context);
+        Page GetFolderPage(BaseItemDto item, DisplayPreferences displayPreferences, string context);
         
         /// <summary>
         /// Gets the person page.
@@ -34,7 +35,7 @@ namespace MediaBrowser.Theater.Interfaces.Theming
         /// <param name="item">The item.</param>
         /// <param name="context">The context.</param>
         /// <returns>Page.</returns>
-        FrameworkElement GetPersonPage(BaseItemDto item, string context);
+        Page GetPersonPage(BaseItemDto item, string context);
 
         /// <summary>
         /// Gets the name.

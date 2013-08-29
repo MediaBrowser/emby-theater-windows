@@ -8,7 +8,6 @@ using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
-using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.Extensions;
 using MediaBrowser.Theater.Presentation.Pages;
@@ -35,19 +34,17 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
         private readonly IPresentationManager _presentationManager;
         private readonly INavigationService _navigationManager;
         private readonly IPlaybackManager _playbackManager;
-        private readonly IThemeManager _themeManager;
         private readonly ILogger _logger;
 
         private readonly BaseItemDto _parentItem;
 
         private readonly ItemListViewModel _viewModel;
 
-        public FolderPage(BaseItemDto parent, DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IPresentationManager applicationWindow, INavigationService navigationManager, IPlaybackManager playbackManager, ILogger logger, IThemeManager themeManager)
+        public FolderPage(BaseItemDto parent, DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IPresentationManager applicationWindow, INavigationService navigationManager, IPlaybackManager playbackManager, ILogger logger)
         {
             _navigationManager = navigationManager;
             _playbackManager = playbackManager;
             _logger = logger;
-            _themeManager = themeManager;
             _presentationManager = applicationWindow;
             _sessionManager = sessionManager;
             _imageManager = imageManager;
@@ -361,8 +358,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         void ViewButton_Click(object sender, RoutedEventArgs e)
         {
-            var viewModel = new DisplayPreferencesViewModel(_viewModel.DisplayPreferences, _apiClient,
-                                                            _presentationManager, _sessionManager, _themeManager);
+            var viewModel = new DisplayPreferencesViewModel(_viewModel.DisplayPreferences, _presentationManager);
 
             var menu = new DisplayPreferencesMenu.DisplayPreferencesMenu(viewModel);
 

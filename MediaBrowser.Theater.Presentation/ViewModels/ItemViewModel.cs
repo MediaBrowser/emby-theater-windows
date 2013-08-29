@@ -31,6 +31,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         public ICommand ResumeCommand { get; private set; }
         public ICommand PlayTrailerCommand { get; private set; }
 
+        public ICommand ToggleIsPlayedCommand { get; private set; }
         public ICommand ToggleLikesCommand { get; private set; }
         public ICommand ToggleDislikesCommand { get; private set; }
         public ICommand ToggleIsFavoriteCommand { get; private set; }
@@ -50,6 +51,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             ToggleLikesCommand = new RelayCommand(ToggleLikes);
             ToggleDislikesCommand = new RelayCommand(ToggleDislikes);
             ToggleIsFavoriteCommand = new RelayCommand(ToggleIsFavorite);
+            ToggleIsPlayedCommand = new RelayCommand(ToggleIsPlayed);
         }
 
         private BaseItemDto _item;
@@ -825,6 +827,20 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 await _playbackManager.Play(new PlayOptions(trailers.First()));
             }
             catch (HttpException)
+            {
+                _presentation.ShowDefaultErrorMessage();
+            }
+        }
+
+        private async void ToggleIsPlayed(object commandParameter)
+        {
+            try
+            {
+                _item.UserData = await _apiClient.UpdatePlayedStatusAsync(_item.Id, _apiClient.CurrentUserId, !IsPlayed);
+
+                RefreshUserDataFields();
+            }
+            catch
             {
                 _presentation.ShowDefaultErrorMessage();
             }

@@ -1,9 +1,14 @@
-﻿using MediaBrowser.Common.Events;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using MediaBrowser.Common.Events;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
+using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Core.Modals;
 using MediaBrowser.Theater.Interfaces;
 using MediaBrowser.Theater.Interfaces.Presentation;
+using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Interfaces.ViewModels;
 using System;
@@ -24,16 +29,20 @@ namespace MediaBrowser.UI.Implementations
         /// </summary>
         private readonly ILogger _logger;
         private readonly IThemeManager _themeManager;
+        private readonly IApiClient _apiClient;
+        private readonly Func<ISessionManager> _sessionFactory;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TheaterApplicationWindow" /> class.
         /// </summary>
         /// <param name="logger">The logger.</param>
         /// <param name="themeManager">The theme manager.</param>
-        public TheaterApplicationWindow(ILogger logger, IThemeManager themeManager)
+        public TheaterApplicationWindow(ILogger logger, IThemeManager themeManager, IApiClient apiClient, Func<ISessionManager> sessionFactory)
         {
             _logger = logger;
             _themeManager = themeManager;
+            _apiClient = apiClient;
+            _sessionFactory = sessionFactory;
 
             _themeManager.ThemeUnloaded += _themeManager_ThemeUnloaded;
             _themeManager.ThemeLoaded += _themeManager_ThemeLoaded;
@@ -248,6 +257,16 @@ namespace MediaBrowser.UI.Implementations
             {
                 viewModel.ShowGlobalContent = visible;
             }
+        }
+
+        public Task<DisplayPreferences> GetDisplayPreferences(string displayPreferencesId, CancellationToken cancellationToken)
+        {
+            return _apiClient.GetDisplayPreferencesAsync(displayPreferencesId, _sessionFactory().CurrentUser.Id, "MBT-" + _themeManager.CurrentTheme.Name, cancellationToken);
+        }
+
+        public Task UpdateDisplayPreferences(DisplayPreferences displayPreferences, CancellationToken cancellationToken)
+        {
+            return _apiClient.UpdateDisplayPreferencesAsync(displayPreferences, _sessionFactory().CurrentUser.Id, "MBT-" + _themeManager.CurrentTheme.Name);
         }
     }
 }

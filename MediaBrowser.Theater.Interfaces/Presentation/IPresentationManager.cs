@@ -1,6 +1,9 @@
-﻿using MediaBrowser.Model.Dto;
+﻿using System.Threading;
+using MediaBrowser.Model.Dto;
+using MediaBrowser.Model.Entities;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
 
@@ -35,7 +38,7 @@ namespace MediaBrowser.Theater.Interfaces.Presentation
         /// Occurs when [window loaded].
         /// </summary>
         event EventHandler<EventArgs> WindowLoaded;
-        
+
         /// <summary>
         /// Gets the window.
         /// </summary>
@@ -127,5 +130,21 @@ namespace MediaBrowser.Theater.Interfaces.Presentation
         /// </summary>
         /// <param name="visible">if set to <c>true</c> [visible].</param>
         void SetGlobalThemeContentVisibility(bool visible);
+
+        /// <summary>
+        /// Gets the display preferences.
+        /// </summary>
+        /// <param name="displayPreferencesId">The display preferences id.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Task{DisplayPreferences}.</returns>
+        Task<DisplayPreferences> GetDisplayPreferences(string displayPreferencesId, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Updates the display preferences.
+        /// </summary>
+        /// <param name="displayPreferences">The display preferences.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Task.</returns>
+        Task UpdateDisplayPreferences(DisplayPreferences displayPreferences, CancellationToken cancellationToken);
     }
 }

@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace MediaBrowser.Plugins.DefaultTheme
 {
@@ -52,11 +53,10 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// The _logger
         /// </summary>
         private readonly ILogger _logger;
-        private readonly IThemeManager _themeManager;
 
         public static DefaultTheme Current;
 
-        public DefaultTheme(IPlaybackManager playbackManager, IImageManager imageManager, IApiClient apiClient, INavigationService navService, ISessionManager sessionManager, IPresentationManager presentationManager, ILogManager logManager, IThemeManager themeManager)
+        public DefaultTheme(IPlaybackManager playbackManager, IImageManager imageManager, IApiClient apiClient, INavigationService navService, ISessionManager sessionManager, IPresentationManager presentationManager, ILogManager logManager)
         {
             Current = this;
 
@@ -66,7 +66,6 @@ namespace MediaBrowser.Plugins.DefaultTheme
             _navService = navService;
             _sessionManager = sessionManager;
             _presentationManager = presentationManager;
-            _themeManager = themeManager;
             _logger = logManager.GetLogger(GetType().Name);
 
             TopRightPanel.SessionManager = _sessionManager;
@@ -98,7 +97,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// <param name="item">The item.</param>
         /// <param name="context">The context.</param>
         /// <returns>Page.</returns>
-        public FrameworkElement GetItemPage(BaseItemDto item, string context)
+        public Page GetItemPage(BaseItemDto item, string context)
         {
             var itemViewModel = new ItemViewModel(_apiClient, _imageManager, _playbackManager, _presentationManager, _logger)
             {
@@ -119,11 +118,11 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// <param name="displayPreferences">The display preferences.</param>
         /// <param name="context">The context.</param>
         /// <returns>Page.</returns>
-        public FrameworkElement GetFolderPage(BaseItemDto item, DisplayPreferences displayPreferences, string context)
+        public Page GetFolderPage(BaseItemDto item, DisplayPreferences displayPreferences, string context)
         {
             if (!item.IsType("series") && !item.IsType("musicalbum"))
             {
-                return new FolderPage(item, displayPreferences, _apiClient, _imageManager, _sessionManager, _presentationManager, _navService, _playbackManager, _logger, _themeManager);
+                return new FolderPage(item, displayPreferences, _apiClient, _imageManager, _sessionManager, _presentationManager, _navService, _playbackManager, _logger);
             }
 
             return GetItemPage(item, context);
@@ -135,7 +134,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// <param name="item">The item.</param>
         /// <param name="context">The context.</param>
         /// <returns>Page.</returns>
-        public FrameworkElement GetPersonPage(BaseItemDto item, string context)
+        public Page GetPersonPage(BaseItemDto item, string context)
         {
             return GetItemPage(item, context);
         }

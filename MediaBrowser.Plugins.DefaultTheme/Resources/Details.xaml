@@ -23,7 +23,7 @@
     </Style>
 
     <DataTemplate x:Key="DetailPageOverviewTemplate" DataType="{x:Type viewModels:ItemViewModel}">
-        <Grid Margin="0 20 0 0">
+        <Grid Margin="70 20 50 0">
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto"></ColumnDefinition>
@@ -106,7 +106,7 @@
             </Grid>
 
 
-            <Grid Grid.Column="1" Margin="50 0 15 0">
+            <Grid Grid.Column="1" Margin="50 0 0 0">
 
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto"></RowDefinition>

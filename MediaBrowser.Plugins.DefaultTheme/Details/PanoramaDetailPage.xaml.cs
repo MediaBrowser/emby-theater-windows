@@ -2,6 +2,7 @@
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Presentation.Pages;
 using MediaBrowser.Theater.Presentation.ViewModels;
+using System.ComponentModel;
 using System.Windows;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Details
@@ -21,6 +22,26 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             Loaded += PanoramaDetailPage_Loaded;
 
             SetTitle(_itemViewModel.Item);
+
+            DataContextChanged += PanoramaDetailPage_DataContextChanged;
+        }
+
+        void PanoramaDetailPage_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            var viewModel = e.NewValue as DetailPageViewModel;
+
+            if (viewModel != null)
+            {
+                viewModel.PropertyChanged += viewModel_PropertyChanged;
+            }
+        }
+
+        void viewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (string.Equals(e.PropertyName, "CurrentSection"))
+            {
+                ScrollViewer.ScrollToLeftEnd();
+            }
         }
 
         public string ThemeMediaItemId

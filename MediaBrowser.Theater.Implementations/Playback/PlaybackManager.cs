@@ -147,7 +147,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
                 Player = player
             }, _logger);
 
-            await new PlaybackProgressReporter(_apiClient, player, _logger).Start().ConfigureAwait(false);
+            await new PlaybackProgressReporter(_apiClient, player, _logger, this).Start().ConfigureAwait(false);
         }
 
         /// <summary>

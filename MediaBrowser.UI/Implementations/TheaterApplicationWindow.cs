@@ -266,7 +266,7 @@ namespace MediaBrowser.UI.Implementations
 
         public Task UpdateDisplayPreferences(DisplayPreferences displayPreferences, CancellationToken cancellationToken)
         {
-            return _apiClient.UpdateDisplayPreferencesAsync(displayPreferences, _sessionFactory().CurrentUser.Id, "MBT-" + _themeManager.CurrentTheme.Name);
+            return _apiClient.UpdateDisplayPreferencesAsync(displayPreferences, _sessionFactory().CurrentUser.Id, "MBT-" + _themeManager.CurrentTheme.Name, cancellationToken);
         }
     }
 }

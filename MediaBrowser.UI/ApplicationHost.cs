@@ -1,4 +1,7 @@
-﻿using MediaBrowser.ApiInteraction;
+﻿using System.Net;
+using System.Net.Cache;
+using System.Net.Http;
+using MediaBrowser.ApiInteraction;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Constants;
 using MediaBrowser.Common.Implementations;
@@ -263,6 +266,15 @@ namespace MediaBrowser.UI
         protected override string ApplicationUpdatePackageName
         {
             get { return Constants.MbTheaterPkgName; }
+        }
+
+        protected override HttpMessageHandler GetHttpMessageHandler(bool enableHttpCompression)
+        {
+            return new WebRequestHandler
+            {
+                CachePolicy = new RequestCachePolicy(RequestCacheLevel.Revalidate),
+                AutomaticDecompression = enableHttpCompression ? DecompressionMethods.Deflate : DecompressionMethods.None
+            };
         }
     }
 }

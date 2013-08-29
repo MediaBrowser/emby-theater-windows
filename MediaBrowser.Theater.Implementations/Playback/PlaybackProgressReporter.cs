@@ -12,21 +12,23 @@ namespace MediaBrowser.Theater.Implementations.Playback
         private readonly IApiClient _apiClient;
         private readonly IMediaPlayer _mediaPlayer;
         private readonly ILogger _logger;
+        private readonly IPlaybackManager _playback;
 
         private Timer _timer;
 
-        public PlaybackProgressReporter(IApiClient apiClient, IMediaPlayer mediaPlayer, ILogger logger)
+        public PlaybackProgressReporter(IApiClient apiClient, IMediaPlayer mediaPlayer, ILogger logger, IPlaybackManager playback)
         {
             _apiClient = apiClient;
             _mediaPlayer = mediaPlayer;
             _logger = logger;
+            _playback = playback;
         }
 
         /// <summary>
         /// Starts this instance.
         /// </summary>
         /// <returns>Task.</returns>
-        /// <exception cref="System.InvalidOperationException">Nothing is currently playing</exception>
+        /// <exception cref="InvalidOperationException">Nothing is currently playing</exception>
         public async Task Start()
         {
             var item = _mediaPlayer.CurrentMedia;
@@ -134,7 +136,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
 
             try
             {
-                await _apiClient.ReportPlaybackProgressAsync(item.Id, _apiClient.CurrentUserId, _mediaPlayer.CurrentPositionTicks, _mediaPlayer.PlayState == PlayState.Paused);
+                await _apiClient.ReportPlaybackProgressAsync(item.Id, _apiClient.CurrentUserId, _mediaPlayer.CurrentPositionTicks, _mediaPlayer.PlayState == PlayState.Paused, _playback.IsMuted);
             }
             catch (Exception ex)
             {

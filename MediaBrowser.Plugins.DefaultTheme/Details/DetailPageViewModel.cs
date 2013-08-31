@@ -355,7 +355,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                                  ItemFields.DateCreated
                         },
                 ParentId = item.Id,
-                SortBy = new[] { ItemSortBy.SortName }
+                SortBy = new[] { ItemSortBy.SortName },
+
+                MinIndexNumber = item.IsType("Series") ? 1 : (int?)null
             };
 
             return _apiClient.GetItemsAsync(query);

@@ -1,7 +1,4 @@
-﻿using System.Net;
-using System.Net.Cache;
-using System.Net.Http;
-using MediaBrowser.ApiInteraction;
+﻿using MediaBrowser.ApiInteraction;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Constants;
 using MediaBrowser.Common.Implementations;
@@ -34,6 +31,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Cache;
+using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
 

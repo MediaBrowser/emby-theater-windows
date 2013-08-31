@@ -27,9 +27,6 @@ namespace MediaBrowser.UI.EntryPoints
         private readonly INavigationService _nav;
         private readonly IPlaybackManager _playbackManager;
 
-        private volatile Timer _webSocketTimer;
-        private readonly object _timerLock = new object();
-
         private ApiWebSocket _apiWebSocket;
 
         public WebSocketEntryPoint(ISessionManager session, IApiClient apiClient, IJsonSerializer json, ILogger logger, IApplicationHost appHost, INavigationService nav, IPlaybackManager playbackManager)
@@ -46,6 +43,13 @@ namespace MediaBrowser.UI.EntryPoints
         public void Run()
         {
             _session.UserLoggedIn += _session_UserLoggedIn;
+            _apiClient.ServerLocationChanged += _apiClient_ServerLocationChanged;
+            EnsureWebSocket();
+        }
+
+        void _apiClient_ServerLocationChanged(object sender, EventArgs e)
+        {
+            ReloadWebSocket();
         }
 
         void _session_UserLoggedIn(object sender, EventArgs e)
@@ -53,42 +57,56 @@ namespace MediaBrowser.UI.EntryPoints
             EnsureWebSocket();
         }
 
-        private async void EnsureWebSocket()
+        private void EnsureWebSocket()
         {
             if (_apiWebSocket == null || !_apiWebSocket.IsOpen)
             {
-                try
-                {
-                    var systemInfo = await _apiClient.GetSystemInfoAsync().ConfigureAwait(false);
-
-                    var socket = new ApiWebSocket(ClientWebSocketFactory.CreateWebSocket(), _logger, _json);
-
-                    await socket.ConnectAsync(_apiClient.ServerHostName, systemInfo.WebSocketPortNumber, _apiClient.ClientName, _apiClient.DeviceId, _appHost.ApplicationVersion.ToString(), CancellationToken.None).ConfigureAwait(false);
-
-                    _apiWebSocket = socket;
-
-                    ((ApiClient)_apiClient).WebSocketConnection = _apiWebSocket;
-
-                    OnWebSocketInitialized();
-
-                    StartWebSocketTimer();
-
-                    _logger.Info("Web socket connection established.");
-                }
-                catch (Exception ex)
-                {
-                    _logger.ErrorException("Error establishing web socket connection", ex);
-                }
+                ReloadWebSocket();
             }
         }
 
-        private void OnWebSocketInitialized()
+        private async void ReloadWebSocket()
         {
-            _apiWebSocket.BrowseCommand += _apiWebSocket_BrowseCommand;
-            _apiWebSocket.UserDeleted += _apiWebSocket_UserDeleted;
-            _apiWebSocket.UserUpdated += _apiWebSocket_UserUpdated;
-            _apiWebSocket.PlaystateCommand += _apiWebSocket_PlaystateCommand;
-            _apiWebSocket.PlayCommand += _apiWebSocket_PlayCommand;
+            try
+            {
+                var systemInfo = await _apiClient.GetSystemInfoAsync().ConfigureAwait(false);
+
+                var socket = new ApiWebSocket(_logger, _json, _apiClient.ServerHostName, systemInfo.WebSocketPortNumber,
+                                              _apiClient.DeviceId, _appHost.ApplicationVersion.ToString(),
+                                              _apiClient.ClientName, ClientWebSocketFactory.CreateWebSocket);
+
+                await socket.ConnectAsync(CancellationToken.None).ConfigureAwait(false);
+
+                OnWebSocketInitialized(socket);
+
+                _logger.Info("Web socket connection established.");
+            }
+            catch (Exception ex)
+            {
+                _logger.ErrorException("Error establishing web socket connection", ex);
+            }
+        }
+
+        private void OnWebSocketInitialized(ApiWebSocket socket)
+        {
+            var previousSocket = _apiWebSocket;
+
+            _apiWebSocket = socket;
+
+            ((ApiClient)_apiClient).WebSocketConnection = socket;
+
+            socket.BrowseCommand += _apiWebSocket_BrowseCommand;
+            socket.UserDeleted += _apiWebSocket_UserDeleted;
+            socket.UserUpdated += _apiWebSocket_UserUpdated;
+            socket.PlaystateCommand += _apiWebSocket_PlaystateCommand;
+            socket.PlayCommand += _apiWebSocket_PlayCommand;
+
+            socket.StartEnsureConnectionTimer(5000);
+
+            if (previousSocket != null)
+            {
+                previousSocket.Dispose();
+            }
         }
 
         async void _apiWebSocket_PlayCommand(object sender, PlayRequestEventArgs e)
@@ -172,40 +190,6 @@ namespace MediaBrowser.UI.EntryPoints
         public void Dispose()
         {
             _session.UserLoggedIn -= _session_UserLoggedIn;
-
-            DisposeTimerLock();
         }
-
-        private void StartWebSocketTimer()
-        {
-            if (_webSocketTimer == null)
-            {
-                lock (_timerLock)
-                {
-                    if (_webSocketTimer == null)
-                    {
-                        _webSocketTimer = new Timer(OnWebSocketTimerFired, null, Timeout.Infinite, 30000);
-                    }
-                }
-            }
-        }
-
-        private void OnWebSocketTimerFired(object state)
-        {
-            EnsureWebSocket();
-        }
-
-        private void DisposeTimerLock()
-        {
-            lock (_timerLock)
-            {
-                if (_webSocketTimer != null)
-                {
-                    _webSocketTimer.Dispose();
-                    _webSocketTimer = null;
-                }
-            }
-        }
-
     }
 }

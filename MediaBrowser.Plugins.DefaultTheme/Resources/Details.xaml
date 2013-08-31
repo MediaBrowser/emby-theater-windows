@@ -30,7 +30,7 @@
                 <ColumnDefinition Width="*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
-            <Grid Grid.Column="0" VerticalAlignment="Top">
+            <Grid Grid.Column="0"  VerticalAlignment="Top">
 
                 <Image Stretch="Uniform" VerticalAlignment="Top" HorizontalAlignment="Left" MaxWidth="550" MaxHeight="650" Source="{Binding Image}">
 
@@ -337,7 +337,7 @@
                         </TextBlock.Style>
                     </TextBlock>
 
-                    <ItemsControl Grid.Row="1" Grid.Column="1" Margin="50 5 0 0" ItemsSource="{Binding Directors}">
+                    <ItemsControl Grid.Row="1" Grid.Column="1" Margin="50 5 0 0" ItemsSource="{Binding Directors}" Focusable="False">
                         <ItemsControl.Style>
                             <Style TargetType="{x:Type ItemsControl}">
                                 <Style.Triggers>
@@ -390,7 +390,7 @@
                         </TextBlock.Style>
                     </TextBlock>
 
-                    <ItemsControl Grid.Row="2" Grid.Column="1" Margin="50 5 0 0" ItemsSource="{Binding Genres}">
+                    <ItemsControl Grid.Row="2" Grid.Column="1" Margin="50 5 0 0" ItemsSource="{Binding Genres}" Focusable="False">
                         <ItemsControl.Style>
                             <Style TargetType="{x:Type ItemsControl}">
                                 <Style.Triggers>
@@ -443,7 +443,7 @@
                         </TextBlock.Style>
                     </TextBlock>
 
-                    <ItemsControl Grid.Row="3" Grid.Column="1" Margin="50 5 0 0" ItemsSource="{Binding StudioNames}">
+                    <ItemsControl Grid.Row="3" Grid.Column="1" Margin="50 5 0 0" ItemsSource="{Binding StudioNames}" Focusable="False">
                         <ItemsControl.Style>
                             <Style TargetType="{x:Type ItemsControl}">
                                 <Style.Triggers>

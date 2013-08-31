@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Threading;
 using MediaBrowser.Common.Events;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
@@ -197,11 +198,14 @@ namespace MediaBrowser.UI.Implementations
         /// <exception cref="System.NotImplementedException"></exception>
         public MessageBoxResult ShowMessage(MessageBoxInfo options, Window parentWindow)
         {
-            var win = new MessageBoxWindow(options);
+            return parentWindow.Dispatcher.Invoke(() =>
+            {
+                var win = new MessageBoxWindow(options);
 
-            win.ShowModal(parentWindow);
+                win.ShowModal(parentWindow);
 
-            return win.MessageBoxResult;
+                return win.MessageBoxResult;
+            });
         }
 
         public void ShowNotification(string caption, string text, BitmapImage icon)

@@ -7,6 +7,7 @@ using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Net;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Model.Serialization;
+using MediaBrowser.Model.Session;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
@@ -26,10 +27,11 @@ namespace MediaBrowser.UI.EntryPoints
         private readonly IApplicationHost _appHost;
         private readonly INavigationService _nav;
         private readonly IPlaybackManager _playbackManager;
+        private readonly IPresentationManager _presentation;
 
         private ApiWebSocket _apiWebSocket;
 
-        public WebSocketEntryPoint(ISessionManager session, IApiClient apiClient, IJsonSerializer json, ILogger logger, IApplicationHost appHost, INavigationService nav, IPlaybackManager playbackManager)
+        public WebSocketEntryPoint(ISessionManager session, IApiClient apiClient, IJsonSerializer json, ILogger logger, IApplicationHost appHost, INavigationService nav, IPlaybackManager playbackManager, IPresentationManager presentation)
         {
             _session = session;
             _apiClient = apiClient;
@@ -38,6 +40,7 @@ namespace MediaBrowser.UI.EntryPoints
             _appHost = appHost;
             _nav = nav;
             _playbackManager = playbackManager;
+            _presentation = presentation;
         }
 
         public void Run()
@@ -99,13 +102,67 @@ namespace MediaBrowser.UI.EntryPoints
             socket.UserDeleted += _apiWebSocket_UserDeleted;
             socket.UserUpdated += _apiWebSocket_UserUpdated;
             socket.PlaystateCommand += _apiWebSocket_PlaystateCommand;
+            socket.SystemCommand += socket_SystemCommand;
+            socket.MessageCommand += socket_MessageCommand;
             socket.PlayCommand += _apiWebSocket_PlayCommand;
+            socket.Closed += socket_Closed;
 
             socket.StartEnsureConnectionTimer(5000);
 
             if (previousSocket != null)
             {
                 previousSocket.Dispose();
+            }
+        }
+
+        void socket_Closed(object sender, EventArgs e)
+        {
+            EnsureWebSocket();
+        }
+
+        void socket_MessageCommand(object sender, MessageCommandEventArgs e)
+        {
+            _presentation.ShowMessage(new MessageBoxInfo
+            {
+                Button = System.Windows.MessageBoxButton.OK,
+                Caption = e.Request.Header,
+                Text = e.Request.Text,
+                TimeoutMs = Convert.ToInt32(e.Request.TimeoutMs ?? 0)
+            });
+        }
+
+        void socket_SystemCommand(object sender, SystemCommandEventArgs e)
+        {
+            switch (e.Command)
+            {
+                case SystemCommand.GoHome:
+                    _nav.NavigateToHomePage();
+                    break;
+                case SystemCommand.GoToSettings:
+                    _nav.NavigateToSettingsPage();
+                    break;
+                case SystemCommand.Mute:
+                    _playbackManager.Mute();
+                    break;
+                case SystemCommand.Unmute:
+                    _playbackManager.UnMute();
+                    break;
+                case SystemCommand.ToggleMute:
+                    if (_playbackManager.IsMuted)
+                    {
+                        _playbackManager.UnMute();
+                    }
+                    else
+                    {
+                        _playbackManager.Mute();
+                    }
+                    break;
+                case SystemCommand.VolumeDown:
+                    _playbackManager.VolumeStepDown();
+                    break;
+                case SystemCommand.VolumeUp:
+                    _playbackManager.VolumeStepUp();
+                    break;
             }
         }
 
@@ -190,6 +247,13 @@ namespace MediaBrowser.UI.EntryPoints
         public void Dispose()
         {
             _session.UserLoggedIn -= _session_UserLoggedIn;
+
+            if (_apiWebSocket != null)
+            {
+                _apiWebSocket.Closed -= socket_Closed;
+                
+                _apiWebSocket.Dispose();
+            }
         }
     }
 }

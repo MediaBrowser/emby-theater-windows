@@ -28,7 +28,7 @@ namespace MediaBrowser.Theater.Core.FullscreenVideo
 
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
-        
+
         private Timer _activityTimer;
         private DateTime _lastMouseInput;
 
@@ -47,6 +47,8 @@ namespace MediaBrowser.Theater.Core.FullscreenVideo
             _imageManager = imageManager;
 
             InitializeComponent();
+
+            IsMouseIdle = false;
         }
 
         /// <summary>
@@ -65,7 +67,14 @@ namespace MediaBrowser.Theater.Core.FullscreenVideo
 
                 if (changed)
                 {
-                    Dispatcher.InvokeAsync(ShowOsd, DispatcherPriority.Background);
+                    if (value)
+                    {
+                        Dispatcher.InvokeAsync(HideOsd, DispatcherPriority.Background);
+                    }
+                    else
+                    {
+                        Dispatcher.InvokeAsync(ShowOsd, DispatcherPriority.Background);
+                    }
                 }
             }
         }
@@ -107,7 +116,7 @@ namespace MediaBrowser.Theater.Core.FullscreenVideo
             {
                 if (IsMouseIdle)
                 {
-                    Osd.Visibility = Visibility.Collapsed;
+                    HideOsd();
                 }
                 else
                 {
@@ -115,6 +124,11 @@ namespace MediaBrowser.Theater.Core.FullscreenVideo
                 }
 
             }, DispatcherPriority.Background);
+        }
+
+        private void HideOsd()
+        {
+            Osd.Visibility = Visibility.Collapsed;
         }
 
         protected override void OnInitialized(EventArgs e)
@@ -132,6 +146,7 @@ namespace MediaBrowser.Theater.Core.FullscreenVideo
 
         void FullscreenVideoPage_Loaded(object sender, RoutedEventArgs e)
         {
+            _lastMouseInput = DateTime.Now;
             _activityTimer = new Timer(TimerCallback, null, 100, 100);
 
             _userInputManager.MouseMove += _userInputManager_MouseMove;

@@ -10,7 +10,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
     /// <summary>
     /// Interaction logic for PanoramaDetailPage.xaml
     /// </summary>
-    public partial class PanoramaDetailPage : BasePage, ISupportsItemThemeMedia, ISupportsItemBackdrops
+    public partial class PanoramaDetailPage : BasePage, ISupportsItemThemeMedia, ISupportsItemBackdrops, IItemPage
     {
         private readonly ItemViewModel _itemViewModel;
 
@@ -77,18 +77,13 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             }
         }
 
-        internal static string GetEpisodeTitle(BaseItemDto item)
+        private static string GetEpisodeTitle(BaseItemDto item)
         {
             var title = item.Name;
 
             if (item.IndexNumber.HasValue)
             {
-                title = "Ep. " + item.IndexNumber.Value + ": " + title;
-            }
-
-            if (item.ParentIndexNumber.HasValue)
-            {
-                title = "Season " + item.ParentIndexNumber.Value + ", " + title;
+                title = item.IndexNumber.Value + " - " + title;
             }
 
             return title;
@@ -102,6 +97,16 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
         public BaseItemDto BackdropItem
         {
             get { return _itemViewModel.Item; }
+        }
+
+        public BaseItemDto PageItem
+        {
+            get { return _itemViewModel.Item; }
+        }
+
+        public ViewType ViewType
+        {
+            get { return ViewType.Folders; }
         }
     }
 }

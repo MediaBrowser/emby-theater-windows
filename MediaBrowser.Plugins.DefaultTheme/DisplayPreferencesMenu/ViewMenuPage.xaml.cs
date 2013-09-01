@@ -1,6 +1,6 @@
-﻿using MediaBrowser.Theater.Presentation.Pages;
+﻿using MediaBrowser.Theater.Interfaces.Presentation;
+using MediaBrowser.Theater.Presentation.Pages;
 using MediaBrowser.Theater.Presentation.ViewModels;
-using System;
 using System.Windows;
 
 namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferencesMenu
@@ -42,7 +42,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferencesMenu
         {
             _displayPreferencesViewModel.PrimaryImageWidth = 600;
 
-            _displayPreferencesViewModel.ViewType = ViewTypes.Thumbstrip;
+            _displayPreferencesViewModel.ViewType = ListViewTypes.Thumbstrip;
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferencesMenu
         {
             _displayPreferencesViewModel.PrimaryImageWidth = 240;
 
-            _displayPreferencesViewModel.ViewType = ViewTypes.Poster;
+            _displayPreferencesViewModel.ViewType = ListViewTypes.Poster;
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferencesMenu
         {
             _displayPreferencesViewModel.PrimaryImageWidth = 140;
 
-            _displayPreferencesViewModel.ViewType = ViewTypes.List;
+            _displayPreferencesViewModel.ViewType = ListViewTypes.List;
         }
 
         /// <summary>
@@ -74,9 +74,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferencesMenu
         /// </summary>
         private void UpdateFields()
         {
-            radioList.IsChecked = _displayPreferencesViewModel.ViewType == ViewTypes.List;
-            radioPoster.IsChecked = _displayPreferencesViewModel.ViewType == ViewTypes.Poster;
-            radioThumbstrip.IsChecked = _displayPreferencesViewModel.ViewType == ViewTypes.Thumbstrip;
+            radioList.IsChecked = _displayPreferencesViewModel.ViewType == ListViewTypes.List;
+            radioPoster.IsChecked = _displayPreferencesViewModel.ViewType == ListViewTypes.Poster;
+            radioThumbstrip.IsChecked = _displayPreferencesViewModel.ViewType == ListViewTypes.Thumbstrip;
 
             if (!radioList.IsChecked.Value && !radioPoster.IsChecked.Value && !radioThumbstrip.IsChecked.Value)
             {

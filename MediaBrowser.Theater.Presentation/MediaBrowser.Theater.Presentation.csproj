@@ -127,7 +127,6 @@
     <Compile Include="ViewModels\RangeObservableCollection.cs" />
     <Compile Include="ViewModels\UserDtoViewModel.cs" />
     <Compile Include="ViewModels\UserListViewModel.cs" />
-    <Compile Include="ViewModels\ViewTypes.cs" />
     <Compile Include="Controls\BaseModalWindow.cs" />
     <Compile Include="Controls\BaseWindow.cs" />
     <Compile Include="ViewModels\VolumeOsdViewModel.cs" />

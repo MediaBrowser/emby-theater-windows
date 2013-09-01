@@ -19,9 +19,9 @@
             <RowDefinition Height="auto"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <TextBlock Name="TxtName" Style="{DynamicResource TextBlockStyle}" HorizontalAlignment="Center" Margin="300 0 300 0" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"></TextBlock>
+        <TextBlock Name="TxtName" Style="{DynamicResource TextBlockStyle}" HorizontalAlignment="Center" Margin="300 0 300 10" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"></TextBlock>
 
-        <controls:ExtendedListBox x:Name="MenuList" ItemsSource="{Binding Sections}" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" Grid.Row="1" HorizontalAlignment="Center" Margin="20 40 20 0" ItemContainerStyle="{DynamicResource DetailPageMenuListBoxItemStyle}">
+        <controls:ExtendedListBox x:Name="MenuList" ItemsSource="{Binding Sections}" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" Grid.Row="1" HorizontalAlignment="Center" Margin="20 30 20 0" ItemContainerStyle="{DynamicResource DetailPageMenuListBoxItemStyle}">
             <controls:ExtendedListBox.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" />
@@ -45,7 +45,7 @@
                 </Style>
             </controls:ExtendedScrollViewer.Style>
 
-            <controls:ScrollingPanel x:Name="ScrollingPanel" CanHorizontallyScroll="True" CanVerticallyScroll="False" HorizontalAlignment="Stretch">
+            <controls:ScrollingPanel x:Name="ScrollingPanel" HorizontalAlignment="Stretch">
                 <controls:ScrollingPanel.Style>
                     <Style TargetType="{x:Type controls:ScrollingPanel}">
                         <Setter Property="CanHorizontallyScroll" Value="True"></Setter>
@@ -62,7 +62,7 @@
             </controls:ScrollingPanel>
         </controls:ExtendedScrollViewer>
 
-        <Grid Grid.Row="3" Margin="25 0 25 20">
+        <Grid Grid.Row="3" Margin="25 0 25 15">
 
             <details:ItemInfoFooter x:Name="ItemInfoFooter" HorizontalAlignment="Right" VerticalAlignment="Bottom" DataContext="{Binding ItemViewModel}"></details:ItemInfoFooter>
 

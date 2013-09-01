@@ -1,4 +1,5 @@
 ﻿using MediaBrowser.Model.Dto;
+using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.ViewModels;
 using System;
 using System.Threading.Tasks;
@@ -52,7 +53,7 @@ namespace MediaBrowser.Theater.Interfaces.Navigation
         /// </summary>
         /// <param name="item">The item.</param>
         /// <param name="context">The context.</param>
-        Task NavigateToItem(BaseItemDto item, string context = null);
+        Task NavigateToItem(BaseItemDto item, ViewType context = ViewType.Folders);
 
         /// <summary>
         /// Navigates to person.
@@ -60,7 +61,7 @@ namespace MediaBrowser.Theater.Interfaces.Navigation
         /// <param name="name">The name.</param>
         /// <param name="context">The context.</param>
         /// <returns>Task.</returns>
-        Task NavigateToPerson(string name, string context = null);
+        Task NavigateToPerson(string name, ViewType context = ViewType.Folders);
 
         /// <summary>
         /// Navigates the back.

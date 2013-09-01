@@ -8,7 +8,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
     /// <summary>
     /// Interaction logic for HomePage.xaml
     /// </summary>
-    public partial class HomePage : BasePage, ISupportsItemBackdrops
+    public partial class HomePage : BasePage, ISupportsItemBackdrops, IItemPage
     {
         /// <summary>
         /// Gets the application window.
@@ -35,6 +35,16 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         public BaseItemDto BackdropItem
         {
             get { return _parentItem; }
+        }
+
+        public BaseItemDto PageItem
+        {
+            get { return _parentItem; }
+        }
+
+        public ViewType ViewType
+        {
+            get { return ViewType.Home; }
         }
     }
 }

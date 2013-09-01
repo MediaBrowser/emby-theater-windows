@@ -198,7 +198,7 @@ namespace MediaBrowser.UI.Implementations
         /// <param name="item">The item.</param>
         /// <param name="context">The context.</param>
         /// <returns>DispatcherOperation.</returns>
-        public async Task NavigateToItem(BaseItemDto item, string context = null)
+        public async Task NavigateToItem(BaseItemDto item, ViewType context = ViewType.Folders)
         {
             // Grab it fresh from the server to make sure we have the full record
             item = await _apiClient.GetItemAsync(item.Id, _apiClient.CurrentUserId);
@@ -231,7 +231,7 @@ namespace MediaBrowser.UI.Implementations
         /// <param name="name">The name.</param>
         /// <param name="context">The context.</param>
         /// <returns>Task.</returns>
-        public async Task NavigateToPerson(string name, string context = null)
+        public async Task NavigateToPerson(string name, ViewType context = ViewType.Folders)
         {
             var item = await _apiClient.GetPersonAsync(name, _sessionFactory().CurrentUser.Id);
 

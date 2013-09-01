@@ -24,7 +24,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
     /// <summary>
     /// Interaction logic for FolderPage.xaml
     /// </summary>
-    public partial class FolderPage : BasePage, ISupportsItemThemeMedia, ISupportsBackdrops
+    public partial class FolderPage : BasePage, ISupportsItemThemeMedia, ISupportsBackdrops, IItemPage
     {
         private readonly DisplayPreferences _displayPreferences;
 
@@ -75,17 +75,15 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
             _viewModel.DisplayPreferences = _displayPreferences;
 
             DataContext = _viewModel;
-
-            OnParentItemChanged();
         }
 
         private ScrollDirection GetScrollDirection(ItemListViewModel viewModel)
         {
-            if (string.Equals(viewModel.ViewType, ViewTypes.List))
+            if (string.Equals(viewModel.ViewType, ListViewTypes.List))
             {
                 return ScrollDirection.Vertical;
             }
-            if (string.Equals(viewModel.ViewType, ViewTypes.Thumbstrip))
+            if (string.Equals(viewModel.ViewType, ListViewTypes.Thumbstrip))
             {
                 return ScrollDirection.Horizontal;
             }
@@ -97,7 +95,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
 
         private ImageType[] GetPreferredImageTypes(ItemListViewModel viewModel)
         {
-            return string.Equals(viewModel.ViewType, ViewTypes.Thumbstrip) || string.Equals(viewModel.ViewType, ViewTypes.List)
+            return string.Equals(viewModel.ViewType, ListViewTypes.Thumbstrip) || string.Equals(viewModel.ViewType, ListViewTypes.List)
                        ? new[] { ImageType.Backdrop, ImageType.Thumb, ImageType.Primary }
                        : new[] { ImageType.Primary };
         }
@@ -105,11 +103,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
 
         private bool GetShowSidebar(ItemListViewModel viewModel)
         {
-            if (string.Equals(viewModel.ViewType, ViewTypes.List))
+            if (string.Equals(viewModel.ViewType, ListViewTypes.List))
             {
                 return true;
             }
-            if (string.Equals(viewModel.ViewType, ViewTypes.Thumbstrip))
+            if (string.Equals(viewModel.ViewType, ListViewTypes.Thumbstrip))
             {
                 return false;
             }
@@ -119,17 +117,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
 
         protected void OnParentItemChanged()
         {
-            DefaultTheme.Current.PageContentDataContext.SetPageTitle(_parentItem);
-
-            if (_parentItem.IsType("season") && _parentItem.IndexNumber.HasValue)
-            {
-                TxtParentName.Text = "Season " + _parentItem.IndexNumber.Value;
-                TxtParentName.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                TxtParentName.Visibility = Visibility.Collapsed;
-            }
+            SetPageTitle(_parentItem);
         }
 
         void FolderPage_Unloaded(object sender, RoutedEventArgs e)
@@ -143,12 +131,17 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
             {
                 ShowViewButton();
 
-                DefaultTheme.Current.PageContentDataContext.SetPageTitle(_parentItem);
+                SetPageTitle(_parentItem);
             }
             else
             {
                 HideViewButton();
             }
+        }
+
+        private void SetPageTitle(BaseItemDto parentItem)
+        {
+            DefaultTheme.Current.PageContentDataContext.SetPageTitle(parentItem);
         }
 
         public static string GetDisplayName(BaseItemDto item)
@@ -220,12 +213,22 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
             get { return _parentItem.Id; }
         }
 
+        public BaseItemDto PageItem
+        {
+            get { return _parentItem; }
+        }
+
+        public ViewType ViewType
+        {
+            get { return ViewType.Folders; }
+        }
+
         private double GetItemContainerHeight(ItemListViewModel viewModel)
         {
             var height = GetImageDisplayHeight(viewModel);
 
             // Add the bottom border
-            if (string.Equals(viewModel.ViewType, ViewTypes.List))
+            if (string.Equals(viewModel.ViewType, ListViewTypes.List))
             {
                 height += 12;
             }
@@ -287,14 +290,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
         {
             if (Sidebar.Visibility != Visibility.Visible)
             {
-                if (item != null && string.Equals(_viewModel.ViewType, ViewTypes.Thumbstrip) && (item.HasArtImage || item.ParentArtImageTag.HasValue))
-                {
-                    SetLogo(_apiClient.GetArtImageUrl(item, new ImageOptions
-                    {
-                        ImageType = ImageType.Art
-                    }));
-                }
-                else if (item != null && item.HasLogo)
+                if (item != null && (item.HasLogo || item.ParentLogoImageTag.HasValue))
                 {
                     SetLogo(_apiClient.GetLogoImageUrl(item, new ImageOptions
                     {

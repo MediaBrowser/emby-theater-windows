@@ -7,7 +7,7 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
 
-        <Image Name="ImgLogo" Stretch="Uniform" HorizontalAlignment="Left" VerticalAlignment="Top" Height="80" Margin="25 20 0 0"></Image>
+        <Image Name="ImgLogo" Stretch="Uniform" HorizontalAlignment="Left" VerticalAlignment="Top" Height="80" MaxWidth="700" Margin="25 20 0 0"></Image>
 
         <Grid Background="#86000000" VerticalAlignment="Bottom" HorizontalAlignment="Stretch">
 

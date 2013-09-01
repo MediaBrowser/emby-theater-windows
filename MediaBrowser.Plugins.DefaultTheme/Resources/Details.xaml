@@ -287,6 +287,8 @@
                         <RowDefinition Height="auto"></RowDefinition>
                         <RowDefinition Height="auto"></RowDefinition>
                         <RowDefinition Height="auto"></RowDefinition>
+                        <RowDefinition Height="auto"></RowDefinition>
+                        <RowDefinition Height="auto"></RowDefinition>
                     </Grid.RowDefinitions>
 
                     <Grid.ColumnDefinitions>
@@ -294,7 +296,108 @@
                         <ColumnDefinition Width="*"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Grid.Row="0" Grid.Column="0" Text="game system">
+                    <TextBlock Grid.Row="0" Grid.Column="0" Margin="0 5 0 0">
+                        <TextBlock.Style>
+                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
+                                <Setter Property="Text" Value="artists" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ArtistCount}" Value="1">
+                                        <Setter Property="Text" Value="artist" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding ArtistCount}" Value="0">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+
+                    <ItemsControl Grid.Row="0" Grid.Column="1" Margin="50 5 0 0" ItemsSource="{Binding Artists}" Focusable="False">
+                        <ItemsControl.Style>
+                            <Style TargetType="{x:Type ItemsControl}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ArtistCount}" Value="0">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ItemsControl.Style>
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal"></WrapPanel>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Style="{DynamicResource TextBlockStyle}" x:Name="Delimiter" Text=" • "/>
+                                    <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding .}"/>
+                                </StackPanel>
+                                <DataTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource PreviousData}}" Value="{x:Null}">
+                                        <Setter Property="Visibility" TargetName="Delimiter" Value="Collapsed"/>
+                                    </DataTrigger>
+                                </DataTemplate.Triggers>
+                            </DataTemplate>
+
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="album">
+                        <TextBlock.Style>
+                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Album}" Value="{x:Null}">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+
+                    <TextBlock Grid.Row="1" Grid.Column="1" Margin="50 0 0 0" Text="{Binding Album}">
+                        <TextBlock.Style>
+                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Album}" Value="{x:Null}">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="album artist">
+                        <TextBlock.Style>
+                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding AlbumArtist}" Value="{x:Null}">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding ItemType}" Value="MusicAlbum">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+
+                    <TextBlock Grid.Row="2" Grid.Column="1" Margin="50 0 0 0" Text="{Binding AlbumArtist}">
+                        <TextBlock.Style>
+                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding AlbumArtist}" Value="{x:Null}">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding ItemType}" Value="MusicAlbum">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="game system">
                         <TextBlock.Style>
                             <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
                                 <Style.Triggers>
@@ -306,7 +409,7 @@
                         </TextBlock.Style>
                     </TextBlock>
 
-                    <TextBlock Grid.Row="0" Grid.Column="1" Margin="50 0 0 0" Text="{Binding GameSystem}">
+                    <TextBlock Grid.Row="3" Grid.Column="1" Margin="50 0 0 0" Text="{Binding GameSystem}">
                         <TextBlock.Style>
                             <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
                                 <Style.Triggers>
@@ -318,7 +421,7 @@
                         </TextBlock.Style>
                     </TextBlock>
 
-                    <TextBlock Grid.Row="1" Grid.Column="0" Margin="0 5 0 0">
+                    <TextBlock Grid.Row="4" Grid.Column="0" Margin="0 5 0 0">
                         <TextBlock.Style>
                             <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
                                 <Setter Property="Text" Value="directors" />
@@ -337,7 +440,7 @@
                         </TextBlock.Style>
                     </TextBlock>
 
-                    <ItemsControl Grid.Row="1" Grid.Column="1" Margin="50 5 0 0" ItemsSource="{Binding Directors}" Focusable="False">
+                    <ItemsControl Grid.Row="4" Grid.Column="1" Margin="50 5 0 0" ItemsSource="{Binding Directors}" Focusable="False">
                         <ItemsControl.Style>
                             <Style TargetType="{x:Type ItemsControl}">
                                 <Style.Triggers>
@@ -371,7 +474,7 @@
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
 
-                    <TextBlock Grid.Row="2" Grid.Column="0" Margin="0 5 0 0">
+                    <TextBlock Grid.Row="5" Grid.Column="0" Margin="0 5 0 0">
                         <TextBlock.Style>
                             <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
                                 <Setter Property="Text" Value="genres" />
@@ -390,7 +493,7 @@
                         </TextBlock.Style>
                     </TextBlock>
 
-                    <ItemsControl Grid.Row="2" Grid.Column="1" Margin="50 5 0 0" ItemsSource="{Binding Genres}" Focusable="False">
+                    <ItemsControl Grid.Row="5" Grid.Column="1" Margin="50 5 0 0" ItemsSource="{Binding Genres}" Focusable="False">
                         <ItemsControl.Style>
                             <Style TargetType="{x:Type ItemsControl}">
                                 <Style.Triggers>
@@ -424,7 +527,7 @@
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
 
-                    <TextBlock Grid.Row="3" Grid.Column="0" Margin="0 5 0 0">
+                    <TextBlock Grid.Row="6" Grid.Column="0" Margin="0 5 0 0">
                         <TextBlock.Style>
                             <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
                                 <Setter Property="Text" Value="studios" />
@@ -443,7 +546,7 @@
                         </TextBlock.Style>
                     </TextBlock>
 
-                    <ItemsControl Grid.Row="3" Grid.Column="1" Margin="50 5 0 0" ItemsSource="{Binding StudioNames}" Focusable="False">
+                    <ItemsControl Grid.Row="6" Grid.Column="1" Margin="50 5 0 0" ItemsSource="{Binding StudioNames}" Focusable="False">
                         <ItemsControl.Style>
                             <Style TargetType="{x:Type ItemsControl}">
                                 <Style.Triggers>
@@ -477,7 +580,7 @@
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
 
-                    <TextBlock Grid.Row="4" Grid.Column="0" Margin="0 5 0 0">
+                    <TextBlock Grid.Row="7" Grid.Column="0" Margin="0 5 0 0">
                         <TextBlock.Style>
                             <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
                                 <Setter Property="Text" Value="premiered" />
@@ -496,7 +599,7 @@
                         </TextBlock.Style>
                     </TextBlock>
 
-                    <TextBlock Grid.Row="4" Grid.Column="1" Margin="50 5 0 0" Text="{Binding PremiereShortDate}">
+                    <TextBlock Grid.Row="7" Grid.Column="1" Margin="50 5 0 0" Text="{Binding PremiereShortDate}">
                         <TextBlock.Style>
                             <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
                                 <Style.Triggers>
@@ -511,7 +614,7 @@
                         </TextBlock.Style>
                     </TextBlock>
 
-                    <TextBlock Grid.Row="5" Grid.Column="0" Margin="0 5 0 0" Text="players">
+                    <TextBlock Grid.Row="8" Grid.Column="0" Margin="0 5 0 0" Text="players">
                         <TextBlock.Style>
                             <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
                                 <Style.Triggers>
@@ -523,7 +626,7 @@
                         </TextBlock.Style>
                     </TextBlock>
 
-                    <TextBlock Grid.Row="5" Grid.Column="1" Margin="50 5 0 0" Text="{Binding Players}">
+                    <TextBlock Grid.Row="8" Grid.Column="1" Margin="50 5 0 0" Text="{Binding Players}">
                         <TextBlock.Style>
                             <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
                                 <Style.Triggers>
@@ -537,7 +640,7 @@
 
                 </Grid>
 
-                <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding Overview}"  Grid.Row="2" Margin="0 30 0 10" TextTrimming="CharacterEllipsis"></TextBlock>
+                <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding Overview}"  Grid.Row="2" Margin="0 30 0 10" TextTrimming="CharacterEllipsis" MinWidth="900"></TextBlock>
             </Grid>
         </Grid>
     </DataTemplate>

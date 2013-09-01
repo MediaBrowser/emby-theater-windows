@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.ApiClient;
+﻿using System;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.ViewModels;
@@ -42,17 +43,12 @@ namespace MediaBrowser.Plugins.DefaultTheme
 
             set
             {
-                var changed = _logoImage != value;
-
                 _logoImage = value;
 
-                if (changed)
-                {
-                    OnPropertyChanged("LogoImage");
-                }
+                OnPropertyChanged("LogoImage");
             }
         }
-        
+
         public async void SetPageTitle(BaseItemDto item)
         {
             if (item.HasLogo || !string.IsNullOrEmpty(item.ParentLogoItemId))
@@ -80,7 +76,30 @@ namespace MediaBrowser.Plugins.DefaultTheme
 
         private void SetPageTitleText(BaseItemDto item)
         {
-            PageTitle = item.SeriesName ?? item.Album ?? item.Name;
+            var title = item.Name;
+
+            if (item.IsType("Season"))
+            {
+                title = item.SeriesName + " | " + item.Name;
+            }
+            else if (item.IsType("Episode"))
+            {
+                title = item.SeriesName;
+
+                if (item.ParentIndexNumber.HasValue)
+                {
+                    title += " | " + string.Format("Season {0}", item.ParentIndexNumber.Value.ToString());
+                }
+            }
+            else if (item.IsType("MusicAlbum"))
+            {
+                if (!string.IsNullOrEmpty(item.AlbumArtist))
+                {
+                    title = item.AlbumArtist + " | " + title;
+                }
+            }
+
+            PageTitle = title;
             ShowDefaultPageTitle = string.IsNullOrEmpty(PageTitle);
             ShowLogoImage = false;
         }

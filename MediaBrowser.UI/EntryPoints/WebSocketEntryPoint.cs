@@ -12,9 +12,11 @@ using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
+using MediaBrowser.Theater.Interfaces.Theming;
 using System;
 using System.Linq;
 using System.Threading;
+using System.Windows;
 
 namespace MediaBrowser.UI.EntryPoints
 {
@@ -47,6 +49,7 @@ namespace MediaBrowser.UI.EntryPoints
         {
             _session.UserLoggedIn += _session_UserLoggedIn;
             _apiClient.ServerLocationChanged += _apiClient_ServerLocationChanged;
+            _nav.Navigated += _nav_Navigated;
             EnsureWebSocket();
         }
 
@@ -124,7 +127,7 @@ namespace MediaBrowser.UI.EntryPoints
         {
             _presentation.ShowMessage(new MessageBoxInfo
             {
-                Button = System.Windows.MessageBoxButton.OK,
+                Button = MessageBoxButton.OK,
                 Caption = e.Request.Header,
                 Text = e.Request.Text,
                 TimeoutMs = Convert.ToInt32(e.Request.TimeoutMs ?? 0)
@@ -170,7 +173,7 @@ namespace MediaBrowser.UI.EntryPoints
         {
             if (_session.CurrentUser == null)
             {
-                _logger.Error("Cannot process remote control command without a logged in user.");
+                OnAnonymousRemoteControlCommand();
                 return;
             }
 
@@ -201,7 +204,7 @@ namespace MediaBrowser.UI.EntryPoints
         {
             if (_session.CurrentUser == null)
             {
-                _logger.Error("Cannot process remote control command without a logged in user.");
+                OnAnonymousRemoteControlCommand();
                 return;
             }
 
@@ -223,7 +226,7 @@ namespace MediaBrowser.UI.EntryPoints
         {
             if (_session.CurrentUser == null)
             {
-                _logger.Error("Cannot process remote control command without a logged in user.");
+                OnAnonymousRemoteControlCommand();
                 return;
             }
 
@@ -236,11 +239,42 @@ namespace MediaBrowser.UI.EntryPoints
                     Id = e.Request.ItemId
                 };
 
-                await _nav.NavigateToItem(dto, e.Request.Context);
+                var viewType = ViewType.Folders;
+
+                if (!string.IsNullOrEmpty(e.Request.Context))
+                {
+                    Enum.TryParse(e.Request.Context, true, out viewType);
+                }
+                await _nav.NavigateToItem(dto, viewType);
             }
             catch (HttpException ex)
             {
                 _logger.ErrorException("Error processing browse command", ex);
+            }
+        }
+
+        private void OnAnonymousRemoteControlCommand()
+        {
+            _logger.Error("Cannot process remote control command without a logged in user.");
+            _presentation.ShowMessage(new MessageBoxInfo
+            {
+                Button = MessageBoxButton.OK,
+                Caption = "Error",
+                Icon = MessageBoxIcon.Error,
+                Text = "Please sign in before attempting to use remote control"
+            });
+        }
+
+        void _nav_Navigated(object sender, NavigationEventArgs e)
+        {
+            var itemPage = e.NewPage as IItemPage;
+
+            if (itemPage != null)
+            {
+                var item = itemPage.PageItem;
+
+                _apiWebSocket.SendContextMessageAsync(item.Type, item.Id, item.Name, itemPage.ViewType.ToString(),
+                                                      CancellationToken.None);
             }
         }
 
@@ -251,7 +285,7 @@ namespace MediaBrowser.UI.EntryPoints
             if (_apiWebSocket != null)
             {
                 _apiWebSocket.Closed -= socket_Closed;
-                
+
                 _apiWebSocket.Dispose();
             }
         }

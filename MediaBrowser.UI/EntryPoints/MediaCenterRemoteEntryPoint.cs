@@ -486,8 +486,6 @@ namespace MediaBrowser.UI.EntryPoints
             if (activePlayer != null && activePlayer.CurrentMedia != null && activePlayer.CurrentMedia.IsVideo)
             {
                 await NextChapter();
-
-                ShowFullscreenVideoOsd();
             }
             else
             {
@@ -504,8 +502,6 @@ namespace MediaBrowser.UI.EntryPoints
             if (activePlayer != null && activePlayer.CurrentMedia != null && activePlayer.CurrentMedia.IsVideo)
             {
                 await PreviousChapter();
-
-                ShowFullscreenVideoOsd();
             }
             else
             {

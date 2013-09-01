@@ -69,6 +69,7 @@
     <Compile Include="Presentation\IAppFactory.cs" />
     <Compile Include="Presentation\IFullscreenVideoPage.cs" />
     <Compile Include="Presentation\IHomePage.cs" />
+    <Compile Include="Presentation\IItemPage.cs" />
     <Compile Include="Presentation\ISupportsBackdrops.cs" />
     <Compile Include="Presentation\ISupportsThemeMedia.cs" />
     <Compile Include="Presentation\IPresentationManager.cs" />
@@ -76,6 +77,8 @@
     <Compile Include="Presentation\IStartupEntryPoint.cs" />
     <Compile Include="Presentation\IApp.cs" />
     <Compile Include="Presentation\MessageBoxInfo.cs" />
+    <Compile Include="Presentation\ListViewTypes.cs" />
+    <Compile Include="Presentation\ViewType.cs" />
     <Compile Include="Reflection\ChainingPropertyDescriptor.cs" />
     <Compile Include="Reflection\HyperTypeDescriptionProvider.cs" />
     <Compile Include="Reflection\HyperTypeDescriptor.cs" />

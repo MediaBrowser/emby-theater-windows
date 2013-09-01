@@ -14,25 +14,41 @@
     <Grid>
 
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <TextBlock x:Name="TxtParentName" Style="{DynamicResource TextBlockStyle}" Grid.Row="0" Margin="25 5 0 0"></TextBlock>
+        <Grid Grid.Row="0">
 
-        <Grid Grid.Row="1" Margin="0 25 0 0">
-
+            <Grid.Style>
+                <Style TargetType="{x:Type Grid}">
+                    <Setter Property="Margin" Value="0 10 0 0" />
+                    
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ScrollDirection}" Value="Vertical">
+                            <Setter Property="Margin" Value="0 30 0 0" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+            
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                 <ColumnDefinition Width="*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
-            <Grid x:Name="Sidebar" Grid.Column="0" Margin="30 30 30 0" Width="600">
+            <Grid x:Name="Sidebar" Grid.Column="0" Width="600">
                 <Grid.Style>
                     <Style TargetType="{x:Type Grid}">
+                        <Setter Property="Margin" Value="30 30 30 0" />
                         <Style.Triggers>
+                            <DataTrigger Binding="{Binding ScrollDirection}" Value="Horizontal">
+                                <Setter Property="Margin" Value="30 30 50 0" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding ViewType}" Value="List">
+                                <Setter Property="Margin" Value="30 30 50 0" />
+                            </DataTrigger>
                             <DataTrigger Binding="{Binding ShowSidebar}" Value="False">
                                 <Setter Property="Visibility" Value="Collapsed" />
                             </DataTrigger>
@@ -46,7 +62,7 @@
             </controls:ExtendedListBox>
         </Grid>
 
-        <Grid Grid.Row="2" Name="PnlThumbstripInfo">
+        <Grid Grid.Row="1" Name="PnlThumbstripInfo">
             <Grid.Style>
                 <Style TargetType="{x:Type Grid}">
                     <Style.Triggers>
@@ -116,7 +132,7 @@
             </StackPanel>
         </Grid>
 
-        <Grid Grid.Row="3" Margin="25 25 25 15">
+        <Grid Grid.Row="2" Margin="25 25 25 15">
 
             <Grid HorizontalAlignment="Left" VerticalAlignment="Bottom">
                 <Grid.Style>
@@ -141,8 +157,8 @@
                     </TextBlock.Style>
                 </TextBlock>
 
-                <Grid Height="100">
-                    <Image Name="ImgLogo" Stretch="Uniform" MaxWidth="700" Height="100" VerticalAlignment="Bottom"></Image>
+                <Grid Height="80">
+                    <Image Name="ImgLogo" Stretch="Uniform" MaxWidth="700" VerticalAlignment="Bottom"></Image>
                 </Grid>
             </Grid>
 

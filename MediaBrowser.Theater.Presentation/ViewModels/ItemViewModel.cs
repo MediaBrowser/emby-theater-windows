@@ -101,6 +101,10 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                     OnPropertyChanged("StudioCount");
                     OnPropertyChanged("Directors");
                     OnPropertyChanged("DirectorCount");
+                    OnPropertyChanged("Album");
+                    OnPropertyChanged("AlbumArtist");
+                    OnPropertyChanged("Artists");
+                    OnPropertyChanged("ArtistCount");
 
                     RefreshUserDataFields();
                 }
@@ -352,13 +356,28 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         {
             get
             {
-                return _item == null ? 
-                    null : 
+                return _item == null ?
+                    null :
                     _item.People
                     .Where(i => string.Equals(i.Type, PersonType.Director, StringComparison.OrdinalIgnoreCase) || string.Equals(i.Role, PersonType.Director, StringComparison.OrdinalIgnoreCase))
                     .Select(i => i.Name)
                     .Take(3)
                     .ToList();
+            }
+        }
+
+        public int ArtistCount
+        {
+            get { return _item == null || _item.Artists == null ? 0 : _item.Artists.Length; }
+        }
+
+        public string[] Artists
+        {
+            get
+            {
+                return _item == null ?
+                    null :
+                    _item.Artists;
             }
         }
 
@@ -492,6 +511,16 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         public string OfficialRating
         {
             get { return _item == null ? null : _item.OfficialRating; }
+        }
+
+        public string AlbumArtist
+        {
+            get { return _item == null ? null : _item.AlbumArtist; }
+        }
+
+        public string Album
+        {
+            get { return _item == null ? null : _item.Album; }
         }
 
         public string Tagline

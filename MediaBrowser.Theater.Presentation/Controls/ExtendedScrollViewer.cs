@@ -23,7 +23,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
             // Don't eat left/right if horizontal scrolling is disabled
             if (e.Key == Key.Left || e.Key == Key.Right)
             {
-                if (HorizontalScrollBarVisibility == ScrollBarVisibility.Disabled)
+                if (HorizontalScrollBarVisibility == ScrollBarVisibility.Disabled || HorizontalOffset.Equals(0))
                 {
                     return;
                 }
@@ -32,7 +32,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
             // Don't eat up/down if vertical scrolling is disabled
             if (e.Key == Key.Up || e.Key == Key.Down)
             {
-                if (VerticalScrollBarVisibility == ScrollBarVisibility.Disabled)
+                if (VerticalScrollBarVisibility == ScrollBarVisibility.Disabled || VerticalOffset.Equals(0))
                 {
                     return;
                 }

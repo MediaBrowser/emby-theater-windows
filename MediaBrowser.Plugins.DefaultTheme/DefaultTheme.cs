@@ -97,7 +97,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// <param name="item">The item.</param>
         /// <param name="context">The context.</param>
         /// <returns>Page.</returns>
-        public Page GetItemPage(BaseItemDto item, string context)
+        public Page GetItemPage(BaseItemDto item, ViewType context)
         {
             var itemViewModel = new ItemViewModel(_apiClient, _imageManager, _playbackManager, _presentationManager, _logger)
             {
@@ -118,7 +118,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// <param name="displayPreferences">The display preferences.</param>
         /// <param name="context">The context.</param>
         /// <returns>Page.</returns>
-        public Page GetFolderPage(BaseItemDto item, DisplayPreferences displayPreferences, string context)
+        public Page GetFolderPage(BaseItemDto item, DisplayPreferences displayPreferences, ViewType context)
         {
             if (!item.IsType("series") && !item.IsType("musicalbum"))
             {
@@ -134,7 +134,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// <param name="item">The item.</param>
         /// <param name="context">The context.</param>
         /// <returns>Page.</returns>
-        public Page GetPersonPage(BaseItemDto item, string context)
+        public Page GetPersonPage(BaseItemDto item, ViewType context)
         {
             return GetItemPage(item, context);
         }

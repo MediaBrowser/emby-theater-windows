@@ -1,10 +1,10 @@
 ﻿
-namespace MediaBrowser.Theater.Presentation.ViewModels
+namespace MediaBrowser.Theater.Interfaces.Presentation
 {
     /// <summary>
     /// These represent only a set of known view types. Themes are free to add more, or use their own names entirely.
     /// </summary>
-    public class ViewTypes
+    public class ListViewTypes
     {
         public const string Poster = "Poster";
         public const string Thumbstrip = "Thumbstrip";

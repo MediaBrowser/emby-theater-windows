@@ -1,5 +1,4 @@
 ﻿using MediaBrowser.Theater.Interfaces.Presentation;
-using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Interfaces.ViewModels;
 using MediaBrowser.Theater.Presentation.Pages;
 using Microsoft.Expression.Media.Effects;

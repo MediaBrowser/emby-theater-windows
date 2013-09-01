@@ -84,7 +84,7 @@
                             </Style.Triggers>
                         </Style>
                     </Grid.Style>
-                    
+
                     <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
                         <StackPanel.Style>
                             <Style TargetType="{x:Type StackPanel}">
@@ -95,12 +95,12 @@
                                 </Style.Triggers>
                             </Style>
                         </StackPanel.Style>
-                        
+
                         <TextBlock Style="{DynamicResource Heading2TextBlockStyle}" Text="media"></TextBlock>
                         <TextBlock Style="{DynamicResource Heading2TextBlockStyle}" Text="browser" Foreground="#52B54B"></TextBlock>
                     </StackPanel>
 
-                    <Image Source="{Binding LogoImage}" Margin="0 10 0 0" MaxHeight="80" MaxWidth="700" VerticalAlignment="Top" HorizontalAlignment="Left" Stretch="Uniform">
+                    <Image Source="{Binding LogoImage}" Margin="0 10 0 0" MaxHeight="70" MaxWidth="700" VerticalAlignment="Top" HorizontalAlignment="Left" Stretch="Uniform">
                         <Image.Style>
                             <Style TargetType="{x:Type Image}">
                                 <Style.Triggers>
@@ -343,10 +343,11 @@
     <DataTemplate x:Key="ListPageListViewItemTemplate" DataType="{x:Type viewModels:ItemViewModel}">
 
         <StackPanel Orientation="Vertical">
-            <Grid Margin="5">
+            <Grid Margin="5 5 15 5">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="auto"></ColumnDefinition>
                     <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="auto"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
 
                 <Grid Grid.Column="0" Width="{Binding ImageWidth}" Height="{Binding ImageHeight}">
@@ -368,8 +369,66 @@
                 </Grid>
 
                 <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding DisplayName}" Grid.Column="1" Margin="20 -5 0 0" VerticalAlignment="Center"></TextBlock>
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal">
+
+                    <Grid Background="#a6cc3333" VerticalAlignment="Center" Margin="0 0 10 0" Height="50">
+
+                        <Grid.Style>
+                            <Style TargetType="{x:Type Grid}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsOffline}" Value="False">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Grid.Style>
+
+                        <TextBlock Style="{DynamicResource SmallTextBlockStyle}" Foreground="White" Margin="10 5" VerticalAlignment="Center">OFFLINE</TextBlock>
+                    </Grid>
+
+                    <ProgressBar Minimum="0" Maximum="100" Value="{Binding PlayedPercentage, Mode=OneWay}" Margin="0 0 10 0" Width="100" Height="50">
+                        <ProgressBar.Style>
+                            <Style TargetType="{x:Type ProgressBar}" BasedOn="{StaticResource ResumeProgressBar}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsInProgress}" Value="False">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsFolder}" Value="True">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ProgressBar.Style>
+                    </ProgressBar>
+
+                    <Grid Background="#a6CC3333" Width="50" Height="50">
+
+                        <Grid.Style>
+                            <Style TargetType="{x:Type Grid}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsPlayed}" Value="False">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Grid.Style>
+
+                        <Path Data="M-150.204,626.126C-152.317,626.126 -154.429,626.126 -156.541,626.126 -167.642,633.42 -180.629,646.047 -189.668,657.238 -190.916,658.782 -192.945,662.362 -193.701,662.422 -194.041,662.448 -198.024,659.719 -198.614,659.297 -202.818,656.279 -205.779,653.709 -209.257,650.899 -211.248,652.172 -212.879,653.805 -214.153,655.797 -206.627,665.074 -200.283,675.534 -193.124,685.18 -181.491,665.11 -168.473,644.683 -152.796,629.006 -151.735,627.946 -149.817,626.933 -150.204,626.126z" Stretch="Uniform" Fill="#FFFFFFFF" Width="25" Height="25" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+                            <Path.RenderTransform>
+                                <TransformGroup>
+                                    <TransformGroup.Children>
+                                        <RotateTransform Angle="0" />
+                                        <ScaleTransform ScaleX="1" ScaleY="1" />
+                                    </TransformGroup.Children>
+                                </TransformGroup>
+                            </Path.RenderTransform>
+                        </Path>
+                    </Grid>
+                </StackPanel>
             </Grid>
-            <Border Background="#666" Height="2" Margin="0 0 0 0"></Border>
+
+            <Border Background="#666" Height="2" Margin="0 0 0 0" Opacity=".6"></Border>
         </StackPanel>
     </DataTemplate>
 
@@ -449,7 +508,7 @@
                 <Setter Property="ItemsPanel">
                     <Setter.Value>
                         <ItemsPanelTemplate>
-                            <controls:VirtualizingWrapPanel ItemHeight="{Binding ItemContainerHeight}" ItemWidth="1100" Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="20">
+                            <controls:VirtualizingWrapPanel ItemHeight="{Binding ItemContainerHeight}" ItemWidth="1060" Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                             </controls:VirtualizingWrapPanel>
                         </ItemsPanelTemplate>
                     </Setter.Value>

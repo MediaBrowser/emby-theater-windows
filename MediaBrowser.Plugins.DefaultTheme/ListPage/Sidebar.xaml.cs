@@ -1,5 +1,6 @@
 ﻿using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
+using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
 using System.Linq;
@@ -62,11 +63,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
             }
         }
 
-        private async void OnItemChanged(ItemViewModel viewModel, BaseItemDto item)
+        private void OnItemChanged(ItemViewModel viewModel, BaseItemDto item)
         {
             UpdateLogo(viewModel, item);
-
-            UpdateArt(viewModel, item);
 
             TxtGenres.Visibility = item.Genres.Count > 0 && !item.IsType("episode") && !item.IsType("season") ? Visibility.Visible : Visibility.Collapsed;
 
@@ -74,30 +73,31 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
         }
 
         private CancellationTokenSource _logoCancellationTokenSource;
-        
+
         private async void UpdateLogo(ItemViewModel viewModel, BaseItemDto item)
         {
-            if (_logoCancellationTokenSource != null)
+            if (string.Equals(viewModel.ViewType, ListViewTypes.List))
             {
-                _logoCancellationTokenSource.Cancel();
-                _logoCancellationTokenSource.Dispose();
-            }
+                TxtTitle.Visibility = Visibility.Visible;
 
-            _logoCancellationTokenSource = new CancellationTokenSource();
+                UpdateLogoForListView(viewModel, item);
+
+                return;
+            }
 
             if (item != null && (item.HasLogo || item.ParentLogoImageTag.HasValue))
             {
+                DisposeLogoCancellationToken(_logoCancellationTokenSource);
+                
+                var tokenSource = _logoCancellationTokenSource = new CancellationTokenSource();
+
                 try
                 {
-                    var token = _logoCancellationTokenSource.Token;
-
                     var img = await viewModel.GetBitmapImageAsync(new ImageOptions
                     {
                         ImageType = ImageType.Logo
 
-                    }, token);
-
-                    token.ThrowIfCancellationRequested();
+                    }, tokenSource.Token);
 
                     LogoImage.Source = img;
 
@@ -109,61 +109,72 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                 }
                 catch
                 {
-                    ArtImage.Visibility = Visibility.Collapsed;
+                    LogoImage.Visibility = Visibility.Collapsed;
                     TxtTitle.Visibility = Visibility.Visible;
+                }
+                finally
+                {
+                    DisposeLogoCancellationToken(tokenSource);
                 }
             }
             else
             {
-                ArtImage.Visibility = Visibility.Collapsed;
+                LogoImage.Visibility = Visibility.Collapsed;
                 TxtTitle.Visibility = Visibility.Visible;
             }
         }
 
-        private CancellationTokenSource _artCancellationTokenSource;
-
-        private async void UpdateArt(ItemViewModel viewModel, BaseItemDto item)
+        private async void UpdateLogoForListView(ItemViewModel viewModel, BaseItemDto item)
         {
-            const int maxheight = 120;
-
-            if (_artCancellationTokenSource != null)
+            if (item != null && item.HasPrimaryImage)
             {
-                _artCancellationTokenSource.Cancel();
-                _artCancellationTokenSource.Dispose();
-            }
+                DisposeLogoCancellationToken(_logoCancellationTokenSource);
 
-            _artCancellationTokenSource = new CancellationTokenSource();
+                var tokenSource = _logoCancellationTokenSource = new CancellationTokenSource();
 
-            if (item != null && (item.HasArtImage || item.ParentArtImageTag.HasValue))
-            {
                 try
                 {
-                    var token = _artCancellationTokenSource.Token;
-                    
                     var img = await viewModel.GetBitmapImageAsync(new ImageOptions
                     {
-                        Height = maxheight,
-                        ImageType = ImageType.Art
+                        ImageType = ImageType.Primary
 
-                    }, token);
+                    }, tokenSource.Token);
 
-                    token.ThrowIfCancellationRequested();
+                    tokenSource.Token.ThrowIfCancellationRequested();
 
-                    ArtImage.Source = img;
+                    LogoImage.Source = img;
 
-                    ArtImage.Visibility = Visibility.Visible;
+                    LogoImage.Visibility = Visibility.Visible;
                 }
                 catch (OperationCanceledException)
                 {
                 }
                 catch
                 {
-                    ArtImage.Visibility = Visibility.Collapsed;
+                    LogoImage.Visibility = Visibility.Collapsed;
+                }
+                finally
+                {
+                    DisposeLogoCancellationToken(tokenSource);
                 }
             }
             else
             {
-                ArtImage.Visibility = Visibility.Collapsed;
+                LogoImage.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private void DisposeLogoCancellationToken(CancellationTokenSource current)
+        {
+            if (current == _logoCancellationTokenSource)
+            {
+                _logoCancellationTokenSource = null;
+            }
+
+            if (current != null)
+            {
+                current.Cancel();
+                current.Dispose();
             }
         }
     }

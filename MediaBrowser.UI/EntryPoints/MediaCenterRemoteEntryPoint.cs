@@ -40,8 +40,6 @@ namespace MediaBrowser.UI.EntryPoints
                 var source = (HwndSource)PresentationSource.FromVisual(window);
 
                 source.AddHook(WndProc);
-
-                window.KeyDown += window_KeyDown;
             });
 
             _nav.Navigated += _nav_Navigated;
@@ -49,12 +47,36 @@ namespace MediaBrowser.UI.EntryPoints
 
         void _nav_Navigated(object sender, NavigationEventArgs e)
         {
-            _userInput.KeyDown -= _userInput_KeyDown;
-
             if (e.NewPage is IFullscreenVideoPage)
             {
-                _userInput.KeyDown += _userInput_KeyDown;
+                RemoveWindowHook();
+                AddGlobalHook();
             }
+            else
+            {
+                RemoveGlobalHook();
+                AddWindowHook();
+            }
+        }
+
+        private void AddWindowHook()
+        {
+            _presenation.Window.KeyDown -= window_KeyDown;
+            _presenation.Window.KeyDown += window_KeyDown;
+        }
+        private void RemoveWindowHook()
+        {
+            _presenation.Window.KeyDown -= window_KeyDown;
+        }
+
+        private void AddGlobalHook()
+        {
+            _userInput.KeyDown -= _userInput_KeyDown;
+            _userInput.KeyDown += _userInput_KeyDown;
+        }
+        private void RemoveGlobalHook()
+        {
+            _userInput.KeyDown -= _userInput_KeyDown;
         }
 
         private const int WM_APPCOMMAND = 0x319;
@@ -126,7 +148,7 @@ namespace MediaBrowser.UI.EntryPoints
         public const int APPCOMMAND_CORRECTION_LIST = 45;
         public const int APPCOMMAND_MEDIA_PLAY = 46;
         public const int APPCOMMAND_MEDIA_PAUSE = 47;
-        public const int APPCOMMAND_MEDIA_RECORD = 48;
+        public const int APPCOMMAND_MEDIA_RECORD = 48; // Also 4144
         public const int APPCOMMAND_MEDIA_FAST_FORWARD = 49;
         public const int APPCOMMAND_MEDIA_REWIND = 50;
         public const int APPCOMMAND_MEDIA_CHANNEL_UP = 51;
@@ -148,15 +170,17 @@ namespace MediaBrowser.UI.EntryPoints
                 case APPCOMMAND_MEDIA_STOP:
                     ExecuteCommand(Stop);
                     return true;
-                case APPCOMMAND_MEDIA_NEXTTRACK:
-                    ExecuteCommand(NextTrack);
-                    return true;
-                case APPCOMMAND_MEDIA_PREVIOUSTRACK:
-                    ExecuteCommand(PreviousTrack);
-                    return true;
+                //case APPCOMMAND_MEDIA_NEXTTRACK:
+                //    ExecuteCommand(OnNextTrackButton);
+                //    return true;
+                //case APPCOMMAND_MEDIA_PREVIOUSTRACK:
+                //    ExecuteCommand(OnPreviousTrackButton);
+                //    return true;
+                case 4146:
                 case APPCOMMAND_MEDIA_REWIND:
                     ExecuteCommand(SkipBackward);
                     return true;
+                case 4145:
                 case APPCOMMAND_MEDIA_FAST_FORWARD:
                     ExecuteCommand(SkipForward);
                     return true;
@@ -201,13 +225,13 @@ namespace MediaBrowser.UI.EntryPoints
                     ExecuteCommand(Pause);
                     break;
                 case System.Windows.Input.Key.MediaNextTrack:
-                    ExecuteCommand(NextTrack);
+                    ExecuteCommand(OnNextTrackButton);
                     break;
                 case System.Windows.Input.Key.MediaPlayPause:
                     ExecuteCommand(PlayPause);
                     break;
                 case System.Windows.Input.Key.MediaPreviousTrack:
-                    ExecuteCommand(PreviousTrack);
+                    ExecuteCommand(OnPreviousTrackButton);
                     break;
                 case System.Windows.Input.Key.MediaStop:
                     ExecuteCommand(Stop);
@@ -238,13 +262,13 @@ namespace MediaBrowser.UI.EntryPoints
                     ExecuteCommand(Pause);
                     break;
                 case Keys.MediaNextTrack:
-                    ExecuteCommand(NextTrack);
+                    ExecuteCommand(OnNextTrackButton);
                     break;
                 case Keys.MediaPlayPause:
                     ExecuteCommand(PlayPause);
                     break;
                 case Keys.MediaPreviousTrack:
-                    ExecuteCommand(PreviousTrack);
+                    ExecuteCommand(OnPreviousTrackButton);
                     break;
                 case Keys.MediaStop:
                     ExecuteCommand(Stop);
@@ -268,7 +292,7 @@ namespace MediaBrowser.UI.EntryPoints
             }
         }
 
-        private Task Play()
+        private async Task Play()
         {
             var activePlayer = _playback.MediaPlayers
                 .OfType<IInternalMediaPlayer>()
@@ -278,16 +302,17 @@ namespace MediaBrowser.UI.EntryPoints
             {
                 if (activePlayer.PlayState == PlayState.Paused)
                 {
-                    return activePlayer.UnPause();
+                    await activePlayer.UnPause();
+                    ShowFullscreenVideoOsd();
                 }
-
-                return _trueTaskResult;
             }
-
-            return SendPlayCommandToPresentation();
+            else
+            {
+                await SendPlayCommandToPresentation();
+            }
         }
 
-        private Task Pause()
+        private async Task Pause()
         {
             var activePlayer = _playback.MediaPlayers
                 .OfType<IInternalMediaPlayer>()
@@ -297,13 +322,14 @@ namespace MediaBrowser.UI.EntryPoints
             {
                 if (activePlayer.PlayState == PlayState.Paused)
                 {
-                    return activePlayer.UnPause();
+                    await activePlayer.UnPause();
                 }
-
-                return activePlayer.Pause();
+                else
+                {
+                    await activePlayer.Pause();
+                }
+                ShowFullscreenVideoOsd();
             }
-
-            return _trueTaskResult;
         }
 
         private Task Close()
@@ -316,7 +342,7 @@ namespace MediaBrowser.UI.EntryPoints
             return _trueTaskResult;
         }
 
-        private Task SkipBackward()
+        private async Task SkipBackward()
         {
             var activePlayer = _playback.MediaPlayers
              .OfType<IInternalMediaPlayer>()
@@ -324,13 +350,13 @@ namespace MediaBrowser.UI.EntryPoints
 
             if (activePlayer != null)
             {
-                return activePlayer.SkipBackward();
+                await activePlayer.SkipBackward();
+
+                ShowFullscreenVideoOsd();
             }
-            
-            return _trueTaskResult;
         }
 
-        private Task SkipForward()
+        private async Task SkipForward()
         {
             var activePlayer = _playback.MediaPlayers
              .OfType<IInternalMediaPlayer>()
@@ -338,13 +364,13 @@ namespace MediaBrowser.UI.EntryPoints
 
             if (activePlayer != null)
             {
-                return activePlayer.SkipForward();
-            }
+                await activePlayer.SkipForward();
 
-            return _trueTaskResult;
+                ShowFullscreenVideoOsd();
+            }
         }
 
-        private Task PlayPause()
+        private async Task PlayPause()
         {
             var activePlayer = _playback.MediaPlayers
                 .OfType<IInternalMediaPlayer>()
@@ -354,13 +380,19 @@ namespace MediaBrowser.UI.EntryPoints
             {
                 if (activePlayer.PlayState == PlayState.Paused)
                 {
-                    return activePlayer.UnPause();
+                    await activePlayer.UnPause();
+                }
+                else
+                {
+                    await activePlayer.Pause();
                 }
 
-                return activePlayer.Pause();
+                ShowFullscreenVideoOsd();
             }
-
-            return SendPlayCommandToPresentation();
+            else
+            {
+                await SendPlayCommandToPresentation();
+            }
         }
 
         private Task SendPlayCommandToPresentation()
@@ -392,6 +424,34 @@ namespace MediaBrowser.UI.EntryPoints
             return _trueTaskResult;
         }
 
+        private async Task NextChapter()
+        {
+            var activePlayer = _playback.MediaPlayers
+              .OfType<IInternalMediaPlayer>()
+              .FirstOrDefault(i => i.PlayState != PlayState.Idle);
+
+            if (activePlayer != null)
+            {
+                await activePlayer.GoToNextChapter();
+
+                ShowFullscreenVideoOsd();
+            }
+        }
+
+        private async Task PreviousChapter()
+        {
+            var activePlayer = _playback.MediaPlayers
+              .OfType<IInternalMediaPlayer>()
+              .FirstOrDefault(i => i.PlayState != PlayState.Idle);
+
+            if (activePlayer != null)
+            {
+                await activePlayer.GoToPreviousChapter();
+
+                ShowFullscreenVideoOsd();
+            }
+        }
+
         private Task Home()
         {
             return _nav.NavigateToHomePage();
@@ -415,6 +475,52 @@ namespace MediaBrowser.UI.EntryPoints
         private Task GreenButton()
         {
             return _trueTaskResult;
+        }
+
+        private async Task OnNextTrackButton()
+        {
+            var activePlayer = _playback.MediaPlayers
+                .OfType<IInternalMediaPlayer>()
+                .FirstOrDefault(i => i.PlayState != PlayState.Idle);
+
+            if (activePlayer != null && activePlayer.CurrentMedia != null && activePlayer.CurrentMedia.IsVideo)
+            {
+                await NextChapter();
+
+                ShowFullscreenVideoOsd();
+            }
+            else
+            {
+                await NextTrack();
+            }
+        }
+
+        private async Task OnPreviousTrackButton()
+        {
+            var activePlayer = _playback.MediaPlayers
+                .OfType<IInternalMediaPlayer>()
+                .FirstOrDefault(i => i.PlayState != PlayState.Idle);
+
+            if (activePlayer != null && activePlayer.CurrentMedia != null && activePlayer.CurrentMedia.IsVideo)
+            {
+                await PreviousChapter();
+
+                ShowFullscreenVideoOsd();
+            }
+            else
+            {
+                await PreviousTrack();
+            }
+        }
+
+        private void ShowFullscreenVideoOsd()
+        {
+            var page = _nav.CurrentPage as IFullscreenVideoPage;
+
+            if (page != null)
+            {
+                page.ShowOnScreenDisplay();
+            }
         }
     }
 }

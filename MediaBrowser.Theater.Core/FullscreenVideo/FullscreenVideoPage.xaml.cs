@@ -1,9 +1,7 @@
-﻿using System.Linq;
-using MediaBrowser.Model.ApiClient;
+﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
-using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Interfaces.UserInput;
 using MediaBrowser.Theater.Presentation.Pages;
 using MediaBrowser.Theater.Presentation.ViewModels;
@@ -73,13 +71,18 @@ namespace MediaBrowser.Theater.Core.FullscreenVideo
                     }
                     else
                     {
-                        Dispatcher.InvokeAsync(ShowOsd, DispatcherPriority.Background);
+                        Dispatcher.InvokeAsync(ShowOnScreenDisplay, DispatcherPriority.Background);
                     }
                 }
             }
         }
 
-        private void ShowOsd()
+        public void ShowOnScreenDisplay()
+        {
+            Dispatcher.InvokeAsync(ShowOnScreenDisplayInternal, DispatcherPriority.Background);
+        }
+
+        private void ShowOnScreenDisplayInternal()
         {
             Osd.Visibility = Visibility.Visible;
 
@@ -87,15 +90,15 @@ namespace MediaBrowser.Theater.Core.FullscreenVideo
             {
                 if (_overlayTimer == null)
                 {
-                    _overlayTimer = new Timer(OsdDisplayTimerCallback, null, 5000, Timeout.Infinite);
+                    _overlayTimer = new Timer(OsdDisplayTimerCallback, null, 4000, Timeout.Infinite);
                 }
                 else
                 {
-                    _overlayTimer.Change(5000, Timeout.Infinite);
+                    _overlayTimer.Change(4000, Timeout.Infinite);
                 }
             }
         }
-
+        
         private void OsdDisplayTimerCallback(object state)
         {
             DisposeOsdTimer();
@@ -120,7 +123,7 @@ namespace MediaBrowser.Theater.Core.FullscreenVideo
                 }
                 else
                 {
-                    ShowOsd();
+                    ShowOnScreenDisplayInternal();
                 }
 
             }, DispatcherPriority.Background);

@@ -3,8 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                                         xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
                           Title="UserProfileWindow" Height="300" Width="300"
-        AllowsTransparency="True"
-        Background="Transparent"
         Style="{DynamicResource ModalWindow}">
     
     <Grid x:Name="MainGrid">

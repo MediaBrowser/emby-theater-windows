@@ -119,8 +119,9 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         private async void ReloadList()
         {
-            var urls = GetImages(Item, _apiClient, ImageWidth, ImageHeight);
+            var urls = GetImages(Item, _apiClient, ImageWidth, ImageHeight, true);
 
+            _listItems.Clear();
             _listItems.AddRange(urls.Select(i => new GalleryImageViewModel(_imageManager) { ImageUrl = i }));
         }
 
@@ -131,8 +132,9 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         /// <param name="apiClient">The API client.</param>
         /// <param name="imageWidth">Width of the image.</param>
         /// <param name="imageHeight">Height of the image.</param>
+        /// <param name="includeNonBackdrops">if set to <c>true</c> [include non backdrops].</param>
         /// <returns>List{System.String}.</returns>
-        public static List<string> GetImages(BaseItemDto item, IApiClient apiClient, int? imageWidth, int? imageHeight)
+        public static List<string> GetImages(BaseItemDto item, IApiClient apiClient, int? imageWidth, int? imageHeight, bool includeNonBackdrops)
         {
             var images = new List<string> { };
 
@@ -150,74 +152,77 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 }
             }
 
-            if (item.HasThumb)
+            if (includeNonBackdrops)
             {
-                images.Add(apiClient.GetImageUrl(item, new ImageOptions
+                if (item.HasThumb)
                 {
-                    ImageType = ImageType.Thumb,
-                    Width = imageWidth,
-                    Height = imageHeight
-                }));
-            }
+                    images.Add(apiClient.GetImageUrl(item, new ImageOptions
+                    {
+                        ImageType = ImageType.Thumb,
+                        Width = imageWidth,
+                        Height = imageHeight
+                    }));
+                }
 
-            if (item.HasArtImage)
-            {
-                images.Add(apiClient.GetImageUrl(item, new ImageOptions
+                if (item.HasArtImage)
                 {
-                    ImageType = ImageType.Art,
-                    Width = imageWidth,
-                    Height = imageHeight
-                }));
-            }
+                    images.Add(apiClient.GetImageUrl(item, new ImageOptions
+                    {
+                        ImageType = ImageType.Art,
+                        Width = imageWidth,
+                        Height = imageHeight
+                    }));
+                }
 
-            if (item.HasDiscImage)
-            {
-                images.Add(apiClient.GetImageUrl(item, new ImageOptions
+                if (item.HasDiscImage)
                 {
-                    ImageType = ImageType.Disc,
-                    Width = imageWidth,
-                    Height = imageHeight
-                }));
-            }
+                    images.Add(apiClient.GetImageUrl(item, new ImageOptions
+                    {
+                        ImageType = ImageType.Disc,
+                        Width = imageWidth,
+                        Height = imageHeight
+                    }));
+                }
 
-            if (item.HasMenuImage)
-            {
-                images.Add(apiClient.GetImageUrl(item, new ImageOptions
+                if (item.HasMenuImage)
                 {
-                    ImageType = ImageType.Menu,
-                    Width = imageWidth,
-                    Height = imageHeight
-                }));
-            }
+                    images.Add(apiClient.GetImageUrl(item, new ImageOptions
+                    {
+                        ImageType = ImageType.Menu,
+                        Width = imageWidth,
+                        Height = imageHeight
+                    }));
+                }
 
-            if (item.HasBoxImage)
-            {
-                images.Add(apiClient.GetImageUrl(item, new ImageOptions
+                if (item.HasBoxImage)
                 {
-                    ImageType = ImageType.Box,
-                    Width = imageWidth,
-                    Height = imageHeight
-                }));
-            }
+                    images.Add(apiClient.GetImageUrl(item, new ImageOptions
+                    {
+                        ImageType = ImageType.Box,
+                        Width = imageWidth,
+                        Height = imageHeight
+                    }));
+                }
 
-            if (item.HasBoxImage)
-            {
-                images.Add(apiClient.GetImageUrl(item, new ImageOptions
+                if (item.HasBoxImage)
                 {
-                    ImageType = ImageType.Box,
-                    Width = imageWidth,
-                    Height = imageHeight
-                }));
-            }
+                    images.Add(apiClient.GetImageUrl(item, new ImageOptions
+                    {
+                        ImageType = ImageType.Box,
+                        Width = imageWidth,
+                        Height = imageHeight
+                    }));
+                }
 
-            if (item.HasBoxRearImage)
-            {
-                images.Add(apiClient.GetImageUrl(item, new ImageOptions
+                if (item.HasBoxRearImage)
                 {
-                    ImageType = ImageType.BoxRear,
-                    Width = imageWidth,
-                    Height = imageHeight
-                }));
+                    images.Add(apiClient.GetImageUrl(item, new ImageOptions
+                    {
+                        ImageType = ImageType.BoxRear,
+                        Width = imageWidth,
+                        Height = imageHeight
+                    }));
+                }
             }
 
             return images;
@@ -227,7 +232,9 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         {
             var image = (GalleryImageViewModel)commandParameter;
 
-            var images = GetImages(Item, _apiClient, Convert.ToInt32(SystemParameters.VirtualScreenWidth), null);
+            var isBackdrop = image.ImageUrl.IndexOf("backdrop", StringComparison.OrdinalIgnoreCase) != -1;
+
+            var images = GetImages(Item, _apiClient, Convert.ToInt32(SystemParameters.VirtualScreenWidth), null, !isBackdrop);
 
             var selectedIndex = ListCollectionView.IndexOf(image);
 

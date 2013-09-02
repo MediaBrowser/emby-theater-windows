@@ -133,7 +133,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 views.Add("themes");
             }
 
-            if (GalleryViewModel.GetImages(item, _apiClient, null, null).Any())
+            if (GalleryViewModel.GetImages(item, _apiClient, null, null, true).Any())
             {
                 views.Add("gallery");
             }

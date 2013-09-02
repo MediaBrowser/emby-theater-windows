@@ -27,7 +27,7 @@
                     
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding ScrollDirection}" Value="Vertical">
-                            <Setter Property="Margin" Value="0 30 0 0" />
+                            <Setter Property="Margin" Value="0 50 0 0" />
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
@@ -41,13 +41,13 @@
             <Grid x:Name="Sidebar" Grid.Column="0" Width="600">
                 <Grid.Style>
                     <Style TargetType="{x:Type Grid}">
-                        <Setter Property="Margin" Value="30 30 30 0" />
+                        <Setter Property="Margin" Value="50 30 30 0" />
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding ScrollDirection}" Value="Horizontal">
-                                <Setter Property="Margin" Value="30 30 50 0" />
+                                <Setter Property="Margin" Value="50 30 50 0" />
                             </DataTrigger>
                             <DataTrigger Binding="{Binding ViewType}" Value="List">
-                                <Setter Property="Margin" Value="30 30 50 0" />
+                                <Setter Property="Margin" Value="50 0 50 0" />
                             </DataTrigger>
                             <DataTrigger Binding="{Binding ShowSidebar}" Value="False">
                                 <Setter Property="Visibility" Value="Collapsed" />

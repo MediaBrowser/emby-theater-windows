@@ -157,7 +157,9 @@ namespace MediaBrowser.Theater.DirectShow
 
                 _hiddenWindow.WindowsFormsHost.Child = _mediaPlayer;
 
-                _mediaPlayer.Play(options.Items.First(), EnableReclock(options), EnableMadvr(options));
+                var playableItem = GetPlayableItem(options.Items.First());
+
+                _mediaPlayer.Play(playableItem, EnableReclock(options), EnableMadvr(options));
 
                 var position = options.StartPositionTicks;
 
@@ -176,6 +178,15 @@ namespace MediaBrowser.Theater.DirectShow
             }
 
             return _taskResult;
+        }
+
+        private PlayableItem GetPlayableItem(BaseItemDto item)
+        {
+            return new PlayableItem
+            {
+                OriginalItem = item,
+                PlayablePath = PlayablePathBuilder.GetPlayablePath(item, _apiClient)
+            };
         }
 
         /// <summary>
@@ -225,49 +236,6 @@ namespace MediaBrowser.Theater.DirectShow
             }
 
             return true;
-        }
-
-        /// <summary>
-        /// Gets the playable path.
-        /// </summary>
-        /// <param name="item">The item.</param>
-        /// <returns>System.String.</returns>
-        private string GetPlayablePath(BaseItemDto item)
-        {
-            if (item.LocationType == LocationType.Remote)
-            {
-                return GetStreamingUrl(item);
-            }
-            if (!File.Exists(item.Path) && !Directory.Exists(item.Path))
-            {
-                return GetStreamingUrl(item);
-            }
-
-            if (item.VideoType.HasValue && item.VideoType.Value == VideoType.BluRay)
-            {
-                var file = new DirectoryInfo(item.Path)
-                    .EnumerateFiles("*.m2ts", SearchOption.AllDirectories)
-                    .OrderByDescending(f => f.Length)
-                    .FirstOrDefault();
-
-                if (file != null)
-                {
-                    return file.FullName;
-                }
-            }
-
-            return item.Path;
-        }
-
-        private string GetStreamingUrl(BaseItemDto item)
-        {
-            // TODO: Add non-static url's for dvd + bluray
-
-            return _apiClient.GetVideoStreamUrl(new VideoStreamOptions
-            {
-                Static = true,
-                ItemId = item.Id
-            });
         }
 
         private void DisposePlayer()
@@ -328,7 +296,7 @@ namespace MediaBrowser.Theater.DirectShow
             EventHelper.FireEventIfNotNull(PlayStateChanged, this, EventArgs.Empty, _logger);
         }
 
-        internal void OnPlaybackStopped(BaseItemDto media, long? positionTicks)
+        internal void OnPlaybackStopped(PlayableItem media, long? positionTicks)
         {
             DisposePlayer();
 
@@ -336,7 +304,7 @@ namespace MediaBrowser.Theater.DirectShow
             {
                 Player = this,
                 Playlist = _playlist,
-                EndingMedia = media,
+                EndingMedia = media.OriginalItem,
                 EndingPositionTicks = positionTicks
 
             };

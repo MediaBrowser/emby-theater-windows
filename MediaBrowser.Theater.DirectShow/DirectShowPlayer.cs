@@ -57,7 +57,7 @@ namespace MediaBrowser.Theater.DirectShow
 
         private MadVR _madvr;
 
-        private BaseItemDto _item;
+        private PlayableItem _item;
 
         public DirectShowPlayer(ILogger logger, IHiddenWindow hiddenWindow, InternalDirectShowPlayer playerWrapper)
         {
@@ -95,11 +95,11 @@ namespace MediaBrowser.Theater.DirectShow
             }
         }
 
-        public void Play(BaseItemDto item, bool enableReclock, bool enableMadvr)
+        public void Play(PlayableItem item, bool enableReclock, bool enableMadvr)
         {
             _item = item;
 
-            Initialize(item.Path, enableReclock, enableMadvr);
+            Initialize(item.PlayablePath, enableReclock, enableMadvr);
 
             var hr = _mediaControl.Run();
             DsError.ThrowExceptionForHR(hr);

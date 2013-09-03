@@ -6,6 +6,7 @@ using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
+using MediaBrowser.Theater.Core.Loading;
 using MediaBrowser.Theater.Core.Modals;
 using MediaBrowser.Theater.Interfaces;
 using MediaBrowser.Theater.Interfaces.Presentation;
@@ -271,6 +272,29 @@ namespace MediaBrowser.UI.Implementations
         public Task UpdateDisplayPreferences(DisplayPreferences displayPreferences, CancellationToken cancellationToken)
         {
             return _apiClient.UpdateDisplayPreferencesAsync(displayPreferences, _sessionFactory().CurrentUser.Id, "MBT-" + _themeManager.CurrentTheme.Name, cancellationToken);
+        }
+
+        private LoadingWindow _loadingWindow;
+
+        public void ShowLoadingAnimation()
+        {
+            Window.Dispatcher.InvokeAsync(() =>
+            {
+                if (_loadingWindow == null)
+                {
+                    _loadingWindow = new LoadingWindow();
+                }
+
+                if (!_loadingWindow.IsActive)
+                {
+                    _loadingWindow.Show(Window);
+                }
+            });
+        }
+
+        public void HideLoadingAnimation()
+        {
+            Window.Dispatcher.InvokeAsync(() => _loadingWindow.Hide());
         }
     }
 }

@@ -73,6 +73,8 @@ namespace MediaBrowser.Theater.Interfaces.Playback
         /// <value><c>true</c> if [go full screen]; otherwise, <c>false</c>.</value>
         public bool GoFullScreen { get; set; }
 
+        public bool ShowLoadingAnimation { get; set; }
+
         public PlayerConfiguration Configuration { get; set; }
 
         /// <summary>
@@ -92,6 +94,7 @@ namespace MediaBrowser.Theater.Interfaces.Playback
         public PlayOptions(IEnumerable<BaseItemDto> items)
         {
             GoFullScreen = true;
+            ShowLoadingAnimation = true;
             Items = items.ToList();
         }
     }

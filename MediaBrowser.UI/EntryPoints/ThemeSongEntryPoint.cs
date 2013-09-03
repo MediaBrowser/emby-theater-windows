@@ -98,7 +98,8 @@ namespace MediaBrowser.UI.EntryPoints
             {
                 GoFullScreen = false,
                 Items = items.ToList(),
-                Shuffle = true
+                Shuffle = true,
+                ShowLoadingAnimation = false
             });
         }
 

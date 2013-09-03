@@ -114,8 +114,8 @@
     <Compile Include="ListPage\Sidebar.xaml.cs">
       <DependentUpon>Sidebar.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Details\PanoramaDetailPage.xaml.cs">
-      <DependentUpon>PanoramaDetailPage.xaml</DependentUpon>
+    <Compile Include="Details\DetailPage.xaml.cs">
+      <DependentUpon>DetailPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -202,7 +202,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Details\PanoramaDetailPage.xaml">
+    <Page Include="Details\DetailPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

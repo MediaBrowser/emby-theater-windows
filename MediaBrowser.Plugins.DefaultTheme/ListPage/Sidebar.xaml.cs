@@ -76,6 +76,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
 
         private async void UpdateLogo(ItemViewModel viewModel, BaseItemDto item)
         {
+            DisposeLogoCancellationToken(_logoCancellationTokenSource);
+
             if (string.Equals(viewModel.ViewType, ListViewTypes.List))
             {
                 TxtTitle.Visibility = Visibility.Visible;
@@ -87,9 +89,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
 
             if (item != null && (item.HasLogo || item.ParentLogoImageTag.HasValue))
             {
-                DisposeLogoCancellationToken(_logoCancellationTokenSource);
-                
-                var tokenSource = _logoCancellationTokenSource = new CancellationTokenSource();
+                var tokenSource = new CancellationTokenSource();
+
+                _logoCancellationTokenSource = tokenSource;
 
                 try
                 {
@@ -128,9 +130,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
         {
             if (item != null && item.HasPrimaryImage)
             {
-                DisposeLogoCancellationToken(_logoCancellationTokenSource);
+                var tokenSource = new CancellationTokenSource();
 
-                var tokenSource = _logoCancellationTokenSource = new CancellationTokenSource();
+                _logoCancellationTokenSource = tokenSource;
 
                 try
                 {

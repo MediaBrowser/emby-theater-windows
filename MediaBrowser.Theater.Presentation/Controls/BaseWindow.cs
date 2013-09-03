@@ -73,6 +73,14 @@ namespace MediaBrowser.Theater.Presentation.Controls
             }
         }
 
+        protected virtual bool ModifyWindowsFormsCursor
+        {
+            get
+            {
+                return false;
+            }
+        }
+
         private DateTime _lastMouseInput;
 
         /// <summary>
@@ -120,12 +128,15 @@ namespace MediaBrowser.Theater.Presentation.Controls
 
                 Cursor = Cursors.None;
 
-                lock (_cursorLock)
+                if (ModifyWindowsFormsCursor)
                 {
-                    while (_showHideCount > -1)
+                    lock (_cursorLock)
                     {
-                        System.Windows.Forms.Cursor.Hide();
-                        _showHideCount--;
+                        while (_showHideCount > -1)
+                        {
+                            System.Windows.Forms.Cursor.Hide();
+                            _showHideCount--;
+                        }
                     }
                 }
 
@@ -141,12 +152,15 @@ namespace MediaBrowser.Theater.Presentation.Controls
             {
                 Cursor = Cursors.Arrow;
 
-                lock (_cursorLock)
+                if (ModifyWindowsFormsCursor)
                 {
-                    while (_showHideCount < 0)
+                    lock (_cursorLock)
                     {
-                        System.Windows.Forms.Cursor.Show();
-                        _showHideCount++;
+                        while (_showHideCount < 0)
+                        {
+                            System.Windows.Forms.Cursor.Show();
+                            _showHideCount++;
+                        }
                     }
                 }
 

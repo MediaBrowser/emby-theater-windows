@@ -35,7 +35,13 @@ namespace MediaBrowser.UI.EntryPoints
 
         public void Run()
         {
+            _playback.PlaybackCompleted += _playback_PlaybackCompleted;
             StartTimer();
+        }
+
+        void _playback_PlaybackCompleted(object sender, PlaybackStopEventArgs e)
+        {
+            _lastInputTime = DateTime.Now;
         }
 
         private void TimerCallback(object state)

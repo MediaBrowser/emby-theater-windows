@@ -105,7 +105,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
                 ImageWidth = 550
             };
 
-            return new PanoramaDetailPage(itemViewModel)
+            return new DetailPage(itemViewModel)
             {
                 DataContext = new DetailPageViewModel(itemViewModel, _apiClient, _sessionManager, _imageManager, _presentationManager, _playbackManager, _navService, _logger)
             };

@@ -22,11 +22,22 @@ namespace MediaBrowser.Theater.DirectShow
         {
             if (item.LocationType == LocationType.Remote)
             {
-                return GetStreamingUrl(item, apiClient);
+                return apiClient.GetVideoStreamUrl(new VideoStreamOptions
+                {
+                    ItemId = item.Id,
+                    AudioCodec = AudioCodecs.Copy,
+                    VideoCodec = VideoCodecs.Copy,
+                    OutputFileExtension = ".mp4"
+                });
             }
+
             if (!File.Exists(item.Path) && !Directory.Exists(item.Path))
             {
-                return GetStreamingUrl(item, apiClient);
+                return apiClient.GetVideoStreamUrl(new VideoStreamOptions
+                {
+                    Static = true,
+                    ItemId = item.Id
+                });
             }
 
             if (item.VideoType.HasValue && item.VideoType.Value == VideoType.BluRay && !string.IsNullOrEmpty(item.MainFeaturePlaylistName))
@@ -49,23 +60,6 @@ namespace MediaBrowser.Theater.DirectShow
             }
 
             return item.Path;
-        }
-
-        /// <summary>
-        /// Gets the streaming URL.
-        /// </summary>
-        /// <param name="item">The item.</param>
-        /// <param name="apiClient">The API client.</param>
-        /// <returns>System.String.</returns>
-        private static string GetStreamingUrl(BaseItemDto item, IApiClient apiClient)
-        {
-            // TODO: Add non-static url's for dvd + bluray
-
-            return apiClient.GetVideoStreamUrl(new VideoStreamOptions
-            {
-                Static = true,
-                ItemId = item.Id
-            });
         }
     }
 }

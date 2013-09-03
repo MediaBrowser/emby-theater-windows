@@ -8,13 +8,13 @@ using System.Windows;
 namespace MediaBrowser.Plugins.DefaultTheme.Details
 {
     /// <summary>
-    /// Interaction logic for PanoramaDetailPage.xaml
+    /// Interaction logic for DetailPage.xaml
     /// </summary>
-    public partial class PanoramaDetailPage : BasePage, ISupportsItemThemeMedia, ISupportsItemBackdrops, IItemPage
+    public partial class DetailPage : BasePage, ISupportsItemThemeMedia, ISupportsItemBackdrops, IItemPage
     {
         private readonly ItemViewModel _itemViewModel;
 
-        public PanoramaDetailPage(ItemViewModel itemViewModel)
+        public DetailPage(ItemViewModel itemViewModel)
         {
             _itemViewModel = itemViewModel;
             InitializeComponent();
@@ -83,7 +83,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
             if (item.IndexNumber.HasValue)
             {
-                title = item.IndexNumber.Value + " - " + title;
+                title = "Ep. " + item.IndexNumber.Value + " - " + title;
+            }
+
+            if (item.ParentIndexNumber.HasValue)
+            {
+                title = string.Format("Season {0}, ", item.ParentIndexNumber.Value) + title;
             }
 
             return title;

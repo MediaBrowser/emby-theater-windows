@@ -17,6 +17,7 @@
                 <ResourceDictionary Source="Resources/WindowCommands.xaml" />
                 <ResourceDictionary Source="Resources/Modals.xaml" />
                 <ResourceDictionary Source="Resources/MessageBox.xaml" />
+                <ResourceDictionary Source="Resources/Loading.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MediaBrowser.Theater.Core;component/Resources/Settings.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MediaBrowser.Theater.Core;component/Resources/Login.xaml" />
             </ResourceDictionary.MergedDictionaries>

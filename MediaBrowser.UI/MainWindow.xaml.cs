@@ -71,6 +71,14 @@ namespace MediaBrowser.UI
             //);
         }
 
+        protected override bool ModifyWindowsFormsCursor
+        {
+            get
+            {
+                return true;
+            }
+        }
+
         void _playbackManager_PlaybackStarted(object sender, PlaybackStartEventArgs e)
         {
             if (e.Player is IInternalMediaPlayer)

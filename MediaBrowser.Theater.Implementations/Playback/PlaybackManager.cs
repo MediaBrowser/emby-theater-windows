@@ -24,7 +24,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
         private readonly ILogger _logger;
         private readonly IApiClient _apiClient;
         private readonly INavigationService _nav;
-        private readonly IPresentationManager _appWindow;
+        private readonly IPresentationManager _presentationManager;
 
         public event EventHandler<PlaybackStartEventArgs> PlaybackStarted;
 
@@ -37,13 +37,13 @@ namespace MediaBrowser.Theater.Implementations.Playback
 
         private readonly List<IMediaPlayer> _mediaPlayers = new List<IMediaPlayer>();
 
-        public PlaybackManager(ITheaterConfigurationManager configurationManager, ILogger logger, IApiClient apiClient, INavigationService nav, IPresentationManager appWindow)
+        public PlaybackManager(ITheaterConfigurationManager configurationManager, ILogger logger, IApiClient apiClient, INavigationService nav, IPresentationManager presentationManager)
         {
             _configurationManager = configurationManager;
             _logger = logger;
             _apiClient = apiClient;
             _nav = nav;
-            _appWindow = appWindow;
+            _presentationManager = presentationManager;
         }
 
         public IEnumerable<IMediaPlayer> MediaPlayers
@@ -82,9 +82,26 @@ namespace MediaBrowser.Theater.Implementations.Playback
                 throw new InvalidOperationException("There are no available players.");
             }
 
-            await StopAllPlayback();
+            var showLoading = options.ShowLoadingAnimation;
 
-            await Play(player, options, config);
+            if (showLoading)
+            {
+                _presentationManager.ShowLoadingAnimation();
+            }
+
+            try
+            {
+                await StopAllPlayback();
+
+                await Play(player, options, config);
+            }
+            finally
+            {
+                if (showLoading)
+                {
+                    _presentationManager.HideLoadingAnimation();
+                }
+            }
         }
 
         /// <summary>
@@ -123,7 +140,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
 
             if (player is IInternalMediaPlayer)
             {
-                await _appWindow.Window.Dispatcher.InvokeAsync(() => _appWindow.WindowOverlay.SetResourceReference(FrameworkElement.StyleProperty, "WindowBackgroundContentDuringPlayback"));
+                await _presentationManager.Window.Dispatcher.InvokeAsync(() => _presentationManager.WindowOverlay.SetResourceReference(FrameworkElement.StyleProperty, "WindowBackgroundContentDuringPlayback"));
 
                 if (options.GoFullScreen)
                 {
@@ -158,7 +175,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
         {
             if (eventArgs.Player is IInternalMediaPlayer)
             {
-                await _appWindow.Window.Dispatcher.InvokeAsync(() => _appWindow.WindowOverlay.SetResourceReference(FrameworkElement.StyleProperty, "WindowBackgroundContent"));
+                await _presentationManager.Window.Dispatcher.InvokeAsync(() => _presentationManager.WindowOverlay.SetResourceReference(FrameworkElement.StyleProperty, "WindowBackgroundContent"));
             }
 
             EventHelper.QueueEventIfNotNull(PlaybackCompleted, this, eventArgs, _logger);

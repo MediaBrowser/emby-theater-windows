@@ -177,19 +177,28 @@ namespace MediaBrowser.UI.Implementations
         /// <returns>DispatcherOperation.</returns>
         public async Task NavigateToHomePage()
         {
-            var userId = _sessionFactory().CurrentUser.Id;
+            _presentationManager.ShowLoadingAnimation();
 
-            var userConfig = await _config.GetUserTheaterConfiguration(userId);
+            try
+            {
+                var userId = _sessionFactory().CurrentUser.Id;
 
-            var homePages = _presentationManager.HomePages.ToList();
+                var userConfig = await _config.GetUserTheaterConfiguration(userId);
 
-            var homePage = homePages.FirstOrDefault(i => string.Equals(i.Name, userConfig.HomePage)) ??
-                homePages.FirstOrDefault(i => string.Equals(i.Name, "Default")) ??
-                homePages.First();
+                var homePages = _presentationManager.HomePages.ToList();
 
-            var rootItem = await _apiClient.GetRootFolderAsync(userId);
+                var homePage = homePages.FirstOrDefault(i => string.Equals(i.Name, userConfig.HomePage)) ??
+                                     homePages.FirstOrDefault(i => string.Equals(i.Name, "Default")) ??
+                                     homePages.First();
 
-            await Navigate(homePage.GetHomePage(rootItem));
+                var rootItem = await _apiClient.GetRootFolderAsync(userId);
+
+                await Navigate(homePage.GetHomePage(rootItem));
+            }
+            finally
+            {
+                _presentationManager.HideLoadingAnimation();
+            }
         }
 
         /// <summary>
@@ -199,6 +208,20 @@ namespace MediaBrowser.UI.Implementations
         /// <param name="context">The context.</param>
         /// <returns>DispatcherOperation.</returns>
         public async Task NavigateToItem(BaseItemDto item, ViewType context = ViewType.Folders)
+        {
+            _presentationManager.ShowLoadingAnimation();
+
+            try
+            {
+                await NavigateToItemInternal(item, context);
+            }
+            finally
+            {
+                _presentationManager.HideLoadingAnimation();
+            }
+        }
+
+        private async Task NavigateToItemInternal(BaseItemDto item, ViewType context)
         {
             // Grab it fresh from the server to make sure we have the full record
             item = await _apiClient.GetItemAsync(item.Id, _apiClient.CurrentUserId);
@@ -233,11 +256,27 @@ namespace MediaBrowser.UI.Implementations
         /// <returns>Task.</returns>
         public async Task NavigateToPerson(string name, ViewType context = ViewType.Folders)
         {
+            _presentationManager.ShowLoadingAnimation();
+
+            try
+            {
+                await NavigateToPersonInternal(name, context);
+            }
+            finally
+            {
+                _presentationManager.HideLoadingAnimation();
+            }
+        }
+
+        private async Task NavigateToPersonInternal(string name, ViewType context)
+        {
+            _presentationManager.ShowLoadingAnimation();
+
             var item = await _apiClient.GetPersonAsync(name, _sessionFactory().CurrentUser.Id);
 
             await App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(async () => await Navigate(_themeManager.CurrentTheme.GetPersonPage(item, context)));
         }
-
+        
         /// <summary>
         /// Navigates the back.
         /// </summary>

@@ -1,8 +1,8 @@
-﻿using System.Threading;
-using MediaBrowser.Model.Dto;
+﻿using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
@@ -146,5 +146,15 @@ namespace MediaBrowser.Theater.Interfaces.Presentation
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Task.</returns>
         Task UpdateDisplayPreferences(DisplayPreferences displayPreferences, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Shows the loading animation.
+        /// </summary>
+        void ShowLoadingAnimation();
+
+        /// <summary>
+        /// Hides the loading animation.
+        /// </summary>
+        void HideLoadingAnimation();
     }
 }

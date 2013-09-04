@@ -261,11 +261,11 @@ namespace MediaBrowser.UI.EntryPoints
                 case Keys.Pause:
                     ExecuteCommand(Pause);
                     break;
-                case Keys.MediaNextTrack:
-                    ExecuteCommand(OnNextTrackButton);
-                    break;
                 case Keys.MediaPlayPause:
                     ExecuteCommand(PlayPause);
+                    break;
+                case Keys.MediaNextTrack:
+                    ExecuteCommand(OnNextTrackButton);
                     break;
                 case Keys.MediaPreviousTrack:
                     ExecuteCommand(OnPreviousTrackButton);
@@ -510,6 +510,11 @@ namespace MediaBrowser.UI.EntryPoints
         }
 
         private void ShowFullscreenVideoOsd()
+        {
+            _presenation.Window.Dispatcher.InvokeAsync(ShowFullscreenVideoOsdInternal);
+        }
+
+        private void ShowFullscreenVideoOsdInternal()
         {
             var page = _nav.CurrentPage as IFullscreenVideoPage;
 

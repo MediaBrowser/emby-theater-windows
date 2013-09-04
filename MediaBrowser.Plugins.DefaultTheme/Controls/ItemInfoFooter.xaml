@@ -11,47 +11,63 @@
         <!--This textblock is just to make sure the panel always takes up the same amount of vertical space, so that content never moves due to height changes -->
         <TextBlock Style="{DynamicResource TextBlockStyle}" Visibility="Hidden" Text=" "></TextBlock>
 
-        <Grid>
-            <Grid.Style>
-                <Style TargetType="{x:Type Grid}">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding IsLiked}" Value="False">
-                            <Setter Property="Visibility" Value="Collapsed" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding IsFavorite}" Value="True">
-                            <Setter Property="Visibility" Value="Collapsed" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Grid.Style>
-            <Image Style="{DynamicResource LikeImage}"></Image>
-        </Grid>
+        <StackPanel Orientation="Horizontal" Name="PnlDate">
+            <Border Style="{StaticResource MediaInfoSeparator}"></Border>
+            <TextBlock Style="{DynamicResource TextBlockStyle}" x:Name="TxtDate" VerticalAlignment="Center"></TextBlock>
+        </StackPanel>
 
-        <Grid>
-            <Grid.Style>
-                <Style TargetType="{x:Type Grid}">
+        <StackPanel Orientation="Horizontal">
+            <StackPanel.Style>
+                <Style TargetType="{x:Type StackPanel}">
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding IsDisliked}" Value="False">
+                        <DataTrigger Binding="{Binding OfficialRating}" Value="{x:Null}">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding ItemType}" Value="Episode">
                             <Setter Property="Visibility" Value="Collapsed" />
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
-            </Grid.Style>
-            <Image Style="{DynamicResource DislikeImage}"></Image>
-        </Grid>
+            </StackPanel.Style>
 
-        <Grid>
-            <Grid.Style>
-                <Style TargetType="{x:Type Grid}">
+            <Border Style="{StaticResource MediaInfoSeparator}"></Border>
+            <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding OfficialRating}" VerticalAlignment="Center"></TextBlock>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal">
+            <StackPanel.Style>
+                <Style TargetType="{x:Type StackPanel}">
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding IsFavorite}" Value="False">
+                        <DataTrigger Binding="{Binding RuntimeMinutesText}" Value="{x:Null}">
                             <Setter Property="Visibility" Value="Collapsed" />
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
-            </Grid.Style>
-            <Image Style="{DynamicResource FavoriteImage}"></Image>
-        </Grid>
+            </StackPanel.Style>
+
+            <Border Style="{StaticResource MediaInfoSeparator}"></Border>
+            <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding RuntimeMinutesText}" VerticalAlignment="Center"></TextBlock>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal">
+
+            <StackPanel.Style>
+                <Style TargetType="{x:Type StackPanel}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding AudioCodec}" Value="{x:Null}">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding MediaType}" Value="Video">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </StackPanel.Style>
+
+            <Border Style="{StaticResource MediaInfoSeparator}"></Border>
+            <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding AudioCodec}" VerticalAlignment="Center"></TextBlock>
+        </StackPanel>
+
 
         <StackPanel Orientation="Horizontal" Margin="30 0 0 0">
 
@@ -113,61 +129,46 @@
             <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding CriticRating}" VerticalAlignment="Center"></TextBlock>
         </StackPanel>
 
-        <StackPanel Orientation="Horizontal" Name="PnlDate">
-            <Border Style="{StaticResource MediaInfoSeparator}"></Border>
-            <TextBlock Style="{DynamicResource TextBlockStyle}" x:Name="TxtDate" VerticalAlignment="Center"></TextBlock>
-        </StackPanel>
-
-        <StackPanel Orientation="Horizontal">
-            <StackPanel.Style>
-                <Style TargetType="{x:Type StackPanel}">
+        <Grid Margin="30 0 0 0">
+            <Grid.Style>
+                <Style TargetType="{x:Type Grid}">
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding OfficialRating}" Value="{x:Null}">
+                        <DataTrigger Binding="{Binding IsLiked}" Value="False">
                             <Setter Property="Visibility" Value="Collapsed" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding ItemType}" Value="Episode">
+                        <DataTrigger Binding="{Binding IsFavorite}" Value="True">
                             <Setter Property="Visibility" Value="Collapsed" />
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
-            </StackPanel.Style>
+            </Grid.Style>
+            <Image Style="{DynamicResource LikeImage}"></Image>
+        </Grid>
 
-            <Border Style="{StaticResource MediaInfoSeparator}"></Border>
-            <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding OfficialRating}" VerticalAlignment="Center"></TextBlock>
-        </StackPanel>
-
-        <StackPanel Orientation="Horizontal">
-            <StackPanel.Style>
-                <Style TargetType="{x:Type StackPanel}">
+        <Grid Margin="30 0 0 0">
+            <Grid.Style>
+                <Style TargetType="{x:Type Grid}">
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding RuntimeMinutesText}" Value="{x:Null}">
+                        <DataTrigger Binding="{Binding IsDisliked}" Value="False">
                             <Setter Property="Visibility" Value="Collapsed" />
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
-            </StackPanel.Style>
+            </Grid.Style>
+            <Image Style="{DynamicResource DislikeImage}"></Image>
+        </Grid>
 
-            <Border Style="{StaticResource MediaInfoSeparator}"></Border>
-            <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding RuntimeMinutesText}" VerticalAlignment="Center"></TextBlock>
-        </StackPanel>
-
-        <StackPanel Orientation="Horizontal">
-
-            <StackPanel.Style>
-                <Style TargetType="{x:Type StackPanel}">
+        <Grid Margin="30 0 0 0">
+            <Grid.Style>
+                <Style TargetType="{x:Type Grid}">
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding AudioCodec}" Value="{x:Null}">
-                            <Setter Property="Visibility" Value="Collapsed" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding MediaType}" Value="Video">
+                        <DataTrigger Binding="{Binding IsFavorite}" Value="False">
                             <Setter Property="Visibility" Value="Collapsed" />
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
-            </StackPanel.Style>
-
-            <Border Style="{StaticResource MediaInfoSeparator}"></Border>
-            <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding AudioCodec}" VerticalAlignment="Center"></TextBlock>
-        </StackPanel>
+            </Grid.Style>
+            <Image Style="{DynamicResource FavoriteImage}"></Image>
+        </Grid>
     </StackPanel>
 </UserControl>

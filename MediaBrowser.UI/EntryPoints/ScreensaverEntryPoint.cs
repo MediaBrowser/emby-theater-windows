@@ -48,7 +48,7 @@ namespace MediaBrowser.UI.EntryPoints
         {
             _lastInputTime = new[] { _lastInputTime, _userInput.GetLastInputTime() }.Max();
 
-            if ((DateTime.Now - _lastInputTime) >= TimeSpan.FromMinutes(5))
+            if ((DateTime.Now - _lastInputTime) >= TimeSpan.FromSeconds(300))
             {
                 ShowScreensaverIfNeeded();
             }

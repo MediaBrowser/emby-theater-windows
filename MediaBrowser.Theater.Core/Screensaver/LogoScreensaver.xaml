@@ -8,10 +8,10 @@
     
     <Canvas ClipToBounds="True" Name="CanMain" Background="Black" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  >
 
-        <Grid Name="Tbmarquee" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0 350 0 0">
+        <Grid Name="Tbmarquee" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0 300 0 0">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                <TextBlock Style="{DynamicResource Heading1TextBlockStyle}" Foreground="White" FontSize="100">media</TextBlock>
-                <TextBlock Style="{DynamicResource Heading1TextBlockStyle}" Foreground="Green" FontSize="100">browser</TextBlock>
+                <TextBlock Style="{DynamicResource Heading1TextBlockStyle}" Foreground="White" FontFamily="Segoe UI" FontSize="170">media</TextBlock>
+                <TextBlock Style="{DynamicResource Heading1TextBlockStyle}" Foreground="#52B54B" FontFamily="Segoe UI" FontSize="170">browser</TextBlock>
             </StackPanel>
         </Grid>
     </Canvas>

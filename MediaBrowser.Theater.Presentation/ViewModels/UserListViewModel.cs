@@ -21,28 +21,47 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         private readonly RangeObservableCollection<UserDtoViewModel> _listItems =
             new RangeObservableCollection<UserDtoViewModel>();
         
-        private ListCollectionView _users;
-        public ListCollectionView Users
+        private ListCollectionView _listCollectionView;
+        public ListCollectionView ListCollectionView
         {
             get
             {
-                if (_users == null)
+                if (_listCollectionView == null)
                 {
-                    _users = new ListCollectionView(_listItems);
+                    _listCollectionView = new ListCollectionView(_listItems);
+                    _listCollectionView.CurrentChanged += ListCollectionViewCurrentChanged;
                     ReloadUsers(true);
                 }
 
-                return _users;
+                return _listCollectionView;
             }
 
             set
             {
-                var changed = _users != value;
-                _users = value;
+                var changed = _listCollectionView != value;
+                _listCollectionView = value;
 
                 if (changed)
                 {
-                    OnPropertyChanged("Users");
+                    OnPropertyChanged("ListCollectionView");
+                }
+            }
+        }
+
+        private UserDtoViewModel _currentItem;
+        public UserDtoViewModel CurrentItem
+        {
+            get { return _currentItem; }
+
+            set
+            {
+                var changed = _currentItem != value;
+
+                _currentItem = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("CurrentItem");
                 }
             }
         }
@@ -58,7 +77,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         private async void ReloadUsers(bool isInitialLoad)
         {
             // Record the current item
-            var currentItem = _users.CurrentItem as UserDtoViewModel;
+            var currentItem = _listCollectionView.CurrentItem as UserDtoViewModel;
 
             try
             {
@@ -86,13 +105,18 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
                 if (selectedIndex.HasValue)
                 {
-                    Users.MoveCurrentToPosition(selectedIndex.Value);
+                    ListCollectionView.MoveCurrentToPosition(selectedIndex.Value);
                 }
             }
             catch (Exception)
             {
                 PresentationManager.ShowDefaultErrorMessage();
             }
+        }
+
+        void ListCollectionViewCurrentChanged(object sender, EventArgs e)
+        {
+            CurrentItem = ListCollectionView.CurrentItem as UserDtoViewModel;
         }
 
         public void Dispose()

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 
@@ -184,6 +185,9 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
                 token.ThrowIfCancellationRequested();
 
                 CurrentImage = img;
+
+                await Task.Delay(500, token);
+
                 CurrentText = image.Caption;
             }
             catch (OperationCanceledException)

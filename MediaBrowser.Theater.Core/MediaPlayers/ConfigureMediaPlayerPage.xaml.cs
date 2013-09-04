@@ -170,7 +170,7 @@ namespace MediaBrowser.Theater.Core.MediaPlayers
 
         void SelectPlayer_SelectedItemChanged(object sender, EventArgs e)
         {
-            var mediaTypes = new[] { MediaType.Video, MediaType.Audio, MediaType.Game };
+            var mediaTypes = new[] { MediaType.Video, MediaType.Audio, MediaType.Game, MediaType.Book };
 
             var player = SelectedPlayer;
 
@@ -247,7 +247,15 @@ namespace MediaBrowser.Theater.Core.MediaPlayers
             {
                 UpdateFileExtensions(VideoFileExtensions);
             }
+            else if (string.Equals(mediaType, MediaType.Book, StringComparison.OrdinalIgnoreCase))
+            {
+                UpdateFileExtensions(BookFileExtensions);
+            }
             else if (string.Equals(mediaType, MediaType.Game, StringComparison.OrdinalIgnoreCase))
+            {
+                UpdateFileExtensions(new string[] { });
+            }
+            else
             {
                 UpdateFileExtensions(new string[] { });
             }
@@ -342,6 +350,11 @@ namespace MediaBrowser.Theater.Core.MediaPlayers
                 ".3gp",
                 ".webm",
                 ".mts"
+        };
+
+        private static readonly string[] BookFileExtensions = new[]
+            {
+                ".pdf"
         };
 
     }

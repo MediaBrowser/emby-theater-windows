@@ -20,22 +20,26 @@
         </controls:ExtendedListBox>
 
         <controls:ExtendedScrollViewer x:Name="ScrollViewer" Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalAlignment="Top" HorizontalAlignment="Center" CanContentScroll="True">
-            <controls:ScrollingPanel x:Name="ScrollingPanel" CanHorizontallyScroll="True" CanVerticallyScroll="False" HorizontalAlignment="Stretch">
-                <ContentControl x:Name="PageContent" Margin="100 40 100 40" Focusable="False">
+            <controls:ScrollingPanel x:Name="ScrollingPanel" CanHorizontallyScroll="True" CanVerticallyScroll="False">
+                <ContentControl x:Name="PageContent" Margin="100 50 100 40" Focusable="False">
                     <ContentControl.Style>
                         <Style TargetType="{x:Type ContentControl}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding CurrentSection}" Value="movies">
                                     <Setter Property="Content">
                                         <Setter.Value>
-                                            <Grid></Grid>
+                                            <Grid>
+                                                <ContentControl Content="{Binding ContentViewModel}" ContentTemplate="{DynamicResource MoviesViewTemplate}"></ContentControl>
+                                            </Grid>
                                         </Setter.Value>
                                     </Setter>
                                 </DataTrigger>
                                 <DataTrigger Binding="{Binding CurrentSection}" Value="tv">
                                     <Setter Property="Content">
                                         <Setter.Value>
-                                            <Grid></Grid>
+                                            <Grid>
+                                                <ContentControl Content="{Binding ContentViewModel}" ContentTemplate="{DynamicResource TvViewTemplate}"></ContentControl>
+                                            </Grid>
                                         </Setter.Value>
                                     </Setter>
                                 </DataTrigger>
@@ -50,7 +54,7 @@
                                     <Setter Property="Content">
                                         <Setter.Value>
                                             <Grid>
-                                                <controls:ExtendedListBox Margin="-40 -30 -40 -35" DataContext="{Binding ContentViewModel}" ItemsSource="{Binding Apps}" Command="{Binding LaunchCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource AppListBoxItemTemplate}">
+                                                <controls:ExtendedListBox Margin="-25 -35" DataContext="{Binding ContentViewModel}" ItemsSource="{Binding Apps}" Command="{Binding LaunchCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource AppListBoxItemTemplate}">
                                                     <controls:ExtendedListBox.ItemsPanel>
                                                         <ItemsPanelTemplate>
                                                             <UniformGrid Margin="40 35" Rows="2"></UniformGrid>

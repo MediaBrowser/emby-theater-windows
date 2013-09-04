@@ -26,6 +26,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         private readonly INavigationService _nav;
         private readonly IPlaybackManager _playbackManager;
 
+        public const int TileWidth = 304;
+        public const int TileHeight = 171;
+
         public HomePageViewModel(IPresentationManager presentationManager, IApiClient apiClient, ISessionManager sessionManager, ILogger logger, IImageManager imageManager, INavigationService nav, IPlaybackManager playbackManager)
         {
             _presentationManager = presentationManager;
@@ -89,8 +92,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 var vm = new ItemListViewModel(GetMediaCollectionsAsync, _presentationManager, _imageManager, _apiClient, _sessionManager, _nav, _playbackManager, _logger)
                 {
-                    ImageDisplayWidth = 400,
-                    ImageDisplayHeightGenerator = v => 225,
+                    ImageDisplayWidth = TileWidth,
+                    ImageDisplayHeightGenerator = v => TileHeight,
                     DisplayNameGenerator = MultiItemTile.GetDisplayName
                 };
 
@@ -100,6 +103,14 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             if (string.Equals(section, "games"))
             {
                 return new GamesViewModel();
+            }
+            if (string.Equals(section, "tv"))
+            {
+                return new TvViewModel(_presentationManager, _imageManager, _apiClient, _sessionManager, _nav, _playbackManager, _logger);
+            }
+            if (string.Equals(section, "movies"))
+            {
+                return new MoviesViewModel(_presentationManager, _imageManager, _apiClient, _sessionManager, _nav, _playbackManager, _logger);
             }
 
             return null;

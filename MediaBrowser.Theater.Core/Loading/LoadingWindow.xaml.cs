@@ -1,5 +1,5 @@
-﻿using System;
-using MediaBrowser.Theater.Presentation.Controls;
+﻿using MediaBrowser.Theater.Presentation.Controls;
+using System;
 using System.Windows;
 
 namespace MediaBrowser.Theater.Core.Loading

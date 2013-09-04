@@ -24,10 +24,8 @@ namespace MediaBrowser.Theater.Core.ImageViewer
                   new RadialBlurTransitionEffect{ },
                   new SmoothSwirlGridTransitionEffect{  },
 				new FadeTransitionEffect {  },
-				new WipeTransitionEffect { WipeDirection = WipeDirection.RightToLeft},
-				new WipeTransitionEffect { WipeDirection = WipeDirection.TopRightToBottomLeft},
-				new WipeTransitionEffect { WipeDirection = WipeDirection.BottomRightToTopLeft},
-				new WipeTransitionEffect { WipeDirection = WipeDirection.TopLeftToBottomRight}
+				new WipeTransitionEffect { WipeDirection = WipeDirection.LeftToRight},
+				new WipeTransitionEffect { WipeDirection = WipeDirection.TopToBottom}
 			};
 
         /// <summary>

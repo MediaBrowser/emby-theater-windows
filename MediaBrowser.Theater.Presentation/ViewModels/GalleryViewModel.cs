@@ -79,50 +79,66 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
-        private readonly RangeObservableCollection<GalleryImageViewModel> _listItems = new RangeObservableCollection<GalleryImageViewModel>();
+        private int? _galleryWidth;
+        public int? GalleryWidth
+        {
+            get { return _galleryWidth; }
 
-        private ListCollectionView _listCollectionView;
+            set
+            {
+                var changed = _galleryWidth != value;
+                _galleryWidth = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("GalleryWidth");
+                }
+            }
+        }
+
+        private int? _galleryHeight;
+        public int? GalleryHeight
+        {
+            get { return _galleryHeight; }
+
+            set
+            {
+                var changed = _galleryHeight != value;
+                _galleryHeight = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("GalleryHeight");
+                }
+            }
+        }
+
+        public Action CustomCommandAction { get; set; }
+
+        public ICommand CustomCommand { get; private set; }
+        
+        public RangeObservableCollection<GalleryImageViewModel> ListItems { get; private set; }
 
         public GalleryViewModel(IApiClient apiClient, IImageManager imageManager, INavigationService navigation)
         {
+            ListItems = new RangeObservableCollection<GalleryImageViewModel>();
+
+            ListCollectionView = new ListCollectionView(ListItems);
+
             _apiClient = apiClient;
             _imageManager = imageManager;
             _navigation = navigation;
 
             OpenImageViewerCommand = new RelayCommand(OpenImageViewer);
+
+            CustomCommand = new RelayCommand(o => CustomCommandAction());
         }
 
-        public ListCollectionView ListCollectionView
+        public ListCollectionView ListCollectionView { get; private set; }
+
+        public void AddImages(IEnumerable<string> urls)
         {
-            get
-            {
-                if (_listCollectionView == null)
-                {
-                    _listCollectionView = new ListCollectionView(_listItems);
-                    ReloadList();
-                }
-
-                return _listCollectionView;
-            }
-
-            set
-            {
-                var changed = _listCollectionView != value;
-                _listCollectionView = value;
-
-                if (changed)
-                {
-                    OnPropertyChanged("ListCollectionView");
-                }
-            }
-        }
-
-        private async void ReloadList()
-        {
-            var urls = GetImages(Item, _apiClient, ImageWidth, ImageHeight, true);
-
-            _listItems.Clear();
-            _listItems.AddRange(urls.Select(i => new GalleryImageViewModel(_imageManager) { ImageUrl = i }));
+            ListItems.AddRange(urls.Select(i => new GalleryImageViewModel(_imageManager) { ImageUrl = i }));
         }
 
         /// <summary>
@@ -249,7 +265,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         public void Dispose()
         {
-            foreach (var item in _listItems.ToList())
+            foreach (var item in ListItems.ToList())
             {
                 item.Dispose();
             }

@@ -1,4 +1,7 @@
-﻿using MediaBrowser.Theater.Interfaces.Presentation;
+﻿using System.Windows.Data;
+using System.Windows.Input;
+using MediaBrowser.Model.Dto;
+using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Reflection;
 using System;
 using System.Collections.Generic;
@@ -37,8 +40,8 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
             }
         }
 
-        private readonly List<ImageViewerImage> _images = new List<ImageViewerImage>();
-        public List<ImageViewerImage> Images
+        private readonly RangeObservableCollection<ImageViewerImage> _images = new RangeObservableCollection<ImageViewerImage>();
+        public RangeObservableCollection<ImageViewerImage> Images
         {
             get { return _images; }
         }
@@ -85,7 +88,47 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
             }
         }
 
-        public void StartRotating()
+        private double _width;
+        public double Width
+        {
+            get
+            {
+                return _width;
+            }
+            set
+            {
+                var changed = !_width.Equals(value);
+
+                _width = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("Width");
+                }
+            }
+        }
+
+        private double _height;
+        public double Height
+        {
+            get
+            {
+                return _height;
+            }
+            set
+            {
+                var changed = !_height.Equals(value);
+
+                _height = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("Height");
+                }
+            }
+        }
+
+        public void StartRotating(int invervalMs = 6000)
         {
             if (CurrentIndex == -1)
             {
@@ -99,11 +142,11 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
                 {
                     if (_rotationTimer == null)
                     {
-                        _rotationTimer = new Timer(OnRotationTimerCallback, null, 6000, 6000);
+                        _rotationTimer = new Timer(OnRotationTimerCallback, null, invervalMs, invervalMs);
                     }
                     else
                     {
-                        _rotationTimer.Change(6000, 6000);
+                        _rotationTimer.Change(invervalMs, invervalMs);
                     }
                 }
             }
@@ -131,8 +174,12 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
 
             CurrentIndex = index;
         }
-        
+
         private CancellationTokenSource _imageDownloadCancellationTokenSource;
+
+        public Action<ImageViewerImage> CustomCommandAction { get; set; }
+
+        public ICommand CustomCommand { get; private set; }
 
         public ImageViewerViewModel(IImageManager imageManager, IEnumerable<ImageViewerImage> initialImages)
         {
@@ -140,6 +187,8 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
 
             _dispatcher = Dispatcher.CurrentDispatcher;
             _imageManager = imageManager;
+
+            CustomCommand = new RelayCommand(o => CustomCommandAction(_currentIndex == -1 ? null : Images[_currentIndex]));
         }
 
         private async void OnIndexChanged()
@@ -226,8 +275,32 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
         }
     }
 
-    public class ImageViewerImage
+    public class ImageViewerImage : BaseViewModel
     {
+        /// <summary>
+        /// The _item
+        /// </summary>
+        private BaseItemDto _item;
+        /// <summary>
+        /// Gets or sets the item.
+        /// </summary>
+        /// <value>The item.</value>
+        public BaseItemDto Item
+        {
+            get { return _item; }
+
+            set
+            {
+                var changed = _item != value;
+                _item = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("Item");
+                }
+            }
+        }
+
         public string Url { get; set; }
         public string Caption { get; set; }
     }

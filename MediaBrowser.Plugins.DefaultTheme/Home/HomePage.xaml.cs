@@ -1,6 +1,8 @@
 ﻿using MediaBrowser.Model.Dto;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Presentation.Pages;
+using System;
+using System.Linq;
 using System.Windows;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Home
@@ -25,11 +27,32 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             InitializeComponent();
 
             Loaded += HomePage_Loaded;
+            Unloaded += HomePage_Unloaded;
+        }
+
+        private ResourceDictionary _dynamicResourceDictionary;
+
+        void HomePage_Unloaded(object sender, RoutedEventArgs e)
+        {
+            _presentationManager.RemoveResourceDictionary(_dynamicResourceDictionary);
         }
 
         void HomePage_Loaded(object sender, RoutedEventArgs e)
         {
             _presentationManager.SetDefaultPageTitle();
+
+            if (_dynamicResourceDictionary == null)
+            {
+                var namespaceName = typeof(DefaultTheme).Namespace;
+
+                _dynamicResourceDictionary = new[] { "HomePageGlobals" }.Select(i => new ResourceDictionary
+                {
+                    Source = new Uri("pack://application:,,,/" + namespaceName + ";component/Resources/" + i + ".xaml", UriKind.Absolute)
+
+                }).First();
+            }
+
+            _presentationManager.AddResourceDictionary(_dynamicResourceDictionary);
         }
 
         public BaseItemDto BackdropItem

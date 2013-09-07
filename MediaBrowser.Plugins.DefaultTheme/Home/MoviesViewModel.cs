@@ -31,7 +31,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 ImageDisplayWidth = HomePageViewModel.TileWidth,
                 ImageDisplayHeightGenerator = v => HomePageViewModel.TileHeight,
                 DisplayNameGenerator = MultiItemTile.GetDisplayName,
-                PreferredImageTypesGenerator = vm => new[] { ImageType.Backdrop, ImageType.Thumb, ImageType.Primary }
+                PreferredImageTypesGenerator = vm => new[] { ImageType.Backdrop, ImageType.Thumb, ImageType.Primary },
+                EnableBackdropsForCurrentItem = false
             };
 
             TrailersViewModel = new ItemListViewModel(GetTrailersAsync, presentation, imageManager, apiClient, session, nav, playback, logger)
@@ -39,7 +40,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 ImageDisplayWidth = HomePageViewModel.TileHeight * 2 / 3,
                 ImageDisplayHeightGenerator = v => HomePageViewModel.TileHeight,
                 DisplayNameGenerator = MultiItemTile.GetDisplayName,
-                PreferredImageTypesGenerator = vm => new[] { ImageType.Primary }
+                PreferredImageTypesGenerator = vm => new[] { ImageType.Primary },
+                EnableBackdropsForCurrentItem = false
             };
         }
 
@@ -64,7 +66,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
                 Filters = new[] { ItemFilter.IsResumable },
 
-                Limit = 6,
+                Limit = 3,
 
                 Recursive = true
             };
@@ -93,7 +95,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
                 Filters = new[] { ItemFilter.IsUnplayed },
 
-                Limit = 9,
+                Limit = 6,
 
                 Recursive = true
             };

@@ -55,7 +55,27 @@ namespace MediaBrowser.Plugins.DefaultTheme.Header
             PlaybackManager.PlaybackStarted += PlaybackManager_PlaybackStarted;
             PlaybackManager.PlaybackCompleted += PlaybackManager_PlaybackCompleted;
 
+            Navigation.Navigated += Navigation_Navigated;
+
             CurrentUserButton.Click += CurrentUserButton_Click;
+            ViewButton.Click += ViewButton_Click;
+        }
+
+        void Navigation_Navigated(object sender, NavigationEventArgs e)
+        {
+            ViewButton.Visibility = e.NewPage is IHasDisplayPreferences
+                                        ? Visibility.Visible
+                                        : Visibility.Collapsed;
+        }
+
+        void ViewButton_Click(object sender, RoutedEventArgs e)
+        {
+            var page = Navigation.CurrentPage as IHasDisplayPreferences;
+
+            if (page != null)
+            {
+                page.ShowDisplayPreferencesMenu();
+            }
         }
 
         void CurrentUserButton_Click(object sender, RoutedEventArgs e)

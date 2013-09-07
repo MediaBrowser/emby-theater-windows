@@ -1,4 +1,5 @@
-﻿using MediaBrowser.ApiInteraction;
+﻿using System.ComponentModel;
+using MediaBrowser.ApiInteraction;
 using MediaBrowser.Common.Constants;
 using MediaBrowser.Common.Implementations.Updates;
 using MediaBrowser.Model.Logging;
@@ -164,6 +165,7 @@ namespace MediaBrowser.UI
             win.LocationChanged += ApplicationWindow_LocationChanged;
             win.StateChanged += ApplicationWindow_LocationChanged;
             win.SizeChanged += ApplicationWindow_LocationChanged;
+            win.Closing += win_Closing;
 
             HiddenWindow.Activated += HiddenWindow_Activated;
             HiddenWindow.IsVisibleChanged += HiddenWindow_IsVisibleChanged;
@@ -175,6 +177,13 @@ namespace MediaBrowser.UI
             ApplicationWindow.Owner = HiddenWindow;
 
             SyncHiddenWindowLocation();
+
+            ApplicationWindow.Activate();
+        }
+
+        void win_Closing(object sender, CancelEventArgs e)
+        {
+            HiddenWindow.Close();
         }
 
         void HiddenWindow_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)

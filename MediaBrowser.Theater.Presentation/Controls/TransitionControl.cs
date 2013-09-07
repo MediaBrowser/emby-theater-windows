@@ -1,5 +1,4 @@
 ﻿using Microsoft.Expression.Media.Effects;
-using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -125,6 +124,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
             }
             catch
             {
+                _contentPresenter.Content = newContent;
                 return;
             }
 
@@ -136,7 +136,9 @@ namespace MediaBrowser.Theater.Presentation.Controls
                 return;
             }
 
-            var da = TransitionAnimation;
+            transitionEffect = (TransitionEffect)transitionEffect.Clone();
+
+            var da = TransitionAnimation.Clone();
             da.From = 0;
             da.To = 1;
             da.FillBehavior = FillBehavior.HoldEnd;

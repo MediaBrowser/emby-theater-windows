@@ -19,7 +19,7 @@
             <RowDefinition Height="auto"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <TextBlock Name="TxtName" Style="{DynamicResource TextBlockStyle}" HorizontalAlignment="Center" Margin="300 0 300 10" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"></TextBlock>
+        <TextBlock Name="TxtName" Style="{DynamicResource TextBlockStyle}" HorizontalAlignment="Center" Margin="300 0 300 10" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" Foreground="#ddd"></TextBlock>
 
         <controls:ExtendedListBox x:Name="MenuList" ItemsSource="{Binding Sections}" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" Grid.Row="1" HorizontalAlignment="Center" Margin="20 40 20 0" ItemContainerStyle="{DynamicResource DetailPageMenuListBoxItemStyle}">
             <controls:ExtendedListBox.ItemsPanel>

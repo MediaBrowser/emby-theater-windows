@@ -117,14 +117,11 @@
     <Compile Include="ViewModels\ItemReviewViewModel.cs" />
     <Compile Include="ViewModels\ItemViewModel.cs" />
     <Compile Include="ViewModels\MessageBoxViewModel.cs" />
-    <Compile Include="ViewModels\RelayCommand.cs" />
-    <Compile Include="ViewModels\BaseItemDtoViewModel.cs" />
     <Compile Include="ViewModels\ChapterInfoViewModel.cs" />
     <Compile Include="ViewModels\RotatingBackdropsViewModel.cs" />
     <Compile Include="ViewModels\TabbedViewModel.cs" />
     <Compile Include="ViewModels\TransportOsdViewModel.cs" />
     <Compile Include="ViewModels\RotatingCollectionViewModel.cs" />
-    <Compile Include="ViewModels\RangeObservableCollection.cs" />
     <Compile Include="ViewModels\UserDtoViewModel.cs" />
     <Compile Include="ViewModels\UserListViewModel.cs" />
     <Compile Include="Controls\BaseModalWindow.cs" />

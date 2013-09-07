@@ -3,7 +3,6 @@ using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Querying;
-using MediaBrowser.Plugins.DefaultTheme.Header;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
@@ -24,7 +23,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
     /// <summary>
     /// Interaction logic for FolderPage.xaml
     /// </summary>
-    public partial class FolderPage : BasePage, ISupportsItemThemeMedia, ISupportsBackdrops, IItemPage
+    public partial class FolderPage : BasePage, ISupportsItemThemeMedia, ISupportsBackdrops, IItemPage, IHasDisplayPreferences
     {
         private readonly DisplayPreferences _displayPreferences;
 
@@ -56,7 +55,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
             InitializeComponent();
 
             Loaded += FolderPage_Loaded;
-            Unloaded += FolderPage_Unloaded;
 
             _viewModel = new ItemListViewModel(GetItemsAsync, _presentationManager, _imageManager, _apiClient, _sessionManager, _navigationManager, _playbackManager, _logger)
             {
@@ -67,7 +65,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                 ShowSidebarGenerator = GetShowSidebar,
                 ScrollDirectionGenerator = GetScrollDirection,
 
-                AutoSelectFirstItem = true
+                AutoSelectFirstItem = true,
+
+                ShowLoadingAnimation = true
             };
 
             _viewModel.PropertyChanged += _viewModel_PropertyChanged;
@@ -76,6 +76,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
 
             DataContext = _viewModel;
         }
+
+        public string CustomPageTitle { get; set; }
+        public ViewType ViewType { get; set; }
 
         private ScrollDirection GetScrollDirection(ItemListViewModel viewModel)
         {
@@ -115,33 +118,21 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
             return viewModel.DisplayPreferences != null && viewModel.DisplayPreferences.ShowSidebar;
         }
 
-        protected void OnParentItemChanged()
+        void FolderPage_Loaded(object sender, RoutedEventArgs e)
         {
             SetPageTitle(_parentItem);
         }
 
-        void FolderPage_Unloaded(object sender, RoutedEventArgs e)
+        private void SetPageTitle(BaseItemDto parentItem)
         {
-            HideViewButton();
-        }
-
-        void FolderPage_Loaded(object sender, RoutedEventArgs e)
-        {
-            if (_parentItem != null)
+            if (!string.IsNullOrEmpty(CustomPageTitle))
             {
-                ShowViewButton();
-
-                SetPageTitle(_parentItem);
+                _presentationManager.SetPageTitle(CustomPageTitle);
             }
             else
             {
-                HideViewButton();
+                DefaultTheme.Current.PageContentDataContext.SetPageTitle(parentItem);
             }
-        }
-
-        private void SetPageTitle(BaseItemDto parentItem)
-        {
-            DefaultTheme.Current.PageContentDataContext.SetPageTitle(parentItem);
         }
 
         public static string GetDisplayName(BaseItemDto item)
@@ -178,31 +169,38 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
             }
         }
 
+        public static ItemFields[] QueryFields = new[]
+            {
+                ItemFields.PrimaryImageAspectRatio,
+                ItemFields.DateCreated,
+                ItemFields.MediaStreams,
+                ItemFields.Taglines,
+                ItemFields.Genres,
+                ItemFields.Overview,
+                ItemFields.DisplayPreferencesId,
+                ItemFields.ItemCounts
+            };
+
+        public Func<DisplayPreferences, Task<ItemsResult>> CustomItemQuery { get; set; }
+
         private Task<ItemsResult> GetItemsAsync()
         {
+            if (CustomItemQuery != null)
+            {
+                return CustomItemQuery(_displayPreferences);
+            }
+
             var query = new ItemQuery
             {
                 ParentId = _parentItem.Id,
 
-                Fields = new[]
-                        {
-                                 ItemFields.PrimaryImageAspectRatio,
-                                 ItemFields.DateCreated,
-                                 ItemFields.MediaStreams,
-                                 ItemFields.Taglines,
-                                 ItemFields.Genres,
-                                 ItemFields.Overview,
-                                 ItemFields.DisplayPreferencesId,
-                                 ItemFields.ItemCounts
-                        },
-
-                UserId = _sessionManager.CurrentUser.Id,
-
                 SortBy = !String.IsNullOrEmpty(_displayPreferences.SortBy)
-                        ? new[] { _displayPreferences.SortBy }
-                        : new[] { ItemSortBy.SortName },
+                             ? new[] { _displayPreferences.SortBy }
+                             : new[] { ItemSortBy.SortName },
 
-                SortOrder = _displayPreferences.SortOrder
+                SortOrder = _displayPreferences.SortOrder,
+                UserId = _sessionManager.CurrentUser.Id,
+                Fields = QueryFields
             };
 
             return _apiClient.GetItemsAsync(query);
@@ -216,11 +214,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
         public BaseItemDto PageItem
         {
             get { return _parentItem; }
-        }
-
-        public ViewType ViewType
-        {
-            get { return ViewType.Folders; }
         }
 
         private double GetItemContainerHeight(ItemListViewModel viewModel)
@@ -263,27 +256,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
             }
 
             return viewModel.DefaultImageDisplayHeight;
-        }
-
-        /// <summary>
-        /// Shows the view button.
-        /// </summary>
-        private void ShowViewButton()
-        {
-            var viewButton = TopRightPanel.Current.ViewButton;
-            viewButton.Visibility = Visibility.Visible;
-            viewButton.Click -= ViewButton_Click;
-            viewButton.Click += ViewButton_Click;
-        }
-
-        /// <summary>
-        /// Hides the view button.
-        /// </summary>
-        private void HideViewButton()
-        {
-            var viewButton = TopRightPanel.Current.ViewButton;
-            viewButton.Visibility = Visibility.Collapsed;
-            viewButton.Click -= ViewButton_Click;
         }
 
         private void UpdateLogo(BaseItemDto item)
@@ -347,12 +319,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
             }
         }
 
-        /// <summary>
-        /// Handles the Click event of the ViewButton control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
-        void ViewButton_Click(object sender, RoutedEventArgs e)
+        public void ShowDisplayPreferencesMenu()
         {
             var viewModel = new DisplayPreferencesViewModel(_viewModel.DisplayPreferences, _presentationManager);
 

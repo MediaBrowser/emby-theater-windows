@@ -75,7 +75,7 @@ namespace MediaBrowser.UI
         {
             get
             {
-                return true;
+                return false;
             }
         }
 

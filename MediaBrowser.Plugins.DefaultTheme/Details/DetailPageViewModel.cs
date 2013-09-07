@@ -169,11 +169,19 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             }
             if (string.Equals(section, "gallery"))
             {
-                return new GalleryViewModel(_apiClient, _imageManager, _navigation)
+                const int imageHeight = 640;
+
+                var vm = new GalleryViewModel(_apiClient, _imageManager, _navigation)
                 {
-                    ImageHeight = 640,
+                    ImageHeight = imageHeight,
                     Item = _itemViewModel.Item
                 };
+
+                var imageUrls = GalleryViewModel.GetImages(_itemViewModel.Item, _apiClient, null, imageHeight, true);
+
+                vm.AddImages(imageUrls);
+
+                return vm;
             }
             if (string.Equals(section, "similar"))
             {

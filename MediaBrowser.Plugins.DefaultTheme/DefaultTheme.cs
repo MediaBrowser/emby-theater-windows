@@ -116,16 +116,15 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// </summary>
         /// <param name="item">The item.</param>
         /// <param name="displayPreferences">The display preferences.</param>
-        /// <param name="context">The context.</param>
         /// <returns>Page.</returns>
-        public Page GetFolderPage(BaseItemDto item, DisplayPreferences displayPreferences, ViewType context)
+        public Page GetFolderPage(BaseItemDto item, DisplayPreferences displayPreferences)
         {
             if (!item.IsType("series") && !item.IsType("musicalbum"))
             {
                 return new FolderPage(item, displayPreferences, _apiClient, _imageManager, _sessionManager, _presentationManager, _navService, _playbackManager, _logger);
             }
 
-            return GetItemPage(item, context);
+            return GetItemPage(item, ViewType.Folders);
         }
 
         /// <summary>

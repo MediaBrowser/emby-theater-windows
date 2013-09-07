@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 
-namespace MediaBrowser.Theater.Presentation.ViewModels
+namespace MediaBrowser.Theater.Interfaces.ViewModels
 {
     /// <summary>
     /// Class RangeObservableCollection

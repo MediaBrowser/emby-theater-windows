@@ -46,6 +46,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         public bool EnableBackdropsForCurrentItem { get; set; }
         public bool AutoSelectFirstItem { get; set; }
+        public bool ShowLoadingAnimation { get; set; }
 
         private readonly Dispatcher _dispatcher;
 
@@ -308,6 +309,11 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             // Record the current item
             var currentItem = _listCollectionView.CurrentItem as ItemViewModel;
 
+            if (ShowLoadingAnimation)
+            {
+                _presentationManager.ShowLoadingAnimation();
+            }
+
             try
             {
                 var result = await _getItemsDelegate();
@@ -338,17 +344,20 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 var childWidth = Convert.ToInt32(ImageDisplayWidth);
                 var imageDisplayHeight = Convert.ToInt32(GetImageDisplayHeight());
 
-                _listItems.AddRange(items.Select(i => new ItemViewModel(_apiClient, _imageManager, _playbackManager, _presentationManager, _logger)
-                {
-                    DownloadPrimaryImageAtExactSize = IsCloseToMedianPrimaryImageAspectRatio(i),
-                    ImageHeight = imageDisplayHeight,
-                    ImageWidth = childWidth,
-                    Item = i,
-                    ViewType = ViewType,
-                    DisplayName = DisplayNameGenerator == null ? i.Name : DisplayNameGenerator(i),
-                    DownloadImagesAtExactSize = true,
-                    PreferredImageTypes = imageTypes
-                }));
+                _listItems.AddRange(
+                    items.Select(
+                        i =>
+                        new ItemViewModel(_apiClient, _imageManager, _playbackManager, _presentationManager, _logger)
+                            {
+                                DownloadPrimaryImageAtExactSize = IsCloseToMedianPrimaryImageAspectRatio(i),
+                                ImageHeight = imageDisplayHeight,
+                                ImageWidth = childWidth,
+                                Item = i,
+                                ViewType = ViewType,
+                                DisplayName = DisplayNameGenerator == null ? i.Name : DisplayNameGenerator(i),
+                                DownloadImagesAtExactSize = true,
+                                PreferredImageTypes = imageTypes
+                            }));
 
                 if (selectedIndex.HasValue)
                 {
@@ -358,6 +367,13 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             catch (HttpException)
             {
                 _presentationManager.ShowDefaultErrorMessage();
+            }
+            finally
+            {
+                if (ShowLoadingAnimation)
+                {
+                    _presentationManager.HideLoadingAnimation();
+                }
             }
         }
 

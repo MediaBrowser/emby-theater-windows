@@ -5,7 +5,7 @@ using MediaBrowser.Theater.Interfaces;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Plugins;
 using MediaBrowser.Theater.Interfaces.Presentation;
-using MediaBrowser.Theater.Presentation.ViewModels;
+using MediaBrowser.Theater.Interfaces.ViewModels;
 using System;
 using System.Linq;
 using System.Windows;

@@ -103,6 +103,8 @@
     <Compile Include="ViewModels\BaseViewModel.cs" />
     <Compile Include="ViewModels\ImageViewerViewModel.cs" />
     <Compile Include="ViewModels\PageContentViewModel.cs" />
+    <Compile Include="ViewModels\RangeObservableCollection.cs" />
+    <Compile Include="ViewModels\RelayCommand.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

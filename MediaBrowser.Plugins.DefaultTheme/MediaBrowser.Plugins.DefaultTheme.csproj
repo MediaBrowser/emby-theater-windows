@@ -107,6 +107,7 @@
     </Compile>
     <Compile Include="Home\MoviesViewModel.cs" />
     <Compile Include="Home\TvViewModel.cs" />
+    <Compile Include="IHasDisplayPreferences.cs" />
     <Compile Include="Osd\FullscreenVideoTransportOsd.xaml.cs">
       <DependentUpon>FullscreenVideoTransportOsd.xaml</DependentUpon>
     </Compile>
@@ -224,6 +225,10 @@
     <Page Include="Resources\DisplayPreferences.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\HomePageGlobals.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Resources\HomePageResources.xaml">
       <SubType>Designer</SubType>

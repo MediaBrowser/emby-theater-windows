@@ -11,6 +11,22 @@
         <!--This textblock is just to make sure the panel always takes up the same amount of vertical space, so that content never moves due to height changes -->
         <TextBlock Style="{DynamicResource TextBlockStyle}" Visibility="Hidden" Text=" "></TextBlock>
 
+        <StackPanel Orientation="Horizontal">
+
+            <StackPanel.Style>
+                <Style TargetType="{x:Type StackPanel}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsInProgress}" Value="False">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </StackPanel.Style>
+
+            <ProgressBar Minimum="0" Maximum="100" Value="{Binding PlayedPercentage, Mode=OneWay}" Margin="3 5 0 0" Width="200" Height="24" Style="{DynamicResource ResumeProgressBar}" VerticalAlignment="Center">
+            </ProgressBar>
+        </StackPanel>
+        
         <StackPanel Orientation="Horizontal" Name="PnlDate">
             <Border Style="{StaticResource MediaInfoSeparator}"></Border>
             <TextBlock Style="{DynamicResource TextBlockStyle}" x:Name="TxtDate" VerticalAlignment="Center"></TextBlock>

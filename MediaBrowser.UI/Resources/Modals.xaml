@@ -13,6 +13,7 @@
         <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}"/>
         <Setter Property="FontWeight" Value="{DynamicResource DefaultFontWeight}"/>
         <Setter Property="Foreground" Value="{DynamicResource DefaultForeground}"/>
+        <Setter Property="Cursor" Value="None"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="AllowsTransparency" Value="True"/>
         <Setter Property="Background" Value="Transparent"/>

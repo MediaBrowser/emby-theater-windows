@@ -1,9 +1,9 @@
 ﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Theater.Interfaces.Presentation;
+using MediaBrowser.Theater.Interfaces.ViewModels;
 using System;
 using System.Threading;
-using MediaBrowser.Theater.Interfaces.ViewModels;
 
 namespace MediaBrowser.Theater.Presentation.ViewModels
 {
@@ -69,7 +69,6 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 _currentItemIndex = value;
                 OnPropertyChanged("CurrentItemIndex");
                 OnPropertyChanged("CurrentItem");
-                OnPropertyChanged("NextItem");
             }
         }
 
@@ -79,28 +78,6 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         public BaseItemDto CurrentItem
         {
             get { return CurrentItemIndex == -1 ? null : Items[CurrentItemIndex]; }
-        }
-
-        /// <summary>
-        /// Gets the next item
-        /// </summary>
-        public BaseItemDto NextItem
-        {
-            get
-            {
-                if (CurrentItem == null || CurrentItemIndex == -1)
-                {
-                    return null;
-                }
-                var index = CurrentItemIndex + 1;
-
-                if (index >= Items.Length)
-                {
-                    index = 0;
-                }
-
-                return Items[index];
-            }
         }
 
         /// <summary>

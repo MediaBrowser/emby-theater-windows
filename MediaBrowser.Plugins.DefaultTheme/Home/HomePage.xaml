@@ -3,15 +3,14 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
                                  xmlns:pages="clr-namespace:MediaBrowser.Theater.Presentation.Pages;assembly=MediaBrowser.Theater.Presentation"
-                                 Title="HomePage">
-
+                Title="HomePage">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <controls:ExtendedListBox x:Name="MenuList" ItemsSource="{Binding Sections}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" Grid.Row="0" HorizontalAlignment="Center" Margin="20 50 20 20" ItemContainerStyle="{StaticResource HomePageListBoxItemStyle}">
+        <controls:ExtendedListBox x:Name="MenuList" ItemsSource="{Binding Sections}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" Grid.Row="0" HorizontalAlignment="Center" Margin="0 70 0 0" ItemContainerStyle="{StaticResource HomePageListBoxItemStyle}">
             <controls:ExtendedListBox.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" />
@@ -21,7 +20,7 @@
 
         <controls:ExtendedScrollViewer x:Name="ScrollViewer" Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalAlignment="Top" HorizontalAlignment="Center" CanContentScroll="True">
             <controls:ScrollingPanel x:Name="ScrollingPanel" CanHorizontallyScroll="True" CanVerticallyScroll="False">
-                <ContentControl x:Name="PageContent" Margin="100 40 100 60" Focusable="False">
+                <ContentControl x:Name="PageContent" Margin="120 100 120 40" Focusable="False">
                     <ContentControl.Style>
                         <Style TargetType="{x:Type ContentControl}">
                             <Style.Triggers>
@@ -72,7 +71,7 @@
                                                 <controls:ExtendedListBox Margin="-25 -35" DataContext="{Binding ContentViewModel}" ItemsSource="{Binding ListCollectionView}" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource HomePageItemTemplate}">
                                                     <controls:ExtendedListBox.ItemsPanel>
                                                         <ItemsPanelTemplate>
-                                                            <UniformGrid Margin="40 35" Rows="3"></UniformGrid>
+                                                            <UniformGrid Margin="40 35" Rows="2"></UniformGrid>
                                                         </ItemsPanelTemplate>
                                                     </controls:ExtendedListBox.ItemsPanel>
                                                 </controls:ExtendedListBox>

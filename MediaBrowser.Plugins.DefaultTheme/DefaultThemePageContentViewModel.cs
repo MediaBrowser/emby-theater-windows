@@ -61,6 +61,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
                     LogoImage = await _imageManager.GetRemoteBitmapAsync(url);
 
                     ShowLogoImage = true;
+                    ShowDefaultPageTitle = false;
                 }
                 catch
                 {

@@ -80,6 +80,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 if (_listCollectionView == null)
                 {
                     _listCollectionView = new ListCollectionView(_listItems);
+
                     _listCollectionView.CurrentChanged += _listCollectionView_CurrentChanged;
                     ReloadItems(true);
                 }
@@ -96,6 +97,21 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 {
                     OnPropertyChanged("ListCollectionView");
                 }
+            }
+        }
+
+        private int _itemCount;
+        public int ItemCount
+        {
+            get
+            {
+                return _itemCount;
+            }
+            set
+            {
+                _itemCount = value;
+
+                OnPropertyChanged("ItemCount");
             }
         }
 
@@ -262,6 +278,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         }
 
         private DisplayPreferences _displayPreferences;
+
         public DisplayPreferences DisplayPreferences
         {
             get { return _displayPreferences; }
@@ -358,6 +375,8 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                                 DownloadImagesAtExactSize = true,
                                 PreferredImageTypes = imageTypes
                             }));
+
+                ItemCount = items.Length;
 
                 if (selectedIndex.HasValue)
                 {

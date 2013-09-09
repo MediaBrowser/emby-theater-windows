@@ -275,26 +275,47 @@ namespace MediaBrowser.UI.Implementations
         }
 
         private LoadingWindow _loadingWindow;
+        private int _loadingCount;
+        private readonly object _loadingSyncLock = new object();
 
         public void ShowLoadingAnimation()
         {
-            Window.Dispatcher.InvokeAsync(() =>
+            lock (_loadingSyncLock)
             {
-                if (_loadingWindow == null)
-                {
-                    _loadingWindow = new LoadingWindow();
-                }
+                _loadingCount++;
 
-                if (!_loadingWindow.IsActive)
+                if (_loadingCount == 1)
                 {
-                    _loadingWindow.Show(Window);
+                    Window.Dispatcher.InvokeAsync(() =>
+                    {
+                        if (_loadingWindow == null)
+                        {
+                            _loadingWindow = new LoadingWindow();
+                        }
+
+                        if (!_loadingWindow.IsActive)
+                        {
+                            _loadingWindow.Show(Window);
+                        }
+                    });
                 }
-            });
+            }
         }
 
         public void HideLoadingAnimation()
         {
-            Window.Dispatcher.InvokeAsync(() => _loadingWindow.Hide());
+            lock (_loadingSyncLock)
+            {
+                if (_loadingCount > 0)
+                {
+                    _loadingCount--;
+                }
+
+                if (_loadingCount == 0)
+                {
+                    Window.Dispatcher.InvokeAsync(() => _loadingWindow.Hide());
+                }
+            }
         }
     }
 }

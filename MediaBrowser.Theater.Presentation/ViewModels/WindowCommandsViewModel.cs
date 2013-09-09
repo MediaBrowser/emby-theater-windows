@@ -88,17 +88,29 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         public void Minimize(object commandParameter)
         {
-            _window.WindowState = WindowState.Minimized;
+            SetWindowState(WindowState.Minimized);
         }
 
         public void Maximize(object commandParameter)
         {
-            _window.WindowState = WindowState.Maximized;
+            SetWindowState(WindowState.Maximized);
         }
 
         public void UndoMaximize(object commandParameter)
         {
-            _window.WindowState = WindowState.Normal;
+            SetWindowState(WindowState.Normal);
+        }
+
+        private void SetWindowState(WindowState state)
+        {
+            //var focusedElement = FocusManager.GetFocusedElement(_window);
+
+            _window.WindowState = state;
+
+            //if (focusedElement != null)
+            {
+                //focusedElement.Focus();
+            }
         }
 
         public void CloseApplication(object commandParameter)

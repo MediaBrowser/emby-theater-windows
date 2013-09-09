@@ -79,8 +79,8 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
-        private int? _galleryWidth;
-        public int? GalleryWidth
+        private double? _galleryWidth;
+        public double? GalleryWidth
         {
             get { return _galleryWidth; }
 
@@ -96,8 +96,8 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
-        private int? _galleryHeight;
-        public int? GalleryHeight
+        private double? _galleryHeight;
+        public double? GalleryHeight
         {
             get { return _galleryHeight; }
 

@@ -99,6 +99,7 @@
     <Compile Include="Header\TopRightPanel.xaml.cs">
       <DependentUpon>TopRightPanel.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Home\BaseHomePageSectionViewModel.cs" />
     <Compile Include="Home\GamesViewModel.cs" />
     <Compile Include="Home\HomePageInfo.cs" />
     <Compile Include="Home\HomePageViewModel.cs" />

@@ -110,6 +110,9 @@
                                     <DataTrigger Binding="{Binding ShowLogoImage}" Value="False">
                                         <Setter Property="Visibility" Value="Collapsed" />
                                     </DataTrigger>
+                                    <DataTrigger Binding="{Binding ShowDefaultPageTitle}" Value="True">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
                                 </Style.Triggers>
                             </Style>
                         </Image.Style>

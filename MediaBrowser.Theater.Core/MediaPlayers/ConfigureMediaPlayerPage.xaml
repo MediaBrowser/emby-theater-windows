@@ -9,7 +9,7 @@
       d:DesignHeight="300" d:DesignWidth="300"
 	Title="ConfigureMediaPlayerPage">
 
-    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Orientation="Vertical" Width="1400">
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Orientation="Vertical" Width="1450">
 
         <TextBlock x:Name="TxtTitle" Style="{DynamicResource Heading1TextBlockStyle}" Margin="0 10 0 0"></TextBlock>
 
@@ -23,11 +23,11 @@
             <controls:SelectList x:Name="SelectMediaType"></controls:SelectList>
         </StackPanel>
 
-        <StackPanel x:Name="PanelVideoTypes" Margin="0 20 0 0" Orientation="Vertical">
+        <StackPanel x:Name="PanelVideoTypes" Margin="0 20 0 0" Orientation="Horizontal">
 
             <TextBlock Style="{DynamicResource TextBlockStyle}">Video types:</TextBlock>
 
-            <WrapPanel Orientation="Horizontal" Margin="0 10 0 0">
+            <WrapPanel Orientation="Horizontal" Margin="220 0 0 0">
 
                 <CheckBox x:Name="ChkBluray">
                     <TextBlock Style="{DynamicResource TextBlockStyle}">Blu-ray folders</TextBlock>
@@ -48,13 +48,13 @@
 
             <TextBlock Style="{DynamicResource TextBlockStyle}">File Extensions:</TextBlock>
 
-            <UniformGrid x:Name="WrapPanelFileExtensions" Margin="0 10 0 0" Columns="8">
+            <UniformGrid x:Name="WrapPanelFileExtensions" Margin="0 10 0 0" Columns="9">
             </UniformGrid>
         </StackPanel>
 
         <StackPanel x:Name="PanelIsoSupport" Margin="0 20 0 0" Orientation="Horizontal">
             <TextBlock Style="{DynamicResource TextBlockStyle}" MinWidth="200">Iso Support:</TextBlock>
-            <controls:SelectList x:Name="SelectIsoSupport"></controls:SelectList>
+            <controls:SelectList x:Name="SelectIsoSupport" Margin="200 0 0 0"></controls:SelectList>
         </StackPanel>
 
         <StackPanel x:Name="PanelExternalPlayerConfig" Margin="0 20 0 0" Orientation="Vertical">

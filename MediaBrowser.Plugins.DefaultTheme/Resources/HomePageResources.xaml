@@ -137,7 +137,6 @@
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
-                <ColumnDefinition Width="Auto"></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
             <Grid.RowDefinitions>
@@ -147,10 +146,30 @@
 
             <TextBlock Style="{DynamicResource TextBlockStyle}" Foreground="#ddd" Grid.Column="0" Grid.Row="0" Padding="10 0 0 0">Spotlight</TextBlock>
             <TextBlock Style="{DynamicResource TextBlockStyle}" Foreground="#ddd" Grid.Column="1" Grid.Row="0" Padding="25 0 0 0">Library</TextBlock>
-            <TextBlock Style="{DynamicResource TextBlockStyle}" Foreground="#ddd" Grid.Column="2" Grid.Row="0" Padding="30 0 0 0">Latest Episodes</TextBlock>
 
-            <TextBlock Style="{DynamicResource TextBlockStyle}" Foreground="#ddd" Grid.Column="3" Grid.Row="0" Padding="25 0 0 0">Resume</TextBlock>
-            <TextBlock Style="{DynamicResource TextBlockStyle}" Foreground="#ddd" Grid.Column="4" Grid.Row="0" Padding="25 0 0 0">Next up</TextBlock>
+            <TextBlock Foreground="#ddd" Grid.Column="2" Grid.Row="0" Padding="25 0 0 0" Text="Resume">
+                <TextBlock.Style>
+                    <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ShowResume}" Value="false">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+
+            <TextBlock Foreground="#ddd" Grid.Column="3" Grid.Row="0" Padding="25 0 0 0" Text="Next Up">
+                <TextBlock.Style>
+                    <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ShowNextUp}" Value="false">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
 
             <Grid Grid.Row="1" Grid.Column="0">
                 <controls:ExtendedButton Style="{DynamicResource BaseItemButtonStyle}" DataContext="{Binding SpotlightViewModel}" Command="{Binding CustomCommand}">
@@ -175,7 +194,7 @@
                 </controls:ExtendedButton>
             </Grid>
 
-            <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical" Margin="15 0 0 0">
+            <WrapPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical" Margin="15 0 0 0">
 
                 <controls:ExtendedButton Style="{DynamicResource BaseItemButtonStyle}" DataContext="{Binding AllShowsViewModel}" Command="{Binding CustomCommand}">
                     <Grid Height="{Binding GalleryHeight}" Width="{Binding GalleryWidth}" Background="#a6000000">
@@ -223,19 +242,20 @@
                     </Grid>
                 </controls:ExtendedButton>
 
-            </StackPanel>
+            </WrapPanel>
 
             <Grid Grid.Row="1" Grid.Column="2">
-                <controls:ExtendedListBox Margin="-25 -35 -30 -35" DataContext="{Binding LatestEpisodesViewModel}" ItemsSource="{Binding ListCollectionView}" KeyboardNavigation.DirectionalNavigation="Continue" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource HomePageItemTemplate}">
-                    <controls:ExtendedListBox.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <WrapPanel Margin="40 35" Orientation="Vertical"></WrapPanel>
-                        </ItemsPanelTemplate>
-                    </controls:ExtendedListBox.ItemsPanel>
-                </controls:ExtendedListBox>
-            </Grid>
 
-            <Grid Grid.Row="1" Grid.Column="3">
+                <Grid.Style>
+                    <Style TargetType="{x:Type Grid}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ShowResume}" Value="false">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+
                 <controls:ExtendedListBox Margin="-30 -35" DataContext="{Binding ResumeViewModel}" ItemsSource="{Binding ListCollectionView}" KeyboardNavigation.DirectionalNavigation="Continue" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource HomePageItemTemplate}">
                     <controls:ExtendedListBox.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -245,7 +265,18 @@
                 </controls:ExtendedListBox>
             </Grid>
 
-            <Grid Grid.Row="1" Grid.Column="4">
+            <Grid Grid.Row="1" Grid.Column="3">
+
+                <Grid.Style>
+                    <Style TargetType="{x:Type Grid}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ShowNextUp}" Value="false">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+
                 <controls:ExtendedListBox Margin="-30 -35" DataContext="{Binding NextUpViewModel}" ItemsSource="{Binding ListCollectionView}" KeyboardNavigation.DirectionalNavigation="Continue" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource HomePageItemTemplate}">
                     <controls:ExtendedListBox.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -267,6 +298,7 @@
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
             <Grid.RowDefinitions>
@@ -277,14 +309,81 @@
             <TextBlock Style="{DynamicResource TextBlockStyle}" Foreground="#ddd" Grid.Column="0" Grid.Row="0" Padding="10 0 0 0">Spotlight</TextBlock>
             <TextBlock Style="{DynamicResource TextBlockStyle}" Foreground="#ddd" Grid.Column="1" Grid.Row="0" Padding="25 0 0 0">Library</TextBlock>
 
-            <TextBlock Style="{DynamicResource TextBlockStyle}" Foreground="#ddd" Grid.Column="2" Grid.Row="0" Padding="25 0 0 0">Resume</TextBlock>
-            <TextBlock Style="{DynamicResource TextBlockStyle}" Foreground="#ddd" Grid.Column="3" Grid.Row="0" Padding="25 0 0 0">Latest trailers</TextBlock>
+            <TextBlock Foreground="#ddd" Grid.Column="2" Grid.Row="0" Padding="20 0 0 0" Text="Resume">
+                <TextBlock.Style>
+                    <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ShowResume}" Value="false">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
 
-            <Grid Grid.Row="1" Grid.Column="0"></Grid>
+            <TextBlock Foreground="#ddd" Grid.Column="3" Grid.Row="0" Padding="20 0 0 0" Text="Latest Movies">
+                <TextBlock.Style>
+                    <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ShowLatestMovies}" Value="false">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+            
+            <TextBlock Foreground="#ddd" Grid.Column="4" Grid.Row="0" Padding="20 0 0 0" Text="Latest Trailers">
+                <TextBlock.Style>
+                    <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ShowTrailers}" Value="false">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
 
-            <Grid Grid.Row="1" Grid.Column="1"></Grid>
+            <Grid Grid.Row="1" Grid.Column="0">
+                <controls:ExtendedButton Style="{DynamicResource BaseItemButtonStyle}" DataContext="{Binding SpotlightViewModel}" Command="{Binding CustomCommand}">
+                    <Grid Height="{Binding Height}" Width="{Binding Width}">
+                        <controls:TransitionControl Content="{Binding CurrentImage}">
+                            <controls:TransitionControl.TransitionAnimation>
+                                <DoubleAnimation Duration="0:0:1.75" >
+                                    <DoubleAnimation.EasingFunction>
+                                        <ExponentialEase EasingMode="EaseInOut"></ExponentialEase>
+                                    </DoubleAnimation.EasingFunction>
+                                </DoubleAnimation>
+                            </controls:TransitionControl.TransitionAnimation>
+                            <controls:TransitionControl.TransitionType>
+                                <ee:FadeTransitionEffect></ee:FadeTransitionEffect>
+                            </controls:TransitionControl.TransitionType>
+                        </controls:TransitionControl>
+
+                        <Border HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Background="#a6000000">
+                            <TextBlock Text="{Binding CurrentText}" Style="{DynamicResource TextBlockStyle}" Margin="10 5 10 10"></TextBlock>
+                        </Border>
+                    </Grid>
+                </controls:ExtendedButton>
+            </Grid>
+
+            <Grid Grid.Row="1" Grid.Column="1">
+                
+            </Grid>
 
             <Grid Grid.Row="1" Grid.Column="2">
+
+                <Grid.Style>
+                    <Style TargetType="{x:Type Grid}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ShowResume}" Value="false">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+
                 <controls:ExtendedListBox Margin="-30 -35" DataContext="{Binding ResumeViewModel}" ItemsSource="{Binding ListCollectionView}" KeyboardNavigation.DirectionalNavigation="Continue" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource HomePageItemTemplate}">
                     <controls:ExtendedListBox.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -295,6 +394,38 @@
             </Grid>
 
             <Grid Grid.Row="1" Grid.Column="3">
+
+                <Grid.Style>
+                    <Style TargetType="{x:Type Grid}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ShowLatestMovies}" Value="false">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+
+                <controls:ExtendedListBox Margin="-30 -35" DataContext="{Binding LatestMoviesViewModel}" ItemsSource="{Binding ListCollectionView}" KeyboardNavigation.DirectionalNavigation="Continue" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource HomePageItemTemplate}">
+                    <controls:ExtendedListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Margin="40 35" Orientation="Vertical"></WrapPanel>
+                        </ItemsPanelTemplate>
+                    </controls:ExtendedListBox.ItemsPanel>
+                </controls:ExtendedListBox>
+            </Grid>
+            
+            <Grid Grid.Row="1" Grid.Column="4">
+
+                <Grid.Style>
+                    <Style TargetType="{x:Type Grid}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ShowTrailers}" Value="false">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+
                 <controls:ExtendedListBox Margin="-30 -35" DataContext="{Binding TrailersViewModel}" ItemsSource="{Binding ListCollectionView}" KeyboardNavigation.DirectionalNavigation="Continue" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource HomePageItemTemplate}">
                     <controls:ExtendedListBox.ItemsPanel>
                         <ItemsPanelTemplate>

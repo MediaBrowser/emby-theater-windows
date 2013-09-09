@@ -142,7 +142,7 @@ namespace MediaBrowser.Theater.Presentation.Playback
         /// <value>The name.</value>
         public virtual string Name
         {
-            get { return "Generic External Player"; }
+            get { return "External Player"; }
         }
 
         /// <summary>
@@ -255,7 +255,7 @@ namespace MediaBrowser.Theater.Presentation.Playback
                 }
                 catch (Exception ex)
                 {
-                    Logger.ErrorException("Error staring player", ex);
+                    Logger.ErrorException("Error starting player", ex);
 
                     _playlist.Clear();
 

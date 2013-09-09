@@ -1,9 +1,13 @@
-﻿using MediaBrowser.Theater.Interfaces.ViewModels;
-using MediaBrowser.Theater.Presentation.ViewModels;
+﻿using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Theater.Interfaces.Presentation;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Home
 {
-    public class GamesViewModel : BaseViewModel
+    public class GamesViewModel : BaseHomePageSectionViewModel
     {
+        public GamesViewModel(IPresentationManager presentationManager, IApiClient apiClient)
+            : base(presentationManager, apiClient)
+        {
+        }
     }
 }

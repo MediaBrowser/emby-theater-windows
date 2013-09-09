@@ -326,6 +326,15 @@ namespace MediaBrowser.Theater.Implementations.Playback
                 }
             }
 
+            else if (string.Equals(configuration.MediaType, MediaType.Book))
+            {
+                // If it's configured for specific file extensions
+                if (!IsConfiguredForFileExtension(configuration, item.Path))
+                {
+                    return false;
+                }
+            }
+
             else if (string.Equals(configuration.MediaType, MediaType.Audio))
             {
                 // If it's configured for specific file extensions

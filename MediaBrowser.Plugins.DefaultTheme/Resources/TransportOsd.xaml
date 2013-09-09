@@ -4,6 +4,7 @@
     <Style TargetType="Button" x:Key="TransportButton">
         <Setter Property="Margin" Value="15 0 15 0"/>
         <Setter Property="KeyboardNavigation.IsTabStop" Value="false"/>
+        <Setter Property="Focusable" Value="false"/>
         <Setter Property="Height" Value="40"/>
         <Setter Property="Padding" Value="0"/>
         <Setter Property="BorderThickness" Value="0"/>

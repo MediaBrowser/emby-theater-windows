@@ -26,8 +26,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         private readonly INavigationService _nav;
         private readonly IPlaybackManager _playbackManager;
 
-        public const int TileWidth = 448;
-        public const int TileHeight = TileWidth * 9 / 16;
+        private const double TileWidth = 448;
+        private const double TileHeight = TileWidth * 9 / 16;
 
         public HomePageViewModel(IPresentationManager presentationManager, IApiClient apiClient, ISessionManager sessionManager, ILogger logger, IImageManager imageManager, INavigationService nav, IPlaybackManager playbackManager)
         {
@@ -102,15 +102,20 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             }
             if (string.Equals(section, "games"))
             {
-                return new GamesViewModel();
+                return new GamesViewModel(_presentationManager, _apiClient)
+                {
+                    TileHeight = TileHeight,
+                    TileWidth = TileWidth
+                };
             }
             if (string.Equals(section, "tv"))
             {
-                return new TvViewModel(_presentationManager, _imageManager, _apiClient, _sessionManager, _nav, _playbackManager, _logger);
+                return new TvViewModel(_presentationManager, _imageManager, _apiClient, _sessionManager, _nav, _playbackManager, _logger, TileWidth, TileHeight);
             }
             if (string.Equals(section, "movies"))
             {
-                return new MoviesViewModel(_presentationManager, _imageManager, _apiClient, _sessionManager, _nav, _playbackManager, _logger);
+                return new MoviesViewModel(_presentationManager, _imageManager, _apiClient, _sessionManager, _nav,
+                                           _playbackManager, _logger, TileWidth, TileHeight);
             }
 
             return null;
@@ -135,6 +140,20 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             };
 
             return _apiClient.GetItemsAsync(query);
+        }
+
+        public void SetBackdrops()
+        {
+            var vm = ContentViewModel as BaseHomePageSectionViewModel;
+
+            if (vm != null)
+            {
+                vm.SetBackdrops();
+            }
+            else
+            {
+                _presentationManager.ClearBackdrops();
+            }
         }
     }
 }

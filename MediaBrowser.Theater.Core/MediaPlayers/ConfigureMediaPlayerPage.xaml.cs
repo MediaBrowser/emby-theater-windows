@@ -354,7 +354,11 @@ namespace MediaBrowser.Theater.Core.MediaPlayers
 
         private static readonly string[] BookFileExtensions = new[]
             {
-                ".pdf"
+                ".pdf",
+                ".mobi",
+                ".epub",
+                ".cbr",
+                ".cbz"
         };
 
     }

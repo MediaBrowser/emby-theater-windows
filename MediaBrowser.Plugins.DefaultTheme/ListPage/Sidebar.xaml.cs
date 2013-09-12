@@ -175,8 +175,15 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
 
             if (current != null)
             {
-                current.Cancel();
-                current.Dispose();
+                try
+                {
+                    current.Cancel();
+                    current.Dispose();
+                }
+                catch (ObjectDisposedException)
+                {
+                    // Messy. Will move this to a view model later.
+                }
             }
         }
     }

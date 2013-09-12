@@ -92,7 +92,7 @@ namespace MediaBrowser.Theater.Interfaces.Playback
         /// <summary>
         /// Reports the playback completed.
         /// </summary>
-        /// <param name="eventArgs">The <see cref="PlaybackStopEventArgs"/> instance containing the event data.</param>
+        /// <param name="eventArgs">The <see cref="PlaybackStopEventArgs" /> instance containing the event data.</param>
         void ReportPlaybackCompleted(PlaybackStopEventArgs eventArgs);
     }
 }

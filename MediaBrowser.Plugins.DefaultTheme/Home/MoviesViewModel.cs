@@ -3,7 +3,7 @@ using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Querying;
-using MediaBrowser.Plugins.DefaultTheme.Controls;
+using MediaBrowser.Plugins.DefaultTheme.ListPage;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Home
@@ -23,12 +24,23 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         private readonly ISessionManager _sessionManager;
         private readonly IImageManager _imageManager;
         private readonly INavigationService _navService;
+        private readonly IPlaybackManager _playbackManager;
+        private readonly ILogger _logger;
+
 
         public ItemListViewModel ResumeViewModel { get; private set; }
-        public ItemListViewModel TrailersViewModel { get; private set; }
+        public ItemListViewModel LatestTrailersViewModel { get; private set; }
         public ItemListViewModel LatestMoviesViewModel { get; private set; }
 
         public ImageViewerViewModel SpotlightViewModel { get; private set; }
+
+        public GalleryViewModel AllMoviesViewModel { get; private set; }
+        public GalleryViewModel ActorsViewModel { get; private set; }
+        public GalleryViewModel BoxsetsViewModel { get; private set; }
+        public GalleryViewModel TrailersViewModel { get; private set; }
+        public GalleryViewModel HDMoviesViewModel { get; private set; }
+        public GalleryViewModel ThreeDMoviesViewModel { get; private set; }
+        public GalleryViewModel FamilyMoviesViewModel { get; private set; }
 
         public MoviesViewModel(IPresentationManager presentation, IImageManager imageManager, IApiClient apiClient, ISessionManager session, INavigationService nav, IPlaybackManager playback, ILogger logger, double tileWidth, double tileHeight)
             : base(presentation, apiClient)
@@ -36,6 +48,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             _sessionManager = session;
             _imageManager = imageManager;
             _navService = nav;
+            _playbackManager = playback;
+            _logger = logger;
 
             TileWidth = tileWidth;
             TileHeight = tileHeight;
@@ -44,7 +58,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 ImageDisplayWidth = TileWidth,
                 ImageDisplayHeightGenerator = v => TileHeight,
-                DisplayNameGenerator = MultiItemTile.GetDisplayName,
+                DisplayNameGenerator = HomePageViewModel.GetDisplayName,
                 PreferredImageTypesGenerator = vm => new[] { ImageType.Backdrop, ImageType.Thumb, ImageType.Primary },
                 EnableBackdropsForCurrentItem = false
             };
@@ -53,27 +67,114 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             var trailerTileHeight = (TileHeight * 2) + TilePadding / 2;
             var trailerTileWidth = trailerTileHeight * 2 / 3;
 
-            TrailersViewModel = new ItemListViewModel(GetLatestTrailersAsync, presentation, imageManager, apiClient, session, nav, playback, logger)
+            LatestTrailersViewModel = new ItemListViewModel(GetLatestTrailersAsync, presentation, imageManager, apiClient, session, nav, playback, logger)
             {
                 ImageDisplayWidth = trailerTileWidth,
                 ImageDisplayHeightGenerator = v => trailerTileHeight,
-                DisplayNameGenerator = MultiItemTile.GetDisplayName,
+                DisplayNameGenerator = HomePageViewModel.GetDisplayName,
                 PreferredImageTypesGenerator = vm => new[] { ImageType.Primary },
                 EnableBackdropsForCurrentItem = false
             };
-            TrailersViewModel.PropertyChanged += TrailersViewModel_PropertyChanged;
+            LatestTrailersViewModel.PropertyChanged += TrailersViewModel_PropertyChanged;
 
             LatestMoviesViewModel = new ItemListViewModel(GetLatestMoviesAsync, presentation, imageManager, apiClient, session, nav, playback, logger)
             {
                 ImageDisplayWidth = TileWidth,
                 ImageDisplayHeightGenerator = v => TileHeight,
-                DisplayNameGenerator = MultiItemTile.GetDisplayName,
+                DisplayNameGenerator = HomePageViewModel.GetDisplayName,
                 PreferredImageTypesGenerator = vm => new[] { ImageType.Backdrop, ImageType.Thumb, ImageType.Primary },
                 EnableBackdropsForCurrentItem = false
             };
             LatestMoviesViewModel.PropertyChanged += LatestMoviesViewModel_PropertyChanged;
-            
-            LoadSpotlightViewModel();
+
+            ActorsViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
+            {
+                GalleryHeight = TileHeight,
+                GalleryWidth = TileWidth * 9 / 16,
+                CustomCommandAction = NavigateToActors
+            };
+
+            AllMoviesViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
+            {
+                GalleryHeight = TileHeight,
+                GalleryWidth = TileWidth * 9 / 16,
+                CustomCommandAction = NavigateToAllMovies
+            };
+
+            BoxsetsViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
+            {
+                GalleryHeight = TileHeight,
+                GalleryWidth = TileWidth * 9 / 16,
+                CustomCommandAction = NavigateToBoxsets
+            };
+
+            TrailersViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
+            {
+                GalleryHeight = TileHeight,
+                GalleryWidth = TileWidth * 9 / 16,
+                CustomCommandAction = NavigateToTrailers
+            };
+
+            HDMoviesViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
+            {
+                GalleryHeight = TileHeight,
+                GalleryWidth = TileWidth * 9 / 16,
+                CustomCommandAction = NavigateToHDMovies
+            };
+
+            FamilyMoviesViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
+            {
+                GalleryHeight = TileHeight,
+                GalleryWidth = TileWidth * 9 / 16,
+                CustomCommandAction = NavigateToFamilyMovies
+            };
+
+            ThreeDMoviesViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
+            {
+                GalleryHeight = TileHeight,
+                GalleryWidth = TileWidth * 9 / 16,
+                CustomCommandAction = NavigateTo3DMovies
+            };
+
+            var spotlightTileWidth = TileWidth * 2 + TilePadding;
+            var spotlightTileHeight = spotlightTileWidth * 9 / 16;
+
+            SpotlightViewModel = new ImageViewerViewModel(_imageManager, new List<ImageViewerImage>())
+            {
+                Height = spotlightTileHeight,
+                Width = spotlightTileWidth,
+                CustomCommandAction = i => _navService.NavigateToItem(i.Item, ViewType.Tv)
+            };
+
+            LoadViewModels();
+        }
+
+        private async void LoadViewModels()
+        {
+            PresentationManager.ShowLoadingAnimation();
+
+            try
+            {
+                var view = await ApiClient.GetMovieView(_sessionManager.CurrentUser.Id, CancellationToken.None);
+
+                LoadSpotlightViewModel(view);
+                LoadBoxsetsViewModel(view);
+                LoadTrailersViewModel(view);
+                LoadAllMoviesViewModel(view);
+                LoadHDMoviesViewModel(view);
+                LoadFamilyMoviesViewModel(view);
+                Load3DMoviesViewModel(view);
+                LoadActorsViewModel(view);
+            }
+            catch (Exception ex)
+            {
+                _logger.ErrorException("Error getting movie view", ex);
+                PresentationManager.ShowDefaultErrorMessage();
+            }
+            finally
+            {
+                PresentationManager.HideLoadingAnimation();
+            }
         }
 
         void LatestMoviesViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -83,7 +184,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         void TrailersViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            ShowTrailers = TrailersViewModel.ItemCount > 0;
+            ShowLatestTrailers = LatestTrailersViewModel.ItemCount > 0;
         }
 
         void ResumeViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -105,6 +206,24 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 if (changed)
                 {
                     OnPropertyChanged("ShowLatestMovies");
+                }
+            }
+        }
+
+        private bool _showLatestTrailers;
+        public bool ShowLatestTrailers
+        {
+            get { return _showLatestTrailers; }
+
+            set
+            {
+                var changed = _showLatestTrailers != value;
+
+                _showLatestTrailers = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("ShowLatestTrailers");
                 }
             }
         }
@@ -145,37 +264,88 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             }
         }
 
-        private async void LoadSpotlightViewModel()
+        private bool _showBoxSets;
+        public bool ShowBoxSets
+        {
+            get { return _showBoxSets; }
+
+            set
+            {
+                var changed = _showBoxSets != value;
+
+                _showBoxSets = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("ShowBoxSets");
+                }
+            }
+        }
+
+        private bool _show3DMovies;
+        public bool Show3DMovies
+        {
+            get { return _show3DMovies; }
+
+            set
+            {
+                var changed = _show3DMovies != value;
+
+                _show3DMovies = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("Show3DMovies");
+                }
+            }
+        }
+
+        private bool _showHdMovies;
+        public bool ShowHDMovies
+        {
+            get { return _showHdMovies; }
+
+            set
+            {
+                var changed = _showHdMovies != value;
+
+                _showHdMovies = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("ShowHDMovies");
+                }
+            }
+        }
+
+        private bool _showFamilyMovies;
+        public bool ShowFamilyMovies
+        {
+            get { return _showFamilyMovies; }
+
+            set
+            {
+                var changed = _showFamilyMovies != value;
+
+                _showFamilyMovies = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("ShowFamilyMovies");
+                }
+            }
+        }
+
+        private void LoadSpotlightViewModel(MovieView view)
         {
             const ImageType imageType = ImageType.Backdrop;
 
             var tileWidth = TileWidth * 2 + TilePadding;
             var tileHeight = tileWidth * 9 / 16;
 
-            SpotlightViewModel = new ImageViewerViewModel(_imageManager, new List<ImageViewerImage>())
-            {
-                Height = tileHeight,
-                Width = tileWidth
-            };
+            BackdropItems = view.SpotlightItems.OrderBy(i => Guid.NewGuid()).ToArray();
 
-            var itemsResult = await ApiClient.GetItemsAsync(new ItemQuery
-            {
-                UserId = _sessionManager.CurrentUser.Id,
-
-                SortBy = new[] { ItemSortBy.Random },
-
-                IncludeItemTypes = new[] { "Movie" },
-
-                ImageTypes = new[] { imageType },
-
-                Limit = 30,
-
-                Recursive = true
-            });
-
-            BackdropItems = itemsResult.Items;
-
-            var images = itemsResult.Items.OrderBy(i => Guid.NewGuid()).Select(i => new ImageViewerImage
+            var images = view.SpotlightItems.Select(i => new ImageViewerImage
             {
                 Url = ApiClient.GetImageUrl(i, new ImageOptions
                 {
@@ -189,7 +359,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             }).ToList();
 
-            SpotlightViewModel.CustomCommandAction = i => _navService.NavigateToItem(i.Item, ViewType.Movies);
 
             SpotlightViewModel.Images.AddRange(images);
             SpotlightViewModel.StartRotating(8000);
@@ -282,11 +451,495 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             return ApiClient.GetItemsAsync(query);
         }
 
+        private void LoadActorsViewModel(MovieView view)
+        {
+            var images = view.PeopleItems.Take(1).Select(i => ApiClient.GetPersonImageUrl(i.Name, new ImageOptions
+            {
+                ImageType = ImageType.Primary,
+                Tag = i.ImageTag,
+                Height = Convert.ToInt32(TileWidth * 2),
+                EnableImageEnhancers = false
+            }));
+
+            ActorsViewModel.AddImages(images);
+        }
+
+        private async void NavigateToActors()
+        {
+            PresentationManager.ShowLoadingAnimation();
+
+            try
+            {
+                await NavigateToActorsInternal();
+            }
+            finally
+            {
+                PresentationManager.HideLoadingAnimation();
+            }
+        }
+
+        private async Task NavigateToActorsInternal()
+        {
+            var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
+
+            var displayPreferences = await PresentationManager.GetDisplayPreferences("TVActors", CancellationToken.None);
+
+            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
+                                      PresentationManager, _navService, _playbackManager, _logger);
+
+            page.CustomPageTitle = "TV | Actors";
+
+            page.ViewType = ViewType.Tv;
+            page.CustomItemQuery = GetAllActors;
+
+            await _navService.Navigate(page);
+        }
+
+        private void LoadAllMoviesViewModel(MovieView view)
+        {
+            var images = view.MovieItems.Take(1).Select(i => ApiClient.GetImageUrl(i.Id, new ImageOptions
+            {
+                ImageType = ImageType.Backdrop,
+                Tag = i.ImageTag,
+                Width = Convert.ToInt32(TileWidth * 2),
+                EnableImageEnhancers = false
+            }));
+
+            AllMoviesViewModel.AddImages(images);
+        }
+
+        private void LoadHDMoviesViewModel(MovieView view)
+        {
+            ShowHDMovies = view.HDItems.Length > 0 && view.HDMoviePercentage > 10 && view.HDMoviePercentage < 90;
+
+            var images = view.HDItems.Take(1).Select(i => ApiClient.GetImageUrl(i.Id, new ImageOptions
+            {
+                ImageType = ImageType.Backdrop,
+                Tag = i.ImageTag,
+                Width = Convert.ToInt32(TileWidth * 2),
+                EnableImageEnhancers = false
+            }));
+
+            HDMoviesViewModel.AddImages(images);
+        }
+
+        private void LoadFamilyMoviesViewModel(MovieView view)
+        {
+            ShowFamilyMovies = view.FamilyMovies.Length > 0 && view.FamilyMoviePercentage > 10 && view.FamilyMoviePercentage < 90;
+
+            var images = view.FamilyMovies.Take(1).Select(i => ApiClient.GetImageUrl(i.Id, new ImageOptions
+            {
+                ImageType = ImageType.Backdrop,
+                Tag = i.ImageTag,
+                Width = Convert.ToInt32(TileWidth * 2),
+                EnableImageEnhancers = false
+            }));
+
+            FamilyMoviesViewModel.AddImages(images);
+        }
+
+        private void Load3DMoviesViewModel(MovieView view)
+        {
+            Show3DMovies = view.ThreeDItems.Length > 0;
+
+            var images = view.ThreeDItems.Take(1).Select(i => ApiClient.GetImageUrl(i.Id, new ImageOptions
+            {
+                ImageType = ImageType.Backdrop,
+                Tag = i.ImageTag,
+                Width = Convert.ToInt32(TileWidth * 2),
+                EnableImageEnhancers = false
+            }));
+
+            ThreeDMoviesViewModel.AddImages(images);
+        }
+
+        private void LoadBoxsetsViewModel(MovieView view)
+        {
+            ShowBoxSets = view.BoxSetItems.Length > 0;
+
+            var images = view.BoxSetItems.Take(1).Select(i => ApiClient.GetImageUrl(i.Id, new ImageOptions
+            {
+                ImageType = ImageType.Backdrop,
+                Tag = i.ImageTag,
+                Width = Convert.ToInt32(TileWidth * 2),
+                EnableImageEnhancers = false
+            }));
+
+            BoxsetsViewModel.AddImages(images);
+        }
+
+        private void LoadTrailersViewModel(MovieView view)
+        {
+            ShowTrailers = view.TrailerItems.Length > 0;
+
+            var images = view.TrailerItems.Take(1).Select(i => ApiClient.GetImageUrl(i.Id, new ImageOptions
+            {
+                ImageType = ImageType.Primary,
+                Tag = i.ImageTag,
+                Width = Convert.ToInt32(TileWidth * 2),
+                EnableImageEnhancers = false
+            }));
+
+            TrailersViewModel.AddImages(images);
+        }
+
+        private async void NavigateToTrailers()
+        {
+            PresentationManager.ShowLoadingAnimation();
+
+            try
+            {
+                await NavigateToTrailersInternal();
+            }
+            finally
+            {
+                PresentationManager.HideLoadingAnimation();
+            }
+        }
+
+        private async Task NavigateToTrailersInternal()
+        {
+            var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
+
+            var displayPreferences = await PresentationManager.GetDisplayPreferences("Trailers", CancellationToken.None);
+
+            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
+                                      PresentationManager, _navService, _playbackManager, _logger);
+
+            page.CustomPageTitle = "Trailers";
+
+            page.ViewType = ViewType.Tv;
+            page.CustomItemQuery = GetTrailers;
+
+            await _navService.Navigate(page);
+        }
+
+        private Task<ItemsResult> GetTrailers(DisplayPreferences displayPreferences)
+        {
+            var query = new ItemQuery
+            {
+                Fields = FolderPage.QueryFields,
+
+                UserId = _sessionManager.CurrentUser.Id,
+
+                IncludeItemTypes = new[] { "Trailer" },
+
+                SortBy = !String.IsNullOrEmpty(displayPreferences.SortBy)
+                             ? new[] { displayPreferences.SortBy }
+                             : new[] { ItemSortBy.SortName },
+
+                SortOrder = displayPreferences.SortOrder,
+
+                Recursive = true
+            };
+
+            return ApiClient.GetItemsAsync(query);
+        }
+
+        private async void NavigateToBoxsets()
+        {
+            PresentationManager.ShowLoadingAnimation();
+
+            try
+            {
+                await NavigateToBoxsetsInternal();
+            }
+            finally
+            {
+                PresentationManager.HideLoadingAnimation();
+            }
+        }
+
+        private async Task NavigateToBoxsetsInternal()
+        {
+            var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
+
+            var displayPreferences = await PresentationManager.GetDisplayPreferences("Boxsets", CancellationToken.None);
+
+            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
+                                      PresentationManager, _navService, _playbackManager, _logger);
+
+            page.CustomPageTitle = "Box Sets";
+
+            page.ViewType = ViewType.Tv;
+            page.CustomItemQuery = GetBoxSets;
+
+            await _navService.Navigate(page);
+        }
+
+        private Task<ItemsResult> GetBoxSets(DisplayPreferences displayPreferences)
+        {
+            var query = new ItemQuery
+            {
+                Fields = FolderPage.QueryFields,
+
+                UserId = _sessionManager.CurrentUser.Id,
+
+                IncludeItemTypes = new[] { "BoxSet" },
+
+                SortBy = !String.IsNullOrEmpty(displayPreferences.SortBy)
+                             ? new[] { displayPreferences.SortBy }
+                             : new[] { ItemSortBy.SortName },
+
+                SortOrder = displayPreferences.SortOrder,
+
+                Recursive = true
+            };
+
+            return ApiClient.GetItemsAsync(query);
+        }
+
+        private async void NavigateToAllMovies()
+        {
+            PresentationManager.ShowLoadingAnimation();
+
+            try
+            {
+                await NavigateToAllMoviesInternal();
+            }
+            finally
+            {
+                PresentationManager.HideLoadingAnimation();
+            }
+        }
+
+        private async Task NavigateToAllMoviesInternal()
+        {
+            var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
+
+            var displayPreferences = await PresentationManager.GetDisplayPreferences("AllMovies", CancellationToken.None);
+
+            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
+                                      PresentationManager, _navService, _playbackManager, _logger);
+
+            page.CustomPageTitle = "Movies";
+
+            page.ViewType = ViewType.Tv;
+            page.CustomItemQuery = GetAllMovies;
+
+            await _navService.Navigate(page);
+        }
+
+        private Task<ItemsResult> GetAllMovies(DisplayPreferences displayPreferences)
+        {
+            var query = new ItemQuery
+            {
+                Fields = FolderPage.QueryFields,
+
+                UserId = _sessionManager.CurrentUser.Id,
+
+                IncludeItemTypes = new[] { "Movie" },
+
+                SortBy = !String.IsNullOrEmpty(displayPreferences.SortBy)
+                             ? new[] { displayPreferences.SortBy }
+                             : new[] { ItemSortBy.SortName },
+
+                SortOrder = displayPreferences.SortOrder,
+
+                Recursive = true
+            };
+
+            return ApiClient.GetItemsAsync(query);
+        }
+
+        private async void NavigateToHDMovies()
+        {
+            PresentationManager.ShowLoadingAnimation();
+
+            try
+            {
+                await NavigateToHDMoviesInternal();
+            }
+            finally
+            {
+                PresentationManager.HideLoadingAnimation();
+            }
+        }
+
+        private async Task NavigateToHDMoviesInternal()
+        {
+            var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
+
+            var displayPreferences = await PresentationManager.GetDisplayPreferences("HDMovies", CancellationToken.None);
+
+            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
+                                      PresentationManager, _navService, _playbackManager, _logger);
+
+            page.CustomPageTitle = "HD Movies";
+
+            page.ViewType = ViewType.Tv;
+            page.CustomItemQuery = GetHDMovies;
+
+            await _navService.Navigate(page);
+        }
+
+        private Task<ItemsResult> GetHDMovies(DisplayPreferences displayPreferences)
+        {
+            var query = new ItemQuery
+            {
+                Fields = FolderPage.QueryFields,
+
+                UserId = _sessionManager.CurrentUser.Id,
+
+                IncludeItemTypes = new[] { "Movie" },
+
+                SortBy = !String.IsNullOrEmpty(displayPreferences.SortBy)
+                             ? new[] { displayPreferences.SortBy }
+                             : new[] { ItemSortBy.SortName },
+
+                SortOrder = displayPreferences.SortOrder,
+
+                IsHD = true,
+
+                Recursive = true
+            };
+
+            return ApiClient.GetItemsAsync(query);
+        }
+
+        private async void NavigateToFamilyMovies()
+        {
+            PresentationManager.ShowLoadingAnimation();
+
+            try
+            {
+                await NavigateToFamilyMoviesInternal();
+            }
+            finally
+            {
+                PresentationManager.HideLoadingAnimation();
+            }
+        }
+
+        private async Task NavigateToFamilyMoviesInternal()
+        {
+            var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
+
+            var displayPreferences = await PresentationManager.GetDisplayPreferences("FamilyMovies", CancellationToken.None);
+
+            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
+                                      PresentationManager, _navService, _playbackManager, _logger);
+
+            page.CustomPageTitle = "Family Movies";
+
+            page.ViewType = ViewType.Tv;
+            page.CustomItemQuery = GetFamilyMovies;
+
+            await _navService.Navigate(page);
+        }
+
+        private Task<ItemsResult> GetFamilyMovies(DisplayPreferences displayPreferences)
+        {
+            var query = new ItemQuery
+            {
+                Fields = FolderPage.QueryFields,
+
+                UserId = _sessionManager.CurrentUser.Id,
+
+                IncludeItemTypes = new[] { "Movie" },
+
+                SortBy = !String.IsNullOrEmpty(displayPreferences.SortBy)
+                             ? new[] { displayPreferences.SortBy }
+                             : new[] { ItemSortBy.SortName },
+
+                SortOrder = displayPreferences.SortOrder,
+
+                MaxOfficialRating = "PG",
+
+                HasParentalRating = true,
+
+                Recursive = true
+            };
+
+            return ApiClient.GetItemsAsync(query);
+        }
+
+        private async void NavigateTo3DMovies()
+        {
+            PresentationManager.ShowLoadingAnimation();
+
+            try
+            {
+                await NavigateTo3DMoviesInternal();
+            }
+            finally
+            {
+                PresentationManager.HideLoadingAnimation();
+            }
+        }
+
+        private async Task NavigateTo3DMoviesInternal()
+        {
+            var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
+
+            var displayPreferences = await PresentationManager.GetDisplayPreferences("3DMovies", CancellationToken.None);
+
+            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
+                                      PresentationManager, _navService, _playbackManager, _logger);
+
+            page.CustomPageTitle = "3D Movies";
+
+            page.ViewType = ViewType.Tv;
+            page.CustomItemQuery = Get3DMovies;
+
+            await _navService.Navigate(page);
+        }
+
+        private Task<ItemsResult> Get3DMovies(DisplayPreferences displayPreferences)
+        {
+            var query = new ItemQuery
+            {
+                Fields = FolderPage.QueryFields,
+
+                UserId = _sessionManager.CurrentUser.Id,
+
+                IncludeItemTypes = new[] { "Movie" },
+
+                SortBy = !String.IsNullOrEmpty(displayPreferences.SortBy)
+                             ? new[] { displayPreferences.SortBy }
+                             : new[] { ItemSortBy.SortName },
+
+                SortOrder = displayPreferences.SortOrder,
+
+                Recursive = true,
+
+                Is3D = true
+            };
+
+            return ApiClient.GetItemsAsync(query);
+        }
+
+        private Task<ItemsResult> GetAllActors(DisplayPreferences displayPreferences)
+        {
+            var fields = FolderPage.QueryFields.ToList();
+            fields.Remove(ItemFields.ItemCounts);
+            fields.Remove(ItemFields.Overview);
+            fields.Remove(ItemFields.DisplayPreferencesId);
+            fields.Remove(ItemFields.DateCreated);
+
+            var query = new PersonsQuery
+            {
+                Fields = fields.ToArray(),
+
+                IncludeItemTypes = new[] { "Movie", "Trailer" },
+
+                SortBy = !String.IsNullOrEmpty(displayPreferences.SortBy)
+                             ? new[] { displayPreferences.SortBy }
+                             : new[] { ItemSortBy.SortName },
+
+                SortOrder = displayPreferences.SortOrder,
+
+                Recursive = true
+            };
+
+            return ApiClient.GetPeopleAsync(query);
+        }
+
         public void Dispose()
         {
-            if (TrailersViewModel != null)
+            if (LatestTrailersViewModel != null)
             {
-                TrailersViewModel.Dispose();
+                LatestTrailersViewModel.Dispose();
             }
             if (ResumeViewModel != null)
             {

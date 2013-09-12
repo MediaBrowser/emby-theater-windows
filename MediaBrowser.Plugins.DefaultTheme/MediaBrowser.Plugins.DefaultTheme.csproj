@@ -38,13 +38,13 @@
     <RunPostBuildEvent>Always</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MediaBrowser.Common, Version=3.0.4992.37025, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.Common, Version=3.0.5002.21401, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.3.0.191\lib\net45\MediaBrowser.Common.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.198\lib\net45\MediaBrowser.Common.dll</HintPath>
     </Reference>
-    <Reference Include="MediaBrowser.Model, Version=3.0.4992.37024, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.Model, Version=3.0.5002.21401, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.3.0.191\lib\net45\MediaBrowser.Model.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.198\lib\net45\MediaBrowser.Model.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Expression.Effects, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -79,9 +79,6 @@
     <Compile Include="Controls\ItemInfoFooter.xaml.cs">
       <DependentUpon>ItemInfoFooter.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\MultiItemTile.xaml.cs">
-      <DependentUpon>MultiItemTile.xaml</DependentUpon>
-    </Compile>
     <Compile Include="DefaultThemePageContentViewModel.cs" />
     <Compile Include="Details\DetailPageViewModel.cs" />
     <Compile Include="DisplayPreferencesMenu\DisplayPreferencesMenu.xaml.cs">
@@ -99,6 +96,7 @@
     <Compile Include="Header\TopRightPanel.xaml.cs">
       <DependentUpon>TopRightPanel.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Home\Api.cs" />
     <Compile Include="Home\BaseHomePageSectionViewModel.cs" />
     <Compile Include="Home\GamesViewModel.cs" />
     <Compile Include="Home\HomePageInfo.cs" />
@@ -163,10 +161,6 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Controls\ItemInfoFooter.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\MultiItemTile.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

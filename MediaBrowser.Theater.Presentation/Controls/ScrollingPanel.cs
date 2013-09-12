@@ -335,7 +335,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
 
             rectangle = visual.TransformToAncestor(this).TransformBounds(rectangle);
 
-            rectangle.Scale(1.3, 1.3);
+            rectangle.Scale(1.4, 1.4);
 
             var viewRect = new Rect(HorizontalOffset,
               VerticalOffset, ViewportWidth, ViewportHeight);

@@ -447,7 +447,7 @@
             <DataTrigger Binding="{Binding ViewType}" Value="{x:Null}">
                 <Setter Property="ItemTemplate" Value="{StaticResource ListItemTemplate}"></Setter>
                 <Setter Property="ItemContainerStyle" Value="{StaticResource AnimatedListBoxItemStyle}"></Setter>
-                <Setter Property="Margin" Value="-20 -20"></Setter>
+                <Setter Property="Margin" Value="-0 -20"></Setter>
                 <Setter Property="ItemsPanel">
                     <Setter.Value>
                         <ItemsPanelTemplate>
@@ -473,7 +473,7 @@
             <DataTrigger Binding="{Binding ViewType}" Value="Poster">
                 <Setter Property="ItemTemplate" Value="{StaticResource ListItemTemplate}"></Setter>
                 <Setter Property="ItemContainerStyle" Value="{StaticResource AnimatedListBoxItemStyle}"></Setter>
-                <Setter Property="Margin" Value="-20 -20"></Setter>
+                <Setter Property="Margin" Value="-0 -20"></Setter>
                 <Setter Property="ItemsPanel">
                     <Setter.Value>
                         <ItemsPanelTemplate>

@@ -41,10 +41,10 @@
             <Grid x:Name="Sidebar" Grid.Column="0" Width="550">
                 <Grid.Style>
                     <Style TargetType="{x:Type Grid}">
-                        <Setter Property="Margin" Value="50 30 30 0" />
+                        <Setter Property="Margin" Value="50 30 10 0" />
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding ScrollDirection}" Value="Horizontal">
-                                <Setter Property="Margin" Value="50 30 70 0" />
+                                <Setter Property="Margin" Value="50 30 50 0" />
                             </DataTrigger>
                             <DataTrigger Binding="{Binding ViewType}" Value="List">
                                 <Setter Property="Margin" Value="50 0 50 0" />

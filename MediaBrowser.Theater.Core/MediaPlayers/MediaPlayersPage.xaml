@@ -43,9 +43,9 @@
             <RowDefinition Height="auto"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <TextBlock Style="{DynamicResource Heading1TextBlockStyle}" Margin="0 30 0 30" Grid.Row="0">Media Players</TextBlock>
+        <TextBlock Style="{DynamicResource Heading1TextBlockStyle}" Margin="0 30 0 30" Grid.Row="0">Custom Players</TextBlock>
 
-        <TextBlock Style="{DynamicResource SmallTextBlockStyle}" Grid.Row="1">Setup rules to configure media players to handle specific formats.</TextBlock>
+        <TextBlock Style="{DynamicResource SmallTextBlockStyle}" Grid.Row="1">Configure custom media players to handle specific formats.</TextBlock>
 
         <controls:ExtendedListBox Margin="-40 0 -40 -35" HorizontalAlignment="Stretch" Grid.Row="2" x:Name="LstItems" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{DynamicResource MediaPlayersListBoxItemTemplate}">
             <controls:ExtendedListBox.ItemsPanel>

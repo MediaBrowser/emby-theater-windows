@@ -1,8 +1,8 @@
 ﻿using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Querying;
-using MediaBrowser.Plugins.DefaultTheme.Controls;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
@@ -82,6 +82,24 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             return views;
         }
 
+        internal static string GetDisplayName(BaseItemDto item)
+        {
+            var name = item.Name;
+
+            if (item.IsType("Episode"))
+            {
+                name = item.SeriesName;
+
+                if (item.IndexNumber.HasValue && item.ParentIndexNumber.HasValue)
+                {
+                    name = name + ": " + string.Format("S{0}, Ep. {1}", item.ParentIndexNumber.Value, item.IndexNumber.Value);
+                }
+
+            }
+
+            return name;
+        }
+
         protected override BaseViewModel GetContentViewModel(string section)
         {
             if (string.Equals(section, "apps"))
@@ -94,7 +112,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 {
                     ImageDisplayWidth = TileWidth,
                     ImageDisplayHeightGenerator = v => TileHeight,
-                    DisplayNameGenerator = MultiItemTile.GetDisplayName
+                    DisplayNameGenerator = GetDisplayName
                 };
 
                 return vm;

@@ -40,7 +40,7 @@ namespace MediaBrowser.Theater.DirectShow
                 });
             }
 
-            if (item.VideoType.HasValue && item.VideoType.Value == VideoType.BluRay && !string.IsNullOrEmpty(item.MainFeaturePlaylistName))
+            if (item.VideoType.HasValue && item.VideoType.Value == VideoType.BluRay)
             {
                 var file = new DirectoryInfo(item.Path)
                     .EnumerateFiles("index.bdmv", SearchOption.AllDirectories)

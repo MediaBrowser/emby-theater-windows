@@ -368,10 +368,10 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         public int ArtistCount
         {
-            get { return _item == null || _item.Artists == null ? 0 : _item.Artists.Length; }
+            get { return _item == null || _item.Artists == null ? 0 : _item.Artists.Count; }
         }
 
-        public string[] Artists
+        public List<string> Artists
         {
             get
             {

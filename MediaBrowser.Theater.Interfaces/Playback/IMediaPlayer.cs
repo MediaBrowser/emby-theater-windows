@@ -24,7 +24,7 @@ namespace MediaBrowser.Theater.Interfaces.Playback
         /// Occurs when [playback completed].
         /// </summary>
         event EventHandler<PlaybackStopEventArgs> PlaybackCompleted;
-        
+
         /// <summary>
         /// Gets the playlist.
         /// </summary>
@@ -48,7 +48,7 @@ namespace MediaBrowser.Theater.Interfaces.Playback
         /// </summary>
         /// <value>The current media.</value>
         BaseItemDto CurrentMedia { get; }
-        
+
         /// <summary>
         /// Gets a value indicating whether this instance can seek.
         /// </summary>

@@ -15,7 +15,7 @@ namespace MediaBrowser.Theater.Presentation.Playback
     /// <summary>
     /// Class GenericExternalPlayer
     /// </summary>
-    public class GenericExternalPlayer : IExternalMediaPlayer
+    public class GenericExternalPlayer : IExternalMediaPlayer, IConfigurableMediaPlayer
     {
         private readonly IUserInputManager _userInput;
 

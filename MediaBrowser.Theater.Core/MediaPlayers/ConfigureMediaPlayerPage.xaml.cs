@@ -45,11 +45,16 @@ namespace MediaBrowser.Theater.Core.MediaPlayers
             InitializeComponent();
         }
 
+        private IEnumerable<IConfigurableMediaPlayer> ConfigurablePlayers
+        {
+            get { return _playbackManager.MediaPlayers.OfType<IConfigurableMediaPlayer>(); }
+        }
+
         protected override void OnInitialized(EventArgs e)
         {
             base.OnInitialized(e);
 
-            SelectPlayer.Options = _playbackManager.MediaPlayers.Select(i => new SelectListItem
+            SelectPlayer.Options = ConfigurablePlayers.Select(i => new SelectListItem
             {
                 Text = i.Name,
                 Value = i.Name
@@ -184,7 +189,7 @@ namespace MediaBrowser.Theater.Core.MediaPlayers
             SelectMediaType.SelectedValue = SelectMediaType.Options[0].Value;
             SelectMediaType_SelectedItemChanged(null, EventArgs.Empty);
 
-            var externalPlayer = player as IExternalMediaPlayer;
+            var externalPlayer = player as IConfigurableMediaPlayer;
 
             ChkClosePlayerOnStop.Visibility = externalPlayer != null && !externalPlayer.CanCloseAutomaticallyOnStopButton
                                                   ? Visibility.Visible

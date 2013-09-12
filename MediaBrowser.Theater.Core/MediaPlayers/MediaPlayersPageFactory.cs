@@ -12,7 +12,7 @@ namespace MediaBrowser.Theater.Core.MediaPlayers
         /// <value>The name.</value>
         public string Name
         {
-            get { return "Media Players"; }
+            get { return "Custom Players"; }
         }
 
         /// <summary>

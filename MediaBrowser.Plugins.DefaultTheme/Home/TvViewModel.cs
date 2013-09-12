@@ -3,7 +3,6 @@ using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Querying;
-using MediaBrowser.Plugins.DefaultTheme.Controls;
 using MediaBrowser.Plugins.DefaultTheme.ListPage;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
@@ -52,7 +51,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 ImageDisplayWidth = TileWidth,
                 ImageDisplayHeightGenerator = v => TileHeight,
-                DisplayNameGenerator = MultiItemTile.GetDisplayName,
+                DisplayNameGenerator = HomePageViewModel.GetDisplayName,
                 EnableBackdropsForCurrentItem = false
             };
             NextUpViewModel.PropertyChanged += NextUpViewModel_PropertyChanged;
@@ -61,14 +60,59 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 ImageDisplayWidth = TileWidth,
                 ImageDisplayHeightGenerator = v => TileHeight,
-                DisplayNameGenerator = MultiItemTile.GetDisplayName,
+                DisplayNameGenerator = HomePageViewModel.GetDisplayName,
                 EnableBackdropsForCurrentItem = false
             };
             ResumeViewModel.PropertyChanged += ResumeViewModel_PropertyChanged;
 
-            LoadSpotlightViewModel();
-            LoadAllShowsViewModel();
-            LoadActorsViewModel();
+            ActorsViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
+            {
+                GalleryHeight = TileHeight,
+                GalleryWidth = TileWidth * 9 / 16,
+                CustomCommandAction = NavigateToActors
+            };
+
+            AllShowsViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
+            {
+                GalleryHeight = TileHeight,
+                GalleryWidth = TileWidth * 9 / 16,
+                CustomCommandAction = NavigateToAllShows
+            };
+
+            var spotlightTileWidth = TileWidth * 2 + TilePadding;
+            var spotlightTileHeight = spotlightTileWidth * 9 / 16;
+
+            SpotlightViewModel = new ImageViewerViewModel(_imageManager, new List<ImageViewerImage>())
+            {
+                Height = spotlightTileHeight,
+                Width = spotlightTileWidth,
+                CustomCommandAction = i => _navService.NavigateToItem(i.Item, ViewType.Tv)
+            };
+
+            LoadViewModels();
+        }
+
+        private async void LoadViewModels()
+        {
+            PresentationManager.ShowLoadingAnimation();
+
+            try
+            {
+                var view = await ApiClient.GetTvView(_sessionManager.CurrentUser.Id, CancellationToken.None);
+
+                LoadSpotlightViewModel(view);
+                LoadAllShowsViewModel(view);
+                LoadActorsViewModel(view);
+            }
+            catch (Exception ex)
+            {
+                _logger.ErrorException("Error getting tv view", ex);
+                PresentationManager.ShowDefaultErrorMessage();
+            }
+            finally
+            {
+                PresentationManager.HideLoadingAnimation();
+            }
         }
 
         void ResumeViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -117,37 +161,16 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             }
         }
 
-        private async void LoadSpotlightViewModel()
+        private void LoadSpotlightViewModel(TvView view)
         {
             const ImageType imageType = ImageType.Backdrop;
 
             var tileWidth = TileWidth * 2 + TilePadding;
             var tileHeight = tileWidth * 9 / 16;
 
-            SpotlightViewModel = new ImageViewerViewModel(_imageManager, new List<ImageViewerImage>())
-            {
-                Height = tileHeight,
-                Width = tileWidth
-            };
+            BackdropItems = view.SpotlightItems.OrderBy(i => Guid.NewGuid()).ToArray();
 
-            var itemsResult = await ApiClient.GetItemsAsync(new ItemQuery
-            {
-                UserId = _sessionManager.CurrentUser.Id,
-
-                SortBy = new[] { ItemSortBy.Random },
-
-                IncludeItemTypes = new[] { "Series" },
-
-                ImageTypes = new[] { imageType },
-
-                Limit = 30,
-
-                Recursive = true
-            });
-
-            BackdropItems = itemsResult.Items;
-
-            var images = itemsResult.Items.OrderBy(i => Guid.NewGuid()).Select(i => new ImageViewerImage
+            var images = view.SpotlightItems.Select(i => new ImageViewerImage
             {
                 Url = ApiClient.GetImageUrl(i, new ImageOptions
                 {
@@ -161,36 +184,19 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             }).ToList();
 
-            SpotlightViewModel.CustomCommandAction = i => _navService.NavigateToItem(i.Item, ViewType.Tv);
 
             SpotlightViewModel.Images.AddRange(images);
             SpotlightViewModel.StartRotating(8000);
         }
 
-        private async void LoadActorsViewModel()
+        private void LoadActorsViewModel(TvView view)
         {
-            ActorsViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
+            var images = view.ActorItems.Take(1).Select(i => ApiClient.GetPersonImageUrl(i.Name, new ImageOptions
             {
-                GalleryHeight = TileHeight,
-                GalleryWidth = TileWidth
-            };
-
-            ActorsViewModel.CustomCommandAction = NavigateToActors;
-
-            var actorsResult = await ApiClient.GetPeopleAsync(new PersonsQuery
-            {
-                IncludeItemTypes = new[] { "Series" },
-                SortBy = new[] { ItemSortBy.Random },
-                Recursive = true,
-                Limit = 3,
-                PersonTypes = new[] { PersonType.Actor },
-                ImageTypes = new[] { ImageType.Primary }
-            });
-
-            var images = actorsResult.Items.Select(i => ApiClient.GetImageUrl(i, new ImageOptions
-            {
-                Height = Convert.ToInt32(TileHeight)
-
+                ImageType = ImageType.Primary,
+                Tag = i.ImageTag,
+                Height = Convert.ToInt32(TileWidth * 2),
+                EnableImageEnhancers = false
             }));
 
             ActorsViewModel.AddImages(images);
@@ -209,7 +215,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 PresentationManager.HideLoadingAnimation();
             }
         }
-        
+
         private async Task NavigateToActorsInternal()
         {
             var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
@@ -227,38 +233,14 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             await _navService.Navigate(page);
         }
 
-        private async void LoadAllShowsViewModel()
+        private void LoadAllShowsViewModel(TvView view)
         {
-            AllShowsViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
+            var images = view.ShowsItems.Take(1).Select(i => ApiClient.GetImageUrl(i.Id, new ImageOptions
             {
-                GalleryHeight = TileHeight,
-                GalleryWidth = TileWidth
-            };
-
-            AllShowsViewModel.CustomCommandAction = NavigateToAllShows;
-
-            const ImageType imageType = ImageType.Primary;
-
-            var allSeriesResult = await ApiClient.GetItemsAsync(new ItemQuery
-            {
-                UserId = _sessionManager.CurrentUser.Id,
-
-                SortBy = new[] { ItemSortBy.Random },
-
-                IncludeItemTypes = new[] { "Series" },
-
-                ImageTypes = new[] { imageType },
-
-                Limit = 3,
-
-                Recursive = true
-            });
-
-            var images = allSeriesResult.Items.Select(i => ApiClient.GetImageUrl(i, new ImageOptions
-            {
-                Height = Convert.ToInt32(TileHeight),
-                ImageType = imageType
-
+                ImageType = ImageType.Backdrop,
+                Tag = i.ImageTag,
+                Height = Convert.ToInt32(TileWidth * 2),
+                EnableImageEnhancers = false
             }));
 
             AllShowsViewModel.AddImages(images);

@@ -16,6 +16,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Media;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Home
 {
@@ -34,6 +35,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         public GalleryViewModel ActorsViewModel { get; private set; }
 
         public ImageViewerViewModel SpotlightViewModel { get; private set; }
+        public GalleryViewModel RomanticSeriesViewModel { get; private set; }
 
         public TvViewModel(IPresentationManager presentation, IImageManager imageManager, IApiClient apiClient, ISessionManager session, INavigationService nav, IPlaybackManager playback, ILogger logger, double tileWidth, double tileHeight)
             : base(presentation, apiClient)
@@ -68,15 +70,22 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             ActorsViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {
                 GalleryHeight = TileHeight,
-                GalleryWidth = TileWidth * 9 / 16,
+                GalleryWidth = TileWidth * 10 / 16,
                 CustomCommandAction = NavigateToActors
             };
 
             AllShowsViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {
                 GalleryHeight = TileHeight,
-                GalleryWidth = TileWidth * 9 / 16,
+                GalleryWidth = TileWidth * 10 / 16,
                 CustomCommandAction = NavigateToAllShows
+            };
+
+            RomanticSeriesViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
+            {
+                GalleryHeight = TileHeight,
+                GalleryWidth = TileWidth * 10 / 16,
+                CustomCommandAction = () => NavigateWithLoading(NavigateToRomanticTvInternal)
             };
 
             var spotlightTileWidth = TileWidth * 2 + TilePadding;
@@ -102,6 +111,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
                 LoadSpotlightViewModel(view);
                 LoadAllShowsViewModel(view);
+                LoadRomanticSeriesViewModel(view);
                 LoadActorsViewModel(view);
             }
             catch (Exception ex)
@@ -161,6 +171,24 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             }
         }
 
+        private bool _showRomanticSeries;
+        public bool ShowRomanticSeries
+        {
+            get { return _showRomanticSeries; }
+
+            set
+            {
+                var changed = _showRomanticSeries != value;
+
+                _showRomanticSeries = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("ShowRomanticSeries");
+                }
+            }
+        }
+
         private void LoadSpotlightViewModel(TvView view)
         {
             const ImageType imageType = ImageType.Backdrop;
@@ -175,6 +203,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 Url = ApiClient.GetImageUrl(i, new ImageOptions
                 {
                     Height = Convert.ToInt32(tileHeight),
+                    Width = Convert.ToInt32(tileWidth),
                     ImageType = imageType
 
                 }),
@@ -184,7 +213,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             }).ToList();
 
-
             SpotlightViewModel.Images.AddRange(images);
             SpotlightViewModel.StartRotating(8000);
         }
@@ -193,13 +221,45 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         {
             var images = view.ActorItems.Take(1).Select(i => ApiClient.GetPersonImageUrl(i.Name, new ImageOptions
             {
-                ImageType = ImageType.Primary,
+                ImageType = i.ImageType,
                 Tag = i.ImageTag,
                 Height = Convert.ToInt32(TileWidth * 2),
                 EnableImageEnhancers = false
             }));
 
             ActorsViewModel.AddImages(images);
+        }
+
+        private void LoadRomanticSeriesViewModel(TvView view)
+        {
+            var now = DateTime.Now;
+
+            if (now.DayOfWeek == DayOfWeek.Friday)
+            {
+                ShowRomanticSeries = view.RomanceItems.Length > 0 && now.Hour >= 15;
+            }
+            else if (now.DayOfWeek == DayOfWeek.Saturday)
+            {
+                ShowRomanticSeries = view.RomanceItems.Length > 0 && (now.Hour < 3 || now.Hour >= 15);
+            }
+            else if (now.DayOfWeek == DayOfWeek.Sunday)
+            {
+                ShowRomanticSeries = view.RomanceItems.Length > 0 && now.Hour < 3;
+            }
+            else
+            {
+                ShowRomanticSeries = false;
+            }
+
+            var images = view.RomanceItems.Take(1).Select(i => ApiClient.GetImageUrl(i.Id, new ImageOptions
+            {
+                ImageType = i.ImageType,
+                Tag = i.ImageTag,
+                Width = Convert.ToInt32(TileWidth * 2),
+                EnableImageEnhancers = false
+            }));
+
+            RomanticSeriesViewModel.AddImages(images);
         }
 
         private async void NavigateToActors()
@@ -237,7 +297,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         {
             var images = view.ShowsItems.Take(1).Select(i => ApiClient.GetImageUrl(i.Id, new ImageOptions
             {
-                ImageType = ImageType.Backdrop,
+                ImageType = i.ImageType,
                 Tag = i.ImageTag,
                 Height = Convert.ToInt32(TileWidth * 2),
                 EnableImageEnhancers = false
@@ -325,6 +385,47 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             };
 
             return ApiClient.GetPeopleAsync(query);
+        }
+
+        private async Task NavigateToRomanticTvInternal()
+        {
+            var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
+
+            var displayPreferences = await PresentationManager.GetDisplayPreferences("RomanticTv", CancellationToken.None);
+
+            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
+                                      PresentationManager, _navService, _playbackManager, _logger);
+
+            page.CustomPageTitle = "Date Night";
+
+            page.ViewType = ViewType.Tv;
+            page.CustomItemQuery = GetRomanticSeries;
+
+            await _navService.Navigate(page);
+        }
+
+        private Task<ItemsResult> GetRomanticSeries(DisplayPreferences displayPreferences)
+        {
+            var query = new ItemQuery
+            {
+                Fields = FolderPage.QueryFields,
+
+                UserId = _sessionManager.CurrentUser.Id,
+
+                IncludeItemTypes = new[] { "Series" },
+
+                Genres = new[] { ApiClientExtensions.RomanceGenre },
+
+                SortBy = !String.IsNullOrEmpty(displayPreferences.SortBy)
+                             ? new[] { displayPreferences.SortBy }
+                             : new[] { ItemSortBy.SortName },
+
+                SortOrder = displayPreferences.SortOrder,
+
+                Recursive = true
+            };
+
+            return ApiClient.GetItemsAsync(query);
         }
 
         private Task<ItemsResult> GetNextUpAsync()

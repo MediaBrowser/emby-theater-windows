@@ -974,13 +974,26 @@
                 <Setter Property="Content">
                     <Setter.Value>
                         <Grid>
-                            <controls:ExtendedListBox Margin="0 -15 0 -15" DataContext="{Binding ContentViewModel}" ItemsSource="{Binding ListCollectionView}" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{DynamicResource ListItemTemplate}">
-                                <controls:ExtendedListBox.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <UniformGrid Rows="2" Margin="80 35"></UniformGrid>
-                                    </ItemsPanelTemplate>
-                                </controls:ExtendedListBox.ItemsPanel>
-                            </controls:ExtendedListBox>
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="3*"></RowDefinition>
+                                <RowDefinition Height="2*"></RowDefinition>
+                            </Grid.RowDefinitions>
+
+                            <controls:ExtendedScrollViewer Grid.Row="0" Margin="0 -15 0 -15" VerticalAlignment="Stretch" HorizontalAlignment="Center" CanContentScroll="True" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" >
+
+                                <controls:ScrollingPanel x:Name="ScrollingPanel" HorizontalAlignment="Stretch" CanHorizontallyScroll="True" CanVerticallyScroll="False">
+                                    <controls:ExtendedListBox DataContext="{Binding ContentViewModel}" ItemsSource="{Binding ListCollectionView}" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{DynamicResource ListItemTemplate}">
+                                        <controls:ExtendedListBox.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <StackPanel Orientation="Horizontal" Margin="80 35"></StackPanel>
+                                            </ItemsPanelTemplate>
+                                        </controls:ExtendedListBox.ItemsPanel>
+                                    </controls:ExtendedListBox>
+                                </controls:ScrollingPanel>
+                            </controls:ExtendedScrollViewer>
+
+                            <TextBlock Grid.Row="1" DataContext="{Binding Path=ContentViewModel.CurrentItem}" Style="{DynamicResource Heading1TextBlockStyle}" HorizontalAlignment="Center" Text="{Binding DisplayName, Converter={controls:UpperCaseConverter}}" VerticalAlignment="Center" FontFamily="Segoe UI" FontWeight="ExtraBold" FontSize="170" Foreground="#ccc" Opacity=".9" Margin="0 -40 0 0"></TextBlock>
                         </Grid>
                     </Setter.Value>
                 </Setter>

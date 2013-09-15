@@ -187,7 +187,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             {
                 return new ItemListViewModel(GetSimilarItemsAsync, _presentationManager, _imageManager, _apiClient, _sessionManager, _navigation, _playback, _logger)
                 {
-                    ImageDisplayWidth = 400,
+                    ImageDisplayWidth = 300,
                     EnableBackdropsForCurrentItem = false
                 };
             }
@@ -219,7 +219,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             {
                 return new ItemListViewModel(GetChildren, _presentationManager, _imageManager, _apiClient, _sessionManager, _navigation, _playback, _logger)
                 {
-                    ImageDisplayWidth = 400,
+                    ImageDisplayWidth = 300,
                     EnableBackdropsForCurrentItem = false
                 };
             }

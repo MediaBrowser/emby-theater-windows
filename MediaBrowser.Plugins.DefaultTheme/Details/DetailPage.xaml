@@ -29,7 +29,7 @@
             </controls:ExtendedListBox.ItemsPanel>
         </controls:ExtendedListBox>
 
-        <controls:ExtendedScrollViewer x:Name="ScrollViewer" Grid.Row="2" Margin="0 30 0 0" VerticalAlignment="Stretch" HorizontalAlignment="Center" CanContentScroll="True">
+        <controls:ExtendedScrollViewer x:Name="ScrollViewer" Grid.Row="2" Margin="0 40 0 0" VerticalAlignment="Stretch" HorizontalAlignment="Center" CanContentScroll="True">
 
             <controls:ExtendedScrollViewer.Style>
                 <Style TargetType="{x:Type controls:ExtendedScrollViewer}">
@@ -39,6 +39,9 @@
 
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding CurrentSection}" Value="overview">
+                            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"></Setter>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding CurrentSection}" Value="seasons">
                             <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"></Setter>
                         </DataTrigger>
                     </Style.Triggers>
@@ -52,6 +55,9 @@
                         <Setter Property="CanVerticallyScroll" Value="False"></Setter>
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding CurrentSection}" Value="overview">
+                                <Setter Property="CanHorizontallyScroll" Value="False"></Setter>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding CurrentSection}" Value="seasons">
                                 <Setter Property="CanHorizontallyScroll" Value="False"></Setter>
                             </DataTrigger>
                         </Style.Triggers>

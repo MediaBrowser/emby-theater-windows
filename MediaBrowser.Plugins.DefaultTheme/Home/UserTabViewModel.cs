@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using MediaBrowser.Model.ApiClient;
+﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
@@ -9,15 +8,18 @@ using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.ViewModels;
+using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading;
-using MediaBrowser.Theater.Presentation.ViewModels;
+using System.Threading.Tasks;
+using System.Windows.Media;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Home
 {
-    public class GamesViewModel : BaseHomePageSectionViewModel
+    public class UserTabViewModel : BaseHomePageSectionViewModel, IDisposable
     {
         private readonly ISessionManager _sessionManager;
         private readonly IPlaybackManager _playbackManager;
@@ -25,11 +27,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         private readonly INavigationService _navService;
         private readonly ILogger _logger;
 
+        public ItemListViewModel ResumeViewModel { get; private set; }
+
         public ImageViewerViewModel SpotlightViewModel { get; private set; }
 
-        public ItemListViewModel GameSystemsViewModel { get; private set; }
-        
-        public GamesViewModel(IPresentationManager presentation, IImageManager imageManager, IApiClient apiClient, ISessionManager session, INavigationService nav, IPlaybackManager playback, ILogger logger, double tileWidth, double tileHeight)
+        public UserTabViewModel(IPresentationManager presentation, IImageManager imageManager, IApiClient apiClient, ISessionManager session, INavigationService nav, IPlaybackManager playback, ILogger logger, double tileWidth, double tileHeight)
             : base(presentation, apiClient)
         {
             _sessionManager = session;
@@ -41,6 +43,16 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             TileWidth = tileWidth;
             TileHeight = tileHeight;
 
+            ResumeViewModel = new ItemListViewModel(GetResumeablesAsync, presentation, imageManager, apiClient, session, nav, playback, logger)
+            {
+                ImageDisplayWidth = TileWidth,
+                ImageDisplayHeightGenerator = v => TileHeight,
+                DisplayNameGenerator = HomePageViewModel.GetDisplayName,
+                EnableBackdropsForCurrentItem = false,
+                PreferredImageTypesGenerator = vm => new[] { ImageType.Backdrop, ImageType.Thumb, ImageType.Primary }
+            };
+            ResumeViewModel.PropertyChanged += ResumeViewModel_PropertyChanged;
+
             var spotlightTileWidth = TileWidth * 2 + TilePadding;
             var spotlightTileHeight = spotlightTileWidth * 9 / 16;
 
@@ -48,17 +60,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 Height = spotlightTileHeight,
                 Width = spotlightTileWidth,
-                CustomCommandAction = i => _navService.NavigateToItem(i.Item, ViewType.Games)
+                CustomCommandAction = i => _navService.NavigateToItem(i.Item, ViewType.Tv)
             };
 
-            GameSystemsViewModel = new ItemListViewModel(GetResumeablesAsync, presentation, imageManager, apiClient, session, nav, playback, logger)
-            {
-                ImageDisplayWidth = TileWidth,
-                ImageDisplayHeightGenerator = v => TileHeight,
-                DisplayNameGenerator = HomePageViewModel.GetDisplayName,
-                EnableBackdropsForCurrentItem = false
-            };
-            
             LoadViewModels();
         }
 
@@ -68,13 +72,13 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             try
             {
-                var view = await ApiClient.GetGamesView(_sessionManager.CurrentUser.Id, CancellationToken.None);
+                var view = await ApiClient.GetHomeView(_sessionManager.CurrentUser.Id, CancellationToken.None);
 
                 LoadSpotlightViewModel(view);
             }
             catch (Exception ex)
             {
-                _logger.ErrorException("Error getting games view", ex);
+                _logger.ErrorException("Error getting home view", ex);
                 PresentationManager.ShowDefaultErrorMessage();
             }
             finally
@@ -83,7 +87,30 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             }
         }
 
-        private void LoadSpotlightViewModel(GamesView view)
+        void ResumeViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            ShowResume = ResumeViewModel.ItemCount > 0;
+        }
+
+        private bool _showResume;
+        public bool ShowResume
+        {
+            get { return _showResume; }
+
+            set
+            {
+                var changed = _showResume != value;
+
+                _showResume = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("ShowResume");
+                }
+            }
+        }
+
+        private void LoadSpotlightViewModel(HomeView view)
         {
             const ImageType imageType = ImageType.Backdrop;
 
@@ -124,9 +151,15 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
                 UserId = _sessionManager.CurrentUser.Id,
 
-                SortBy = new[] { ItemSortBy.SortName },
+                SortBy = new[] { ItemSortBy.DatePlayed },
 
-                IncludeItemTypes = new[] { "GamePlatform" },
+                SortOrder = SortOrder.Descending,
+
+                IncludeItemTypes = new[] { "Episode", "Movie" },
+
+                Filters = new[] { ItemFilter.IsResumable },
+
+                Limit = 6,
 
                 Recursive = true
             };
@@ -139,6 +172,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             if (SpotlightViewModel != null)
             {
                 SpotlightViewModel.Dispose();
+            }
+            if (ResumeViewModel != null)
+            {
+                ResumeViewModel.Dispose();
             }
         }
     }

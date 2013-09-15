@@ -30,7 +30,22 @@
             </Image.Style>
         </Image>
 
-        <TextBlock x:Name="TxtTitle" Style="{DynamicResource Heading2TextBlockStyle}" Grid.Row="1" Text="{Binding DisplayName}"></TextBlock>
+        <StackPanel x:Name="PnlTitle" Orientation="Vertical" Grid.Row="1">
+
+            <TextBlock Text="{Binding ParentIndexNumber, StringFormat='Season {0}'}" Margin="0 0 0 10">
+                <TextBlock.Style>
+                    <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource Heading2TextBlockStyle}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ParentIndexNumber}" Value="{x:Null}">
+                                <Setter Property="Visibility" Value="Collapsed"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+
+            <TextBlock Style="{DynamicResource Heading2TextBlockStyle}" Text="{Binding DisplayName}"></TextBlock>
+        </StackPanel>
 
         <TextBlock x:Name="TxtGenres" Style="{DynamicResource TextBlockStyle}" Foreground="OrangeRed" Grid.Row="2" Margin="0 20 0 0"></TextBlock>
 

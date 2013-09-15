@@ -80,7 +80,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
 
             if (string.Equals(viewModel.ViewType, ListViewTypes.List))
             {
-                TxtTitle.Visibility = Visibility.Visible;
+                PnlTitle.Visibility = Visibility.Visible;
 
                 UpdateLogoForListView(viewModel, item);
 
@@ -104,7 +104,13 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                     LogoImage.Source = img;
 
                     LogoImage.Visibility = Visibility.Visible;
-                    TxtTitle.Visibility = Visibility.Collapsed;
+                    LogoImage.HorizontalAlignment = HorizontalAlignment.Center;
+
+                    // If the logo is owned by the current item, don't show the title
+                    if (item.HasLogo)
+                    {
+                        PnlTitle.Visibility = Visibility.Collapsed;
+                    }
                 }
                 catch (OperationCanceledException)
                 {
@@ -112,7 +118,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                 catch
                 {
                     LogoImage.Visibility = Visibility.Collapsed;
-                    TxtTitle.Visibility = Visibility.Visible;
+                    PnlTitle.Visibility = Visibility.Visible;
                 }
                 finally
                 {
@@ -122,7 +128,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
             else
             {
                 LogoImage.Visibility = Visibility.Collapsed;
-                TxtTitle.Visibility = Visibility.Visible;
+                PnlTitle.Visibility = Visibility.Visible;
             }
         }
 
@@ -147,6 +153,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                     LogoImage.Source = img;
 
                     LogoImage.Visibility = Visibility.Visible;
+                    LogoImage.HorizontalAlignment = HorizontalAlignment.Left;
                 }
                 catch (OperationCanceledException)
                 {

@@ -23,6 +23,7 @@
                 <ContentControl x:Name="PageContent" Margin="120 100 120 40" Focusable="False">
                     <ContentControl.Style>
                         <Style TargetType="{x:Type ContentControl}">
+
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding CurrentSection}" Value="movies">
                                     <Setter Property="Content">
@@ -82,7 +83,9 @@
                                 <DataTrigger Binding="{Binding CurrentSection}" Value="games">
                                     <Setter Property="Content">
                                         <Setter.Value>
-                                            <Grid></Grid>
+                                            <Grid>
+                                                <ContentControl Content="{Binding ContentViewModel}" ContentTemplate="{DynamicResource GamesViewTemplate}"></ContentControl>
+                                            </Grid>
                                         </Setter.Value>
                                     </Setter>
                                 </DataTrigger>

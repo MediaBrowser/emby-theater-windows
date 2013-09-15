@@ -3,7 +3,9 @@ using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.ViewModels;
+using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Home
 {
@@ -25,6 +27,20 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             ApiClient = apiClient;
         }
 
+        protected async void NavigateWithLoading(Func<Task> navTask)
+        {
+            PresentationManager.ShowLoadingAnimation();
+
+            try
+            {
+                await navTask();
+            }
+            finally
+            {
+                PresentationManager.HideLoadingAnimation();
+            }
+        }
+        
         public BaseItemDto[] BackdropItems
         {
             get { return _backdropItems; }

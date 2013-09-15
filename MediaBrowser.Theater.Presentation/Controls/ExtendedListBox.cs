@@ -375,5 +375,12 @@ namespace MediaBrowser.Theater.Presentation.Controls
 
             Focus();
         }
+
+        protected override void OnGotKeyboardFocus(KeyboardFocusChangedEventArgs e)
+        {
+            base.OnGotKeyboardFocus(e);
+
+            IsSelected = true;
+        }
     }
 }

@@ -60,8 +60,9 @@ namespace MediaBrowser.Plugins.DefaultTheme
                 {
                     LogoImage = await _imageManager.GetRemoteBitmapAsync(url);
 
-                    ShowLogoImage = true;
                     ShowDefaultPageTitle = false;
+                    PageTitle = string.Empty;
+                    ShowLogoImage = true;
                 }
                 catch
                 {
@@ -111,12 +112,18 @@ namespace MediaBrowser.Plugins.DefaultTheme
             if (string.Equals(name, "PageTitle"))
             {
                 ShowLogoImage = false;
+
+                if (!string.IsNullOrEmpty(PageTitle))
+                {
+                    ShowDefaultPageTitle = false;
+                }
             }
             else if (string.Equals(name, "ShowDefaultPageTitle"))
             {
                 if (ShowDefaultPageTitle)
                 {
                     ShowLogoImage = false;
+                    PageTitle = string.Empty;
                 }
             }
         }

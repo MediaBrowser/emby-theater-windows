@@ -1,5 +1,6 @@
 ﻿using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Media;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Reflection;
@@ -16,6 +17,8 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
     [TypeDescriptionProvider(typeof(HyperTypeDescriptionProvider))]
     public class ImageViewerViewModel : BaseViewModel, IDisposable
     {
+        public Stretch ImageStretch { get; set; }
+
         private readonly Dispatcher _dispatcher;
         private readonly IImageManager _imageManager;
 
@@ -183,6 +186,8 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
 
         public ImageViewerViewModel(IImageManager imageManager, IEnumerable<ImageViewerImage> initialImages)
         {
+            ImageStretch = Stretch.Uniform;
+
             _images.AddRange(initialImages);
 
             _dispatcher = Dispatcher.CurrentDispatcher;
@@ -232,6 +237,8 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
                 var img = await _imageManager.GetRemoteImageAsync(image.Url, token);
 
                 token.ThrowIfCancellationRequested();
+
+                img.Stretch = ImageStretch;
 
                 CurrentImage = img;
 

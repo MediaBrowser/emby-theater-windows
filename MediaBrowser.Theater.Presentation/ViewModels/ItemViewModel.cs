@@ -105,6 +105,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                     OnPropertyChanged("AlbumArtist");
                     OnPropertyChanged("Artists");
                     OnPropertyChanged("ArtistCount");
+                    OnPropertyChanged("ParentIndexNumber");
 
                     RefreshUserDataFields();
                 }
@@ -455,6 +456,11 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         public int? Players
         {
             get { return _item == null ? null : _item.Players; }
+        }
+
+        public int? ParentIndexNumber
+        {
+            get { return _item == null ? null : _item.ParentIndexNumber; }
         }
 
         public string DurationShortTimeString

@@ -1,4 +1,5 @@
-﻿using MediaBrowser.ApiInteraction;
+﻿using System.Threading;
+using MediaBrowser.ApiInteraction;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Constants;
 using MediaBrowser.Common.Implementations;
@@ -7,6 +8,7 @@ using MediaBrowser.Common.Implementations.ScheduledTasks;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.IO;
 using MediaBrowser.Model.System;
+using MediaBrowser.Model.Updates;
 using MediaBrowser.Plugins.DefaultTheme;
 using MediaBrowser.Theater.Core.Login;
 using MediaBrowser.Theater.DirectShow;
@@ -263,11 +265,6 @@ namespace MediaBrowser.UI
             return new ConfigurationManager(ApplicationPaths, LogManager, XmlSerializer);
         }
 
-        protected override string ApplicationUpdatePackageName
-        {
-            get { return Constants.MbTheaterPkgName; }
-        }
-
         protected override HttpMessageHandler GetHttpMessageHandler(bool enableHttpCompression)
         {
             return new WebRequestHandler
@@ -275,6 +272,37 @@ namespace MediaBrowser.UI
                 CachePolicy = new RequestCachePolicy(RequestCacheLevel.Revalidate),
                 AutomaticDecompression = enableHttpCompression ? DecompressionMethods.Deflate : DecompressionMethods.None
             };
+        }
+
+        /// <summary>
+        /// Checks for update.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="progress">The progress.</param>
+        /// <returns>Task{CheckForUpdateResult}.</returns>
+        public override async Task<CheckForUpdateResult> CheckForApplicationUpdate(CancellationToken cancellationToken,
+                                                                    IProgress<double> progress)
+        {
+            var availablePackages = await InstallationManager.GetAvailablePackagesWithoutRegistrationInfo(cancellationToken).ConfigureAwait(false);
+
+            var version = InstallationManager.GetLatestCompatibleVersion(availablePackages, Constants.MbTheaterPkgName, ConfigurationManager.CommonConfiguration.SystemUpdateLevel);
+
+            return version != null ? new CheckForUpdateResult { AvailableVersion = version.version, IsUpdateAvailable = version.version > ApplicationVersion, Package = version } :
+                       new CheckForUpdateResult { AvailableVersion = ApplicationVersion, IsUpdateAvailable = false };
+        }
+
+        /// <summary>
+        /// Updates the application.
+        /// </summary>
+        /// <param name="package">The package that contains the update</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="progress">The progress.</param>
+        /// <returns>Task.</returns>
+        public override async Task UpdateApplication(PackageVersionInfo package, CancellationToken cancellationToken, IProgress<double> progress)
+        {
+            await InstallationManager.InstallPackage(package, progress, cancellationToken).ConfigureAwait(false);
+
+            OnApplicationUpdated(package.version);
         }
     }
 }

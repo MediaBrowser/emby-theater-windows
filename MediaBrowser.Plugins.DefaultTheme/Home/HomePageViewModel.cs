@@ -42,7 +42,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         protected override async Task<IEnumerable<string>> GetSectionNames()
         {
-            var views = new List<string>();
+            var views = new List<string>
+                {
+                    //_sessionManager.CurrentUser.Name.ToLower()
+                };
 
             try
             {
@@ -62,10 +65,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 //{
                 //    views.Add("music");
                 //}
-                //if (itemCounts.GameCount > 0)
-                //{
-                //    views.Add("games");
-                //}
+                if (itemCounts.GameCount > 0)
+                {
+                    views.Add("games");
+                }
             }
             catch (Exception ex)
             {
@@ -120,11 +123,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             }
             if (string.Equals(section, "games"))
             {
-                return new GamesViewModel(_presentationManager, _apiClient)
-                {
-                    TileHeight = TileHeight,
-                    TileWidth = TileWidth
-                };
+                return new GamesViewModel(_presentationManager, _imageManager, _apiClient, _sessionManager, _nav,
+                                       _playbackManager, _logger, TileWidth, TileHeight);
             }
             if (string.Equals(section, "tv"))
             {
@@ -136,7 +136,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                                            _playbackManager, _logger, TileWidth, TileHeight);
             }
 
-            return null;
+            return new UserTabViewModel(_presentationManager, _imageManager, _apiClient, _sessionManager, _nav, _playbackManager, _logger, TileWidth, TileHeight);
         }
 
         private Task<ItemsResult> GetMediaCollectionsAsync()

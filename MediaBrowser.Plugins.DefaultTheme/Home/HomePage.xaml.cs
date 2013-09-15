@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.Dto;
+﻿using System.Windows.Controls;
+using MediaBrowser.Model.Dto;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Presentation.Pages;
 using System;
@@ -48,6 +49,13 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             if (string.Equals(e.PropertyName, "CurrentSection"))
             {
                 ScrollViewer.ScrollToLeftEnd();
+
+                var current = MenuList.ItemContainerGenerator.ContainerFromItem(MenuList.SelectedItem) as ListBoxItem;
+
+                if (current != null)
+                {
+                    current.Focus();
+                }
             }
         }
 

@@ -68,6 +68,8 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             PlayCommand = new RelayCommand(Play);
         }
 
+        public string ListType { get; set; }
+        
         public Func<BaseItemDto, string> DisplayNameGenerator { get; set; }
         public Func<ItemListViewModel, double> ImageDisplayHeightGenerator { get; set; }
         public Func<ItemListViewModel, ImageType[]> PreferredImageTypesGenerator { get; set; }
@@ -373,7 +375,8 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                                 ViewType = ViewType,
                                 DisplayName = DisplayNameGenerator == null ? i.Name : DisplayNameGenerator(i),
                                 DownloadImagesAtExactSize = true,
-                                PreferredImageTypes = imageTypes
+                                PreferredImageTypes = imageTypes,
+                                ListType = ListType
                             }));
 
                 ItemCount = items.Length;

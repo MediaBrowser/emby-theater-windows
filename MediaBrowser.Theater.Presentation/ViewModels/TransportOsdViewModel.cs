@@ -353,7 +353,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         void player_PlayStateChanged(object sender, EventArgs e)
         {
-            UpdatePauseValues(MediaPlayer);
+            _currentDispatcher.InvokeAsync(() => UpdatePauseValues(MediaPlayer));
         }
 
         private void UpdateSupportsChapters(IMediaPlayer player, BaseItemDto media)

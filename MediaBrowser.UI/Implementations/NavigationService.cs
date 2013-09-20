@@ -209,6 +209,12 @@ namespace MediaBrowser.UI.Implementations
         /// <returns>DispatcherOperation.</returns>
         public async Task NavigateToItem(BaseItemDto item, ViewType context = ViewType.Folders)
         {
+            if (item.IsPerson)
+            {
+                await NavigateToPerson(item.Name, context);
+                return;
+            }
+
             _presentationManager.ShowLoadingAnimation();
 
             try
@@ -270,8 +276,6 @@ namespace MediaBrowser.UI.Implementations
 
         private async Task NavigateToPersonInternal(string name, ViewType context)
         {
-            _presentationManager.ShowLoadingAnimation();
-
             var item = await _apiClient.GetPersonAsync(name, _sessionFactory().CurrentUser.Id);
 
             await App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(async () => await Navigate(_themeManager.CurrentTheme.GetPersonPage(item, context)));

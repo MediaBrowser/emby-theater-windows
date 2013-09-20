@@ -16,7 +16,7 @@ namespace MediaBrowser.Theater.Core.Login
     /// <summary>
     /// Interaction logic for LoginPage.xaml
     /// </summary>
-    public partial class LoginPage : BasePage
+    public partial class LoginPage : BasePage, ILoginPage
     {
         protected IApiClient ApiClient { get; private set; }
         protected IImageManager ImageManager { get; private set; }

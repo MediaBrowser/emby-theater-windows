@@ -3,10 +3,15 @@ using System.Windows.Controls;
 
 namespace MediaBrowser.Theater.Interfaces.Presentation
 {
-    public interface IHomePage
+    public interface IHomePageInfo
     {
         string Name { get; }
 
         Page GetHomePage(BaseItemDto rootFolder);
+    }
+
+    public interface IHomePage
+    {
+        
     }
 }

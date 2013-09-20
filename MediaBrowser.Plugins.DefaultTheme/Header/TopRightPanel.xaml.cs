@@ -59,6 +59,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Header
 
             CurrentUserButton.Click += CurrentUserButton_Click;
             ViewButton.Click += ViewButton_Click;
+            HomeButton.Click += HomeButton_Click;
+        }
+
+        void HomeButton_Click(object sender, RoutedEventArgs e)
+        {
+            Navigation.NavigateToHomePage();
         }
 
         void Navigation_Navigated(object sender, NavigationEventArgs e)
@@ -66,6 +72,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.Header
             ViewButton.Visibility = e.NewPage is IHasDisplayPreferences
                                         ? Visibility.Visible
                                         : Visibility.Collapsed;
+
+            HomeButton.Visibility = e.NewPage is ILoginPage || e.NewPage is IHomePage || SessionManager.CurrentUser == null
+                                ? Visibility.Collapsed
+                                : Visibility.Visible;
         }
 
         void ViewButton_Click(object sender, RoutedEventArgs e)

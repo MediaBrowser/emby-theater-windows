@@ -74,16 +74,16 @@
                     <ColumnDefinition Width="*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
 
-                <Grid VerticalAlignment="Top" HorizontalAlignment="Left" Margin="25 10 0 0" Grid.Column="0" Grid.Row="0">
-                    <Grid.Style>
-                        <Style TargetType="{x:Type Grid}">
+                <StackPanel VerticalAlignment="Top" HorizontalAlignment="Left" Margin="25 10 0 0" Grid.Column="0" Grid.Row="0" Orientation="Horizontal">
+                    <StackPanel.Style>
+                        <Style TargetType="{x:Type StackPanel}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding ShowGlobalContent}" Value="False">
                                     <Setter Property="Visibility" Value="Collapsed" />
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
-                    </Grid.Style>
+                    </StackPanel.Style>
 
                     <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
                         <StackPanel.Style>
@@ -132,7 +132,7 @@
                             </Style>
                         </TextBlock.Style>
                     </TextBlock>
-                </Grid>
+                </StackPanel>
 
                 <header:TopRightPanel Grid.Column="1" Panel.ZIndex="3" Grid.Row="0" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0 0 30 0">
                     <header:TopRightPanel.Style>
@@ -213,6 +213,9 @@
                                 <DataTrigger Binding="{Binding HasImage}" Value="false">
                                     <Setter Property="Visibility" Value="Collapsed" />
                                 </DataTrigger>
+                                <DataTrigger Binding="{Binding ListType}" Value="SpecialFeatures">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
                             </Style.Triggers>
                         </Style>
                     </TextBlock.Style>
@@ -237,6 +240,15 @@
                     <TextBlock.Style>
                         <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
                             <Setter Property="Visibility" Value="Collapsed"></Setter>
+
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ListType}" Value="SpecialFeatures">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding ListType}" Value="Trailers">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
                         </Style>
                     </TextBlock.Style>
                 </TextBlock>
@@ -447,11 +459,11 @@
             <DataTrigger Binding="{Binding ViewType}" Value="{x:Null}">
                 <Setter Property="ItemTemplate" Value="{StaticResource ListItemTemplate}"></Setter>
                 <Setter Property="ItemContainerStyle" Value="{StaticResource AnimatedListBoxItemStyle}"></Setter>
-                <Setter Property="Margin" Value="-0 -20"></Setter>
+                <Setter Property="Margin" Value="0 0"></Setter>
                 <Setter Property="ItemsPanel">
                     <Setter.Value>
                         <ItemsPanelTemplate>
-                            <controls:VirtualizingWrapPanel ItemHeight="{Binding ItemContainerHeight}" ItemWidth="{Binding ItemContainerWidth}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="50 50">
+                            <controls:VirtualizingWrapPanel ItemHeight="{Binding ItemContainerHeight}" ItemWidth="{Binding ItemContainerWidth}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="50 40">
                                 <controls:VirtualizingWrapPanel.Style>
                                     <Style TargetType="{x:Type controls:VirtualizingWrapPanel}">
                                         <Style.Triggers>
@@ -473,11 +485,11 @@
             <DataTrigger Binding="{Binding ViewType}" Value="Poster">
                 <Setter Property="ItemTemplate" Value="{StaticResource ListItemTemplate}"></Setter>
                 <Setter Property="ItemContainerStyle" Value="{StaticResource AnimatedListBoxItemStyle}"></Setter>
-                <Setter Property="Margin" Value="-0 -20"></Setter>
+                <Setter Property="Margin" Value="0 0"></Setter>
                 <Setter Property="ItemsPanel">
                     <Setter.Value>
                         <ItemsPanelTemplate>
-                            <controls:VirtualizingWrapPanel ItemHeight="{Binding ItemContainerHeight}" ItemWidth="{Binding ItemContainerWidth}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="50 50">
+                            <controls:VirtualizingWrapPanel ItemHeight="{Binding ItemContainerHeight}" ItemWidth="{Binding ItemContainerWidth}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="50 40">
                                 <controls:VirtualizingWrapPanel.Style>
                                     <Style TargetType="{x:Type controls:VirtualizingWrapPanel}">
                                         <Style.Triggers>

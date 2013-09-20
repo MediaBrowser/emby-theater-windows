@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using MediaBrowser.Model.ApiClient;
+﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
@@ -9,11 +8,12 @@ using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.ViewModels;
+using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using MediaBrowser.Theater.Presentation.ViewModels;
+using System.Threading.Tasks;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Home
 {

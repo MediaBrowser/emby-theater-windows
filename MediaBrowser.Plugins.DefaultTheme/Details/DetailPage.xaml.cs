@@ -14,10 +14,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
     public partial class DetailPage : BasePage, ISupportsItemThemeMedia, ISupportsItemBackdrops, IItemPage
     {
         private readonly ItemViewModel _itemViewModel;
+        private readonly IPresentationManager _presentation;
 
-        public DetailPage(ItemViewModel itemViewModel)
+        public DetailPage(ItemViewModel itemViewModel, IPresentationManager presentation)
         {
             _itemViewModel = itemViewModel;
+            _presentation = presentation;
             InitializeComponent();
 
             Loaded += PanoramaDetailPage_Loaded;
@@ -59,7 +61,16 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
         void PanoramaDetailPage_Loaded(object sender, RoutedEventArgs e)
         {
-            DefaultTheme.Current.PageContentDataContext.SetPageTitle(_itemViewModel.Item);
+            var item = _itemViewModel.Item;
+
+            if (item.IsPerson || item.IsArtist || item.IsGenre || item.IsGameGenre || item.IsMusicGenre || item.IsStudio)
+            {
+                _presentation.SetDefaultPageTitle();
+            }
+            else
+            {
+                DefaultTheme.Current.PageContentDataContext.SetPageTitle(item);
+            }
         }
 
         private void SetTitle(BaseItemDto item)
@@ -77,6 +88,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             else if (item.IsType("audio"))
             {
                 TxtName.Text = GetSongTitle(item);
+                TxtName.Visibility = Visibility.Visible;
+            }
+            else if (item.IsPerson || item.IsArtist || item.IsGenre || item.IsGameGenre || item.IsMusicGenre || item.IsStudio)
+            {
+                TxtName.Text = item.Name;
                 TxtName.Visibility = Visibility.Visible;
             }
             else

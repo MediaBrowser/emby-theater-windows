@@ -13,7 +13,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         private Timer _selectionChangeTimer;
         private readonly object _syncLock = new object();
 
-        private readonly RangeObservableCollection<string> _sectionNames = new RangeObservableCollection<string>();
+        private readonly RangeObservableCollection<TabItem> _sectionNames = new RangeObservableCollection<TabItem>();
 
         private ListCollectionView _sections;
         public ListCollectionView Sections
@@ -64,9 +64,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         {
             get
             {
-                var sections = Sections;
-
-                return sections == null ? null : sections.CurrentItem as string;
+                return _currentSection;
             }
             set
             {
@@ -76,9 +74,31 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
                 if (changed)
                 {
+                    ContentViewModel = null;
+
                     OnPropertyChanged("CurrentSection");
 
                     ContentViewModel = GetContentViewModel(CurrentSection);
+                }
+            }
+        }
+
+        private string _currentSectionDisplayName;
+        public string CurrentSectionDisplayName
+        {
+            get
+            {
+                return _currentSectionDisplayName;
+            }
+            set
+            {
+                var changed = !string.Equals(_currentSectionDisplayName, value);
+
+                _currentSectionDisplayName = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("CurrentSectionDisplayName");
                 }
             }
         }
@@ -124,12 +144,15 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         private void UpdateCurrentSection()
         {
-            CurrentSection = Sections.CurrentItem as string;
+            var tab = Sections.CurrentItem as TabItem;
+
+            CurrentSection = tab == null ? null : tab.Name;
+            CurrentSectionDisplayName = tab == null ? null : tab.DisplayName;
         }
 
         private async Task ReloadSections()
         {
-            var views = await GetSectionNames();
+            var views = await GetSections();
 
             _sectionNames.Clear();
             _sectionNames.AddRange(views);
@@ -137,7 +160,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             Sections.MoveCurrentToPosition(0);
         }
 
-        protected abstract Task<IEnumerable<string>> GetSectionNames();
+        protected abstract Task<IEnumerable<TabItem>> GetSections();
         protected abstract BaseViewModel GetContentViewModel(string section);
 
         public void Dispose()
@@ -163,5 +186,11 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 }
             }
         }
+    }
+
+    public class TabItem
+    {
+        public string Name { get; set; }
+        public string DisplayName { get; set; }
     }
 }

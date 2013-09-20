@@ -40,9 +40,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             _playbackManager = playbackManager;
         }
 
-        protected override async Task<IEnumerable<string>> GetSectionNames()
+        protected override async Task<IEnumerable<TabItem>> GetSections()
         {
-            var views = new List<string>
+            var views = new List<TabItem>
                 {
                     //_sessionManager.CurrentUser.Name.ToLower()
                 };
@@ -53,12 +53,20 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
                 if (itemCounts.MovieCount > 0 || itemCounts.TrailerCount > 0)
                 {
-                    views.Add("movies");
+                    views.Add(new TabItem
+                    {
+                        Name = "movies",
+                        DisplayName = "movies"
+                    });
                 }
 
                 if (itemCounts.SeriesCount > 0 || itemCounts.EpisodeCount > 0)
                 {
-                    views.Add("tv");
+                    views.Add(new TabItem
+                    {
+                        Name = "tv",
+                        DisplayName = "tv"
+                    });
                 }
 
                 //if (itemCounts.SongCount > 0)
@@ -67,7 +75,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 //}
                 if (itemCounts.GameCount > 0)
                 {
-                    views.Add("games");
+                    views.Add(new TabItem
+                    {
+                        Name = "games",
+                        DisplayName = "games"
+                    });
                 }
             }
             catch (Exception ex)
@@ -77,10 +89,18 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             if (_presentationManager.GetApps(_sessionManager.CurrentUser).Any())
             {
-                views.Add("apps");
+                views.Add(new TabItem
+                {
+                    Name = "apps",
+                    DisplayName = "apps"
+                });
             }
 
-            views.Add("media collections");
+            views.Add(new TabItem
+            {
+                Name = "media collections",
+                DisplayName = "media collections"
+            });
 
             return views;
         }

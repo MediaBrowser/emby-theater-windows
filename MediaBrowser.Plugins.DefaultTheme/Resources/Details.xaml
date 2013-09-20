@@ -1,13 +1,14 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:viewModels="clr-namespace:MediaBrowser.Theater.Presentation.ViewModels;assembly=MediaBrowser.Theater.Presentation"
-                    xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation">
+                    xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
+                    xmlns:details="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Controls">
 
     <Style x:Key="DetailPageMenuListBoxItemStyle" TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource ListBoxItemStyle}">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                    <TextBlock Opacity=".5" x:Name="MenuText" Margin="45 0" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Text="{Binding}" Style="{DynamicResource Heading2TextBlockStyle}"></TextBlock>
+                    <TextBlock Opacity=".5" x:Name="MenuText" Margin="45 0" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Text="{Binding DisplayName}" Style="{DynamicResource Heading2TextBlockStyle}"></TextBlock>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsSelected" Value="true">
                             <Setter TargetName="MenuText" Property="Opacity" Value="1"/>
@@ -21,6 +22,43 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <DataTemplate x:Key="DetailPageItemsFromItemByNameTemplate" DataType="{x:Type viewModels:ItemListViewModel}">
+        <Grid>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="auto"></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <controls:ExtendedListBox Grid.Column="0" Command="{Binding NavigateCommand}" Style="{StaticResource ListBoxStyle}" ItemsSource="{Binding ListCollectionView}" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" ItemTemplate="{DynamicResource ListItemTemplate}" ItemContainerStyle="{StaticResource AnimatedListBoxItemStyle}">
+                <controls:ExtendedListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <controls:VirtualizingWrapPanel ItemHeight="{Binding ItemContainerHeight}" ItemWidth="{Binding ItemContainerWidth}" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="50" CanVerticallyScroll="False" CanHorizontallyScroll="True">
+                        </controls:VirtualizingWrapPanel>
+                    </ItemsPanelTemplate>
+                </controls:ExtendedListBox.ItemsPanel>
+            </controls:ExtendedListBox>
+
+            <!--TODO: The fixed width is a hack until i figure out why it won't stretch-->
+            <Grid Grid.Row="1" Margin="25 0 25 15" Width="1750">
+
+                <Grid.Style>
+                    <Style TargetType="{x:Type Grid}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding CurrentItem}" Value="{x:Null}">
+                                <Setter Property="Visibility" Value="Hidden" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+
+                <details:ItemInfoFooter HorizontalAlignment="Right" VerticalAlignment="Bottom" DataContext="{Binding CurrentItem}">
+                </details:ItemInfoFooter>
+            </Grid>
+
+        </Grid>
+    </DataTemplate>
 
     <DataTemplate x:Key="DetailPageOverviewTemplate" DataType="{x:Type viewModels:ItemViewModel}">
         <Grid Margin="70 30 50 0">
@@ -105,7 +143,6 @@
                 </Grid>
             </Grid>
 
-
             <Grid Grid.Column="1" Margin="50 0 0 0">
 
                 <Grid.RowDefinitions>
@@ -116,13 +153,14 @@
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Row="0">
 
-                    <Button x:Name="BtnPlay" Command="{Binding PlayCommand}">
+                    <Button Command="{Binding PlayCommand}">
 
                         <Button.Style>
                             <Style TargetType="{x:Type Button}" BasedOn="{StaticResource BaseButtonStyle}">
+                                <Setter Property="Visibility" Value="Collapsed" />
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding CanPlay}" Value="False">
-                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    <DataTrigger Binding="{Binding CanPlay}" Value="True">
+                                        <Setter Property="Visibility" Value="Visible" />
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
@@ -131,13 +169,14 @@
                         <TextBlock Style="{DynamicResource TextBlockStyle}">Play</TextBlock>
                     </Button>
 
-                    <Button x:Name="BtnResume" Margin="10 0 0 0" Command="{Binding ResumeCommand}">
+                    <Button Margin="10 0 0 0" Command="{Binding ResumeCommand}">
 
                         <Button.Style>
                             <Style TargetType="{x:Type Button}" BasedOn="{StaticResource BaseButtonStyle}">
+                                <Setter Property="Visibility" Value="Collapsed" />
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding CanResume}" Value="False">
-                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    <DataTrigger Binding="{Binding CanResume}" Value="True">
+                                        <Setter Property="Visibility" Value="Visible" />
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
@@ -146,13 +185,14 @@
                         <TextBlock Style="{DynamicResource TextBlockStyle}">Resume</TextBlock>
                     </Button>
 
-                    <Button x:Name="BtnPlayTrailer" Margin="10 0 0 0" Command="{Binding PlayTrailerCommand}">
+                    <Button Margin="10 0 0 0" Command="{Binding PlayTrailerCommand}">
 
                         <Button.Style>
                             <Style TargetType="{x:Type Button}" BasedOn="{StaticResource BaseButtonStyle}">
+                                <Setter Property="Visibility" Value="Collapsed" />
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding HasTrailer}" Value="False">
-                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    <DataTrigger Binding="{Binding HasTrailer}" Value="True">
+                                        <Setter Property="Visibility" Value="Visible" />
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
@@ -165,7 +205,19 @@
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="0">
 
-                    <Button Style="{DynamicResource ImageButton}" Command="{Binding ToggleIsPlayedCommand}">
+                    <Button Command="{Binding ToggleIsPlayedCommand}">
+
+                        <Button.Style>
+                            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource ImageButton}">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding CanBeMarkedPlayed}" Value="true">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+
                         <Grid>
                             <Grid Width="70" Height="50" />
                             <Path Data="M-150.204,626.126C-152.317,626.126 -154.429,626.126 -156.541,626.126 -167.642,633.42 -180.629,646.047 -189.668,657.238 -190.916,658.782 -192.945,662.362 -193.701,662.422 -194.041,662.448 -198.024,659.719 -198.614,659.297 -202.818,656.279 -205.779,653.709 -209.257,650.899 -211.248,652.172 -212.879,653.805 -214.153,655.797 -206.627,665.074 -200.283,675.534 -193.124,685.18 -181.491,665.11 -168.473,644.683 -152.796,629.006 -151.735,627.946 -149.817,626.933 -150.204,626.126z" Stretch="Uniform" Width="36" Height="36" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
@@ -530,10 +582,10 @@
                     <TextBlock Grid.Row="6" Grid.Column="0" Margin="0 5 0 0">
                         <TextBlock.Style>
                             <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
-                                <Setter Property="Text" Value="studios" />
+                                <Setter Property="Text" Value="{Binding StudioLabelPlural, Converter={controls:LowerCaseConverter}}" />
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding StudioCount}" Value="1">
-                                        <Setter Property="Text" Value="studio" />
+                                        <Setter Property="Text" Value="{Binding StudioLabelSingular, Converter={controls:LowerCaseConverter}}" />
                                     </DataTrigger>
                                     <DataTrigger Binding="{Binding StudioCount}" Value="0">
                                         <Setter Property="Visibility" Value="Collapsed" />
@@ -588,6 +640,9 @@
                                     <DataTrigger Binding="{Binding PremieresInFuture}" Value="true">
                                         <Setter Property="Text" Value="premieres" />
                                     </DataTrigger>
+                                    <DataTrigger Binding="{Binding ItemType}" Value="Person">
+                                        <Setter Property="Text" Value="date of birth" />
+                                    </DataTrigger>
                                     <DataTrigger Binding="{Binding PremiereDate}" Value="{x:Null}">
                                         <Setter Property="Visibility" Value="Collapsed" />
                                     </DataTrigger>
@@ -640,7 +695,7 @@
 
                 </Grid>
 
-                <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding Overview}"  Grid.Row="2" Margin="0 30 0 10" TextTrimming="CharacterEllipsis" MinWidth="900"></TextBlock>
+                <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding Overview}"  Grid.Row="2" Margin="0 30 0 20" TextTrimming="CharacterEllipsis" MinWidth="900"></TextBlock>
             </Grid>
         </Grid>
     </DataTemplate>
@@ -835,6 +890,7 @@
 
     <Style x:Key="DetailPageContentStyle" TargetType="{x:Type ContentControl}">
         <Style.Triggers>
+
             <DataTrigger Binding="{Binding CurrentSection}" Value="cast">
                 <Setter Property="Content">
                     <Setter.Value>
@@ -850,6 +906,7 @@
                     </Setter.Value>
                 </Setter>
             </DataTrigger>
+
             <DataTrigger Binding="{Binding CurrentSection}" Value="scenes">
                 <Setter Property="Content">
                     <Setter.Value>
@@ -865,6 +922,7 @@
                     </Setter.Value>
                 </Setter>
             </DataTrigger>
+
             <DataTrigger Binding="{Binding CurrentSection}" Value="reviews">
                 <Setter Property="Content">
                     <Setter.Value>
@@ -980,9 +1038,9 @@
                                 <RowDefinition Height="2*"></RowDefinition>
                             </Grid.RowDefinitions>
 
-                            <controls:ExtendedScrollViewer Grid.Row="0" Margin="0 -15 0 -15" VerticalAlignment="Stretch" HorizontalAlignment="Center" CanContentScroll="True" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" >
+                            <controls:ExtendedScrollViewer Grid.Row="0" Margin="0 30 0 0" VerticalAlignment="Stretch" HorizontalAlignment="Center" CanContentScroll="True" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" >
 
-                                <controls:ScrollingPanel x:Name="ScrollingPanel" HorizontalAlignment="Stretch" CanHorizontallyScroll="True" CanVerticallyScroll="False">
+                                <controls:ScrollingPanel HorizontalAlignment="Stretch" CanHorizontallyScroll="True" CanVerticallyScroll="False">
                                     <controls:ExtendedListBox DataContext="{Binding ContentViewModel}" ItemsSource="{Binding ListCollectionView}" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{DynamicResource ListItemTemplate}">
                                         <controls:ExtendedListBox.ItemsPanel>
                                             <ItemsPanelTemplate>
@@ -993,7 +1051,7 @@
                                 </controls:ScrollingPanel>
                             </controls:ExtendedScrollViewer>
 
-                            <TextBlock Grid.Row="1" DataContext="{Binding Path=ContentViewModel.CurrentItem}" Style="{DynamicResource Heading1TextBlockStyle}" HorizontalAlignment="Center" Text="{Binding DisplayName, Converter={controls:UpperCaseConverter}}" VerticalAlignment="Center" FontFamily="Segoe UI" FontWeight="ExtraBold" FontSize="170" Foreground="#ccc" Opacity=".9" Margin="0 -40 0 0"></TextBlock>
+                            <TextBlock Grid.Row="1" DataContext="{Binding Path=ContentViewModel.CurrentItem}" Style="{DynamicResource Heading1TextBlockStyle}" HorizontalAlignment="Center" Text="{Binding DisplayName, Converter={controls:UpperCaseConverter}}" VerticalAlignment="Center" FontFamily="Segoe UI" FontWeight="ExtraBold" FontSize="170" Foreground="#ccc" Opacity=".9" Margin="0 -50 0 0"></TextBlock>
                         </Grid>
                     </Setter.Value>
                 </Setter>
@@ -1046,7 +1104,73 @@
             <DataTrigger Binding="{Binding CurrentSection}" Value="overview">
                 <Setter Property="Content">
                     <Setter.Value>
-                        <ContentControl ContentTemplate="{StaticResource DetailPageOverviewTemplate}" Content="{Binding ContentViewModel}">
+                        <Grid>
+                            <ContentControl ContentTemplate="{StaticResource DetailPageOverviewTemplate}" Content="{Binding ContentViewModel}">
+                            </ContentControl>
+                        </Grid>
+                    </Setter.Value>
+                </Setter>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding CurrentSection}" Value="itemmovies">
+                <Setter Property="Content">
+                    <Setter.Value>
+                        <ContentControl ContentTemplate="{StaticResource DetailPageItemsFromItemByNameTemplate}" Content="{Binding ContentViewModel}">
+                        </ContentControl>
+                    </Setter.Value>
+                </Setter>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding CurrentSection}" Value="itemseries">
+                <Setter Property="Content">
+                    <Setter.Value>
+                        <ContentControl ContentTemplate="{StaticResource DetailPageItemsFromItemByNameTemplate}" Content="{Binding ContentViewModel}">
+                        </ContentControl>
+                    </Setter.Value>
+                </Setter>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding CurrentSection}" Value="itemepisodes">
+                <Setter Property="Content">
+                    <Setter.Value>
+                        <ContentControl ContentTemplate="{StaticResource DetailPageItemsFromItemByNameTemplate}" Content="{Binding ContentViewModel}">
+                        </ContentControl>
+                    </Setter.Value>
+                </Setter>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding CurrentSection}" Value="itemgames">
+                <Setter Property="Content">
+                    <Setter.Value>
+                        <ContentControl ContentTemplate="{StaticResource DetailPageItemsFromItemByNameTemplate}" Content="{Binding ContentViewModel}">
+                        </ContentControl>
+                    </Setter.Value>
+                </Setter>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding CurrentSection}" Value="itemalbums">
+                <Setter Property="Content">
+                    <Setter.Value>
+                        <ContentControl ContentTemplate="{StaticResource DetailPageItemsFromItemByNameTemplate}" Content="{Binding ContentViewModel}">
+                        </ContentControl>
+                    </Setter.Value>
+                </Setter>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding CurrentSection}" Value="itemsongs">
+                <Setter Property="Content">
+                    <Setter.Value>
+                        <ContentControl ContentTemplate="{StaticResource DetailPageItemsFromItemByNameTemplate}" Content="{Binding ContentViewModel}">
+                        </ContentControl>
+                    </Setter.Value>
+                </Setter>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding CurrentSection}" Value="itemmusicvideos">
+                <Setter Property="Content">
+                    <Setter.Value>
+                        <ContentControl ContentTemplate="{StaticResource DetailPageItemsFromItemByNameTemplate}" Content="{Binding ContentViewModel}">
+                        </ContentControl>
+                    </Setter.Value>
+                </Setter>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding CurrentSection}" Value="itemtrailers">
+                <Setter Property="Content">
+                    <Setter.Value>
+                        <ContentControl ContentTemplate="{StaticResource DetailPageItemsFromItemByNameTemplate}" Content="{Binding ContentViewModel}">
                         </ContentControl>
                     </Setter.Value>
                 </Setter>

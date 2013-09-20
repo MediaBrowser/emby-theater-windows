@@ -9,7 +9,7 @@ using System.Windows.Controls;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Home
 {
-    public class HomePageInfo : IHomePage
+    public class HomePageInfo : IHomePageInfo
     {
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;

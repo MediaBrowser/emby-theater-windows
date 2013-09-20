@@ -163,7 +163,7 @@ namespace MediaBrowser.UI
             base.FindParts();
 
             ThemeManager.AddParts(GetExports<ITheme>());
-            PresentationManager.AddParts(GetExports<IAppFactory>(), GetExports<ISettingsPage>(), GetExports<IHomePage>());
+            PresentationManager.AddParts(GetExports<IAppFactory>(), GetExports<ISettingsPage>(), GetExports<IHomePageInfo>());
 
             PlaybackManager.AddParts(GetExports<IMediaPlayer>());
 

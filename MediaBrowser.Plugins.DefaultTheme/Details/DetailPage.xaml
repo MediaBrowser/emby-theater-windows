@@ -19,7 +19,7 @@
             <RowDefinition Height="auto"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <TextBlock Name="TxtName" Style="{DynamicResource TextBlockStyle}" HorizontalAlignment="Center" Margin="300 0 300 10" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" Foreground="#ddd"></TextBlock>
+        <TextBlock Name="TxtName" Style="{DynamicResource TextBlockStyle}" HorizontalAlignment="Center" Margin="300 0 300 10" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"></TextBlock>
 
         <controls:ExtendedListBox x:Name="MenuList" ItemsSource="{Binding Sections}" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" Grid.Row="1" HorizontalAlignment="Center" Margin="20 40 20 0" ItemContainerStyle="{DynamicResource DetailPageMenuListBoxItemStyle}">
             <controls:ExtendedListBox.ItemsPanel>
@@ -38,26 +38,20 @@
                     <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"></Setter>
 
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding CurrentSection}" Value="overview">
-                            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"></Setter>
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding CurrentSection}" Value="seasons">
+                        <DataTrigger Binding="{Binding EnableScrolling}" Value="false">
                             <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"></Setter>
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
             </controls:ExtendedScrollViewer.Style>
 
-            <controls:ScrollingPanel x:Name="ScrollingPanel" HorizontalAlignment="Stretch">
+            <controls:ScrollingPanel HorizontalAlignment="Stretch">
                 <controls:ScrollingPanel.Style>
                     <Style TargetType="{x:Type controls:ScrollingPanel}">
                         <Setter Property="CanHorizontallyScroll" Value="True"></Setter>
                         <Setter Property="CanVerticallyScroll" Value="False"></Setter>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding CurrentSection}" Value="overview">
-                                <Setter Property="CanHorizontallyScroll" Value="False"></Setter>
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding CurrentSection}" Value="seasons">
+                            <DataTrigger Binding="{Binding EnableScrolling}" Value="False">
                                 <Setter Property="CanHorizontallyScroll" Value="False"></Setter>
                             </DataTrigger>
                         </Style.Triggers>
@@ -68,10 +62,19 @@
             </controls:ScrollingPanel>
         </controls:ExtendedScrollViewer>
 
-        <Grid Grid.Row="3" Margin="25 0 25 15">
+        <Grid Grid.Row="3" Margin="25 0 25 15" DataContext="{Binding ItemViewModel}">
+            <Grid.Style>
+                <Style TargetType="{x:Type Grid}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ItemType}" Value="Person">
+                            <Setter Property="Visibility" Value="Collapsed"></Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
 
-            <details:ItemInfoFooter x:Name="ItemInfoFooter" HorizontalAlignment="Right" VerticalAlignment="Bottom" DataContext="{Binding ItemViewModel}"></details:ItemInfoFooter>
-
+            <details:ItemInfoFooter HorizontalAlignment="Right" VerticalAlignment="Bottom">
+            </details:ItemInfoFooter>
         </Grid>
 
     </Grid>

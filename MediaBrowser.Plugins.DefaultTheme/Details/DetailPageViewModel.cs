@@ -1,13 +1,18 @@
-﻿using MediaBrowser.Model.ApiClient;
+﻿using System.ComponentModel;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
+using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Querying;
+using MediaBrowser.Plugins.DefaultTheme.Home;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.ViewModels;
+using MediaBrowser.Theater.Presentation.Extensions;
 using MediaBrowser.Theater.Presentation.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -51,91 +56,263 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             ItemViewModel = item;
         }
 
-        protected override async Task<IEnumerable<string>> GetSectionNames()
+        private bool _enableScrolling = true;
+        public bool EnableScrolling
         {
-            var item = ItemViewModel;
-
-            var themeMediaTask = GetThemeMedia(item.Item);
-            var criticReviewsTask = GetCriticReviews(item.Item);
-
-            await Task.WhenAll(themeMediaTask, criticReviewsTask);
-
-            return GetMenuList(item.Item, themeMediaTask.Result, criticReviewsTask.Result);
+            get
+            {
+                return _enableScrolling;
+            }
+            set
+            {
+                _enableScrolling = value;
+                OnPropertyChanged("EnableScrolling");
+            }
         }
 
-        private IEnumerable<string> GetMenuList(BaseItemDto item, AllThemeMediaResult themeMediaResult, ItemReviewsResult reviewsResult)
+        public override void OnPropertyChanged(string name)
         {
-            var views = new List<string>
+            base.OnPropertyChanged(name);
+
+            if (string.Equals(name, "CurrentSection"))
+            {
+                var section = CurrentSection;
+
+                EnableScrolling = !string.Equals(section, "overview", StringComparison.OrdinalIgnoreCase) &&
+                    !string.Equals(section, "seasons", StringComparison.OrdinalIgnoreCase) &&
+                    !string.Equals(section, "itemmovies", StringComparison.OrdinalIgnoreCase) &&
+                    !string.Equals(section, "itemtrailers", StringComparison.OrdinalIgnoreCase) &&
+                    !string.Equals(section, "itemseries", StringComparison.OrdinalIgnoreCase) &&
+                    !string.Equals(section, "itemepisodes", StringComparison.OrdinalIgnoreCase) &&
+                    !string.Equals(section, "itemalbums", StringComparison.OrdinalIgnoreCase);
+            }
+        }
+
+        protected override async Task<IEnumerable<TabItem>> GetSections()
+        {
+            _presentationManager.ShowLoadingAnimation();
+
+            try
+            {
+                var item = ItemViewModel;
+
+                var themeMediaTask = GetThemeMedia(item.Item);
+                var criticReviewsTask = GetCriticReviews(item.Item);
+
+                await Task.WhenAll(themeMediaTask, criticReviewsTask);
+
+                return GetMenuList(item.Item, themeMediaTask.Result, criticReviewsTask.Result);
+            }
+            finally
+            {
+                _presentationManager.HideLoadingAnimation();
+            }
+        }
+
+        private IEnumerable<TabItem> GetMenuList(BaseItemDto item, AllThemeMediaResult themeMediaResult, ItemReviewsResult reviewsResult)
+        {
+            var views = new List<TabItem>
                 {
-                    "overview"
+                    new TabItem
+                    {
+                        Name = "overview",
+                        DisplayName = "overview"
+                    }
                 };
 
             if (item.ChildCount > 0)
             {
                 if (item.IsType("series"))
                 {
-                    views.Add("seasons");
+                    views.Add(new TabItem
+                    {
+                        Name = "seasons",
+                        DisplayName = "seasons"
+                    });
                 }
                 else if (item.IsType("season"))
                 {
-                    views.Add("episodes");
+                    views.Add(new TabItem
+                    {
+                        Name = "episodes",
+                        DisplayName = "episodes"
+                    });
                 }
                 else if (item.IsType("musicalbum"))
                 {
-                    views.Add("songs");
+                    views.Add(new TabItem
+                    {
+                        Name = "songs",
+                        DisplayName = "songs"
+                    });
                 }
             }
 
             if (item.People.Length > 0)
             {
-                views.Add("cast");
+                views.Add(new TabItem
+                {
+                    Name = "cast",
+                    DisplayName = "cast"
+                });
             }
 
             if (item.LocalTrailerCount > 1)
             {
-                views.Add("trailers");
+                views.Add(new TabItem
+                {
+                    Name = "trailers",
+                    DisplayName = "trailers"
+                });
             }
 
             if (item.Chapters != null && item.Chapters.Count > 0)
             {
-                views.Add("scenes");
+                views.Add(new TabItem
+                {
+                    Name = "scenes",
+                    DisplayName = "scenes"
+                });
             }
 
             if (item.SpecialFeatureCount > 0)
             {
-                views.Add("special features");
+                views.Add(new TabItem
+                {
+                    Name = "special features",
+                    DisplayName = "special features"
+                });
             }
 
             if (item.IsType("movie") || item.IsType("trailer") || item.IsType("series") || item.IsType("musicalbum") || item.IsGame)
             {
-                views.Add("similar");
+                views.Add(new TabItem
+                {
+                    Name = "similar",
+                    DisplayName = "similar"
+                });
             }
 
             if (reviewsResult.TotalRecordCount > 0 || !string.IsNullOrEmpty(item.CriticRatingSummary))
             {
-                views.Add("reviews");
+                views.Add(new TabItem
+                {
+                    Name = "reviews",
+                    DisplayName = "reviews"
+                });
             }
 
             if (item.SoundtrackIds != null)
             {
                 if (item.SoundtrackIds.Length > 1)
                 {
-                    views.Add("soundtracks");
+                    views.Add(new TabItem
+                    {
+                        Name = "soundtracks",
+                        DisplayName = "soundtracks"
+                    });
                 }
                 else if (item.SoundtrackIds.Length > 0)
                 {
-                    views.Add("soundtrack");
+                    views.Add(new TabItem
+                    {
+                        Name = "soundtrack",
+                        DisplayName = "soundtrack"
+                    });
                 }
             }
 
             if (themeMediaResult.ThemeVideosResult.TotalRecordCount > 0 || themeMediaResult.ThemeSongsResult.TotalRecordCount > 0)
             {
-                views.Add("themes");
+                views.Add(new TabItem
+                {
+                    Name = "themes",
+                    DisplayName = "themes"
+                });
+            }
+
+            if (item.IsArtist || item.IsGameGenre || item.IsGenre || item.IsMusicGenre || item.IsPerson || item.IsStudio)
+            {
+                if (item.MovieCount.HasValue && item.MovieCount.Value > 0)
+                {
+                    views.Add(new TabItem
+                    {
+                        Name = "itemmovies",
+                        DisplayName = string.Format("movies ({0})", item.MovieCount.Value)
+                    });
+                }
+
+                if (item.SeriesCount.HasValue && item.SeriesCount.Value > 0)
+                {
+                    views.Add(new TabItem
+                    {
+                        Name = "itemseries",
+                        DisplayName = string.Format("series ({0})", item.SeriesCount.Value)
+                    });
+                }
+
+                if (item.EpisodeCount.HasValue && item.EpisodeCount.Value > 0)
+                {
+                    views.Add(new TabItem
+                    {
+                        Name = "itemepisodes",
+                        DisplayName = string.Format("episodes ({0})", item.EpisodeCount.Value)
+                    });
+                }
+
+                if (item.TrailerCount.HasValue && item.TrailerCount.Value > 0)
+                {
+                    views.Add(new TabItem
+                    {
+                        Name = "itemtrailers",
+                        DisplayName = string.Format("trailers ({0})", item.TrailerCount.Value)
+                    });
+                }
+
+                if (item.GameCount.HasValue && item.GameCount.Value > 0)
+                {
+                    views.Add(new TabItem
+                    {
+                        Name = "itemgames",
+                        DisplayName = string.Format("games ({0})", item.GameCount.Value)
+                    });
+                }
+
+                if (item.AlbumCount.HasValue && item.AlbumCount.Value > 0)
+                {
+                    views.Add(new TabItem
+                    {
+                        Name = "itemalbums",
+                        DisplayName = string.Format("albums ({0})", item.AlbumCount.Value)
+                    });
+                }
+
+                if (item.SongCount.HasValue && item.SongCount.Value > 0)
+                {
+                    views.Add(new TabItem
+                    {
+                        Name = "itemsongs",
+                        DisplayName = string.Format("songs ({0})", item.SongCount.Value)
+                    });
+                }
+
+                if (item.MusicVideoCount.HasValue && item.MusicVideoCount.Value > 0)
+                {
+                    views.Add(new TabItem
+                    {
+                        Name = "itemmusicvideos",
+                        DisplayName = string.Format("music videos ({0})", item.MusicVideoCount.Value)
+                    });
+                }
             }
 
             if (GalleryViewModel.GetImages(item, _apiClient, null, null, true).Any())
             {
-                views.Add("gallery");
+                views.Add(new TabItem
+                {
+                    Name = "gallery",
+                    DisplayName = "gallery"
+                });
             }
 
             return views;
@@ -196,7 +373,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 return new ItemListViewModel(GetSpecialFeatures, _presentationManager, _imageManager, _apiClient, _sessionManager, _navigation, _playback, _logger)
                 {
                     ImageDisplayWidth = 576,
-                    EnableBackdropsForCurrentItem = false
+                    EnableBackdropsForCurrentItem = false,
+                    ListType = "SpecialFeatures"
                 };
             }
             if (string.Equals(section, "themes"))
@@ -204,7 +382,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 return new ItemListViewModel(GetConvertedThemeMediaResult, _presentationManager, _imageManager, _apiClient, _sessionManager, _navigation, _playback, _logger)
                 {
                     ImageDisplayWidth = 576,
-                    EnableBackdropsForCurrentItem = false
+                    EnableBackdropsForCurrentItem = false,
+                    ListType = "SpecialFeatures"
                 };
             }
             if (string.Equals(section, "soundtrack") || string.Equals(section, "soundtracks"))
@@ -228,11 +407,129 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 return new ItemListViewModel(GetTrailers, _presentationManager, _imageManager, _apiClient, _sessionManager, _navigation, _playback, _logger)
                 {
                     ImageDisplayWidth = 384,
-                    EnableBackdropsForCurrentItem = false
+                    EnableBackdropsForCurrentItem = false,
+                    ListType = "Trailers"
                 };
+            }
+            if (string.Equals(section, "itemmovies"))
+            {
+                return GetItemByNameItemListViewModel("Movie", 240, 360);
+            }
+            if (string.Equals(section, "itemtrailers"))
+            {
+                return GetItemByNameItemListViewModel("Trailer", 240, 360);
+            }
+            if (string.Equals(section, "itemseries"))
+            {
+                return GetItemByNameItemListViewModel("Series", 240, 360);
+            }
+            if (string.Equals(section, "itemalbums"))
+            {
+                return GetItemByNameItemListViewModel("MusicAlbum", 280, 280);
+            }
+            if (string.Equals(section, "itemepisodes"))
+            {
+                return GetItemByNameItemListViewModel("Episode", 496, 279);
             }
 
             return null;
+        }
+
+        private ItemListViewModel GetItemByNameItemListViewModel(string type, int width, int height)
+        {
+            Func<Task<ItemsResult>> itemGenerator = () => GetItemByNameItemsAsync(type);
+
+            var viewModel = new ItemListViewModel(itemGenerator, _presentationManager, _imageManager, _apiClient, _sessionManager, _navigation, _playback, _logger)
+            {
+                ViewType = ListViewTypes.Poster,
+                ImageDisplayWidth = width,
+                ImageDisplayHeightGenerator = GetImageDisplayHeight,
+                ItemContainerWidth = width + 20,
+                ItemContainerHeight = height + 20,
+                DisplayNameGenerator = HomePageViewModel.GetDisplayName,
+                PreferredImageTypesGenerator = vm => new[] { ImageType.Primary },
+
+                ShowSidebarGenerator = vm => false,
+                ScrollDirectionGenerator = vm => ScrollDirection.Horizontal,
+
+                AutoSelectFirstItem = false,
+
+                ShowLoadingAnimation = true,
+                EnableBackdropsForCurrentItem = false
+            };
+
+            viewModel.PropertyChanged += viewModel_PropertyChanged;
+
+            return viewModel;
+        }
+
+        void viewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (string.Equals(e.PropertyName, "ImageDisplayHeight"))
+            {
+                var vm = sender as ItemListViewModel;
+
+                if (vm != null)
+                {
+                    vm.ItemContainerHeight = GetImageDisplayHeight(vm) + 20;
+                }
+            }
+        }
+
+        private double GetImageDisplayHeight(ItemListViewModel viewModel)
+        {
+            var imageDisplayWidth = viewModel.ImageDisplayWidth;
+            var medianPrimaryImageAspectRatio = viewModel.MedianPrimaryImageAspectRatio ?? 0;
+
+            if (!medianPrimaryImageAspectRatio.Equals(0))
+            {
+                double height = imageDisplayWidth;
+                height /= medianPrimaryImageAspectRatio;
+
+                return height;
+            }
+
+            return viewModel.DefaultImageDisplayHeight;
+        }
+
+        private Task<ItemsResult> GetItemByNameItemsAsync(string type)
+        {
+            var item = ItemViewModel.Item;
+
+            var query = new ItemQuery
+            {
+                UserId = _sessionManager.CurrentUser.Id,
+                Fields = new[]
+                        {
+                                 ItemFields.PrimaryImageAspectRatio,
+                                 ItemFields.DateCreated
+                        },
+
+                SortBy = new[] { ItemSortBy.SortName },
+
+                IncludeItemTypes = new[] { type },
+
+                Recursive = true
+            };
+
+            if (item.IsPerson)
+            {
+                query.Person = item.Name;
+            }
+            else if (item.IsStudio)
+            {
+                query.Studios = new[] { item.Name };
+            }
+            else if (item.IsGenre || item.IsMusicGenre || item.IsGameGenre)
+            {
+                query.Genres = new[] { item.Name };
+            }
+            else if (item.IsArtist)
+            {
+                query.Artists = new[] { item.Name };
+            }
+
+            return _apiClient.GetItemsAsync(query);
         }
 
         private async Task<ItemReviewsResult> GetCriticReviews(BaseItemDto item)
@@ -321,7 +618,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
         private Task<ItemsResult> GetSoundtracks()
         {
             var item = ItemViewModel.Item;
-     
+
             var query = new ItemQuery
             {
                 UserId = _sessionManager.CurrentUser.Id,

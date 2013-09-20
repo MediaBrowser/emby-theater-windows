@@ -105,7 +105,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
                 ImageWidth = 550
             };
 
-            return new DetailPage(itemViewModel)
+            return new DetailPage(itemViewModel, _presentationManager)
             {
                 DataContext = new DetailPageViewModel(itemViewModel, _apiClient, _sessionManager, _imageManager, _presentationManager, _playbackManager, _navService, _logger)
             };

@@ -32,13 +32,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MediaBrowser.Common, Version=3.0.5004.37663, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.Common, Version=3.0.5010.36461, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.3.0.199\lib\net45\MediaBrowser.Common.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.204\lib\net45\MediaBrowser.Common.dll</HintPath>
     </Reference>
-    <Reference Include="MediaBrowser.Model, Version=3.0.5004.37663, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.Model, Version=3.0.5010.36461, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.3.0.199\lib\net45\MediaBrowser.Model.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.204\lib\net45\MediaBrowser.Model.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -69,8 +69,9 @@
     <Compile Include="Plugins\IHasThumbImage.cs" />
     <Compile Include="Presentation\IAppFactory.cs" />
     <Compile Include="Presentation\IFullscreenVideoPage.cs" />
-    <Compile Include="Presentation\IHomePage.cs" />
+    <Compile Include="Presentation\IHomePageInfo.cs" />
     <Compile Include="Presentation\IItemPage.cs" />
+    <Compile Include="Presentation\ILoginPage.cs" />
     <Compile Include="Presentation\ISupportsBackdrops.cs" />
     <Compile Include="Presentation\ISupportsThemeMedia.cs" />
     <Compile Include="Presentation\IPresentationManager.cs" />

@@ -32,7 +32,7 @@ namespace MediaBrowser.Theater.Interfaces.Presentation
         /// Gets the home pages.
         /// </summary>
         /// <value>The home pages.</value>
-        IEnumerable<IHomePage> HomePages { get; }
+        IEnumerable<IHomePageInfo> HomePages { get; }
 
         /// <summary>
         /// Occurs when [window loaded].
@@ -111,7 +111,7 @@ namespace MediaBrowser.Theater.Interfaces.Presentation
         /// <param name="appFactories">The app factories.</param>
         /// <param name="settingsPages">The settings pages.</param>
         /// <param name="homePages">The home pages.</param>
-        void AddParts(IEnumerable<IAppFactory> appFactories, IEnumerable<ISettingsPage> settingsPages, IEnumerable<IHomePage> homePages);
+        void AddParts(IEnumerable<IAppFactory> appFactories, IEnumerable<ISettingsPage> settingsPages, IEnumerable<IHomePageInfo> homePages);
 
         /// <summary>
         /// Adds the resource dictionary.

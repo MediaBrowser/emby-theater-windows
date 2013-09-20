@@ -16,7 +16,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Media;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Home
 {
@@ -101,13 +100,38 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             LoadViewModels();
         }
 
+        private CancellationTokenSource _mainViewCancellationTokenSource;
+        private void DisposeMainViewCancellationTokenSource(bool cancel)
+        {
+            if (_mainViewCancellationTokenSource != null)
+            {
+                if (cancel)
+                {
+                    try
+                    {
+                        _mainViewCancellationTokenSource.Cancel();
+                    }
+                    catch (ObjectDisposedException)
+                    {
+                        
+                    }
+                }
+                _mainViewCancellationTokenSource.Dispose();
+                _mainViewCancellationTokenSource = null;
+            }
+        }
+
         private async void LoadViewModels()
         {
             PresentationManager.ShowLoadingAnimation();
 
+            var cancellationSource = _mainViewCancellationTokenSource = new CancellationTokenSource();
+
             try
             {
-                var view = await ApiClient.GetTvView(_sessionManager.CurrentUser.Id, CancellationToken.None);
+                var view = await ApiClient.GetTvView(_sessionManager.CurrentUser.Id, cancellationSource.Token);
+
+                cancellationSource.Token.ThrowIfCancellationRequested();
 
                 LoadSpotlightViewModel(view);
                 LoadAllShowsViewModel(view);
@@ -122,6 +146,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             finally
             {
                 PresentationManager.HideLoadingAnimation();
+                DisposeMainViewCancellationTokenSource(false);
             }
         }
 
@@ -498,6 +523,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 NextUpViewModel.Dispose();
             }
+            DisposeMainViewCancellationTokenSource(true);
         }
     }
 }

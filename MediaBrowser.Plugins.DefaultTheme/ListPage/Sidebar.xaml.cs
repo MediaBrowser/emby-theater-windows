@@ -76,7 +76,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
 
         private async void UpdateLogo(ItemViewModel viewModel, BaseItemDto item)
         {
-            DisposeLogoCancellationToken(_logoCancellationTokenSource);
+            DisposeLogoCancellationToken(_logoCancellationTokenSource, true);
 
             if (string.Equals(viewModel.ViewType, ListViewTypes.List))
             {
@@ -122,7 +122,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                 }
                 finally
                 {
-                    DisposeLogoCancellationToken(tokenSource);
+                    DisposeLogoCancellationToken(tokenSource, false);
                 }
             }
             else
@@ -164,7 +164,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                 }
                 finally
                 {
-                    DisposeLogoCancellationToken(tokenSource);
+                    DisposeLogoCancellationToken(tokenSource, false);
                 }
             }
             else
@@ -173,7 +173,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
             }
         }
 
-        private void DisposeLogoCancellationToken(CancellationTokenSource current)
+        private void DisposeLogoCancellationToken(CancellationTokenSource current, bool cancel)
         {
             if (current == _logoCancellationTokenSource)
             {
@@ -182,15 +182,18 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
 
             if (current != null)
             {
-                try
+                if (cancel)
                 {
-                    current.Cancel();
-                    current.Dispose();
+                    try
+                    {
+                        current.Cancel();
+                    }
+                    catch (ObjectDisposedException)
+                    {
+
+                    }
                 }
-                catch (ObjectDisposedException)
-                {
-                    // Messy. Will move this to a view model later.
-                }
+                current.Dispose();
             }
         }
     }

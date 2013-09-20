@@ -63,7 +63,7 @@ namespace MediaBrowser.UI.Implementations
             App.Instance.ApplicationWindow.PageContent.Content = null;
         }
 
-        public IEnumerable<IHomePage> HomePages { get; private set; }
+        public IEnumerable<IHomePageInfo> HomePages { get; private set; }
 
         /// <summary>
         /// Gets the window.
@@ -158,7 +158,7 @@ namespace MediaBrowser.UI.Implementations
         /// <param name="apps">The apps.</param>
         /// <param name="settingsPages">The settings pages.</param>
         /// <param name="homePages">The home pages.</param>
-        public void AddParts(IEnumerable<IAppFactory> apps, IEnumerable<ISettingsPage> settingsPages, IEnumerable<IHomePage> homePages)
+        public void AddParts(IEnumerable<IAppFactory> apps, IEnumerable<ISettingsPage> settingsPages, IEnumerable<IHomePageInfo> homePages)
         {
             AppFactories = apps;
             SettingsPages = settingsPages;

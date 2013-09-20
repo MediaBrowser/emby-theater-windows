@@ -29,4 +29,29 @@ namespace MediaBrowser.Theater.Presentation.Controls
             return _converter;
         }
     }
+
+    public class LowerCaseConverter : MarkupExtension, IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            var str = value as string;
+
+            return str != null ? str.ToLower(culture) : value;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+
+        private static LowerCaseConverter _converter;
+        public override object ProvideValue(IServiceProvider serviceProvider)
+        {
+            if (_converter == null)
+            {
+                _converter = new LowerCaseConverter();
+            }
+            return _converter;
+        }
+    }
 }

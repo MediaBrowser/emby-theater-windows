@@ -12,7 +12,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
     /// <summary>
     /// Interaction logic for HomePage.xaml
     /// </summary>
-    public partial class HomePage : BasePage, ISupportsBackdrops, IItemPage
+    public partial class HomePage : BasePage, ISupportsBackdrops, IItemPage, IHomePage
     {
         /// <summary>
         /// Gets the application window.

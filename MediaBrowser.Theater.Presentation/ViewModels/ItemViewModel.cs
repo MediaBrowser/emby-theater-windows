@@ -123,11 +123,31 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             OnPropertyChanged("IsPlayed");
         }
 
+        /// <summary>
+        /// A property that can be used by page developers
+        /// </summary>
+        public string ListType { get; set; }
+
+        public bool CanBeMarkedPlayed
+        {
+            get { return Item.IsFolder || !string.IsNullOrEmpty(Item.MediaType); }
+        }
+
+        public string StudioLabelSingular
+        {
+            get { return Item.IsType("series") ? "Network" : "Studio"; }
+        }
+
+        public string StudioLabelPlural
+        {
+            get { return Item.IsType("series") ? "Networks" : "Studios"; }
+        }
+
         public bool CanPlay
         {
             get
             {
-                return _item != null && !_item.IsFolder;
+                return _item != null && !_item.IsFolder && !string.IsNullOrEmpty(Item.MediaType);
             }
         }
 

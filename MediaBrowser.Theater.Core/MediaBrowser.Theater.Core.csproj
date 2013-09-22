@@ -103,6 +103,7 @@
     <Compile Include="MediaPlayers\ConfigureMediaPlayerPage.xaml.cs">
       <DependentUpon>ConfigureMediaPlayerPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MediaPlayers\DefaultCommandArgs.cs" />
     <Compile Include="MediaPlayers\MediaPlayersPage.xaml.cs">
       <DependentUpon>MediaPlayersPage.xaml</DependentUpon>
     </Compile>

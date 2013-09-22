@@ -84,7 +84,30 @@ namespace MediaBrowser.Theater.Core.MediaPlayers
             SelectPlayer.SelectedItemChanged += SelectPlayer_SelectedItemChanged;
             SelectMediaType.SelectedItemChanged += SelectMediaType_SelectedItemChanged;
             SelectGameSystem.SelectedItemChanged += SelectGameSystem_SelectedItemChanged;
+            TxtPath.TextChanged += TxtPath_TextChanged;
             BtnSubmit.Click += BtnSubmit_Click;
+        }
+
+        void TxtPath_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var path = TxtPath.Text;
+
+            if (!string.IsNullOrEmpty(path))
+            {
+                try
+                {
+                    var args = DefaultCommandArgs.GetDefaultArgs(path);
+
+                    if (!string.IsNullOrEmpty(args))
+                    {
+                        TxtArgs.Text = args;
+                    }
+                }
+                catch (ArgumentException)
+                {
+                    // No biggie
+                }
+            }
         }
 
         void SelectGameSystem_SelectedItemChanged(object sender, EventArgs e)

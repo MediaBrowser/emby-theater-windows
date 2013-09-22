@@ -17,6 +17,6 @@
             </controls:TransitionControl.TransitionAnimation>
         </controls:TransitionControl>
 
-        <TextBlock Style="{DynamicResource Heading1TextBlockStyle}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0 0 90 50" Text="{Binding CurrentText}" FontFamily="Segoe UI" FontWeight="ExtraBold" FontSize="130" Foreground="#eee" Opacity=".9"></TextBlock>
+        <TextBlock Style="{DynamicResource Heading1TextBlockStyle}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0 0 90 50" Text="{Binding CurrentText}" FontFamily="Segoe UI" FontWeight="ExtraBold" FontSize="120" Foreground="#eee" Opacity=".9"></TextBlock>
     </Grid>
 </UserControl>

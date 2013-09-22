@@ -891,7 +891,14 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         {
             try
             {
-                _item.UserData = await _apiClient.UpdatePlayedStatusAsync(_item.Id, _apiClient.CurrentUserId, !IsPlayed);
+                if (IsPlayed)
+                {
+                    _item.UserData = await _apiClient.MarkUnplayedAsync(_item.Id, _apiClient.CurrentUserId);
+                }
+                else
+                {
+                    _item.UserData = await _apiClient.MarkPlayedAsync(_item.Id, _apiClient.CurrentUserId, null);
+                }
 
                 RefreshUserDataFields();
             }

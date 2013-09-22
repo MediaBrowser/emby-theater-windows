@@ -1,5 +1,4 @@
-﻿using System.Threading;
-using MediaBrowser.ApiInteraction;
+﻿using MediaBrowser.ApiInteraction;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Constants;
 using MediaBrowser.Common.Implementations;
@@ -7,6 +6,7 @@ using MediaBrowser.Common.Implementations.IO;
 using MediaBrowser.Common.Implementations.ScheduledTasks;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.IO;
+using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.System;
 using MediaBrowser.Model.Updates;
 using MediaBrowser.Plugins.DefaultTheme;
@@ -37,6 +37,7 @@ using System.Net;
 using System.Net.Cache;
 using System.Net.Http;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MediaBrowser.UI
@@ -46,6 +47,11 @@ namespace MediaBrowser.UI
     /// </summary>
     internal class ApplicationHost : BaseApplicationHost<ApplicationPaths>
     {
+        public ApplicationHost(ApplicationPaths applicationPaths, ILogManager logManager)
+            : base(applicationPaths, logManager)
+        {
+        }
+
         /// <summary>
         /// Gets the API client.
         /// </summary>
@@ -65,11 +71,6 @@ namespace MediaBrowser.UI
         public ConfigurationManager TheaterConfigurationManager
         {
             get { return (ConfigurationManager)ConfigurationManager; }
-        }
-
-        protected override string LogFilePrefixName
-        {
-            get { return "mbt"; }
         }
 
         public override async Task Init()
@@ -186,12 +187,9 @@ namespace MediaBrowser.UI
             };
         }
 
-        /// <summary>
-        /// Restarts this instance.
-        /// </summary>
-        public override void Restart()
+        public override Task Restart()
         {
-            App.Instance.Restart();
+            return Task.Run(() => App.Instance.Dispatcher.Invoke(() => App.Instance.Restart()));
         }
 
         /// <summary>
@@ -232,7 +230,7 @@ namespace MediaBrowser.UI
 
             // DirectShow assembly
             yield return typeof(InternalDirectShowPlayer).Assembly;
-            
+
             // Presentation player assembly
             yield return typeof(GenericExternalPlayer).Assembly;
 
@@ -243,12 +241,9 @@ namespace MediaBrowser.UI
             yield return typeof(DefaultTheme).Assembly;
         }
 
-        /// <summary>
-        /// Shuts down.
-        /// </summary>
-        public override void Shutdown()
+        public override Task Shutdown()
         {
-            App.Instance.Shutdown();
+            return Task.Run(() => App.Instance.Dispatcher.Invoke(() => App.Instance.Shutdown()));
         }
 
         protected override void OnConfigurationUpdated(object sender, EventArgs e)

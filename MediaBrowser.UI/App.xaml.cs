@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using MediaBrowser.ApiInteraction;
 using MediaBrowser.Common.Constants;
+using MediaBrowser.Common.Implementations.Logging;
 using MediaBrowser.Common.Implementations.Updates;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Net;
@@ -229,7 +230,11 @@ namespace MediaBrowser.UI
         {
             try
             {
-                _appHost = new ApplicationHost();
+                var appPaths = new ApplicationPaths();
+                var logManager = new NlogManager(appPaths.LogDirectoryPath, "theater");
+                logManager.ReloadLogger(LogSeverity.Debug);
+
+                _appHost = new ApplicationHost(appPaths, logManager);
 
                 _logger = _appHost.LogManager.GetLogger("App");
 

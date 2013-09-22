@@ -497,7 +497,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         {
             var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
 
-            var displayPreferences = await PresentationManager.GetDisplayPreferences("TVActors", CancellationToken.None);
+            var displayPreferences = await PresentationManager.GetDisplayPreferences("People", CancellationToken.None);
 
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
                                       PresentationManager, _navService, _playbackManager, _logger);
@@ -634,7 +634,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         {
             var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
 
-            var displayPreferences = await PresentationManager.GetDisplayPreferences("Trailers", CancellationToken.None);
+            var displayPreferences = await PresentationManager.GetDisplayPreferences("Movies", CancellationToken.None);
 
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
                                       PresentationManager, _navService, _playbackManager, _logger);
@@ -712,7 +712,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         {
             var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
 
-            var displayPreferences = await PresentationManager.GetDisplayPreferences("AllMovies", CancellationToken.None);
+            var displayPreferences = await PresentationManager.GetDisplayPreferences("Movies", CancellationToken.None);
 
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
                                       PresentationManager, _navService, _playbackManager, _logger);
@@ -729,7 +729,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         {
             var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
 
-            var displayPreferences = await PresentationManager.GetDisplayPreferences("RomanticMovies", CancellationToken.None);
+            var displayPreferences = await PresentationManager.GetDisplayPreferences("Movies", CancellationToken.None);
 
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
                                       PresentationManager, _navService, _playbackManager, _logger);
@@ -792,7 +792,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         {
             var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
 
-            var displayPreferences = await PresentationManager.GetDisplayPreferences("HDMovies", CancellationToken.None);
+            var displayPreferences = await PresentationManager.GetDisplayPreferences("Movies", CancellationToken.None);
 
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
                                       PresentationManager, _navService, _playbackManager, _logger);
@@ -833,7 +833,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         {
             var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
 
-            var displayPreferences = await PresentationManager.GetDisplayPreferences("FamilyMovies", CancellationToken.None);
+            var displayPreferences = await PresentationManager.GetDisplayPreferences("Movies", CancellationToken.None);
 
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
                                       PresentationManager, _navService, _playbackManager, _logger);
@@ -874,7 +874,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         {
             var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
 
-            var displayPreferences = await PresentationManager.GetDisplayPreferences("3DMovies", CancellationToken.None);
+            var displayPreferences = await PresentationManager.GetDisplayPreferences("Movies", CancellationToken.None);
 
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
                                       PresentationManager, _navService, _playbackManager, _logger);

@@ -305,7 +305,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         {
             var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
 
-            var displayPreferences = await PresentationManager.GetDisplayPreferences("TVActors", CancellationToken.None);
+            var displayPreferences = await PresentationManager.GetDisplayPreferences("People", CancellationToken.None);
 
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
                                       PresentationManager, _navService, _playbackManager, _logger);
@@ -349,7 +349,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         {
             var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
 
-            var displayPreferences = await PresentationManager.GetDisplayPreferences("AllShows", CancellationToken.None);
+            var displayPreferences = await PresentationManager.GetDisplayPreferences("Shows", CancellationToken.None);
 
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
                                       PresentationManager, _navService, _playbackManager, _logger);
@@ -416,7 +416,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         {
             var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
 
-            var displayPreferences = await PresentationManager.GetDisplayPreferences("RomanticTv", CancellationToken.None);
+            var displayPreferences = await PresentationManager.GetDisplayPreferences("Shows", CancellationToken.None);
 
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
                                       PresentationManager, _navService, _playbackManager, _logger);

@@ -84,7 +84,6 @@ namespace MediaBrowser.Theater.Core.MediaPlayers
             SelectPlayer.SelectedItemChanged += SelectPlayer_SelectedItemChanged;
             SelectMediaType.SelectedItemChanged += SelectMediaType_SelectedItemChanged;
             SelectGameSystem.SelectedItemChanged += SelectGameSystem_SelectedItemChanged;
-            TxtPath.TextChanged += TxtPath_TextChanged;
             BtnSubmit.Click += BtnSubmit_Click;
         }
 
@@ -296,6 +295,8 @@ namespace MediaBrowser.Theater.Core.MediaPlayers
 
         async void ConfigureMediaPlayerPage_Loaded(object sender, RoutedEventArgs e)
         {
+            TxtPath.TextChanged -= TxtPath_TextChanged;
+            
             TxtTitle.Text = _isNew ? "Add Media Player" : "Edit Media Player";
 
             SelectMediaType_SelectedItemChanged(null, EventArgs.Empty);
@@ -333,6 +334,8 @@ namespace MediaBrowser.Theater.Core.MediaPlayers
                 SelectGameSystem.SelectedValue = systemToSelect.Value;
                 SelectGameSystem_SelectedItemChanged(null, EventArgs.Empty);
             }
+
+            TxtPath.TextChanged += TxtPath_TextChanged;
         }
 
         private IMediaPlayer SelectedPlayer

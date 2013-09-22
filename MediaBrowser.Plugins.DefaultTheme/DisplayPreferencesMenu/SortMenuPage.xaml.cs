@@ -1,8 +1,9 @@
-﻿using MediaBrowser.Model.Querying;
+﻿using MediaBrowser.Model.Entities;
 using MediaBrowser.Theater.Presentation.Pages;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -16,11 +17,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferencesMenu
         private readonly Dictionary<string, string> _sortOptions = new Dictionary<string, string>();
 
         private readonly DisplayPreferencesViewModel _displayPreferencesViewModel;
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="SortMenuPage" /> class.
         /// </summary>
-        public SortMenuPage(DisplayPreferencesViewModel displayPreferencesViewModel)
+        public SortMenuPage(DisplayPreferencesViewModel displayPreferencesViewModel, Dictionary<string,string> sortOptions)
         {
             _displayPreferencesViewModel = displayPreferencesViewModel;
             InitializeComponent();
@@ -29,11 +30,20 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferencesMenu
 
             Loaded += SortMenuPage_Loaded;
 
-            _sortOptions["Name"] = ItemSortBy.SortName;
-            _sortOptions["CommunityRating"] = ItemSortBy.CommunityRating;
-            _sortOptions["Date Added"] = ItemSortBy.DateCreated;
-            _sortOptions["Runtime"] = ItemSortBy.Runtime;
-            _sortOptions["Year"] = ItemSortBy.ProductionYear;
+            _sortOptions = sortOptions;
+
+            RadioAscending.Click += RadioAscending_Click;
+            RadioDescending.Click += RadioDescending_Click;
+        }
+
+        void RadioDescending_Click(object sender, RoutedEventArgs e)
+        {
+            _displayPreferencesViewModel.SortOrder = SortOrder.Descending;
+        }
+
+        void RadioAscending_Click(object sender, RoutedEventArgs e)
+        {
+            _displayPreferencesViewModel.SortOrder = SortOrder.Ascending;
         }
 
         void SortMenuPage_Loaded(object sender, RoutedEventArgs e)
@@ -46,7 +56,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferencesMenu
         /// </summary>
         private void AddFields()
         {
-            chkRemember.IsChecked = _displayPreferencesViewModel.RememberSorting;
+            ChkRemember.IsChecked = _displayPreferencesViewModel.RememberSorting;
 
             var index = 0;
 
@@ -78,10 +88,16 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferencesMenu
                 radio.Tag = optionValue;
                 radio.Click += radio_Click;
 
-                pnlOptions.Children.Add(radio);
+                PnlOptions.Children.Add(radio);
 
                 index++;
             }
+
+            RadioAscending.IsChecked = _displayPreferencesViewModel.DisplayPreferences.SortOrder ==
+                                       SortOrder.Ascending;
+
+            RadioDescending.IsChecked = _displayPreferencesViewModel.DisplayPreferences.SortOrder ==
+                               SortOrder.Descending;
         }
 
         /// <summary>

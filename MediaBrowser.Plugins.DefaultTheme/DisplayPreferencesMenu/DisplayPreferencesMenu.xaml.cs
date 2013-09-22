@@ -1,6 +1,7 @@
 ﻿using MediaBrowser.Theater.Presentation.Controls;
-using System.Windows;
 using MediaBrowser.Theater.Presentation.ViewModels;
+using System.Collections.Generic;
+using System.Windows;
 
 namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferencesMenu
 {
@@ -10,10 +11,13 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferencesMenu
     public partial class DisplayPreferencesMenu : BaseModalWindow
     {
         private readonly DisplayPreferencesViewModel _displayPreferencesViewModel;
+        private readonly Dictionary<string, string> _sortOptions = new Dictionary<string, string>();
 
-        public DisplayPreferencesMenu(DisplayPreferencesViewModel displayPreferencesViewModel)
+        public DisplayPreferencesMenu(DisplayPreferencesViewModel displayPreferencesViewModel, Dictionary<string, string> sortOptions)
         {
             _displayPreferencesViewModel = displayPreferencesViewModel;
+            _sortOptions = sortOptions;
+
             InitializeComponent();
 
             btnClose.Click += btnClose_Click;
@@ -63,7 +67,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferencesMenu
         /// </summary>
         public void NavigateToSortMenu()
         {
-            PageFrame.NavigateWithTransition(new SortMenuPage(_displayPreferencesViewModel));
+            PageFrame.NavigateWithTransition(new SortMenuPage(_displayPreferencesViewModel, _sortOptions));
         }
     }
 }

@@ -48,6 +48,22 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
+        public SortOrder SortOrder
+        {
+            get { return DisplayPreferences.SortOrder; }
+            set
+            {
+                var changed = DisplayPreferences.SortOrder != value;
+
+                DisplayPreferences.SortOrder = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("SortOrder");
+                }
+            }
+        }
+
         public int PrimaryImageWidth
         {
             get { return DisplayPreferences.PrimaryImageWidth; }

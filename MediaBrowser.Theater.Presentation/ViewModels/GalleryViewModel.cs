@@ -45,6 +45,23 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
+        private string _name;
+        public string Name
+        {
+            get { return _name; }
+
+            set
+            {
+                var changed = !string.Equals(_name, value);
+                _name = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("Name");
+                }
+            }
+        }
+
         private int? _imageWidth;
         public int? ImageWidth
         {

@@ -35,6 +35,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         public ImageViewerViewModel SpotlightViewModel { get; private set; }
         public GalleryViewModel RomanticSeriesViewModel { get; private set; }
+        public GalleryViewModel ComedyItemsViewModel { get; private set; }
 
         public TvViewModel(IPresentationManager presentation, IImageManager imageManager, IApiClient apiClient, ISessionManager session, INavigationService nav, IPlaybackManager playback, ILogger logger, double tileWidth, double tileHeight)
             : base(presentation, apiClient)
@@ -87,6 +88,13 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 CustomCommandAction = () => NavigateWithLoading(NavigateToRomanticTvInternal)
             };
 
+            ComedyItemsViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
+            {
+                GalleryHeight = TileHeight,
+                GalleryWidth = TileWidth * 10 / 16,
+                CustomCommandAction = () => NavigateWithLoading(NavigateToComedySeriesInternal)
+            };
+
             var spotlightTileWidth = TileWidth * 2 + TilePadding;
             var spotlightTileHeight = spotlightTileWidth * 9 / 16;
 
@@ -136,6 +144,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 LoadSpotlightViewModel(view);
                 LoadAllShowsViewModel(view);
                 LoadRomanticSeriesViewModel(view);
+                LoadComedySeriesViewModel(view);
                 LoadActorsViewModel(view);
             }
             catch (Exception ex)
@@ -214,6 +223,24 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             }
         }
 
+        private bool _showComedyItems;
+        public bool ShowComedyItems
+        {
+            get { return _showComedyItems; }
+
+            set
+            {
+                var changed = _showComedyItems != value;
+
+                _showComedyItems = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("ShowComedyItems");
+                }
+            }
+        }
+
         private void LoadSpotlightViewModel(TvView view)
         {
             const ImageType imageType = ImageType.Backdrop;
@@ -287,6 +314,36 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             RomanticSeriesViewModel.AddImages(images);
         }
 
+        private void LoadComedySeriesViewModel(TvView view)
+        {
+            var now = DateTime.Now;
+
+            if (now.DayOfWeek == DayOfWeek.Thursday)
+            {
+                ShowComedyItems = view.ComedyItems.Length > 0 && now.Hour >= 12;
+                ComedyItemsViewModel.Name = "Comedy Night";
+            }
+            else if (now.DayOfWeek == DayOfWeek.Sunday)
+            {
+                ShowComedyItems = view.ComedyItems.Length > 0;
+                ComedyItemsViewModel.Name = "Sunday Funnies";
+            }
+            else
+            {
+                ShowComedyItems = false;
+            }
+
+            var images = view.ComedyItems.Take(1).Select(i => ApiClient.GetImageUrl(i.Id, new ImageOptions
+            {
+                ImageType = i.ImageType,
+                Tag = i.ImageTag,
+                Width = Convert.ToInt32(TileWidth * 2),
+                EnableImageEnhancers = false
+            }));
+
+            ComedyItemsViewModel.AddImages(images);
+        }
+
         private async void NavigateToActors()
         {
             PresentationManager.ShowLoadingAnimation();
@@ -310,6 +367,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
                                       PresentationManager, _navService, _playbackManager, _logger);
 
+            var sortOptions = new Dictionary<string, string>();
+            sortOptions["Name"] = ItemSortBy.SortName;
+            sortOptions["Series count"] = ItemSortBy.SeriesCount;
+            sortOptions["Episode count"] = ItemSortBy.EpisodeCount;
+
+            page.SortOptions = sortOptions;
             page.CustomPageTitle = "TV | Actors";
 
             page.ViewType = ViewType.Tv;
@@ -354,12 +417,69 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
                                       PresentationManager, _navService, _playbackManager, _logger);
 
+            page.SortOptions = GetSeriesSortOptions();
             page.CustomPageTitle = "TV Shows";
 
             page.ViewType = ViewType.Tv;
             page.CustomItemQuery = GetAllShows;
 
             await _navService.Navigate(page);
+        }
+
+        private Dictionary<string, string> GetSeriesSortOptions()
+        {
+            var sortOptions = new Dictionary<string, string>();
+            sortOptions["Name"] = ItemSortBy.SortName;
+
+            sortOptions["Community rating"] = ItemSortBy.CommunityRating;
+            sortOptions["Date added"] = ItemSortBy.DateCreated;
+            sortOptions["Parental rating"] = ItemSortBy.OfficialRating;
+            sortOptions["Premiere date"] = ItemSortBy.PremiereDate;
+            sortOptions["Runtime"] = ItemSortBy.Runtime;
+
+            return sortOptions;
+        }
+
+        private async Task NavigateToComedySeriesInternal()
+        {
+            var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
+
+            var displayPreferences = await PresentationManager.GetDisplayPreferences("Shows", CancellationToken.None);
+
+            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
+                                      PresentationManager, _navService, _playbackManager, _logger);
+
+            page.SortOptions = GetSeriesSortOptions();
+            page.CustomPageTitle = "Comedy Night";
+
+            page.ViewType = ViewType.Movies;
+            page.CustomItemQuery = GetComedySeries;
+
+            await _navService.Navigate(page);
+        }
+
+        private Task<ItemsResult> GetComedySeries(DisplayPreferences displayPreferences)
+        {
+            var query = new ItemQuery
+            {
+                Fields = FolderPage.QueryFields,
+
+                UserId = _sessionManager.CurrentUser.Id,
+
+                IncludeItemTypes = new[] { "Series" },
+
+                Genres = new[] { ApiClientExtensions.ComedyGenre },
+
+                SortBy = !String.IsNullOrEmpty(displayPreferences.SortBy)
+                             ? new[] { displayPreferences.SortBy }
+                             : new[] { ItemSortBy.SortName },
+
+                SortOrder = displayPreferences.SortOrder,
+
+                Recursive = true
+            };
+
+            return ApiClient.GetItemsAsync(query);
         }
 
         private Task<ItemsResult> GetAllShows(DisplayPreferences displayPreferences)
@@ -421,6 +541,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
                                       PresentationManager, _navService, _playbackManager, _logger);
 
+            page.SortOptions = GetSeriesSortOptions();
             page.CustomPageTitle = "Date Night";
 
             page.ViewType = ViewType.Tv;

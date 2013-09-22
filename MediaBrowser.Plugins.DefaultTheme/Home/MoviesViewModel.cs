@@ -42,7 +42,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         public GalleryViewModel HDMoviesViewModel { get; private set; }
         public GalleryViewModel ThreeDMoviesViewModel { get; private set; }
         public GalleryViewModel FamilyMoviesViewModel { get; private set; }
-
+        public GalleryViewModel ComedyItemsViewModel { get; private set; }
         public GalleryViewModel RomanticMoviesViewModel { get; private set; }
 
         public MoviesViewModel(IPresentationManager presentation, IImageManager imageManager, IApiClient apiClient, ISessionManager session, INavigationService nav, IPlaybackManager playback, ILogger logger, double tileWidth, double tileHeight)
@@ -146,6 +146,13 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 CustomCommandAction = () => NavigateWithLoading(NavigateToRomanticMoviesInternal)
             };
 
+            ComedyItemsViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
+            {
+                GalleryHeight = TileHeight,
+                GalleryWidth = TileWidth * 10 / 16,
+                CustomCommandAction = () => NavigateWithLoading(NavigateToComedyMoviesInternal)
+            };
+
             var spotlightTileWidth = TileWidth * 2 + TilePadding;
             var spotlightTileHeight = spotlightTileWidth * 9 / 16;
 
@@ -163,9 +170,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         {
             PresentationManager.ShowLoadingAnimation();
 
+            var cancellationSource = _mainViewCancellationTokenSource = new CancellationTokenSource();
+            
             try
             {
-                var view = await ApiClient.GetMovieView(_sessionManager.CurrentUser.Id, CancellationToken.None);
+                var view = await ApiClient.GetMovieView(_sessionManager.CurrentUser.Id, cancellationSource.Token);
 
                 LoadSpotlightViewModel(view);
                 LoadBoxsetsViewModel(view);
@@ -174,6 +183,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 LoadHDMoviesViewModel(view);
                 LoadFamilyMoviesViewModel(view);
                 Load3DMoviesViewModel(view);
+                LoadComedyMoviesViewModel(view);
                 LoadRomanticMoviesViewModel(view);
                 LoadActorsViewModel(view);
             }
@@ -185,6 +195,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             finally
             {
                 PresentationManager.HideLoadingAnimation();
+                DisposeMainViewCancellationTokenSource(false);
             }
         }
 
@@ -325,6 +336,24 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 if (changed)
                 {
                     OnPropertyChanged("ShowRomanticMovies");
+                }
+            }
+        }
+
+        private bool _showComedyItems;
+        public bool ShowComedyItems
+        {
+            get { return _showComedyItems; }
+
+            set
+            {
+                var changed = _showComedyItems != value;
+
+                _showComedyItems = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("ShowComedyItems");
                 }
             }
         }
@@ -502,7 +531,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
                                       PresentationManager, _navService, _playbackManager, _logger);
 
-            page.CustomPageTitle = "TV | Actors";
+            var sortOptions = new Dictionary<string, string>();
+            sortOptions["Name"] = ItemSortBy.SortName;
+            sortOptions["Movie count"] = ItemSortBy.MovieCount;
+            sortOptions["Trailer count"] = ItemSortBy.TrailerCount;
+            
+            page.CustomPageTitle = "Movies | People";
 
             page.ViewType = ViewType.Movies;
             page.CustomItemQuery = GetAllActors;
@@ -568,6 +602,36 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             }));
 
             RomanticMoviesViewModel.AddImages(images);
+        }
+
+        private void LoadComedyMoviesViewModel(MoviesView view)
+        {
+            var now = DateTime.Now;
+
+            if (now.DayOfWeek == DayOfWeek.Thursday)
+            {
+                ShowComedyItems = view.ComedyItems.Length > 0 && now.Hour >= 12;
+                ComedyItemsViewModel.Name = "Comedy Night";
+            }
+            else if (now.DayOfWeek == DayOfWeek.Sunday)
+            {
+                ShowComedyItems = view.ComedyItems.Length > 0;
+                ComedyItemsViewModel.Name = "Sunday Funnies";
+            }
+            else
+            {
+                ShowComedyItems = false;
+            }
+
+            var images = view.ComedyItems.Take(1).Select(i => ApiClient.GetImageUrl(i.Id, new ImageOptions
+            {
+                ImageType = i.ImageType,
+                Tag = i.ImageTag,
+                Width = Convert.ToInt32(TileWidth * 2),
+                EnableImageEnhancers = false
+            }));
+
+            ComedyItemsViewModel.AddImages(images);
         }
 
         private void LoadFamilyMoviesViewModel(MoviesView view)
@@ -639,6 +703,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
                                       PresentationManager, _navService, _playbackManager, _logger);
 
+            page.SortOptions = GetMovieSortOptions();
             page.CustomPageTitle = "Trailers";
 
             page.ViewType = ViewType.Movies;
@@ -717,6 +782,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
                                       PresentationManager, _navService, _playbackManager, _logger);
 
+            page.SortOptions = GetMovieSortOptions();
             page.CustomPageTitle = "Movies";
 
             page.ViewType = ViewType.Movies;
@@ -734,6 +800,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
                                       PresentationManager, _navService, _playbackManager, _logger);
 
+            page.SortOptions = GetMovieSortOptions();
             page.CustomPageTitle = "Date Night";
 
             page.ViewType = ViewType.Movies;
@@ -753,6 +820,48 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 IncludeItemTypes = new[] { "Movie" },
 
                 Genres = new[] { ApiClientExtensions.RomanceGenre },
+
+                SortBy = !String.IsNullOrEmpty(displayPreferences.SortBy)
+                             ? new[] { displayPreferences.SortBy }
+                             : new[] { ItemSortBy.SortName },
+
+                SortOrder = displayPreferences.SortOrder,
+
+                Recursive = true
+            };
+
+            return ApiClient.GetItemsAsync(query);
+        }
+
+        private async Task NavigateToComedyMoviesInternal()
+        {
+            var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
+
+            var displayPreferences = await PresentationManager.GetDisplayPreferences("Movies", CancellationToken.None);
+
+            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
+                                      PresentationManager, _navService, _playbackManager, _logger);
+
+            page.SortOptions = GetMovieSortOptions();
+            page.CustomPageTitle = "Comedy Night";
+
+            page.ViewType = ViewType.Movies;
+            page.CustomItemQuery = GetComedyMovies;
+
+            await _navService.Navigate(page);
+        }
+
+        private Task<ItemsResult> GetComedyMovies(DisplayPreferences displayPreferences)
+        {
+            var query = new ItemQuery
+            {
+                Fields = FolderPage.QueryFields,
+
+                UserId = _sessionManager.CurrentUser.Id,
+
+                IncludeItemTypes = new[] { "Movie" },
+
+                Genres = new[] { ApiClientExtensions.ComedyGenre },
 
                 SortBy = !String.IsNullOrEmpty(displayPreferences.SortBy)
                              ? new[] { displayPreferences.SortBy }
@@ -797,6 +906,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
                                       PresentationManager, _navService, _playbackManager, _logger);
 
+            page.SortOptions = GetMovieSortOptions();
             page.CustomPageTitle = "HD Movies";
 
             page.ViewType = ViewType.Movies;
@@ -838,6 +948,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
                                       PresentationManager, _navService, _playbackManager, _logger);
 
+            page.SortOptions = GetMovieSortOptions();
             page.CustomPageTitle = "Family Movies";
 
             page.ViewType = ViewType.Movies;
@@ -879,6 +990,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
                                       PresentationManager, _navService, _playbackManager, _logger);
 
+            page.SortOptions = GetMovieSortOptions();
             page.CustomPageTitle = "3D Movies";
 
             page.ViewType = ViewType.Movies;
@@ -937,6 +1049,42 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             return ApiClient.GetPeopleAsync(query);
         }
 
+        private Dictionary<string, string> GetMovieSortOptions()
+        {
+            var sortOptions = new Dictionary<string, string>();
+            sortOptions["Name"] = ItemSortBy.SortName;
+
+            sortOptions["Community rating"] = ItemSortBy.CommunityRating;
+            sortOptions["Critic rating"] = ItemSortBy.CriticRating;
+            sortOptions["Date added"] = ItemSortBy.DateCreated;
+            sortOptions["Parental rating"] = ItemSortBy.OfficialRating;
+            sortOptions["Release date"] = ItemSortBy.PremiereDate;
+            sortOptions["Runtime"] = ItemSortBy.Runtime;
+
+            return sortOptions;
+        }
+
+        private CancellationTokenSource _mainViewCancellationTokenSource;
+        private void DisposeMainViewCancellationTokenSource(bool cancel)
+        {
+            if (_mainViewCancellationTokenSource != null)
+            {
+                if (cancel)
+                {
+                    try
+                    {
+                        _mainViewCancellationTokenSource.Cancel();
+                    }
+                    catch (ObjectDisposedException)
+                    {
+
+                    }
+                }
+                _mainViewCancellationTokenSource.Dispose();
+                _mainViewCancellationTokenSource = null;
+            }
+        }
+        
         public void Dispose()
         {
             if (LatestTrailersViewModel != null)
@@ -947,6 +1095,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 ResumeViewModel.Dispose();
             }
+            DisposeMainViewCancellationTokenSource(true);
         }
     }
 }

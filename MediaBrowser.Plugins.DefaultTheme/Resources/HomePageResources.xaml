@@ -224,6 +224,42 @@
                     <Grid.Style>
                         <Style TargetType="{x:Type Grid}">
                             <Style.Triggers>
+                                <DataTrigger Binding="{Binding ShowComedyItems}" Value="false">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
+
+                    <controls:ExtendedButton Style="{DynamicResource BaseItemButtonStyle}" DataContext="{Binding ComedyItemsViewModel}" Command="{Binding CustomCommand}">
+
+                        <Grid Height="{Binding GalleryHeight}" Width="{Binding GalleryWidth}">
+
+                            <ItemsControl ItemsSource="{Binding ListCollectionView}" Focusable="False">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Columns="1"></UniformGrid>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Image Source="{Binding Image}" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Top"></Image>
+                                    </DataTemplate>
+
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <Border HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Background="#a6000000" Margin="0 0 0 -1">
+                                <TextBlock Text="{Binding Name}" Style="{DynamicResource SmallTextBlockStyle}" Margin="10 5 10 10"></TextBlock>
+                            </Border>
+                        </Grid>
+                    </controls:ExtendedButton>
+                </Grid>
+                
+                <Grid>
+                    <Grid.Style>
+                        <Style TargetType="{x:Type Grid}">
+                            <Style.Triggers>
                                 <DataTrigger Binding="{Binding ShowRomanticSeries}" Value="false">
                                     <Setter Property="Visibility" Value="Collapsed" />
                                 </DataTrigger>
@@ -503,6 +539,42 @@
                         </Border>
                     </Grid>
                 </controls:ExtendedButton>
+
+                <Grid>
+                    <Grid.Style>
+                        <Style TargetType="{x:Type Grid}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ShowComedyItems}" Value="false">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
+
+                    <controls:ExtendedButton Style="{DynamicResource BaseItemButtonStyle}" DataContext="{Binding ComedyItemsViewModel}" Command="{Binding CustomCommand}">
+
+                        <Grid Height="{Binding GalleryHeight}" Width="{Binding GalleryWidth}">
+
+                            <ItemsControl ItemsSource="{Binding ListCollectionView}" Focusable="False">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Columns="1"></UniformGrid>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Image Source="{Binding Image}" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Top"></Image>
+                                    </DataTemplate>
+
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <Border HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Background="#a6000000" Margin="0 0 0 -1">
+                                <TextBlock Text="{Binding Name}" Style="{DynamicResource SmallTextBlockStyle}" Margin="10 5 10 10"></TextBlock>
+                            </Border>
+                        </Grid>
+                    </controls:ExtendedButton>
+                </Grid>
 
                 <Grid>
                     <Grid.Style>

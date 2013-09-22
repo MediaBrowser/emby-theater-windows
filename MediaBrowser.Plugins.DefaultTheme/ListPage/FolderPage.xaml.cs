@@ -12,6 +12,7 @@ using MediaBrowser.Theater.Presentation.Extensions;
 using MediaBrowser.Theater.Presentation.Pages;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading;
@@ -79,6 +80,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
 
         public string CustomPageTitle { get; set; }
         public ViewType ViewType { get; set; }
+        public Dictionary<string, string> SortOptions { get; set; }
 
         private ScrollDirection GetScrollDirection(ItemListViewModel viewModel)
         {
@@ -323,7 +325,19 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
         {
             var viewModel = new DisplayPreferencesViewModel(_viewModel.DisplayPreferences, _presentationManager);
 
-            var menu = new DisplayPreferencesMenu.DisplayPreferencesMenu(viewModel);
+            var sortOptions = SortOptions;
+
+            if (sortOptions == null)
+            {
+                sortOptions = new Dictionary<string, string>();
+                sortOptions["Name"] = ItemSortBy.SortName;
+                sortOptions["CommunityRating"] = ItemSortBy.CommunityRating;
+                sortOptions["Date Added"] = ItemSortBy.DateCreated;
+                sortOptions["Runtime"] = ItemSortBy.Runtime;
+                sortOptions["Year"] = ItemSortBy.ProductionYear;
+            }
+
+            var menu = new DisplayPreferencesMenu.DisplayPreferencesMenu(viewModel, sortOptions);
 
             menu.ShowModal(this.GetWindow());
 

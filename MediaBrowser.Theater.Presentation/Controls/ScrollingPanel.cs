@@ -16,10 +16,6 @@ namespace MediaBrowser.Theater.Presentation.Controls
     public class ScrollingPanel : Grid, IScrollInfo
     {
         /// <summary>
-        /// The infinite size
-        /// </summary>
-        private static Size _infiniteSize = new Size(double.PositiveInfinity, double.PositiveInfinity);
-        /// <summary>
         /// The line size
         /// </summary>
         private const double LineSize = 16;
@@ -31,15 +27,15 @@ namespace MediaBrowser.Theater.Presentation.Controls
         /// <summary>
         /// The _ offset
         /// </summary>
-        private Vector _Offset;
+        private Vector _offset;
         /// <summary>
         /// The _ extent
         /// </summary>
-        private Size _Extent;
+        private Size _extent;
         /// <summary>
         /// The _ viewport
         /// </summary>
-        private Size _Viewport;
+        private Size _viewport;
 
         /// <summary>
         /// The _ animation length
@@ -88,7 +84,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
         /// <returns><see cref="T:System.Windows.Size" /> that represents the arranged size of this Grid element and its children.</returns>
         protected override Size ArrangeOverride(Size arrangeSize)
         {
-            this.VerifyScrollData(arrangeSize, _Extent);
+            this.VerifyScrollData(arrangeSize, _extent);
 
             if (this.Children == null || this.Children.Count == 0)
             {
@@ -279,7 +275,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
         /// <value>The height of the extent.</value>
         /// <returns>A <see cref="T:System.Double" /> that represents, in device independent pixels, the vertical size of the extent.This property has no default value.</returns>
         public double ExtentHeight
-        { get { return _Extent.Height; } }
+        { get { return _extent.Height; } }
 
         /// <summary>
         /// Gets the horizontal size of the extent.
@@ -287,7 +283,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
         /// <value>The width of the extent.</value>
         /// <returns>A <see cref="T:System.Double" /> that represents, in device independent pixels, the horizontal size of the extent. This property has no default value.</returns>
         public double ExtentWidth
-        { get { return _Extent.Width; } }
+        { get { return _extent.Width; } }
 
         /// <summary>
         /// Gets the horizontal offset of the scrolled content.
@@ -295,7 +291,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
         /// <value>The horizontal offset.</value>
         /// <returns>A <see cref="T:System.Double" /> that represents, in device independent pixels, the horizontal offset. This property has no default value.</returns>
         public double HorizontalOffset
-        { get { return _Offset.X; } }
+        { get { return _offset.X; } }
 
         /// <summary>
         /// Gets the vertical offset of the scrolled content.
@@ -303,7 +299,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
         /// <value>The vertical offset.</value>
         /// <returns>A <see cref="T:System.Double" /> that represents, in device independent pixels, the vertical offset of the scrolled content. Valid values are between zero and the <see cref="P:System.Windows.Controls.Primitives.IScrollInfo.ExtentHeight" /> minus the <see cref="P:System.Windows.Controls.Primitives.IScrollInfo.ViewportHeight" />. This property has no default value.</returns>
         public double VerticalOffset
-        { get { return _Offset.Y; } }
+        { get { return _offset.Y; } }
 
         /// <summary>
         /// Gets the vertical size of the viewport for this content.
@@ -311,7 +307,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
         /// <value>The height of the viewport.</value>
         /// <returns>A <see cref="T:System.Double" /> that represents, in device independent pixels, the vertical size of the viewport for this content. This property has no default value.</returns>
         public double ViewportHeight
-        { get { return _Viewport.Height; } }
+        { get { return _viewport.Height; } }
 
         /// <summary>
         /// Gets the horizontal size of the viewport for this content.
@@ -319,7 +315,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
         /// <value>The width of the viewport.</value>
         /// <returns>A <see cref="T:System.Double" /> that represents, in device independent pixels, the horizontal size of the viewport for this content. This property has no default value.</returns>
         public double ViewportWidth
-        { get { return _Viewport.Width; } }
+        { get { return _viewport.Width; } }
 
         /// <summary>
         /// Forces content to scroll until the coordinate space of a <see cref="T:System.Windows.Media.Visual" /> object is visible.
@@ -370,8 +366,12 @@ namespace MediaBrowser.Theater.Presentation.Controls
             bool offTop = bottomChild > bottomView && topChild > topView;
             bool tooLarge = (bottomChild - topChild) > (bottomView - topView);
 
+
             if (!offBottom && !offTop)
-            { return topView; } //Don't do anything, already in view
+            {
+                //Don't do anything, already in view
+                return topView;
+            } 
 
             if ((offBottom && !tooLarge) || (offTop && tooLarge))
             { return topChild; }
@@ -392,13 +392,13 @@ namespace MediaBrowser.Theater.Presentation.Controls
             if (double.IsInfinity(viewport.Height))
             { viewport.Height = extent.Height; }
 
-            _Extent = extent;
-            _Viewport = viewport;
+            _extent = extent;
+            _viewport = viewport;
 
-            _Offset.X = Math.Max(0,
-              Math.Min(_Offset.X, ExtentWidth - ViewportWidth));
-            _Offset.Y = Math.Max(0,
-              Math.Min(_Offset.Y, ExtentHeight - ViewportHeight));
+            _offset.X = Math.Max(0,
+              Math.Min(_offset.X, ExtentWidth - ViewportWidth));
+            _offset.Y = Math.Max(0,
+              Math.Min(_offset.Y, ExtentHeight - ViewportHeight));
 
             if (ScrollOwner != null)
             { ScrollOwner.InvalidateScrollInfo(); }
@@ -410,11 +410,11 @@ namespace MediaBrowser.Theater.Presentation.Controls
         /// <param name="offset">The degree to which content is horizontally offset from the containing viewport.</param>
         public void SetHorizontalOffset(double offset)
         {
-            offset = Math.Max(0,
-              Math.Min(offset, ExtentWidth - ViewportWidth));
-            if (!offset.Equals(_Offset.X))
+            offset = Math.Max(0, Math.Min(offset, ExtentWidth - ViewportWidth));
+
+            if (!offset.Equals(_offset.X))
             {
-                _Offset.X = offset;
+                _offset.X = offset;
                 InvalidateArrange();
             }
         }
@@ -425,11 +425,11 @@ namespace MediaBrowser.Theater.Presentation.Controls
         /// <param name="offset">The degree to which content is vertically offset from the containing viewport.</param>
         public void SetVerticalOffset(double offset)
         {
-            offset = Math.Max(0,
-              Math.Min(offset, ExtentHeight - ViewportHeight));
-            if (!offset.Equals(_Offset.Y))
+            offset = Math.Max(0, Math.Min(offset, ExtentHeight - ViewportHeight));
+
+            if (!offset.Equals(_offset.Y))
             {
-                _Offset.Y = offset;
+                _offset.Y = offset;
                 InvalidateArrange();
             }
         }

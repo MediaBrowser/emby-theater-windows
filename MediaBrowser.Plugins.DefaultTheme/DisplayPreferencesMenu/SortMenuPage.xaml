@@ -4,16 +4,26 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                 xmlns:pages="clr-namespace:MediaBrowser.Theater.Presentation.Pages;assembly=MediaBrowser.Theater.Presentation"
-                                 mc:Ignorable="d" 
+                xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
+                mc:Ignorable="d" 
       d:DesignHeight="300" d:DesignWidth="300"
 	Title="SortMenuPage">
 
     <Grid>
         <StackPanel Orientation="Vertical">
             <TextBlock Style="{DynamicResource Heading2TextBlockStyle}">Sort By</TextBlock>
-            <StackPanel x:Name="pnlOptions" Orientation="Vertical"></StackPanel>
-            <CheckBox x:Name="chkRemember" Margin="0 50 0 0" IsChecked="{Binding RememberSorting}">
-                <TextBlock Text="Remember Sorting" Style="{DynamicResource TextBlockStyle}"></TextBlock>
+            <StackPanel x:Name="PnlOptions" Orientation="Vertical"></StackPanel>
+
+            <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Row="2" Grid.Column="0" Margin="0 30 0 0">Sort Order</TextBlock>
+            <RadioButton x:Name="RadioAscending" GroupName="SortOrder" Margin="0 25 0 0">
+                <TextBlock Style="{DynamicResource TextBlockStyle}">Ascending</TextBlock>
+            </RadioButton>
+            <RadioButton x:Name="RadioDescending" GroupName="SortOrder" Margin="0 20 0 0">
+                <TextBlock Style="{DynamicResource TextBlockStyle}">Descending</TextBlock>
+            </RadioButton>
+
+            <CheckBox x:Name="ChkRemember" Margin="0 30 0 0" IsChecked="{Binding RememberSorting}">
+                <TextBlock Text="Remember sorting" Style="{DynamicResource TextBlockStyle}"></TextBlock>
             </CheckBox>
         </StackPanel>
     </Grid>

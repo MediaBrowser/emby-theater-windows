@@ -66,9 +66,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         {
             PresentationManager.ShowLoadingAnimation();
 
+            var cancellationSource = _mainViewCancellationTokenSource = new CancellationTokenSource();
+            
             try
             {
-                var view = await ApiClient.GetGamesView(_sessionManager.CurrentUser.Id, CancellationToken.None);
+                var view = await ApiClient.GetGamesView(_sessionManager.CurrentUser.Id, cancellationSource.Token);
 
                 LoadSpotlightViewModel(view);
             }
@@ -80,6 +82,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             finally
             {
                 PresentationManager.HideLoadingAnimation();
+                DisposeMainViewCancellationTokenSource(false);
             }
         }
 
@@ -126,7 +129,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
                 SortBy = new[] { ItemSortBy.SortName },
 
-                IncludeItemTypes = new[] { "GamePlatform" },
+                IncludeItemTypes = new[] { "GameSystem" },
 
                 Recursive = true
             };
@@ -134,12 +137,34 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             return ApiClient.GetItemsAsync(query);
         }
 
+        private CancellationTokenSource _mainViewCancellationTokenSource;
+        private void DisposeMainViewCancellationTokenSource(bool cancel)
+        {
+            if (_mainViewCancellationTokenSource != null)
+            {
+                if (cancel)
+                {
+                    try
+                    {
+                        _mainViewCancellationTokenSource.Cancel();
+                    }
+                    catch (ObjectDisposedException)
+                    {
+
+                    }
+                }
+                _mainViewCancellationTokenSource.Dispose();
+                _mainViewCancellationTokenSource = null;
+            }
+        }
+        
         public void Dispose()
         {
             if (SpotlightViewModel != null)
             {
                 SpotlightViewModel.Dispose();
             }
+            DisposeMainViewCancellationTokenSource(true);
         }
     }
 }

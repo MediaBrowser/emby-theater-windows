@@ -526,6 +526,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
                 Recursive = true,
 
+                UserId = _sessionManager.CurrentUser.Id,
+
                 PersonTypes = new[] { PersonType.Actor, PersonType.GuestStar }
             };
 

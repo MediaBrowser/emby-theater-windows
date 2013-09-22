@@ -228,7 +228,13 @@
                                 <DataTrigger Binding="{Binding IsInProgress}" Value="False">
                                     <Setter Property="Visibility" Value="Collapsed" />
                                 </DataTrigger>
-                                <DataTrigger Binding="{Binding IsFolder}" Value="True">
+                                <DataTrigger Binding="{Binding ItemType}" Value="Series">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding ItemType}" Value="MusicAlbum">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding ItemType}" Value="GameSystem">
                                     <Setter Property="Visibility" Value="Collapsed" />
                                 </DataTrigger>
                             </Style.Triggers>

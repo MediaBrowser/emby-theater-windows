@@ -412,7 +412,7 @@ namespace MediaBrowser.Theater.Presentation.Playback
                 paths = paths.Take(1);
             }
 
-            return string.Format(formatString, string.Join(" ", paths.ToArray()));
+            return formatString.Replace("{PATH}", string.Join(" ", paths.ToArray()));
         }
 
         /// <summary>

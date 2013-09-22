@@ -1,4 +1,7 @@
-﻿using MediaBrowser.Model.Entities;
+﻿using System.Threading.Tasks;
+using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Dto;
+using MediaBrowser.Model.Entities;
 using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
@@ -10,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -27,20 +31,24 @@ namespace MediaBrowser.Theater.Core.MediaPlayers
         private readonly ITheaterConfigurationManager _config;
         private readonly IPresentationManager _presentation;
         private readonly INavigationService _nav;
+        private readonly IApiClient _apiClient;
 
-        public ConfigureMediaPlayerPage(IPlaybackManager playbackManager, ITheaterConfigurationManager config, IPresentationManager presentation, INavigationService nav)
-            : this(new PlayerConfiguration(), playbackManager, config, presentation, nav)
+        private List<GameSystemSummary> _gameSystems;
+
+        public ConfigureMediaPlayerPage(IPlaybackManager playbackManager, ITheaterConfigurationManager config, IPresentationManager presentation, INavigationService nav, IApiClient apiClient)
+            : this(new PlayerConfiguration(), playbackManager, config, presentation, nav, apiClient)
         {
             _isNew = true;
         }
 
-        public ConfigureMediaPlayerPage(PlayerConfiguration playerConfig, IPlaybackManager playbackManager, ITheaterConfigurationManager config, IPresentationManager presentation, INavigationService nav)
+        public ConfigureMediaPlayerPage(PlayerConfiguration playerConfig, IPlaybackManager playbackManager, ITheaterConfigurationManager config, IPresentationManager presentation, INavigationService nav, IApiClient apiClient)
         {
             _playerConfig = playerConfig;
             _playbackManager = playbackManager;
             _config = config;
             _presentation = presentation;
             _nav = nav;
+            _apiClient = apiClient;
 
             InitializeComponent();
         }
@@ -54,12 +62,16 @@ namespace MediaBrowser.Theater.Core.MediaPlayers
         {
             base.OnInitialized(e);
 
-            SelectPlayer.Options = ConfigurablePlayers.Select(i => new SelectListItem
+            var mediaTypes = new[] { MediaType.Video, MediaType.Audio, MediaType.Game, MediaType.Book };
+
+            SelectMediaType.Options = mediaTypes.Select(i => new SelectListItem
             {
-                Text = i.Name,
-                Value = i.Name
+                Text = i,
+                Value = i
 
             }).ToList();
+
+            SelectMediaType.SelectedValue = SelectMediaType.Options[0].Value;
 
             SelectIsoSupport.Options = new List<SelectListItem>
                 {
@@ -71,7 +83,58 @@ namespace MediaBrowser.Theater.Core.MediaPlayers
             Loaded += ConfigureMediaPlayerPage_Loaded;
             SelectPlayer.SelectedItemChanged += SelectPlayer_SelectedItemChanged;
             SelectMediaType.SelectedItemChanged += SelectMediaType_SelectedItemChanged;
+            SelectGameSystem.SelectedItemChanged += SelectGameSystem_SelectedItemChanged;
             BtnSubmit.Click += BtnSubmit_Click;
+        }
+
+        void SelectGameSystem_SelectedItemChanged(object sender, EventArgs e)
+        {
+            if (_gameSystems == null)
+            {
+                return;
+            }
+
+            var system = _gameSystems.FirstOrDefault(i => string.Equals(i.Name, SelectGameSystem.SelectedValue));
+
+            if (system == null)
+            {
+                return;
+            }
+
+            PanelIsoSupport.Visibility = system.GameFileExtensions.Contains(".iso", StringComparer.OrdinalIgnoreCase) ? Visibility.Visible : Visibility.Collapsed;
+
+            UpdateFileExtensions();
+        }
+
+        private async Task LoadGameSystems()
+        {
+            _presentation.ShowLoadingAnimation();
+
+            try
+            {
+                var systems = await _apiClient.GetGameSystemSummariesAsync(CancellationToken.None);
+
+                _gameSystems = systems.Where(i => i.GameFileExtensions.Count > 0).OrderBy(i => i.DisplayName).ToList();
+
+                SelectGameSystem.Options = _gameSystems.Select(i => new SelectListItem
+                {
+                    Text = i.DisplayName,
+                    Value = i.Name
+
+                }).ToList();
+
+                SelectGameSystem.SelectedValue = _gameSystems[0].Name;
+
+                BtnSubmit.Visibility = Visibility.Visible;
+                _presentation.HideLoadingAnimation();
+            }
+            catch
+            {
+                _presentation.HideLoadingAnimation();
+                _presentation.ShowDefaultErrorMessage();
+
+                BtnSubmit.Visibility = Visibility.Collapsed;
+            }
         }
 
         void BtnSubmit_Click(object sender, RoutedEventArgs e)
@@ -141,6 +204,8 @@ namespace MediaBrowser.Theater.Core.MediaPlayers
             _playerConfig.Command = TxtPath.Text;
             _playerConfig.Args = TxtArgs.Text;
 
+            _playerConfig.GameSystem = SelectGameSystem.SelectedValue;
+
             IsoConfiguration iso;
 
             if (Enum.TryParse(SelectIsoSupport.SelectedValue, true, out iso))
@@ -157,7 +222,7 @@ namespace MediaBrowser.Theater.Core.MediaPlayers
 
             _config.SaveConfiguration();
 
-            await _nav.Navigate(new MediaPlayersPage(_nav, _playbackManager, _config, _presentation));
+            await _nav.Navigate(new MediaPlayersPage(_nav, _playbackManager, _config, _presentation, _apiClient));
 
             _nav.RemovePagesFromHistory(2);
         }
@@ -170,24 +235,26 @@ namespace MediaBrowser.Theater.Core.MediaPlayers
 
             PanelIsoSupport.Visibility = string.Equals(value, MediaType.Video) || string.Equals(value, MediaType.Game) ? Visibility.Visible : Visibility.Collapsed;
 
+            PnlGameSystems.Visibility = string.Equals(value, MediaType.Game) ? Visibility.Visible : Visibility.Collapsed;
+
             UpdateFileExtensions();
+
+            if (string.Equals(value, MediaType.Game))
+            {
+                SelectGameSystem_SelectedItemChanged(null, EventArgs.Empty);
+            }
+
+            SelectPlayer.Options = ConfigurablePlayers.Where(i => i.CanPlayMediaType(value)).Select(i => new SelectListItem
+            {
+                Text = i.Name,
+                Value = i.Name
+
+            }).ToList();
         }
 
         void SelectPlayer_SelectedItemChanged(object sender, EventArgs e)
         {
-            var mediaTypes = new[] { MediaType.Video, MediaType.Audio, MediaType.Game, MediaType.Book };
-
             var player = SelectedPlayer;
-
-            SelectMediaType.Options = mediaTypes.Where(player.CanPlayMediaType).Select(i => new SelectListItem
-            {
-                Text = i,
-                Value = i
-
-            }).ToList();
-
-            SelectMediaType.SelectedValue = SelectMediaType.Options[0].Value;
-            SelectMediaType_SelectedItemChanged(null, EventArgs.Empty);
 
             var externalPlayer = player as IConfigurableMediaPlayer;
 
@@ -204,15 +271,15 @@ namespace MediaBrowser.Theater.Core.MediaPlayers
                                           : Visibility.Collapsed;
         }
 
-        void ConfigureMediaPlayerPage_Loaded(object sender, RoutedEventArgs e)
+        async void ConfigureMediaPlayerPage_Loaded(object sender, RoutedEventArgs e)
         {
             TxtTitle.Text = _isNew ? "Add Media Player" : "Edit Media Player";
+
+            SelectMediaType_SelectedItemChanged(null, EventArgs.Empty);
 
             var option = SelectPlayer.Options.FirstOrDefault(i => string.Equals(i.Text, _playerConfig.PlayerName, StringComparison.OrdinalIgnoreCase)) ?? SelectPlayer.Options.First();
 
             SelectPlayer.SelectedValue = option.Value;
-
-            SelectPlayer_SelectedItemChanged(null, EventArgs.Empty);
 
             ChkPlay3DVideo.IsChecked = _playerConfig.Play3DVideo;
 
@@ -226,12 +293,22 @@ namespace MediaBrowser.Theater.Core.MediaPlayers
 
             ChkClosePlayerOnStop.IsChecked = _playerConfig.CloseOnStopButton;
 
+            await LoadGameSystems();
+
             var mediaTypeToSelect = SelectMediaType.Options.FirstOrDefault(i => string.Equals(_playerConfig.MediaType, i.Value, StringComparison.OrdinalIgnoreCase));
 
             if (mediaTypeToSelect != null)
             {
                 SelectMediaType.SelectedValue = mediaTypeToSelect.Value;
                 SelectMediaType_SelectedItemChanged(null, EventArgs.Empty);
+            }
+
+            var systemToSelect = SelectGameSystem.Options.FirstOrDefault(i => string.Equals(_playerConfig.GameSystem, i.Value, StringComparison.OrdinalIgnoreCase));
+
+            if (systemToSelect != null)
+            {
+                SelectGameSystem.SelectedValue = systemToSelect.Value;
+                SelectGameSystem_SelectedItemChanged(null, EventArgs.Empty);
             }
         }
 
@@ -258,7 +335,16 @@ namespace MediaBrowser.Theater.Core.MediaPlayers
             }
             else if (string.Equals(mediaType, MediaType.Game, StringComparison.OrdinalIgnoreCase))
             {
-                UpdateFileExtensions(new string[] { });
+                var system = _gameSystems.FirstOrDefault(i => string.Equals(i.Name, SelectGameSystem.SelectedValue));
+
+                if (system == null)
+                {
+                    UpdateFileExtensions(new string[] { });
+                }
+                else
+                {
+                    UpdateFileExtensions(system.GameFileExtensions);
+                }
             }
             else
             {

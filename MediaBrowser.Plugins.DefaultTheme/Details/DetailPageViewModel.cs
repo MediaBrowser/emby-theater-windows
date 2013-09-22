@@ -413,15 +413,15 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             }
             if (string.Equals(section, "itemmovies"))
             {
-                return GetItemByNameItemListViewModel("Movie", 240, 360);
+                return GetItemByNameItemListViewModel("Movie", 200, 300);
             }
             if (string.Equals(section, "itemtrailers"))
             {
-                return GetItemByNameItemListViewModel("Trailer", 240, 360);
+                return GetItemByNameItemListViewModel("Trailer", 200, 300);
             }
             if (string.Equals(section, "itemseries"))
             {
-                return GetItemByNameItemListViewModel("Series", 240, 360);
+                return GetItemByNameItemListViewModel("Series", 200, 300);
             }
             if (string.Equals(section, "itemalbums"))
             {
@@ -444,8 +444,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 ViewType = ListViewTypes.Poster,
                 ImageDisplayWidth = width,
                 ImageDisplayHeightGenerator = GetImageDisplayHeight,
+
                 ItemContainerWidth = width + 20,
                 ItemContainerHeight = height + 20,
+
+                ItemContainerHeightGenerator = vm => GetImageDisplayHeight(vm) + 20,
+
                 DisplayNameGenerator = HomePageViewModel.GetDisplayName,
                 PreferredImageTypesGenerator = vm => new[] { ImageType.Primary },
 
@@ -458,22 +462,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 EnableBackdropsForCurrentItem = false
             };
 
-            viewModel.PropertyChanged += viewModel_PropertyChanged;
-
             return viewModel;
-        }
-
-        void viewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (string.Equals(e.PropertyName, "ImageDisplayHeight"))
-            {
-                var vm = sender as ItemListViewModel;
-
-                if (vm != null)
-                {
-                    vm.ItemContainerHeight = GetImageDisplayHeight(vm) + 20;
-                }
-            }
         }
 
         private double GetImageDisplayHeight(ItemListViewModel viewModel)

@@ -225,6 +225,9 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
+        public Func<ItemListViewModel, double> ItemContainerWidthGenerator { get; set; }
+        public Func<ItemListViewModel, double> ItemContainerHeightGenerator { get; set; }
+
         private double _itemContainerHeight;
         public double ItemContainerHeight
         {
@@ -381,6 +384,8 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
                 ItemCount = items.Length;
 
+                UpdateContainerSizes();
+
                 if (selectedIndex.HasValue)
                 {
                     ListCollectionView.MoveCurrentToPosition(selectedIndex.Value);
@@ -468,6 +473,8 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             ViewType = displayPreferences.ViewType;
             ImageDisplayWidth = displayPreferences.PrimaryImageWidth;
 
+            UpdateContainerSizes();
+
             ScrollDirection = ScrollDirectionGenerator == null ? displayPreferences.ScrollDirection : ScrollDirectionGenerator(this);
             ShowSidebar = ShowSidebarGenerator == null ? displayPreferences.ShowSidebar : ShowSidebarGenerator(this);
 
@@ -498,6 +505,18 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
             // Preserve the exact AR if it deviates from the median significantly
             return Math.Abs(currentAspectRatio - layoutAspectRatio) <= .25;
+        }
+
+        private void UpdateContainerSizes()
+        {
+            if (ItemContainerWidthGenerator != null)
+            {
+                ItemContainerWidth = ItemContainerWidthGenerator(this);
+            }
+            if (ItemContainerHeightGenerator != null)
+            {
+                ItemContainerHeight = ItemContainerHeightGenerator(this);
+            }
         }
 
         private async void Navigate(object commandParameter)

@@ -535,7 +535,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             sortOptions["Name"] = ItemSortBy.SortName;
             sortOptions["Movie count"] = ItemSortBy.MovieCount;
             sortOptions["Trailer count"] = ItemSortBy.TrailerCount;
-            
+
+            page.SortOptions = sortOptions;
             page.CustomPageTitle = "Movies | People";
 
             page.ViewType = ViewType.Movies;
@@ -1042,6 +1043,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                              : new[] { ItemSortBy.SortName },
 
                 SortOrder = displayPreferences.SortOrder,
+
+                UserId = _sessionManager.CurrentUser.Id,
 
                 Recursive = true
             };

@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Theater.Interfaces;
+﻿using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Theater.Interfaces;
 using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
@@ -22,13 +23,15 @@ namespace MediaBrowser.Theater.Core.MediaPlayers
         private readonly IPlaybackManager _playbackManager;
         private readonly ITheaterConfigurationManager _config;
         private readonly IPresentationManager _presentation;
+        private readonly IApiClient _apiClient;
 
-        public MediaPlayersPage(INavigationService nav, IPlaybackManager playbackManager, ITheaterConfigurationManager config, IPresentationManager presentation)
+        public MediaPlayersPage(INavigationService nav, IPlaybackManager playbackManager, ITheaterConfigurationManager config, IPresentationManager presentation, IApiClient apiClient)
         {
             _nav = nav;
             _playbackManager = playbackManager;
             _config = config;
             _presentation = presentation;
+            _apiClient = apiClient;
             InitializeComponent();
         }
 
@@ -50,12 +53,12 @@ namespace MediaBrowser.Theater.Core.MediaPlayers
         {
             var player = (MediaPlayerViewModel)e.Argument;
 
-            await _nav.Navigate(new ConfigureMediaPlayerPage(player.PlayerConfiguration, _playbackManager, _config, _presentation, _nav));
+            await _nav.Navigate(new ConfigureMediaPlayerPage(player.PlayerConfiguration, _playbackManager, _config, _presentation, _nav, _apiClient));
         }
 
         async void BtnAddPlayer_Click(object sender, RoutedEventArgs e)
         {
-            await _nav.Navigate(new ConfigureMediaPlayerPage(_playbackManager, _config, _presentation, _nav));
+            await _nav.Navigate(new ConfigureMediaPlayerPage(_playbackManager, _config, _presentation, _nav, _apiClient));
         }
     }
 

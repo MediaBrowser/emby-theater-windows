@@ -26,7 +26,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         private readonly INavigationService _nav;
         private readonly IPlaybackManager _playbackManager;
 
-        private const double TileWidth = 448;
+        private const double TileWidth = 416;
         private const double TileHeight = TileWidth * 9 / 16;
 
         public HomePageViewModel(IPresentationManager presentationManager, IApiClient apiClient, ISessionManager sessionManager, ILogger logger, IImageManager imageManager, INavigationService nav, IPlaybackManager playbackManager)

@@ -579,8 +579,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 Fields = new[]
                         {
                                  ItemFields.PrimaryImageAspectRatio,
-                                 ItemFields.DateCreated,
-                                 ItemFields.ItemCounts
+                                 ItemFields.DateCreated
                         },
                 Id = item.Id
             };
@@ -615,8 +614,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 Fields = new[]
                         {
                                  ItemFields.PrimaryImageAspectRatio,
-                                 ItemFields.DateCreated,
-                                 ItemFields.ItemCounts
+                                 ItemFields.DateCreated
                         },
                 Ids = item.SoundtrackIds,
                 SortBy = new[] { ItemSortBy.SortName }
@@ -648,8 +646,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 Fields = new[]
                         {
                                  ItemFields.PrimaryImageAspectRatio,
-                                 ItemFields.DateCreated,
-                                 ItemFields.ItemCounts
+                                 ItemFields.DateCreated
                         },
                 ParentId = item.Id,
                 SortBy = new[] { ItemSortBy.SortName },

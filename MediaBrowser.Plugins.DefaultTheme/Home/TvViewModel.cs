@@ -507,7 +507,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         private Task<ItemsResult> GetAllActors(DisplayPreferences displayPreferences)
         {
             var fields = FolderPage.QueryFields.ToList();
-            fields.Remove(ItemFields.ItemCounts);
             fields.Remove(ItemFields.Overview);
             fields.Remove(ItemFields.DisplayPreferencesId);
             fields.Remove(ItemFields.DateCreated);

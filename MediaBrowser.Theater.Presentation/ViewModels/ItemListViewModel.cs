@@ -153,8 +153,8 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
-        private bool _downloadImageAtExactSize;
-        public bool DownloadImageAtExactSize
+        private bool? _downloadImageAtExactSize;
+        public bool? DownloadImageAtExactSize
         {
             get { return _downloadImageAtExactSize; }
 
@@ -377,7 +377,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                                 Item = i,
                                 ViewType = ViewType,
                                 DisplayName = DisplayNameGenerator == null ? i.Name : DisplayNameGenerator(i),
-                                DownloadImagesAtExactSize = true,
+                                DownloadImagesAtExactSize = DownloadImageAtExactSize ?? true,
                                 PreferredImageTypes = imageTypes,
                                 ListType = ListType
                             }));

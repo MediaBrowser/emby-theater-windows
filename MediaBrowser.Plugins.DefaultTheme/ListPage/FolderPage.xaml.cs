@@ -179,8 +179,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                 ItemFields.Taglines,
                 ItemFields.Genres,
                 ItemFields.Overview,
-                ItemFields.DisplayPreferencesId,
-                ItemFields.ItemCounts
+                ItemFields.DisplayPreferencesId
             };
 
         public Func<DisplayPreferences, Task<ItemsResult>> CustomItemQuery { get; set; }

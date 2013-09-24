@@ -87,7 +87,7 @@ namespace MediaBrowser.Theater.Interfaces.Playback
         /// Stops all playback.
         /// </summary>
         /// <returns>Task.</returns>
-        Task StopAllPlayback();
+        void StopAllPlayback();
 
         /// <summary>
         /// Reports the playback completed.

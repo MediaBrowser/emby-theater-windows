@@ -280,11 +280,11 @@ namespace MediaBrowser.UI.EntryPoints
 
         private readonly Task _trueTaskResult = Task.FromResult(true);
 
-        private async void ExecuteCommand(Func<Task> action)
+        private void ExecuteCommand(Action action)
         {
             try
             {
-                await action();
+                action();
             }
             catch (Exception ex)
             {
@@ -292,7 +292,7 @@ namespace MediaBrowser.UI.EntryPoints
             }
         }
 
-        private async Task Play()
+        private void Play()
         {
             var activePlayer = _playback.MediaPlayers
                 .OfType<IInternalMediaPlayer>()
@@ -302,17 +302,17 @@ namespace MediaBrowser.UI.EntryPoints
             {
                 if (activePlayer.PlayState == PlayState.Paused)
                 {
-                    await activePlayer.UnPause();
+                    activePlayer.UnPause();
                     ShowFullscreenVideoOsd();
                 }
             }
             else
             {
-                await SendPlayCommandToPresentation();
+                SendPlayCommandToPresentation();
             }
         }
 
-        private async Task Pause()
+        private void Pause()
         {
             var activePlayer = _playback.MediaPlayers
                 .OfType<IInternalMediaPlayer>()
@@ -322,27 +322,25 @@ namespace MediaBrowser.UI.EntryPoints
             {
                 if (activePlayer.PlayState == PlayState.Paused)
                 {
-                    await activePlayer.UnPause();
+                    activePlayer.UnPause();
                 }
                 else
                 {
-                    await activePlayer.Pause();
+                    activePlayer.Pause();
                 }
                 ShowFullscreenVideoOsd();
             }
         }
 
-        private Task Close()
+        private void Close()
         {
-            return _trueTaskResult;
         }
 
-        private Task Search()
+        private void Search()
         {
-            return _trueTaskResult;
         }
 
-        private async Task SkipBackward()
+        private void SkipBackward()
         {
             var activePlayer = _playback.MediaPlayers
              .OfType<IInternalMediaPlayer>()
@@ -350,13 +348,13 @@ namespace MediaBrowser.UI.EntryPoints
 
             if (activePlayer != null)
             {
-                await activePlayer.SkipBackward();
+                activePlayer.SkipBackward();
 
                 ShowFullscreenVideoOsd();
             }
         }
 
-        private async Task SkipForward()
+        private void SkipForward()
         {
             var activePlayer = _playback.MediaPlayers
              .OfType<IInternalMediaPlayer>()
@@ -364,13 +362,13 @@ namespace MediaBrowser.UI.EntryPoints
 
             if (activePlayer != null)
             {
-                await activePlayer.SkipForward();
+                activePlayer.SkipForward();
 
                 ShowFullscreenVideoOsd();
             }
         }
 
-        private async Task PlayPause()
+        private void PlayPause()
         {
             var activePlayer = _playback.MediaPlayers
                 .OfType<IInternalMediaPlayer>()
@@ -380,27 +378,26 @@ namespace MediaBrowser.UI.EntryPoints
             {
                 if (activePlayer.PlayState == PlayState.Paused)
                 {
-                    await activePlayer.UnPause();
+                    activePlayer.UnPause();
                 }
                 else
                 {
-                    await activePlayer.Pause();
+                    activePlayer.Pause();
                 }
 
                 ShowFullscreenVideoOsd();
             }
             else
             {
-                await SendPlayCommandToPresentation();
+                SendPlayCommandToPresentation();
             }
         }
 
-        private Task SendPlayCommandToPresentation()
+        private void SendPlayCommandToPresentation()
         {
-            return _trueTaskResult;
         }
 
-        private Task Stop()
+        private void Stop()
         {
             var activePlayer = _playback.MediaPlayers
                 .OfType<IInternalMediaPlayer>()
@@ -408,23 +405,19 @@ namespace MediaBrowser.UI.EntryPoints
 
             if (activePlayer != null)
             {
-                return activePlayer.Stop();
+                activePlayer.Stop();
             }
-
-            return _trueTaskResult;
         }
 
-        private Task NextTrack()
+        private void NextTrack()
         {
-            return _trueTaskResult;
         }
 
-        private Task PreviousTrack()
+        private void PreviousTrack()
         {
-            return _trueTaskResult;
         }
 
-        private async Task NextChapter()
+        private void NextChapter()
         {
             var activePlayer = _playback.MediaPlayers
               .OfType<IInternalMediaPlayer>()
@@ -432,13 +425,13 @@ namespace MediaBrowser.UI.EntryPoints
 
             if (activePlayer != null)
             {
-                await activePlayer.GoToNextChapter();
+                activePlayer.GoToNextChapter();
 
                 ShowFullscreenVideoOsd();
             }
         }
 
-        private async Task PreviousChapter()
+        private void PreviousChapter()
         {
             var activePlayer = _playback.MediaPlayers
               .OfType<IInternalMediaPlayer>()
@@ -446,38 +439,34 @@ namespace MediaBrowser.UI.EntryPoints
 
             if (activePlayer != null)
             {
-                await activePlayer.GoToPreviousChapter();
+                activePlayer.GoToPreviousChapter();
 
                 ShowFullscreenVideoOsd();
             }
         }
 
-        private Task Home()
+        private void Home()
         {
-            return _nav.NavigateToHomePage();
+            _nav.NavigateToHomePage();
         }
 
-        private Task YellowButton()
+        private void YellowButton()
         {
-            return _trueTaskResult;
         }
 
-        private Task BlueButton()
+        private void BlueButton()
         {
-            return _trueTaskResult;
         }
 
-        private Task RedButton()
+        private void RedButton()
         {
-            return _trueTaskResult;
         }
 
-        private Task GreenButton()
+        private void GreenButton()
         {
-            return _trueTaskResult;
         }
 
-        private async Task OnNextTrackButton()
+        private void OnNextTrackButton()
         {
             var activePlayer = _playback.MediaPlayers
                 .OfType<IInternalMediaPlayer>()
@@ -485,15 +474,15 @@ namespace MediaBrowser.UI.EntryPoints
 
             if (activePlayer != null && activePlayer.CurrentMedia != null && activePlayer.CurrentMedia.IsVideo)
             {
-                await NextChapter();
+                NextChapter();
             }
             else
             {
-                await NextTrack();
+                NextTrack();
             }
         }
 
-        private async Task OnPreviousTrackButton()
+        private void OnPreviousTrackButton()
         {
             var activePlayer = _playback.MediaPlayers
                 .OfType<IInternalMediaPlayer>()
@@ -501,11 +490,11 @@ namespace MediaBrowser.UI.EntryPoints
 
             if (activePlayer != null && activePlayer.CurrentMedia != null && activePlayer.CurrentMedia.IsVideo)
             {
-                await PreviousChapter();
+                PreviousChapter();
             }
             else
             {
-                await PreviousTrack();
+                PreviousTrack();
             }
         }
 

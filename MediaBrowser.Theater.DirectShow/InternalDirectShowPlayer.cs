@@ -2,6 +2,7 @@
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
+using MediaBrowser.Model.IO;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Playback;
@@ -11,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -27,6 +29,7 @@ namespace MediaBrowser.Theater.DirectShow
         private readonly IApiClient _apiClient;
         private readonly IPlaybackManager _playbackManager;
         private readonly ITheaterConfigurationManager _config;
+        private readonly IIsoManager _isoManager;
 
         private readonly Task _taskResult = Task.FromResult(true);
 
@@ -36,7 +39,7 @@ namespace MediaBrowser.Theater.DirectShow
 
         private List<BaseItemDto> _playlist = new List<BaseItemDto>();
 
-        public InternalDirectShowPlayer(ILogManager logManager, IHiddenWindow hiddenWindow, IPresentationManager presentation, IUserInputManager userInput, IApiClient apiClient, IPlaybackManager playbackManager, ITheaterConfigurationManager config)
+        public InternalDirectShowPlayer(ILogManager logManager, IHiddenWindow hiddenWindow, IPresentationManager presentation, IUserInputManager userInput, IApiClient apiClient, IPlaybackManager playbackManager, ITheaterConfigurationManager config, IIsoManager isoManager)
         {
             _logger = logManager.GetLogger("DirectShowPlayer");
             _hiddenWindow = hiddenWindow;
@@ -45,6 +48,7 @@ namespace MediaBrowser.Theater.DirectShow
             _apiClient = apiClient;
             _playbackManager = playbackManager;
             _config = config;
+            _isoManager = isoManager;
         }
 
         public IReadOnlyList<BaseItemDto> Playlist
@@ -138,7 +142,7 @@ namespace MediaBrowser.Theater.DirectShow
             await _presentation.Window.Dispatcher.InvokeAsync(async () => await PlayInternal(options));
         }
 
-        private Task PlayInternal(PlayOptions options)
+        private async Task PlayInternal(PlayOptions options)
         {
             CurrentPlaylistIndex = 0;
             CurrentPlayOptions = options;
@@ -156,16 +160,7 @@ namespace MediaBrowser.Theater.DirectShow
 
                 _hiddenWindow.WindowsFormsHost.Child = _mediaPlayer;
 
-                var playableItem = GetPlayableItem(options.Items.First());
-
-                _mediaPlayer.Play(playableItem, EnableReclock(options), EnableMadvr(options));
-
-                var position = options.StartPositionTicks;
-
-                if (position > 0)
-                {
-                    _mediaPlayer.Seek(position);
-                }
+                await PlayTrack(0, options.StartPositionTicks);
             }
             catch (Exception ex)
             {
@@ -175,16 +170,72 @@ namespace MediaBrowser.Theater.DirectShow
 
                 throw;
             }
-
-            return _taskResult;
         }
 
-        private PlayableItem GetPlayableItem(BaseItemDto item)
+        private async Task PlayTrack(int index, long? startPositionTicks)
         {
+            var previousMedia = CurrentMedia;
+            var previousIndex = CurrentPlaylistIndex;
+            var endingTicks = CurrentPositionTicks;
+
+            var options = CurrentPlayOptions;
+
+            var playableItem = await GetPlayableItem(options.Items[index], CancellationToken.None);
+
+            try
+            {
+                _mediaPlayer.Play(playableItem, EnableReclock(options), EnableMadvr(options));
+            }
+            catch
+            {
+                DisposeMount(playableItem);
+
+                throw;
+            }
+
+            CurrentPlaylistIndex = index;
+
+            if (startPositionTicks.HasValue && startPositionTicks.Value > 0)
+            {
+                _mediaPlayer.Seek(startPositionTicks.Value);
+            }
+
+            if (previousMedia != null)
+            {
+                var args = new MediaChangeEventArgs
+                {
+                    Player = this,
+                    NewPlaylistIndex = index,
+                    NewMedia = CurrentMedia,
+                    PreviousMedia = previousMedia,
+                    PreviousPlaylistIndex = previousIndex,
+                    EndingPositionTicks = endingTicks
+                };
+
+                EventHelper.FireEventIfNotNull(MediaChanged, this, args, _logger);
+            }
+        }
+
+        private async Task<PlayableItem> GetPlayableItem(BaseItemDto item, CancellationToken cancellationToken)
+        {
+            IIsoMount mountedIso = null;
+
+            if (item.VideoType.HasValue && item.VideoType.Value == VideoType.Iso && item.IsoType.HasValue && _isoManager.CanMount(item.Path))
+            {
+                try
+                {
+                    mountedIso = await _isoManager.Mount(item.Path, cancellationToken);
+                }
+                catch (Exception ex)
+                {
+                    _logger.ErrorException("Error mounting iso {0}", ex, item.Path);
+                }
+            }
+
             return new PlayableItem
             {
                 OriginalItem = item,
-                PlayablePath = PlayablePathBuilder.GetPlayablePath(item, _apiClient)
+                PlayablePath = PlayablePathBuilder.GetPlayablePath(item, mountedIso, _apiClient)
             };
         }
 
@@ -250,40 +301,36 @@ namespace MediaBrowser.Theater.DirectShow
             }
         }
 
-        public Task Pause()
+        public void Pause()
         {
             if (_mediaPlayer != null)
             {
                 _mediaPlayer.Pause();
             }
-            return Task.FromResult(true);
         }
 
-        public Task UnPause()
+        public void UnPause()
         {
             if (_mediaPlayer != null)
             {
                 _mediaPlayer.Unpause();
             }
-            return Task.FromResult(true);
         }
 
-        public Task Stop()
+        public void Stop()
         {
             if (_mediaPlayer != null)
             {
-                _mediaPlayer.Stop();
+                _mediaPlayer.Stop(TrackCompletionReason.Stop, null);
             }
-            return Task.FromResult(true);
         }
 
-        public Task Seek(long positionTicks)
+        public void Seek(long positionTicks)
         {
             if (_mediaPlayer != null)
             {
                 _mediaPlayer.Seek(positionTicks);
             }
-            return Task.FromResult(true);
         }
 
         /// <summary>
@@ -295,8 +342,36 @@ namespace MediaBrowser.Theater.DirectShow
             EventHelper.FireEventIfNotNull(PlayStateChanged, this, EventArgs.Empty, _logger);
         }
 
-        internal void OnPlaybackStopped(PlayableItem media, long? positionTicks)
+        private void DisposeMount(PlayableItem media)
         {
+            if (media.IsoMount != null)
+            {
+                try
+                {
+                    media.IsoMount.Dispose();
+                }
+                catch (Exception ex)
+                {
+                    _logger.ErrorException("Error unmounting iso {0}", ex, media.IsoMount.MountedPath);
+                }
+            }
+        }
+
+        internal async void OnPlaybackStopped(PlayableItem media, long? positionTicks, TrackCompletionReason reason, int? newTrackIndex)
+        {
+            DisposeMount(media);
+
+            if (reason == TrackCompletionReason.Ended || reason == TrackCompletionReason.ChangeTrack)
+            {
+                var nextIndex = newTrackIndex ?? (CurrentPlaylistIndex + 1);
+
+                if (nextIndex < CurrentPlayOptions.Items.Count)
+                {
+                    await PlayTrack(nextIndex, null);
+                    return;
+                }
+            }
+
             DisposePlayer();
 
             var args = new PlaybackStopEventArgs
@@ -312,5 +387,17 @@ namespace MediaBrowser.Theater.DirectShow
 
             _playbackManager.ReportPlaybackCompleted(args);
         }
+
+        public void ChangeTrack(int newIndex)
+        {
+            _mediaPlayer.Stop(TrackCompletionReason.ChangeTrack, newIndex);
+        }
+    }
+
+    public enum TrackCompletionReason
+    {
+        Stop,
+        Ended,
+        ChangeTrack
     }
 }

@@ -466,7 +466,7 @@ namespace MediaBrowser.Theater.DirectShow
                 PlayState = PlayState.Playing;
         }
 
-        public void Stop()
+        public void Stop(TrackCompletionReason reason, int? newTrackIndex)
         {
             var hr = 0;
 
@@ -476,9 +476,9 @@ namespace MediaBrowser.Theater.DirectShow
 
             DsError.ThrowExceptionForHR(hr);
 
-            OnStopped();
+            OnStopped(reason, newTrackIndex);
         }
-
+        
         public void Seek(long ticks)
         {
             if (_mediaSeeking != null)
@@ -495,7 +495,7 @@ namespace MediaBrowser.Theater.DirectShow
             }
         }
 
-        private void OnStopped()
+        private void OnStopped(TrackCompletionReason reason, int? newTrackIndex)
         {
             // Clear global flags
             PlayState = PlayState.Idle;
@@ -504,7 +504,7 @@ namespace MediaBrowser.Theater.DirectShow
 
             DisposePlayer();
 
-            _playerWrapper.OnPlaybackStopped(_item, CurrentPositionTicks);
+            _playerWrapper.OnPlaybackStopped(_item, pos, reason, newTrackIndex);
         }
 
         private void HandleGraphEvent()
@@ -528,7 +528,7 @@ namespace MediaBrowser.Theater.DirectShow
                     // If this is the end of the clip, close
                     if (evCode == EventCode.Complete)
                     {
-                        Stop();
+                        Stop(TrackCompletionReason.Ended, null);
                     }
                 }
             }

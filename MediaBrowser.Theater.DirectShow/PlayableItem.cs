@@ -1,5 +1,6 @@
 ﻿using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
+using MediaBrowser.Model.IO;
 using System.Collections.Generic;
 
 namespace MediaBrowser.Theater.DirectShow
@@ -19,5 +20,7 @@ namespace MediaBrowser.Theater.DirectShow
         {
             get { return OriginalItem.MediaStreams; }
         }
+
+        public IIsoMount IsoMount { get; set; }
     }
 }

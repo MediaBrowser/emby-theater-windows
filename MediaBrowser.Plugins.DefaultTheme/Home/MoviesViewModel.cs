@@ -699,7 +699,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         {
             var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
 
-            var displayPreferences = await PresentationManager.GetDisplayPreferences("Movies", CancellationToken.None);
+            var displayPreferences = await PresentationManager.GetDisplayPreferences("Trailers", CancellationToken.None);
 
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
                                       PresentationManager, _navService, _playbackManager, _logger);

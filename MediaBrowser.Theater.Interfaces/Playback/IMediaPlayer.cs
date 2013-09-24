@@ -114,8 +114,7 @@ namespace MediaBrowser.Theater.Interfaces.Playback
         /// <summary>
         /// Stops this instance.
         /// </summary>
-        /// <returns>Task.</returns>
-        Task Stop();
+        void Stop();
 
         /// <summary>
         /// Plays the specified options.
@@ -127,20 +126,24 @@ namespace MediaBrowser.Theater.Interfaces.Playback
         /// <summary>
         /// Pauses this instance.
         /// </summary>
-        /// <returns>Task.</returns>
-        Task Pause();
+        void Pause();
 
         /// <summary>
         /// Uns the pause.
         /// </summary>
-        /// <returns>Task.</returns>
-        Task UnPause();
+        void UnPause();
 
         /// <summary>
         /// Seeks the specified position ticks.
         /// </summary>
         /// <param name="positionTicks">The position ticks.</param>
         /// <returns>Task.</returns>
-        Task Seek(long positionTicks);
+        void Seek(long positionTicks);
+
+        /// <summary>
+        /// Changes the track.
+        /// </summary>
+        /// <param name="newIndex">The new index.</param>
+        void ChangeTrack(int newIndex);
     }
 }

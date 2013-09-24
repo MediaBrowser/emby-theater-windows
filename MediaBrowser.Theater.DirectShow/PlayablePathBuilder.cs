@@ -1,7 +1,8 @@
-﻿using System;
-using MediaBrowser.Model.ApiClient;
+﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
+using MediaBrowser.Model.IO;
+using System;
 using System.IO;
 using System.Linq;
 
@@ -16,9 +17,10 @@ namespace MediaBrowser.Theater.DirectShow
         /// Gets the playable path.
         /// </summary>
         /// <param name="item">The item.</param>
+        /// <param name="isoMount">The iso mount.</param>
         /// <param name="apiClient">The API client.</param>
         /// <returns>System.String.</returns>
-        public static string GetPlayablePath(BaseItemDto item, IApiClient apiClient)
+        public static string GetPlayablePath(BaseItemDto item, IIsoMount isoMount, IApiClient apiClient)
         {
             if (item.LocationType == LocationType.Remote)
             {
@@ -40,9 +42,11 @@ namespace MediaBrowser.Theater.DirectShow
                 });
             }
 
+            var itemPath = isoMount == null ? item.Path : isoMount.MountedPath;
+
             if (item.VideoType.HasValue && item.VideoType.Value == VideoType.BluRay)
             {
-                var file = new DirectoryInfo(item.Path)
+                var file = new DirectoryInfo(itemPath)
                     .EnumerateFiles("index.bdmv", SearchOption.AllDirectories)
                     .FirstOrDefault();
 
@@ -59,7 +63,7 @@ namespace MediaBrowser.Theater.DirectShow
                 }
             }
 
-            return item.Path;
+            return itemPath;
         }
     }
 }

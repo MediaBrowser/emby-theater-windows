@@ -32,7 +32,7 @@ namespace MediaBrowser.Theater.Implementations.Presentation
         private readonly IApiClient _apiClient;
 
         private readonly ITheaterConfigurationManager _config;
-        
+
         /// <summary>
         /// The _locks
         /// </summary>
@@ -77,7 +77,7 @@ namespace MediaBrowser.Theater.Implementations.Presentation
                                   : BitmapScalingMode.LowQuality;
 
             RenderOptions.SetBitmapScalingMode(bitmap, scalingMode);
-            
+
             bitmap.BeginInit();
             bitmap.UriSource = uri;
             bitmap.EndInit();
@@ -133,8 +133,20 @@ namespace MediaBrowser.Theater.Implementations.Presentation
                     using (var httpStream = await _apiClient.GetImageStreamAsync(url, cancellationToken).ConfigureAwait(false))
                     {
                         cancellationToken.ThrowIfCancellationRequested();
-                        
-                        return await GetBitmapImageAsync(httpStream, cachePath).ConfigureAwait(false);
+
+                        var parentPath = Path.GetDirectoryName(cachePath);
+
+                        if (!Directory.Exists(parentPath))
+                        {
+                            Directory.CreateDirectory(parentPath);
+                        }
+
+                        using (var fileStream = new FileStream(cachePath, FileMode.Create, FileAccess.Write, FileShare.Read, StreamDefaults.DefaultFileStreamBufferSize, true))
+                        {
+                            await httpStream.CopyToAsync(fileStream).ConfigureAwait(false);
+                        }
+
+                        return GetCachedBitmapImage(cachePath);
                     }
                 }
                 finally
@@ -174,29 +186,6 @@ namespace MediaBrowser.Theater.Implementations.Presentation
         private SemaphoreSlim GetImageFileLock(string filename)
         {
             return _imageFileLocks.GetOrAdd(filename, key => new SemaphoreSlim(1, 1));
-        }
-
-        /// <summary>
-        /// Gets the image async.
-        /// </summary>
-        /// <param name="sourceStream">The source stream.</param>
-        /// <param name="cachePath">The cache path.</param>
-        /// <returns>Task{BitmapImage}.</returns>
-        private async Task<BitmapImage> GetBitmapImageAsync(Stream sourceStream, string cachePath)
-        {
-            var parentPath = Path.GetDirectoryName(cachePath);
-
-            if (!Directory.Exists(parentPath))
-            {
-                Directory.CreateDirectory(parentPath);
-            }
-
-            using (var fileStream = new FileStream(cachePath, FileMode.Create, FileAccess.Write, FileShare.Read, StreamDefaults.DefaultFileStreamBufferSize, true))
-            {
-                await sourceStream.CopyToAsync(fileStream).ConfigureAwait(false);
-            }
-
-            return GetCachedBitmapImage(cachePath);
         }
 
         /// <summary>

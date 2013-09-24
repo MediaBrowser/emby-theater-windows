@@ -13,6 +13,7 @@ using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.Theming;
+using MediaBrowser.Theater.Presentation.Playback;
 using System;
 using System.Linq;
 using System.Threading;
@@ -208,6 +209,41 @@ namespace MediaBrowser.UI.EntryPoints
                 return;
             }
 
+            var player = _playbackManager.MediaPlayers
+              .FirstOrDefault(i => i.PlayState != PlayState.Idle);
+
+            if (player == null)
+            {
+                return;
+            }
+
+            var request = e.Request;
+
+            switch (request.Command)
+            {
+                case PlaystateCommand.Pause:
+                    player.Pause();
+                    break;
+                case PlaystateCommand.Stop:
+                    player.Stop();
+                    break;
+                case PlaystateCommand.Unpause:
+                    player.UnPause();
+                    break;
+                case PlaystateCommand.Seek:
+                    player.Seek(e.Request.SeekPositionTicks ?? 0);
+                    break;
+                case PlaystateCommand.PreviousTrack:
+                    {
+                        player.GoToPreviousTrack();
+                        break;
+                    }
+                case PlaystateCommand.NextTrack:
+                    {
+                        player.GoToNextTrack();
+                        break;
+                    }
+            }
         }
 
         void _apiWebSocket_UserUpdated(object sender, UserUpdatedEventArgs e)

@@ -1,7 +1,6 @@
 ﻿using MediaBrowser.Theater.Interfaces.Playback;
 using System;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace MediaBrowser.Theater.Presentation.Playback
 {
@@ -10,23 +9,41 @@ namespace MediaBrowser.Theater.Presentation.Playback
     /// </summary>
     public static class PlaybackExtensions
     {
-        /// <summary>
-        /// The null task result
-        /// </summary>
-        private static readonly Task NullTaskResult = Task.FromResult(true);
+        public static void GoToNextTrack(this IMediaPlayer player)
+        {
+            var index = player.CurrentPlaylistIndex;
+
+            if (index < player.CurrentPlayOptions.Items.Count - 1)
+            {
+                player.ChangeTrack(index + 1);
+            }
+        }
+
+        public static void GoToPreviousTrack(this IMediaPlayer player)
+        {
+            var index = player.CurrentPlaylistIndex;
+
+            if (index > 0)
+            {
+                player.ChangeTrack(index - 1);
+            }
+        }
 
         /// <summary>
         /// Goes to next chapter.
         /// </summary>
         /// <param name="player">The player.</param>
         /// <returns>Task.</returns>
-        public static Task GoToNextChapter(this IMediaPlayer player)
+        public static void GoToNextChapter(this IMediaPlayer player)
         {
             var current = player.CurrentPositionTicks;
 
             var chapter = player.CurrentMedia.Chapters.FirstOrDefault(c => c.StartPositionTicks > current);
 
-            return chapter != null ? player.Seek(chapter.StartPositionTicks) : NullTaskResult;
+            if (chapter != null)
+            {
+                player.Seek(chapter.StartPositionTicks);
+            }
         }
 
         /// <summary>
@@ -34,7 +51,7 @@ namespace MediaBrowser.Theater.Presentation.Playback
         /// </summary>
         /// <param name="player">The player.</param>
         /// <returns>Task.</returns>
-        public static Task GoToPreviousChapter(this IMediaPlayer player)
+        public static void GoToPreviousChapter(this IMediaPlayer player)
         {
             var current = player.CurrentPositionTicks;
 
@@ -42,7 +59,10 @@ namespace MediaBrowser.Theater.Presentation.Playback
 
             var chapter = player.CurrentMedia.Chapters.LastOrDefault(c => c.StartPositionTicks < current - ticksPerTenSeconds);
 
-            return chapter != null ? player.Seek(chapter.StartPositionTicks) : NullTaskResult;
+            if (chapter != null)
+            {
+                player.Seek(chapter.StartPositionTicks);
+            }
         }
 
         /// <summary>
@@ -50,7 +70,7 @@ namespace MediaBrowser.Theater.Presentation.Playback
         /// </summary>
         /// <param name="player">The player.</param>
         /// <returns>Task.</returns>
-        public static Task SkipForward(this IMediaPlayer player)
+        public static void SkipForward(this IMediaPlayer player)
         {
             var current = player.CurrentPositionTicks ?? 0;
 
@@ -61,7 +81,7 @@ namespace MediaBrowser.Theater.Presentation.Playback
                 current = 0;
             }
 
-            return player.Seek(current);
+            player.Seek(current);
         }
 
         /// <summary>
@@ -69,7 +89,7 @@ namespace MediaBrowser.Theater.Presentation.Playback
         /// </summary>
         /// <param name="player">The player.</param>
         /// <returns>Task.</returns>
-        public static Task SkipBackward(this IMediaPlayer player)
+        public static void SkipBackward(this IMediaPlayer player)
         {
             var current = player.CurrentPositionTicks ?? 0;
 
@@ -80,7 +100,7 @@ namespace MediaBrowser.Theater.Presentation.Playback
                 current = 0;
             }
 
-            return player.Seek(current);
+            player.Seek(current);
         }
     }
 }

@@ -42,7 +42,7 @@ namespace MediaBrowser.Theater.Implementations.Session
 
         public async Task Logout()
         {
-            await _playback.StopAllPlayback();
+             _playback.StopAllPlayback();
 
             _apiClient.CurrentUserId = null;
 

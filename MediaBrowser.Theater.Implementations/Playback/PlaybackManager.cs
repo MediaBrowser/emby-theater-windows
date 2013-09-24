@@ -91,7 +91,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
 
             try
             {
-                await StopAllPlayback();
+                StopAllPlayback();
 
                 await Play(player, options, config);
             }
@@ -185,13 +185,16 @@ namespace MediaBrowser.Theater.Implementations.Playback
         /// Stops all playback.
         /// </summary>
         /// <returns>Task.</returns>
-        public Task StopAllPlayback()
+        public void StopAllPlayback()
         {
-            var tasks = MediaPlayers
+            var players = MediaPlayers
                 .Where(p => p.PlayState == PlayState.Playing || p.PlayState == PlayState.Paused)
-                .Select(p => p.Stop());
+                .ToList();
 
-            return Task.WhenAll(tasks);
+            foreach (var player in players)
+            {
+                player.Stop();
+            }
         }
 
         /// <summary>
@@ -429,7 +432,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
                 {
                     return audioDevice.AudioEndpointVolume.Mute;
                 }
-                
+
                 return false;
             }
         }

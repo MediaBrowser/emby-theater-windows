@@ -211,20 +211,15 @@ namespace MediaBrowser.Theater.Presentation.Playback
         /// Stops this instance.
         /// </summary>
         /// <returns>Task.</returns>
-        public virtual Task Stop()
+        public virtual void Stop()
         {
-            if (_currentProcess == null)
-            {
-                return _nullTaskResult;
-            }
-
-            return Task.Run(() =>
+            if (_currentProcess != null)
             {
                 if (!_currentProcess.CloseMainWindow())
                 {
                     _currentProcess.Kill();
                 }
-            });
+            }
         }
 
         /// <summary>
@@ -285,7 +280,7 @@ namespace MediaBrowser.Theater.Presentation.Playback
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="KeyEventArgs" /> instance containing the event data.</param>
-        async void KeyboardListener_KeyDown(object sender, KeyEventArgs e)
+        void KeyboardListener_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.MediaStop)
             {
@@ -293,7 +288,7 @@ namespace MediaBrowser.Theater.Presentation.Playback
 
                 if (playstate == PlayState.Paused || playstate == PlayState.Playing)
                 {
-                    await Stop();
+                    Stop();
                 }
             }
         }
@@ -343,7 +338,7 @@ namespace MediaBrowser.Theater.Presentation.Playback
         /// </summary>
         /// <returns>Task.</returns>
         /// <exception cref="System.NotImplementedException"></exception>
-        public virtual Task Pause()
+        public virtual void Pause()
         {
             throw new NotImplementedException();
         }
@@ -353,7 +348,7 @@ namespace MediaBrowser.Theater.Presentation.Playback
         /// </summary>
         /// <returns>Task.</returns>
         /// <exception cref="System.NotImplementedException"></exception>
-        public virtual Task UnPause()
+        public virtual void UnPause()
         {
             throw new NotImplementedException();
         }
@@ -364,7 +359,17 @@ namespace MediaBrowser.Theater.Presentation.Playback
         /// <param name="positionTicks">The position ticks.</param>
         /// <returns>Task.</returns>
         /// <exception cref="System.NotImplementedException"></exception>
-        public virtual Task Seek(long positionTicks)
+        public virtual void Seek(long positionTicks)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Changes the track.
+        /// </summary>
+        /// <param name="newIndex">The new index.</param>
+        /// <exception cref="System.NotImplementedException"></exception>
+        public virtual void ChangeTrack(int newIndex)
         {
             throw new NotImplementedException();
         }

@@ -57,7 +57,7 @@ namespace MediaBrowser.UI.EntryPoints
             {
                 if (!string.IsNullOrEmpty(_currentPlayingOwnerId) && !(e.NewPage is ISupportsThemeMedia))
                 {
-                    await _playback.StopAllPlayback().ConfigureAwait(false);
+                    _playback.StopAllPlayback();
                 }
                 return;
             }
@@ -78,18 +78,33 @@ namespace MediaBrowser.UI.EntryPoints
             }
 
             _lastPlayedOwnerId = null;
-            
+
             if (themeMediaResult.Items.Length > 0)
             {
-                await Play(themeMediaResult.Items).ConfigureAwait(false);
+                await Play(GetItemsToPlay(themeMediaResult)).ConfigureAwait(false);
 
                 _currentPlayingOwnerId = themeMediaResult.OwnerId;
                 _lastPlayedOwnerId = themeMediaResult.OwnerId;
             }
             else if (!string.IsNullOrEmpty(_currentPlayingOwnerId))
             {
-                await _playback.StopAllPlayback().ConfigureAwait(false);
+                _playback.StopAllPlayback();
             }
+        }
+
+        private IEnumerable<BaseItemDto> GetItemsToPlay(ThemeMediaResult result)
+        {
+            var items = result.Items.ToList();
+
+            var i = 0;
+
+            while (i < 5)
+            {
+                items.AddRange(result.Items);
+                i++;
+            }
+
+            return items;
         }
 
         private Task Play(IEnumerable<BaseItemDto> items)

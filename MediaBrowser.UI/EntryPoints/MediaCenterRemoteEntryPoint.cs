@@ -273,6 +273,9 @@ namespace MediaBrowser.UI.EntryPoints
                 case Keys.MediaStop:
                     ExecuteCommand(Stop);
                     break;
+                case Keys.I:
+                    ShowInfoPanel();
+                    break;
                 default:
                     return;
             }
@@ -510,6 +513,21 @@ namespace MediaBrowser.UI.EntryPoints
             if (page != null)
             {
                 page.ShowOnScreenDisplay();
+            }
+        }
+
+        private void ShowInfoPanel()
+        {
+            _presenation.Window.Dispatcher.InvokeAsync(ShowInfoPanelInternal);
+        }
+
+        private void ShowInfoPanelInternal()
+        {
+            var page = _nav.CurrentPage as IFullscreenVideoPage;
+
+            if (page != null)
+            {
+                page.ShowInfoPanel();
             }
         }
     }

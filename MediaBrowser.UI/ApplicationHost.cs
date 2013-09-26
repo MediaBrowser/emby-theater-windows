@@ -105,14 +105,6 @@ namespace MediaBrowser.UI
         }
 
         /// <summary>
-        /// The full path to our startmenu shortcut
-        /// </summary>
-        protected override string ProductShortcutPath
-        {
-            get { return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), "Media Browser 3", "Media Browser Theater.lnk"); }
-        }
-
-        /// <summary>
         /// Registers resources that classes will depend on
         /// </summary>
         protected override async Task RegisterResources()
@@ -302,6 +294,22 @@ namespace MediaBrowser.UI
             await InstallationManager.InstallPackage(package, progress, cancellationToken).ConfigureAwait(false);
 
             OnApplicationUpdated(package.version);
+        }
+
+        protected override void ConfigureAutoRunAtStartup(bool autorun)
+        {
+            var shortcutPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), "Media Browser 3", "Media Browser Theater.lnk");
+
+            if (autorun)
+            {
+                // Copy our shortut into the startup folder for this user
+                File.Copy(shortcutPath, Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), Path.GetFileName(shortcutPath) ?? "MediaBrowserTheaterStartup.lnk"), true);
+            }
+            else
+            {
+                // Remove our shortcut from the startup folder for this user
+                File.Delete(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), Path.GetFileName(shortcutPath) ?? "MediaBrowserTheaterStartup.lnk"));
+            }
         }
     }
 }

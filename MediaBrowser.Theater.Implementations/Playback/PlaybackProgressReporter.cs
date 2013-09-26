@@ -2,6 +2,7 @@
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Interfaces.Playback;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -28,7 +29,6 @@ namespace MediaBrowser.Theater.Implementations.Playback
         /// Starts this instance.
         /// </summary>
         /// <returns>Task.</returns>
-        /// <exception cref="InvalidOperationException">Nothing is currently playing</exception>
         public async Task Start()
         {
             var item = _mediaPlayer.CurrentMedia;
@@ -42,7 +42,11 @@ namespace MediaBrowser.Theater.Implementations.Playback
 
             try
             {
-                await _apiClient.ReportPlaybackStartAsync(item.Id, _apiClient.CurrentUserId);
+                var queueTypes = _mediaPlayer.CanQueue
+                                     ? new List<string> { item.MediaType }
+                                     : new List<string> { };
+
+                await _apiClient.ReportPlaybackStartAsync(item.Id, _apiClient.CurrentUserId, _mediaPlayer.CanSeek, queueTypes);
 
                 if (_mediaPlayer.CanTrackProgress)
                 {
@@ -112,7 +116,11 @@ namespace MediaBrowser.Theater.Implementations.Playback
             {
                 try
                 {
-                    await _apiClient.ReportPlaybackStartAsync(e.NewMedia.Id, _apiClient.CurrentUserId);
+                    var queueTypes = _mediaPlayer.CanQueue
+                                ? new List<string> { e.NewMedia.MediaType }
+                                : new List<string> { };
+
+                    await _apiClient.ReportPlaybackStartAsync(e.NewMedia.Id, _apiClient.CurrentUserId, _mediaPlayer.CanSeek, queueTypes);
                 }
                 catch (Exception ex)
                 {

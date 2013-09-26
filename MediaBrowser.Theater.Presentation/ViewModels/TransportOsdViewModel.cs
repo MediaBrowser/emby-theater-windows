@@ -1,5 +1,6 @@
 ﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
+using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Reflection;
@@ -20,6 +21,8 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         public IApiClient ApiClient { get; private set; }
         public IImageManager ImageManager { get; private set; }
         private IPlaybackManager PlaybackManager { get; set; }
+        private IPresentationManager PresentationManager { get; set; }
+        private ILogger Logger { get; set; }
 
         public ICommand PauseCommand { get; private set; }
         public ICommand NextChapterCommand { get; private set; }
@@ -69,13 +72,43 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             set
             {
                 var changed = _nowPlayingItem != value;
+
                 _nowPlayingItem = value;
 
                 if (changed)
                 {
+                    NowPlayingItemViewModel = new ItemViewModel(ApiClient, ImageManager, PlaybackManager, PresentationManager, Logger)
+                    {
+                        Item = value
+                    };
+
                     OnPropertyChanged("NowPlayingItem");
                 }
             }
+        }
+
+        private ItemViewModel _nowPlayingItemViewModel;
+        public ItemViewModel NowPlayingItemViewModel
+        {
+            get
+            {
+                return _nowPlayingItemViewModel;
+            }
+            set
+            {
+                var changed = _nowPlayingItemViewModel != value;
+                _nowPlayingItemViewModel = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("NowPlayingItemViewModel");
+                }
+            }
+        }
+
+        public string ClockShortTime
+        {
+            get { return DateTime.Now.ToShortTimeString(); }
         }
 
         private string _displayDuration;
@@ -112,6 +145,25 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 if (changed)
                 {
                     OnPropertyChanged("DisplayPosition");
+                }
+            }
+        }
+
+        private bool _showInfoPanel;
+        public bool ShowInfoPanel
+        {
+            get
+            {
+                return _showInfoPanel;
+            }
+            set
+            {
+                var changed = !bool.Equals(_showInfoPanel, value);
+                _showInfoPanel = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("ShowInfoPanel");
                 }
             }
         }
@@ -249,8 +301,10 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
-        public TransportOsdViewModel(IPlaybackManager playbackManager, IApiClient apiClient, IImageManager imageManager)
+        public TransportOsdViewModel(IPlaybackManager playbackManager, IApiClient apiClient, IImageManager imageManager, IPresentationManager presentationManager, ILogger logger)
         {
+            Logger = logger;
+            PresentationManager = presentationManager;
             ImageManager = imageManager;
             ApiClient = apiClient;
             PlaybackManager = playbackManager;
@@ -285,6 +339,8 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
             DisplayPosition = ticks.HasValue ? GetTimeString(ticks.Value) : "--:--";
             PositionTicks = ticks.HasValue ? ticks.Value : 0;
+
+            OnPropertyChanged("ClockShortTime");
         }
 
         /// <summary>

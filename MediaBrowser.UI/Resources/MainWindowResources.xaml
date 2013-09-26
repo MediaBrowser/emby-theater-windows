@@ -56,6 +56,9 @@
     <ControlTemplate x:Key="FullscreenVideoOsdTemplate">
     </ControlTemplate>
 
+    <ControlTemplate x:Key="FullscreenVideoInfoTemplate">
+    </ControlTemplate>
+
     <ControlTemplate x:Key="NowPlayingOverlayTemplate">
     </ControlTemplate>
 </ResourceDictionary>

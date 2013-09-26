@@ -84,7 +84,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         {
             var namespaceName = GetType().Namespace;
 
-            return new[] { "AppResources", "HomePageResources", "Details", "VolumeOsd", "TransportOsd", "DisplayPreferences" }.Select(i => new ResourceDictionary
+            return new[] { "AppResources", "HomePageResources", "Details", "VolumeOsd", "TransportOsd", "InfoPanel", "DisplayPreferences" }.Select(i => new ResourceDictionary
             {
                 Source = new Uri("pack://application:,,,/" + namespaceName + ";component/Resources/" + i + ".xaml", UriKind.Absolute)
 

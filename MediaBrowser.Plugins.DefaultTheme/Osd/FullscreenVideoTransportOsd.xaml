@@ -9,6 +9,8 @@
 
         <Image Name="ImgLogo" Stretch="Uniform" HorizontalAlignment="Left" VerticalAlignment="Top" Height="80" MaxWidth="700" Margin="25 20 0 0"></Image>
 
+        <TextBlock Style="{DynamicResource Heading2TextBlockStyle}" Margin="0 15 25 0" VerticalAlignment="Top" HorizontalAlignment="Right" Foreground="#fff" Text="{Binding ClockShortTime}"></TextBlock>
+
         <Grid Background="#86000000" VerticalAlignment="Bottom" HorizontalAlignment="Stretch">
 
             <StackPanel Orientation="Vertical">
@@ -91,7 +93,7 @@
 
                 </StackPanel>
 
-                <Grid x:Name="SeekGrid" Margin="300 15 300 20">
+                <Grid x:Name="SeekGrid" Margin="400 15 300 20">
 
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"></ColumnDefinition>

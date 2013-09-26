@@ -94,7 +94,7 @@ namespace MediaBrowser.UI.EntryPoints
 
         private IEnumerable<BaseItemDto> GetItemsToPlay(ThemeMediaResult result)
         {
-            var items = result.Items.ToList();
+            var items = result.Items.OrderBy(j => Guid.NewGuid()).ToList();
 
             var i = 0;
 
@@ -113,7 +113,6 @@ namespace MediaBrowser.UI.EntryPoints
             {
                 GoFullScreen = false,
                 Items = items.ToList(),
-                Shuffle = true,
                 ShowLoadingAnimation = false
             });
         }

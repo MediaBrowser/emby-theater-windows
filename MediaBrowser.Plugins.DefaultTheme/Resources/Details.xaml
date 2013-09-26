@@ -946,7 +946,7 @@
                             <controls:ExtendedListBox Margin="0 -15 0 -15" DataContext="{Binding ContentViewModel}" ItemsSource="{Binding ListCollectionView}" Command="{Binding OpenImageViewerCommand}" KeyboardNavigation.DirectionalNavigation="Continue" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource ItemGalleryTemplate}">
                                 <controls:ExtendedListBox.ItemsPanel>
                                     <ItemsPanelTemplate>
-                                        <UniformGrid Rows="2" Margin="80 35"></UniformGrid>
+                                        <UniformGrid Rows="3" Margin="80 35"></UniformGrid>
                                     </ItemsPanelTemplate>
                                 </controls:ExtendedListBox.ItemsPanel>
                             </controls:ExtendedListBox>

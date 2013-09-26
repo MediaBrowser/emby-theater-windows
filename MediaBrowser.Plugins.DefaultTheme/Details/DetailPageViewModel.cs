@@ -346,7 +346,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             }
             if (string.Equals(section, "gallery"))
             {
-                const int imageHeight = 640;
+                const int imageHeight = 280;
 
                 var vm = new GalleryViewModel(_apiClient, _imageManager, _navigation)
                 {

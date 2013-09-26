@@ -1,0 +1,12 @@
+﻿<controls:BaseModalWindow x:Class="MediaBrowser.Theater.Core.FullscreenVideo.InfoWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                        xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
+                                        Title="InfoWindow" Height="300" Width="300"
+        Style="{DynamicResource ModalWindow}">
+    <Grid>
+        <!--Themes will supply this template to outline the window structure.-->
+        <ContentControl x:Name="InfoPanel" Template="{DynamicResource FullscreenVideoInfoTemplate}">
+        </ContentControl>
+    </Grid>
+</controls:BaseModalWindow>

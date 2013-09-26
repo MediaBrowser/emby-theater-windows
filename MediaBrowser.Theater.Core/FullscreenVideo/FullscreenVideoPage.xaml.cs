@@ -1,4 +1,5 @@
 ﻿using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
@@ -6,6 +7,7 @@ using MediaBrowser.Theater.Interfaces.UserInput;
 using MediaBrowser.Theater.Presentation.Pages;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Forms;
@@ -26,6 +28,7 @@ namespace MediaBrowser.Theater.Core.FullscreenVideo
 
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
+        private readonly ILogger _logger;
 
         private Timer _activityTimer;
         private DateTime _lastMouseInput;
@@ -35,7 +38,7 @@ namespace MediaBrowser.Theater.Core.FullscreenVideo
 
         private TransportOsdViewModel _viewModel;
 
-        public FullscreenVideoPage(IUserInputManager userInputManager, IPlaybackManager playbackManager, INavigationService nav, IPresentationManager presentation, IApiClient apiClient, IImageManager imageManager)
+        public FullscreenVideoPage(IUserInputManager userInputManager, IPlaybackManager playbackManager, INavigationService nav, IPresentationManager presentation, IApiClient apiClient, IImageManager imageManager, ILogger logger)
         {
             _userInputManager = userInputManager;
             _playbackManager = playbackManager;
@@ -43,6 +46,7 @@ namespace MediaBrowser.Theater.Core.FullscreenVideo
             _presentation = presentation;
             _apiClient = apiClient;
             _imageManager = imageManager;
+            _logger = logger;
 
             InitializeComponent();
 
@@ -134,6 +138,26 @@ namespace MediaBrowser.Theater.Core.FullscreenVideo
             Osd.Visibility = Visibility.Collapsed;
         }
 
+        public void ShowInfoPanel()
+        {
+            Dispatcher.InvokeAsync(() =>
+            {
+                HideOsd();
+
+                if (System.Windows.Application.Current.Windows.OfType<InfoWindow>().Any())
+                {
+                    return;
+                }
+
+                new InfoWindow()
+                {
+                    DataContext = _viewModel
+
+                }.ShowModal(_presentation.Window);
+
+            }, DispatcherPriority.Background);
+        }
+
         protected override void OnInitialized(EventArgs e)
         {
             base.OnInitialized(e);
@@ -156,7 +180,7 @@ namespace MediaBrowser.Theater.Core.FullscreenVideo
             _presentation.SetGlobalThemeContentVisibility(false);
             _playbackManager.PlaybackCompleted += _playbackManager_PlaybackCompleted;
 
-            Osd.DataContext = _viewModel = new TransportOsdViewModel(_playbackManager, _apiClient, _imageManager);
+            Osd.DataContext = _viewModel = new TransportOsdViewModel(_playbackManager, _apiClient, _imageManager, _presentation, _logger);
         }
 
         void FullscreenVideoPage_Unloaded(object sender, RoutedEventArgs e)

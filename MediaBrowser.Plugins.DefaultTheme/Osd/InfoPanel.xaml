@@ -3,35 +3,83 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:details="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Controls"
+             xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
+             xmlns:osd="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Osd"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
 
-    <Grid Background="#a6000000" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Height="300" Margin="0 0 0 200">
+    <Grid>
+        <Image Name="ImgLogo" Stretch="Uniform" HorizontalAlignment="Left" VerticalAlignment="Top" Height="80" MaxWidth="700" Margin="25 20 0 0"></Image>
 
-        <Grid HorizontalAlignment="Center" Margin="20">
-            
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="auto"></ColumnDefinition>
-                <ColumnDefinition Width="auto"></ColumnDefinition>
-            </Grid.ColumnDefinitions>
+        <TextBlock Style="{DynamicResource Heading2TextBlockStyle}" Margin="0 15 25 0" VerticalAlignment="Top" HorizontalAlignment="Right" Foreground="#fff" Text="{Binding ClockShortTime, Converter={controls:LowerCaseConverter}}"></TextBlock>
 
-            <Image x:Name="ImgPrimary" Stretch="Uniform" Grid.Column="0"></Image>
+        <Grid VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="0 0 0 150" Background="{DynamicResource TextBackground}">
 
-            <Grid Grid.Column="1" MaxWidth="1000" Margin="40 0 0 0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"></RowDefinition>
+                <RowDefinition Height="auto"></RowDefinition>
+            </Grid.RowDefinitions>
 
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="auto"></RowDefinition>
-                    <RowDefinition Height="*"></RowDefinition>
-                    <RowDefinition Height="auto"></RowDefinition>
-                </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
 
-                <TextBlock Name="TxtName" Style="{DynamicResource TextBlockStyle}" Grid.Row="0" Margin="0 -5 0 0"></TextBlock>
-                
-                <TextBlock DataContext="{Binding NowPlayingItemViewModel}" Style="{DynamicResource SmallTextBlockStyle}" Text="{Binding Overview}" Grid.Row="1" Margin="0 10 0 0"></TextBlock>
+                <controls:ExtendedListBox x:Name="MenuList" ItemsSource="{Binding Sections}" HorizontalAlignment="Center" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" Margin="100 25 100 15" ItemContainerStyle="{StaticResource InfoPanelMenuItemStyle}">
+                    <controls:ExtendedListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" />
+                        </ItemsPanelTemplate>
+                    </controls:ExtendedListBox.ItemsPanel>
+                </controls:ExtendedListBox>
 
-                <details:ItemInfoFooter HorizontalAlignment="Right" VerticalAlignment="Bottom" DataContext="{Binding NowPlayingItemViewModel}" Grid.Row="2">
-                </details:ItemInfoFooter>
+            </Grid>
+
+            <Grid Height="350" Grid.Row="1" HorizontalAlignment="Center" Margin="20">
+
+                <controls:ExtendedScrollViewer Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalAlignment="Top" HorizontalAlignment="Center" CanContentScroll="True">
+                    <controls:ScrollingPanel CanHorizontallyScroll="True" CanVerticallyScroll="False">
+                        <ContentControl x:Name="PageContent" Focusable="False">
+                            <ContentControl.Style>
+                                <Style TargetType="{x:Type ContentControl}">
+
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding CurrentSection}" Value="Info">
+                                            <Setter Property="Content">
+                                                <Setter.Value>
+                                                    <Grid>
+                                                        <osd:NowPlayingInfo DataContext="{Binding ContentViewModel}"></osd:NowPlayingInfo>
+                                                    </Grid>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding CurrentSection}" Value="Scenes">
+                                            <Setter Property="Content">
+                                                <Setter.Value>
+                                                    <Grid>
+                                                    </Grid>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding CurrentSection}" Value="Audio">
+                                            <Setter Property="Content">
+                                                <Setter.Value>
+                                                    <Grid>
+                                                    </Grid>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding CurrentSection}" Value="Subtitles">
+                                            <Setter Property="Content">
+                                                <Setter.Value>
+                                                    <Grid>
+                                                    </Grid>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ContentControl.Style>
+                        </ContentControl>
+                    </controls:ScrollingPanel>
+                </controls:ExtendedScrollViewer>
             </Grid>
         </Grid>
     </Grid>

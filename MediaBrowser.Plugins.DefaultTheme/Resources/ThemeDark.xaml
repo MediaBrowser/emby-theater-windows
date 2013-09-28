@@ -26,6 +26,8 @@
         </Setter>
     </Style>
 
+    <Brush x:Key="TextBackground">#a6000000</Brush>
+
     <!--Default font for text. Themes should override these as needed-->
     <Brush x:Key="DefaultForeground">#ffffff</Brush>
 
@@ -59,4 +61,15 @@
         </Setter>
     </Style>
 
+    <LinearGradientBrush
+    x:Key="InfoPanelBackgroundOpacityMask"
+    StartPoint="0,0"
+    EndPoint="0,1">
+        <GradientStop Color="#FFFFFFFF" Offset="1"/>
+        <GradientStop Color="#ddFFFFFF" Offset="0.667"/>
+        <GradientStop Color="#bbFFFFFF" Offset="0.34"/>
+        <GradientStop Color="#00FFFFFF" Offset="0"/>
+    </LinearGradientBrush>
+    
+    
 </ResourceDictionary>

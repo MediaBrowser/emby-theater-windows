@@ -273,7 +273,7 @@ namespace MediaBrowser.UI.EntryPoints
                 case Keys.MediaStop:
                     ExecuteCommand(Stop);
                     break;
-                case Keys.I:
+                case Keys.Multiply:
                     ShowInfoPanel();
                     break;
                 default:
@@ -527,7 +527,7 @@ namespace MediaBrowser.UI.EntryPoints
 
             if (page != null)
             {
-                page.ShowInfoPanel();
+                page.ToggleInfoPanel();
             }
         }
     }

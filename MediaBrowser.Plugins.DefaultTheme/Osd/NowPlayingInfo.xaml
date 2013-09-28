@@ -1,0 +1,33 @@
+﻿<UserControl x:Class="MediaBrowser.Plugins.DefaultTheme.Osd.NowPlayingInfo"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:details="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"></ColumnDefinition>
+            <ColumnDefinition Width="auto"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+
+        <Image x:Name="ImgPrimary" Stretch="Uniform" Grid.Column="0" Margin="0 0 0 20"></Image>
+
+        <Grid Grid.Column="1" Width="1100" Margin="40 0 0 0">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="auto"></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <TextBlock Name="TxtName" Style="{DynamicResource TextBlockStyle}" Grid.Row="0" Margin="0 -5 0 0"></TextBlock>
+
+            <TextBlock DataContext="{Binding NowPlayingItemViewModel}" Style="{DynamicResource SmallTextBlockStyle}" Text="{Binding Overview}" Grid.Row="1" Margin="0 10 0 20"></TextBlock>
+
+            <details:ItemInfoFooter ShowResumeProgress="False"  HorizontalAlignment="Right" VerticalAlignment="Bottom" DataContext="{Binding NowPlayingItemViewModel}" Grid.Row="2">
+            </details:ItemInfoFooter>
+        </Grid>
+    </Grid>
+</UserControl>

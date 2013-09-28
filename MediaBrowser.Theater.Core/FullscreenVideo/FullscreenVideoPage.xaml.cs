@@ -88,6 +88,11 @@ namespace MediaBrowser.Theater.Core.FullscreenVideo
 
         private void ShowOnScreenDisplayInternal()
         {
+            if (_infoWindow != null)
+            {
+                return;
+            }
+            
             Osd.Visibility = Visibility.Visible;
 
             lock (_overlayTimerLock)
@@ -138,22 +143,45 @@ namespace MediaBrowser.Theater.Core.FullscreenVideo
             Osd.Visibility = Visibility.Collapsed;
         }
 
+        private InfoWindow _infoWindow;
         public void ShowInfoPanel()
         {
             Dispatcher.InvokeAsync(() =>
             {
                 HideOsd();
 
-                if (System.Windows.Application.Current.Windows.OfType<InfoWindow>().Any())
+                if (_infoWindow != null)
                 {
                     return;
                 }
 
-                new InfoWindow()
+                _infoWindow = new InfoWindow()
                 {
                     DataContext = _viewModel
 
-                }.ShowModal(_presentation.Window);
+                };
+
+                _infoWindow.ShowModal(_presentation.Window);
+
+                _infoWindow = null;
+
+            }, DispatcherPriority.Background);
+        }
+
+        public void ToggleInfoPanel()
+        {
+            if (_infoWindow == null)
+            {
+                ShowInfoPanel();
+                return;
+            }
+
+            Dispatcher.InvokeAsync(() =>
+            {
+                if (_infoWindow != null)
+                {
+                    _infoWindow.Close();
+                }
 
             }, DispatcherPriority.Background);
         }

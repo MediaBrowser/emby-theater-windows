@@ -122,8 +122,17 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
+        private bool _isFirstChange = true;
+
         void Sections_CurrentChanged(object sender, EventArgs e)
         {
+            if (_isFirstChange)
+            {
+                OnSelectionTimerFired(null);
+                _isFirstChange = false;
+                return;
+            }
+
             lock (_syncLock)
             {
                 if (_selectionChangeTimer == null)

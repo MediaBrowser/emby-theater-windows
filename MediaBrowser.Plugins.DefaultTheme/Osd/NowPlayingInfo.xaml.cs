@@ -1,16 +1,16 @@
 ﻿using MediaBrowser.Model.Dto;
-using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using System.ComponentModel;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Osd
 {
     /// <summary>
-    /// Interaction logic for InfoPanel.xaml
+    /// Interaction logic for NowPlayingInfo.xaml
     /// </summary>
-    public partial class InfoPanel : UserControl
+    public partial class NowPlayingInfo : UserControl
     {
         /// <summary>
         /// Gets the view model.
@@ -21,7 +21,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Osd
             get { return DataContext as TransportOsdViewModel; }
         }
 
-        public InfoPanel()
+        public NowPlayingInfo()
         {
             InitializeComponent();
 
@@ -60,28 +60,23 @@ namespace MediaBrowser.Plugins.DefaultTheme.Osd
             }
         }
 
-        private void UpdateNowPlayingItem(TransportOsdViewModel viewModel)
+        private async void UpdateImage(TransportOsdViewModel viewModel)
         {
-            PageContent.DataContext =  MenuList.DataContext = new InfoPanelViewModel(viewModel);
-
             var media = viewModel.NowPlayingItem;
 
-            UpdateLogo(viewModel, media);
-        }
+            ImgPrimary.Visibility = Visibility.Hidden;
 
-        private async void UpdateLogo(TransportOsdViewModel viewModel, BaseItemDto media)
-        {
-            ImgLogo.Visibility = Visibility.Hidden;
-
-            if (media != null && (media.HasLogo || !string.IsNullOrEmpty(media.ParentLogoItemId)))
+            if (media != null && media.HasPrimaryImage)
             {
                 try
                 {
-                    ImgLogo.Source = await viewModel.ImageManager.GetRemoteBitmapAsync(viewModel.ApiClient.GetLogoImageUrl(media, new ImageOptions
+                    ImgPrimary.Source = await viewModel.ImageManager.GetRemoteBitmapAsync(viewModel.ApiClient.GetImageUrl(media, new ImageOptions
                     {
-                    }));
+                        Height = 300
 
-                    ImgLogo.Visibility = Visibility.Visible;
+                    }), CancellationToken.None);
+
+                    ImgPrimary.Visibility = Visibility.Visible;
                 }
                 catch
                 {
@@ -90,5 +85,13 @@ namespace MediaBrowser.Plugins.DefaultTheme.Osd
             }
         }
 
+        private void UpdateNowPlayingItem(TransportOsdViewModel viewModel)
+        {
+            UpdateImage(viewModel);
+
+            var media = viewModel.NowPlayingItem;
+
+            TxtName.Text = media == null ? string.Empty : media.Name;
+        }
     }
 }

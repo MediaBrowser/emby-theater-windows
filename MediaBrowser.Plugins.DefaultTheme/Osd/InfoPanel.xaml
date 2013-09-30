@@ -34,7 +34,7 @@
 
             <Grid Height="320" Grid.Row="1" Margin="20">
 
-                <controls:ExtendedScrollViewer x:Name="ScrollViewer" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalAlignment="Center" HorizontalAlignment="Stretch" CanContentScroll="True">
+                <controls:ExtendedScrollViewer x:Name="ScrollViewer" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" CanContentScroll="True">
                     <controls:ScrollingPanel CanHorizontallyScroll="True" CanVerticallyScroll="False">
                         <ContentControl x:Name="PageContent" Focusable="False">
                             <ContentControl.Style>
@@ -57,7 +57,7 @@
                                                         <controls:ExtendedListBox Margin="0" DataContext="{Binding ContentViewModel}" ItemsSource="{Binding ListCollectionView}" Command="{Binding SeekCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource ItemChaptersTemplate}">
                                                             <controls:ExtendedListBox.ItemsPanel>
                                                                 <ItemsPanelTemplate>
-                                                                    <StackPanel Orientation="Horizontal" Margin="100 25" HorizontalAlignment="Stretch"></StackPanel>
+                                                                    <UniformGrid Rows="1" Margin="100 25" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></UniformGrid>
                                                                 </ItemsPanelTemplate>
                                                             </controls:ExtendedListBox.ItemsPanel>
                                                         </controls:ExtendedListBox>

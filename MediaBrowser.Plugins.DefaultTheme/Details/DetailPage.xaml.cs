@@ -54,9 +54,14 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             }
         }
 
+        /// <summary>
+        /// If viewing a person, genre, etc. This is the id of the media item that we came from (could be null)
+        /// </summary>
+        public string ItemByNameMediaItemId { get; set; }
+
         public string ThemeMediaItemId
         {
-            get { return _itemViewModel.Item.Id; }
+            get { return ItemByNameMediaItemId ?? _itemViewModel.Item.Id; }
         }
 
         void PanoramaDetailPage_Loaded(object sender, RoutedEventArgs e)

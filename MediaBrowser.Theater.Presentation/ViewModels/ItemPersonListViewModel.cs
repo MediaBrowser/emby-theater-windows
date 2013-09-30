@@ -41,6 +41,8 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
+        public ViewType ViewType { get; set; }
+
         private ListCollectionView _listCollectionView;
         public ListCollectionView ListCollectionView
         {
@@ -152,7 +154,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
             try
             {
-                await _navigation.NavigateToPerson(person.Name);
+                await _navigation.NavigateToPerson(person.Name, ViewType, Item.Id);
             }
             catch
             {

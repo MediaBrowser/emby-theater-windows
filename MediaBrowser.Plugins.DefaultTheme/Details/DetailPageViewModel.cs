@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using MediaBrowser.Model.ApiClient;
+﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
@@ -10,7 +9,6 @@ using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.ViewModels;
-using MediaBrowser.Theater.Presentation.Extensions;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
 using System.Collections.Generic;

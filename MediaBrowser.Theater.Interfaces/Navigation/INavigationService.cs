@@ -60,8 +60,9 @@ namespace MediaBrowser.Theater.Interfaces.Navigation
         /// </summary>
         /// <param name="name">The name.</param>
         /// <param name="context">The context.</param>
+        /// <param name="mediaItemId">The media item id.</param>
         /// <returns>Task.</returns>
-        Task NavigateToPerson(string name, ViewType context = ViewType.Folders);
+        Task NavigateToPerson(string name, ViewType context = ViewType.Folders, string mediaItemId = null);
 
         /// <summary>
         /// Navigates the back.
@@ -73,6 +74,11 @@ namespace MediaBrowser.Theater.Interfaces.Navigation
         /// </summary>
         Task NavigateForward();
 
+        /// <summary>
+        /// Navigates to image viewer.
+        /// </summary>
+        /// <param name="viewModel">The view model.</param>
+        /// <returns>Task.</returns>
         Task NavigateToImageViewer(ImageViewerViewModel viewModel);
 
         /// <summary>

@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading;
-using DirectShowLib;
+﻿using DirectShowLib;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Interfaces.Playback;
@@ -9,6 +7,7 @@ using MediaFoundation;
 using MediaFoundation.EVR;
 using MediaFoundation.Misc;
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Forms;

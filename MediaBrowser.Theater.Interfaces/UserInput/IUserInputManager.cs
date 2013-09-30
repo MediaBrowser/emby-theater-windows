@@ -15,15 +15,15 @@ namespace MediaBrowser.Theater.Interfaces.UserInput
         DateTime GetLastInputTime();
 
         /// <summary>
+        /// Occurs when [key press].
+        /// </summary>
+        event KeyPressEventHandler KeyPress;
+
+        /// <summary>
         /// Occurs when [key down].
         /// </summary>
         event KeyEventHandler KeyDown;
 
-        /// <summary>
-        /// Occurs when [key press].
-        /// </summary>
-        event KeyPressEventHandler KeyPress;
-        
         /// <summary>
         /// Occurs when [mouse move].
         /// </summary>

@@ -28,14 +28,15 @@ namespace MediaBrowser.Theater.Interfaces.Theming
         /// <param name="displayPreferences">The display preferences.</param>
         /// <returns>Page.</returns>
         Page GetFolderPage(BaseItemDto item, DisplayPreferences displayPreferences);
-        
+
         /// <summary>
         /// Gets the person page.
         /// </summary>
         /// <param name="item">The item.</param>
         /// <param name="context">The context.</param>
+        /// <param name="mediaItemId">The media item id.</param>
         /// <returns>Page.</returns>
-        Page GetPersonPage(BaseItemDto item, ViewType context);
+        Page GetPersonPage(BaseItemDto item, ViewType context, string mediaItemId = null);
 
         /// <summary>
         /// Gets the name.

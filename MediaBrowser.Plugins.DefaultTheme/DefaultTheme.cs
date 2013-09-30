@@ -132,10 +132,15 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// </summary>
         /// <param name="item">The item.</param>
         /// <param name="context">The context.</param>
+        /// <param name="mediaItemId">The media item id.</param>
         /// <returns>Page.</returns>
-        public Page GetPersonPage(BaseItemDto item, ViewType context)
+        public Page GetPersonPage(BaseItemDto item, ViewType context, string mediaItemId = null)
         {
-            return GetItemPage(item, context);
+            var page = (DetailPage)GetItemPage(item, context);
+
+            page.ItemByNameMediaItemId = mediaItemId;
+
+            return page;
         }
 
         public virtual string Name

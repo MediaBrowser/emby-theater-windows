@@ -303,7 +303,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
                 }
             }
         }
-        
+
         private static void OnCommandChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var buttonBase = (ExtendedListBox)d;

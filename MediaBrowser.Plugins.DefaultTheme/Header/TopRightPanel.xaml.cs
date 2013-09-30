@@ -252,7 +252,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Header
         /// <param name="e">The <see cref="PlaybackStartEventArgs" /> instance containing the event data.</param>
         async void PlaybackManager_PlaybackStarted(object sender, PlaybackStartEventArgs e)
         {
-            if (e.Player is IInternalMediaPlayer)
+            if (e.Player is IInternalMediaPlayer && e.Player is IVideoPlayer)
             {
                 await Dispatcher.InvokeAsync(() => FullscreenButton.Visibility = Visibility.Visible);
             }

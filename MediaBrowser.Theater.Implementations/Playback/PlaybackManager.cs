@@ -138,7 +138,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
 
             await player.Play(options);
 
-            if (player is IInternalMediaPlayer)
+            if (player is IInternalMediaPlayer && player is IVideoPlayer)
             {
                 await _presentationManager.Window.Dispatcher.InvokeAsync(() => _presentationManager.WindowOverlay.SetResourceReference(FrameworkElement.StyleProperty, "WindowBackgroundContentDuringPlayback"));
 
@@ -173,10 +173,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
         /// <param name="eventArgs">The <see cref="PlaybackStopEventArgs"/> instance containing the event data.</param>
         public async void ReportPlaybackCompleted(PlaybackStopEventArgs eventArgs)
         {
-            if (eventArgs.Player is IInternalMediaPlayer)
-            {
-                await _presentationManager.Window.Dispatcher.InvokeAsync(() => _presentationManager.WindowOverlay.SetResourceReference(FrameworkElement.StyleProperty, "WindowBackgroundContent"));
-            }
+            await _presentationManager.Window.Dispatcher.InvokeAsync(() => _presentationManager.WindowOverlay.SetResourceReference(FrameworkElement.StyleProperty, "WindowBackgroundContent"));
 
             EventHelper.QueueEventIfNotNull(PlaybackCompleted, this, eventArgs, _logger);
         }

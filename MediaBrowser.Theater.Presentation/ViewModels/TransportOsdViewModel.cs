@@ -20,8 +20,8 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
     {
         public IApiClient ApiClient { get; private set; }
         public IImageManager ImageManager { get; private set; }
-        private IPlaybackManager PlaybackManager { get; set; }
-        private IPresentationManager PresentationManager { get; set; }
+        public IPlaybackManager PlaybackManager { get; set; }
+        public IPresentationManager PresentationManager { get; set; }
         private ILogger Logger { get; set; }
 
         public ICommand PauseCommand { get; private set; }
@@ -206,6 +206,44 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
+        private bool _canSelectAudioTrack;
+        public bool CanSelectAudioTrack
+        {
+            get
+            {
+                return _canSelectAudioTrack;
+            }
+            set
+            {
+                var changed = !bool.Equals(_canSelectAudioTrack, value);
+                _canSelectAudioTrack = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("CanSelectAudioTrack");
+                }
+            }
+        }
+
+        private bool _canSelectSubtitleTrack;
+        public bool CanSelectSubtitleTrack
+        {
+            get
+            {
+                return _canSelectSubtitleTrack;
+            }
+            set
+            {
+                var changed = !bool.Equals(_canSelectSubtitleTrack, value);
+                _canSelectSubtitleTrack = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("CanSelectSubtitleTrack");
+                }
+            }
+        }
+
         private bool _isPaused;
         public bool IsPaused
         {
@@ -343,6 +381,17 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             OnPropertyChanged("ClockShortTime");
         }
 
+        public ChapterInfoListViewModel CreateChaptersViewModel()
+        {
+            var vm = new ChapterInfoListViewModel(ApiClient, ImageManager, PlaybackManager, PresentationManager)
+            {
+                Item = NowPlayingItem,
+                StartPositionTicks = PositionTicks
+            };
+
+            return vm;
+        }
+
         /// <summary>
         /// Gets the time string.
         /// </summary>
@@ -373,7 +422,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 CanSeek = player != null && player.CanSeek;
 
                 UpdatePauseValues(player);
-                UpdateSupportsChapters(player, media);
+                UpdatePlayerCapabilities(player, media);
             }
             else if (string.Equals(name, "MediaPlayer"))
             {
@@ -412,9 +461,14 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             _currentDispatcher.InvokeAsync(() => UpdatePauseValues(MediaPlayer));
         }
 
-        private void UpdateSupportsChapters(IMediaPlayer player, BaseItemDto media)
+        private void UpdatePlayerCapabilities(IMediaPlayer player, BaseItemDto media)
         {
             SupportsChapters = player != null && player.CanSeek && media != null && media.Chapters.Count > 0;
+
+            var videoPlayer = player as IVideoPlayer;
+
+            CanSelectAudioTrack = videoPlayer != null && videoPlayer.CanSelectAudioTrack && media != null && videoPlayer.AudioStreams.Count > 0;
+            CanSelectSubtitleTrack = videoPlayer != null && videoPlayer.CanSelectSubtitleTrack && media != null && videoPlayer.SubtitleStreams.Count > 0;
         }
 
         private void UpdatePauseValues(IMediaPlayer player)

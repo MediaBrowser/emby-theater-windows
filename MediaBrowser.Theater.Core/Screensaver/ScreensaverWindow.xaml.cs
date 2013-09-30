@@ -10,6 +10,7 @@ using MediaBrowser.Theater.Presentation.Controls;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace MediaBrowser.Theater.Core.Screensaver
 {
@@ -92,6 +93,7 @@ namespace MediaBrowser.Theater.Core.Screensaver
             {
                 UserId = _session.CurrentUser.Id,
                 ImageTypes = new[] { ImageType.Backdrop },
+                IncludeItemTypes = new[] { "Movie", "Boxset", "Trailer", "Game", "Series", "MusicArtist" },
                 Limit = 100,
                 SortBy = new[] { ItemSortBy.Random },
                 Recursive = true
@@ -116,6 +118,9 @@ namespace MediaBrowser.Theater.Core.Screensaver
             MainGrid.Children.Add(new ImageViewerControl
             {
                 DataContext = new ImageViewerViewModel(_imageManager, images)
+                {
+                    ImageStretch = Stretch.UniformToFill
+                }
             });
         }
     }

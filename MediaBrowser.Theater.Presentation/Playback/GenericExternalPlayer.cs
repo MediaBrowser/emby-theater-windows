@@ -430,11 +430,19 @@ namespace MediaBrowser.Theater.Presentation.Playback
             return item.Path;
         }
 
+        /// <summary>
+        /// Gets a value indicating whether [requires configured path].
+        /// </summary>
+        /// <value><c>true</c> if [requires configured path]; otherwise, <c>false</c>.</value>
         public virtual bool RequiresConfiguredPath
         {
             get { return true; }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether [requires configured arguments].
+        /// </summary>
+        /// <value><c>true</c> if [requires configured arguments]; otherwise, <c>false</c>.</value>
         public virtual bool RequiresConfiguredArguments
         {
             get { return true; }

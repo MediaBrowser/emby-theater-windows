@@ -1,7 +1,4 @@
-﻿using System.Windows.Data;
-using System.Windows.Input;
-using System.Windows.Media;
-using MediaBrowser.Model.Dto;
+﻿using MediaBrowser.Model.Dto;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Reflection;
 using System;
@@ -10,6 +7,8 @@ using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Threading;
 
 namespace MediaBrowser.Theater.Interfaces.ViewModels

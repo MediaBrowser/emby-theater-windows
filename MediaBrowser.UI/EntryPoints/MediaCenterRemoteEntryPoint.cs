@@ -74,6 +74,7 @@ namespace MediaBrowser.UI.EntryPoints
             _userInput.KeyDown -= _userInput_KeyDown;
             _userInput.KeyDown += _userInput_KeyDown;
         }
+
         private void RemoveGlobalHook()
         {
             _userInput.KeyDown -= _userInput_KeyDown;
@@ -273,15 +274,18 @@ namespace MediaBrowser.UI.EntryPoints
                 case Keys.MediaStop:
                     ExecuteCommand(Stop);
                     break;
+                case Keys.D8:
+                    {
+                        ToggleInfoPanel();
+                        break;
+                    }
                 case Keys.Multiply:
-                    ShowInfoPanel();
+                    ToggleInfoPanel();
                     break;
                 default:
                     return;
             }
         }
-
-        private readonly Task _trueTaskResult = Task.FromResult(true);
 
         private void ExecuteCommand(Action action)
         {
@@ -516,7 +520,7 @@ namespace MediaBrowser.UI.EntryPoints
             }
         }
 
-        private void ShowInfoPanel()
+        private void ToggleInfoPanel()
         {
             _presenation.Window.Dispatcher.InvokeAsync(ShowInfoPanelInternal);
         }

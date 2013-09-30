@@ -15,22 +15,27 @@
 
     <Style TargetType="controls:TransitionControl">
         <Setter Property="KeyboardNavigation.IsTabStop" Value="false"/>
+        <Setter Property="Focusable" Value="false"/>
     </Style>
 
     <Style TargetType="UserControl">
         <Setter Property="KeyboardNavigation.IsTabStop" Value="false"/>
+        <Setter Property="Focusable" Value="false"/>
     </Style>
 
     <Style TargetType="Page">
         <Setter Property="KeyboardNavigation.IsTabStop" Value="false"/>
+        <Setter Property="Focusable" Value="false"/>
     </Style>
 
     <Style TargetType="controls:ScrollingPanel">
         <Setter Property="KeyboardNavigation.IsTabStop" Value="false"/>
+        <Setter Property="Focusable" Value="false"/>
     </Style>
 
     <!--Default Frame style. -->
     <Style TargetType="ContentControl">
         <Setter Property="KeyboardNavigation.IsTabStop" Value="false"/>
+        <Setter Property="Focusable" Value="false"/>
     </Style>
 </ResourceDictionary>

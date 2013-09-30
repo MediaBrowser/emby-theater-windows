@@ -62,11 +62,30 @@ namespace MediaBrowser.Plugins.DefaultTheme.Osd
 
         private void UpdateNowPlayingItem(TransportOsdViewModel viewModel)
         {
-            PageContent.DataContext =  MenuList.DataContext = new InfoPanelViewModel(viewModel);
+            var menuViewModel = new InfoPanelViewModel(viewModel);
+
+            PageContent.DataContext = MenuList.DataContext = menuViewModel;
+
+            menuViewModel.PropertyChanged += InfoPanel_PropertyChanged;
 
             var media = viewModel.NowPlayingItem;
 
             UpdateLogo(viewModel, media);
+        }
+
+        void InfoPanel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (string.Equals(e.PropertyName, "CurrentSection"))
+            {
+                ScrollViewer.ScrollToLeftEnd();
+
+                var current = MenuList.ItemContainerGenerator.ContainerFromItem(MenuList.SelectedItem) as ListBoxItem;
+
+                if (current != null)
+                {
+                    current.Focus();
+                }
+            }
         }
 
         private async void UpdateLogo(TransportOsdViewModel viewModel, BaseItemDto media)

@@ -165,6 +165,8 @@ namespace MediaBrowser.Theater.Core.FullscreenVideo
 
                 _infoWindow = null;
 
+                IsMouseIdle = true;
+
             }, DispatcherPriority.Background);
         }
 

@@ -18,7 +18,7 @@ using System.Windows.Forms;
 
 namespace MediaBrowser.Theater.DirectShow
 {
-    public class InternalDirectShowPlayer : IInternalMediaPlayer
+    public class InternalDirectShowPlayer : IInternalMediaPlayer, IVideoPlayer
     {
         private DirectShowPlayer _mediaPlayer;
 
@@ -97,6 +97,24 @@ namespace MediaBrowser.Theater.DirectShow
         }
 
         public bool SupportsMultiFilePlayback
+        {
+            get { return true; }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this instance can select audio track.
+        /// </summary>
+        /// <value><c>true</c> if this instance can select audio track; otherwise, <c>false</c>.</value>
+        public virtual bool CanSelectAudioTrack
+        {
+            get { return true; }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this instance can select subtitle track.
+        /// </summary>
+        /// <value><c>true</c> if this instance can select subtitle track; otherwise, <c>false</c>.</value>
+        public virtual bool CanSelectSubtitleTrack
         {
             get { return true; }
         }
@@ -391,6 +409,24 @@ namespace MediaBrowser.Theater.DirectShow
         public void ChangeTrack(int newIndex)
         {
             _mediaPlayer.Stop(TrackCompletionReason.ChangeTrack, newIndex);
+        }
+
+        public IReadOnlyList<SelectableMediaStream> AudioStreams
+        {
+            get { return _mediaPlayer.GetAudioStreams(); }
+        }
+
+        public IReadOnlyList<SelectableMediaStream> SubtitleStreams
+        {
+            get { return _mediaPlayer.GetSubtitleStreams(); }
+        }
+
+        public void ChangeAudioStream(SelectableMediaStream track)
+        {
+        }
+
+        public void ChangeSubtitleStream(SelectableMediaStream track)
+        {
         }
     }
 

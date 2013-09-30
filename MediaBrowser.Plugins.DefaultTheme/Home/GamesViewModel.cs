@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Media;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Home
 {
@@ -48,7 +49,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 Height = spotlightTileHeight,
                 Width = spotlightTileWidth,
-                CustomCommandAction = i => _navService.NavigateToItem(i.Item, ViewType.Games)
+                CustomCommandAction = i => _navService.NavigateToItem(i.Item, ViewType.Games),
+                ImageStretch = Stretch.UniformToFill
             };
 
             GameSystemsViewModel = new ItemListViewModel(GetResumeablesAsync, presentation, imageManager, apiClient, session, nav, playback, logger)

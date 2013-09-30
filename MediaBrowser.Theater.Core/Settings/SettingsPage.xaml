@@ -13,7 +13,6 @@
 
         <controls:ExtendedScrollViewer ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalAlignment="Top" HorizontalAlignment="Left">
             <controls:ScrollingPanel CanHorizontallyScroll="True" CanVerticallyScroll="False" HorizontalAlignment="Stretch">
-
                 <Grid Margin="100 0 100 0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="auto"></RowDefinition>

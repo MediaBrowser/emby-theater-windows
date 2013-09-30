@@ -87,7 +87,7 @@ namespace MediaBrowser.Theater.Core.Settings
 
             if (update.IsUpdateAvailable)
             {
-                _installationManager.InstallPackage(update.Package, new Progress<double>(), CancellationToken.None);
+                _appHost.UpdateApplication(update.Package, CancellationToken.None, new Progress<double>());
             }
         }
 

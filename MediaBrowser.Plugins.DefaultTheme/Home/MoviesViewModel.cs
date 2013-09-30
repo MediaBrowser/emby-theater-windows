@@ -160,7 +160,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 Height = spotlightTileHeight,
                 Width = spotlightTileWidth,
-                CustomCommandAction = i => _navService.NavigateToItem(i.Item, ViewType.Movies)
+                CustomCommandAction = i => _navService.NavigateToItem(i.Item, ViewType.Movies),
+                ImageStretch = Stretch.UniformToFill
             };
 
             LoadViewModels();

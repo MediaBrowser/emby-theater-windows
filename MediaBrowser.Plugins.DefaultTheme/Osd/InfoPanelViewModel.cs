@@ -24,29 +24,43 @@ namespace MediaBrowser.Plugins.DefaultTheme.Osd
                 Name = "Info"
             });
 
-            list.Add(new TabItem
+            if (_transportViewModel.CanSeek && _transportViewModel.SupportsChapters)
             {
-                DisplayName = "Scenes",
-                Name = "Scenes"
-            });
+                list.Add(new TabItem
+                {
+                    DisplayName = "Scenes",
+                    Name = "Scenes"
+                });
+            }
 
-            list.Add(new TabItem
+            if (_transportViewModel.CanSelectAudioTrack)
             {
-                DisplayName = "Audio",
-                Name = "Audio"
-            });
+                list.Add(new TabItem
+                {
+                    DisplayName = "Audio",
+                    Name = "Audio"
+                });
+            }
 
-            list.Add(new TabItem
+            if (_transportViewModel.CanSelectSubtitleTrack)
             {
-                DisplayName = "Subtitles",
-                Name = "Subtitles"
-            });
+                list.Add(new TabItem
+                {
+                    DisplayName = "Subtitles",
+                    Name = "Subtitles"
+                });
+            }
             
             return Task.FromResult<IEnumerable<TabItem>>(list);
         }
 
         protected override BaseViewModel GetContentViewModel(string section)
         {
+            if (string.Equals(section, "Scenes"))
+            {
+                return _transportViewModel.CreateChaptersViewModel();
+            }
+
             return _transportViewModel;
         }
     }

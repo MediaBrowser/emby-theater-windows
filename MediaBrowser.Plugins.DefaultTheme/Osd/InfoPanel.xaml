@@ -32,9 +32,9 @@
 
             </Grid>
 
-            <Grid Height="350" Grid.Row="1" HorizontalAlignment="Center" Margin="20">
+            <Grid Height="320" Grid.Row="1" Margin="20">
 
-                <controls:ExtendedScrollViewer Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalAlignment="Top" HorizontalAlignment="Center" CanContentScroll="True">
+                <controls:ExtendedScrollViewer x:Name="ScrollViewer" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalAlignment="Center" HorizontalAlignment="Stretch" CanContentScroll="True">
                     <controls:ScrollingPanel CanHorizontallyScroll="True" CanVerticallyScroll="False">
                         <ContentControl x:Name="PageContent" Focusable="False">
                             <ContentControl.Style>
@@ -45,7 +45,7 @@
                                             <Setter Property="Content">
                                                 <Setter.Value>
                                                     <Grid>
-                                                        <osd:NowPlayingInfo DataContext="{Binding ContentViewModel}"></osd:NowPlayingInfo>
+                                                        <osd:NowPlayingInfo DataContext="{Binding ContentViewModel}" HorizontalAlignment="Center"></osd:NowPlayingInfo>
                                                     </Grid>
                                                 </Setter.Value>
                                             </Setter>
@@ -54,6 +54,13 @@
                                             <Setter Property="Content">
                                                 <Setter.Value>
                                                     <Grid>
+                                                        <controls:ExtendedListBox Margin="0" DataContext="{Binding ContentViewModel}" ItemsSource="{Binding ListCollectionView}" Command="{Binding SeekCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource ItemChaptersTemplate}">
+                                                            <controls:ExtendedListBox.ItemsPanel>
+                                                                <ItemsPanelTemplate>
+                                                                    <StackPanel Orientation="Horizontal" Margin="100 25" HorizontalAlignment="Stretch"></StackPanel>
+                                                                </ItemsPanelTemplate>
+                                                            </controls:ExtendedListBox.ItemsPanel>
+                                                        </controls:ExtendedListBox>
                                                     </Grid>
                                                 </Setter.Value>
                                             </Setter>

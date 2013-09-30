@@ -26,6 +26,18 @@ namespace MediaBrowser.Theater.Implementations.UserInput
             }
         }
 
+        public event KeyPressEventHandler KeyPress
+        {
+            add
+            {
+                HookManager.KeyPress += value;
+            }
+            remove
+            {
+                HookManager.KeyPress -= value;
+            }
+        }
+        
         /// <summary>
         /// Occurs when [mouse move].
         /// </summary>

@@ -190,7 +190,13 @@ namespace MediaBrowser.UI
         /// <value><c>true</c> if this instance can self update; otherwise, <c>false</c>.</value>
         public override bool CanSelfUpdate
         {
-            get { return false; }
+            get
+            {
+#if DEBUG
+                return false;
+#endif
+                return true;
+            }
         }
 
         /// <summary>

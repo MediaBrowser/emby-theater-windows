@@ -19,9 +19,15 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         private readonly IPresentationManager _presentationManager;
 
         public ICommand PlayCommand { get; private set; }
+        public ICommand SeekCommand { get; private set; }
 
         private readonly RangeObservableCollection<ChapterInfoViewModel> _listItems =
          new RangeObservableCollection<ChapterInfoViewModel>();
+
+        public IReadOnlyList<ChapterInfoViewModel> Chapters
+        {
+            get { return _listItems; }
+        }
 
         private BaseItemDto _item;
         public BaseItemDto Item
@@ -37,7 +43,10 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 {
                     OnPropertyChanged("Item");
 
-                    ReloadChapters(_item);
+                    if (_chapters != null)
+                    {
+                        ReloadChapters(_item);
+                    }
                 }
             }
         }
@@ -64,6 +73,15 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         {
             get
             {
+                if (_chapters == null)
+                {
+                    _chapters = new ListCollectionView(_listItems);
+
+                    if (Item != null)
+                    {
+                        ReloadChapters(Item);
+                    }
+                }
                 return _chapters;
             }
 
@@ -85,12 +103,12 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             _imageManager = imageManager;
             _playback = playback;
             _presentationManager = presentationManager;
-            _chapters = new ListCollectionView(_listItems);
 
             PlayCommand = new RelayCommand(Play);
+            SeekCommand = new RelayCommand(Seek);
         }
 
-        private void ReloadChapters(BaseItemDto item)
+        public void ReloadChapters(BaseItemDto item)
         {
             if (item == null)
             {
@@ -98,22 +116,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 return;
             }
 
-            // Record the current item
-            var currentItem = _chapters.CurrentItem as ChapterInfoViewModel;
-
             var chapters = item.Chapters ?? new List<ChapterInfoDto>();
-
-            int? selectedIndex = null;
-
-            if (currentItem != null)
-            {
-                var index = Array.FindIndex(chapters.ToArray(), i => i.StartPositionTicks == currentItem.Chapter.StartPositionTicks);
-
-                if (index != -1)
-                {
-                    selectedIndex = index;
-                }
-            }
 
             _listItems.Clear();
 
@@ -124,9 +127,9 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 ImageWidth = ImageWidth
             }));
 
-            if (selectedIndex.HasValue)
+            if (StartPositionTicks.HasValue)
             {
-                ListCollectionView.MoveCurrentToPosition(selectedIndex.Value);
+                //SetPositionTicks(StartPositionTicks.Value);
             }
         }
 
@@ -145,6 +148,50 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             catch
             {
                 _presentationManager.ShowDefaultErrorMessage();
+            }
+        }
+
+        public long? StartPositionTicks { get; set; }
+
+        public void SetPositionTicks(long ticks)
+        {
+            var newIndex = 0;
+
+            var chapters = Chapters.ToList();
+
+            for (var i = 0; i < chapters.Count; i++)
+            {
+                if (ticks >= chapters[i].Chapter.StartPositionTicks)
+                {
+                    newIndex = i;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            ListCollectionView.MoveCurrentToPosition(newIndex);
+        }
+
+        private void Seek(object commandParameter)
+        {
+            var chapter = (ChapterInfoViewModel)commandParameter;
+
+            var player = _playback.MediaPlayers
+                .OfType<IVideoPlayer>()
+                .FirstOrDefault(i => i.PlayState != PlayState.Idle && i.CanSeek);
+
+            if (player != null)
+            {
+                try
+                {
+                    player.Seek(chapter.Chapter.StartPositionTicks);
+                }
+                catch
+                {
+                    _presentationManager.ShowDefaultErrorMessage();
+                }
             }
         }
 

@@ -20,6 +20,11 @@ namespace MediaBrowser.Theater.Interfaces.UserInput
         event KeyEventHandler KeyDown;
 
         /// <summary>
+        /// Occurs when [key press].
+        /// </summary>
+        event KeyPressEventHandler KeyPress;
+        
+        /// <summary>
         /// Occurs when [mouse move].
         /// </summary>
         event MouseEventHandler MouseMove;

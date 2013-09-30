@@ -1,4 +1,6 @@
-﻿using DirectShowLib;
+﻿using System.Collections.Generic;
+using System.Threading;
+using DirectShowLib;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Interfaces.Playback;
@@ -7,7 +9,6 @@ using MediaFoundation;
 using MediaFoundation.EVR;
 using MediaFoundation.Misc;
 using System;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Forms;
@@ -24,7 +25,7 @@ namespace MediaBrowser.Theater.DirectShow
         private readonly IHiddenWindow _hiddenWindow;
         private readonly InternalDirectShowPlayer _playerWrapper;
 
-        private DirectShowLib.IGraphBuilder _graphBuilder;
+        private DirectShowLib.IGraphBuilder m_graph;
 
         private DirectShowLib.IMediaControl _mediaControl;
         private DirectShowLib.IMediaEventEx _mediaEventEx;
@@ -108,20 +109,20 @@ namespace MediaBrowser.Theater.DirectShow
 
         private void InitializeGraph()
         {
-            _graphBuilder = (DirectShowLib.IGraphBuilder)new FilterGraphNoThread();
+            m_graph = (DirectShowLib.IGraphBuilder)new FilterGraphNoThread();
 
             // QueryInterface for DirectShow interfaces
-            _mediaControl = (DirectShowLib.IMediaControl)_graphBuilder;
-            _mediaEventEx = (DirectShowLib.IMediaEventEx)_graphBuilder;
-            _mediaSeeking = (DirectShowLib.IMediaSeeking)_graphBuilder;
-            _mediaPosition = (DirectShowLib.IMediaPosition)_graphBuilder;
+            _mediaControl = (DirectShowLib.IMediaControl)m_graph;
+            _mediaEventEx = (DirectShowLib.IMediaEventEx)m_graph;
+            _mediaSeeking = (DirectShowLib.IMediaSeeking)m_graph;
+            _mediaPosition = (DirectShowLib.IMediaPosition)m_graph;
 
             // Query for video interfaces, which may not be relevant for audio files
-            _videoWindow = _graphBuilder as DirectShowLib.IVideoWindow;
-            _basicVideo = _graphBuilder as DirectShowLib.IBasicVideo;
+            _videoWindow = m_graph as DirectShowLib.IVideoWindow;
+            _basicVideo = m_graph as DirectShowLib.IBasicVideo;
 
             // Query for audio interfaces, which may not be relevant for video-only files
-            _basicAudio = _graphBuilder as DirectShowLib.IBasicAudio;
+            _basicAudio = m_graph as DirectShowLib.IBasicAudio;
 
             // Set up event notification.
             var hr = _mediaEventEx.SetNotifyWindow(Handle, WM_GRAPHNOTIFY, IntPtr.Zero);
@@ -132,7 +133,7 @@ namespace MediaBrowser.Theater.DirectShow
         {
             InitializeGraph();
 
-            var hr = _graphBuilder.AddSourceFilter(path, path, out _pSource);
+            var hr = m_graph.AddSourceFilter(path, path, out _pSource);
             DsError.ThrowExceptionForHR(hr);
 
             // Try to render the streams.
@@ -147,7 +148,7 @@ namespace MediaBrowser.Theater.DirectShow
         {
             int hr;
 
-            _filterGraph = _graphBuilder as DirectShowLib.IFilterGraph2;
+            _filterGraph = m_graph as DirectShowLib.IFilterGraph2;
             if (_filterGraph == null)
             {
                 throw new Exception("Could not QueryInterface for the IFilterGraph2");
@@ -157,7 +158,7 @@ namespace MediaBrowser.Theater.DirectShow
             if (_item.IsVideo)
             {
                 _mPEvr = (DirectShowLib.IBaseFilter)new EnhancedVideoRenderer();
-                hr = _graphBuilder.AddFilter(_mPEvr, "EVR");
+                hr = m_graph.AddFilter(_mPEvr, "EVR");
                 DsError.ThrowExceptionForHR(hr);
 
                 InitializeEvr(_mPEvr, 1);
@@ -174,7 +175,7 @@ namespace MediaBrowser.Theater.DirectShow
                     var aRenderer = _reclockAudioRenderer as DirectShowLib.IBaseFilter;
                     if (aRenderer != null)
                     {
-                        hr = _graphBuilder.AddFilter(aRenderer, "Reclock Audio Renderer");
+                        hr = m_graph.AddFilter(aRenderer, "Reclock Audio Renderer");
                         DsError.ThrowExceptionForHR(hr);
                         useDefaultRenderer = false;
                     }
@@ -191,7 +192,7 @@ namespace MediaBrowser.Theater.DirectShow
                 var aRenderer = _defaultAudioRenderer as DirectShowLib.IBaseFilter;
                 if (aRenderer != null)
                 {
-                    _graphBuilder.AddFilter(aRenderer, "Default Audio Renderer");
+                    m_graph.AddFilter(aRenderer, "Default Audio Renderer");
                 }
             }
 
@@ -203,7 +204,7 @@ namespace MediaBrowser.Theater.DirectShow
                     var vlavvideo = _lavvideo as DirectShowLib.IBaseFilter;
                     if (vlavvideo != null)
                     {
-                        hr = _graphBuilder.AddFilter(vlavvideo, "LAV Video Decoder");
+                        hr = m_graph.AddFilter(vlavvideo, "LAV Video Decoder");
                         DsError.ThrowExceptionForHR(hr);
                     }
                 }
@@ -218,7 +219,7 @@ namespace MediaBrowser.Theater.DirectShow
                     var vxyVsFilter = _xyVsFilter as DirectShowLib.IBaseFilter;
                     if (vxyVsFilter != null)
                     {
-                        hr = _graphBuilder.AddFilter(vxyVsFilter, "xy-VSFilter");
+                        hr = m_graph.AddFilter(vxyVsFilter, "xy-VSFilter");
                         DsError.ThrowExceptionForHR(hr);
                     }
                 }
@@ -234,7 +235,7 @@ namespace MediaBrowser.Theater.DirectShow
                 var vlavaudio = _lavaudio as DirectShowLib.IBaseFilter;
                 if (vlavaudio != null)
                 {
-                    hr = _graphBuilder.AddFilter(vlavaudio, "LAV Audio Decoder");
+                    hr = m_graph.AddFilter(vlavaudio, "LAV Audio Decoder");
                     DsError.ThrowExceptionForHR(hr);
                 }
             }
@@ -251,7 +252,7 @@ namespace MediaBrowser.Theater.DirectShow
                     var vmadvr = _madvr as DirectShowLib.IBaseFilter;
                     if (vmadvr != null)
                     {
-                        hr = _graphBuilder.AddFilter(vmadvr, "MadVR Video Renderer");
+                        hr = m_graph.AddFilter(vmadvr, "MadVR Video Renderer");
                         DsError.ThrowExceptionForHR(hr);
                     }
                 }
@@ -334,6 +335,7 @@ namespace MediaBrowser.Theater.DirectShow
             SetVideoPositions();
             _hiddenWindow.SizeChanged += _hiddenWindow_SizeChanged;
 
+            //_videoWindow.HideCursor(OABool.True);
             _videoWindow.put_Owner(Handle);
             _videoWindow.put_WindowStyle(DirectShowLib.WindowStyle.Child | DirectShowLib.WindowStyle.Visible | DirectShowLib.WindowStyle.ClipSiblings);
             //_videoWindow.put_FullScreenMode(OABool.True);
@@ -361,21 +363,15 @@ namespace MediaBrowser.Theater.DirectShow
 
             decimal heightAsPercentOfWidth = 0;
 
-            var basicVideo2 = (IBasicVideo2)_graphBuilder;
+            var basicVideo2 = (IBasicVideo2)m_graph;
             basicVideo2.GetPreferredAspectRatio(out aspectX, out aspectY);
 
             var sourceHeight = 0;
             var sourceWidth = 0;
 
-            var videoStream = _item.MediaStreams.FirstOrDefault(i => i.Type == MediaStreamType.Video);
+            _basicVideo.GetVideoSize(out sourceWidth, out sourceHeight);
 
-            if (videoStream != null)
-            {
-                sourceWidth = videoStream.Width ?? 0;
-                sourceHeight = videoStream.Height ?? 0;
-            }
-
-            if (aspectX == 0 || aspectY == 0)
+            if (aspectX == 0 || aspectY == 0 || sourceWidth > 0 || sourceHeight > 0)
             {
                 aspectX = sourceWidth;
                 aspectY = sourceHeight;
@@ -478,7 +474,7 @@ namespace MediaBrowser.Theater.DirectShow
 
             OnStopped(reason, newTrackIndex);
         }
-        
+
         public void Seek(long ticks)
         {
             if (_mediaSeeking != null)
@@ -563,7 +559,7 @@ namespace MediaBrowser.Theater.DirectShow
 
             if (_defaultAudioRenderer != null)
             {
-                _graphBuilder.RemoveFilter(_defaultAudioRenderer as DirectShowLib.IBaseFilter);
+                m_graph.RemoveFilter(_defaultAudioRenderer as DirectShowLib.IBaseFilter);
 
                 Marshal.ReleaseComObject(_defaultAudioRenderer);
                 _defaultAudioRenderer = null;
@@ -571,7 +567,7 @@ namespace MediaBrowser.Theater.DirectShow
 
             if (_reclockAudioRenderer != null)
             {
-                _graphBuilder.RemoveFilter(_reclockAudioRenderer as DirectShowLib.IBaseFilter);
+                m_graph.RemoveFilter(_reclockAudioRenderer as DirectShowLib.IBaseFilter);
 
                 Marshal.ReleaseComObject(_reclockAudioRenderer);
                 _reclockAudioRenderer = null;
@@ -579,7 +575,7 @@ namespace MediaBrowser.Theater.DirectShow
 
             if (_lavaudio != null)
             {
-                _graphBuilder.RemoveFilter(_lavaudio as DirectShowLib.IBaseFilter);
+                m_graph.RemoveFilter(_lavaudio as DirectShowLib.IBaseFilter);
 
                 Marshal.ReleaseComObject(_lavaudio);
                 _lavaudio = null;
@@ -587,7 +583,7 @@ namespace MediaBrowser.Theater.DirectShow
 
             if (_xyVsFilter != null)
             {
-                _graphBuilder.RemoveFilter(_xyVsFilter as DirectShowLib.IBaseFilter);
+                m_graph.RemoveFilter(_xyVsFilter as DirectShowLib.IBaseFilter);
 
                 Marshal.ReleaseComObject(_xyVsFilter);
                 _xyVsFilter = null;
@@ -595,7 +591,7 @@ namespace MediaBrowser.Theater.DirectShow
 
             if (_lavvideo != null)
             {
-                _graphBuilder.RemoveFilter(_lavvideo as DirectShowLib.IBaseFilter);
+                m_graph.RemoveFilter(_lavvideo as DirectShowLib.IBaseFilter);
 
                 Marshal.ReleaseComObject(_lavvideo);
                 _lavvideo = null;
@@ -603,7 +599,7 @@ namespace MediaBrowser.Theater.DirectShow
 
             if (_madvr != null)
             {
-                _graphBuilder.RemoveFilter(_madvr as DirectShowLib.IBaseFilter);
+                m_graph.RemoveFilter(_madvr as DirectShowLib.IBaseFilter);
 
                 Marshal.ReleaseComObject(_madvr);
                 _madvr = null;
@@ -684,10 +680,10 @@ namespace MediaBrowser.Theater.DirectShow
                 _sourceFilter = null;
             }
 
-            if (_graphBuilder != null)
+            if (m_graph != null)
             {
-                Marshal.ReleaseComObject(_graphBuilder);
-                _graphBuilder = null;
+                Marshal.ReleaseComObject(m_graph);
+                m_graph = null;
             }
 
             if (_videoWindow != null)
@@ -699,6 +695,177 @@ namespace MediaBrowser.Theater.DirectShow
             _mSeekCaps = 0;
 
             GC.Collect();
+        }
+
+        private List<SelectableMediaStream> _audioStreams;
+        private List<SelectableMediaStream> _subtitleStreams;
+
+        public IReadOnlyList<SelectableMediaStream> GetAudioStreams()
+        {
+            if (_audioStreams == null || _subtitleStreams == null)
+            {
+                PopulateStreams();
+            }
+            return _audioStreams;
+        }
+
+        public IReadOnlyList<SelectableMediaStream> GetSubtitleStreams()
+        {
+            if (_audioStreams == null || _subtitleStreams == null)
+            {
+                try
+                {
+                    PopulateStreams();
+                }
+                catch (Exception ex)
+                {
+                    _logger.ErrorException("Unable to get audio and subtitle information.", ex);
+
+                    _audioStreams = new List<SelectableMediaStream>();
+                    _subtitleStreams = new List<SelectableMediaStream>();
+                }
+            }
+            return _subtitleStreams;
+        }
+
+        private void PopulateStreams()
+        {
+            var audioStreams = new List<SelectableMediaStream>();
+            var subtitleStreams = new List<SelectableMediaStream>();
+
+            var audioSelector = Guid.Empty;
+            var vobsubSelector = Guid.Empty;
+            var grp2Selector = Guid.Empty;
+            
+            IEnumFilters enumFilters;
+            var hr = m_graph.EnumFilters(out enumFilters);
+
+            DsError.ThrowExceptionForHR(hr);
+
+            var filters = new DirectShowLib.IBaseFilter[1];
+
+            while (enumFilters.Next(filters.Length, filters, IntPtr.Zero) == 0)
+            {
+                FilterInfo filterInfo;
+
+                hr = filters[0].QueryFilterInfo(out filterInfo);
+                DsError.ThrowExceptionForHR(hr);
+
+                Guid cl;
+                filters[0].GetClassID(out cl);
+
+                if (filterInfo.pGraph != null)
+                {
+                    Marshal.ReleaseComObject(filterInfo.pGraph);
+                }
+
+                var iss = filters[0] as IAMStreamSelect;
+
+                if (iss != null)
+                {
+                    int count;
+
+                    hr = iss.Count(out count);
+                    DsError.ThrowExceptionForHR(hr);
+
+                    for (int i = 0; i < count; i++)
+                    {
+                        DirectShowLib.AMMediaType type;
+                        AMStreamSelectInfoFlags flags;
+                        int plcid, pwdGrp; // language
+                        String pzname;
+
+                        object ppobject, ppunk;
+
+                        hr = iss.Info(i, out type, out flags, out plcid, out pwdGrp, out pzname, out ppobject, out ppunk);
+                        DsError.ThrowExceptionForHR(hr);
+
+                        if (ppobject != null)
+                        {
+                            Marshal.ReleaseComObject(ppobject);
+                        }
+
+                        if (type != null)
+                        {
+                            DsUtils.FreeAMMediaType(type);
+                        }
+
+                        if (ppunk != null)
+                        {
+                            Marshal.ReleaseComObject(ppunk);
+                        }
+
+                        if (pwdGrp == 2)
+                        {
+                            if (grp2Selector == Guid.Empty)
+                            {
+                                filters[0].GetClassID(out grp2Selector);
+                            }
+
+                            var stream = new SelectableMediaStream
+                            {
+                                Index = i,
+                                Name = pzname,
+                                Type = MediaStreamType.Subtitle
+                            };
+                            
+                            if ((AMStreamSelectInfoFlags.Enabled & flags) == AMStreamSelectInfoFlags.Enabled)
+                            {
+                                stream.IsPlaying = true;
+                            }
+                            subtitleStreams.Add(stream);
+                        }
+
+                        if (pwdGrp == 1)
+                        {
+                            if (audioSelector == Guid.Empty)
+                            {
+                                filters[0].GetClassID(out audioSelector);
+                            }
+                            var stream = new SelectableMediaStream
+                            {
+                                Index = i,
+                                Name = pzname,
+                                Type = MediaStreamType.Audio
+                            };
+                            if ((AMStreamSelectInfoFlags.Enabled & flags) == AMStreamSelectInfoFlags.Enabled)
+                            {
+                                stream.IsPlaying = true;
+                            }
+                            audioStreams.Add(stream);
+                        }
+
+                        if (pwdGrp == 6590033)
+                        {
+                            if (vobsubSelector == Guid.Empty)
+                            {
+                                filters[0].GetClassID(out vobsubSelector);
+                            }
+
+                            var stream = new SelectableMediaStream
+                            {
+                                Index = i,
+                                Name = pzname,
+                                Type = MediaStreamType.Subtitle,
+                                Identifier = "Vobsub"
+                            };
+                            
+                            if ((AMStreamSelectInfoFlags.Enabled & flags) == AMStreamSelectInfoFlags.Enabled)
+                            {
+                                stream.IsPlaying = true;
+                            }
+                            subtitleStreams.Add(stream);
+                        }
+                    }
+                }
+
+                Marshal.ReleaseComObject(filters[0]);
+            }
+
+            Marshal.ReleaseComObject(enumFilters);
+
+            _audioStreams = audioStreams;
+            _subtitleStreams = subtitleStreams;
         }
     }
 }

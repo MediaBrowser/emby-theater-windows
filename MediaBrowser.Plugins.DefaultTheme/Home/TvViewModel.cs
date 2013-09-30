@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.ApiClient;
+﻿using System.Windows.Media;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
@@ -102,7 +103,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 Height = spotlightTileHeight,
                 Width = spotlightTileWidth,
-                CustomCommandAction = i => _navService.NavigateToItem(i.Item, ViewType.Tv)
+                CustomCommandAction = i => _navService.NavigateToItem(i.Item, ViewType.Tv),
+                ImageStretch = Stretch.UniformToFill
             };
 
             LoadViewModels();

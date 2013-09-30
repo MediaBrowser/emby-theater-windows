@@ -1,4 +1,5 @@
 ﻿using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 
 namespace MediaBrowser.Theater.Presentation.Controls
@@ -37,9 +38,14 @@ namespace MediaBrowser.Theater.Presentation.Controls
                     return;
                 }
             }
-
+           
             // Let the base class do it's thing
             base.OnKeyDown(e);
+        }
+
+        internal void SetScrollInfo(IScrollInfo info)
+        {
+            ScrollInfo = info;
         }
     }
 }

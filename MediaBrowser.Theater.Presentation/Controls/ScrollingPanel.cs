@@ -13,7 +13,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
     /// Then, after implementing this, content was being displayed in stack panel like manner.
     /// I then reviewed the source code of ScrollContentPresenter and updated MeasureOverride and ArrangeOverride to match.
     /// </summary>
-    public class ScrollingPanel : Grid, IScrollInfo
+    public class ScrollingPanel : ContentControl, IScrollInfo
     {
         /// <summary>
         /// The line size
@@ -24,6 +24,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
         /// </summary>
         private const double WheelSize = 3 * LineSize;
 
+        private Vector _computedOffset;
         /// <summary>
         /// The _ offset
         /// </summary>
@@ -42,6 +43,11 @@ namespace MediaBrowser.Theater.Presentation.Controls
         /// </summary>
         private readonly TimeSpan _animationLength = TimeSpan.FromMilliseconds(500);
 
+        public ScrollingPanel()
+        {
+            Focusable = false;
+        }
+
         /// <summary>
         /// When overridden in a derived class, measures the size in layout required for child elements and determines a size for the <see cref="T:System.Windows.FrameworkElement" />-derived class.
         /// </summary>
@@ -49,7 +55,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
         /// <returns>The size that this element determines it needs during layout, based on its calculations of child element sizes.</returns>
         protected override Size MeasureOverride(Size availableSize)
         {
-            if (Children == null || Children.Count == 0)
+            if (ContentElement == null)
             {
                 return availableSize;
             }
@@ -64,10 +70,10 @@ namespace MediaBrowser.Theater.Presentation.Controls
                 constraint2.Height = double.PositiveInfinity;
             }
 
-            var uiElement = Children[0];
+            //var uiElement = Children[0];
 
-            uiElement.Measure(constraint2);
-            var size = uiElement.DesiredSize;
+            //uiElement.Measure(constraint2);
+            var size = base.MeasureOverride(constraint2);
 
             VerifyScrollData(availableSize, size);
 
@@ -84,16 +90,16 @@ namespace MediaBrowser.Theater.Presentation.Controls
         /// <returns><see cref="T:System.Windows.Size" /> that represents the arranged size of this Grid element and its children.</returns>
         protected override Size ArrangeOverride(Size arrangeSize)
         {
-            this.VerifyScrollData(arrangeSize, _extent);
+            VerifyScrollData(arrangeSize, _extent);
 
-            if (this.Children == null || this.Children.Count == 0)
+            var uiElement = ContentElement;
+
+            if (uiElement == null)
             {
                 return arrangeSize;
             }
 
             TranslateTransform trans = null;
-
-            var uiElement = Children[0];
 
             var finalRect = new Rect(uiElement.DesiredSize);
 
@@ -124,6 +130,20 @@ namespace MediaBrowser.Theater.Presentation.Controls
               HandoffBehavior.Compose);
 
             return arrangeSize;
+        }
+
+        private UIElement ContentElement
+        {
+            get
+            {
+                return Content as UIElement;
+                //if (Children == null || Children.Count == 0)
+                //{
+                //    return null;
+                //}
+
+                //return Children[0];
+            }
         }
 
         /// <summary>
@@ -268,7 +288,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
                 panel.InvalidateMeasure();
             }
         }
-        
+
         /// <summary>
         /// Gets the vertical size of the extent.
         /// </summary>
@@ -291,7 +311,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
         /// <value>The horizontal offset.</value>
         /// <returns>A <see cref="T:System.Double" /> that represents, in device independent pixels, the horizontal offset. This property has no default value.</returns>
         public double HorizontalOffset
-        { get { return _offset.X; } }
+        { get { return _computedOffset.X; } }
 
         /// <summary>
         /// Gets the vertical offset of the scrolled content.
@@ -299,7 +319,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
         /// <value>The vertical offset.</value>
         /// <returns>A <see cref="T:System.Double" /> that represents, in device independent pixels, the vertical offset of the scrolled content. Valid values are between zero and the <see cref="P:System.Windows.Controls.Primitives.IScrollInfo.ExtentHeight" /> minus the <see cref="P:System.Windows.Controls.Primitives.IScrollInfo.ViewportHeight" />. This property has no default value.</returns>
         public double VerticalOffset
-        { get { return _offset.Y; } }
+        { get { return _computedOffset.Y; } }
 
         /// <summary>
         /// Gets the vertical size of the viewport for this content.
@@ -326,29 +346,63 @@ namespace MediaBrowser.Theater.Presentation.Controls
         public Rect MakeVisible(Visual visual, Rect rectangle)
         {
             if (rectangle.IsEmpty || visual == null
-              || visual == this || !IsAncestorOf(visual))
+              || visual.Equals(this) || !IsAncestorOf(visual))
             { return Rect.Empty; }
 
             rectangle = visual.TransformToAncestor(this).TransformBounds(rectangle);
 
-            rectangle.Scale(1.4, 1.4);
+            if (rectangle.IsEmpty)
+            {
+                return rectangle;
+            }
 
-            var viewRect = new Rect(HorizontalOffset,
-              VerticalOffset, ViewportWidth, ViewportHeight);
-            rectangle.X += viewRect.X;
-            rectangle.Y += viewRect.Y;
+            var scaleX = CanHorizontallyScroll ? 1.15 : 1;
+            var scaleY = CanVerticallyScroll ? 1.15 : 1;
+            rectangle.Scale(scaleX, scaleY);
 
-            viewRect.X = CalculateNewScrollOffset(viewRect.Left,
-              viewRect.Right, rectangle.Left, rectangle.Right);
-            viewRect.Y = CalculateNewScrollOffset(viewRect.Top,
-              viewRect.Bottom, rectangle.Top, rectangle.Bottom);
-            SetHorizontalOffset(viewRect.X);
-            SetVerticalOffset(viewRect.Y);
-            rectangle.Intersect(viewRect);
-            rectangle.X -= viewRect.X;
-            rectangle.Y -= viewRect.Y;
+            var rect = new Rect(HorizontalOffset, VerticalOffset, ViewportWidth, ViewportHeight);
+
+            rectangle.X += rect.X;
+            rectangle.Y += rect.Y;
+
+            //rect.X = CalculateNewScrollOffset(rect.Left, rect.Right, rectangle.Left, rectangle.Right);
+            //rect.Y = CalculateNewScrollOffset(rect.Top, rect.Bottom, rectangle.Top, rectangle.Bottom);
+
+            rect.X = ComputeScrollOffsetWithMinimalScroll(rect.Left, rect.Right, rectangle.Left, rectangle.Right);
+            rect.Y = ComputeScrollOffsetWithMinimalScroll(rect.Top, rect.Bottom, rectangle.Top, rectangle.Bottom);
+
+            SetHorizontalOffset(rect.X);
+            SetVerticalOffset(rect.Y);
+
+            rectangle.Intersect(rect);
+            rectangle.X -= rect.X;
+            rectangle.Y -= rect.Y;
 
             return rectangle;
+        }
+
+        private static double ComputeScrollOffsetWithMinimalScroll(double topView, double bottomView, double topChild, double bottomChild)
+        {
+            bool flag = false;
+            bool flag2 = false;
+            return ComputeScrollOffsetWithMinimalScroll(topView, bottomView, topChild, bottomChild, ref flag, ref flag2);
+        }
+        private static double ComputeScrollOffsetWithMinimalScroll(double topView, double bottomView, double topChild, double bottomChild, ref bool alignTop, ref bool alignBottom)
+        {
+            bool flag = DoubleUtil.LessThan(topChild, topView) && DoubleUtil.LessThan(bottomChild, bottomView);
+            bool flag2 = DoubleUtil.GreaterThan(bottomChild, bottomView) && DoubleUtil.GreaterThan(topChild, topView);
+            bool flag3 = bottomChild - topChild > bottomView - topView;
+            if ((flag && !flag3) || (flag2 && flag3) || alignTop)
+            {
+                alignTop = true;
+                return topChild;
+            }
+            if (flag || flag2 || alignBottom)
+            {
+                alignBottom = true;
+                return bottomChild - (bottomView - topView);
+            }
+            return topView;
         }
 
         /// <summary>
@@ -371,7 +425,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
             {
                 //Don't do anything, already in view
                 return topView;
-            } 
+            }
 
             if ((offBottom && !tooLarge) || (offTop && tooLarge))
             { return topChild; }
@@ -386,22 +440,47 @@ namespace MediaBrowser.Theater.Presentation.Controls
         /// <param name="extent">The extent.</param>
         protected void VerifyScrollData(Size viewport, Size extent)
         {
+            bool flag = true;
             if (double.IsInfinity(viewport.Width))
-            { viewport.Width = extent.Width; }
-
+            {
+                viewport.Width = extent.Width;
+            }
             if (double.IsInfinity(viewport.Height))
-            { viewport.Height = extent.Height; }
+            {
+                viewport.Height = extent.Height;
+            }
 
-            _extent = extent;
+            flag &= DoubleUtil.AreClose(viewport, _viewport);
+            flag &= DoubleUtil.AreClose(extent, _extent);
             _viewport = viewport;
+            _extent = extent;
+            if (!(flag & this.CoerceOffsets()))
+            {
+                if (ScrollOwner != null)
+                {
+                    ScrollOwner.InvalidateScrollInfo();
+                }
+            }
+        }
 
-            _offset.X = Math.Max(0,
-              Math.Min(_offset.X, ExtentWidth - ViewportWidth));
-            _offset.Y = Math.Max(0,
-              Math.Min(_offset.Y, ExtentHeight - ViewportHeight));
-
-            if (ScrollOwner != null)
-            { ScrollOwner.InvalidateScrollInfo(); }
+        private bool CoerceOffsets()
+        {
+            var vector = new Vector(CoerceOffset(this._offset.X, this._extent.Width, this._viewport.Width), CoerceOffset(this._offset.Y, this._extent.Height, this._viewport.Height));
+            bool result = DoubleUtil.AreClose(this._computedOffset, vector);
+            this._computedOffset = vector;
+            return result;
+        }
+        private static double CoerceOffset(double offset, double extent, double viewport)
+        {
+            if (offset > extent - viewport)
+            {
+                offset = extent - viewport;
+            }
+            if (offset < 0.0)
+            {
+                offset = 0.0;
+            }
+            return offset;
         }
 
         /// <summary>
@@ -410,9 +489,10 @@ namespace MediaBrowser.Theater.Presentation.Controls
         /// <param name="offset">The degree to which content is horizontally offset from the containing viewport.</param>
         public void SetHorizontalOffset(double offset)
         {
-            offset = Math.Max(0, Math.Min(offset, ExtentWidth - ViewportWidth));
+            offset = Math.Max(0, offset);
+            //offset = Math.Max(0, Math.Min(offset, ExtentWidth - ViewportWidth));
 
-            if (!offset.Equals(_offset.X))
+            if (!DoubleUtil.AreClose(_offset.X, offset))
             {
                 _offset.X = offset;
                 InvalidateArrange();
@@ -425,9 +505,10 @@ namespace MediaBrowser.Theater.Presentation.Controls
         /// <param name="offset">The degree to which content is vertically offset from the containing viewport.</param>
         public void SetVerticalOffset(double offset)
         {
-            offset = Math.Max(0, Math.Min(offset, ExtentHeight - ViewportHeight));
+            offset = Math.Max(0, offset);
+            //offset = Math.Max(0, Math.Min(offset, ExtentHeight - ViewportHeight));
 
-            if (!offset.Equals(_offset.Y))
+            if (!DoubleUtil.AreClose(_offset.Y, offset))
             {
                 _offset.Y = offset;
                 InvalidateArrange();

@@ -400,16 +400,12 @@
 rmdir "$(SolutionDir)..\Deploy\MBT\System" /s /q
 mkdir "$(SolutionDir)..\Deploy\MBT\System"
 rmdir "$(SolutionDir)..\Deploy\MBT\Pismo" /s /q
-mkdir "$(SolutionDir)..\Deploy\MBT\Pismo"
 xcopy "$(TargetDir)$(TargetFileName)" "$(SolutionDir)..\Deploy\MBT\System\" /y
 xcopy "$(SolutionDir)..\Mediabrowser\Installation\MediaBrowser.Uninstaller.exe" "$(SolutionDir)..\Deploy\MBT\System\" /y
 xcopy "$(SolutionDir)..\Mediabrowser\Installation\MediaBrowser.InstallUtil.dll" "$(SolutionDir)..\Deploy\MBT\System\" /y
 xcopy "$(SolutionDir)..\Mediabrowser\Installation\MediaBrowser.Updater.exe" "$(SolutionDir)..\Deploy\MBT\System\" /y
 xcopy "$(TargetDir)libvlc.dll" "$(SolutionDir)..\Deploy\MBT\System\" /y
 xcopy "$(TargetDir)libvlccore.dll" "$(SolutionDir)..\Deploy\MBT\System\" /y
-
-//Pismo
-"$(SolutionDir)ThirdParty\7zip\7za" x  "$(SolutionDir)ThirdParty\Pismo-Install\pfm-168-mediabrowser-win.zip" -o"$(SolutionDir)..\Deploy\MBT\Pismo\" -y 
 
 xcopy "$(TargetDir)$(TargetFileName).config" "$(SolutionDir)..\Deploy\MBT\System\" /y
 

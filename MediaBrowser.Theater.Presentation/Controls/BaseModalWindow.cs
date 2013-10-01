@@ -27,6 +27,8 @@ namespace MediaBrowser.Theater.Presentation.Controls
             Owner = owner;
 
             ShowDialog();
+
+            owner.Activate();
         }
 
         /// <summary>

@@ -3,7 +3,6 @@ using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Plugins.DefaultTheme.Details;
-using MediaBrowser.Plugins.DefaultTheme.Header;
 using MediaBrowser.Plugins.DefaultTheme.ListPage;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
@@ -67,13 +66,6 @@ namespace MediaBrowser.Plugins.DefaultTheme
             _sessionManager = sessionManager;
             _presentationManager = presentationManager;
             _logger = logManager.GetLogger(GetType().Name);
-
-            TopRightPanel.SessionManager = _sessionManager;
-            TopRightPanel.ApiClient = _apiClient;
-            TopRightPanel.ImageManager = _imageManager;
-            TopRightPanel.Logger = _logger;
-            TopRightPanel.Navigation = _navService;
-            TopRightPanel.PlaybackManager = _playbackManager;
         }
 
         /// <summary>
@@ -185,7 +177,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
 
         public PageContentViewModel CreatePageContentDataContext()
         {
-            PageContentDataContext = new DefaultThemePageContentViewModel(_apiClient, _imageManager);
+            PageContentDataContext = new DefaultThemePageContentViewModel(_navService, _sessionManager, _apiClient, _imageManager, _presentationManager, _playbackManager);
 
             return PageContentDataContext;
         }

@@ -504,7 +504,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             var currentAspectRatio = item.PrimaryImageAspectRatio ?? MedianPrimaryImageAspectRatio ?? layoutAspectRatio;
 
             // Preserve the exact AR if it deviates from the median significantly
-            return Math.Abs(currentAspectRatio - layoutAspectRatio) <= .25;
+            return Math.Abs(currentAspectRatio - layoutAspectRatio) <= .3;
         }
 
         private void UpdateContainerSizes()

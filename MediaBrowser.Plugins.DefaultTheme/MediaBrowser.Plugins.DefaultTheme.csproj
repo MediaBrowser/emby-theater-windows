@@ -93,9 +93,6 @@
     <Compile Include="DisplayPreferencesMenu\ViewMenuPage.xaml.cs">
       <DependentUpon>ViewMenuPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Header\TopRightPanel.xaml.cs">
-      <DependentUpon>TopRightPanel.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Home\Api.cs" />
     <Compile Include="Home\BaseHomePageSectionViewModel.cs" />
     <Compile Include="Home\GamesViewModel.cs" />
@@ -187,10 +184,6 @@
     <Page Include="DisplayPreferencesMenu\ViewMenuPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Header\TopRightPanel.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Home\HomePage.xaml">
       <SubType>Designer</SubType>

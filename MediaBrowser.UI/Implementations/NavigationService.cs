@@ -1,4 +1,5 @@
 ﻿using MediaBrowser.Common;
+using MediaBrowser.Common.Events;
 using MediaBrowser.Common.Updates;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Configuration;
@@ -31,17 +32,7 @@ namespace MediaBrowser.UI.Implementations
     /// </summary>
     internal class NavigationService : INavigationService
     {
-        public event EventHandler<NavigationEventArgs> Navigated
-        {
-            add
-            {
-                App.Instance.ApplicationWindow.Navigated += value;
-            }
-            remove
-            {
-                App.Instance.ApplicationWindow.Navigated -= value;
-            }
-        }
+        public event EventHandler<NavigationEventArgs> Navigated;
 
         /// <summary>
         /// The _theme manager
@@ -87,6 +78,18 @@ namespace MediaBrowser.UI.Implementations
             _imageManager = imageManager;
             _logger = logger;
             _userInputManager = userInputManager;
+
+            presentationManager.WindowLoaded += presentationManager_WindowLoaded;
+        }
+
+        void presentationManager_WindowLoaded(object sender, EventArgs e)
+        {
+            App.Instance.ApplicationWindow.Navigated += ApplicationWindow_Navigated;
+        }
+
+        void ApplicationWindow_Navigated(object sender, NavigationEventArgs e)
+        {
+            EventHelper.FireEventIfNotNull(Navigated, this, e, _logger);
         }
 
         /// <summary>

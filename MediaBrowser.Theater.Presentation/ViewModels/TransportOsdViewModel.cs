@@ -22,7 +22,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         public IImageManager ImageManager { get; private set; }
         public IPlaybackManager PlaybackManager { get; set; }
         public IPresentationManager PresentationManager { get; set; }
-        private ILogger Logger { get; set; }
+        public ILogger Logger { get; set; }
 
         public ICommand PauseCommand { get; private set; }
         public ICommand NextChapterCommand { get; private set; }

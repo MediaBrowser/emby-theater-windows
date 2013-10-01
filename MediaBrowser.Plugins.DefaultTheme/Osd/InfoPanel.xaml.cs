@@ -62,7 +62,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Osd
 
         private void UpdateNowPlayingItem(TransportOsdViewModel viewModel)
         {
-            var menuViewModel = new InfoPanelViewModel(viewModel);
+            var menuViewModel = new InfoPanelViewModel(viewModel, viewModel.ApiClient, viewModel.ImageManager, viewModel.PlaybackManager, viewModel.PresentationManager, viewModel.Logger);
 
             PageContent.DataContext = MenuList.DataContext = menuViewModel;
 

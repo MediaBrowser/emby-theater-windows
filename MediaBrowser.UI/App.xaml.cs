@@ -355,6 +355,8 @@ namespace MediaBrowser.UI
 
             _logger.ErrorException("UnhandledException", exception);
 
+            File.WriteAllText("D:\\errir.txt", exception.Message + exception.StackTrace + (exception.InnerException == null ? "" : exception.InnerException.StackTrace));
+
             MessageBox.Show("Unhandled exception: " + exception.Message);
         }
 

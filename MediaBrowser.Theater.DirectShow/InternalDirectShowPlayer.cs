@@ -335,11 +335,16 @@ namespace MediaBrowser.Theater.DirectShow
             }
         }
 
+        private readonly object _commandLock = new object();
+
         public void Stop()
         {
-            if (_mediaPlayer != null)
+            lock (_commandLock)
             {
-                _mediaPlayer.Stop(TrackCompletionReason.Stop, null);
+                if (_mediaPlayer != null)
+                {
+                    _mediaPlayer.Stop(TrackCompletionReason.Stop, null);
+                }
             }
         }
 

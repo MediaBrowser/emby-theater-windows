@@ -181,6 +181,8 @@ namespace MediaBrowser.UI
 
         public override Task Restart()
         {
+            PlaybackManager.StopAllPlayback();
+            
             return Task.Run(() => App.Instance.Dispatcher.Invoke(() => App.Instance.Restart()));
         }
 
@@ -241,6 +243,8 @@ namespace MediaBrowser.UI
 
         public override Task Shutdown()
         {
+            PlaybackManager.StopAllPlayback();
+
             return Task.Run(() => App.Instance.Dispatcher.Invoke(() => App.Instance.Shutdown()));
         }
 

@@ -478,9 +478,6 @@ namespace MediaBrowser.Theater.DirectShow
         {
             if (_mediaSeeking != null)
             {
-                // In Directx time is measured in 100 nanoseconds. 
-                var pos = new DsLong(ticks);
-
                 long duration;
 
                 var hr = _mediaSeeking.GetDuration(out duration);

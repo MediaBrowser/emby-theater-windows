@@ -1,7 +1,15 @@
 ﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
+using MediaBrowser.Model.Entities;
+using MediaBrowser.Plugins.DefaultTheme.UserProfileMenu;
+using MediaBrowser.Theater.Interfaces.Navigation;
+using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
+using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.ViewModels;
+using System;
+using System.Globalization;
+using System.Windows.Input;
 using System.Windows.Media.Imaging;
 
 namespace MediaBrowser.Plugins.DefaultTheme
@@ -10,11 +18,92 @@ namespace MediaBrowser.Plugins.DefaultTheme
     {
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
+        private readonly IPresentationManager _presentation;
 
-        public DefaultThemePageContentViewModel(IApiClient apiClient, IImageManager imageManager)
+        public ICommand UserCommand { get; private set; }
+        public ICommand DisplayPreferencesCommand { get; private set; }
+
+        public DefaultThemePageContentViewModel(INavigationService navigationService, ISessionManager sessionManager, IApiClient apiClient, IImageManager imageManager, IPresentationManager presentation, IPlaybackManager playbackManager)
+            : base(navigationService, sessionManager, playbackManager)
         {
             _apiClient = apiClient;
             _imageManager = imageManager;
+            _presentation = presentation;
+
+            NavigationService.Navigated += NavigationService_Navigated;
+            SessionManager.UserLoggedIn += SessionManager_UserLoggedIn;
+            UserCommand = new RelayCommand(i => ShowUserMenu());
+
+            DisplayPreferencesCommand = new RelayCommand(i => ShowDisplayPreferences());
+        }
+
+        void SessionManager_UserLoggedIn(object sender, EventArgs e)
+        {
+            UpdateUserImage();
+        }
+
+        private async void UpdateUserImage()
+        {
+            var user = SessionManager.CurrentUser;
+
+            if (user.HasPrimaryImage)
+            {
+                var imageUrl = _apiClient.GetUserImageUrl(user, new ImageOptions
+                {
+                    ImageType = ImageType.Primary
+                });
+
+                try
+                {
+                    UserImage = await _imageManager.GetRemoteBitmapAsync(imageUrl);
+
+                    ShowDefaultUserImage = false;
+                }
+                catch (Exception ex)
+                {
+                    ShowDefaultUserImage = true;
+                }
+            }
+            else
+            {
+                ShowDefaultUserImage = true;
+            }
+        }
+
+        void NavigationService_Navigated(object sender, NavigationEventArgs e)
+        {
+            IsOnPageWithDisplayPreferences = e.NewPage is IHasDisplayPreferences;
+        }
+
+        private BitmapImage _userImage;
+        public BitmapImage UserImage
+        {
+            get { return _userImage; }
+
+            set
+            {
+                _userImage = value;
+
+                OnPropertyChanged("UserImage");
+            }
+        }
+
+        private bool _showDefaultUserImage;
+        public bool ShowDefaultUserImage
+        {
+            get { return _showLogoImage; }
+
+            set
+            {
+                var changed = _showDefaultUserImage != value;
+
+                _showDefaultUserImage = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("ShowDefaultUserImage");
+                }
+            }
         }
 
         private bool _showLogoImage;
@@ -34,7 +123,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
                 }
             }
         }
-
+        
         private BitmapImage _logoImage;
         public BitmapImage LogoImage
         {
@@ -45,6 +134,75 @@ namespace MediaBrowser.Plugins.DefaultTheme
                 _logoImage = value;
 
                 OnPropertyChanged("LogoImage");
+            }
+        }
+
+        private bool _isOnPageWithDisplayPreferences = false;
+        public bool IsOnPageWithDisplayPreferences
+        {
+            get { return _isOnPageWithDisplayPreferences; }
+
+            set
+            {
+                var changed = _isOnPageWithDisplayPreferences != value;
+
+                _isOnPageWithDisplayPreferences = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("IsOnPageWithDisplayPreferences");
+                }
+            }
+        }
+        
+        private string _timeLeft;
+        public string TimeLeft
+        {
+            get { return _timeLeft; }
+
+            set
+            {
+                var changed = !string.Equals(_timeLeft, value);
+
+                _timeLeft = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("TimeLeft");
+                }
+            }
+        }
+
+        private string _timeRight;
+        public string TimeRight
+        {
+            get { return _timeRight; }
+
+            set
+            {
+                var changed = !string.Equals(_timeRight, value);
+
+                _timeRight = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("TimeRight");
+                }
+            }
+        }
+
+        private void ShowUserMenu()
+        {
+            new UserProfileWindow(SessionManager, _imageManager, _apiClient).ShowModal(_presentation.Window);
+        }
+
+        private void ShowDisplayPreferences()
+        {
+            var page = NavigationService.CurrentPage as IHasDisplayPreferences;
+
+            if (page != null)
+            {
+                page.ShowDisplayPreferencesMenu();
             }
         }
 
@@ -126,6 +284,39 @@ namespace MediaBrowser.Plugins.DefaultTheme
                     PageTitle = string.Empty;
                 }
             }
+            else if (string.Equals(name, "DateTime"))
+            {
+                UpdateTime();
+            }
+        }
+
+        private void UpdateTime()
+        {
+            var now = DateTime;
+
+            TimeLeft = now.ToString("h:mm");
+
+            if (CultureInfo.CurrentCulture.Name.Equals("en-US", StringComparison.OrdinalIgnoreCase))
+            {
+                var time = now.ToString("t");
+                var values = time.Split(' ');
+                TimeRight = values[values.Length - 1].ToLower();
+            }
+            else
+            {
+                TimeRight = string.Empty;
+            }
+        }
+
+        protected override void Dispose(bool dispose)
+        {
+            if (dispose)
+            {
+                NavigationService.Navigated -= NavigationService_Navigated;
+                SessionManager.UserLoggedIn -= SessionManager_UserLoggedIn;
+            }
+            
+            base.Dispose(dispose);
         }
     }
 }

@@ -276,11 +276,11 @@ namespace MediaBrowser.UI.EntryPoints
                     break;
                 case Keys.D8:
                     {
-                        ToggleInfoPanel();
+                        ExecuteCommand(ToggleInfoPanel);
                         break;
                     }
                 case Keys.Multiply:
-                    ToggleInfoPanel();
+                    ExecuteCommand(ToggleInfoPanel);
                     break;
                 default:
                     return;
@@ -337,6 +337,11 @@ namespace MediaBrowser.UI.EntryPoints
                 }
                 ShowFullscreenVideoOsd();
             }
+        }
+
+        private void NavigateBack()
+        {
+            _nav.NavigateBack();
         }
 
         private void Close()

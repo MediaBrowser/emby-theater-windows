@@ -72,6 +72,22 @@
             <StackPanel.Style>
                 <Style TargetType="{x:Type StackPanel}">
                     <Style.Triggers>
+                        <DataTrigger Binding="{Binding Resolution}" Value="{x:Null}">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </StackPanel.Style>
+
+            <Border Style="{StaticResource MediaInfoSeparator}"></Border>
+            <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding Resolution}" VerticalAlignment="Center"></TextBlock>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal">
+
+            <StackPanel.Style>
+                <Style TargetType="{x:Type StackPanel}">
+                    <Style.Triggers>
                         <DataTrigger Binding="{Binding AudioCodec}" Value="{x:Null}">
                             <Setter Property="Visibility" Value="Collapsed" />
                         </DataTrigger>
@@ -85,7 +101,6 @@
             <Border Style="{StaticResource MediaInfoSeparator}"></Border>
             <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding AudioCodec}" VerticalAlignment="Center"></TextBlock>
         </StackPanel>
-
 
         <StackPanel Orientation="Horizontal" Margin="30 0 0 0">
 

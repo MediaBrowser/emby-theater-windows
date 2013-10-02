@@ -1,8 +1,4 @@
-﻿using MediaBrowser.Model.ApiClient;
-using MediaBrowser.Model.Logging;
-using MediaBrowser.Theater.Interfaces.Playback;
-using MediaBrowser.Theater.Interfaces.Presentation;
-using MediaBrowser.Theater.Interfaces.ViewModels;
+﻿using MediaBrowser.Theater.Interfaces.ViewModels;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -13,20 +9,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Osd
     {
         private readonly TransportOsdViewModel _transportViewModel;
 
-        private IApiClient ApiClient { get; set; }
-        private IImageManager ImageManager { get; set; }
-        private IPlaybackManager PlaybackManager { get; set; }
-        private IPresentationManager PresentationManager { get; set; }
-        private ILogger Logger { get; set; }
-        
-        public InfoPanelViewModel(TransportOsdViewModel transportViewModel, IApiClient apiClient, IImageManager imageManager, IPlaybackManager playbackManager, IPresentationManager presentationManager, ILogger logger)
+        public InfoPanelViewModel(TransportOsdViewModel transportViewModel)
         {
             _transportViewModel = transportViewModel;
-            Logger = logger;
-            PresentationManager = presentationManager;
-            PlaybackManager = playbackManager;
-            ImageManager = imageManager;
-            ApiClient = apiClient;
         }
 
         protected override Task<IEnumerable<TabItem>> GetSections()
@@ -76,7 +61,15 @@ namespace MediaBrowser.Plugins.DefaultTheme.Osd
                 return _transportViewModel.CreateChaptersViewModel();
             }
 
-            return new TransportOsdViewModel(PlaybackManager, ApiClient, ImageManager, PresentationManager, Logger);
+            return _transportViewModel;
+        }
+
+        protected override void DisposePreviousSection(BaseViewModel old)
+        {
+            if (!(old is TransportOsdViewModel))
+            {
+                base.DisposePreviousSection(old);
+            }
         }
     }
 }

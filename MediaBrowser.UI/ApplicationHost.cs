@@ -65,7 +65,6 @@ namespace MediaBrowser.UI
         public ISessionManager SessionManager { get; private set; }
         public IPresentationManager PresentationManager { get; private set; }
         public IUserInputManager UserInputManager { get; private set; }
-        private IIsoManager IsoManager { get; set; }
         public IMediaFilters MediaFilters { get; private set; }
 
         public ConfigurationManager TheaterConfigurationManager
@@ -125,9 +124,6 @@ namespace MediaBrowser.UI
 
             RegisterSingleInstance<ITheaterConfigurationManager>(TheaterConfigurationManager);
 
-            IsoManager = new IsoManager();
-            RegisterSingleInstance(IsoManager);
-
             ImageManager = new ImageManager(ApiClient, ApplicationPaths, TheaterConfigurationManager);
             RegisterSingleInstance(ImageManager);
 
@@ -159,8 +155,6 @@ namespace MediaBrowser.UI
             PresentationManager.AddParts(GetExports<IAppFactory>(), GetExports<ISettingsPage>(), GetExports<IHomePageInfo>());
 
             PlaybackManager.AddParts(GetExports<IMediaPlayer>());
-
-            IsoManager.AddParts(GetExports<IIsoMounter>().ToArray());
         }
 
         /// <summary>

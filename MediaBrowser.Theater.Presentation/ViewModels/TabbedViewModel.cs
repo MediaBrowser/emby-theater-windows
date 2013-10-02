@@ -49,12 +49,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 {
                     OnPropertyChanged("ContentViewModel");
 
-                    var disposable = old as IDisposable;
-
-                    if (disposable != null)
-                    {
-                        disposable.Dispose();
-                    }
+                    DisposePreviousSection(old);
                 }
             }
         }
@@ -100,6 +95,16 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 {
                     OnPropertyChanged("CurrentSectionDisplayName");
                 }
+            }
+        }
+
+        protected virtual void DisposePreviousSection(BaseViewModel old)
+        {
+            var disposable = old as IDisposable;
+
+            if (disposable != null)
+            {
+                disposable.Dispose();
             }
         }
 

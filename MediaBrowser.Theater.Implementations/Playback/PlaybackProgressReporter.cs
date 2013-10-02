@@ -38,8 +38,6 @@ namespace MediaBrowser.Theater.Implementations.Playback
                 throw new InvalidOperationException("Nothing is currently playing");
             }
 
-            _logger.Info("Sending playback start checkin for {0}", item.Name);
-
             try
             {
                 var queueTypes = _mediaPlayer.CanQueue

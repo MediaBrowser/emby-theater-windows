@@ -33,6 +33,16 @@ namespace MediaBrowser.Plugins.DefaultTheme.Osd
                 });
             }
 
+            var nowPlaying = _transportViewModel.NowPlayingItem;
+            if (nowPlaying != null && nowPlaying.People.Length > 0)
+            {
+                list.Add(new TabItem
+                {
+                    DisplayName = "Cast",
+                    Name = "Cast"
+                });
+            }
+
             if (_transportViewModel.CanSelectAudioTrack)
             {
                 list.Add(new TabItem
@@ -58,9 +68,36 @@ namespace MediaBrowser.Plugins.DefaultTheme.Osd
         {
             if (string.Equals(section, "Scenes"))
             {
-                return _transportViewModel.CreateChaptersViewModel();
+                var vm = _transportViewModel.CreateChaptersViewModel();
+
+                vm.ImageWidth = 400;
+
+                return vm;
             }
 
+            if (string.Equals(section, "Cast"))
+            {
+                var vm = _transportViewModel.CreatePeopleViewModel();
+
+                vm.ImageWidth = 200;
+
+                return vm;
+            }
+
+            if (string.Equals(section, "Audio"))
+            {
+                var vm = _transportViewModel.CreateAudioStreamsViewModel();
+
+                return vm;
+            }
+
+            if (string.Equals(section, "Subtitles"))
+            {
+                var vm = _transportViewModel.CreateSubtitleStreamsViewModel();
+
+                return vm;
+            }
+            
             return _transportViewModel;
         }
 

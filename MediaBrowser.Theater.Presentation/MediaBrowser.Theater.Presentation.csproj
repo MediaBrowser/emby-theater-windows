@@ -123,6 +123,7 @@
     <Compile Include="ViewModels\MessageBoxViewModel.cs" />
     <Compile Include="ViewModels\ChapterInfoViewModel.cs" />
     <Compile Include="ViewModels\RotatingBackdropsViewModel.cs" />
+    <Compile Include="ViewModels\SelectableMediaStreamListViewModel.cs" />
     <Compile Include="ViewModels\TabbedViewModel.cs" />
     <Compile Include="ViewModels\TransportOsdViewModel.cs" />
     <Compile Include="ViewModels\RotatingCollectionViewModel.cs" />

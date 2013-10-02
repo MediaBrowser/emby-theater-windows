@@ -20,16 +20,10 @@ namespace MediaBrowser.Theater.Interfaces.Playback
         bool CanSelectSubtitleTrack { get; }
 
         /// <summary>
-        /// Gets the audio tracks.
-        /// </summary>
-        /// <value>The audio tracks.</value>
-        IReadOnlyList<SelectableMediaStream> AudioStreams { get; }
-
-        /// <summary>
         /// Gets the subtitle tracks.
         /// </summary>
         /// <value>The subtitle tracks.</value>
-        IReadOnlyList<SelectableMediaStream> SubtitleStreams { get; }
+        IReadOnlyList<SelectableMediaStream> SelectableStreams { get; }
 
         /// <summary>
         /// Changes the audio track.
@@ -42,5 +36,10 @@ namespace MediaBrowser.Theater.Interfaces.Playback
         /// </summary>
         /// <param name="track">The track.</param>
         void ChangeSubtitleStream(SelectableMediaStream track);
+
+        /// <summary>
+        /// Removes the subtitles.
+        /// </summary>
+        void RemoveSubtitles();
     }
 }

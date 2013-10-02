@@ -22,6 +22,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferencesMenu
 
             btnClose.Click += btnClose_Click;
             Loaded += DisplayPreferencesMenu_Loaded;
+
+            DataContext = this;
         }
 
         void DisplayPreferencesMenu_Loaded(object sender, RoutedEventArgs e)

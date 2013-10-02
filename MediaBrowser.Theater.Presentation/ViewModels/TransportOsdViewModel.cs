@@ -1,12 +1,15 @@
 ﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
+using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
+using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Reflection;
 using MediaBrowser.Theater.Interfaces.ViewModels;
 using MediaBrowser.Theater.Presentation.Playback;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading;
@@ -23,6 +26,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         public IPlaybackManager PlaybackManager { get; set; }
         public IPresentationManager PresentationManager { get; set; }
         public ILogger Logger { get; set; }
+        public INavigationService NavigationService { get; set; }
 
         public ICommand PauseCommand { get; private set; }
         public ICommand NextChapterCommand { get; private set; }
@@ -339,13 +343,14 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
-        public TransportOsdViewModel(IPlaybackManager playbackManager, IApiClient apiClient, IImageManager imageManager, IPresentationManager presentationManager, ILogger logger)
+        public TransportOsdViewModel(IPlaybackManager playbackManager, IApiClient apiClient, IImageManager imageManager, IPresentationManager presentationManager, ILogger logger, INavigationService nav)
         {
             Logger = logger;
             PresentationManager = presentationManager;
             ImageManager = imageManager;
             ApiClient = apiClient;
             PlaybackManager = playbackManager;
+            NavigationService = nav;
 
             _currentDispatcher = Dispatcher.CurrentDispatcher;
 
@@ -392,6 +397,32 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             return vm;
         }
 
+        public ItemPersonListViewModel CreatePeopleViewModel()
+        {
+            var vm = new ItemPersonListViewModel(ApiClient, ImageManager, PresentationManager, NavigationService)
+            {
+                Item = NowPlayingItem
+            };
+
+            return vm;
+        }
+
+        public SelectableMediaStreamListViewModel CreateAudioStreamsViewModel()
+        {
+            return new SelectableMediaStreamListViewModel(PlaybackManager)
+            {
+                Type = MediaStreamType.Audio
+            };
+        }
+
+        public SelectableMediaStreamListViewModel CreateSubtitleStreamsViewModel()
+        {
+            return new SelectableMediaStreamListViewModel(PlaybackManager)
+            {
+                Type = MediaStreamType.Subtitle
+            };
+        }
+        
         /// <summary>
         /// Gets the time string.
         /// </summary>
@@ -467,8 +498,15 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
             var videoPlayer = player as IVideoPlayer;
 
-            CanSelectAudioTrack = videoPlayer != null && videoPlayer.CanSelectAudioTrack && media != null && videoPlayer.AudioStreams.Count > 0;
-            CanSelectSubtitleTrack = videoPlayer != null && videoPlayer.CanSelectSubtitleTrack && media != null && videoPlayer.SubtitleStreams.Count > 0;
+            var selectableStreams = videoPlayer == null
+                                        ? new List<SelectableMediaStream>()
+                                        : videoPlayer.SelectableStreams;
+
+            var audioStreams = selectableStreams.Where(i => i.Type == MediaStreamType.Audio).ToList();
+            var subtitleStreams = selectableStreams.Where(i => i.Type == MediaStreamType.Subtitle).ToList();
+
+            CanSelectAudioTrack = videoPlayer != null && videoPlayer.CanSelectAudioTrack && media != null && audioStreams.Count > 0;
+            CanSelectSubtitleTrack = videoPlayer != null && videoPlayer.CanSelectSubtitleTrack && media != null && subtitleStreams.Count > 0;
         }
 
         private void UpdatePauseValues(IMediaPlayer player)

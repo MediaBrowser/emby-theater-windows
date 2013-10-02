@@ -210,7 +210,7 @@ namespace MediaBrowser.Theater.Core.FullscreenVideo
             _presentation.SetGlobalThemeContentVisibility(false);
             _playbackManager.PlaybackCompleted += _playbackManager_PlaybackCompleted;
 
-            Osd.DataContext = _viewModel = new TransportOsdViewModel(_playbackManager, _apiClient, _imageManager, _presentation, _logger);
+            Osd.DataContext = _viewModel = new TransportOsdViewModel(_playbackManager, _apiClient, _imageManager, _presentation, _logger, _nav);
         }
 
         void FullscreenVideoPage_Unloaded(object sender, RoutedEventArgs e)

@@ -416,22 +416,24 @@ namespace MediaBrowser.Theater.DirectShow
             _mediaPlayer.Stop(TrackCompletionReason.ChangeTrack, newIndex);
         }
 
-        public IReadOnlyList<SelectableMediaStream> AudioStreams
+        public IReadOnlyList<SelectableMediaStream> SelectableStreams
         {
-            get { return _mediaPlayer.GetAudioStreams(); }
-        }
-
-        public IReadOnlyList<SelectableMediaStream> SubtitleStreams
-        {
-            get { return _mediaPlayer.GetSubtitleStreams(); }
+            get { return _mediaPlayer.GetSelectableStreams(); }
         }
 
         public void ChangeAudioStream(SelectableMediaStream track)
         {
+            _mediaPlayer.SetAudioTrack(track);
         }
 
         public void ChangeSubtitleStream(SelectableMediaStream track)
         {
+            _mediaPlayer.SetSubtitleTrack(track);
+        }
+
+        public void RemoveSubtitles()
+        {
+            
         }
     }
 

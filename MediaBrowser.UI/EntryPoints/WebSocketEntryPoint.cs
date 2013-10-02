@@ -301,7 +301,7 @@ namespace MediaBrowser.UI.EntryPoints
             });
         }
 
-        void _nav_Navigated(object sender, NavigationEventArgs e)
+        async void _nav_Navigated(object sender, NavigationEventArgs e)
         {
             var itemPage = e.NewPage as IItemPage;
 
@@ -309,8 +309,14 @@ namespace MediaBrowser.UI.EntryPoints
             {
                 var item = itemPage.PageItem;
 
-                _apiWebSocket.SendContextMessageAsync(item.Type, item.Id, item.Name, itemPage.ViewType.ToString(),
-                                                      CancellationToken.None);
+                try
+                {
+                    await _apiWebSocket.SendContextMessageAsync(item.Type, item.Id, item.Name, itemPage.ViewType.ToString(), CancellationToken.None).ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    _logger.ErrorException("Error sending context message", ex);
+                }
             }
         }
 

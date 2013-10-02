@@ -42,7 +42,20 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         public string PersonType
         {
-            get { return _person == null ? null : _person.Type; }
+            get
+            {
+                if (_person == null)
+                {
+                    return null;
+                }
+
+                if (string.Equals(_person.Type, Model.Entities.PersonType.GuestStar, StringComparison.OrdinalIgnoreCase))
+                {
+                    return "Guest Star";
+                }
+
+                return _person.Type;
+            }
         }
 
         public string Name

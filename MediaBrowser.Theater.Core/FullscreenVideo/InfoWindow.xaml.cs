@@ -1,4 +1,5 @@
 ﻿using MediaBrowser.Theater.Presentation.Controls;
+using System.Windows;
 
 namespace MediaBrowser.Theater.Core.FullscreenVideo
 {
@@ -10,6 +11,15 @@ namespace MediaBrowser.Theater.Core.FullscreenVideo
         public InfoWindow()
         {
             InitializeComponent();
+
+            MainGrid.DataContext = this;
+
+            Loaded += InfoWindow_Loaded;
+        }
+
+        void InfoWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            InfoPanel.DataContext = DataContext;
         }
     }
 }

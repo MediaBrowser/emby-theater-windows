@@ -2,10 +2,8 @@
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Constants;
 using MediaBrowser.Common.Implementations;
-using MediaBrowser.Common.Implementations.IO;
 using MediaBrowser.Common.Implementations.ScheduledTasks;
 using MediaBrowser.Model.ApiClient;
-using MediaBrowser.Model.IO;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.System;
 using MediaBrowser.Model.Updates;
@@ -176,7 +174,7 @@ namespace MediaBrowser.UI
         public override Task Restart()
         {
             PlaybackManager.StopAllPlayback();
-            
+
             return Task.Run(() => App.Instance.Dispatcher.Invoke(() => App.Instance.Restart()));
         }
 
@@ -256,12 +254,15 @@ namespace MediaBrowser.UI
             return new ConfigurationManager(ApplicationPaths, LogManager, XmlSerializer);
         }
 
-        protected override HttpMessageHandler GetHttpMessageHandler(bool enableHttpCompression)
+        protected override HttpClient CreateHttpClient(bool enableHttpCompression)
         {
-            return new WebRequestHandler
+            return new HttpClient(new WebRequestHandler
             {
                 CachePolicy = new RequestCachePolicy(RequestCacheLevel.Revalidate),
                 AutomaticDecompression = enableHttpCompression ? DecompressionMethods.Deflate : DecompressionMethods.None
+            })
+            {
+                Timeout = TimeSpan.FromSeconds(20)
             };
         }
 

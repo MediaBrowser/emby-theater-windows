@@ -41,6 +41,11 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
             _dispatcher = Dispatcher.CurrentDispatcher;
 
             _clockTimer = new Timer(ClockTimerCallback, null, 0, 10000);
+
+            IsLoggedIn = SessionManager.CurrentUser != null;
+            var page = NavigationService.CurrentPage;
+            IsOnHomePage = page is IHomePage;
+            IsOnFullscreenVideo = page is IFullscreenVideoPage;
         }
 
         void PlaybackManager_PlaybackCompleted(object sender, PlaybackStopEventArgs e)
@@ -60,12 +65,12 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
 
         void SessionManagerUserLoggedOut(object sender, EventArgs e)
         {
-            IsLoggedIn = false;
+            IsLoggedIn = SessionManager.CurrentUser != null;
         }
 
         void SessionManagerUserLoggedIn(object sender, EventArgs e)
         {
-            IsLoggedIn = true;
+            IsLoggedIn = SessionManager.CurrentUser != null;
         }
 
         void NavigationServiceNavigated(object sender, NavigationEventArgs e)

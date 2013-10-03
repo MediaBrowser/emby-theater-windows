@@ -71,6 +71,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                 ShowLoadingAnimation = true
             };
 
+            //_viewModel.AddIndexOptions(new[] { new TabItem { DisplayName = "A", Name = "A" }, new TabItem { DisplayName = "B", Name = "B" } });
+
             _viewModel.PropertyChanged += _viewModel_PropertyChanged;
 
             _viewModel.DisplayPreferences = _displayPreferences;

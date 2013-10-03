@@ -19,7 +19,7 @@
         <TextBlock Style="{DynamicResource Heading1TextBlockStyle}" Grid.Row="0">Install LAV Filters</TextBlock>
 
         <StackPanel Orientation="Vertical" Grid.Row="1" Margin="0 40 0 0">
-            <TextBlock Style="{DynamicResource TextBlockStyle}">LAV Fitlers is a required installation for optimal playback.</TextBlock>
+            <TextBlock Style="{DynamicResource TextBlockStyle}">LAV Filters is a required installation for optimal playback.</TextBlock>
             <Button x:Name="BtnInstall" Margin="0 20 0 0">
                 <TextBlock Style="{DynamicResource TextBlockStyle}">Install Now</TextBlock>
             </Button>

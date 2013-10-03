@@ -12,6 +12,7 @@ using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.ViewModels;
 using MediaBrowser.Theater.Presentation.Extensions;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading;
@@ -64,6 +65,8 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             _dispatcher = Dispatcher.CurrentDispatcher;
             _presentationManager = presentationManager;
 
+            _indexOptionsCollectionView = new ListCollectionView(_indexOptions);
+
             NavigateCommand = new RelayCommand(Navigate);
             PlayCommand = new RelayCommand(Play);
         }
@@ -102,6 +105,33 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
+        private readonly RangeObservableCollection<TabItem> _indexOptions =
+           new RangeObservableCollection<TabItem>();
+
+        private readonly ListCollectionView _indexOptionsCollectionView;
+        public ListCollectionView IndexOptionsCollectionView
+        {
+            get
+            {
+                return _indexOptionsCollectionView;
+            }
+        }
+
+        public bool HasIndexOptions
+        {
+            get
+            {
+                return _indexOptions.Count > 0;
+            }
+        }
+
+        public void AddIndexOptions(IEnumerable<TabItem> options)
+        {
+            _indexOptions.AddRange(options);
+
+            OnPropertyChanged("HasIndexOptions");
+        }
+        
         private int _itemCount;
         public int ItemCount
         {

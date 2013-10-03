@@ -112,11 +112,11 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
                 if (_backdropSetTimer == null)
                 {
-                    _backdropSetTimer = new Timer(OnPendingBackdropsTimerFired, null, 800, Timeout.Infinite);
+                    _backdropSetTimer = new Timer(OnPendingBackdropsTimerFired, null, 300, Timeout.Infinite);
                 }
                 else
                 {
-                    _backdropSetTimer.Change(800, Timeout.Infinite);
+                    _backdropSetTimer.Change(300, Timeout.Infinite);
                 }
             }
         }
@@ -163,13 +163,15 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             {
                 lock (_rotationTimerLock)
                 {
+                    const int rotationPeriodMs = 7000;
+
                     if (_backdropRotationTimer == null)
                     {
-                        _backdropRotationTimer = new Timer(OnBackdropRotationTimerCallback, null, 8000, 8000);
+                        _backdropRotationTimer = new Timer(OnBackdropRotationTimerCallback, null, rotationPeriodMs, rotationPeriodMs);
                     }
                     else
                     {
-                        _backdropRotationTimer.Change(8000, 8000);
+                        _backdropRotationTimer.Change(rotationPeriodMs, rotationPeriodMs);
                     }
                 }
             }

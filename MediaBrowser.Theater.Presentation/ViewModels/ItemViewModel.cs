@@ -337,15 +337,15 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                     {
                         if (stream.Width.HasValue && stream.Height.HasValue)
                         {
-                            if (stream.Width.Value == 1920)
+                            if (IsCloseTo(stream.Width.Value, 1920))
                             {
                                 return "1080p";
                             }
-                            if (stream.Width.Value == 1280)
+                            if (IsCloseTo(stream.Width.Value, 1280))
                             {
                                 return "720p";
                             }
-                            if (stream.Width.Value == 720)
+                            if (IsCloseTo(stream.Width.Value, 720))
                             {
                                 return "480p";
                             }
@@ -356,6 +356,11 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
                 return null;
             }
+        }
+
+        private bool IsCloseTo(int x, int y)
+        {
+            return Math.Abs(x - y) <= 10;
         }
 
         public int StudioCount

@@ -202,7 +202,7 @@ namespace MediaBrowser.Theater.DirectShow
 
             try
             {
-                _mediaPlayer.Play(playableItem, EnableReclock(options), EnableMadvr(options));
+                _mediaPlayer.Play(playableItem, EnableReclock(options), EnableMadvr(options), true);
             }
             catch
             {

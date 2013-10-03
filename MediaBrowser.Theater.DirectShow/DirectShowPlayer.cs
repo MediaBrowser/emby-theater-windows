@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using DirectShowLib;
+﻿using DirectShowLib;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Interfaces.Playback;
@@ -9,6 +8,7 @@ using MediaFoundation.EVR;
 using MediaFoundation.Misc;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Forms;
@@ -39,6 +39,7 @@ namespace MediaBrowser.Theater.DirectShow
         private DirectShowLib.IBaseFilter _pSource;
 
         private XYVSFilter _xyVsFilter;
+        private XySubFilter _xySubFilter;
 
         private LAVAudio _lavaudio;
         private LAVVideo _lavvideo;
@@ -46,8 +47,6 @@ namespace MediaBrowser.Theater.DirectShow
         // EVR filter
         private DirectShowLib.IBaseFilter _mPEvr;
         private IMFVideoDisplayControl _mPDisplay;
-        private IMFVideoMixerControl _mPMixer;
-        private IMFVideoPositionMapper _mPMapper;
 
         private DefaultAudioRenderer _defaultAudioRenderer;
         private ReclockAudioRenderer _reclockAudioRenderer;
@@ -95,11 +94,11 @@ namespace MediaBrowser.Theater.DirectShow
             }
         }
 
-        public void Play(PlayableItem item, bool enableReclock, bool enableMadvr)
+        public void Play(PlayableItem item, bool enableReclock, bool enableMadvr, bool enableXySubFilter)
         {
             _item = item;
 
-            Initialize(item.PlayablePath, enableReclock, enableMadvr);
+            Initialize(item.PlayablePath, enableReclock, enableMadvr, enableXySubFilter);
 
             var hr = _mediaControl.Run();
             DsError.ThrowExceptionForHR(hr);
@@ -129,7 +128,7 @@ namespace MediaBrowser.Theater.DirectShow
             DsError.ThrowExceptionForHR(hr);
         }
 
-        private void Initialize(string path, bool enableReclock, bool enableMadvr)
+        private void Initialize(string path, bool enableReclock, bool enableMadvr, bool enableXySubFilter)
         {
             InitializeGraph();
 
@@ -137,14 +136,14 @@ namespace MediaBrowser.Theater.DirectShow
             DsError.ThrowExceptionForHR(hr);
 
             // Try to render the streams.
-            RenderStreams(_pSource, enableReclock, enableMadvr);
+            RenderStreams(_pSource, enableReclock, enableMadvr, enableXySubFilter);
 
             // Get the seeking capabilities.
             hr = _mediaSeeking.GetCapabilities(out _mSeekCaps);
             DsError.ThrowExceptionForHR(hr);
         }
 
-        private void RenderStreams(DirectShowLib.IBaseFilter pSource, bool enableReclock, bool enableMadvr)
+        private void RenderStreams(DirectShowLib.IBaseFilter pSource, bool enableReclock, bool enableMadvr, bool enableXySubFilter)
         {
             int hr;
 
@@ -215,50 +214,82 @@ namespace MediaBrowser.Theater.DirectShow
 
                 try
                 {
-                    _xyVsFilter = new XYVSFilter();
-                    var vxyVsFilter = _xyVsFilter as DirectShowLib.IBaseFilter;
-                    if (vxyVsFilter != null)
+                    _lavaudio = new LAVAudio();
+                    var vlavaudio = _lavaudio as DirectShowLib.IBaseFilter;
+                    if (vlavaudio != null)
                     {
-                        hr = m_graph.AddFilter(vxyVsFilter, "xy-VSFilter");
+                        hr = m_graph.AddFilter(vlavaudio, "LAV Audio Decoder");
                         DsError.ThrowExceptionForHR(hr);
                     }
                 }
                 catch (Exception ex)
                 {
-                    _logger.ErrorException("Error adding xy-VSFilter filter", ex);
+                    _logger.ErrorException("Error adding LAV Audio filter", ex);
                 }
-            }
 
-            try
-            {
-                _lavaudio = new LAVAudio();
-                var vlavaudio = _lavaudio as DirectShowLib.IBaseFilter;
-                if (vlavaudio != null)
+                if (_item.IsVideo)
                 {
-                    hr = m_graph.AddFilter(vlavaudio, "LAV Audio Decoder");
-                    DsError.ThrowExceptionForHR(hr);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.ErrorException("Error adding LAV Audio filter", ex);
-            }
+                    var xySubFilterSucceeded = false;
 
-            if (enableMadvr && _item.IsVideo)
-            {
-                try
-                {
-                    _madvr = new MadVR();
-                    var vmadvr = _madvr as DirectShowLib.IBaseFilter;
-                    if (vmadvr != null)
+                    if (enableMadvr)
                     {
-                        hr = m_graph.AddFilter(vmadvr, "MadVR Video Renderer");
-                        DsError.ThrowExceptionForHR(hr);
+                        var madVrSucceded = false;
+
+                        try
+                        {
+                            _madvr = new MadVR();
+                            var vmadvr = _madvr as DirectShowLib.IBaseFilter;
+                            if (vmadvr != null)
+                            {
+                                hr = m_graph.AddFilter(vmadvr, "MadVR Video Renderer");
+                                DsError.ThrowExceptionForHR(hr);
+                            }
+
+                            madVrSucceded = true;
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.ErrorException("Error adding MadVR filter", ex);
+                        }
+
+                        if (enableXySubFilter && madVrSucceded)
+                        {
+                            try
+                            {
+                                _xySubFilter = new XySubFilter();
+                                var vxySubFilter = _xySubFilter as DirectShowLib.IBaseFilter;
+                                if (vxySubFilter != null)
+                                {
+                                    hr = m_graph.AddFilter(vxySubFilter, "xy-SubFilter");
+                                    DsError.ThrowExceptionForHR(hr);
+                                }
+
+                                xySubFilterSucceeded = true;
+                            }
+                            catch (Exception ex)
+                            {
+                                _logger.ErrorException("Error adding xy-SubFilter filter", ex);
+                            }
+                        }
                     }
-                }
-                catch (Exception ex)
-                {
-                    _logger.ErrorException("Error adding MadVR filter", ex);
+
+                    if (!xySubFilterSucceeded)
+                    {
+                        try
+                        {
+                            _xyVsFilter = new XYVSFilter();
+                            var vxyVsFilter = _xyVsFilter as DirectShowLib.IBaseFilter;
+                            if (vxyVsFilter != null)
+                            {
+                                hr = m_graph.AddFilter(vxyVsFilter, "xy-VSFilter");
+                                DsError.ThrowExceptionForHR(hr);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.ErrorException("Error adding xy-VSFilter filter", ex);
+                        }
+                    }
                 }
             }
 
@@ -326,8 +357,6 @@ namespace MediaBrowser.Theater.DirectShow
 
             // Return the IMFVideoDisplayControl pointer to the caller.
             _mPDisplay = pDisplay;
-
-            _mPMixer = null;
         }
 
         private void SetVideoWindow()
@@ -586,6 +615,14 @@ namespace MediaBrowser.Theater.DirectShow
                 _xyVsFilter = null;
             }
 
+            if (_xySubFilter != null)
+            {
+                m_graph.RemoveFilter(_xySubFilter as DirectShowLib.IBaseFilter);
+
+                Marshal.ReleaseComObject(_xySubFilter);
+                _xySubFilter = null;
+            }
+
             if (_lavvideo != null)
             {
                 m_graph.RemoveFilter(_lavvideo as DirectShowLib.IBaseFilter);
@@ -705,7 +742,7 @@ namespace MediaBrowser.Theater.DirectShow
         private Guid _audioSelector = Guid.Empty;
         private Guid _vobsubSelector = Guid.Empty;
         private Guid _grp2Selector = Guid.Empty;
-        
+
         private List<SelectableMediaStream> GetStreams()
         {
             var streams = new List<SelectableMediaStream>();

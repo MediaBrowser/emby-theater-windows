@@ -72,6 +72,11 @@ namespace MediaBrowser.Theater.Presentation.Controls
 
         void BtnPreviousOption_Click(object sender, RoutedEventArgs e)
         {
+            if (SelectedItem == null && Options.Count == 0)
+            {
+                return;
+            }
+
             var currentIndex = Options.IndexOf(SelectedItem);
 
             var newIndex = currentIndex == 0 ? Options.Count - 1 : currentIndex - 1;
@@ -86,6 +91,11 @@ namespace MediaBrowser.Theater.Presentation.Controls
 
         void BtnNextOption_Click(object sender, RoutedEventArgs e)
         {
+            if (SelectedItem == null && Options.Count == 0)
+            {
+                return;
+            }
+
             var currentIndex = Options.IndexOf(SelectedItem);
 
             var newIndex = currentIndex == Options.Count - 1 ? 0 : currentIndex + 1;

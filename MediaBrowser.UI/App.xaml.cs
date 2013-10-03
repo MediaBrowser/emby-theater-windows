@@ -271,11 +271,9 @@ namespace MediaBrowser.UI
         {
             var foundServer = false;
 
-            SystemInfo systemInfo;
-
             try
             {
-                systemInfo = await _appHost.ApiClient.GetSystemInfoAsync().ConfigureAwait(false);
+                var systemInfo = await _appHost.ApiClient.GetSystemInfoAsync().ConfigureAwait(false);
 
                 foundServer = true;
             }
@@ -294,8 +292,6 @@ namespace MediaBrowser.UI
 
                     _appHost.ApiClient.ServerHostName = parts[0];
                     _appHost.ApiClient.ServerApiPort = address.Port;
-
-                    systemInfo = await _appHost.ApiClient.GetSystemInfoAsync().ConfigureAwait(false);
 
                     foundServer = true;
                 }

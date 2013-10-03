@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using MediaBrowser.Model.ApiClient;
+﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Theater.Interfaces.Configuration;
@@ -14,6 +13,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -145,12 +145,15 @@ namespace MediaBrowser.Theater.Core.MediaPlayers
 
                 }).ToList();
 
-                SelectGameSystem.SelectedValue = _gameSystems[0].Name;
+                if (_gameSystems.Count > 0)
+                {
+                    SelectGameSystem.SelectedValue = _gameSystems[0].Name;
+                }
 
                 BtnSubmit.Visibility = Visibility.Visible;
                 _presentation.HideLoadingAnimation();
             }
-            catch
+            catch (Exception ex)
             {
                 _presentation.HideLoadingAnimation();
                 _presentation.ShowDefaultErrorMessage();
@@ -169,6 +172,20 @@ namespace MediaBrowser.Theater.Core.MediaPlayers
 
         private bool ValidateInput()
         {
+            if (string.Equals(SelectMediaType.SelectedValue, MediaType.Game))
+            {
+                if (string.IsNullOrEmpty(SelectGameSystem.SelectedValue))
+                {
+                    _presentation.ShowMessage(new MessageBoxInfo
+                    {
+                        Button = MessageBoxButton.OK,
+                        Caption = "Error",
+                        Icon = MessageBoxIcon.Error,
+                        Text = "Please select a game system."
+                    });
+                }
+            }
+
             if (PanelPlayerPath.Visibility == Visibility.Visible)
             {
                 if (string.IsNullOrEmpty(TxtPath.Text) || !File.Exists(TxtPath.Text))

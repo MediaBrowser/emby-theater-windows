@@ -14,12 +14,37 @@
     <Grid>
 
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0">
+        <Grid Grid.Row="0" Margin="20 30 20 0">
+
+            <Grid.Style>
+                <Style TargetType="{x:Type Grid}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding HasIndexOptions}" Value="False">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+            
+            <controls:ExtendedScrollViewer ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalAlignment="Top" HorizontalAlignment="Center" CanContentScroll="True">
+                <controls:ScrollingPanel CanHorizontallyScroll="True" CanVerticallyScroll="False">
+                    <controls:ExtendedListBox x:Name="IndexMenu" ItemsSource="{Binding IndexOptionsCollectionView}" ScrollViewer.CanContentScroll="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" HorizontalAlignment="Center" ItemContainerStyle="{DynamicResource DetailPageMenuListBoxItemStyle}">
+                        <controls:ExtendedListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" />
+                            </ItemsPanelTemplate>
+                        </controls:ExtendedListBox.ItemsPanel>
+                    </controls:ExtendedListBox>
+                </controls:ScrollingPanel>
+            </controls:ExtendedScrollViewer>
+        </Grid>
+        <Grid Grid.Row="1">
 
             <Grid.Style>
                 <Style TargetType="{x:Type Grid}">
@@ -62,7 +87,7 @@
             </controls:ExtendedListBox>
         </Grid>
 
-        <Grid Grid.Row="1" Name="PnlThumbstripInfo">
+        <Grid Grid.Row="2" Name="PnlThumbstripInfo">
             <Grid.Style>
                 <Style TargetType="{x:Type Grid}">
                     <Style.Triggers>
@@ -132,7 +157,7 @@
             </StackPanel>
         </Grid>
 
-        <Grid Grid.Row="2" Margin="25 25 25 15">
+        <Grid Grid.Row="3" Margin="25 25 25 15">
 
             <Grid HorizontalAlignment="Left" VerticalAlignment="Bottom">
                 <Grid.Style>

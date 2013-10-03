@@ -37,4 +37,9 @@ namespace MediaBrowser.Theater.DirectShow
     internal class XYVSFilter
     {
     }
+
+    [ComImport, Guid("2DFCB782-EC20-4A7C-B530-4577ADB33F21")]
+    internal class XySubFilter
+    {
+    }
 }

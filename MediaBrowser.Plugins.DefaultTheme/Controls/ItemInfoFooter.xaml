@@ -28,7 +28,23 @@
                 </ProgressBar>
             </StackPanel>
         </Grid>
-        
+
+        <StackPanel Orientation="Horizontal">
+            <StackPanel.Style>
+                <Style TargetType="{x:Type StackPanel}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Players}" Value="{x:Null}">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </StackPanel.Style>
+
+            <Border Style="{StaticResource MediaInfoSeparator}"></Border>
+            <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding Players}" VerticalAlignment="Center"></TextBlock>
+            <TextBlock Style="{DynamicResource TextBlockStyle}" Text=" Player" VerticalAlignment="Center"></TextBlock>
+        </StackPanel>
+
         <StackPanel Orientation="Horizontal" Name="PnlDate">
             <Border Style="{StaticResource MediaInfoSeparator}"></Border>
             <TextBlock Style="{DynamicResource TextBlockStyle}" x:Name="TxtDate" VerticalAlignment="Center"></TextBlock>

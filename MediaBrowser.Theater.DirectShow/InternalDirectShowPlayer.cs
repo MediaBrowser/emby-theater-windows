@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Common.Events;
+﻿using System.Windows.Threading;
+using MediaBrowser.Common.Events;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
@@ -145,6 +146,19 @@ namespace MediaBrowser.Theater.DirectShow
             }
         }
 
+        public long? CurrentDurationTicks
+        {
+            get
+            {
+                if (_mediaPlayer != null)
+                {
+                    return _mediaPlayer.CurrentDurationTicks;
+                }
+
+                return null;
+            }
+        }
+
         public bool CanPlayByDefault(BaseItemDto item)
         {
             return item.IsVideo || item.IsAudio;
@@ -155,28 +169,25 @@ namespace MediaBrowser.Theater.DirectShow
             return new[] { MediaType.Video, MediaType.Audio }.Contains(mediaType, StringComparer.OrdinalIgnoreCase);
         }
 
-        public async Task Play(PlayOptions options)
-        {
-            await _presentation.Window.Dispatcher.InvokeAsync(async () => await PlayInternal(options));
-        }
+        private Dispatcher _currentPlaybackDispatcher;
 
-        private async Task PlayInternal(PlayOptions options)
+        public async Task Play(PlayOptions options)
         {
             CurrentPlaylistIndex = 0;
             CurrentPlayOptions = options;
 
             _playlist = options.Items.ToList();
 
+            _currentPlaybackDispatcher = _presentation.Window.Dispatcher;
+
             try
             {
-                _mediaPlayer = new DirectShowPlayer(_logger, _hiddenWindow, this)
+                _currentPlaybackDispatcher.Invoke(() => _hiddenWindow.WindowsFormsHost.Child = _mediaPlayer = new DirectShowPlayer(_logger, _hiddenWindow, this)
                 {
                     BackColor = Color.Black,
                     FormBorderStyle = FormBorderStyle.None,
                     TopLevel = false
-                };
-
-                _hiddenWindow.WindowsFormsHost.Child = _mediaPlayer;
+                });
 
                 await PlayTrack(0, options.StartPositionTicks);
             }
@@ -202,7 +213,7 @@ namespace MediaBrowser.Theater.DirectShow
 
             try
             {
-                _mediaPlayer.Play(playableItem, EnableReclock(options), EnableMadvr(options), true);
+                _currentPlaybackDispatcher.Invoke(() => _mediaPlayer.Play(playableItem, EnableReclock(options), EnableMadvr(options), _config.Configuration.InternalPlayerConfiguration.EnableXySubFilter));
             }
             catch
             {
@@ -215,7 +226,7 @@ namespace MediaBrowser.Theater.DirectShow
 
             if (startPositionTicks.HasValue && startPositionTicks.Value > 0)
             {
-                _mediaPlayer.Seek(startPositionTicks.Value);
+                _currentPlaybackDispatcher.Invoke(() => _mediaPlayer.Seek(startPositionTicks.Value));
             }
 
             if (previousMedia != null)
@@ -310,7 +321,7 @@ namespace MediaBrowser.Theater.DirectShow
         {
             if (_mediaPlayer != null)
             {
-                _presentation.Window.Dispatcher.InvokeAsync(() =>
+                _currentPlaybackDispatcher.Invoke(() =>
                 {
                     _mediaPlayer.Dispose();
                     _hiddenWindow.WindowsFormsHost.Child = new Panel();
@@ -321,17 +332,23 @@ namespace MediaBrowser.Theater.DirectShow
 
         public void Pause()
         {
-            if (_mediaPlayer != null)
+            lock (_commandLock)
             {
-                _mediaPlayer.Pause();
+                if (_mediaPlayer != null)
+                {
+                    _currentPlaybackDispatcher.Invoke(_mediaPlayer.Pause);
+                }
             }
         }
 
         public void UnPause()
         {
-            if (_mediaPlayer != null)
+            lock (_commandLock)
             {
-                _mediaPlayer.Unpause();
+                if (_mediaPlayer != null)
+                {
+                    _currentPlaybackDispatcher.Invoke(_mediaPlayer.Unpause);
+                }
             }
         }
 
@@ -343,16 +360,19 @@ namespace MediaBrowser.Theater.DirectShow
             {
                 if (_mediaPlayer != null)
                 {
-                    _mediaPlayer.Stop(TrackCompletionReason.Stop, null);
+                    _currentPlaybackDispatcher.Invoke(() => _mediaPlayer.Stop(TrackCompletionReason.Stop, null));
                 }
             }
         }
 
         public void Seek(long positionTicks)
         {
-            if (_mediaPlayer != null)
+            lock (_commandLock)
             {
-                _mediaPlayer.Seek(positionTicks);
+                if (_mediaPlayer != null)
+                {
+                    _currentPlaybackDispatcher.Invoke(() => _mediaPlayer.Seek(positionTicks));
+                }
             }
         }
 
@@ -372,6 +392,7 @@ namespace MediaBrowser.Theater.DirectShow
                 try
                 {
                     media.IsoMount.Dispose();
+                    media.IsoMount = null;
                 }
                 catch (Exception ex)
                 {
@@ -414,6 +435,7 @@ namespace MediaBrowser.Theater.DirectShow
         public void ChangeTrack(int newIndex)
         {
             _mediaPlayer.Stop(TrackCompletionReason.ChangeTrack, newIndex);
+            _currentPlaybackDispatcher.Invoke(() => _mediaPlayer.Stop(TrackCompletionReason.ChangeTrack, newIndex));
         }
 
         public IReadOnlyList<SelectableMediaStream> SelectableStreams
@@ -423,17 +445,17 @@ namespace MediaBrowser.Theater.DirectShow
 
         public void ChangeAudioStream(SelectableMediaStream track)
         {
-            _mediaPlayer.SetAudioTrack(track);
+            _currentPlaybackDispatcher.Invoke(() => _mediaPlayer.SetAudioTrack(track));
         }
 
         public void ChangeSubtitleStream(SelectableMediaStream track)
         {
-            _mediaPlayer.SetSubtitleTrack(track);
+            _currentPlaybackDispatcher.Invoke(() => _mediaPlayer.SetSubtitleTrack(track));
         }
 
         public void RemoveSubtitles()
         {
-            
+
         }
     }
 

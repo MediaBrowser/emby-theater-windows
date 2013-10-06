@@ -33,6 +33,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         public GalleryViewModel AllShowsViewModel { get; private set; }
         public GalleryViewModel ActorsViewModel { get; private set; }
+        public GalleryViewModel GenresViewModel { get; private set; }
 
         public ImageViewerViewModel SpotlightViewModel { get; private set; }
         public GalleryViewModel RomanticSeriesViewModel { get; private set; }
@@ -68,31 +69,40 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             };
             ResumeViewModel.PropertyChanged += ResumeViewModel_PropertyChanged;
 
+            const int tileScaleFactor = 12;
+            
             ActorsViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {
                 GalleryHeight = TileHeight,
-                GalleryWidth = TileWidth * 10 / 16,
-                CustomCommandAction = NavigateToActors
+                GalleryWidth = TileWidth * tileScaleFactor / 16,
+                CustomCommandAction = () => NavigateWithLoading(NavigateToActorsInternal)
+            };
+
+            GenresViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
+            {
+                GalleryHeight = TileHeight,
+                GalleryWidth = TileWidth * tileScaleFactor / 16,
+                CustomCommandAction = () => NavigateWithLoading(NavigateToGenresInternal)
             };
 
             AllShowsViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {
                 GalleryHeight = TileHeight,
-                GalleryWidth = TileWidth * 10 / 16,
-                CustomCommandAction = NavigateToAllShows
+                GalleryWidth = TileWidth * tileScaleFactor / 16,
+                CustomCommandAction = () => NavigateWithLoading(NavigateToAllShowsInternal)
             };
 
             RomanticSeriesViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {
                 GalleryHeight = TileHeight,
-                GalleryWidth = TileWidth * 10 / 16,
+                GalleryWidth = TileWidth * tileScaleFactor / 16,
                 CustomCommandAction = () => NavigateWithLoading(NavigateToRomanticTvInternal)
             };
 
             ComedyItemsViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {
                 GalleryHeight = TileHeight,
-                GalleryWidth = TileWidth * 10 / 16,
+                GalleryWidth = TileWidth * tileScaleFactor / 16,
                 CustomCommandAction = () => NavigateWithLoading(NavigateToComedySeriesInternal)
             };
 
@@ -123,7 +133,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                     }
                     catch (ObjectDisposedException)
                     {
-                        
+
                     }
                 }
                 _mainViewCancellationTokenSource.Dispose();
@@ -133,8 +143,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         private async void LoadViewModels()
         {
-            PresentationManager.ShowLoadingAnimation();
-
             var cancellationSource = _mainViewCancellationTokenSource = new CancellationTokenSource();
 
             try
@@ -148,6 +156,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 LoadRomanticSeriesViewModel(view);
                 LoadComedySeriesViewModel(view);
                 LoadActorsViewModel(view);
+                LoadGenresViewModel(view);
             }
             catch (Exception ex)
             {
@@ -156,7 +165,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             }
             finally
             {
-                PresentationManager.HideLoadingAnimation();
                 DisposeMainViewCancellationTokenSource(false);
             }
         }
@@ -284,6 +292,19 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             ActorsViewModel.AddImages(images);
         }
 
+        private void LoadGenresViewModel(TvView view)
+        {
+            //var images = view.ActorItems.Take(1).Select(i => ApiClient.GetPersonImageUrl(i.Name, new ImageOptions
+            //{
+            //    ImageType = i.ImageType,
+            //    Tag = i.ImageTag,
+            //    Height = Convert.ToInt32(TileWidth * 2),
+            //    EnableImageEnhancers = false
+            //}));
+
+            //GenresViewModel.AddImages(images);
+        }
+
         private void LoadRomanticSeriesViewModel(TvView view)
         {
             var now = DateTime.Now;
@@ -346,20 +367,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             ComedyItemsViewModel.AddImages(images);
         }
 
-        private async void NavigateToActors()
-        {
-            PresentationManager.ShowLoadingAnimation();
-
-            try
-            {
-                await NavigateToActorsInternal();
-            }
-            finally
-            {
-                PresentationManager.HideLoadingAnimation();
-            }
-        }
-
         private async Task NavigateToActorsInternal()
         {
             var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
@@ -367,7 +374,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             var displayPreferences = await PresentationManager.GetDisplayPreferences("People", CancellationToken.None);
 
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger);
+                                      PresentationManager, _navService, _playbackManager, _logger, AlphabetIndex);
 
             var sortOptions = new Dictionary<string, string>();
             sortOptions["Name"] = ItemSortBy.SortName;
@@ -383,6 +390,40 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             await _navService.Navigate(page);
         }
 
+        private async Task NavigateToGenresInternal()
+        {
+            var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
+
+            var displayPreferences = await PresentationManager.GetDisplayPreferences("TVGenres", CancellationToken.None);
+
+            var genres = await ApiClient.GetGenresAsync(new ItemsByNameQuery
+            {
+                IncludeItemTypes = new[] { "Series" },
+                SortBy = new[] { ItemSortBy.SortName },
+                Recursive = true,
+                UserId = _sessionManager.CurrentUser.Id
+            });
+
+            var indexOptions = genres.Items.Select(i => new TabItem
+            {
+                Name = i.Name,
+                DisplayName = i.Name + " (" + i.SeriesCount + ")"
+            });
+
+            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
+                                      PresentationManager, _navService, _playbackManager, _logger, indexOptions);
+
+            var sortOptions = new Dictionary<string, string>();
+
+            page.SortOptions = sortOptions;
+            page.CustomPageTitle = "TV | Genres";
+
+            page.ViewType = ViewType.Tv;
+            page.CustomItemQuery = GetSeriesByGenre;
+
+            await _navService.Navigate(page);
+        }
+
         private void LoadAllShowsViewModel(TvView view)
         {
             var images = view.ShowsItems.Take(1).Select(i => ApiClient.GetImageUrl(i.Id, new ImageOptions
@@ -394,20 +435,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             }));
 
             AllShowsViewModel.AddImages(images);
-        }
-
-        private async void NavigateToAllShows()
-        {
-            PresentationManager.ShowLoadingAnimation();
-
-            try
-            {
-                await NavigateToAllShowsInternal();
-            }
-            finally
-            {
-                PresentationManager.HideLoadingAnimation();
-            }
         }
 
         private async Task NavigateToAllShowsInternal()
@@ -460,7 +487,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             await _navService.Navigate(page);
         }
 
-        private Task<ItemsResult> GetComedySeries(DisplayPreferences displayPreferences)
+        private Task<ItemsResult> GetComedySeries(ItemListViewModel viewModel, DisplayPreferences displayPreferences)
         {
             var query = new ItemQuery
             {
@@ -484,7 +511,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             return ApiClient.GetItemsAsync(query);
         }
 
-        private Task<ItemsResult> GetAllShows(DisplayPreferences displayPreferences)
+        private Task<ItemsResult> GetAllShows(ItemListViewModel viewModel, DisplayPreferences displayPreferences)
         {
             var query = new ItemQuery
             {
@@ -506,7 +533,36 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             return ApiClient.GetItemsAsync(query);
         }
 
-        private Task<ItemsResult> GetAllActors(DisplayPreferences displayPreferences)
+        private Task<ItemsResult> GetSeriesByGenre(ItemListViewModel viewModel, DisplayPreferences displayPreferences)
+        {
+            var query = new ItemQuery
+            {
+                Fields = FolderPage.QueryFields,
+
+                UserId = _sessionManager.CurrentUser.Id,
+
+                IncludeItemTypes = new[] { "Series" },
+
+                SortBy = !String.IsNullOrEmpty(displayPreferences.SortBy)
+                             ? new[] { displayPreferences.SortBy }
+                             : new[] { ItemSortBy.SortName },
+
+                SortOrder = displayPreferences.SortOrder,
+
+                Recursive = true
+            };
+
+            var indexOption = viewModel.CurrentIndexOption;
+
+            if (indexOption != null)
+            {
+                query.Genres = new[] { indexOption.Name };
+            }
+
+            return ApiClient.GetItemsAsync(query);
+        }
+
+        private Task<ItemsResult> GetAllActors(ItemListViewModel viewModel, DisplayPreferences displayPreferences)
         {
             var fields = FolderPage.QueryFields.ToList();
             fields.Remove(ItemFields.Overview);
@@ -532,6 +588,21 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 PersonTypes = new[] { PersonType.Actor, PersonType.GuestStar }
             };
 
+            var indexOption = viewModel.CurrentIndexOption;
+
+            if (indexOption != null)
+            {
+                if (string.Equals(indexOption.Name, "#", StringComparison.OrdinalIgnoreCase))
+                {
+                    query.NameLessThan = "A";
+                }
+                else
+                {
+                    query.NameStartsWithOrGreater = indexOption.Name;
+                    query.NameLessThan = indexOption.Name + "zz";
+                }
+            }
+
             return ApiClient.GetPeopleAsync(query);
         }
 
@@ -553,7 +624,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             await _navService.Navigate(page);
         }
 
-        private Task<ItemsResult> GetRomanticSeries(DisplayPreferences displayPreferences)
+        private Task<ItemsResult> GetRomanticSeries(ItemListViewModel viewModel, DisplayPreferences displayPreferences)
         {
             var query = new ItemQuery
             {
@@ -577,7 +648,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             return ApiClient.GetItemsAsync(query);
         }
 
-        private Task<ItemsResult> GetNextUpAsync()
+        private Task<ItemsResult> GetNextUpAsync(ItemListViewModel viewModel)
         {
             var query = new NextUpQuery
             {
@@ -596,7 +667,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             return ApiClient.GetNextUpAsync(query);
         }
 
-        private Task<ItemsResult> GetResumeablesAsync()
+        private Task<ItemsResult> GetResumeablesAsync(ItemListViewModel viewModel)
         {
             var query = new ItemQuery
             {
@@ -617,7 +688,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
                 Filters = new[] { ItemFilter.IsResumable },
 
-                Limit = 4,
+                Limit = 6,
 
                 Recursive = true
             };
@@ -634,6 +705,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             if (ActorsViewModel != null)
             {
                 ActorsViewModel.Dispose();
+            }
+            if (GenresViewModel != null)
+            {
+                GenresViewModel.Dispose();
             }
             if (AllShowsViewModel != null)
             {

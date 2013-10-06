@@ -34,10 +34,11 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         private readonly IPlaybackManager _playbackManager;
         private readonly ILogger _logger;
 
+        private Timer _indexSelectionChangeTimer;
         private Timer _selectionChangeTimer;
         private readonly object _syncLock = new object();
 
-        private readonly Func<Task<ItemsResult>> _getItemsDelegate;
+        private readonly Func<ItemListViewModel,Task<ItemsResult>> _getItemsDelegate;
 
         private readonly RangeObservableCollection<ItemViewModel> _listItems =
             new RangeObservableCollection<ItemViewModel>();
@@ -51,7 +52,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         private readonly Dispatcher _dispatcher;
 
-        public ItemListViewModel(Func<Task<ItemsResult>> getItemsDelegate, IPresentationManager presentationManager, IImageManager imageManager, IApiClient apiClient, ISessionManager sessionManager, INavigationService navigationService, IPlaybackManager playbackManager, ILogger logger)
+        public ItemListViewModel(Func<ItemListViewModel,Task<ItemsResult>> getItemsDelegate, IPresentationManager presentationManager, IImageManager imageManager, IApiClient apiClient, ISessionManager sessionManager, INavigationService navigationService, IPlaybackManager playbackManager, ILogger logger)
         {
             EnableBackdropsForCurrentItem = true;
 
@@ -66,6 +67,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             _presentationManager = presentationManager;
 
             _indexOptionsCollectionView = new ListCollectionView(_indexOptions);
+            _indexOptionsCollectionView.CurrentChanged += _indexOptionsCollectionView_CurrentChanged;
 
             NavigateCommand = new RelayCommand(Navigate);
             PlayCommand = new RelayCommand(Play);
@@ -255,6 +257,24 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
+        private TabItem _currentIndexOption;
+        public TabItem CurrentIndexOption
+        {
+            get { return _currentIndexOption; }
+
+            set
+            {
+                var changed = _currentIndexOption != value;
+
+                _currentIndexOption = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("CurrentIndexOption");
+                }
+            }
+        }
+
         public Func<ItemListViewModel, double> ItemContainerWidthGenerator { get; set; }
         public Func<ItemListViewModel, double> ItemContainerHeightGenerator { get; set; }
 
@@ -348,18 +368,12 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
-        public Task Initialize()
-        {
-            _listCollectionView = new ListCollectionView(_listItems);
-            _listCollectionView.CurrentChanged += _listCollectionView_CurrentChanged;
-
-            return ReloadItems(true);
-        }
-
         private async Task ReloadItems(bool isInitialLoad)
         {
-            // Record the current item
-            var currentItem = _listCollectionView.CurrentItem as ItemViewModel;
+            if (HasIndexOptions && CurrentIndexOption == null)
+            {
+                return;
+            }
 
             if (ShowLoadingAnimation)
             {
@@ -368,7 +382,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
             try
             {
-                var result = await _getItemsDelegate();
+                var result = await _getItemsDelegate(this);
                 var items = result.Items;
 
                 int? selectedIndex = null;
@@ -376,15 +390,6 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 if (isInitialLoad && AutoSelectFirstItem)
                 {
                     selectedIndex = 0;
-                }
-                else if (currentItem != null)
-                {
-                    var index = Array.FindIndex(items, i => string.Equals(i.Id, currentItem.Item.Id));
-
-                    if (index != -1)
-                    {
-                        selectedIndex = index;
-                    }
                 }
 
                 MedianPrimaryImageAspectRatio = result.Items.MedianPrimaryImageAspectRatio();
@@ -396,21 +401,28 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 var childWidth = Convert.ToInt32(ImageDisplayWidth);
                 var imageDisplayHeight = Convert.ToInt32(GetImageDisplayHeight());
 
-                _listItems.AddRange(
-                    items.Select(
-                        i =>
-                        new ItemViewModel(_apiClient, _imageManager, _playbackManager, _presentationManager, _logger)
-                            {
-                                DownloadPrimaryImageAtExactSize = IsCloseToMedianPrimaryImageAspectRatio(i),
-                                ImageHeight = imageDisplayHeight,
-                                ImageWidth = childWidth,
-                                Item = i,
-                                ViewType = ViewType,
-                                DisplayName = DisplayNameGenerator == null ? i.Name : DisplayNameGenerator(i),
-                                DownloadImagesAtExactSize = DownloadImageAtExactSize ?? true,
-                                PreferredImageTypes = imageTypes,
-                                ListType = ListType
-                            }));
+                var viewModels = items.Select(
+                    i =>
+                    {
+                        var vm = new ItemViewModel(_apiClient, _imageManager, _playbackManager,
+                                                   _presentationManager, _logger)
+                        {
+                            DownloadPrimaryImageAtExactSize = IsCloseToMedianPrimaryImageAspectRatio(i),
+                            ImageHeight = imageDisplayHeight,
+                            ImageWidth = childWidth,
+                            Item = i,
+                            ViewType = ViewType,
+                            DisplayName = DisplayNameGenerator == null ? i.Name : DisplayNameGenerator(i),
+                            DownloadImagesAtExactSize = DownloadImageAtExactSize ?? true,
+                            PreferredImageTypes = imageTypes,
+                            ListType = ListType
+                        };
+
+                        return vm;
+                    }
+                    ).ToList();
+
+                _listItems.AddRange(viewModels);
 
                 ItemCount = items.Length;
 
@@ -421,7 +433,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                     ListCollectionView.MoveCurrentToPosition(selectedIndex.Value);
                 }
             }
-            catch (HttpException)
+            catch (Exception)
             {
                 _presentationManager.ShowDefaultErrorMessage();
             }
@@ -576,6 +588,48 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
+        private bool _isFirstChange = true;
+        private readonly object _indexSyncLock = new object();
+
+        void _indexOptionsCollectionView_CurrentChanged(object sender, EventArgs e)
+        {
+            if (!HasIndexOptions)
+            {
+                return;
+            }
+
+            if (_isFirstChange)
+            {
+                OnIndexSelectionChange(null);
+                _isFirstChange = false;
+                return;
+            }
+
+            lock (_indexSyncLock)
+            {
+                if (_indexSelectionChangeTimer == null)
+                {
+                    _indexSelectionChangeTimer = new Timer(OnIndexSelectionChange, null, 600, Timeout.Infinite);
+                }
+                else
+                {
+                    _indexSelectionChangeTimer.Change(600, Timeout.Infinite);
+                }
+            }
+        }
+
+        private void OnIndexSelectionChange(object state)
+        {
+            _dispatcher.InvokeAsync(UpdateCurrentIndex);
+        }
+
+        private void UpdateCurrentIndex()
+        {
+            CurrentIndexOption = IndexOptionsCollectionView.CurrentItem as TabItem;
+
+            ReloadItems(false);
+        }
+
         public void Dispose()
         {
             DisposeTimer();
@@ -604,6 +658,15 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 {
                     _selectionChangeTimer.Dispose();
                     _selectionChangeTimer = null;
+                }
+            }
+
+            lock (_indexSyncLock)
+            {
+                if (_indexSelectionChangeTimer != null)
+                {
+                    _indexSelectionChangeTimer.Dispose();
+                    _indexSelectionChangeTimer = null;
                 }
             }
         }

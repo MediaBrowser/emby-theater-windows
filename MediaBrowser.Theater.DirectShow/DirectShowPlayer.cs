@@ -1,4 +1,6 @@
-﻿using DirectShowLib;
+﻿using System.IO;
+using DirectShowLib;
+using DirectShowLib.Dvd;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Interfaces.Playback;
@@ -54,6 +56,11 @@ namespace MediaBrowser.Theater.DirectShow
         // Caps bits for IMediaSeeking
         private AMSeekingSeekingCapabilities _mSeekCaps;
 
+        // Dvd
+        private DirectShowLib.IBaseFilter _dvdNav;
+        private IDvdControl2 _mDvdControl;
+        private IDvdInfo2 _mDvdInfo;
+
         private MadVR _madvr;
 
         private PlayableItem _item;
@@ -94,11 +101,32 @@ namespace MediaBrowser.Theater.DirectShow
             }
         }
 
+        public long? CurrentDurationTicks
+        {
+            get
+            {
+                if (_mediaSeeking != null && PlayState != PlayState.Idle)
+                {
+                    long pos;
+
+                    var hr = _mediaSeeking.GetDuration(out pos);
+
+                    return pos;
+                }
+
+                return null;
+            }
+        }
+
         public void Play(PlayableItem item, bool enableReclock, bool enableMadvr, bool enableXySubFilter)
         {
+            _logger.Info("Playing {0}. Reclock: {1}, Madvr: {2}, xySubFilter: {3}", item.OriginalItem.Name, enableReclock, enableMadvr, enableXySubFilter);
+
             _item = item;
 
-            Initialize(item.PlayablePath, enableReclock, enableMadvr, enableXySubFilter);
+            var isDvd = (item.OriginalItem.VideoType ?? VideoType.VideoFile) == VideoType.Dvd || (item.OriginalItem.IsoType ?? IsoType.BluRay) == IsoType.Dvd && item.PlayablePath.IndexOf("http://", StringComparison.OrdinalIgnoreCase) == -1;
+
+            Initialize(item.PlayablePath, enableReclock, enableMadvr, enableXySubFilter, isDvd);
 
             var hr = _mediaControl.Run();
             DsError.ThrowExceptionForHR(hr);
@@ -128,19 +156,79 @@ namespace MediaBrowser.Theater.DirectShow
             DsError.ThrowExceptionForHR(hr);
         }
 
-        private void Initialize(string path, bool enableReclock, bool enableMadvr, bool enableXySubFilter)
+        private void Initialize(string path, bool enableReclock, bool enableMadvr, bool enableXySubFilter, bool isDvd)
         {
             InitializeGraph();
 
-            var hr = m_graph.AddSourceFilter(path, path, out _pSource);
-            DsError.ThrowExceptionForHR(hr);
+            int hr = 0;
 
-            // Try to render the streams.
-            RenderStreams(_pSource, enableReclock, enableMadvr, enableXySubFilter);
+            if (!isDvd)
+            {
+                hr = m_graph.AddSourceFilter(path, path, out _pSource);
+                DsError.ThrowExceptionForHR(hr);
+
+                // Try to render the streams.
+                RenderStreams(_pSource, enableReclock, enableMadvr, enableXySubFilter);
+            }
+            else
+            {
+                _logger.Debug("Initializing dvd player to play {0}", path);
+
+                /* Create a new DVD Navigator. */
+                _dvdNav = (DirectShowLib.IBaseFilter)new DVDNavigator();
+
+                InitializeDvd(path);
+
+                // Try to render the streams.
+                RenderStreams(_dvdNav, enableReclock, enableMadvr, enableXySubFilter);
+            }
 
             // Get the seeking capabilities.
             hr = _mediaSeeking.GetCapabilities(out _mSeekCaps);
             DsError.ThrowExceptionForHR(hr);
+        }
+
+        private void InitializeDvd(string path)
+        {
+            /* The DVDControl2 interface lets us control DVD features */
+            _mDvdControl = _dvdNav as IDvdControl2;
+
+            if (_mDvdControl == null)
+                throw new Exception("Could not QueryInterface the IDvdControl2 interface");
+
+            /* QueryInterface the DVDInfo2 */
+            _mDvdInfo = _dvdNav as IDvdInfo2;
+
+            var videoTsPath = Path.Combine(path, "video_ts");
+            if (Directory.Exists(videoTsPath))
+            {
+                path = videoTsPath;
+            }
+
+            /* If a Dvd directory has been set then use it, if not, let DShow find the Dvd */
+            var hr = _mDvdControl.SetDVDDirectory(path);
+            DsError.ThrowExceptionForHR(hr);
+
+            /* This gives us the DVD time in Hours-Minutes-Seconds-Frame time format, and other options */
+            hr = _mDvdControl.SetOption(DvdOptionFlag.HMSFTimeCodeEvents, true);
+            DsError.ThrowExceptionForHR(hr);
+
+            /* If the graph stops, resume at the same point */
+            _mDvdControl.SetOption(DvdOptionFlag.ResetOnStop, false);
+
+            hr = m_graph.AddFilter(_dvdNav, "DVD Navigator");
+            DsError.ThrowExceptionForHR(hr);
+
+            //int uTitle = 1;
+            //dma = new DvdMenuAttributes();
+            //dta = new DvdTitleAttributes();
+            //m_dvdInfo.GetTitleAttributes(uTitle, out dma, dta);
+
+            //int iX = dta.VideoAttributes.aspectX;
+            //int iY = dta.VideoAttributes.aspectY;
+            //DvdIsLetterBoxed = dta.VideoAttributes.isSourceLetterboxed;
+            //int sX = dta.VideoAttributes.sourceResolutionX;
+            //int sY = dta.VideoAttributes.sourceResolutionY;
         }
 
         private void RenderStreams(DirectShowLib.IBaseFilter pSource, bool enableReclock, bool enableMadvr, bool enableXySubFilter)
@@ -252,6 +340,7 @@ namespace MediaBrowser.Theater.DirectShow
                             _logger.ErrorException("Error adding MadVR filter", ex);
                         }
 
+                        // Load xySubFilter if configured and if madvr succeeded
                         if (enableXySubFilter && madVrSucceded)
                         {
                             try
@@ -273,6 +362,7 @@ namespace MediaBrowser.Theater.DirectShow
                         }
                     }
 
+                    // Fallback to xyVsFilter
                     if (!xySubFilterSucceeded)
                     {
                         try
@@ -652,6 +742,24 @@ namespace MediaBrowser.Theater.DirectShow
                 hr = _mediaEventEx.SetNotifyWindow(IntPtr.Zero, 0, IntPtr.Zero);
                 Marshal.ReleaseComObject(_mediaEventEx);
                 _mediaEventEx = null;
+            }
+
+            if (_dvdNav != null)
+            {
+                Marshal.ReleaseComObject(_dvdNav);
+                _dvdNav = null;
+            }
+
+            if (_mDvdInfo != null)
+            {
+                Marshal.ReleaseComObject(_mDvdInfo);
+                _mDvdInfo = null;
+            }
+
+            if (_mDvdControl != null)
+            {
+                Marshal.ReleaseComObject(_mDvdControl);
+                _mDvdControl = null;
             }
 
             if (_mPDisplay != null)

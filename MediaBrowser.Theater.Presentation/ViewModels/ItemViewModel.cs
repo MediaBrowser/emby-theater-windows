@@ -2,7 +2,6 @@
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
-using MediaBrowser.Model.Net;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Reflection;
@@ -761,17 +760,19 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         /// <returns>System.String.</returns>
         private string GetImageUrl(ImageType imageType, int? imageIndex = null)
         {
+            var scaleFactor = 1;
+
             var imageOptions = new ImageOptions
             {
                 ImageType = imageType,
                 ImageIndex = imageIndex,
-                Width = ImageWidth
+                Width = Convert.ToInt32(ImageWidth * scaleFactor)
             };
 
             if ((imageType == ImageType.Primary && DownloadPrimaryImageAtExactSize)
                 || (imageType != ImageType.Primary && DownloadImagesAtExactSize))
             {
-                imageOptions.Height = ImageHeight;
+                imageOptions.Height = Convert.ToInt32(ImageHeight * scaleFactor);
             }
 
             return _apiClient.GetImageUrl(Item, imageOptions);
@@ -857,7 +858,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             {
                 await _playbackManager.Play(new PlayOptions(_item));
             }
-            catch (HttpException)
+            catch (Exception)
             {
                 _presentation.ShowDefaultErrorMessage();
             }
@@ -872,7 +873,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                     StartPositionTicks = _item.UserData.PlaybackPositionTicks
                 });
             }
-            catch (HttpException)
+            catch (Exception)
             {
                 _presentation.ShowDefaultErrorMessage();
             }
@@ -886,7 +887,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
                 await _playbackManager.Play(new PlayOptions(trailers.First()));
             }
-            catch (HttpException)
+            catch (Exception)
             {
                 _presentation.ShowDefaultErrorMessage();
             }
@@ -992,10 +993,12 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         private void DisposeCancellationTokenSource()
         {
-            if (_imageCancellationTokenSource != null)
+            var tokenSource = _imageCancellationTokenSource;
+
+            if (tokenSource != null)
             {
-                _imageCancellationTokenSource.Cancel();
-                _imageCancellationTokenSource.Dispose();
+                tokenSource.Cancel();
+                tokenSource.Dispose();
                 _imageCancellationTokenSource = null;
             }
         }

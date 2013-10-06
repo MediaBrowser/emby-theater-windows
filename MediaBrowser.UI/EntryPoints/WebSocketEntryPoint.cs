@@ -80,7 +80,7 @@ namespace MediaBrowser.UI.EntryPoints
 
                 var socket = new ApiWebSocket(_logger, _json, _apiClient.ServerHostName, systemInfo.WebSocketPortNumber,
                                               _apiClient.DeviceId, _appHost.ApplicationVersion.ToString(),
-                                              _apiClient.ClientName, ClientWebSocketFactory.CreateWebSocket);
+                                              _apiClient.ClientName, _apiClient.DeviceName, ClientWebSocketFactory.CreateWebSocket);
 
                 await socket.ConnectAsync(CancellationToken.None).ConfigureAwait(false);
 
@@ -283,7 +283,7 @@ namespace MediaBrowser.UI.EntryPoints
                 }
                 await _nav.NavigateToItem(dto, viewType);
             }
-            catch (HttpException ex)
+            catch (Exception ex)
             {
                 _logger.ErrorException("Error processing browse command", ex);
             }

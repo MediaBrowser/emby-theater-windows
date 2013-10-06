@@ -3,6 +3,8 @@ using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Constants;
 using MediaBrowser.Common.Implementations;
 using MediaBrowser.Common.Implementations.ScheduledTasks;
+using MediaBrowser.Common.Net;
+using MediaBrowser.IsoMounter;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.System;
@@ -37,6 +39,7 @@ using System.Net.Http;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using MediaBrowser.UI.Networking;
 
 namespace MediaBrowser.UI
 {
@@ -155,6 +158,11 @@ namespace MediaBrowser.UI
             PlaybackManager.AddParts(GetExports<IMediaPlayer>());
         }
 
+        protected override INetworkManager CreateNetworkManager()
+        {
+            return new NetworkManager();
+        }
+
         /// <summary>
         /// Disposes the current ApiClient and creates a new one
         /// </summary>
@@ -228,6 +236,8 @@ namespace MediaBrowser.UI
 
             // Core assembly
             yield return typeof(LoginPage).Assembly;
+
+            yield return typeof(PismoIsoManager).Assembly;
 
             // Default theme assembly
             yield return typeof(DefaultTheme).Assembly;

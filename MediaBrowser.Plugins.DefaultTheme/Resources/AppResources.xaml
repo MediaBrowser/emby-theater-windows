@@ -204,15 +204,11 @@
                                 <Style TargetType="{x:Type Button}" BasedOn="{StaticResource ImageButton}">
 
                                     <Setter Property="Visibility" Value="Collapsed" />
-                                    
+
                                     <Style.Triggers>
-                                        <MultiDataTrigger>
-                                            <MultiDataTrigger.Conditions>
-                                                <Condition Binding="{Binding IsOnHomePage}" Value="False" />
-                                                <Condition Binding="{Binding IsLoggedIn}" Value="True" />
-                                            </MultiDataTrigger.Conditions>
+                                        <DataTrigger Binding="{Binding ShowHomeButton}" Value="True">
                                             <Setter Property="Visibility" Value="Visible" />
-                                        </MultiDataTrigger>
+                                        </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
                             </Button.Style>
@@ -599,6 +595,30 @@
             <Border Background="#666" Height="2" Margin="0 0 0 0" Opacity=".6"></Border>
         </StackPanel>
     </DataTemplate>
+
+    <Style x:Key="IndexMenuListBoxItemStyle" TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource ListBoxItemStyle}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                 
+                    <TextBlock Opacity=".5" x:Name="MenuText" Margin="35 0" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Text="{Binding DisplayName}" Style="{DynamicResource Heading2TextBlockStyle}"></TextBlock>
+                 
+                    <ControlTemplate.Triggers>
+                        <DataTrigger Binding="{Binding TabType}" Value="Alphabet">
+                            <Setter TargetName="MenuText" Property="Margin" Value="15 0" />
+                        </DataTrigger>
+                        <Trigger Property="IsSelected" Value="true">
+                            <Setter TargetName="MenuText" Property="Opacity" Value="1"/>
+                        </Trigger>
+                        <Trigger Property="IsFocused" Value="true">
+                            <Setter TargetName="MenuText" Property="Opacity" Value="1"/>
+                            <Setter TargetName="MenuText" Property="TextBlock.TextDecorations" Value="Underline"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 
     <!--List Page ListBox. -->
     <Style TargetType="controls:ExtendedListBox" x:Key="ListPageListBoxStyle" BasedOn="{StaticResource ListBoxStyle}">

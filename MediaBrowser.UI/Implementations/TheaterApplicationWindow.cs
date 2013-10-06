@@ -280,42 +280,42 @@ namespace MediaBrowser.UI.Implementations
 
         public void ShowLoadingAnimation()
         {
-            lock (_loadingSyncLock)
-            {
-                _loadingCount++;
+            //lock (_loadingSyncLock)
+            //{
+            //    _loadingCount++;
 
-                if (_loadingCount == 1)
-                {
-                    Window.Dispatcher.InvokeAsync(() =>
-                    {
-                        if (_loadingWindow == null)
-                        {
-                            _loadingWindow = new LoadingWindow();
-                        }
+            //    if (_loadingCount == 1)
+            //    {
+            //        Window.Dispatcher.InvokeAsync(() =>
+            //        {
+            //            if (_loadingWindow == null)
+            //            {
+            //                _loadingWindow = new LoadingWindow();
+            //            }
 
-                        if (!_loadingWindow.IsActive)
-                        {
-                            _loadingWindow.Show(Window);
-                        }
-                    });
-                }
-            }
+            //            if (!_loadingWindow.IsActive)
+            //            {
+            //                _loadingWindow.Show(Window);
+            //            }
+            //        });
+            //    }
+            //}
         }
 
         public void HideLoadingAnimation()
         {
-            lock (_loadingSyncLock)
-            {
-                if (_loadingCount > 0)
-                {
-                    _loadingCount--;
-                }
+            //lock (_loadingSyncLock)
+            //{
+            //    if (_loadingCount > 0)
+            //    {
+            //        _loadingCount--;
+            //    }
 
-                if (_loadingCount == 0)
-                {
-                    Window.Dispatcher.InvokeAsync(() => _loadingWindow.Hide());
-                }
-            }
+            //    if (_loadingCount == 0)
+            //    {
+            //        Window.Dispatcher.InvokeAsync(() => _loadingWindow.Hide());
+            //    }
+            //}
         }
     }
 }

@@ -19,7 +19,7 @@
         </Style.Triggers>
     </Style>
 
-    <System:Double x:Key="BackdropOpacity">.27</System:Double>
+    <System:Double x:Key="BackdropOpacity">.24</System:Double>
 
     <!--Themes may want to override this to adjust the backdrop image style-->
     <Style TargetType="Image" x:Key="BackdropImage">

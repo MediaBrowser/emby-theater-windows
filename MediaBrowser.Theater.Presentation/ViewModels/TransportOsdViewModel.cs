@@ -443,12 +443,12 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             {
                 var media = NowPlayingItem;
 
-                var ticks = media != null ? media.RunTimeTicks : null;
+                var player = MediaPlayer;
+
+                var ticks = player != null ? player.CurrentDurationTicks : null;
 
                 DisplayDuration = ticks.HasValue ? GetTimeString(ticks.Value) : "--:--";
                 DurationTicks = ticks.HasValue ? ticks.Value : 0;
-
-                var player = MediaPlayer;
 
                 CanSeek = player != null && player.CanSeek;
 

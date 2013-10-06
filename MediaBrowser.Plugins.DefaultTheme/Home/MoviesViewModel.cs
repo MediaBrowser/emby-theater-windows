@@ -35,6 +35,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         public ImageViewerViewModel SpotlightViewModel { get; private set; }
 
+        public GalleryViewModel GenresViewModel { get; private set; }
         public GalleryViewModel AllMoviesViewModel { get; private set; }
         public GalleryViewModel ActorsViewModel { get; private set; }
         public GalleryViewModel BoxsetsViewModel { get; private set; }
@@ -44,6 +45,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         public GalleryViewModel FamilyMoviesViewModel { get; private set; }
         public GalleryViewModel ComedyItemsViewModel { get; private set; }
         public GalleryViewModel RomanticMoviesViewModel { get; private set; }
+        public GalleryViewModel YearsViewModel { get; private set; }
 
         public MoviesViewModel(IPresentationManager presentation, IImageManager imageManager, IApiClient apiClient, ISessionManager session, INavigationService nav, IPlaybackManager playback, ILogger logger, double tileWidth, double tileHeight)
             : base(presentation, apiClient)
@@ -67,7 +69,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             };
             ResumeViewModel.PropertyChanged += ResumeViewModel_PropertyChanged;
 
-            var trailerTileHeight = (TileHeight * 2) + TilePadding / 2;
+            var trailerTileHeight = (TileHeight * 1.46) + TilePadding / 2;
             var trailerTileWidth = trailerTileHeight * 2 / 3;
 
             LatestTrailersViewModel = new ItemListViewModel(GetLatestTrailersAsync, presentation, imageManager, apiClient, session, nav, playback, logger)
@@ -80,76 +82,93 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             };
             LatestTrailersViewModel.PropertyChanged += TrailersViewModel_PropertyChanged;
 
+            const int tileScaleFactor = 12;
+
             LatestMoviesViewModel = new ItemListViewModel(GetLatestMoviesAsync, presentation, imageManager, apiClient, session, nav, playback, logger)
             {
-                ImageDisplayWidth = TileWidth,
-                ImageDisplayHeightGenerator = v => TileHeight,
+                ImageDisplayWidth = trailerTileWidth,
+                ImageDisplayHeightGenerator = v => trailerTileHeight,
                 DisplayNameGenerator = HomePageViewModel.GetDisplayName,
-                PreferredImageTypesGenerator = vm => new[] { ImageType.Backdrop, ImageType.Thumb, ImageType.Primary },
-                EnableBackdropsForCurrentItem = false
+                PreferredImageTypesGenerator = vm => new[] { ImageType.Primary, ImageType.Backdrop, ImageType.Thumb, },
+                EnableBackdropsForCurrentItem = false,
+                ListType = "LatestMovies"
             };
             LatestMoviesViewModel.PropertyChanged += LatestMoviesViewModel_PropertyChanged;
 
             ActorsViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {
                 GalleryHeight = TileHeight,
-                GalleryWidth = TileWidth * 10 / 16,
+                GalleryWidth = TileWidth * tileScaleFactor / 16,
                 CustomCommandAction = () => NavigateWithLoading(NavigateToActorsInternal)
+            };
+
+            GenresViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
+            {
+                GalleryHeight = TileHeight,
+                GalleryWidth = TileWidth * tileScaleFactor / 16,
+                CustomCommandAction = () => NavigateWithLoading(NavigateToGenresInternal)
+            };
+
+            YearsViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
+            {
+                GalleryHeight = TileHeight,
+                GalleryWidth = TileWidth * tileScaleFactor / 16,
+                CustomCommandAction = () => NavigateWithLoading(NavigateToYearsInternal)
             };
 
             AllMoviesViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {
                 GalleryHeight = TileHeight,
-                GalleryWidth = TileWidth * 10 / 16,
+                GalleryWidth = TileWidth * tileScaleFactor / 16,
                 CustomCommandAction = () => NavigateWithLoading(NavigateToAllMoviesInternal)
             };
 
             BoxsetsViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {
                 GalleryHeight = TileHeight,
-                GalleryWidth = TileWidth * 10 / 16,
+                GalleryWidth = TileWidth * tileScaleFactor / 16,
                 CustomCommandAction = () => NavigateWithLoading(NavigateToBoxsetsInternal)
             };
 
             TrailersViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {
                 GalleryHeight = TileHeight,
-                GalleryWidth = TileWidth * 10 / 16,
+                GalleryWidth = TileWidth * tileScaleFactor / 16,
                 CustomCommandAction = () => NavigateWithLoading(NavigateToTrailersInternal)
             };
 
             HDMoviesViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {
                 GalleryHeight = TileHeight,
-                GalleryWidth = TileWidth * 10 / 16,
+                GalleryWidth = TileWidth * tileScaleFactor / 16,
                 CustomCommandAction = () => NavigateWithLoading(NavigateToHDMoviesInternal)
             };
 
             FamilyMoviesViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {
                 GalleryHeight = TileHeight,
-                GalleryWidth = TileWidth * 10 / 16,
+                GalleryWidth = TileWidth * tileScaleFactor / 16,
                 CustomCommandAction = () => NavigateWithLoading(NavigateToFamilyMoviesInternal)
             };
 
             ThreeDMoviesViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {
                 GalleryHeight = TileHeight,
-                GalleryWidth = TileWidth * 10 / 16,
+                GalleryWidth = TileWidth * tileScaleFactor / 16,
                 CustomCommandAction = () => NavigateWithLoading(NavigateTo3DMoviesInternal)
             };
 
             RomanticMoviesViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {
                 GalleryHeight = TileHeight,
-                GalleryWidth = TileWidth * 10 / 16,
+                GalleryWidth = TileWidth * tileScaleFactor / 16,
                 CustomCommandAction = () => NavigateWithLoading(NavigateToRomanticMoviesInternal)
             };
 
             ComedyItemsViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {
                 GalleryHeight = TileHeight,
-                GalleryWidth = TileWidth * 10 / 16,
+                GalleryWidth = TileWidth * tileScaleFactor / 16,
                 CustomCommandAction = () => NavigateWithLoading(NavigateToComedyMoviesInternal)
             };
 
@@ -172,7 +191,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             PresentationManager.ShowLoadingAnimation();
 
             var cancellationSource = _mainViewCancellationTokenSource = new CancellationTokenSource();
-            
+
             try
             {
                 var view = await ApiClient.GetMovieView(_sessionManager.CurrentUser.Id, cancellationSource.Token);
@@ -187,6 +206,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 LoadComedyMoviesViewModel(view);
                 LoadRomanticMoviesViewModel(view);
                 LoadActorsViewModel(view);
+                LoadGenresViewModel(view);
+                LoadYearsViewModel(view);
             }
             catch (Exception ex)
             {
@@ -423,7 +444,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             SpotlightViewModel.StartRotating(8000);
         }
 
-        private Task<ItemsResult> GetResumeablesAsync()
+        private Task<ItemsResult> GetResumeablesAsync(ItemListViewModel viewModel)
         {
             var query = new ItemQuery
             {
@@ -452,7 +473,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             return ApiClient.GetItemsAsync(query);
         }
 
-        private Task<ItemsResult> GetLatestTrailersAsync()
+        private Task<ItemsResult> GetLatestTrailersAsync(ItemListViewModel viewModel)
         {
             var query = new ItemQuery
             {
@@ -473,7 +494,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
                 Filters = new[] { ItemFilter.IsUnplayed },
 
-                Limit = 4,
+                Limit = 6,
 
                 Recursive = true
             };
@@ -481,7 +502,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             return ApiClient.GetItemsAsync(query);
         }
 
-        private Task<ItemsResult> GetLatestMoviesAsync()
+        private Task<ItemsResult> GetLatestMoviesAsync(ItemListViewModel viewModel)
         {
             var query = new ItemQuery
             {
@@ -502,7 +523,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
                 Filters = new[] { ItemFilter.IsUnplayed },
 
-                Limit = 4,
+                Limit = 6,
 
                 Recursive = true
             };
@@ -523,6 +544,66 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             ActorsViewModel.AddImages(images);
         }
 
+        private void LoadGenresViewModel(MoviesView view)
+        {
+            //var images = view.PeopleItems.Take(1).Select(i => ApiClient.GetPersonImageUrl(i.Name, new ImageOptions
+            //{
+            //    ImageType = i.ImageType,
+            //    Tag = i.ImageTag,
+            //    Height = Convert.ToInt32(TileWidth * 2),
+            //    EnableImageEnhancers = false
+            //}));
+
+            //GenresViewModel.AddImages(images);
+        }
+
+        private void LoadYearsViewModel(MoviesView view)
+        {
+            //var images = view.PeopleItems.Take(1).Select(i => ApiClient.GetPersonImageUrl(i.Name, new ImageOptions
+            //{
+            //    ImageType = i.ImageType,
+            //    Tag = i.ImageTag,
+            //    Height = Convert.ToInt32(TileWidth * 2),
+            //    EnableImageEnhancers = false
+            //}));
+
+            //GenresViewModel.AddImages(images);
+        }
+
+        private async Task NavigateToGenresInternal()
+        {
+            var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
+
+            var displayPreferences = await PresentationManager.GetDisplayPreferences("MovieGenres", CancellationToken.None);
+
+            var genres = await ApiClient.GetGenresAsync(new ItemsByNameQuery
+            {
+                IncludeItemTypes = new[] { "Movie" },
+                SortBy = new[] { ItemSortBy.SortName },
+                Recursive = true,
+                UserId = _sessionManager.CurrentUser.Id
+            });
+
+            var indexOptions = genres.Items.Select(i => new TabItem
+            {
+                Name = i.Name,
+                DisplayName = i.Name + " (" + i.MovieCount + ")"
+            });
+
+            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
+                                      PresentationManager, _navService, _playbackManager, _logger, indexOptions);
+
+            var sortOptions = new Dictionary<string, string>();
+
+            page.SortOptions = sortOptions;
+            page.CustomPageTitle = "Movies | Genres";
+
+            page.ViewType = ViewType.Movies;
+            page.CustomItemQuery = GetMoviesByGenre;
+
+            await _navService.Navigate(page);
+        }
+
         private async Task NavigateToActorsInternal()
         {
             var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
@@ -530,7 +611,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             var displayPreferences = await PresentationManager.GetDisplayPreferences("People", CancellationToken.None);
 
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger);
+                                      PresentationManager, _navService, _playbackManager, _logger, AlphabetIndex);
 
             var sortOptions = new Dictionary<string, string>();
             sortOptions["Name"] = ItemSortBy.SortName;
@@ -542,6 +623,34 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             page.ViewType = ViewType.Movies;
             page.CustomItemQuery = GetAllActors;
+
+            await _navService.Navigate(page);
+        }
+
+        private async Task NavigateToYearsInternal()
+        {
+            var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
+
+            var displayPreferences = await PresentationManager.GetDisplayPreferences("MovieYears", CancellationToken.None);
+
+            var yearIndex = await ApiClient.GetYearIndex(_sessionManager.CurrentUser.Id, new[] { "Movie" }, CancellationToken.None);
+
+            var indexOptions = yearIndex.Where(i => !string.IsNullOrEmpty(i.Name)).Select(i => new TabItem
+            {
+                Name = i.Name,
+                DisplayName = i.Name + " (" + i.ItemCount + ")"
+            });
+
+            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
+                                      PresentationManager, _navService, _playbackManager, _logger, indexOptions);
+
+            var sortOptions = new Dictionary<string, string>();
+
+            page.SortOptions = sortOptions;
+            page.CustomPageTitle = "Movies | Timeline";
+
+            page.ViewType = ViewType.Movies;
+            page.CustomItemQuery = GetMoviesByYear;
 
             await _navService.Navigate(page);
         }
@@ -714,7 +823,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             await _navService.Navigate(page);
         }
 
-        private Task<ItemsResult> GetTrailers(DisplayPreferences displayPreferences)
+        private Task<ItemsResult> GetTrailers(ItemListViewModel viewModel, DisplayPreferences displayPreferences)
         {
             var query = new ItemQuery
             {
@@ -753,7 +862,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             await _navService.Navigate(page);
         }
 
-        private Task<ItemsResult> GetBoxSets(DisplayPreferences displayPreferences)
+        private Task<ItemsResult> GetBoxSets(ItemListViewModel viewModel, DisplayPreferences displayPreferences)
         {
             var query = new ItemQuery
             {
@@ -811,7 +920,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             await _navService.Navigate(page);
         }
 
-        private Task<ItemsResult> GetRomanticMovies(DisplayPreferences displayPreferences)
+        private Task<ItemsResult> GetRomanticMovies(ItemListViewModel viewModel, DisplayPreferences displayPreferences)
         {
             var query = new ItemQuery
             {
@@ -853,7 +962,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             await _navService.Navigate(page);
         }
 
-        private Task<ItemsResult> GetComedyMovies(DisplayPreferences displayPreferences)
+        private Task<ItemsResult> GetComedyMovies(ItemListViewModel viewModel, DisplayPreferences displayPreferences)
         {
             var query = new ItemQuery
             {
@@ -877,7 +986,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             return ApiClient.GetItemsAsync(query);
         }
 
-        private Task<ItemsResult> GetAllMovies(DisplayPreferences displayPreferences)
+        private Task<ItemsResult> GetAllMovies(ItemListViewModel viewModel, DisplayPreferences displayPreferences)
         {
             var query = new ItemQuery
             {
@@ -895,6 +1004,64 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
                 Recursive = true
             };
+
+            return ApiClient.GetItemsAsync(query);
+        }
+
+        private Task<ItemsResult> GetMoviesByGenre(ItemListViewModel viewModel, DisplayPreferences displayPreferences)
+        {
+            var query = new ItemQuery
+            {
+                Fields = FolderPage.QueryFields,
+
+                UserId = _sessionManager.CurrentUser.Id,
+
+                IncludeItemTypes = new[] { "Movie" },
+
+                SortBy = !String.IsNullOrEmpty(displayPreferences.SortBy)
+                             ? new[] { displayPreferences.SortBy }
+                             : new[] { ItemSortBy.SortName },
+
+                SortOrder = displayPreferences.SortOrder,
+
+                Recursive = true
+            };
+
+            var indexOption = viewModel.CurrentIndexOption;
+
+            if (indexOption != null)
+            {
+                query.Genres = new[] { indexOption.Name };
+            }
+
+            return ApiClient.GetItemsAsync(query);
+        }
+
+        private Task<ItemsResult> GetMoviesByYear(ItemListViewModel viewModel, DisplayPreferences displayPreferences)
+        {
+            var query = new ItemQuery
+            {
+                Fields = FolderPage.QueryFields,
+
+                UserId = _sessionManager.CurrentUser.Id,
+
+                IncludeItemTypes = new[] { "Movie" },
+
+                SortBy = !String.IsNullOrEmpty(displayPreferences.SortBy)
+                             ? new[] { displayPreferences.SortBy }
+                             : new[] { ItemSortBy.SortName },
+
+                SortOrder = displayPreferences.SortOrder,
+
+                Recursive = true
+            };
+
+            var indexOption = viewModel.CurrentIndexOption;
+
+            if (indexOption != null)
+            {
+                query.Years = new[] { int.Parse(indexOption.Name) };
+            }
 
             return ApiClient.GetItemsAsync(query);
         }
@@ -917,7 +1084,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             await _navService.Navigate(page);
         }
 
-        private Task<ItemsResult> GetHDMovies(DisplayPreferences displayPreferences)
+        private Task<ItemsResult> GetHDMovies(ItemListViewModel viewModel, DisplayPreferences displayPreferences)
         {
             var query = new ItemQuery
             {
@@ -959,7 +1126,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             await _navService.Navigate(page);
         }
 
-        private Task<ItemsResult> GetFamilyMovies(DisplayPreferences displayPreferences)
+        private Task<ItemsResult> GetFamilyMovies(ItemListViewModel viewModel, DisplayPreferences displayPreferences)
         {
             var query = new ItemQuery
             {
@@ -1001,7 +1168,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             await _navService.Navigate(page);
         }
 
-        private Task<ItemsResult> Get3DMovies(DisplayPreferences displayPreferences)
+        private Task<ItemsResult> Get3DMovies(ItemListViewModel viewModel, DisplayPreferences displayPreferences)
         {
             var query = new ItemQuery
             {
@@ -1025,7 +1192,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             return ApiClient.GetItemsAsync(query);
         }
 
-        private Task<ItemsResult> GetAllActors(DisplayPreferences displayPreferences)
+        private Task<ItemsResult> GetAllActors(ItemListViewModel viewModel, DisplayPreferences displayPreferences)
         {
             var fields = FolderPage.QueryFields.ToList();
             fields.Remove(ItemFields.Overview);
@@ -1048,6 +1215,21 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
                 Recursive = true
             };
+
+            var indexOption = viewModel.CurrentIndexOption;
+
+            if (indexOption != null)
+            {
+                if (string.Equals(indexOption.Name, "#", StringComparison.OrdinalIgnoreCase))
+                {
+                    query.NameLessThan = "A";
+                }
+                else
+                {
+                    query.NameStartsWithOrGreater = indexOption.Name;
+                    query.NameLessThan = indexOption.Name + "zz";
+                }
+            }
 
             return ApiClient.GetPeopleAsync(query);
         }
@@ -1087,7 +1269,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 _mainViewCancellationTokenSource = null;
             }
         }
-        
+
         public void Dispose()
         {
             if (LatestTrailersViewModel != null)

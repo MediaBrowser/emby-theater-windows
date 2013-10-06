@@ -104,7 +104,7 @@ namespace MediaBrowser.Theater.Core.Appearance
 
                     return;
                 }
-                catch (HttpException)
+                catch (Exception)
                 {
                     // Logged at lower levels
                 }

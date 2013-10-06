@@ -206,5 +206,6 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
     {
         public string Name { get; set; }
         public string DisplayName { get; set; }
+        public string TabType { get; set; }
     }
 }

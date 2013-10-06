@@ -23,7 +23,7 @@
             <TextBox x:Name="TxtUsername"></TextBox>
 
             <TextBlock Style="{DynamicResource TextBlockStyle}" Text="Password" Margin="0 40 0 0"></TextBlock>
-            <TextBox x:Name="TxtPassword"></TextBox>
+            <PasswordBox x:Name="TxtPassword"></PasswordBox>
 
             <Button x:Name="BtnSubmit" Margin="0 40 0 0" IsDefault="True">
                 <TextBlock Style="{DynamicResource TextBlockStyle}" Text="Sign In"></TextBlock>

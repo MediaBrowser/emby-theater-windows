@@ -4,7 +4,6 @@ using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
-using MediaBrowser.Model.Net;
 using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
@@ -82,26 +81,9 @@ namespace MediaBrowser.Theater.Implementations.Playback
                 throw new InvalidOperationException("There are no available players.");
             }
 
-            var showLoading = options.ShowLoadingAnimation;
+            StopAllPlayback();
 
-            if (showLoading)
-            {
-                _presentationManager.ShowLoadingAnimation();
-            }
-
-            try
-            {
-                StopAllPlayback();
-
-                await Play(player, options, config);
-            }
-            finally
-            {
-                if (showLoading)
-                {
-                    _presentationManager.HideLoadingAnimation();
-                }
-            }
+            await Play(player, options, config);
         }
 
         /// <summary>
@@ -120,15 +102,15 @@ namespace MediaBrowser.Theater.Implementations.Playback
 
             var firstItem = options.Items[0];
 
-            if (options.StartPositionTicks == 0 && player.SupportsMultiFilePlayback && firstItem.IsVideo && firstItem.LocationType == LocationType.FileSystem)
+            if (options.StartPositionTicks == 0 && player.SupportsMultiFilePlayback && firstItem.IsVideo && firstItem.LocationType == LocationType.FileSystem && options.GoFullScreen)
             {
                 try
                 {
                     var intros = await _apiClient.GetIntrosAsync(firstItem.Id, _apiClient.CurrentUserId);
 
-                    options.Items.InsertRange(0, intros.Select(GetPlayableItem));
+                    options.Items.InsertRange(0, intros.Items);
                 }
-                catch (HttpException ex)
+                catch (Exception ex)
                 {
                     _logger.ErrorException("Error retrieving intros", ex);
                 }

@@ -49,6 +49,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
     public class GamesView
     {
         public BaseItemDto[] SpotlightItems { get; set; }
+        public ItemStub[] MultiPlayerItems { get; set; }
     }
     
     public class HomeView

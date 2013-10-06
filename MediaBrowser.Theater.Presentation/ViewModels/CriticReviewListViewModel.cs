@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.ApiClient;
+﻿using System;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Net;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.ViewModels;
@@ -67,7 +68,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
                 _listItems.AddRange(result.ItemReviews.Where(i => !string.IsNullOrEmpty(i.Caption)).Select(i => new ItemReviewViewModel { Review = i }));
             }
-            catch (HttpException)
+            catch (Exception)
             {
                 PresentationManager.ShowDefaultErrorMessage();
             }

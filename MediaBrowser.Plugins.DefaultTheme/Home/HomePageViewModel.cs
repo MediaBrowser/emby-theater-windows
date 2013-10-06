@@ -26,7 +26,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         private readonly INavigationService _nav;
         private readonly IPlaybackManager _playbackManager;
 
-        private const double TileWidth = 432;
+        private const double TileWidth = 320;
         private const double TileHeight = TileWidth * 9 / 16;
 
         public HomePageViewModel(IPresentationManager presentationManager, IApiClient apiClient, ISessionManager sessionManager, ILogger logger, IImageManager imageManager, INavigationService nav, IPlaybackManager playbackManager)
@@ -159,7 +159,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             return new UserTabViewModel(_presentationManager, _imageManager, _apiClient, _sessionManager, _nav, _playbackManager, _logger, TileWidth, TileHeight);
         }
 
-        private Task<ItemsResult> GetMediaCollectionsAsync()
+        private Task<ItemsResult> GetMediaCollectionsAsync(ItemListViewModel viewModel)
         {
             var query = new ItemQuery
             {

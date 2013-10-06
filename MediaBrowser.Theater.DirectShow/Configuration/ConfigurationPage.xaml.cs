@@ -32,6 +32,7 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
 
             ChkEnableReclock.IsChecked = config.EnableReclock;
             ChkEnableMadvr.IsChecked = config.EnableMadvr;
+            ChkEnableXySubFilter.IsChecked = config.EnableXySubFilter;
         }
 
         void GeneralSettingsPage_Unloaded(object sender, RoutedEventArgs e)
@@ -40,7 +41,8 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
 
             config.EnableReclock = ChkEnableReclock.IsChecked ?? false;
             config.EnableMadvr = ChkEnableMadvr.IsChecked ?? false;
-
+            config.EnableXySubFilter = ChkEnableXySubFilter.IsChecked ?? false;
+            
             _config.SaveConfiguration();
         }
     }

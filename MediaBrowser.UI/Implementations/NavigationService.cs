@@ -167,11 +167,21 @@ namespace MediaBrowser.UI.Implementations
         /// <returns>DispatcherOperation.</returns>
         public Task NavigateToInternalPlayerPage()
         {
-            var page = new FullscreenVideoPage(_userInputManager, _playbackManagerFactory(), this, _presentationManager, _apiClient, _imageManager, _logger);
+            var task = new TaskCompletionSource<bool>();
 
-            new InternalPlayerPageBehavior(page).AdjustPresentationForPlayback();
+            App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(async () =>
+            {
+                var page = new FullscreenVideoPage(_userInputManager, _playbackManagerFactory(), this, _presentationManager, _apiClient, _imageManager, _logger);
 
-            return Navigate(page);
+                new InternalPlayerPageBehavior(page).AdjustPresentationForPlayback();
+
+                await Navigate(page);
+
+                task.TrySetResult(true);
+
+            });
+
+            return task.Task;
         }
 
         /// <summary>
@@ -284,7 +294,7 @@ namespace MediaBrowser.UI.Implementations
 
             await App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(async () => await Navigate(_themeManager.CurrentTheme.GetPersonPage(item, context, mediaItemId)));
         }
-        
+
         /// <summary>
         /// Navigates the back.
         /// </summary>

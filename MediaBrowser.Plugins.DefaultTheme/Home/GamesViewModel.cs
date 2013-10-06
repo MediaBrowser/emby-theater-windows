@@ -3,6 +3,7 @@ using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Querying;
+using MediaBrowser.Plugins.DefaultTheme.ListPage;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
@@ -29,7 +30,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         public ImageViewerViewModel SpotlightViewModel { get; private set; }
 
         public ItemListViewModel GameSystemsViewModel { get; private set; }
-        
+        public GalleryViewModel GenresViewModel { get; private set; }
+        public GalleryViewModel YearsViewModel { get; private set; }
+        public GalleryViewModel MultiPlayerViewModel { get; private set; }
+
         public GamesViewModel(IPresentationManager presentation, IImageManager imageManager, IApiClient apiClient, ISessionManager session, INavigationService nav, IPlaybackManager playback, ILogger logger, double tileWidth, double tileHeight)
             : base(presentation, apiClient)
         {
@@ -60,7 +64,30 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 DisplayNameGenerator = HomePageViewModel.GetDisplayName,
                 EnableBackdropsForCurrentItem = false
             };
-            
+
+            const int tileScaleFactor = 12;
+
+            GenresViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
+            {
+                GalleryHeight = TileHeight,
+                GalleryWidth = TileWidth * tileScaleFactor / 16,
+                CustomCommandAction = () => NavigateWithLoading(NavigateToGenresInternal)
+            };
+
+            YearsViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
+            {
+                GalleryHeight = TileHeight,
+                GalleryWidth = TileWidth * tileScaleFactor / 16,
+                CustomCommandAction = () => NavigateWithLoading(NavigateToYearsInternal)
+            };
+
+            MultiPlayerViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
+            {
+                GalleryHeight = TileHeight,
+                GalleryWidth = TileWidth * tileScaleFactor / 16,
+                CustomCommandAction = () => NavigateWithLoading(NavigateToMultiPlayerGamesInternal)
+            };
+
             LoadViewModels();
         }
 
@@ -69,12 +96,15 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             PresentationManager.ShowLoadingAnimation();
 
             var cancellationSource = _mainViewCancellationTokenSource = new CancellationTokenSource();
-            
+
             try
             {
                 var view = await ApiClient.GetGamesView(_sessionManager.CurrentUser.Id, cancellationSource.Token);
 
                 LoadSpotlightViewModel(view);
+                LoadGenresViewModel(view);
+                LoadYearsViewModel(view);
+                LoadMultiPlayerViewModel(view);
             }
             catch (Exception ex)
             {
@@ -85,6 +115,24 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 PresentationManager.HideLoadingAnimation();
                 DisposeMainViewCancellationTokenSource(false);
+            }
+        }
+
+        private bool _showMultiPlayer;
+        public bool ShowMultiPlayer
+        {
+            get { return _showMultiPlayer; }
+
+            set
+            {
+                var changed = _showMultiPlayer != value;
+
+                _showMultiPlayer = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("ShowMultiPlayer");
+                }
             }
         }
 
@@ -116,7 +164,160 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             SpotlightViewModel.StartRotating(8000);
         }
 
-        private Task<ItemsResult> GetResumeablesAsync()
+        private void LoadGenresViewModel(GamesView view)
+        {
+            //var images = view.SpotlightItems.Take(1).Select(i => ApiClient.GetPersonImageUrl(i.Name, new ImageOptions
+            //{
+            //    ImageType = i.ImageType,
+            //    Tag = i.ImageTag,
+            //    Height = Convert.ToInt32(TileWidth * 2),
+            //    EnableImageEnhancers = false
+            //}));
+
+            //GenresViewModel.AddImages(images);
+        }
+
+        private void LoadYearsViewModel(GamesView view)
+        {
+            //var images = view.SpotlightItems.Take(1).Select(i => ApiClient.GetPersonImageUrl(i.Name, new ImageOptions
+            //{
+            //    ImageType = i.ImageType,
+            //    Tag = i.ImageTag,
+            //    Height = Convert.ToInt32(TileWidth * 2),
+            //    EnableImageEnhancers = false
+            //}));
+
+            //GenresViewModel.AddImages(images);
+        }
+
+        private void LoadMultiPlayerViewModel(GamesView view)
+        {
+            ShowMultiPlayer = view.MultiPlayerItems.Length > 0;
+
+            var images = view.MultiPlayerItems.Take(1).Select(i => ApiClient.GetImageUrl(i.Id, new ImageOptions
+            {
+                ImageType = i.ImageType,
+                Tag = i.ImageTag,
+                Width = Convert.ToInt32(TileWidth * 2),
+                EnableImageEnhancers = false
+            }));
+
+            MultiPlayerViewModel.AddImages(images);
+        }
+
+        private async Task NavigateToMultiPlayerGamesInternal()
+        {
+            var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
+
+            var displayPreferences = await PresentationManager.GetDisplayPreferences("MultiPlayerGames", CancellationToken.None);
+
+            var playerIndex = await ApiClient.GetGamePlayerIndex(_sessionManager.CurrentUser.Id, CancellationToken.None);
+
+            var indexOptions = playerIndex.Where(i => !string.IsNullOrEmpty(i.Name) && int.Parse(i.Name) > 1).Select(i => new TabItem
+            {
+                Name = i.Name,
+                DisplayName = i.Name + " Player (" + i.ItemCount + ")"
+            });
+
+            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
+                                      PresentationManager, _navService, _playbackManager, _logger, indexOptions);
+
+            //page.SortOptions = GetSeriesSortOptions();
+            page.CustomPageTitle = "Games | Multi-Player";
+
+            page.ViewType = ViewType.Games;
+            page.CustomItemQuery = GetMultiPlayerGames;
+
+            await _navService.Navigate(page);
+        }
+
+        private Task<ItemsResult> GetMultiPlayerGames(ItemListViewModel viewModel, DisplayPreferences displayPreferences)
+        {
+            var query = new ItemQuery
+            {
+                Fields = FolderPage.QueryFields,
+
+                UserId = _sessionManager.CurrentUser.Id,
+
+                IncludeItemTypes = new[] { "Game" },
+
+                SortBy = !String.IsNullOrEmpty(displayPreferences.SortBy)
+                             ? new[] { displayPreferences.SortBy }
+                             : new[] { ItemSortBy.SortName },
+
+                SortOrder = displayPreferences.SortOrder,
+
+                MinPlayers = 2,
+
+                Recursive = true
+            };
+
+            var indexOption = viewModel.CurrentIndexOption;
+
+            if (indexOption != null)
+            {
+                query.MinPlayers = query.MaxPlayers = int.Parse(indexOption.Name);
+            }
+
+            return ApiClient.GetItemsAsync(query);
+        }
+
+        private async Task NavigateToYearsInternal()
+        {
+            var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
+
+            var displayPreferences = await PresentationManager.GetDisplayPreferences("GameYears", CancellationToken.None);
+
+            var yearIndex = await ApiClient.GetYearIndex(_sessionManager.CurrentUser.Id, new[] { "Game" }, CancellationToken.None);
+
+            var indexOptions = yearIndex.Where(i => !string.IsNullOrEmpty(i.Name)).Select(i => new TabItem
+            {
+                Name = i.Name,
+                DisplayName = i.Name + " (" + i.ItemCount + ")"
+            });
+
+            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
+                                      PresentationManager, _navService, _playbackManager, _logger, indexOptions);
+
+            //page.SortOptions = GetSeriesSortOptions();
+            page.CustomPageTitle = "Games | Timeline";
+
+            page.ViewType = ViewType.Games;
+            page.CustomItemQuery = GetGamesByYear;
+
+            await _navService.Navigate(page);
+        }
+
+        private Task<ItemsResult> GetGamesByYear(ItemListViewModel viewModel, DisplayPreferences displayPreferences)
+        {
+            var query = new ItemQuery
+            {
+                Fields = FolderPage.QueryFields,
+
+                UserId = _sessionManager.CurrentUser.Id,
+
+                IncludeItemTypes = new[] { "Game" },
+
+                SortBy = !String.IsNullOrEmpty(displayPreferences.SortBy)
+                             ? new[] { displayPreferences.SortBy }
+                             : new[] { ItemSortBy.SortName },
+
+                SortOrder = displayPreferences.SortOrder,
+
+                Recursive = true
+            };
+
+            var indexOption = viewModel.CurrentIndexOption;
+
+            if (indexOption != null)
+            {
+                query.Years = new[] { int.Parse(indexOption.Name) };
+            }
+
+            return ApiClient.GetItemsAsync(query);
+        }
+
+        private Task<ItemsResult> GetResumeablesAsync(ItemListViewModel viewModel)
         {
             var query = new ItemQuery
             {
@@ -135,6 +336,69 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
                 Recursive = true
             };
+
+            return ApiClient.GetItemsAsync(query);
+        }
+
+        private async Task NavigateToGenresInternal()
+        {
+            var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
+
+            var displayPreferences = await PresentationManager.GetDisplayPreferences("GameGenres", CancellationToken.None);
+
+            var genres = await ApiClient.GetGameGenresAsync(new ItemsByNameQuery
+            {
+                IncludeItemTypes = new[] { "Game" },
+                SortBy = new[] { ItemSortBy.SortName },
+                Recursive = true,
+                UserId = _sessionManager.CurrentUser.Id
+            });
+
+            var indexOptions = genres.Items.Select(i => new TabItem
+            {
+                Name = i.Name,
+                DisplayName = i.Name + " (" + i.GameCount + ")"
+            });
+
+            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
+                                      PresentationManager, _navService, _playbackManager, _logger, indexOptions);
+
+            var sortOptions = new Dictionary<string, string>();
+
+            page.SortOptions = sortOptions;
+            page.CustomPageTitle = "Games | Genres";
+
+            page.ViewType = ViewType.Games;
+            page.CustomItemQuery = GetGamesByGenre;
+
+            await _navService.Navigate(page);
+        }
+
+        private Task<ItemsResult> GetGamesByGenre(ItemListViewModel viewModel, DisplayPreferences displayPreferences)
+        {
+            var query = new ItemQuery
+            {
+                Fields = FolderPage.QueryFields,
+
+                UserId = _sessionManager.CurrentUser.Id,
+
+                IncludeItemTypes = new[] { "Game" },
+
+                SortBy = !String.IsNullOrEmpty(displayPreferences.SortBy)
+                             ? new[] { displayPreferences.SortBy }
+                             : new[] { ItemSortBy.SortName },
+
+                SortOrder = displayPreferences.SortOrder,
+
+                Recursive = true
+            };
+
+            var indexOption = viewModel.CurrentIndexOption;
+
+            if (indexOption != null)
+            {
+                query.Genres = new[] { indexOption.Name };
+            }
 
             return ApiClient.GetItemsAsync(query);
         }
@@ -159,7 +423,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 _mainViewCancellationTokenSource = null;
             }
         }
-        
+
         public void Dispose()
         {
             if (SpotlightViewModel != null)

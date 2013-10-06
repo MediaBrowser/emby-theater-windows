@@ -56,7 +56,7 @@ namespace MediaBrowser.Theater.Core.Plugins
                     CateogriesPanel.Children.Add(new PluginCategory(category.Key, category.ToList(), _nav, _appHost, _installationManager));
                 }
             }
-            catch (HttpException)
+            catch (Exception)
             {
                 _presentation.ShowDefaultErrorMessage();
             }

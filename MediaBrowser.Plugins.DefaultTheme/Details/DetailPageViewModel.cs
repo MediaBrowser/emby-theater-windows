@@ -435,7 +435,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
         private ItemListViewModel GetItemByNameItemListViewModel(string type, int width, int height)
         {
-            Func<Task<ItemsResult>> itemGenerator = () => GetItemByNameItemsAsync(type);
+            Func<ItemListViewModel, Task<ItemsResult>> itemGenerator = (vm) => GetItemByNameItemsAsync(type);
 
             var viewModel = new ItemListViewModel(itemGenerator, _presentationManager, _imageManager, _apiClient, _sessionManager, _navigation, _playback, _logger)
             {
@@ -555,7 +555,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             }
         }
 
-        private async Task<ItemsResult> GetConvertedThemeMediaResult()
+        private async Task<ItemsResult> GetConvertedThemeMediaResult(ItemListViewModel viewModel)
         {
             var allThemeMedia = await GetThemeMedia(ItemViewModel.Item);
 
@@ -566,7 +566,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             };
         }
 
-        private Task<ItemsResult> GetSimilarItemsAsync()
+        private Task<ItemsResult> GetSimilarItemsAsync(ItemListViewModel viewModel)
         {
             var item = ItemViewModel.Item;
 
@@ -602,7 +602,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             return _apiClient.GetSimilarMoviesAsync(query);
         }
 
-        private Task<ItemsResult> GetSoundtracks()
+        private Task<ItemsResult> GetSoundtracks(ItemListViewModel viewModel)
         {
             var item = ItemViewModel.Item;
 
@@ -621,7 +621,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             return _apiClient.GetItemsAsync(query);
         }
 
-        private async Task<ItemsResult> GetTrailers()
+        private async Task<ItemsResult> GetTrailers(ItemListViewModel viewModel)
         {
             var item = ItemViewModel.Item;
 
@@ -634,7 +634,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             };
         }
 
-        private Task<ItemsResult> GetChildren()
+        private Task<ItemsResult> GetChildren(ItemListViewModel viewModel)
         {
             var item = ItemViewModel.Item;
 
@@ -655,7 +655,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             return _apiClient.GetItemsAsync(query);
         }
 
-        private async Task<ItemsResult> GetSpecialFeatures()
+        private async Task<ItemsResult> GetSpecialFeatures(ItemListViewModel viewModel)
         {
             var item = ItemViewModel.Item;
 

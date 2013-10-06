@@ -20,7 +20,7 @@
             <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Margin="20 30 20 0">
+        <Grid Grid.Row="0" Margin="20 40 20 0">
 
             <Grid.Style>
                 <Style TargetType="{x:Type Grid}">
@@ -34,7 +34,7 @@
             
             <controls:ExtendedScrollViewer ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalAlignment="Top" HorizontalAlignment="Center" CanContentScroll="True">
                 <controls:ScrollingPanel CanHorizontallyScroll="True" CanVerticallyScroll="False">
-                    <controls:ExtendedListBox x:Name="IndexMenu" ItemsSource="{Binding IndexOptionsCollectionView}" ScrollViewer.CanContentScroll="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" HorizontalAlignment="Center" ItemContainerStyle="{DynamicResource DetailPageMenuListBoxItemStyle}">
+                    <controls:ExtendedListBox x:Name="IndexMenu" ItemsSource="{Binding IndexOptionsCollectionView}" ScrollViewer.CanContentScroll="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" HorizontalAlignment="Center" ItemContainerStyle="{DynamicResource IndexMenuListBoxItemStyle}">
                         <controls:ExtendedListBox.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" />
@@ -48,7 +48,7 @@
 
             <Grid.Style>
                 <Style TargetType="{x:Type Grid}">
-                    <Setter Property="Margin" Value="0 10 0 0" />
+                    <Setter Property="Margin" Value="0 0 0 0" />
                     
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding ScrollDirection}" Value="Vertical">

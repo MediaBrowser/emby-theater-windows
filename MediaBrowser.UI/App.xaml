@@ -9,6 +9,7 @@
                 <ResourceDictionary Source="Resources/Controls.xaml" />
                 <ResourceDictionary Source="Resources/Buttons.xaml" />
                 <ResourceDictionary Source="Resources/TextBox.xaml" />
+                <ResourceDictionary Source="Resources/PasswordBox.xaml" />
                 <ResourceDictionary Source="Resources/ListBox.xaml" />
                 <ResourceDictionary Source="Resources/Checkbox.xaml" />
                 <ResourceDictionary Source="Resources/RadioButton.xaml" />

@@ -15,7 +15,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Media;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Home
 {
@@ -138,7 +137,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             SpotlightViewModel.StartRotating(8000);
         }
 
-        private Task<ItemsResult> GetResumeablesAsync()
+        private Task<ItemsResult> GetResumeablesAsync(ItemListViewModel viewModel)
         {
             var query = new ItemQuery
             {

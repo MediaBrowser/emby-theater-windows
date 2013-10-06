@@ -1,4 +1,5 @@
 ﻿using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Core.Screensaver;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
@@ -19,11 +20,12 @@ namespace MediaBrowser.UI.EntryPoints
         private readonly ISessionManager _session;
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
+        private readonly ILogger _logger;
 
         private DateTime _lastInputTime;
         private Timer _timer;
 
-        public ScreensaverEntryPoint(IUserInputManager userInput, IPresentationManager presentationManager, IPlaybackManager playback, ISessionManager session, IApiClient apiClient, IImageManager imageManager)
+        public ScreensaverEntryPoint(IUserInputManager userInput, IPresentationManager presentationManager, IPlaybackManager playback, ISessionManager session, IApiClient apiClient, IImageManager imageManager, ILogger logger)
         {
             _userInput = userInput;
             _presentationManager = presentationManager;
@@ -31,6 +33,7 @@ namespace MediaBrowser.UI.EntryPoints
             _session = session;
             _apiClient = apiClient;
             _imageManager = imageManager;
+            _logger = logger;
         }
 
         public void Run()
@@ -57,16 +60,11 @@ namespace MediaBrowser.UI.EntryPoints
         private void ShowScreensaverIfNeeded()
         {
             var activePlayer = _playback.MediaPlayers
+                .OfType<IInternalMediaPlayer>()
                 .FirstOrDefault(i => i.PlayState != PlayState.Idle);
 
             if (activePlayer != null)
             {
-                // Never show when using an external player
-                if (activePlayer is IExternalMediaPlayer)
-                {
-                    return;
-                }
-
                 var media = activePlayer.CurrentMedia;
 
                 if (media != null)
@@ -79,14 +77,16 @@ namespace MediaBrowser.UI.EntryPoints
                 }
             }
 
-            _presentationManager.Window.Dispatcher.InvokeAsync(ShowScreensaver);
+            ShowScreensaver();
         }
 
         private void ShowScreensaver()
         {
             StopTimer();
 
-            new ScreensaverWindow(_session, _apiClient, _imageManager).ShowModal(_presentationManager.Window);
+            _logger.Debug("Displaying screen saver");
+
+            _presentationManager.Window.Dispatcher.Invoke(() => new ScreensaverWindow(_session, _apiClient, _imageManager).ShowModal(_presentationManager.Window));
 
             StartTimer();
         }
@@ -109,9 +109,9 @@ namespace MediaBrowser.UI.EntryPoints
             {
                 _timer.Dispose();
                 _timer = null;
-            }
 
-            AllowSystemIdle();
+                AllowSystemIdle();
+            }
         }
 
         public void Dispose()
@@ -121,12 +121,16 @@ namespace MediaBrowser.UI.EntryPoints
 
         private void PreventSystemIdle()
         {
+            _logger.Debug("Calling SetThreadExecutionState to prevent system idle");
+
             // Prevent system screen saver and monitor power off
             SetThreadExecutionState(EXECUTION_STATE.ES_DISPLAY_REQUIRED | EXECUTION_STATE.ES_SYSTEM_REQUIRED | EXECUTION_STATE.ES_CONTINUOUS);
         }
 
         private void AllowSystemIdle()
         {
+            _logger.Debug("Calling SetThreadExecutionState to allow system idle");
+            
             // Clear EXECUTION_STATE flags to disable away mode and allow the system to idle to sleep normally.
             SetThreadExecutionState(EXECUTION_STATE.ES_CONTINUOUS);
         }

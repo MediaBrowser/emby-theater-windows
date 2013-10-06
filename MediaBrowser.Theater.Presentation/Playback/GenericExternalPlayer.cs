@@ -172,6 +172,8 @@ namespace MediaBrowser.Theater.Presentation.Playback
         /// <value>The current position ticks.</value>
         public long? CurrentPositionTicks { get; protected set; }
 
+        public long? CurrentDurationTicks { get; protected set; }
+        
         /// <summary>
         /// Determines whether this instance can play the specified item.
         /// </summary>

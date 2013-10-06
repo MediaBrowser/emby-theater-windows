@@ -98,6 +98,12 @@ namespace MediaBrowser.Theater.Interfaces.Playback
         long? CurrentPositionTicks { get; }
 
         /// <summary>
+        /// Gets the current duration ticks.
+        /// </summary>
+        /// <value>The current duration ticks.</value>
+        long? CurrentDurationTicks { get; }
+
+        /// <summary>
         /// Determines whether this instance can play the specified item.
         /// </summary>
         /// <param name="item">The item.</param>

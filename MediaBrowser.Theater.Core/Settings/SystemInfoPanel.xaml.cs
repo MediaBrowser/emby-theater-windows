@@ -110,7 +110,7 @@ namespace MediaBrowser.Theater.Core.Settings
                     PanelUpToDate.Visibility = Visibility.Visible;
                 }
             }
-            catch (HttpException)
+            catch (Exception)
             {
                 // Already logged at lower levels
                 PanelUpToDate.Visibility = Visibility.Collapsed;

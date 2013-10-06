@@ -19,6 +19,10 @@
         <CheckBox x:Name="ChkEnableMadvr" Margin="0 30 0 0" VerticalAlignment="Center">
             <TextBlock Style="{DynamicResource TextBlockStyle}">Enable Madvr *</TextBlock>
         </CheckBox>
+
+        <CheckBox x:Name="ChkEnableXySubFilter" Margin="0 30 0 0" VerticalAlignment="Center">
+            <TextBlock Style="{DynamicResource TextBlockStyle}">Enable XySubFilter *</TextBlock>
+        </CheckBox>
         
         <TextBlock Style="{DynamicResource Heading2TextBlockStyle}" Margin="0 60 0 0">* Separate installation required</TextBlock>
     </StackPanel>

@@ -3,7 +3,9 @@ using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.ViewModels;
+using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -29,18 +31,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         protected async void NavigateWithLoading(Func<Task> navTask)
         {
-            PresentationManager.ShowLoadingAnimation();
-
-            try
-            {
-                await navTask();
-            }
-            finally
-            {
-                PresentationManager.HideLoadingAnimation();
-            }
+            await navTask();
         }
-        
+
         public BaseItemDto[] BackdropItems
         {
             get { return _backdropItems; }
@@ -69,6 +62,20 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 ImageType = ImageType.Backdrop
             })));
+        }
+
+        public List<TabItem> AlphabetIndex
+        {
+            get
+            {
+                var list = new List<TabItem>();
+
+                var chars = new[] { "#", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z" };
+
+                list.AddRange(chars.Select(i => new TabItem { Name = i, DisplayName = i, TabType = "Alphabet" }));
+
+                return list;
+            }
         }
     }
 }

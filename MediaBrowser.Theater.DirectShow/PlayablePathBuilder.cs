@@ -22,6 +22,18 @@ namespace MediaBrowser.Theater.DirectShow
         /// <returns>System.String.</returns>
         public static string GetPlayablePath(BaseItemDto item, IIsoMount isoMount, IApiClient apiClient)
         {
+            // Check the mounted path first
+            if (isoMount != null)
+            {
+                if (item.IsoType.HasValue && item.IsoType.Value == IsoType.BluRay)
+                {
+                    return GetBlurayPath(isoMount.MountedPath);
+                }
+
+                return isoMount.MountedPath;
+            }
+
+            // Stream remote items through the api
             if (item.LocationType == LocationType.Remote)
             {
                 return apiClient.GetVideoStreamUrl(new VideoStreamOptions
@@ -33,6 +45,7 @@ namespace MediaBrowser.Theater.DirectShow
                 });
             }
 
+            // Stream if we can't access the file system
             if (!File.Exists(item.Path) && !Directory.Exists(item.Path))
             {
                 return apiClient.GetVideoStreamUrl(new VideoStreamOptions
@@ -42,28 +55,33 @@ namespace MediaBrowser.Theater.DirectShow
                 });
             }
 
-            var itemPath = isoMount == null ? item.Path : isoMount.MountedPath;
-
             if (item.VideoType.HasValue && item.VideoType.Value == VideoType.BluRay)
             {
-                var file = new DirectoryInfo(itemPath)
-                    .EnumerateFiles("index.bdmv", SearchOption.AllDirectories)
-                    .FirstOrDefault();
-
-                if (file != null)
-                {
-                    Uri uri;
-
-                    if (Uri.TryCreate(file.FullName, UriKind.RelativeOrAbsolute, out uri))
-                    {
-                        return uri.OriginalString;
-                    }
-
-                    return file.FullName;
-                }
+                return GetBlurayPath(item.Path);
             }
 
-            return itemPath;
+            return item.Path;
+        }
+
+        private static string GetBlurayPath(string root)
+        {
+            var file = new DirectoryInfo(root)
+                .EnumerateFiles("index.bdmv", SearchOption.AllDirectories)
+                .FirstOrDefault();
+
+            if (file != null)
+            {
+                Uri uri;
+
+                if (Uri.TryCreate(file.FullName, UriKind.RelativeOrAbsolute, out uri))
+                {
+                    return uri.OriginalString;
+                }
+
+                return file.FullName;
+            }
+
+            return root;
         }
     }
 }

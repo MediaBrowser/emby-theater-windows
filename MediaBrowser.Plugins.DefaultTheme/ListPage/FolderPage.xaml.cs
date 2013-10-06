@@ -40,12 +40,17 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
 
         private readonly ItemListViewModel _viewModel;
 
-        public FolderPage(BaseItemDto parent, DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IPresentationManager applicationWindow, INavigationService navigationManager, IPlaybackManager playbackManager, ILogger logger)
+        public FolderPage(BaseItemDto parent, DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IPresentationManager presentation, INavigationService navigationManager, IPlaybackManager playbackManager, ILogger logger)
+            : this(parent, displayPreferences, apiClient, imageManager, sessionManager, presentation, navigationManager, playbackManager, logger, new List<TabItem>())
+        {
+        }
+
+        public FolderPage(BaseItemDto parent, DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IPresentationManager presentation, INavigationService navigationManager, IPlaybackManager playbackManager, ILogger logger, IEnumerable<TabItem> indexOptions)
         {
             _navigationManager = navigationManager;
             _playbackManager = playbackManager;
             _logger = logger;
-            _presentationManager = applicationWindow;
+            _presentationManager = presentation;
             _sessionManager = sessionManager;
             _imageManager = imageManager;
             _apiClient = apiClient;
@@ -71,7 +76,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                 ShowLoadingAnimation = true
             };
 
-            //_viewModel.AddIndexOptions(new[] { new TabItem { DisplayName = "A", Name = "A" }, new TabItem { DisplayName = "B", Name = "B" } });
+            _viewModel.AddIndexOptions(indexOptions);
 
             _viewModel.PropertyChanged += _viewModel_PropertyChanged;
 
@@ -184,13 +189,13 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                 ItemFields.DisplayPreferencesId
             };
 
-        public Func<DisplayPreferences, Task<ItemsResult>> CustomItemQuery { get; set; }
+        public Func<ItemListViewModel, DisplayPreferences, Task<ItemsResult>> CustomItemQuery { get; set; }
 
-        private Task<ItemsResult> GetItemsAsync()
+        private Task<ItemsResult> GetItemsAsync(ItemListViewModel viewModel)
         {
             if (CustomItemQuery != null)
             {
-                return CustomItemQuery(_displayPreferences);
+                return CustomItemQuery(viewModel, _displayPreferences);
             }
 
             var query = new ItemQuery

@@ -1,5 +1,8 @@
 ﻿using System.ComponentModel;
+using System.Net;
+using System.Text;
 using MediaBrowser.ApiInteraction;
+using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Constants;
 using MediaBrowser.Common.Implementations.Logging;
 using MediaBrowser.Common.Implementations.Updates;
@@ -63,6 +66,11 @@ namespace MediaBrowser.UI
         /// </summary>
         /// <value>The hidden window.</value>
         internal HiddenWindow HiddenWindow { get; set; }
+
+        /// <summary>
+        /// The _app paths
+        /// </summary>
+        private ApplicationPaths _appPaths;
 
         /// <summary>
         /// Defines the entry point of the application.
@@ -230,11 +238,11 @@ namespace MediaBrowser.UI
         {
             try
             {
-                var appPaths = new ApplicationPaths();
-                var logManager = new NlogManager(appPaths.LogDirectoryPath, "theater");
+                _appPaths = new ApplicationPaths();
+                var logManager = new NlogManager(_appPaths.LogDirectoryPath, "theater");
                 logManager.ReloadLogger(LogSeverity.Debug);
 
-                _appHost = new ApplicationHost(appPaths, logManager);
+                _appHost = new ApplicationHost(_appPaths, logManager);
 
                 _logger = _appHost.LogManager.GetLogger("App");
 
@@ -277,7 +285,7 @@ namespace MediaBrowser.UI
 
                 foundServer = true;
             }
-            catch (HttpException ex)
+            catch (Exception ex)
             {
                 _logger.ErrorException("Error connecting to server using saved connection information. Host: {0}, Port {1}", ex, _appHost.ApiClient.ServerHostName, _appHost.ApiClient.ServerApiPort);
             }
@@ -349,11 +357,20 @@ namespace MediaBrowser.UI
         {
             var exception = (Exception)e.ExceptionObject;
 
-            _logger.ErrorException("UnhandledException", exception);
-
-            File.WriteAllText("D:\\errir.txt", exception.Message + exception.StackTrace + (exception.InnerException == null ? "" : exception.InnerException.StackTrace));
+            LogUnhandledException(exception);
 
             MessageBox.Show("Unhandled exception: " + exception.Message);
+        }
+
+        private void LogUnhandledException(Exception ex)
+        {
+            _logger.ErrorException("UnhandledException", ex);
+
+            var path = Path.Combine(_appPaths.LogDirectoryPath, "crash_" + Guid.NewGuid() + ".txt");
+
+            var builder = LogHelper.GetLogMessage(ex);
+
+            File.WriteAllText(path, builder.ToString());
         }
 
         /// <summary>

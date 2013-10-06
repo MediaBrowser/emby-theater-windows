@@ -20,7 +20,7 @@
 
         <controls:ExtendedScrollViewer x:Name="ScrollViewer" Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalAlignment="Top" HorizontalAlignment="Center" CanContentScroll="True">
             <controls:ScrollingPanel x:Name="ScrollingPanel" CanHorizontallyScroll="True" CanVerticallyScroll="False">
-                <ContentControl x:Name="PageContent" Margin="120 100 120 40" Focusable="False">
+                <ContentControl x:Name="PageContent" Margin="120 80 120 40" Focusable="False">
                     <ContentControl.Style>
                         <Style TargetType="{x:Type ContentControl}">
 

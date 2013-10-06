@@ -55,7 +55,7 @@ namespace MediaBrowser.Theater.Core.Login
         {
             try
             {
-                await SessionManager.Login(TxtUsername.Text, TxtPassword.Text);
+                await SessionManager.Login(TxtUsername.Text, TxtPassword.Password);
             }
             catch (HttpException ex)
             {

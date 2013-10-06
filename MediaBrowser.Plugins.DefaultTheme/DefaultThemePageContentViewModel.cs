@@ -32,14 +32,21 @@ namespace MediaBrowser.Plugins.DefaultTheme
 
             NavigationService.Navigated += NavigationService_Navigated;
             SessionManager.UserLoggedIn += SessionManager_UserLoggedIn;
+            SessionManager.UserLoggedOut += SessionManager_UserLoggedOut;
             UserCommand = new RelayCommand(i => ShowUserMenu());
 
             DisplayPreferencesCommand = new RelayCommand(i => ShowDisplayPreferences());
         }
 
+        void SessionManager_UserLoggedOut(object sender, EventArgs e)
+        {
+            RefreshHomeButton();
+        }
+
         void SessionManager_UserLoggedIn(object sender, EventArgs e)
         {
             UpdateUserImage();
+            RefreshHomeButton();
         }
 
         private async void UpdateUserImage()
@@ -73,6 +80,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         void NavigationService_Navigated(object sender, NavigationEventArgs e)
         {
             IsOnPageWithDisplayPreferences = e.NewPage is IHasDisplayPreferences;
+            RefreshHomeButton();
         }
 
         private BitmapImage _userImage;
@@ -102,6 +110,24 @@ namespace MediaBrowser.Plugins.DefaultTheme
                 if (changed)
                 {
                     OnPropertyChanged("ShowDefaultUserImage");
+                }
+            }
+        }
+
+        private bool _showHomeButton;
+        public bool ShowHomeButton
+        {
+            get { return _showHomeButton; }
+
+            set
+            {
+                var changed = _showHomeButton != value;
+
+                _showHomeButton = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("ShowHomeButton");
                 }
             }
         }
@@ -189,6 +215,11 @@ namespace MediaBrowser.Plugins.DefaultTheme
                     OnPropertyChanged("TimeRight");
                 }
             }
+        }
+
+        private void RefreshHomeButton()
+        {
+            ShowHomeButton = SessionManager.CurrentUser != null && !(NavigationService.CurrentPage is IHomePage) && !(NavigationService.CurrentPage is ILoginPage);
         }
 
         private void ShowUserMenu()
@@ -314,6 +345,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
             {
                 NavigationService.Navigated -= NavigationService_Navigated;
                 SessionManager.UserLoggedIn -= SessionManager_UserLoggedIn;
+                SessionManager.UserLoggedOut -= SessionManager_UserLoggedOut;
             }
             
             base.Dispose(dispose);

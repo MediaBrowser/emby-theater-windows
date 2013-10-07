@@ -1234,7 +1234,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             return ApiClient.GetPeopleAsync(query);
         }
 
-        private Dictionary<string, string> GetMovieSortOptions()
+        internal static Dictionary<string, string> GetMovieSortOptions()
         {
             var sortOptions = new Dictionary<string, string>();
             sortOptions["Name"] = ItemSortBy.SortName;

@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.ApiClient;
+﻿using System.Windows.Controls;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Plugins.DefaultTheme.UserProfileMenu;
@@ -40,13 +41,13 @@ namespace MediaBrowser.Plugins.DefaultTheme
 
         void SessionManager_UserLoggedOut(object sender, EventArgs e)
         {
-            RefreshHomeButton();
+            RefreshHomeButton(NavigationService.CurrentPage);
         }
 
         void SessionManager_UserLoggedIn(object sender, EventArgs e)
         {
             UpdateUserImage();
-            RefreshHomeButton();
+            RefreshHomeButton(NavigationService.CurrentPage);
         }
 
         private async void UpdateUserImage()
@@ -80,7 +81,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         void NavigationService_Navigated(object sender, NavigationEventArgs e)
         {
             IsOnPageWithDisplayPreferences = e.NewPage is IHasDisplayPreferences;
-            RefreshHomeButton();
+            RefreshHomeButton(e.NewPage as Page);
         }
 
         private BitmapImage _userImage;
@@ -163,7 +164,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
             }
         }
 
-        private bool _isOnPageWithDisplayPreferences = false;
+        private bool _isOnPageWithDisplayPreferences;
         public bool IsOnPageWithDisplayPreferences
         {
             get { return _isOnPageWithDisplayPreferences; }
@@ -217,9 +218,9 @@ namespace MediaBrowser.Plugins.DefaultTheme
             }
         }
 
-        private void RefreshHomeButton()
+        private void RefreshHomeButton(Page currentPage)
         {
-            ShowHomeButton = SessionManager.CurrentUser != null && !(NavigationService.CurrentPage is IHomePage) && !(NavigationService.CurrentPage is ILoginPage);
+            ShowHomeButton = SessionManager.CurrentUser != null && !(currentPage is IHomePage) && !(currentPage is ILoginPage);
         }
 
         private void ShowUserMenu()

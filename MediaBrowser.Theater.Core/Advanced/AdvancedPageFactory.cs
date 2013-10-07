@@ -21,7 +21,7 @@ namespace MediaBrowser.Theater.Core.Advanced
         /// <value>The thumb URI.</value>
         public Uri ThumbUri
         {
-            get { return new Uri("../Resources/Images/Settings/general.jpg", UriKind.Relative); }
+            get { return new Uri("../Resources/Images/Settings/advanced.jpg", UriKind.Relative); }
         }
 
         public SettingsPageCategory Category

@@ -4,11 +4,6 @@
 
     <DataTemplate x:Key="SettingsPageTemplate" DataType="{x:Type presentation:ISettingsPage}">
         <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition></RowDefinition>
-                <RowDefinition></RowDefinition>
-            </Grid.RowDefinitions>
-
             <Grid.Background>
                 <LinearGradientBrush SpreadMethod="Reflect" ColorInterpolationMode="SRgbLinearInterpolation" StartPoint="0,0" EndPoint="0,1" >
                     <GradientStop Color="#ffCBCBCB" Offset="0" />
@@ -16,11 +11,11 @@
                 </LinearGradientBrush>
             </Grid.Background>
 
-            <Image Source="{Binding ThumbUri}" Width="304" Height="171" Stretch="Uniform" Grid.Row="0">
+            <Image Source="{Binding ThumbUri}" Width="400" Height="225" Stretch="Uniform">
 
             </Image>
 
-            <Border Grid.Row="1" Padding="5 5 5 10" Background="#a6000000">
+            <Border Padding="5 5 5 10" Background="#a6000000" VerticalAlignment="Bottom" HorizontalAlignment="Stretch">
                 <TextBlock HorizontalAlignment="Center" Text="{Binding Name}" Style="{DynamicResource TextBlockStyle}" TextWrapping="NoWrap" Foreground="White"></TextBlock>
             </Border>
         </Grid>

@@ -1,8 +1,10 @@
-﻿using MediaBrowser.Model.ApiClient;
+﻿using System.Threading;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Querying;
+using MediaBrowser.Plugins.DefaultTheme.ListPage;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
@@ -26,7 +28,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         private readonly INavigationService _nav;
         private readonly IPlaybackManager _playbackManager;
 
-        private const double TileWidth = 320;
+        private const double TileWidth = 368;
         private const double TileHeight = TileWidth * 9 / 16;
 
         public HomePageViewModel(IPresentationManager presentationManager, IApiClient apiClient, ISessionManager sessionManager, ILogger logger, IImageManager imageManager, INavigationService nav, IPlaybackManager playbackManager)
@@ -192,6 +194,101 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 _presentationManager.ClearBackdrops();
             }
+        }
+
+        protected override void OnTabCommmand(TabItem tab)
+        {
+            if (tab != null)
+            {
+                if (string.Equals(tab.Name, "movies"))
+                {
+                    NavigateToAllMoviesInternal();
+                }
+                else if (string.Equals(tab.Name, "tv"))
+                {
+                    NavigateToAllShowsInternal();
+                }
+            }
+        }
+
+        private async Task NavigateToAllShowsInternal()
+        {
+            var item = await _apiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
+
+            var displayPreferences = await _presentationManager.GetDisplayPreferences("Shows", CancellationToken.None);
+
+            var page = new FolderPage(item, displayPreferences, _apiClient, _imageManager, _sessionManager,
+                                      _presentationManager, _nav, _playbackManager, _logger);
+
+            page.SortOptions = TvViewModel.GetSeriesSortOptions();
+            page.CustomPageTitle = "TV Shows";
+
+            page.ViewType = ViewType.Tv;
+            page.CustomItemQuery = GetAllShows;
+
+            await _nav.Navigate(page);
+        }
+
+        private Task<ItemsResult> GetAllShows(ItemListViewModel viewModel, DisplayPreferences displayPreferences)
+        {
+            var query = new ItemQuery
+            {
+                Fields = FolderPage.QueryFields,
+
+                UserId = _sessionManager.CurrentUser.Id,
+
+                IncludeItemTypes = new[] { "Series" },
+
+                SortBy = !String.IsNullOrEmpty(displayPreferences.SortBy)
+                             ? new[] { displayPreferences.SortBy }
+                             : new[] { ItemSortBy.SortName },
+
+                SortOrder = displayPreferences.SortOrder,
+
+                Recursive = true
+            };
+
+            return _apiClient.GetItemsAsync(query);
+        }
+
+        private async Task NavigateToAllMoviesInternal()
+        {
+            var item = await _apiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
+
+            var displayPreferences = await _presentationManager.GetDisplayPreferences("Movies", CancellationToken.None);
+
+            var page = new FolderPage(item, displayPreferences, _apiClient, _imageManager, _sessionManager,
+                                      _presentationManager, _nav, _playbackManager, _logger);
+
+            page.SortOptions = MoviesViewModel.GetMovieSortOptions();
+            page.CustomPageTitle = "Movies";
+
+            page.ViewType = ViewType.Movies;
+            page.CustomItemQuery = GetAllMovies;
+
+            await _nav.Navigate(page);
+        }
+
+        private Task<ItemsResult> GetAllMovies(ItemListViewModel viewModel, DisplayPreferences displayPreferences)
+        {
+            var query = new ItemQuery
+            {
+                Fields = FolderPage.QueryFields,
+
+                UserId = _sessionManager.CurrentUser.Id,
+
+                IncludeItemTypes = new[] { "Movie" },
+
+                SortBy = !String.IsNullOrEmpty(displayPreferences.SortBy)
+                             ? new[] { displayPreferences.SortBy }
+                             : new[] { ItemSortBy.SortName },
+
+                SortOrder = displayPreferences.SortOrder,
+
+                Recursive = true
+            };
+
+            return _apiClient.GetItemsAsync(query);
         }
     }
 }

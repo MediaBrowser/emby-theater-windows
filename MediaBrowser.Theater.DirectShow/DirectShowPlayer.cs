@@ -105,6 +105,14 @@ namespace MediaBrowser.Theater.DirectShow
         {
             get
             {
+                if (_mDvdInfo != null && PlayState != PlayState.Idle)
+                {
+                    var totaltime = new DvdHMSFTimeCode();
+                    DvdTimeCodeFlags ulTimeCodeFlags;
+                    _mDvdInfo.GetTotalTitleTime(totaltime, out ulTimeCodeFlags);
+
+                    return new TimeSpan(totaltime.bHours, totaltime.bMinutes, totaltime.bSeconds).Ticks;
+                }
                 if (_mediaSeeking != null && PlayState != PlayState.Idle)
                 {
                     long pos;

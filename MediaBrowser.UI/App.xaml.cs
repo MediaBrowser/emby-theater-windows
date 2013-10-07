@@ -36,6 +36,7 @@ namespace MediaBrowser.UI
         /// </summary>
         /// <value>The logger.</value>
         private ILogger _logger;
+        private ILogManager _logManager;
 
         /// <summary>
         /// Gets or sets the composition root.
@@ -70,7 +71,7 @@ namespace MediaBrowser.UI
         /// <summary>
         /// The _app paths
         /// </summary>
-        private ApplicationPaths _appPaths;
+        private readonly ApplicationPaths _appPaths;
 
         /// <summary>
         /// Defines the entry point of the application.
@@ -90,6 +91,8 @@ namespace MediaBrowser.UI
 
             // Look for the existence of an update archive
             var appPaths = new ApplicationPaths();
+            var logManager = new NlogManager(appPaths.LogDirectoryPath, "theater");
+            logManager.ReloadLogger(LogSeverity.Debug);
 
             var updateArchive = Path.Combine(appPaths.TempUpdatePath, Constants.MbTheaterPkgName + ".zip");
 
@@ -98,7 +101,7 @@ namespace MediaBrowser.UI
                 // Update is there - execute update
                 try
                 {
-                    new ApplicationUpdater().UpdateApplication(MBApplication.MBTheater, appPaths, updateArchive);
+                    new ApplicationUpdater().UpdateApplication(MBApplication.MBTheater, appPaths, updateArchive, logManager.GetLogger("ApplicationUpdater"), string.Empty);
 
                     // And just let the app exit so it can update
                     return;
@@ -109,7 +112,7 @@ namespace MediaBrowser.UI
                 }
             }
 
-            var application = new App();
+            var application = new App(appPaths, logManager);
 
             application.Run();
         }
@@ -117,8 +120,11 @@ namespace MediaBrowser.UI
         /// <summary>
         /// Initializes a new instance of the <see cref="App" /> class.
         /// </summary>
-        public App()
+        public App(ApplicationPaths appPaths, ILogManager logManager)
         {
+            _appPaths = appPaths;
+            _logManager = logManager;
+
             InitializeComponent();
         }
 
@@ -238,11 +244,7 @@ namespace MediaBrowser.UI
         {
             try
             {
-                _appPaths = new ApplicationPaths();
-                var logManager = new NlogManager(_appPaths.LogDirectoryPath, "theater");
-                logManager.ReloadLogger(LogSeverity.Debug);
-
-                _appHost = new ApplicationHost(_appPaths, logManager);
+                _appHost = new ApplicationHost(_appPaths, _logManager);
 
                 _logger = _appHost.LogManager.GetLogger("App");
 

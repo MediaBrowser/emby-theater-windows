@@ -24,7 +24,7 @@ namespace MediaBrowser.Theater.Core.NetworkSettings
         /// <value>The thumb URI.</value>
         public Uri ThumbUri
         {
-            get { return new Uri("../Resources/Images/Settings/network.png", UriKind.Relative); }
+            get { return new Uri("../Resources/Images/Settings/network.jpg", UriKind.Relative); }
         }
 
         public SettingsPageCategory Category

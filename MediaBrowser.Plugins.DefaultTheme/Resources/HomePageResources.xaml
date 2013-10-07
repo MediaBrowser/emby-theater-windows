@@ -174,7 +174,7 @@
                 </TextBlock.Style>
             </TextBlock>
 
-            <Grid Grid.Row="1" Grid.Column="0" Margin="0 2 0 0">
+            <Grid Grid.Row="1" Grid.Column="0">
                 <controls:ExtendedButton Style="{DynamicResource BaseItemButtonStyle}" DataContext="{Binding SpotlightViewModel}" Command="{Binding CustomCommand}" VerticalAlignment="Top">
                     <Grid Height="{Binding Height}" Width="{Binding Width}">
                         <controls:TransitionControl Content="{Binding CurrentImage}">
@@ -197,7 +197,7 @@
                 </controls:ExtendedButton>
             </Grid>
 
-            <WrapPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical" Margin="15 2 0 0">
+            <WrapPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical" Margin="15 0 0 0">
 
                 <controls:ExtendedButton Style="{DynamicResource BaseItemButtonStyle}" DataContext="{Binding AllShowsViewModel}" Command="{Binding CustomCommand}">
                     <Grid Height="{Binding GalleryHeight}" Width="{Binding GalleryWidth}">
@@ -295,29 +295,6 @@
                     </controls:ExtendedButton>
                 </Grid>
 
-                <controls:ExtendedButton Style="{DynamicResource BaseItemButtonStyle}" DataContext="{Binding GenresViewModel}" Command="{Binding CustomCommand}">
-                    <Grid Height="{Binding GalleryHeight}" Width="{Binding GalleryWidth}">
-
-                        <ItemsControl ItemsSource="{Binding ListCollectionView}" Focusable="False">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <UniformGrid Columns="1"></UniformGrid>
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Image Source="{Binding Image}" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Top"></Image>
-                                </DataTemplate>
-
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-
-                        <Border HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Background="#a6000000" Margin="0 0 0 -1">
-                            <TextBlock Text="Genres" Style="{DynamicResource SmallTextBlockStyle}" Margin="10 5 10 10"></TextBlock>
-                        </Border>
-                    </Grid>
-                </controls:ExtendedButton>
-
                 <controls:ExtendedButton Style="{DynamicResource BaseItemButtonStyle}" DataContext="{Binding ActorsViewModel}" Command="{Binding CustomCommand}">
                     <Grid Height="{Binding GalleryHeight}" Width="{Binding GalleryWidth}">
 
@@ -337,6 +314,17 @@
 
                         <Border HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Background="#a6000000" Margin="0 0 0 -1">
                             <TextBlock Text="Actors" Style="{DynamicResource SmallTextBlockStyle}" Margin="10 5 10 10"></TextBlock>
+                        </Border>
+                    </Grid>
+                </controls:ExtendedButton>
+
+                <controls:ExtendedButton Style="{DynamicResource BaseItemButtonStyle}" DataContext="{Binding GenresViewModel}" Command="{Binding CustomCommand}">
+                    <Grid Height="{Binding GalleryHeight}" Width="{Binding GalleryWidth}">
+
+                        <Image Source="Images/tvgenres.jpg" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Top"></Image>
+
+                        <Border HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Background="#a6000000" Margin="0 0 0 -1">
+                            <TextBlock Text="Genres" Style="{DynamicResource SmallTextBlockStyle}" Margin="10 5 10 10"></TextBlock>
                         </Border>
                     </Grid>
                 </controls:ExtendedButton>
@@ -519,7 +507,7 @@
                 </TextBlock.Style>
             </TextBlock>
 
-            <Grid Grid.Row="1" Grid.Column="0" Margin="0 2 0 0">
+            <Grid Grid.Row="1" Grid.Column="0">
                 <controls:ExtendedButton Style="{DynamicResource BaseItemButtonStyle}" DataContext="{Binding SpotlightViewModel}" Command="{Binding CustomCommand}" VerticalAlignment="Top">
                     <Grid Height="{Binding Height}" Width="{Binding Width}">
                         <controls:TransitionControl Content="{Binding CurrentImage}">
@@ -542,7 +530,7 @@
                 </controls:ExtendedButton>
             </Grid>
 
-            <WrapPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical" Margin="15 2 0 0">
+            <WrapPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical" Margin="15 0 0 0">
                 <controls:ExtendedButton Style="{DynamicResource BaseItemButtonStyle}" DataContext="{Binding AllMoviesViewModel}" Command="{Binding CustomCommand}">
                     <Grid Height="{Binding GalleryHeight}" Width="{Binding GalleryWidth}">
 
@@ -818,29 +806,6 @@
                     </controls:ExtendedButton>
                 </Grid>
 
-                <controls:ExtendedButton Style="{DynamicResource BaseItemButtonStyle}" DataContext="{Binding GenresViewModel}" Command="{Binding CustomCommand}">
-                    <Grid Height="{Binding GalleryHeight}" Width="{Binding GalleryWidth}">
-
-                        <ItemsControl ItemsSource="{Binding ListCollectionView}" Focusable="False">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <UniformGrid Columns="1"></UniformGrid>
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Image Source="{Binding Image}" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Top"></Image>
-                                </DataTemplate>
-
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-
-                        <Border HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Background="#a6000000" Margin="0 0 0 -1">
-                            <TextBlock Text="Genres" Style="{DynamicResource SmallTextBlockStyle}" Margin="10 5 10 10"></TextBlock>
-                        </Border>
-                    </Grid>
-                </controls:ExtendedButton>
-
                 <controls:ExtendedButton Style="{DynamicResource BaseItemButtonStyle}" DataContext="{Binding ActorsViewModel}" Command="{Binding CustomCommand}">
                     <Grid Height="{Binding GalleryHeight}" Width="{Binding GalleryWidth}">
 
@@ -864,22 +829,21 @@
                     </Grid>
                 </controls:ExtendedButton>
 
+                <controls:ExtendedButton Style="{DynamicResource BaseItemButtonStyle}" DataContext="{Binding GenresViewModel}" Command="{Binding CustomCommand}">
+                    <Grid Height="{Binding GalleryHeight}" Width="{Binding GalleryWidth}">
+
+                        <Image Source="Images/moviegenres.jpg" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Top"></Image>
+
+                        <Border HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Background="#a6000000" Margin="0 0 0 -1">
+                            <TextBlock Text="Genres" Style="{DynamicResource SmallTextBlockStyle}" Margin="10 5 10 10"></TextBlock>
+                        </Border>
+                    </Grid>
+                </controls:ExtendedButton>
+
                 <controls:ExtendedButton Style="{DynamicResource BaseItemButtonStyle}" DataContext="{Binding YearsViewModel}" Command="{Binding CustomCommand}">
                     <Grid Height="{Binding GalleryHeight}" Width="{Binding GalleryWidth}">
 
-                        <ItemsControl ItemsSource="{Binding ListCollectionView}" Focusable="False">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <UniformGrid Columns="1"></UniformGrid>
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Image Source="{Binding Image}" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Top"></Image>
-                                </DataTemplate>
-
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
+                        <Image Source="Images/movietimeline.jpg" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Top"></Image>
 
                         <Border HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Background="#a6000000" Margin="0 0 0 -1">
                             <TextBlock Text="Timeline" Style="{DynamicResource SmallTextBlockStyle}" Margin="10 5 10 10"></TextBlock>
@@ -1034,23 +998,11 @@
                         </Grid>
                     </controls:ExtendedButton>
                 </Grid>
-                
+
                 <controls:ExtendedButton Style="{DynamicResource BaseItemButtonStyle}" DataContext="{Binding GenresViewModel}" Command="{Binding CustomCommand}">
                     <Grid Height="{Binding GalleryHeight}" Width="{Binding GalleryWidth}">
 
-                        <ItemsControl ItemsSource="{Binding ListCollectionView}" Focusable="False">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <UniformGrid Columns="1"></UniformGrid>
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Image Source="{Binding Image}" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Top"></Image>
-                                </DataTemplate>
-
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
+                        <Image Source="Images/gamegenres.jpg" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Top"></Image>
 
                         <Border HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Background="#a6000000" Margin="0 0 0 -1">
                             <TextBlock Text="Genres" Style="{DynamicResource SmallTextBlockStyle}" Margin="10 5 10 10"></TextBlock>
@@ -1061,19 +1013,7 @@
                 <controls:ExtendedButton Style="{DynamicResource BaseItemButtonStyle}" DataContext="{Binding YearsViewModel}" Command="{Binding CustomCommand}">
                     <Grid Height="{Binding GalleryHeight}" Width="{Binding GalleryWidth}">
 
-                        <ItemsControl ItemsSource="{Binding ListCollectionView}" Focusable="False">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <UniformGrid Columns="1"></UniformGrid>
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Image Source="{Binding Image}" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Top"></Image>
-                                </DataTemplate>
-
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
+                        <Image Source="Images/gametimeline.jpg" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Top"></Image>
 
                         <Border HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Background="#a6000000" Margin="0 0 0 -1">
                             <TextBlock Text="Timeline" Style="{DynamicResource SmallTextBlockStyle}" Margin="10 5 10 10"></TextBlock>

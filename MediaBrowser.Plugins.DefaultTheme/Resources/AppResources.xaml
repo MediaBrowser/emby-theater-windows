@@ -173,11 +173,9 @@
                             <Button.Style>
                                 <Style TargetType="{x:Type Button}" BasedOn="{StaticResource ImageButton}">
 
-                                    <Setter Property="Visibility" Value="Collapsed" />
-                                    
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsOnPageWithDisplayPreferences}" Value="True">
-                                            <Setter Property="Visibility" Value="Visible" />
+                                        <DataTrigger Binding="{Binding IsOnPageWithDisplayPreferences}" Value="False">
+                                            <Setter Property="Visibility" Value="Collapsed" />
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>

@@ -455,7 +455,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             await _navService.Navigate(page);
         }
 
-        private Dictionary<string, string> GetSeriesSortOptions()
+        internal static Dictionary<string, string> GetSeriesSortOptions()
         {
             var sortOptions = new Dictionary<string, string>();
             sortOptions["Name"] = ItemSortBy.SortName;

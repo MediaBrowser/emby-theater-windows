@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Data;
+using System.Windows.Input;
 using System.Windows.Threading;
 
 namespace MediaBrowser.Theater.Presentation.ViewModels
@@ -15,6 +16,8 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         private readonly RangeObservableCollection<TabItem> _sectionNames = new RangeObservableCollection<TabItem>();
 
+        public ICommand TabCommand { get; private set; }
+        
         private ListCollectionView _sections;
         public ListCollectionView Sections
         {
@@ -113,6 +116,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         protected TabbedViewModel()
         {
             _dispatcher = Dispatcher.CurrentDispatcher;
+            TabCommand = new RelayCommand(i => OnTabCommmand(i as TabItem));
         }
 
         private void EnsureSections()
@@ -199,6 +203,11 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                     _selectionChangeTimer = null;
                 }
             }
+        }
+
+        protected virtual void OnTabCommmand(TabItem tab)
+        {
+            
         }
     }
 

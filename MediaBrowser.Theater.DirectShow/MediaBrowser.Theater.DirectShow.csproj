@@ -38,13 +38,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Assemblies\DirectShowLib-2005.dll</HintPath>
     </Reference>
-    <Reference Include="MediaBrowser.Common, Version=3.0.5026.39648, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.Common, Version=3.0.5027.35455, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.3.0.221\lib\net45\MediaBrowser.Common.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.222\lib\net45\MediaBrowser.Common.dll</HintPath>
     </Reference>
-    <Reference Include="MediaBrowser.Model, Version=3.0.5026.39648, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.Model, Version=3.0.5027.35454, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.3.0.221\lib\net45\MediaBrowser.Model.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.222\lib\net45\MediaBrowser.Model.dll</HintPath>
     </Reference>
     <Reference Include="MediaFoundation, Version=2.0.0.0, Culture=neutral, PublicKeyToken=36fa660e1d6ebf8d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -124,7 +124,7 @@
     <Content Include="Assemblies\DirectShowLib-2005.dll" />
     <Content Include="Assemblies\MediaFoundation.dll" />
     <Content Include="Assemblies\Microsoft.DirectX.AudioVideoPlayback.dll" />
-    <Resource Include="Resources\Images\config.jpg" />
+    <Resource Include="Resources\config.jpg" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="Configuration\ConfigurationPage.xaml">

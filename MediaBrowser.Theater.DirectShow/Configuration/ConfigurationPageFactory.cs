@@ -12,7 +12,7 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
         /// <value>The name.</value>
         public string Name
         {
-            get { return "Internal Player"; }
+            get { return "Video Player"; }
         }
 
         /// <summary>
@@ -21,7 +21,7 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
         /// <value>The thumb URI.</value>
         public Uri ThumbUri
         {
-            get { return new Uri("../Resources/Images/config.jpg", UriKind.Relative); }
+            get { return new Uri("pack://application:,,,/MediaBrowser.Theater.DirectShow;component/Resources/config.jpg", UriKind.Absolute); }
         }
 
         public SettingsPageCategory Category

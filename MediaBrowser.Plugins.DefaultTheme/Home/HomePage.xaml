@@ -10,7 +10,7 @@
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <controls:ExtendedListBox x:Name="MenuList" ItemsSource="{Binding Sections}" Command="{Binding TabCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" Grid.Row="0" HorizontalAlignment="Center" Margin="0 60 0 0" ItemContainerStyle="{StaticResource HomePageListBoxItemStyle}">
+        <controls:ExtendedListBox x:Name="MenuList" ItemsSource="{Binding Sections}" Command="{Binding TabCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" Grid.Row="0" HorizontalAlignment="Center" Margin="0 40 0 0" ItemContainerStyle="{StaticResource HomePageListBoxItemStyle}">
             <controls:ExtendedListBox.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" />
@@ -20,7 +20,7 @@
 
         <controls:ExtendedScrollViewer x:Name="ScrollViewer" Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalAlignment="Top" HorizontalAlignment="Center" CanContentScroll="True">
             <controls:ScrollingPanel x:Name="ScrollingPanel" CanHorizontallyScroll="True" CanVerticallyScroll="False">
-                <ContentControl x:Name="PageContent" Margin="120 70 120 40" Focusable="False">
+                <ContentControl x:Name="PageContent" Margin="120 60 120 40" Focusable="False">
                     <ContentControl.Style>
                         <Style TargetType="{x:Type ContentControl}">
 

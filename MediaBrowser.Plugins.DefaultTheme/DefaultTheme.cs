@@ -177,7 +177,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
 
         public PageContentViewModel CreatePageContentDataContext()
         {
-            PageContentDataContext = new DefaultThemePageContentViewModel(_navService, _sessionManager, _apiClient, _imageManager, _presentationManager, _playbackManager);
+            PageContentDataContext = new DefaultThemePageContentViewModel(_navService, _sessionManager, _apiClient, _imageManager, _presentationManager, _playbackManager, _logger);
 
             return PageContentDataContext;
         }

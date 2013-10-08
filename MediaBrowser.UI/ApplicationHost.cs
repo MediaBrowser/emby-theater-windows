@@ -104,6 +104,11 @@ namespace MediaBrowser.UI
             });
         }
 
+        public override bool CanSelfRestart
+        {
+            get { return true; }
+        }
+
         /// <summary>
         /// Registers resources that classes will depend on
         /// </summary>

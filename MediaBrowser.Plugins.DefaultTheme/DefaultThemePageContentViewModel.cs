@@ -1,7 +1,7 @@
-﻿using System.Windows.Controls;
-using MediaBrowser.Model.ApiClient;
+﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
+using MediaBrowser.Model.Logging;
 using MediaBrowser.Plugins.DefaultTheme.UserProfileMenu;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
@@ -10,6 +10,7 @@ using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.ViewModels;
 using System;
 using System.Globalization;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 
@@ -20,16 +21,18 @@ namespace MediaBrowser.Plugins.DefaultTheme
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
         private readonly IPresentationManager _presentation;
+        private readonly ILogger _logger;
 
         public ICommand UserCommand { get; private set; }
         public ICommand DisplayPreferencesCommand { get; private set; }
 
-        public DefaultThemePageContentViewModel(INavigationService navigationService, ISessionManager sessionManager, IApiClient apiClient, IImageManager imageManager, IPresentationManager presentation, IPlaybackManager playbackManager)
+        public DefaultThemePageContentViewModel(INavigationService navigationService, ISessionManager sessionManager, IApiClient apiClient, IImageManager imageManager, IPresentationManager presentation, IPlaybackManager playbackManager, ILogger logger)
             : base(navigationService, sessionManager, playbackManager)
         {
             _apiClient = apiClient;
             _imageManager = imageManager;
             _presentation = presentation;
+            _logger = logger;
 
             NavigationService.Navigated += NavigationService_Navigated;
             SessionManager.UserLoggedIn += SessionManager_UserLoggedIn;

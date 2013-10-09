@@ -7,7 +7,6 @@ using MediaBrowser.Theater.Interfaces.UserInput;
 using MediaBrowser.Theater.Presentation.Pages;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
-using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Forms;
@@ -25,6 +24,7 @@ namespace MediaBrowser.Theater.Core.FullscreenVideo
         private readonly IPresentationManager _presentation;
         private readonly IPlaybackManager _playbackManager;
         private readonly INavigationService _nav;
+        private readonly IServerEvents _serverEvents;
 
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
@@ -38,7 +38,7 @@ namespace MediaBrowser.Theater.Core.FullscreenVideo
 
         private TransportOsdViewModel _viewModel;
 
-        public FullscreenVideoPage(IUserInputManager userInputManager, IPlaybackManager playbackManager, INavigationService nav, IPresentationManager presentation, IApiClient apiClient, IImageManager imageManager, ILogger logger)
+        public FullscreenVideoPage(IUserInputManager userInputManager, IPlaybackManager playbackManager, INavigationService nav, IPresentationManager presentation, IApiClient apiClient, IImageManager imageManager, ILogger logger, IServerEvents serverEvents)
         {
             _userInputManager = userInputManager;
             _playbackManager = playbackManager;
@@ -47,6 +47,7 @@ namespace MediaBrowser.Theater.Core.FullscreenVideo
             _apiClient = apiClient;
             _imageManager = imageManager;
             _logger = logger;
+            _serverEvents = serverEvents;
 
             InitializeComponent();
 
@@ -210,7 +211,7 @@ namespace MediaBrowser.Theater.Core.FullscreenVideo
             _presentation.SetGlobalThemeContentVisibility(false);
             _playbackManager.PlaybackCompleted += _playbackManager_PlaybackCompleted;
 
-            Osd.DataContext = _viewModel = new TransportOsdViewModel(_playbackManager, _apiClient, _imageManager, _presentation, _logger, _nav);
+            Osd.DataContext = _viewModel = new TransportOsdViewModel(_playbackManager, _apiClient, _imageManager, _presentation, _logger, _nav, _serverEvents);
         }
 
         void FullscreenVideoPage_Unloaded(object sender, RoutedEventArgs e)

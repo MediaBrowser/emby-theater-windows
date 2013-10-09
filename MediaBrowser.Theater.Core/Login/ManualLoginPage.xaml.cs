@@ -3,7 +3,6 @@ using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Presentation.Pages;
-using System;
 using System.Net;
 using System.Windows;
 
@@ -12,7 +11,7 @@ namespace MediaBrowser.Theater.Core.Login
     /// <summary>
     /// Interaction logic for ManualLoginPage.xaml
     /// </summary>
-    public partial class ManualLoginPage : BasePage
+    public partial class ManualLoginPage : BasePage, ILoginPage
     {
         protected ISessionManager SessionManager { get; private set; }
         protected IPresentationManager PresentationManager { get; private set; }
@@ -24,11 +23,6 @@ namespace MediaBrowser.Theater.Core.Login
             InitializeComponent();
 
             TxtUsername.Text = initialUsername;
-        }
-
-        protected override void OnInitialized(EventArgs e)
-        {
-            base.OnInitialized(e);
 
             Loaded += LoginPage_Loaded;
             BtnSubmit.Click += BtnSubmit_Click;

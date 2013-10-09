@@ -59,7 +59,7 @@
     </ControlTemplate>
 
     <!--Override PageContentTemplate-->
-    <DataTemplate x:Key="PageContentTemplate" DataType="{x:Type defaultTheme:DefaultThemePageContentViewModel}">
+    <ControlTemplate x:Key="PageContentTemplate">
 
         <Grid>
             <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
@@ -98,8 +98,8 @@
                             </Style>
                         </StackPanel.Style>
 
-                        <TextBlock Style="{DynamicResource Heading2TextBlockStyle}" Text="media"></TextBlock>
-                        <TextBlock Style="{DynamicResource Heading2TextBlockStyle}" Text="browser" Foreground="#52B54B"></TextBlock>
+                        <TextBlock Style="{DynamicResource Heading2TextBlockStyle}" Text="MEDIA"></TextBlock>
+                        <TextBlock Style="{DynamicResource Heading2TextBlockStyle}" Text="BROWSER" Foreground="#52B54B"></TextBlock>
                     </StackPanel>
 
                     <Image Source="{Binding LogoImage}" Margin="0 10 0 0" MaxHeight="70" MaxWidth="700" VerticalAlignment="Top" HorizontalAlignment="Left" Stretch="Uniform">
@@ -286,20 +286,16 @@
 
             </Grid>
         </Grid>
-    </DataTemplate>
+    </ControlTemplate>
 
     <DataTemplate x:Key="ListItemTemplate" DataType="{x:Type viewModels:ItemViewModel}">
         <Grid>
-            <Image HorizontalAlignment="Center" Source="{Binding Image}">
+            <Image HorizontalAlignment="Center" Source="{Binding Image}" Stretch="{Binding ImageStretch}">
                 <Image.Style>
                     <Style TargetType="{x:Type Image}">
-                        <Setter Property="Stretch" Value="UniformToFill"></Setter>
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding HasImage}" Value="False">
                                 <Setter Property="Visibility" Value="Hidden" />
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding DownloadPrimaryImageAtExactSize}" Value="False">
-                                <Setter Property="Stretch" Value="Uniform" />
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
@@ -513,16 +509,12 @@
                 </Grid.ColumnDefinitions>
 
                 <Grid Grid.Column="0" Width="{Binding ImageWidth}" Height="{Binding ImageHeight}">
-                    <Image Source="{Binding Image}">
+                    <Image Source="{Binding Image}" Stretch="{Binding ImageStretch}">
                         <Image.Style>
                             <Style TargetType="{x:Type Image}">
-                                <Setter Property="Stretch" Value="UniformToFill"></Setter>
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding HasImage}" Value="False">
                                         <Setter Property="Visibility" Value="Hidden" />
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding DownloadPrimaryImageAtExactSize}" Value="False">
-                                        <Setter Property="Stretch" Value="Uniform" />
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
@@ -607,10 +599,12 @@
                         </DataTrigger>
                         <Trigger Property="IsSelected" Value="true">
                             <Setter TargetName="MenuText" Property="Opacity" Value="1"/>
+                            <Setter TargetName="MenuText" Property="Foreground" Value="{DynamicResource SelectedMenuItemForeground}"></Setter>
                         </Trigger>
                         <Trigger Property="IsFocused" Value="true">
                             <Setter TargetName="MenuText" Property="Opacity" Value="1"/>
                             <Setter TargetName="MenuText" Property="TextBlock.TextDecorations" Value="Underline"/>
+                            <Setter TargetName="MenuText" Property="Foreground" Value="{DynamicResource SelectedMenuItemForeground}"></Setter>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

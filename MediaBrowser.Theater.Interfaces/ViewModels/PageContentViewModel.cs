@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Theater.Interfaces.Navigation;
+﻿using MediaBrowser.Model.Logging;
+using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
@@ -14,6 +15,7 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
         protected readonly INavigationService NavigationService;
         protected readonly ISessionManager SessionManager;
         protected readonly IPlaybackManager PlaybackManager;
+        protected readonly ILogger Logger;
 
         public ICommand HomeCommand { get; private set; }
         public ICommand FullscreenVideoCommand { get; private set; }
@@ -22,11 +24,12 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
         private readonly Timer _clockTimer;
         private readonly Dispatcher _dispatcher;
 
-        public PageContentViewModel(INavigationService navigationService, ISessionManager sessionManager, IPlaybackManager playbackManager)
+        public PageContentViewModel(INavigationService navigationService, ISessionManager sessionManager, IPlaybackManager playbackManager, ILogger logger)
         {
             NavigationService = navigationService;
             SessionManager = sessionManager;
             PlaybackManager = playbackManager;
+            Logger = logger;
 
             NavigationService.Navigated += NavigationServiceNavigated;
             SessionManager.UserLoggedIn += SessionManagerUserLoggedIn;
@@ -84,7 +87,7 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
             get { return DateTime.Now; }
         }
 
-        private bool _isLoggedIn = false;
+        private bool _isLoggedIn;
         public bool IsLoggedIn
         {
             get { return _isLoggedIn; }
@@ -94,7 +97,6 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
                 var changed = _isLoggedIn != value;
 
                 _isLoggedIn = value;
-
                 if (changed)
                 {
                     OnPropertyChanged("IsLoggedIn");
@@ -102,7 +104,7 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
             }
         }
 
-        private bool _isOnHomePage = false;
+        private bool _isOnHomePage;
         public bool IsOnHomePage
         {
             get { return _isOnHomePage; }
@@ -120,17 +122,16 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
             }
         }
 
-        private bool _isOnFullscreenVideo = false;
+        private bool _isOnFullscreenVideo;
         public bool IsOnFullscreenVideo
         {
-            get { return _isOnHomePage; }
+            get { return _isOnFullscreenVideo; }
 
             set
             {
                 var changed = _isOnFullscreenVideo != value;
 
                 _isOnFullscreenVideo = value;
-
                 if (changed)
                 {
                     OnPropertyChanged("IsOnFullscreenVideo");
@@ -138,7 +139,7 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
             }
         }
 
-        private bool _isPlayingInternalVideo = false;
+        private bool _isPlayingInternalVideo;
         public bool IsPlayingInternalVideo
         {
             get { return _isPlayingInternalVideo; }
@@ -146,9 +147,8 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
             set
             {
                 var changed = _isPlayingInternalVideo != value;
-
+                
                 _isPlayingInternalVideo = value;
-
                 if (changed)
                 {
                     OnPropertyChanged("IsPlayingInternalVideo");
@@ -225,6 +225,8 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
         /// <param name="dispose"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         protected virtual void Dispose(bool dispose)
         {
+            Logger.Info("Disposing {0}", GetType().Name);
+
             if (dispose)
             {
                 _clockTimer.Dispose();

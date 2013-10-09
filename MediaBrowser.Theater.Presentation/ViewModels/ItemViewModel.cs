@@ -13,6 +13,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace MediaBrowser.Theater.Presentation.ViewModels
@@ -25,6 +26,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         private readonly IPlaybackManager _playbackManager;
         private readonly IPresentationManager _presentation;
         private readonly ILogger _logger;
+        private readonly IServerEvents _serverEvents;
 
         public ICommand PlayCommand { get; private set; }
         public ICommand ResumeCommand { get; private set; }
@@ -35,13 +37,14 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         public ICommand ToggleDislikesCommand { get; private set; }
         public ICommand ToggleIsFavoriteCommand { get; private set; }
 
-        public ItemViewModel(IApiClient apiClient, IImageManager imageManager, IPlaybackManager playbackManager, IPresentationManager presentation, ILogger logger)
+        public ItemViewModel(IApiClient apiClient, IImageManager imageManager, IPlaybackManager playbackManager, IPresentationManager presentation, ILogger logger, IServerEvents serverEvents)
         {
             _apiClient = apiClient;
             _imageManager = imageManager;
             _playbackManager = playbackManager;
             _presentation = presentation;
             _logger = logger;
+            _serverEvents = serverEvents;
 
             PlayCommand = new RelayCommand(o => Play());
             ResumeCommand = new RelayCommand(o => Resume());
@@ -51,6 +54,24 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             ToggleDislikesCommand = new RelayCommand(ToggleDislikes);
             ToggleIsFavoriteCommand = new RelayCommand(ToggleIsFavorite);
             ToggleIsPlayedCommand = new RelayCommand(ToggleIsPlayed);
+
+            _serverEvents.UserDataChanged += _serverEvents_UserDataChanged;
+        }
+
+        void _serverEvents_UserDataChanged(object sender, UserDataChangedEventArgs e)
+        {
+            var key = _item.UserData == null ? string.Empty : _item.UserData.Key;
+
+            if (!string.IsNullOrEmpty(key))
+            {
+                var data = e.ChangeInfo.UserDataList.FirstOrDefault(i => string.Equals(key, i.Key, StringComparison.OrdinalIgnoreCase));
+
+                if (data != null)
+                {
+                    _item.UserData = data;
+                    RefreshUserDataFields();
+                }
+            }
         }
 
         private BaseItemDto _item;
@@ -105,6 +126,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                     OnPropertyChanged("Artists");
                     OnPropertyChanged("ArtistCount");
                     OnPropertyChanged("ParentIndexNumber");
+                    OnPropertyChanged("MediaStreams");
 
                     RefreshUserDataFields();
                 }
@@ -255,6 +277,24 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 {
                     OnPropertyChanged("DisplayName");
                 }
+            }
+        }
+
+        /// <summary>
+        /// Gets the media streams.
+        /// </summary>
+        /// <value>The media streams.</value>
+        public List<MediaStream> MediaStreams
+        {
+            get
+            {
+
+                if (_item != null)
+                {
+                    return _item.MediaStreams;
+                }
+
+                return null;
             }
         }
 
@@ -641,6 +681,24 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
+        private Stretch _imageStretch;
+        public Stretch ImageStretch
+        {
+            get { return _imageStretch; }
+
+            set
+            {
+                var changed = _imageStretch != value;
+
+                _imageStretch = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("ImageStretch");
+                }
+            }
+        }
+
         private bool _downloadPrimaryImageAtExactSize;
         public bool DownloadPrimaryImageAtExactSize
         {
@@ -988,6 +1046,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         public void Dispose()
         {
+            _serverEvents.UserDataChanged -= _serverEvents_UserDataChanged;
             DisposeCancellationTokenSource();
         }
 

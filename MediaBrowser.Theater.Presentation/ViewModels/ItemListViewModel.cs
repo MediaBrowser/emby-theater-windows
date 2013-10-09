@@ -2,13 +2,11 @@
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
-using MediaBrowser.Model.Net;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Reflection;
-using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.ViewModels;
 using MediaBrowser.Theater.Presentation.Extensions;
 using System;
@@ -19,6 +17,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Threading;
 
 namespace MediaBrowser.Theater.Presentation.ViewModels
@@ -29,16 +28,16 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         private readonly IPresentationManager _presentationManager;
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
-        private readonly ISessionManager _sessionManager;
         private readonly INavigationService _navigationService;
         private readonly IPlaybackManager _playbackManager;
         private readonly ILogger _logger;
+        private readonly IServerEvents _serverEvents;
 
         private Timer _indexSelectionChangeTimer;
         private Timer _selectionChangeTimer;
         private readonly object _syncLock = new object();
 
-        private readonly Func<ItemListViewModel,Task<ItemsResult>> _getItemsDelegate;
+        private readonly Func<ItemListViewModel, Task<ItemsResult>> _getItemsDelegate;
 
         private readonly RangeObservableCollection<ItemViewModel> _listItems =
             new RangeObservableCollection<ItemViewModel>();
@@ -52,7 +51,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         private readonly Dispatcher _dispatcher;
 
-        public ItemListViewModel(Func<ItemListViewModel,Task<ItemsResult>> getItemsDelegate, IPresentationManager presentationManager, IImageManager imageManager, IApiClient apiClient, ISessionManager sessionManager, INavigationService navigationService, IPlaybackManager playbackManager, ILogger logger)
+        public ItemListViewModel(Func<ItemListViewModel, Task<ItemsResult>> getItemsDelegate, IPresentationManager presentationManager, IImageManager imageManager, IApiClient apiClient, INavigationService navigationService, IPlaybackManager playbackManager, ILogger logger, IServerEvents serverEvents)
         {
             EnableBackdropsForCurrentItem = true;
 
@@ -60,7 +59,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             _navigationService = navigationService;
             _playbackManager = playbackManager;
             _logger = logger;
-            _sessionManager = sessionManager;
+            _serverEvents = serverEvents;
             _apiClient = apiClient;
             _imageManager = imageManager;
             _dispatcher = Dispatcher.CurrentDispatcher;
@@ -74,7 +73,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         }
 
         public string ListType { get; set; }
-        
+
         public Func<BaseItemDto, string> DisplayNameGenerator { get; set; }
         public Func<ItemListViewModel, double> ImageDisplayHeightGenerator { get; set; }
         public Func<ItemListViewModel, ImageType[]> PreferredImageTypesGenerator { get; set; }
@@ -133,7 +132,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
             OnPropertyChanged("HasIndexOptions");
         }
-        
+
         private int _itemCount;
         public int ItemCount
         {
@@ -199,6 +198,24 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 if (changed)
                 {
                     OnPropertyChanged("DownloadImageAtExactSize");
+                }
+            }
+        }
+
+        private Stretch? _imageStretch;
+        public Stretch? ImageStretch
+        {
+            get { return _imageStretch; }
+
+            set
+            {
+                var changed = _imageStretch != value;
+
+                _imageStretch = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("ImageStretch");
                 }
             }
         }
@@ -405,7 +422,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                     i =>
                     {
                         var vm = new ItemViewModel(_apiClient, _imageManager, _playbackManager,
-                                                   _presentationManager, _logger)
+                                                   _presentationManager, _logger, _serverEvents)
                         {
                             DownloadPrimaryImageAtExactSize = IsCloseToMedianPrimaryImageAspectRatio(i),
                             ImageHeight = imageDisplayHeight,
@@ -417,6 +434,19 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                             PreferredImageTypes = imageTypes,
                             ListType = ListType
                         };
+
+                        var stretch = ImageStretch;
+
+                        if (!stretch.HasValue && imageTypes.Length > 0)
+                        {
+                            var exact = imageTypes[0] == ImageType.Primary ? vm.DownloadPrimaryImageAtExactSize : vm.DownloadImagesAtExactSize;
+                            stretch = exact ? Stretch.UniformToFill : Stretch.Uniform;
+                        }
+
+                        if (stretch.HasValue)
+                        {
+                            vm.ImageStretch = stretch.Value;
+                        }
 
                         return vm;
                     }

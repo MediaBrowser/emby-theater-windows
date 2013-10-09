@@ -1,4 +1,5 @@
 ﻿using MediaBrowser.ApiInteraction;
+using MediaBrowser.ApiInteraction.WebSocket;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Constants;
 using MediaBrowser.Common.Implementations;
@@ -58,6 +59,8 @@ namespace MediaBrowser.UI
         /// </summary>
         /// <value>The API client.</value>
         public IApiClient ApiClient { get; private set; }
+
+        internal ApiWebSocket ApiWebSocket { get; set; }
 
         public IThemeManager ThemeManager { get; private set; }
         public IPlaybackManager PlaybackManager { get; private set; }
@@ -136,7 +139,9 @@ namespace MediaBrowser.UI
             UserInputManager = new UserInputManager();
             RegisterSingleInstance(UserInputManager);
 
-            NavigationService = new NavigationService(ThemeManager, () => PlaybackManager, ApiClient, PresentationManager, TheaterConfigurationManager, () => SessionManager, this, InstallationManager, ImageManager, Logger, UserInputManager);
+            var serverEventsFactory = new ServerEventsFactory(this);
+
+            NavigationService = new NavigationService(ThemeManager, () => PlaybackManager, ApiClient, PresentationManager, TheaterConfigurationManager, () => SessionManager, this, InstallationManager, ImageManager, Logger, UserInputManager, serverEventsFactory);
             RegisterSingleInstance(NavigationService);
 
             PlaybackManager = new PlaybackManager(TheaterConfigurationManager, Logger, ApiClient, NavigationService, PresentationManager);
@@ -148,6 +153,8 @@ namespace MediaBrowser.UI
             RegisterSingleInstance(ApiClient);
 
             RegisterSingleInstance<IHiddenWindow>(new AppHiddenWIndow());
+
+            RegisterSingleInstance<IServerEventsFactory>(serverEventsFactory);
         }
 
         /// <summary>
@@ -332,4 +339,20 @@ namespace MediaBrowser.UI
             }
         }
     }
+
+    internal class ServerEventsFactory : IServerEventsFactory
+    {
+        private readonly ApplicationHost _appHost;
+
+        public ServerEventsFactory(ApplicationHost appHost)
+        {
+            _appHost = appHost;
+        }
+
+        public IServerEvents GetServerEvents()
+        {
+            return _appHost.ApiWebSocket;
+        }
+    }
+
 }

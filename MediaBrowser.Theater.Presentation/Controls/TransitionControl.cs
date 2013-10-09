@@ -107,7 +107,10 @@ namespace MediaBrowser.Theater.Presentation.Controls
 
         private void SetContent(object newContent)
         {
-            _contentPresenter.Content = newContent;
+            if (_contentPresenter != null)
+            {
+                _contentPresenter.Content = newContent;
+            }
         }
 
         /// <summary>

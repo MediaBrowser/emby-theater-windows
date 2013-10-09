@@ -27,6 +27,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         public IPresentationManager PresentationManager { get; set; }
         public ILogger Logger { get; set; }
         public INavigationService NavigationService { get; set; }
+        private readonly IServerEvents _serverEvents;
 
         public ICommand PauseCommand { get; private set; }
         public ICommand NextChapterCommand { get; private set; }
@@ -81,7 +82,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
                 if (changed)
                 {
-                    NowPlayingItemViewModel = new ItemViewModel(ApiClient, ImageManager, PlaybackManager, PresentationManager, Logger)
+                    NowPlayingItemViewModel = new ItemViewModel(ApiClient, ImageManager, PlaybackManager, PresentationManager, Logger, _serverEvents)
                     {
                         Item = value
                     };
@@ -343,7 +344,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
-        public TransportOsdViewModel(IPlaybackManager playbackManager, IApiClient apiClient, IImageManager imageManager, IPresentationManager presentationManager, ILogger logger, INavigationService nav)
+        public TransportOsdViewModel(IPlaybackManager playbackManager, IApiClient apiClient, IImageManager imageManager, IPresentationManager presentationManager, ILogger logger, INavigationService nav, IServerEvents serverEvents)
         {
             Logger = logger;
             PresentationManager = presentationManager;
@@ -351,6 +352,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             ApiClient = apiClient;
             PlaybackManager = playbackManager;
             NavigationService = nav;
+            _serverEvents = serverEvents;
 
             _currentDispatcher = Dispatcher.CurrentDispatcher;
 

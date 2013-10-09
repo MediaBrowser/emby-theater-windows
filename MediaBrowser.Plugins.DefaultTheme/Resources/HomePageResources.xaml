@@ -18,7 +18,7 @@
 
         <Grid Height="{Binding ImageHeight}" Width="{Binding ImageWidth}">
 
-            <Image Stretch="UniformToFill" Source="{Binding Image}">
+            <Image Stretch="{Binding ImageStretch}" Source="{Binding Image}">
                 <Image.Style>
                     <Style TargetType="{x:Type Image}">
                         <Style.Triggers>
@@ -109,10 +109,12 @@
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsSelected" Value="true">
                             <Setter TargetName="MenuText" Property="Opacity" Value="1"/>
+                            <Setter TargetName="MenuText" Property="Foreground" Value="{DynamicResource SelectedMenuItemForeground}"></Setter>
                         </Trigger>
                         <Trigger Property="IsFocused" Value="true">
                             <Setter TargetName="MenuText" Property="Opacity" Value="1"/>
                             <Setter TargetName="MenuText" Property="TextBlock.TextDecorations" Value="Underline"/>
+                            <Setter TargetName="MenuText" Property="Foreground" Value="{DynamicResource SelectedMenuItemForeground}"></Setter>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -925,6 +927,7 @@
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
             <Grid.RowDefinitions>
@@ -936,7 +939,19 @@
 
             <TextBlock Style="{DynamicResource TextBlockStyle}" Foreground="#ddd" Grid.Column="1" Grid.Row="0" Padding="25 0 0 0">Library</TextBlock>
 
-            <TextBlock Style="{DynamicResource TextBlockStyle}" Foreground="#ddd" Grid.Column="2" Grid.Row="0" Padding="25 0 0 0">Game Systems</TextBlock>
+            <TextBlock Foreground="#ddd" Grid.Column="2" Grid.Row="0" Padding="25 0 0 0" Text="Recently Played">
+                <TextBlock.Style>
+                    <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ShowRecentlyPlayed}" Value="false">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+            
+            <TextBlock Style="{DynamicResource TextBlockStyle}" Foreground="#ddd" Grid.Column="3" Grid.Row="0" Padding="25 0 0 0">Game Systems</TextBlock>
 
             <Grid Grid.Row="1" Grid.Column="0">
                 <controls:ExtendedButton Style="{DynamicResource BaseItemButtonStyle}" DataContext="{Binding SpotlightViewModel}" Command="{Binding CustomCommand}" VerticalAlignment="Top">
@@ -1024,6 +1039,27 @@
             </WrapPanel>
 
             <Grid Grid.Row="1" Grid.Column="2" Margin="10 0 0 0">
+
+                <Grid.Style>
+                    <Style TargetType="{x:Type Grid}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ShowRecentlyPlayed}" Value="false">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+                
+                <controls:ExtendedListBox Margin="-35 -35" DataContext="{Binding RecentlyPlayedViewModel}" ItemsSource="{Binding ListCollectionView}" KeyboardNavigation.DirectionalNavigation="Continue" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource HomePageItemTemplate}">
+                    <controls:ExtendedListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Margin="40 35" Orientation="Vertical"></WrapPanel>
+                        </ItemsPanelTemplate>
+                    </controls:ExtendedListBox.ItemsPanel>
+                </controls:ExtendedListBox>
+            </Grid>
+
+            <Grid Grid.Row="1" Grid.Column="3" Margin="10 0 0 0">
 
                 <controls:ExtendedListBox Margin="-35 -35" DataContext="{Binding GameSystemsViewModel}" ItemsSource="{Binding ListCollectionView}" KeyboardNavigation.DirectionalNavigation="Continue" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource HomePageItemTemplate}">
                     <controls:ExtendedListBox.ItemsPanel>

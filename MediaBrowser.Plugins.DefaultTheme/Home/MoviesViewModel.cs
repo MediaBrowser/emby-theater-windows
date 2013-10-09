@@ -27,7 +27,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         private readonly INavigationService _navService;
         private readonly IPlaybackManager _playbackManager;
         private readonly ILogger _logger;
-
+        private readonly IServerEvents _serverEvents;
 
         public ItemListViewModel ResumeViewModel { get; private set; }
         public ItemListViewModel LatestTrailersViewModel { get; private set; }
@@ -47,7 +47,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         public GalleryViewModel RomanticMoviesViewModel { get; private set; }
         public GalleryViewModel YearsViewModel { get; private set; }
 
-        public MoviesViewModel(IPresentationManager presentation, IImageManager imageManager, IApiClient apiClient, ISessionManager session, INavigationService nav, IPlaybackManager playback, ILogger logger, double tileWidth, double tileHeight)
+        public MoviesViewModel(IPresentationManager presentation, IImageManager imageManager, IApiClient apiClient, ISessionManager session, INavigationService nav, IPlaybackManager playback, ILogger logger, double tileWidth, double tileHeight, IServerEvents serverEvents)
             : base(presentation, apiClient)
         {
             _sessionManager = session;
@@ -55,11 +55,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             _navService = nav;
             _playbackManager = playback;
             _logger = logger;
+            _serverEvents = serverEvents;
 
             TileWidth = tileWidth;
             TileHeight = tileHeight;
 
-            ResumeViewModel = new ItemListViewModel(GetResumeablesAsync, presentation, imageManager, apiClient, session, nav, playback, logger)
+            ResumeViewModel = new ItemListViewModel(GetResumeablesAsync, presentation, imageManager, apiClient, nav, playback, logger, _serverEvents)
             {
                 ImageDisplayWidth = TileWidth,
                 ImageDisplayHeightGenerator = v => TileHeight,
@@ -72,7 +73,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             var trailerTileHeight = (TileHeight * 1.46) + TilePadding / 2;
             var trailerTileWidth = trailerTileHeight * 2 / 3;
 
-            LatestTrailersViewModel = new ItemListViewModel(GetLatestTrailersAsync, presentation, imageManager, apiClient, session, nav, playback, logger)
+            LatestTrailersViewModel = new ItemListViewModel(GetLatestTrailersAsync, presentation, imageManager, apiClient, nav, playback, logger, _serverEvents)
             {
                 ImageDisplayWidth = trailerTileWidth,
                 ImageDisplayHeightGenerator = v => trailerTileHeight,
@@ -84,7 +85,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             const int tileScaleFactor = 12;
 
-            LatestMoviesViewModel = new ItemListViewModel(GetLatestMoviesAsync, presentation, imageManager, apiClient, session, nav, playback, logger)
+            LatestMoviesViewModel = new ItemListViewModel(GetLatestMoviesAsync, presentation, imageManager, apiClient, nav, playback, logger, _serverEvents)
             {
                 ImageDisplayWidth = trailerTileWidth,
                 ImageDisplayHeightGenerator = v => trailerTileHeight,
@@ -591,7 +592,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             });
 
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger, indexOptions);
+                                      PresentationManager, _navService, _playbackManager, _logger, indexOptions, _serverEvents);
 
             var sortOptions = new Dictionary<string, string>();
 
@@ -611,7 +612,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             var displayPreferences = await PresentationManager.GetDisplayPreferences("People", CancellationToken.None);
 
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger, AlphabetIndex);
+                                      PresentationManager, _navService, _playbackManager, _logger, AlphabetIndex, _serverEvents);
 
             var sortOptions = new Dictionary<string, string>();
             sortOptions["Name"] = ItemSortBy.SortName;
@@ -642,7 +643,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             });
 
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger, indexOptions);
+                                      PresentationManager, _navService, _playbackManager, _logger, indexOptions, _serverEvents);
 
             var sortOptions = new Dictionary<string, string>();
 
@@ -812,7 +813,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             var displayPreferences = await PresentationManager.GetDisplayPreferences("Trailers", CancellationToken.None);
 
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger);
+                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents);
 
             page.SortOptions = GetMovieSortOptions();
             page.CustomPageTitle = "Trailers";
@@ -852,7 +853,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             var displayPreferences = await PresentationManager.GetDisplayPreferences("Boxsets", CancellationToken.None);
 
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger);
+                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents);
 
             page.CustomPageTitle = "Box Sets";
 
@@ -891,7 +892,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             var displayPreferences = await PresentationManager.GetDisplayPreferences("Movies", CancellationToken.None);
 
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger);
+                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents);
 
             page.SortOptions = GetMovieSortOptions();
             page.CustomPageTitle = "Movies";
@@ -909,7 +910,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             var displayPreferences = await PresentationManager.GetDisplayPreferences("Movies", CancellationToken.None);
 
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger);
+                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents);
 
             page.SortOptions = GetMovieSortOptions();
             page.CustomPageTitle = "Date Night";
@@ -951,7 +952,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             var displayPreferences = await PresentationManager.GetDisplayPreferences("Movies", CancellationToken.None);
 
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger);
+                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents);
 
             page.SortOptions = GetMovieSortOptions();
             page.CustomPageTitle = "Comedy Night";
@@ -1073,7 +1074,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             var displayPreferences = await PresentationManager.GetDisplayPreferences("Movies", CancellationToken.None);
 
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger);
+                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents);
 
             page.SortOptions = GetMovieSortOptions();
             page.CustomPageTitle = "HD Movies";
@@ -1115,7 +1116,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             var displayPreferences = await PresentationManager.GetDisplayPreferences("Movies", CancellationToken.None);
 
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger);
+                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents);
 
             page.SortOptions = GetMovieSortOptions();
             page.CustomPageTitle = "Family Movies";
@@ -1157,7 +1158,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             var displayPreferences = await PresentationManager.GetDisplayPreferences("Movies", CancellationToken.None);
 
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger);
+                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents);
 
             page.SortOptions = GetMovieSortOptions();
             page.CustomPageTitle = "3D Movies";

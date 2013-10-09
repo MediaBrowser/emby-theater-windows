@@ -26,6 +26,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         private readonly IImageManager _imageManager;
         private readonly INavigationService _navService;
         private readonly ILogger _logger;
+        private readonly IServerEvents _serverEvents;
 
         public ImageViewerViewModel SpotlightViewModel { get; private set; }
 
@@ -33,8 +34,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         public GalleryViewModel GenresViewModel { get; private set; }
         public GalleryViewModel YearsViewModel { get; private set; }
         public GalleryViewModel MultiPlayerViewModel { get; private set; }
+        public ItemListViewModel RecentlyPlayedViewModel { get; private set; }
 
-        public GamesViewModel(IPresentationManager presentation, IImageManager imageManager, IApiClient apiClient, ISessionManager session, INavigationService nav, IPlaybackManager playback, ILogger logger, double tileWidth, double tileHeight)
+        public GamesViewModel(IPresentationManager presentation, IImageManager imageManager, IApiClient apiClient, ISessionManager session, INavigationService nav, IPlaybackManager playback, ILogger logger, double tileWidth, double tileHeight, IServerEvents serverEvents)
             : base(presentation, apiClient)
         {
             _sessionManager = session;
@@ -42,6 +44,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             _imageManager = imageManager;
             _navService = nav;
             _logger = logger;
+            _serverEvents = serverEvents;
 
             TileWidth = tileWidth;
             TileHeight = tileHeight;
@@ -57,7 +60,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 ImageStretch = Stretch.UniformToFill
             };
 
-            GameSystemsViewModel = new ItemListViewModel(GetResumeablesAsync, presentation, imageManager, apiClient, session, nav, playback, logger)
+            GameSystemsViewModel = new ItemListViewModel(GetGameSystems, presentation, imageManager, apiClient, nav, playback, logger, _serverEvents)
             {
                 ImageDisplayWidth = TileWidth,
                 ImageDisplayHeightGenerator = v => TileHeight,
@@ -66,6 +69,15 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             };
 
             const int tileScaleFactor = 12;
+
+            RecentlyPlayedViewModel = new ItemListViewModel(GetRecentlyPlayedAsync, presentation, imageManager, apiClient, nav, playback, logger, _serverEvents)
+            {
+                ImageDisplayWidth = TileWidth * tileScaleFactor / 16,
+                ImageDisplayHeightGenerator = v => TileHeight,
+                DisplayNameGenerator = HomePageViewModel.GetDisplayName,
+                EnableBackdropsForCurrentItem = false,
+                ImageStretch = Stretch.UniformToFill
+            };
 
             GenresViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {
@@ -136,6 +148,24 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             }
         }
 
+        private bool _showRecentlyPlayed;
+        public bool ShowRecentlyPlayed
+        {
+            get { return _showRecentlyPlayed; }
+
+            set
+            {
+                var changed = _showRecentlyPlayed != value;
+
+                _showRecentlyPlayed = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("ShowRecentlyPlayed");
+                }
+            }
+        }
+
         private void LoadSpotlightViewModel(GamesView view)
         {
             const ImageType imageType = ImageType.Backdrop;
@@ -166,28 +196,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         private void LoadGenresViewModel(GamesView view)
         {
-            //var images = view.SpotlightItems.Take(1).Select(i => ApiClient.GetPersonImageUrl(i.Name, new ImageOptions
-            //{
-            //    ImageType = i.ImageType,
-            //    Tag = i.ImageTag,
-            //    Height = Convert.ToInt32(TileWidth * 2),
-            //    EnableImageEnhancers = false
-            //}));
-
-            //GenresViewModel.AddImages(images);
         }
 
         private void LoadYearsViewModel(GamesView view)
         {
-            //var images = view.SpotlightItems.Take(1).Select(i => ApiClient.GetPersonImageUrl(i.Name, new ImageOptions
-            //{
-            //    ImageType = i.ImageType,
-            //    Tag = i.ImageTag,
-            //    Height = Convert.ToInt32(TileWidth * 2),
-            //    EnableImageEnhancers = false
-            //}));
-
-            //GenresViewModel.AddImages(images);
         }
 
         private void LoadMultiPlayerViewModel(GamesView view)
@@ -220,7 +232,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             });
 
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger, indexOptions);
+                                      PresentationManager, _navService, _playbackManager, _logger, indexOptions, _serverEvents);
 
             //page.SortOptions = GetSeriesSortOptions();
             page.CustomPageTitle = "Games | Multi-Player";
@@ -277,7 +289,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             });
 
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger, indexOptions);
+                                      PresentationManager, _navService, _playbackManager, _logger, indexOptions, _serverEvents);
 
             //page.SortOptions = GetSeriesSortOptions();
             page.CustomPageTitle = "Games | Timeline";
@@ -317,7 +329,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             return ApiClient.GetItemsAsync(query);
         }
 
-        private Task<ItemsResult> GetResumeablesAsync(ItemListViewModel viewModel)
+        private Task<ItemsResult> GetGameSystems(ItemListViewModel viewModel)
         {
             var query = new ItemQuery
             {
@@ -338,6 +350,39 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             };
 
             return ApiClient.GetItemsAsync(query);
+        }
+
+        private async Task<ItemsResult> GetRecentlyPlayedAsync(ItemListViewModel viewModel)
+        {
+            var query = new ItemQuery
+            {
+                Fields = new[]
+                        {
+                            ItemFields.PrimaryImageAspectRatio,
+                            ItemFields.DateCreated,
+                            ItemFields.DisplayPreferencesId
+                        },
+
+                UserId = _sessionManager.CurrentUser.Id,
+
+                SortBy = new[] { ItemSortBy.DatePlayed },
+
+                SortOrder = SortOrder.Descending,
+
+                Filters = new[] { ItemFilter.IsPlayed },
+
+                IncludeItemTypes = new[] { "Game" },
+
+                Recursive = true,
+
+                Limit = 6
+            };
+
+            var result = await ApiClient.GetItemsAsync(query);
+
+            ShowRecentlyPlayed = result.Items.Length > 0;
+
+            return result;
         }
 
         private async Task NavigateToGenresInternal()
@@ -361,7 +406,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             });
 
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger, indexOptions);
+                                      PresentationManager, _navService, _playbackManager, _logger, indexOptions, _serverEvents);
 
             var sortOptions = new Dictionary<string, string>();
 

@@ -59,22 +59,15 @@ namespace MediaBrowser.UI.EntryPoints
 
         private void ShowScreensaverIfNeeded()
         {
-            var activePlayer = _playback.MediaPlayers
-                .OfType<IInternalMediaPlayer>()
-                .FirstOrDefault(i => i.PlayState != PlayState.Idle);
+            var activeMedias = _playback.MediaPlayers
+                .Where(i => i.PlayState == PlayState.Playing)
+                .Select(i => i.CurrentMedia)
+                .Where(i => i != null)
+                .ToList();
 
-            if (activePlayer != null)
+            if (activeMedias.Any(i => !i.IsAudio))
             {
-                var media = activePlayer.CurrentMedia;
-
-                if (media != null)
-                {
-                    // For internal players, only allow the screen saver for audio
-                    if (!media.IsAudio && activePlayer.PlayState != PlayState.Paused)
-                    {
-                        return;
-                    }
-                }
+                return;
             }
 
             ShowScreensaver();

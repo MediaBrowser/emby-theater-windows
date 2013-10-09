@@ -35,21 +35,23 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
         private readonly INavigationService _navigationManager;
         private readonly IPlaybackManager _playbackManager;
         private readonly ILogger _logger;
+        private readonly IServerEvents _serverEvents;
 
         private readonly BaseItemDto _parentItem;
 
         private readonly ItemListViewModel _viewModel;
 
-        public FolderPage(BaseItemDto parent, DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IPresentationManager presentation, INavigationService navigationManager, IPlaybackManager playbackManager, ILogger logger)
-            : this(parent, displayPreferences, apiClient, imageManager, sessionManager, presentation, navigationManager, playbackManager, logger, new List<TabItem>())
+        public FolderPage(BaseItemDto parent, DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IPresentationManager presentation, INavigationService navigationManager, IPlaybackManager playbackManager, ILogger logger, IServerEvents serverEvents)
+            : this(parent, displayPreferences, apiClient, imageManager, sessionManager, presentation, navigationManager, playbackManager, logger, new List<TabItem>(), serverEvents)
         {
         }
 
-        public FolderPage(BaseItemDto parent, DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IPresentationManager presentation, INavigationService navigationManager, IPlaybackManager playbackManager, ILogger logger, IEnumerable<TabItem> indexOptions)
+        public FolderPage(BaseItemDto parent, DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IPresentationManager presentation, INavigationService navigationManager, IPlaybackManager playbackManager, ILogger logger, IEnumerable<TabItem> indexOptions, IServerEvents serverEvents)
         {
             _navigationManager = navigationManager;
             _playbackManager = playbackManager;
             _logger = logger;
+            _serverEvents = serverEvents;
             _presentationManager = presentation;
             _sessionManager = sessionManager;
             _imageManager = imageManager;
@@ -62,7 +64,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
 
             Loaded += FolderPage_Loaded;
 
-            _viewModel = new ItemListViewModel(GetItemsAsync, _presentationManager, _imageManager, _apiClient, _sessionManager, _navigationManager, _playbackManager, _logger)
+            _viewModel = new ItemListViewModel(GetItemsAsync, _presentationManager, _imageManager, _apiClient, _navigationManager, _playbackManager, _logger, _serverEvents)
             {
                 ImageDisplayHeightGenerator = GetImageDisplayHeight,
                 DisplayNameGenerator = GetDisplayName,

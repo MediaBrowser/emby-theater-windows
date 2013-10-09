@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MediaBrowser.Theater.Interfaces.ViewModels;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -35,7 +36,7 @@ namespace MediaBrowser.Theater.Presentation.Pages
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         void BasePage_Loaded(object sender, RoutedEventArgs e)
         {
-            _disposableDataContext = DataContext as IDisposable;
+            ResetDisposableDataContext();
 
             FocusManager.SetIsFocusScope(this, true);
 
@@ -46,6 +47,16 @@ namespace MediaBrowser.Theater.Presentation.Pages
             else
             {
                 FocusManager.SetFocusedElement(this, _lastFocused);
+            }
+        }
+
+        private void ResetDisposableDataContext()
+        {
+            if (ReadLocalValue(DataContextProperty) !=
+                DependencyProperty.UnsetValue)
+            {
+                // Data context was set locally.
+                _disposableDataContext = DataContext as IDisposable;
             }
         }
 

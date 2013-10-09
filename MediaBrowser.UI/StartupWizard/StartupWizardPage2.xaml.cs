@@ -84,8 +84,7 @@ namespace MediaBrowser.UI.StartupWizard
                         var json = await client.GetStringAsync(url);
                     }
 
-                    _apiClient.ServerApiPort = port;
-                    _apiClient.ServerHostName = TxtHost.Text;
+                    _apiClient.ChangeServerLocation(TxtHost.Text, port);
                     
                     _config.Configuration.ServerApiPort = port;
                     _config.Configuration.ServerHostName = TxtHost.Text;

@@ -21,18 +21,16 @@ namespace MediaBrowser.Plugins.DefaultTheme
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
         private readonly IPresentationManager _presentation;
-        private readonly ILogger _logger;
 
         public ICommand UserCommand { get; private set; }
         public ICommand DisplayPreferencesCommand { get; private set; }
 
         public DefaultThemePageContentViewModel(INavigationService navigationService, ISessionManager sessionManager, IApiClient apiClient, IImageManager imageManager, IPresentationManager presentation, IPlaybackManager playbackManager, ILogger logger)
-            : base(navigationService, sessionManager, playbackManager)
+            : base(navigationService, sessionManager, playbackManager, logger)
         {
             _apiClient = apiClient;
             _imageManager = imageManager;
             _presentation = presentation;
-            _logger = logger;
 
             NavigationService.Navigated += NavigationService_Navigated;
             SessionManager.UserLoggedIn += SessionManager_UserLoggedIn;
@@ -103,7 +101,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         private bool _showDefaultUserImage;
         public bool ShowDefaultUserImage
         {
-            get { return _showLogoImage; }
+            get { return _showDefaultUserImage; }
 
             set
             {
@@ -128,7 +126,6 @@ namespace MediaBrowser.Plugins.DefaultTheme
                 var changed = _showHomeButton != value;
 
                 _showHomeButton = value;
-
                 if (changed)
                 {
                     OnPropertyChanged("ShowHomeButton");
@@ -177,7 +174,6 @@ namespace MediaBrowser.Plugins.DefaultTheme
                 var changed = _isOnPageWithDisplayPreferences != value;
 
                 _isOnPageWithDisplayPreferences = value;
-
                 if (changed)
                 {
                     OnPropertyChanged("IsOnPageWithDisplayPreferences");
@@ -195,7 +191,6 @@ namespace MediaBrowser.Plugins.DefaultTheme
                 var changed = !string.Equals(_timeLeft, value);
 
                 _timeLeft = value;
-
                 if (changed)
                 {
                     OnPropertyChanged("TimeLeft");
@@ -213,7 +208,6 @@ namespace MediaBrowser.Plugins.DefaultTheme
                 var changed = !string.Equals(_timeRight, value);
 
                 _timeRight = value;
-
                 if (changed)
                 {
                     OnPropertyChanged("TimeRight");

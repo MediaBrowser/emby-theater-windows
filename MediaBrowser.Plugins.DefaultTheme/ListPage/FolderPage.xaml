@@ -20,7 +20,7 @@
             <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Margin="20 40 20 0">
+        <Grid Grid.Row="0" Margin="0 40 0 0">
 
             <Grid.Style>
                 <Style TargetType="{x:Type Grid}">
@@ -37,7 +37,7 @@
                     <controls:ExtendedListBox x:Name="IndexMenu" ItemsSource="{Binding IndexOptionsCollectionView}" ScrollViewer.CanContentScroll="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" HorizontalAlignment="Center" ItemContainerStyle="{DynamicResource IndexMenuListBoxItemStyle}">
                         <controls:ExtendedListBox.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" />
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="100 0 100 0" />
                             </ItemsPanelTemplate>
                         </controls:ExtendedListBox.ItemsPanel>
                     </controls:ExtendedListBox>

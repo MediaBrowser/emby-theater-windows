@@ -1,5 +1,4 @@
 ﻿using MediaBrowser.Common;
-using MediaBrowser.Common.Events;
 using MediaBrowser.Common.Updates;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Configuration;
@@ -19,6 +18,7 @@ using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Interfaces.UserInput;
 using MediaBrowser.Theater.Interfaces.ViewModels;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -32,7 +32,26 @@ namespace MediaBrowser.UI.Implementations
     /// </summary>
     internal class NavigationService : INavigationService
     {
-        public event EventHandler<NavigationEventArgs> Navigated;
+        private readonly List<EventHandler<NavigationEventArgs>> _pendingEventHandlers =
+            new List<EventHandler<NavigationEventArgs>>();
+ 
+        public event EventHandler<NavigationEventArgs> Navigated
+        {
+            add
+            {
+                if (App.Instance.ApplicationWindow == null)
+                {
+                    _pendingEventHandlers.Add(value);
+                    return;
+                }
+
+                App.Instance.ApplicationWindow.Navigated += value;
+            }
+            remove
+            {
+                App.Instance.ApplicationWindow.Navigated -= value;
+            }
+        }
 
         /// <summary>
         /// The _theme manager
@@ -55,6 +74,7 @@ namespace MediaBrowser.UI.Implementations
 
         private readonly IImageManager _imageManager;
         private readonly ILogger _logger;
+        private readonly IServerEventsFactory _serverEvents;
 
         private readonly IUserInputManager _userInputManager;
 
@@ -65,7 +85,7 @@ namespace MediaBrowser.UI.Implementations
         /// <param name="playbackManagerFactory">The playback manager factory.</param>
         /// <param name="apiClient">The API client.</param>
         /// <param name="presentationManager">The presentation manager.</param>
-        public NavigationService(IThemeManager themeManager, Func<IPlaybackManager> playbackManagerFactory, IApiClient apiClient, IPresentationManager presentationManager, ITheaterConfigurationManager config, Func<ISessionManager> sessionFactory, IApplicationHost appHost, IInstallationManager installationManager, IImageManager imageManager, ILogger logger, IUserInputManager userInputManager)
+        public NavigationService(IThemeManager themeManager, Func<IPlaybackManager> playbackManagerFactory, IApiClient apiClient, IPresentationManager presentationManager, ITheaterConfigurationManager config, Func<ISessionManager> sessionFactory, IApplicationHost appHost, IInstallationManager installationManager, IImageManager imageManager, ILogger logger, IUserInputManager userInputManager, IServerEventsFactory serverEvents)
         {
             _themeManager = themeManager;
             _playbackManagerFactory = playbackManagerFactory;
@@ -78,18 +98,19 @@ namespace MediaBrowser.UI.Implementations
             _imageManager = imageManager;
             _logger = logger;
             _userInputManager = userInputManager;
+            _serverEvents = serverEvents;
 
             presentationManager.WindowLoaded += presentationManager_WindowLoaded;
         }
 
         void presentationManager_WindowLoaded(object sender, EventArgs e)
         {
-            App.Instance.ApplicationWindow.Navigated += ApplicationWindow_Navigated;
-        }
+            foreach (var handler in _pendingEventHandlers)
+            {
+                App.Instance.ApplicationWindow.Navigated += handler;
+            }
 
-        void ApplicationWindow_Navigated(object sender, NavigationEventArgs e)
-        {
-            EventHelper.FireEventIfNotNull(Navigated, this, e, _logger);
+            _pendingEventHandlers.Clear();
         }
 
         /// <summary>
@@ -171,7 +192,7 @@ namespace MediaBrowser.UI.Implementations
 
             App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(async () =>
             {
-                var page = new FullscreenVideoPage(_userInputManager, _playbackManagerFactory(), this, _presentationManager, _apiClient, _imageManager, _logger);
+                var page = new FullscreenVideoPage(_userInputManager, _playbackManagerFactory(), this, _presentationManager, _apiClient, _imageManager, _logger, _serverEvents.GetServerEvents());
 
                 new InternalPlayerPageBehavior(page).AdjustPresentationForPlayback();
 

@@ -27,11 +27,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         private readonly IImageManager _imageManager;
         private readonly INavigationService _nav;
         private readonly IPlaybackManager _playbackManager;
+        private readonly IServerEvents _serverEvents;
 
         private const double TileWidth = 368;
         private const double TileHeight = TileWidth * 9 / 16;
 
-        public HomePageViewModel(IPresentationManager presentationManager, IApiClient apiClient, ISessionManager sessionManager, ILogger logger, IImageManager imageManager, INavigationService nav, IPlaybackManager playbackManager)
+        public HomePageViewModel(IPresentationManager presentationManager, IApiClient apiClient, ISessionManager sessionManager, ILogger logger, IImageManager imageManager, INavigationService nav, IPlaybackManager playbackManager, IServerEvents serverEvents)
         {
             _presentationManager = presentationManager;
             _apiClient = apiClient;
@@ -40,6 +41,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             _imageManager = imageManager;
             _nav = nav;
             _playbackManager = playbackManager;
+            _serverEvents = serverEvents;
         }
 
         protected override async Task<IEnumerable<TabItem>> GetSections()
@@ -133,7 +135,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             }
             if (string.Equals(section, "media collections"))
             {
-                var vm = new ItemListViewModel(GetMediaCollectionsAsync, _presentationManager, _imageManager, _apiClient, _sessionManager, _nav, _playbackManager, _logger)
+                var vm = new ItemListViewModel(GetMediaCollectionsAsync, _presentationManager, _imageManager, _apiClient, _nav, _playbackManager, _logger, _serverEvents)
                 {
                     ImageDisplayWidth = TileWidth,
                     ImageDisplayHeightGenerator = v => TileHeight,
@@ -146,19 +148,19 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             if (string.Equals(section, "games"))
             {
                 return new GamesViewModel(_presentationManager, _imageManager, _apiClient, _sessionManager, _nav,
-                                       _playbackManager, _logger, TileWidth, TileHeight);
+                                       _playbackManager, _logger, TileWidth, TileHeight, _serverEvents);
             }
             if (string.Equals(section, "tv"))
             {
-                return new TvViewModel(_presentationManager, _imageManager, _apiClient, _sessionManager, _nav, _playbackManager, _logger, TileWidth, TileHeight);
+                return new TvViewModel(_presentationManager, _imageManager, _apiClient, _sessionManager, _nav, _playbackManager, _logger, TileWidth, TileHeight, _serverEvents);
             }
             if (string.Equals(section, "movies"))
             {
                 return new MoviesViewModel(_presentationManager, _imageManager, _apiClient, _sessionManager, _nav,
-                                           _playbackManager, _logger, TileWidth, TileHeight);
+                                           _playbackManager, _logger, TileWidth, TileHeight, _serverEvents);
             }
 
-            return new UserTabViewModel(_presentationManager, _imageManager, _apiClient, _sessionManager, _nav, _playbackManager, _logger, TileWidth, TileHeight);
+            return new UserTabViewModel(_presentationManager, _imageManager, _apiClient, _sessionManager, _nav, _playbackManager, _logger, TileWidth, TileHeight, _serverEvents);
         }
 
         private Task<ItemsResult> GetMediaCollectionsAsync(ItemListViewModel viewModel)
@@ -218,7 +220,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             var displayPreferences = await _presentationManager.GetDisplayPreferences("Shows", CancellationToken.None);
 
             var page = new FolderPage(item, displayPreferences, _apiClient, _imageManager, _sessionManager,
-                                      _presentationManager, _nav, _playbackManager, _logger);
+                                      _presentationManager, _nav, _playbackManager, _logger, _serverEvents);
 
             page.SortOptions = TvViewModel.GetSeriesSortOptions();
             page.CustomPageTitle = "TV Shows";
@@ -258,7 +260,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             var displayPreferences = await _presentationManager.GetDisplayPreferences("Movies", CancellationToken.None);
 
             var page = new FolderPage(item, displayPreferences, _apiClient, _imageManager, _sessionManager,
-                                      _presentationManager, _nav, _playbackManager, _logger);
+                                      _presentationManager, _nav, _playbackManager, _logger, _serverEvents);
 
             page.SortOptions = MoviesViewModel.GetMovieSortOptions();
             page.CustomPageTitle = "Movies";

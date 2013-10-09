@@ -53,9 +53,16 @@ namespace MediaBrowser.Theater.Implementations.Theming
 
             if (_currentTheme != null)
             {
+                if (string.Equals(_currentTheme.Name, theme.Name))
+                {
+                    return;
+                }
+
                 UnloadThemeInternal(_currentTheme);
                 hadThemePrior = true;
             }
+
+            _logger.Info("Loading theme: {0}", theme.Name);
 
             LoadThemeInternal(theme);
 
@@ -88,6 +95,8 @@ namespace MediaBrowser.Theater.Implementations.Theming
 
         private void UnloadThemeInternal(ITheme theme)
         {
+            _logger.Info("Unloading theme: {0}", theme.Name);
+            
             var presentationManager = _presentationManager();
 
             foreach (var resource in _themeResources)

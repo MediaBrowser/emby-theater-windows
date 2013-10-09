@@ -300,8 +300,7 @@ namespace MediaBrowser.UI
 
                     var parts = address.ToString().Split(':');
 
-                    _appHost.ApiClient.ServerHostName = parts[0];
-                    _appHost.ApiClient.ServerApiPort = address.Port;
+                    _appHost.ApiClient.ChangeServerLocation(parts[0], address.Port);
 
                     foundServer = true;
                 }

@@ -120,7 +120,7 @@ namespace MediaBrowser.UI
             VolumeOsd.DataContext = new VolumeOsdViewModel(_playbackManager);
             BackdropContainer.DataContext = RotatingBackdrops;
 
-            NavigationManager.Navigated += NavigationManager_Navigated;
+            Navigated += NavigationManager_Navigated;
 
             DragBar.MouseDown += DragableGridMouseDown;
 
@@ -153,7 +153,7 @@ namespace MediaBrowser.UI
         
         protected override void OnClosing(CancelEventArgs e)
         {
-            NavigationManager.Navigated -= NavigationManager_Navigated;
+            Navigated -= NavigationManager_Navigated;
             UserInputManager.MouseMove -= _userInput_MouseMove;
 
             if (RotatingBackdrops != null)
@@ -207,7 +207,7 @@ namespace MediaBrowser.UI
         /// <param name="page">The page.</param>
         internal Task Navigate(FrameworkElement page)
         {
-            _logger.Info("Navigating to " + page.GetType().Name);
+            _logger.Debug("Navigating to " + page.GetType().Name);
             var task = new TaskCompletionSource<bool>();
 
             Dispatcher.InvokeAsync(async () =>
@@ -218,6 +218,8 @@ namespace MediaBrowser.UI
 
                 task.TrySetResult(true);
 
+                _logger.Debug("Navigation complete to " + page.GetType().Name);
+                
                 EventHelper.FireEventIfNotNull(Navigated, this, new NavigationEventArgs
                 {
                     NewPage = page,

@@ -1,5 +1,4 @@
-﻿using System.Windows.Media;
-using MediaBrowser.Model.ApiClient;
+﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
@@ -17,6 +16,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Media;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Home
 {
@@ -27,6 +27,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         private readonly IImageManager _imageManager;
         private readonly INavigationService _navService;
         private readonly ILogger _logger;
+        private readonly IServerEvents _serverEvents;
 
         public ItemListViewModel NextUpViewModel { get; private set; }
         public ItemListViewModel ResumeViewModel { get; private set; }
@@ -39,7 +40,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         public GalleryViewModel RomanticSeriesViewModel { get; private set; }
         public GalleryViewModel ComedyItemsViewModel { get; private set; }
 
-        public TvViewModel(IPresentationManager presentation, IImageManager imageManager, IApiClient apiClient, ISessionManager session, INavigationService nav, IPlaybackManager playback, ILogger logger, double tileWidth, double tileHeight)
+        public TvViewModel(IPresentationManager presentation, IImageManager imageManager, IApiClient apiClient, ISessionManager session, INavigationService nav, IPlaybackManager playback, ILogger logger, double tileWidth, double tileHeight, IServerEvents serverEvents)
             : base(presentation, apiClient)
         {
             _sessionManager = session;
@@ -47,11 +48,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             _imageManager = imageManager;
             _navService = nav;
             _logger = logger;
+            _serverEvents = serverEvents;
 
             TileWidth = tileWidth;
             TileHeight = tileHeight;
 
-            NextUpViewModel = new ItemListViewModel(GetNextUpAsync, presentation, imageManager, apiClient, session, nav, playback, logger)
+            NextUpViewModel = new ItemListViewModel(GetNextUpAsync, presentation, imageManager, apiClient, nav, playback, logger, _serverEvents)
             {
                 ImageDisplayWidth = TileWidth,
                 ImageDisplayHeightGenerator = v => TileHeight,
@@ -60,7 +62,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             };
             NextUpViewModel.PropertyChanged += NextUpViewModel_PropertyChanged;
 
-            ResumeViewModel = new ItemListViewModel(GetResumeablesAsync, presentation, imageManager, apiClient, session, nav, playback, logger)
+            ResumeViewModel = new ItemListViewModel(GetResumeablesAsync, presentation, imageManager, apiClient, nav, playback, logger, _serverEvents)
             {
                 ImageDisplayWidth = TileWidth,
                 ImageDisplayHeightGenerator = v => TileHeight,
@@ -374,7 +376,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             var displayPreferences = await PresentationManager.GetDisplayPreferences("People", CancellationToken.None);
 
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger, AlphabetIndex);
+                                      PresentationManager, _navService, _playbackManager, _logger, AlphabetIndex, _serverEvents);
 
             var sortOptions = new Dictionary<string, string>();
             sortOptions["Name"] = ItemSortBy.SortName;
@@ -411,7 +413,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             });
 
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger, indexOptions);
+                                      PresentationManager, _navService, _playbackManager, _logger, indexOptions, _serverEvents);
 
             var sortOptions = new Dictionary<string, string>();
 
@@ -444,7 +446,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             var displayPreferences = await PresentationManager.GetDisplayPreferences("Shows", CancellationToken.None);
 
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger);
+                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents);
 
             page.SortOptions = GetSeriesSortOptions();
             page.CustomPageTitle = "TV Shows";
@@ -476,7 +478,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             var displayPreferences = await PresentationManager.GetDisplayPreferences("Shows", CancellationToken.None);
 
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger);
+                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents);
 
             page.SortOptions = GetSeriesSortOptions();
             page.CustomPageTitle = "Comedy Night";
@@ -613,7 +615,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             var displayPreferences = await PresentationManager.GetDisplayPreferences("Shows", CancellationToken.None);
 
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger);
+                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents);
 
             page.SortOptions = GetSeriesSortOptions();
             page.CustomPageTitle = "Date Night";

@@ -25,12 +25,13 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         private readonly IImageManager _imageManager;
         private readonly INavigationService _navService;
         private readonly ILogger _logger;
+        private readonly IServerEvents _serverEvents;
 
         public ItemListViewModel ResumeViewModel { get; private set; }
 
         public ImageViewerViewModel SpotlightViewModel { get; private set; }
 
-        public UserTabViewModel(IPresentationManager presentation, IImageManager imageManager, IApiClient apiClient, ISessionManager session, INavigationService nav, IPlaybackManager playback, ILogger logger, double tileWidth, double tileHeight)
+        public UserTabViewModel(IPresentationManager presentation, IImageManager imageManager, IApiClient apiClient, ISessionManager session, INavigationService nav, IPlaybackManager playback, ILogger logger, double tileWidth, double tileHeight, IServerEvents serverEvents)
             : base(presentation, apiClient)
         {
             _sessionManager = session;
@@ -38,11 +39,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             _imageManager = imageManager;
             _navService = nav;
             _logger = logger;
+            _serverEvents = serverEvents;
 
             TileWidth = tileWidth;
             TileHeight = tileHeight;
 
-            ResumeViewModel = new ItemListViewModel(GetResumeablesAsync, presentation, imageManager, apiClient, session, nav, playback, logger)
+            ResumeViewModel = new ItemListViewModel(GetResumeablesAsync, presentation, imageManager, apiClient, nav, playback, logger, _serverEvents)
             {
                 ImageDisplayWidth = TileWidth,
                 ImageDisplayHeightGenerator = v => TileHeight,

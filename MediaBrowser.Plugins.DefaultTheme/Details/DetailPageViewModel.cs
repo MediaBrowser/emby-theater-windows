@@ -27,6 +27,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
         private readonly IPlaybackManager _playback;
         private readonly INavigationService _navigation;
         private readonly ILogger _logger;
+        private readonly IServerEvents _serverEvents;
 
         private ItemViewModel _itemViewModel;
         public ItemViewModel ItemViewModel
@@ -42,7 +43,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             }
         }
 
-        public DetailPageViewModel(ItemViewModel item, IApiClient apiClient, ISessionManager sessionManager, IImageManager imageManager, IPresentationManager presentationManager, IPlaybackManager playback, INavigationService navigation, ILogger logger)
+        public DetailPageViewModel(ItemViewModel item, IApiClient apiClient, ISessionManager sessionManager, IImageManager imageManager, IPresentationManager presentationManager, IPlaybackManager playback, INavigationService navigation, ILogger logger, IServerEvents serverEvents)
         {
             _apiClient = apiClient;
             _sessionManager = sessionManager;
@@ -51,6 +52,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             _playback = playback;
             _navigation = navigation;
             _logger = logger;
+            _serverEvents = serverEvents;
             ItemViewModel = item;
         }
 
@@ -170,6 +172,15 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 {
                     Name = "scenes",
                     DisplayName = "scenes"
+                });
+            }
+
+            if (item.MediaStreams != null && item.MediaStreams.Count > 0)
+            {
+                views.Add(new TabItem
+                {
+                    Name = "media info",
+                    DisplayName = "media info"
                 });
             }
 
@@ -360,7 +371,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             }
             if (string.Equals(section, "similar"))
             {
-                return new ItemListViewModel(GetSimilarItemsAsync, _presentationManager, _imageManager, _apiClient, _sessionManager, _navigation, _playback, _logger)
+                return new ItemListViewModel(GetSimilarItemsAsync, _presentationManager, _imageManager, _apiClient, _navigation, _playback, _logger, _serverEvents)
                 {
                     ImageDisplayWidth = 300,
                     EnableBackdropsForCurrentItem = false
@@ -368,7 +379,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             }
             if (string.Equals(section, "special features"))
             {
-                return new ItemListViewModel(GetSpecialFeatures, _presentationManager, _imageManager, _apiClient, _sessionManager, _navigation, _playback, _logger)
+                return new ItemListViewModel(GetSpecialFeatures, _presentationManager, _imageManager, _apiClient, _navigation, _playback, _logger, _serverEvents)
                 {
                     ImageDisplayWidth = 576,
                     EnableBackdropsForCurrentItem = false,
@@ -377,7 +388,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             }
             if (string.Equals(section, "themes"))
             {
-                return new ItemListViewModel(GetConvertedThemeMediaResult, _presentationManager, _imageManager, _apiClient, _sessionManager, _navigation, _playback, _logger)
+                return new ItemListViewModel(GetConvertedThemeMediaResult, _presentationManager, _imageManager, _apiClient, _navigation, _playback, _logger, _serverEvents)
                 {
                     ImageDisplayWidth = 576,
                     EnableBackdropsForCurrentItem = false,
@@ -386,7 +397,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             }
             if (string.Equals(section, "soundtrack") || string.Equals(section, "soundtracks"))
             {
-                return new ItemListViewModel(GetSoundtracks, _presentationManager, _imageManager, _apiClient, _sessionManager, _navigation, _playback, _logger)
+                return new ItemListViewModel(GetSoundtracks, _presentationManager, _imageManager, _apiClient, _navigation, _playback, _logger, _serverEvents)
                 {
                     ImageDisplayWidth = 400,
                     EnableBackdropsForCurrentItem = false
@@ -394,7 +405,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             }
             if (string.Equals(section, "seasons") || string.Equals(section, "episodes") || string.Equals(section, "songs"))
             {
-                return new ItemListViewModel(GetChildren, _presentationManager, _imageManager, _apiClient, _sessionManager, _navigation, _playback, _logger)
+                return new ItemListViewModel(GetChildren, _presentationManager, _imageManager, _apiClient, _navigation, _playback, _logger, _serverEvents)
                 {
                     ImageDisplayWidth = 300,
                     EnableBackdropsForCurrentItem = false
@@ -402,7 +413,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             }
             if (string.Equals(section, "trailers"))
             {
-                return new ItemListViewModel(GetTrailers, _presentationManager, _imageManager, _apiClient, _sessionManager, _navigation, _playback, _logger)
+                return new ItemListViewModel(GetTrailers, _presentationManager, _imageManager, _apiClient, _navigation, _playback, _logger, _serverEvents)
                 {
                     ImageDisplayWidth = 384,
                     EnableBackdropsForCurrentItem = false,
@@ -430,14 +441,25 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 return GetItemByNameItemListViewModel("Episode", 496, 279);
             }
 
-            return null;
+            return _itemViewModel;
+        }
+
+        protected override void DisposePreviousSection(BaseViewModel old)
+        {
+            // Don't dispose the page view model on tab change
+            if (old is ItemViewModel)
+            {
+                return;
+            }
+
+            base.DisposePreviousSection(old);
         }
 
         private ItemListViewModel GetItemByNameItemListViewModel(string type, int width, int height)
         {
             Func<ItemListViewModel, Task<ItemsResult>> itemGenerator = (vm) => GetItemByNameItemsAsync(type);
 
-            var viewModel = new ItemListViewModel(itemGenerator, _presentationManager, _imageManager, _apiClient, _sessionManager, _navigation, _playback, _logger)
+            var viewModel = new ItemListViewModel(itemGenerator, _presentationManager, _imageManager, _apiClient, _navigation, _playback, _logger, _serverEvents)
             {
                 ViewType = ListViewTypes.Poster,
                 ImageDisplayWidth = width,

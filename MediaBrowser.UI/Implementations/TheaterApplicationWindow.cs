@@ -1,7 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Threading;
-using MediaBrowser.Common.Events;
+﻿using MediaBrowser.Common.Events;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
@@ -16,6 +13,8 @@ using MediaBrowser.Theater.Interfaces.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
 
@@ -54,13 +53,24 @@ namespace MediaBrowser.UI.Implementations
         {
             if (App.Instance.ApplicationWindow != null)
             {
-                App.Instance.ApplicationWindow.PageContent.Content = e.Argument.CreatePageContentDataContext();
+                App.Instance.ApplicationWindow.PageContent.DataContext = e.Argument.CreatePageContentDataContext();
             }
         }
 
         void _themeManager_ThemeUnloaded(object sender, ItemEventArgs<ITheme> e)
         {
-            App.Instance.ApplicationWindow.PageContent.Content = null;
+            var viewModel = App.Instance.ApplicationWindow.PageContent.DataContext;
+
+            App.Instance.ApplicationWindow.PageContent.DataContext = null;
+
+            var disposable = viewModel as IDisposable;
+
+            if (disposable != null)
+            {
+                _logger.Debug("Disposing page content view model");
+
+                disposable.Dispose();
+            }
         }
 
         public IEnumerable<IHomePageInfo> HomePages { get; private set; }
@@ -105,7 +115,7 @@ namespace MediaBrowser.UI.Implementations
         /// </summary>
         internal void OnWindowLoaded()
         {
-            App.Instance.ApplicationWindow.PageContent.Content = _themeManager.CurrentTheme.CreatePageContentDataContext();
+            App.Instance.ApplicationWindow.PageContent.DataContext = _themeManager.CurrentTheme.CreatePageContentDataContext();
             EventHelper.FireEventIfNotNull(WindowLoaded, null, EventArgs.Empty, _logger);
         }
 
@@ -215,7 +225,7 @@ namespace MediaBrowser.UI.Implementations
 
         public void SetPageTitle(string title)
         {
-            var viewModel = App.Instance.ApplicationWindow.PageContent.Content as PageContentViewModel;
+            var viewModel = App.Instance.ApplicationWindow.PageContent.DataContext as PageContentViewModel;
 
             if (viewModel != null)
             {
@@ -226,7 +236,7 @@ namespace MediaBrowser.UI.Implementations
 
         public void SetDefaultPageTitle()
         {
-            var viewModel = App.Instance.ApplicationWindow.PageContent.Content as PageContentViewModel;
+            var viewModel = App.Instance.ApplicationWindow.PageContent.DataContext as PageContentViewModel;
 
             if (viewModel != null)
             {
@@ -256,7 +266,7 @@ namespace MediaBrowser.UI.Implementations
 
         public void SetGlobalThemeContentVisibility(bool visible)
         {
-            var viewModel = App.Instance.ApplicationWindow.PageContent.Content as PageContentViewModel;
+            var viewModel = App.Instance.ApplicationWindow.PageContent.DataContext as PageContentViewModel;
 
             if (viewModel != null)
             {

@@ -52,10 +52,11 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// The _logger
         /// </summary>
         private readonly ILogger _logger;
+        private readonly IServerEventsFactory _serverEvents;
 
         public static DefaultTheme Current;
 
-        public DefaultTheme(IPlaybackManager playbackManager, IImageManager imageManager, IApiClient apiClient, INavigationService navService, ISessionManager sessionManager, IPresentationManager presentationManager, ILogManager logManager)
+        public DefaultTheme(IPlaybackManager playbackManager, IImageManager imageManager, IApiClient apiClient, INavigationService navService, ISessionManager sessionManager, IPresentationManager presentationManager, ILogManager logManager, IServerEventsFactory serverEvents)
         {
             Current = this;
 
@@ -65,6 +66,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
             _navService = navService;
             _sessionManager = sessionManager;
             _presentationManager = presentationManager;
+            _serverEvents = serverEvents;
             _logger = logManager.GetLogger(GetType().Name);
         }
 
@@ -91,7 +93,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// <returns>Page.</returns>
         public Page GetItemPage(BaseItemDto item, ViewType context)
         {
-            var itemViewModel = new ItemViewModel(_apiClient, _imageManager, _playbackManager, _presentationManager, _logger)
+            var itemViewModel = new ItemViewModel(_apiClient, _imageManager, _playbackManager, _presentationManager, _logger, _serverEvents.GetServerEvents())
             {
                 Item = item,
                 ImageWidth = 550
@@ -99,7 +101,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
 
             return new DetailPage(itemViewModel, _presentationManager)
             {
-                DataContext = new DetailPageViewModel(itemViewModel, _apiClient, _sessionManager, _imageManager, _presentationManager, _playbackManager, _navService, _logger)
+                DataContext = new DetailPageViewModel(itemViewModel, _apiClient, _sessionManager, _imageManager, _presentationManager, _playbackManager, _navService, _logger, _serverEvents.GetServerEvents())
             };
         }
 
@@ -113,7 +115,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         {
             if (!item.IsType("series") && !item.IsType("musicalbum"))
             {
-                return new FolderPage(item, displayPreferences, _apiClient, _imageManager, _sessionManager, _presentationManager, _navService, _playbackManager, _logger);
+                return new FolderPage(item, displayPreferences, _apiClient, _imageManager, _sessionManager, _presentationManager, _navService, _playbackManager, _logger, _serverEvents.GetServerEvents());
             }
 
             return GetItemPage(item, ViewType.Folders);

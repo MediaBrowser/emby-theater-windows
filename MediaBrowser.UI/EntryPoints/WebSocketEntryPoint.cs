@@ -4,7 +4,6 @@ using MediaBrowser.Common;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
-using MediaBrowser.Model.Net;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Model.Serialization;
 using MediaBrowser.Model.Session;
@@ -27,12 +26,19 @@ namespace MediaBrowser.UI.EntryPoints
         private readonly IApiClient _apiClient;
         private readonly ILogger _logger;
         private readonly IJsonSerializer _json;
-        private readonly IApplicationHost _appHost;
+        private readonly ApplicationHost _appHost;
         private readonly INavigationService _nav;
         private readonly IPlaybackManager _playbackManager;
         private readonly IPresentationManager _presentation;
 
-        private ApiWebSocket _apiWebSocket;
+        private ApiWebSocket ApiWebSocket
+        {
+            get { return _appHost.ApiWebSocket; }
+            set
+            {
+                _appHost.ApiWebSocket = value;
+            }
+        }
 
         public WebSocketEntryPoint(ISessionManager session, IApiClient apiClient, IJsonSerializer json, ILogger logger, IApplicationHost appHost, INavigationService nav, IPlaybackManager playbackManager, IPresentationManager presentation)
         {
@@ -40,7 +46,7 @@ namespace MediaBrowser.UI.EntryPoints
             _apiClient = apiClient;
             _json = json;
             _logger = logger;
-            _appHost = appHost;
+            _appHost = (ApplicationHost)appHost;
             _nav = nav;
             _playbackManager = playbackManager;
             _presentation = presentation;
@@ -66,14 +72,22 @@ namespace MediaBrowser.UI.EntryPoints
 
         private void EnsureWebSocket()
         {
-            if (_apiWebSocket == null || !_apiWebSocket.IsOpen)
+            var socket = ApiWebSocket;
+
+            if (socket == null)
             {
                 ReloadWebSocket();
+            }
+            else
+            {
+                socket.EnsureConnectionAsync(CancellationToken.None);
             }
         }
 
         private async void ReloadWebSocket()
         {
+            DisposeSocket();
+            
             try
             {
                 var systemInfo = await _apiClient.GetSystemInfoAsync().ConfigureAwait(false);
@@ -82,9 +96,9 @@ namespace MediaBrowser.UI.EntryPoints
                                               _apiClient.DeviceId, _appHost.ApplicationVersion.ToString(),
                                               _apiClient.ClientName, _apiClient.DeviceName, ClientWebSocketFactory.CreateWebSocket);
 
-                await socket.ConnectAsync(CancellationToken.None).ConfigureAwait(false);
-
                 OnWebSocketInitialized(socket);
+
+                await socket.ConnectAsync(CancellationToken.None).ConfigureAwait(false);
 
                 _logger.Info("Web socket connection established.");
             }
@@ -96,9 +110,7 @@ namespace MediaBrowser.UI.EntryPoints
 
         private void OnWebSocketInitialized(ApiWebSocket socket)
         {
-            var previousSocket = _apiWebSocket;
-
-            _apiWebSocket = socket;
+            ApiWebSocket = socket;
 
             ((ApiClient)_apiClient).WebSocketConnection = socket;
 
@@ -112,11 +124,6 @@ namespace MediaBrowser.UI.EntryPoints
             socket.Closed += socket_Closed;
 
             socket.StartEnsureConnectionTimer(5000);
-
-            if (previousSocket != null)
-            {
-                previousSocket.Dispose();
-            }
         }
 
         void socket_Closed(object sender, EventArgs e)
@@ -311,7 +318,7 @@ namespace MediaBrowser.UI.EntryPoints
 
                 try
                 {
-                    await _apiWebSocket.SendContextMessageAsync(item.Type, item.Id, item.Name, itemPage.ViewType.ToString(), CancellationToken.None).ConfigureAwait(false);
+                    await ApiWebSocket.SendContextMessageAsync(item.Type, item.Id, item.Name, itemPage.ViewType.ToString(), CancellationToken.None).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
@@ -323,12 +330,25 @@ namespace MediaBrowser.UI.EntryPoints
         public void Dispose()
         {
             _session.UserLoggedIn -= _session_UserLoggedIn;
+            DisposeSocket();
+        }
 
-            if (_apiWebSocket != null)
+        private void DisposeSocket()
+        {
+            var socket = ApiWebSocket;
+
+            if (socket != null)
             {
-                _apiWebSocket.Closed -= socket_Closed;
+                socket.BrowseCommand -= _apiWebSocket_BrowseCommand;
+                socket.UserDeleted -= _apiWebSocket_UserDeleted;
+                socket.UserUpdated -= _apiWebSocket_UserUpdated;
+                socket.PlaystateCommand -= _apiWebSocket_PlaystateCommand;
+                socket.SystemCommand -= socket_SystemCommand;
+                socket.MessageCommand -= socket_MessageCommand;
+                socket.PlayCommand -= _apiWebSocket_PlayCommand;
+                socket.Closed -= socket_Closed;
 
-                _apiWebSocket.Dispose();
+                socket.Dispose();
             }
         }
     }

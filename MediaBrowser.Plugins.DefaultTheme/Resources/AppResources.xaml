@@ -591,7 +591,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ListBoxItem}">
                  
-                    <TextBlock Opacity=".5" x:Name="MenuText" Margin="35 0" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Text="{Binding DisplayName}" Style="{DynamicResource Heading2TextBlockStyle}"></TextBlock>
+                    <TextBlock Opacity=".5" x:Name="MenuText" Margin="35 0" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Text="{Binding DisplayName}" Style="{DynamicResource Heading1TextBlockStyle}"></TextBlock>
                  
                     <ControlTemplate.Triggers>
                         <DataTrigger Binding="{Binding TabType}" Value="Alphabet">

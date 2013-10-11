@@ -19,5 +19,7 @@ namespace MediaBrowser.Theater.Interfaces.Presentation
         double ContentWidth { get; }
 
         double ContentHeight { get; }
+
+        Size ContentPixelSize { get; }
     }
 }

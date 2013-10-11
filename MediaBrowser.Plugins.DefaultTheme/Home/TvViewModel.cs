@@ -29,6 +29,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         private readonly ILogger _logger;
         private readonly IServerEvents _serverEvents;
 
+        public ItemListViewModel LatestEpisodesViewModel { get; private set; }
         public ItemListViewModel NextUpViewModel { get; private set; }
         public ItemListViewModel ResumeViewModel { get; private set; }
 
@@ -60,7 +61,14 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 DisplayNameGenerator = HomePageViewModel.GetDisplayName,
                 EnableBackdropsForCurrentItem = false
             };
-            NextUpViewModel.PropertyChanged += NextUpViewModel_PropertyChanged;
+
+            LatestEpisodesViewModel = new ItemListViewModel(GetLatestEpisodes, presentation, imageManager, apiClient, nav, playback, logger, _serverEvents)
+            {
+                ImageDisplayWidth = TileWidth,
+                ImageDisplayHeightGenerator = v => TileHeight,
+                DisplayNameGenerator = HomePageViewModel.GetDisplayName,
+                EnableBackdropsForCurrentItem = false
+            };
 
             ResumeViewModel = new ItemListViewModel(GetResumeablesAsync, presentation, imageManager, apiClient, nav, playback, logger, _serverEvents)
             {
@@ -176,9 +184,22 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             ShowResume = ResumeViewModel.ItemCount > 0;
         }
 
-        void NextUpViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private bool _showLatestEpisodes;
+        public bool ShowLatestEpisodes
         {
-            ShowNextUp = NextUpViewModel.ItemCount > 0;
+            get { return _showLatestEpisodes; }
+
+            set
+            {
+                var changed = _showLatestEpisodes != value;
+
+                _showLatestEpisodes = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("ShowLatestEpisodes");
+                }
+            }
         }
 
         private bool _showNextUp;
@@ -650,7 +671,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             return ApiClient.GetItemsAsync(query);
         }
 
-        private Task<ItemsResult> GetNextUpAsync(ItemListViewModel viewModel)
+        private async Task<ItemsResult> GetNextUpAsync(ItemListViewModel viewModel)
         {
             var query = new NextUpQuery
             {
@@ -663,10 +684,47 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
                 UserId = _sessionManager.CurrentUser.Id,
 
-                Limit = 30
+                Limit = 18
             };
 
-            return ApiClient.GetNextUpAsync(query);
+            var result = await ApiClient.GetNextUpAsync(query);
+
+            ShowNextUp = result.TotalRecordCount > 0;
+
+            return result;
+        }
+
+        private async Task<ItemsResult> GetLatestEpisodes(ItemListViewModel viewModel)
+        {
+            var query = new ItemQuery
+            {
+                Fields = new[]
+                        {
+                            ItemFields.PrimaryImageAspectRatio,
+                            ItemFields.DateCreated,
+                            ItemFields.DisplayPreferencesId
+                        },
+
+                UserId = _sessionManager.CurrentUser.Id,
+
+                SortBy = new[] { ItemSortBy.DateCreated },
+
+                SortOrder = SortOrder.Descending,
+
+                IncludeItemTypes = new[] { "Episode" },
+
+                Filters = new[] { ItemFilter.IsUnplayed },
+
+                Limit = 6,
+
+                Recursive = true
+            };
+
+            var result = await ApiClient.GetItemsAsync(query);
+
+            ShowLatestEpisodes = result.TotalRecordCount > 0;
+
+            return result;
         }
 
         private Task<ItemsResult> GetResumeablesAsync(ItemListViewModel viewModel)

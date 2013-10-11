@@ -227,7 +227,7 @@ namespace MediaBrowser.UI
             HiddenWindow.Top = ApplicationWindow.Top;
             HiddenWindow.Left = ApplicationWindow.Left;
             HiddenWindow.WindowState = ApplicationWindow.WindowState;
-
+         
             ApplicationWindow.Activate();
         }
 

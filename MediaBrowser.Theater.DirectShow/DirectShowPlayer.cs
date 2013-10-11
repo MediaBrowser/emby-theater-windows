@@ -1,5 +1,4 @@
-﻿using System.IO;
-using DirectShowLib;
+﻿using DirectShowLib;
 using DirectShowLib.Dvd;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
@@ -10,14 +9,16 @@ using MediaFoundation.EVR;
 using MediaFoundation.Misc;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Forms;
+using Point = System.Drawing.Point;
 
 namespace MediaBrowser.Theater.DirectShow
 {
-    public class DirectShowPlayer : Form
+    public class DirectShowPlayer : Panel
     {
         private const int WM_APP = 0x8000;
         private const int WM_GRAPHNOTIFY = WM_APP + 1;
@@ -70,6 +71,11 @@ namespace MediaBrowser.Theater.DirectShow
             _logger = logger;
             _hiddenWindow = hiddenWindow;
             _playerWrapper = playerWrapper;
+        }
+
+        private IntPtr VideoWindowHandle
+        {
+            get { return Handle; }
         }
 
         private PlayState _playstate;
@@ -160,7 +166,7 @@ namespace MediaBrowser.Theater.DirectShow
             _basicAudio = m_graph as DirectShowLib.IBasicAudio;
 
             // Set up event notification.
-            var hr = _mediaEventEx.SetNotifyWindow(Handle, WM_GRAPHNOTIFY, IntPtr.Zero);
+            var hr = _mediaEventEx.SetNotifyWindow(VideoWindowHandle, WM_GRAPHNOTIFY, IntPtr.Zero);
             DsError.ThrowExceptionForHR(hr);
         }
 
@@ -445,7 +451,7 @@ namespace MediaBrowser.Theater.DirectShow
             }
 
             // Set the number of streams.
-            pDisplay.SetVideoWindow(Handle);
+            pDisplay.SetVideoWindow(VideoWindowHandle);
 
             if (dwStreams > 1)
             {
@@ -463,7 +469,7 @@ namespace MediaBrowser.Theater.DirectShow
             _hiddenWindow.SizeChanged += _hiddenWindow_SizeChanged;
 
             //_videoWindow.HideCursor(OABool.True);
-            _videoWindow.put_Owner(Handle);
+            _videoWindow.put_Owner(VideoWindowHandle);
             _videoWindow.put_WindowStyle(DirectShowLib.WindowStyle.Child | DirectShowLib.WindowStyle.Visible | DirectShowLib.WindowStyle.ClipSiblings);
             //_videoWindow.put_FullScreenMode(OABool.True);
 
@@ -475,9 +481,13 @@ namespace MediaBrowser.Theater.DirectShow
 
         private void SetVideoPositions()
         {
-            var screenWidth = Convert.ToInt32(_hiddenWindow.ContentWidth);
-            var screenHeight = Convert.ToInt32(_hiddenWindow.ContentHeight);
+            var hiddenWindowContentSize = _hiddenWindow.ContentPixelSize;
 
+            var screenWidth = Convert.ToInt32(hiddenWindowContentSize.Width);
+            var screenHeight = Convert.ToInt32(hiddenWindowContentSize.Height);
+
+            _logger.Info("window content width: {0}, window height: {1}", screenWidth, screenHeight);
+            
             // Set the display position to the entire window.
             var rc = new MFRect(0, 0, screenWidth, screenHeight);
 
@@ -523,6 +533,7 @@ namespace MediaBrowser.Theater.DirectShow
             {
                 double totalMargin = (screenHeight - iAdjustedHeight);
                 var topMargin = Convert.ToInt32(Math.Round(totalMargin / 2));
+
                 _basicVideo.SetDestinationPosition(0, topMargin, screenWidth, iAdjustedHeight);
             }
             else if (screenHeight < iAdjustedHeight && iAdjustedHeight > 0)
@@ -536,11 +547,8 @@ namespace MediaBrowser.Theater.DirectShow
 
                 double totalMargin = (screenWidth - iAdjustedWidth);
                 var leftMargin = Convert.ToInt32(Math.Round(totalMargin / 2));
+
                 _basicVideo.SetDestinationPosition(leftMargin, 0, iAdjustedWidth, screenHeight);
-            }
-            else if (iAdjustedHeight == 0)
-            {
-                _videoWindow.SetWindowPosition(0, 0, screenWidth, screenHeight);
             }
             _videoWindow.SetWindowPosition(0, 0, screenWidth, screenHeight);
         }
@@ -627,6 +635,16 @@ namespace MediaBrowser.Theater.DirectShow
             _playerWrapper.OnPlaybackStopped(_item, endingPosition, reason, newTrackIndex);
         }
 
+        protected override void WndProc(ref Message m)
+        {
+            if (m.Msg == WM_GRAPHNOTIFY)
+            {
+                HandleGraphEvent();
+            }
+
+            base.WndProc(ref m);
+        }
+        
         private void HandleGraphEvent()
         {
             // Make sure that we don't access the media event interface
@@ -656,16 +674,6 @@ namespace MediaBrowser.Theater.DirectShow
             {
 
             }
-        }
-
-        protected override void WndProc(ref Message m)
-        {
-            if (m.Msg == WM_GRAPHNOTIFY)
-            {
-                HandleGraphEvent();
-            }
-
-            base.WndProc(ref m);
         }
 
         private void DisposePlayer()

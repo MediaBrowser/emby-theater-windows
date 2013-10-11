@@ -103,7 +103,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             views.Add(new TabItem
             {
                 Name = "media collections",
-                DisplayName = "media collections"
+                DisplayName = "collections"
             });
 
             return views;

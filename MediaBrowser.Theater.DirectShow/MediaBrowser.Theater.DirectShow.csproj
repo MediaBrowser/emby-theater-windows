@@ -77,7 +77,7 @@
       <DependentUpon>ConfigurationPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="DirectShowPlayer.cs">
-      <SubType>Form</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Configuration\ConfigurationPageFactory.cs" />
     <Compile Include="Imports.cs" />

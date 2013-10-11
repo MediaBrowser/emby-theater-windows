@@ -105,7 +105,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                    <TextBlock Margin="85 0" Opacity=".5" x:Name="MenuText" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Text="{Binding DisplayName}" Style="{DynamicResource Heading2TextBlockStyle}" TextWrapping="NoWrap"></TextBlock>
+                    <TextBlock Margin="85 0" Opacity=".5" x:Name="MenuText" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Text="{Binding DisplayName}" Style="{DynamicResource Heading1TextBlockStyle}" TextWrapping="NoWrap"></TextBlock>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsSelected" Value="true">
                             <Setter TargetName="MenuText" Property="Opacity" Value="1"/>
@@ -142,6 +142,7 @@
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
             <Grid.RowDefinitions>
@@ -164,17 +165,37 @@
                 </TextBlock.Style>
             </TextBlock>
 
-            <TextBlock Foreground="#ddd" Grid.Column="3" Grid.Row="0" Padding="15 0 0 0" Text="Next Up">
-                <TextBlock.Style>
-                    <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
+            <StackPanel Orientation="Horizontal" Grid.Column="3" Grid.Row="0">
+
+                <StackPanel.Style>
+                    <Style TargetType="{x:Type StackPanel}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ShowLatestEpisodes}" Value="false">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </StackPanel.Style>
+
+                <TextBlock Style="{DynamicResource TextBlockStyle}" Foreground="#ddd" Padding="15 0 0 0" Text="Latest Episodes">
+                </TextBlock>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Grid.Column="4" Grid.Row="0">
+
+                <StackPanel.Style>
+                    <Style TargetType="{x:Type StackPanel}">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding ShowNextUp}" Value="false">
                                 <Setter Property="Visibility" Value="Collapsed" />
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
-                </TextBlock.Style>
-            </TextBlock>
+                </StackPanel.Style>
+
+                <TextBlock Style="{DynamicResource TextBlockStyle}" Foreground="#ddd" Padding="15 0 0 0" Text="Next Up">
+                </TextBlock>
+            </StackPanel>
 
             <Grid Grid.Row="1" Grid.Column="0">
                 <controls:ExtendedButton Style="{DynamicResource BaseItemButtonStyle}" DataContext="{Binding SpotlightViewModel}" Command="{Binding CustomCommand}" VerticalAlignment="Top">
@@ -355,6 +376,27 @@
             </Grid>
 
             <Grid Grid.Row="1" Grid.Column="3">
+
+                <Grid.Style>
+                    <Style TargetType="{x:Type Grid}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ShowLatestEpisodes}" Value="false">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+
+                <controls:ExtendedListBox Margin="-35 -35 -30 -35" DataContext="{Binding LatestEpisodesViewModel}" ItemsSource="{Binding ListCollectionView}" KeyboardNavigation.DirectionalNavigation="Continue" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource HomePageItemTemplate}">
+                    <controls:ExtendedListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Margin="40 35" Orientation="Vertical"></WrapPanel>
+                        </ItemsPanelTemplate>
+                    </controls:ExtendedListBox.ItemsPanel>
+                </controls:ExtendedListBox>
+            </Grid>
+
+            <Grid Grid.Row="1" Grid.Column="4">
 
                 <Grid.Style>
                     <Style TargetType="{x:Type Grid}">

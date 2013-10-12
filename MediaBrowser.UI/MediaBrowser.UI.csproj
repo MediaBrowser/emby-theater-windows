@@ -100,9 +100,9 @@
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MediaBrowser.ApiInteraction, Version=3.0.5029.37669, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.ApiInteraction, Version=3.0.5032.21992, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.ApiClient.3.0.0.243\lib\net45\MediaBrowser.ApiInteraction.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.ApiClient.3.0.0.245\lib\net45\MediaBrowser.ApiInteraction.dll</HintPath>
     </Reference>
     <Reference Include="MediaBrowser.Common, Version=3.0.5029.37553, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

@@ -51,6 +51,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                     //_sessionManager.CurrentUser.Name.ToLower()
                 };
 
+            //views.Add(new TabItem
+            //{
+            //    Name = "start",
+            //    DisplayName = "start"
+            //});
+            
             try
             {
                 var itemCounts = await _apiClient.GetItemCountsAsync(_sessionManager.CurrentUser.Id);

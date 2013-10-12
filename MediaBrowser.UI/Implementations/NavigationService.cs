@@ -280,7 +280,7 @@ namespace MediaBrowser.UI.Implementations
                     displayPreferences = new DisplayPreferences() { Id = new Guid(item.DisplayPreferencesId) };
                 }
 
-                await App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(async () => await Navigate(_themeManager.CurrentTheme.GetFolderPage(item, displayPreferences)));
+                await App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(async () => await Navigate(_themeManager.CurrentTheme.GetFolderPage(item, context, displayPreferences)));
             }
             else
             {

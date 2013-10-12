@@ -30,6 +30,9 @@ namespace MediaBrowser.UI.EntryPoints
         private readonly INavigationService _nav;
         private readonly IPlaybackManager _playbackManager;
         private readonly IPresentationManager _presentation;
+        private readonly ILogManager _logManager;
+
+        private bool _isDisposed;
 
         private ApiWebSocket ApiWebSocket
         {
@@ -40,16 +43,17 @@ namespace MediaBrowser.UI.EntryPoints
             }
         }
 
-        public WebSocketEntryPoint(ISessionManager session, IApiClient apiClient, IJsonSerializer json, ILogger logger, IApplicationHost appHost, INavigationService nav, IPlaybackManager playbackManager, IPresentationManager presentation)
+        public WebSocketEntryPoint(ISessionManager session, IApiClient apiClient, IJsonSerializer json, ILogManager logManager, IApplicationHost appHost, INavigationService nav, IPlaybackManager playbackManager, IPresentationManager presentation)
         {
             _session = session;
             _apiClient = apiClient;
             _json = json;
-            _logger = logger;
+            _logger = logManager.GetLogger(GetType().Name);
             _appHost = (ApplicationHost)appHost;
             _nav = nav;
             _playbackManager = playbackManager;
             _presentation = presentation;
+            _logManager = logManager;
         }
 
         public void Run()
@@ -67,6 +71,11 @@ namespace MediaBrowser.UI.EntryPoints
 
         void _session_UserLoggedIn(object sender, EventArgs e)
         {
+            if (_isDisposed)
+            {
+                return;
+            }
+
             EnsureWebSocket();
         }
 
@@ -92,9 +101,11 @@ namespace MediaBrowser.UI.EntryPoints
             {
                 var systemInfo = await _apiClient.GetSystemInfoAsync().ConfigureAwait(false);
 
-                var socket = new ApiWebSocket(_logger, _json, _apiClient.ServerHostName, systemInfo.WebSocketPortNumber,
+                var socketLogger = _logManager.GetLogger(typeof (ApiWebSocket).Name);
+
+                var socket = new ApiWebSocket(socketLogger, _json, _apiClient.ServerHostName, systemInfo.WebSocketPortNumber,
                                               _apiClient.DeviceId, _appHost.ApplicationVersion.ToString(),
-                                              _apiClient.ClientName, _apiClient.DeviceName, ClientWebSocketFactory.CreateWebSocket);
+                                              _apiClient.ClientName, _apiClient.DeviceName, () => ClientWebSocketFactory.CreateWebSocket(socketLogger));
 
                 OnWebSocketInitialized(socket);
 
@@ -329,6 +340,7 @@ namespace MediaBrowser.UI.EntryPoints
 
         public void Dispose()
         {
+            _isDisposed = true;
             _session.UserLoggedIn -= _session_UserLoggedIn;
             DisposeSocket();
         }

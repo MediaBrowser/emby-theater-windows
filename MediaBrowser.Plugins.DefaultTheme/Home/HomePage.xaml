@@ -89,6 +89,15 @@
                                         </Setter.Value>
                                     </Setter>
                                 </DataTrigger>
+                                <DataTrigger Binding="{Binding CurrentSection}" Value="start">
+                                    <Setter Property="Content">
+                                        <Setter.Value>
+                                            <Grid>
+                                                <ContentControl Content="{Binding ContentViewModel}" ContentTemplate="{DynamicResource UserViewTemplate}"></ContentControl>
+                                            </Grid>
+                                        </Setter.Value>
+                                    </Setter>
+                                </DataTrigger>
                             </Style.Triggers>
                         </Style>
                     </ContentControl.Style>

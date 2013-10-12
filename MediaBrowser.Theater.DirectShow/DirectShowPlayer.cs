@@ -14,7 +14,6 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Forms;
-using Point = System.Drawing.Point;
 
 namespace MediaBrowser.Theater.DirectShow
 {
@@ -22,7 +21,6 @@ namespace MediaBrowser.Theater.DirectShow
     {
         private const int WM_APP = 0x8000;
         private const int WM_GRAPHNOTIFY = WM_APP + 1;
-        private const int EC_COMPLETE = 0x01;
 
         private readonly ILogger _logger;
         private readonly IHiddenWindow _hiddenWindow;
@@ -259,7 +257,7 @@ namespace MediaBrowser.Theater.DirectShow
             if (_item.IsVideo)
             {
                 _mPEvr = (DirectShowLib.IBaseFilter)new EnhancedVideoRenderer();
-                hr = m_graph.AddFilter(_mPEvr, "EVR");
+                hr = m_graph.AddFilter(_mPEvr, "Enhanced Video Renderer");
                 DsError.ThrowExceptionForHR(hr);
 
                 InitializeEvr(_mPEvr, 1);
@@ -438,7 +436,9 @@ namespace MediaBrowser.Theater.DirectShow
             // Set the video window.
             object o;
             var pGetService = (IMFGetService)pEvr;
-            pGetService.GetService(MFServices.MR_VIDEO_RENDER_SERVICE, typeof(IMFVideoDisplayControl).GUID, out o);
+            var hr = pGetService.GetService(MFServices.MR_VIDEO_RENDER_SERVICE, typeof(IMFVideoDisplayControl).GUID, out o);
+
+            DsError.ThrowExceptionForHR(hr);
 
             try
             {
@@ -451,12 +451,14 @@ namespace MediaBrowser.Theater.DirectShow
             }
 
             // Set the number of streams.
-            pDisplay.SetVideoWindow(VideoWindowHandle);
+            hr = pDisplay.SetVideoWindow(VideoWindowHandle);
+            DsError.ThrowExceptionForHR(hr);
 
             if (dwStreams > 1)
             {
                 var pConfig = (IEVRFilterConfig)pEvr;
-                pConfig.SetNumberOfStreams(dwStreams);
+                hr = pConfig.SetNumberOfStreams(dwStreams);
+                DsError.ThrowExceptionForHR(hr);
             }
 
             // Return the IMFVideoDisplayControl pointer to the caller.
@@ -471,6 +473,8 @@ namespace MediaBrowser.Theater.DirectShow
             //_videoWindow.HideCursor(OABool.True);
             _videoWindow.put_Owner(VideoWindowHandle);
             _videoWindow.put_WindowStyle(DirectShowLib.WindowStyle.Child | DirectShowLib.WindowStyle.Visible | DirectShowLib.WindowStyle.ClipSiblings);
+            _videoWindow.SetWindowForeground(OABool.True);
+
             //_videoWindow.put_FullScreenMode(OABool.True);
 
             if (_madvr != null)
@@ -487,7 +491,7 @@ namespace MediaBrowser.Theater.DirectShow
             var screenHeight = Convert.ToInt32(hiddenWindowContentSize.Height);
 
             _logger.Info("window content width: {0}, window height: {1}", screenWidth, screenHeight);
-            
+
             // Set the display position to the entire window.
             var rc = new MFRect(0, 0, screenWidth, screenHeight);
 
@@ -644,7 +648,7 @@ namespace MediaBrowser.Theater.DirectShow
 
             base.WndProc(ref m);
         }
-        
+
         private void HandleGraphEvent()
         {
             // Make sure that we don't access the media event interface

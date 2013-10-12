@@ -118,12 +118,11 @@
       <DependentUpon>NetworkSettingsPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="NetworkSettings\NetworkSettingsPageFactory.cs" />
+    <Compile Include="Plugins\InstalledPluginListViewModel.cs" />
     <Compile Include="Plugins\InstalledPluginPage.xaml.cs">
       <DependentUpon>InstalledPluginPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Plugins\InstalledPlugins.xaml.cs">
-      <DependentUpon>InstalledPlugins.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="Plugins\InstalledPluginViewModel.cs" />
     <Compile Include="Plugins\PackageInfoPage.xaml.cs">
       <DependentUpon>PackageInfoPage.xaml</DependentUpon>
     </Compile>
@@ -137,6 +136,7 @@
       <DependentUpon>PluginsPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Plugins\PluginsPageFactory.cs" />
+    <Compile Include="Plugins\PluginsPageViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -242,10 +242,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Plugins\InstalledPluginPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Plugins\InstalledPlugins.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

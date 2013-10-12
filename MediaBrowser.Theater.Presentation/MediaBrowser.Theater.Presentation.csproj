@@ -118,7 +118,6 @@
     <Compile Include="ViewModels\ItemPersonViewModel.cs" />
     <Compile Include="ViewModels\ItemReviewViewModel.cs" />
     <Compile Include="ViewModels\ItemViewModel.cs" />
-    <Compile Include="ViewModels\MediaStreamListViewModel.cs" />
     <Compile Include="ViewModels\MediaStreamViewModel.cs" />
     <Compile Include="ViewModels\MessageBoxViewModel.cs" />
     <Compile Include="ViewModels\ChapterInfoViewModel.cs" />

@@ -748,7 +748,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
                 Filters = new[] { ItemFilter.IsResumable },
 
-                Limit = 6,
+                Limit = 3,
 
                 Recursive = true
             };

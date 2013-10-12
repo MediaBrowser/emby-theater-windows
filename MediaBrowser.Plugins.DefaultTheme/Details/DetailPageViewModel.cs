@@ -43,7 +43,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             }
         }
 
-        public DetailPageViewModel(ItemViewModel item, IApiClient apiClient, ISessionManager sessionManager, IImageManager imageManager, IPresentationManager presentationManager, IPlaybackManager playback, INavigationService navigation, ILogger logger, IServerEvents serverEvents)
+        public ViewType Context { get; private set; }
+
+        public DetailPageViewModel(ItemViewModel item, IApiClient apiClient, ISessionManager sessionManager, IImageManager imageManager, IPresentationManager presentationManager, IPlaybackManager playback, INavigationService navigation, ILogger logger, IServerEvents serverEvents, ViewType context)
         {
             _apiClient = apiClient;
             _sessionManager = sessionManager;
@@ -53,6 +55,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             _navigation = navigation;
             _logger = logger;
             _serverEvents = serverEvents;
+            Context = context;
             ItemViewModel = item;
         }
 
@@ -350,7 +353,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 return new ItemPersonListViewModel(_apiClient, _imageManager, _presentationManager, _navigation)
                 {
                     Item = _itemViewModel.Item,
-                    ImageWidth = 300
+                    ImageWidth = 300,
+                    ViewType = Context
                 };
             }
             if (string.Equals(section, "gallery"))
@@ -374,7 +378,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 return new ItemListViewModel(GetSimilarItemsAsync, _presentationManager, _imageManager, _apiClient, _navigation, _playback, _logger, _serverEvents)
                 {
                     ImageDisplayWidth = 300,
-                    EnableBackdropsForCurrentItem = false
+                    EnableBackdropsForCurrentItem = false,
+                    Context = Context
                 };
             }
             if (string.Equals(section, "special features"))
@@ -383,7 +388,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 {
                     ImageDisplayWidth = 576,
                     EnableBackdropsForCurrentItem = false,
-                    ListType = "SpecialFeatures"
+                    ListType = "SpecialFeatures",
+                    Context = Context
                 };
             }
             if (string.Equals(section, "themes"))
@@ -400,7 +406,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 return new ItemListViewModel(GetSoundtracks, _presentationManager, _imageManager, _apiClient, _navigation, _playback, _logger, _serverEvents)
                 {
                     ImageDisplayWidth = 400,
-                    EnableBackdropsForCurrentItem = false
+                    EnableBackdropsForCurrentItem = false,
+                    Context = Context
                 };
             }
             if (string.Equals(section, "seasons") || string.Equals(section, "episodes") || string.Equals(section, "songs"))
@@ -408,7 +415,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 return new ItemListViewModel(GetChildren, _presentationManager, _imageManager, _apiClient, _navigation, _playback, _logger, _serverEvents)
                 {
                     ImageDisplayWidth = 300,
-                    EnableBackdropsForCurrentItem = false
+                    EnableBackdropsForCurrentItem = false,
+                    Context = Context
                 };
             }
             if (string.Equals(section, "trailers"))
@@ -417,7 +425,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 {
                     ImageDisplayWidth = 384,
                     EnableBackdropsForCurrentItem = false,
-                    ListType = "Trailers"
+                    ListType = "Trailers",
+                    Context = Context
                 };
             }
             if (string.Equals(section, "itemmovies"))

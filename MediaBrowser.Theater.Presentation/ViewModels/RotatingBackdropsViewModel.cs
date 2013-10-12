@@ -112,11 +112,11 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
                 if (_backdropSetTimer == null)
                 {
-                    _backdropSetTimer = new Timer(OnPendingBackdropsTimerFired, null, 500, Timeout.Infinite);
+                    _backdropSetTimer = new Timer(OnPendingBackdropsTimerFired, null, 800, Timeout.Infinite);
                 }
                 else
                 {
-                    _backdropSetTimer.Change(500, Timeout.Infinite);
+                    _backdropSetTimer.Change(800, Timeout.Infinite);
                 }
             }
         }

@@ -101,24 +101,27 @@ namespace MediaBrowser.Plugins.DefaultTheme
 
             return new DetailPage(itemViewModel, _presentationManager)
             {
-                DataContext = new DetailPageViewModel(itemViewModel, _apiClient, _sessionManager, _imageManager, _presentationManager, _playbackManager, _navService, _logger, _serverEvents.GetServerEvents())
+                DataContext = new DetailPageViewModel(itemViewModel, _apiClient, _sessionManager, _imageManager, _presentationManager, _playbackManager, _navService, _logger, _serverEvents.GetServerEvents(), context)
             };
         }
+
+        private readonly string[] _folderTypesWithDetailPages = new[] { "series", "musicalbum" };
 
         /// <summary>
         /// Gets the folder page.
         /// </summary>
         /// <param name="item">The item.</param>
+        /// <param name="context">The context.</param>
         /// <param name="displayPreferences">The display preferences.</param>
         /// <returns>Page.</returns>
-        public Page GetFolderPage(BaseItemDto item, DisplayPreferences displayPreferences)
+        public Page GetFolderPage(BaseItemDto item, ViewType context, DisplayPreferences displayPreferences)
         {
-            if (!item.IsType("series") && !item.IsType("musicalbum"))
+            if (context == ViewType.Folders || context == ViewType.Home || !_folderTypesWithDetailPages.Contains(item.Type, StringComparer.OrdinalIgnoreCase))
             {
                 return new FolderPage(item, displayPreferences, _apiClient, _imageManager, _sessionManager, _presentationManager, _navService, _playbackManager, _logger, _serverEvents.GetServerEvents());
             }
 
-            return GetItemPage(item, ViewType.Folders);
+            return GetItemPage(item, context);
         }
 
         /// <summary>

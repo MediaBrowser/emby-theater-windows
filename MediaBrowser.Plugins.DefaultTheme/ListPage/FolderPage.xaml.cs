@@ -88,7 +88,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
         }
 
         public string CustomPageTitle { get; set; }
-        public ViewType ViewType { get; set; }
+        public ViewType ViewType
+        {
+            get { return _viewModel.Context; }
+            set { _viewModel.Context = value; }
+        }
         public Dictionary<string, string> SortOptions { get; set; }
 
         private ScrollDirection GetScrollDirection(ItemListViewModel viewModel)

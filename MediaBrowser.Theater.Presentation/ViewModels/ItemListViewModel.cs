@@ -78,6 +78,8 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         public Func<ItemListViewModel, double> ImageDisplayHeightGenerator { get; set; }
         public Func<ItemListViewModel, ImageType[]> PreferredImageTypesGenerator { get; set; }
 
+        public ViewType Context { get; set; }
+
         private ListCollectionView _listCollectionView;
         public ListCollectionView ListCollectionView
         {
@@ -599,7 +601,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             {
                 try
                 {
-                    await _navigationService.NavigateToItem(item.Item);
+                    await _navigationService.NavigateToItem(item.Item, Context);
                 }
                 catch
                 {

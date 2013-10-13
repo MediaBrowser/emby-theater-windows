@@ -20,7 +20,7 @@
                             <Trigger Property="IsSelected" Value="true">
                                 <Setter TargetName="MenuText" Property="Opacity" Value="1"/>
                             </Trigger>
-                            <Trigger Property="IsFocused" Value="true">
+                            <Trigger Property="IsKeyboardFocused" Value="true">
                                 <Setter TargetName="MenuText" Property="Opacity" Value="1"/>
                                 <Setter TargetName="MenuText" Property="TextBlock.TextDecorations" Value="Underline"/>
                             </Trigger>

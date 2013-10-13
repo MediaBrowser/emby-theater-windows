@@ -34,7 +34,7 @@
         </controls:ExtendedScrollViewer>
         
 
-        <controls:ExtendedScrollViewer x:Name="ScrollViewer" Grid.Row="2" Margin="0 40 0 0" VerticalAlignment="Stretch" HorizontalAlignment="Center" CanContentScroll="True">
+        <controls:ExtendedScrollViewer x:Name="ScrollViewer" Grid.Row="2" Margin="0 40 0 0" VerticalAlignment="Stretch" HorizontalAlignment="Center" CanContentScroll="True" Focusable="False">
 
             <controls:ExtendedScrollViewer.Style>
                 <Style TargetType="{x:Type controls:ExtendedScrollViewer}">

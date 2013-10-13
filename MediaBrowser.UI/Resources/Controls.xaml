@@ -33,6 +33,16 @@
         <Setter Property="Focusable" Value="false"/>
     </Style>
 
+    <Style TargetType="controls:ExtendedScrollViewer">
+        <Setter Property="KeyboardNavigation.IsTabStop" Value="false"/>
+        <Setter Property="Focusable" Value="false"/>
+    </Style>
+
+    <Style TargetType="ScrollViewer">
+        <Setter Property="KeyboardNavigation.IsTabStop" Value="false"/>
+        <Setter Property="Focusable" Value="false"/>
+    </Style>
+    
     <!--Default Frame style. -->
     <Style TargetType="ContentControl">
         <Setter Property="KeyboardNavigation.IsTabStop" Value="false"/>

@@ -40,7 +40,7 @@
     <!--Default font for h2 headers. Themes should override these as needed-->
     <Brush x:Key="Heading2Foreground">#ffffff</Brush>
 
-    <Brush x:Key="SelectedMenuItemForeground">#FFFFBE</Brush>
+    <Brush x:Key="SelectedMenuItemForeground">#5586F9</Brush>
 
     <Style TargetType="Path" x:Key="IconPath">
         <Setter Property="Fill">

@@ -20,7 +20,7 @@ using System.Windows.Media;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Home
 {
-    public class TvViewModel : BaseHomePageSectionViewModel, IDisposable
+    public class TvViewModel : BaseHomePageSectionViewModel, IDisposable, IHasActivePresentation
     {
         private readonly ISessionManager _sessionManager;
         private readonly IPlaybackManager _playbackManager;
@@ -299,9 +299,18 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             }).ToList();
 
             SpotlightViewModel.Images.AddRange(images);
-            SpotlightViewModel.StartRotating(8000);
+            SpotlightViewModel.StartRotating(10000);
         }
 
+        public void EnableActivePresentation()
+        {
+            SpotlightViewModel.StartRotating(10000);
+        }
+        public void DisableActivePresentation()
+        {
+            SpotlightViewModel.StopRotating();
+        }
+        
         private void LoadActorsViewModel(TvView view)
         {
             var images = view.ActorItems.Take(1).Select(i => ApiClient.GetPersonImageUrl(i.Name, new ImageOptions
@@ -684,7 +693,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
                 UserId = _sessionManager.CurrentUser.Id,
 
-                Limit = 18
+                Limit = 15
             };
 
             var result = await ApiClient.GetNextUpAsync(query);

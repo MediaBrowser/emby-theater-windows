@@ -73,7 +73,7 @@ namespace MediaBrowser.UI
         {
             get
             {
-                return false;
+                return CurrentPage is IFullscreenVideoPage;
             }
         }
 

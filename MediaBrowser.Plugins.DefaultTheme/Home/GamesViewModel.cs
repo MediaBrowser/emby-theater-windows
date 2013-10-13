@@ -19,7 +19,7 @@ using System.Windows.Media;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Home
 {
-    public class GamesViewModel : BaseHomePageSectionViewModel
+    public class GamesViewModel : BaseHomePageSectionViewModel, IHasActivePresentation
     {
         private readonly ISessionManager _sessionManager;
         private readonly IPlaybackManager _playbackManager;
@@ -191,7 +191,15 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             }).ToList();
 
             SpotlightViewModel.Images.AddRange(images);
-            SpotlightViewModel.StartRotating(8000);
+            SpotlightViewModel.StartRotating(10000);
+        }
+        public void EnableActivePresentation()
+        {
+            SpotlightViewModel.StartRotating(10000);
+        }
+        public void DisableActivePresentation()
+        {
+            SpotlightViewModel.StopRotating();
         }
 
         private void LoadGenresViewModel(GamesView view)

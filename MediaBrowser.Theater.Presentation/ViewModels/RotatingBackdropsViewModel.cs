@@ -5,14 +5,13 @@ using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Reflection;
+using MediaBrowser.Theater.Interfaces.ViewModels;
 using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Threading;
-using MediaBrowser.Theater.Interfaces.ViewModels;
 
 namespace MediaBrowser.Theater.Presentation.ViewModels
 {
@@ -163,7 +162,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             {
                 lock (_rotationTimerLock)
                 {
-                    const int rotationPeriodMs = 8000;
+                    const int rotationPeriodMs = 10000;
 
                     if (_backdropRotationTimer == null)
                     {
@@ -222,7 +221,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
             if (index > 0)
             {
-                // Don't display backdrops during video playback
+                // Don't rotate backdrops during video playback
                 if (_playbackManager.MediaPlayers.Any(p =>
                 {
                     if (p.PlayState != PlayState.Idle)

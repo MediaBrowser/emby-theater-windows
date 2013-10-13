@@ -159,7 +159,7 @@
                                     </Style.Triggers>
                                 </Style>
                             </Button.Style>
-                            
+
                             <Grid>
                                 <Grid Width="48" Height="48" />
                                 <Path Style="{DynamicResource IconPath}" Data="M17.009024,34.375001L21.992001,39.360691 11.299349,50.047187 17.61442,56.365 0,56.365 0,38.75008 6.3150315,45.065395z M39.355614,34.371001L50.047157,45.065394 56.365002,38.750081 56.365002,56.365 38.750103,56.365 45.065346,50.047185 34.371002,39.360691z M38.750103,0L56.365002,0 56.365002,17.614279 50.049858,11.295294 39.355614,21.992999 34.371002,17.00889 45.065346,6.3150749z M0,0L17.61482,0 11.299606,6.3151321 21.990002,17.009045 17.009411,21.991999 6.3151751,11.295397 0,17.614439z" Stretch="Uniform" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
@@ -237,9 +237,9 @@
                                     </Style.Triggers>
                                 </Style>
                             </Button.Style>
-                            
+
                             <Grid>
-                                
+
                                 <Image x:Name="CurrentUserImage" Stretch="Uniform" Height="40" Source="{Binding UserImage}">
                                     <Image.Style>
                                         <Style TargetType="{x:Type Image}">
@@ -263,7 +263,7 @@
                                             </Style.Triggers>
                                         </Style>
                                     </Grid.Style>
-                                    
+
                                     <Grid Name="backgroundGrid" Width="48" Height="48" />
                                     <Path Style="{DynamicResource IconPath}" Data="M15.930851,36.710608C22.14356,36.647291 30.005098,41.570198 30.005098,41.570198 38.080673,46.45562 45.657448,38.281082 45.657448,38.281082 48.847534,35.288968 53.432121,42.865801 53.432121,42.865801 59.214702,51.040343 59.414001,64.000004 59.414001,64.000004L0,64.000004C2.092523,41.669198 12.360659,37.482978 12.360659,37.482978 13.423015,36.951675 14.64142,36.723749 15.930851,36.710608z M33.0965,0C42.015587,0 49.245998,7.8997269 49.245998,17.644449 49.245998,27.390621 42.015587,35.288998 33.0965,35.288999 24.177311,35.288998 16.947,27.390621 16.947,17.644449 16.947,7.8997269 24.177311,0 33.0965,0z" Stretch="Uniform" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
                                     </Path>
@@ -451,6 +451,9 @@
                             <DataTrigger Binding="{Binding IsNew}" Value="False">
                                 <Setter Property="Visibility" Value="Hidden" />
                             </DataTrigger>
+                            <DataTrigger Binding="{Binding IsPlayed}" Value="True">
+                                <Setter Property="Visibility" Value="Hidden" />
+                            </DataTrigger>
                         </Style.Triggers>
                     </Style>
                 </Grid.Style>
@@ -458,42 +461,38 @@
                 <TextBlock Style="{DynamicResource SmallTextBlockStyle}" Foreground="White" Margin="10 5">NEW</TextBlock>
             </Grid>
 
-            <StackPanel Background="#a666C010" VerticalAlignment="Top" HorizontalAlignment="Right" Orientation="Horizontal">
-
-                <StackPanel.Style>
-                    <Style TargetType="{x:Type StackPanel}">
+            <TextBlock Background="#a666C010" VerticalAlignment="Top" HorizontalAlignment="Right" Foreground="White" Padding="10 5 10 5" Text="{Binding RecursiveUnplayedItemCount, StringFormat='{}{0} NEW'}">
+                <TextBlock.Style>
+                    <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SmallTextBlockStyle}">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding IsOffline}" Value="True">
                                 <Setter Property="Visibility" Value="Hidden" />
                             </DataTrigger>
-                            <DataTrigger Binding="{Binding IsFolder}" Value="False">
+                            <DataTrigger Binding="{Binding PlayedPercentage}" Value="0">
                                 <Setter Property="Visibility" Value="Hidden" />
                             </DataTrigger>
-                            <DataTrigger Binding="{Binding RecentlyAddedItemCount}" Value="0">
+                            <DataTrigger Binding="{Binding RecursiveUnplayedItemCount}" Value="0">
+                                <Setter Property="Visibility" Value="Hidden" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding ItemType}" Value="Season">
                                 <Setter Property="Visibility" Value="Hidden" />
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
-                </StackPanel.Style>
+                </TextBlock.Style>
+            </TextBlock>
 
-                <TextBlock Style="{DynamicResource SmallTextBlockStyle}" Foreground="White" Margin="10 5 0 5" Text="{Binding RecentlyAddedItemCount}"></TextBlock>
-                <TextBlock Style="{DynamicResource SmallTextBlockStyle}" Foreground="White" Margin="5 5 10 5">NEW</TextBlock>
-            </StackPanel>
-
-            <Grid Background="#a6cc3333" VerticalAlignment="Top" HorizontalAlignment="Right">
-
-                <Grid.Style>
-                    <Style TargetType="{x:Type Grid}">
+            <TextBlock Background="#a6cc3333" VerticalAlignment="Top" HorizontalAlignment="Right" Foreground="White" Margin="10 5" Text="OFFLINE">
+                <TextBlock.Style>
+                    <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SmallTextBlockStyle}">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding IsOffline}" Value="False">
                                 <Setter Property="Visibility" Value="Hidden" />
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
-                </Grid.Style>
-
-                <TextBlock Style="{DynamicResource SmallTextBlockStyle}" Foreground="White" Margin="10 5">OFFLINE</TextBlock>
-            </Grid>
+                </TextBlock.Style>
+            </TextBlock>
         </Grid>
     </DataTemplate>
 
@@ -589,9 +588,9 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                 
+
                     <TextBlock Opacity=".5" x:Name="MenuText" Margin="35 0" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Text="{Binding DisplayName}" Style="{DynamicResource Heading1TextBlockStyle}"></TextBlock>
-                 
+
                     <ControlTemplate.Triggers>
                         <DataTrigger Binding="{Binding TabType}" Value="Alphabet">
                             <Setter TargetName="MenuText" Property="Margin" Value="15 0" />

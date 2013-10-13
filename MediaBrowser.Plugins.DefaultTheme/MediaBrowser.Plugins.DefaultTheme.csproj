@@ -101,6 +101,7 @@
     <Compile Include="Home\HomePage.xaml.cs">
       <DependentUpon>HomePage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Home\IHasActivePresentation.cs" />
     <Compile Include="Home\MoviesViewModel.cs" />
     <Compile Include="Home\TvViewModel.cs" />
     <Compile Include="Home\UserTabViewModel.cs" />

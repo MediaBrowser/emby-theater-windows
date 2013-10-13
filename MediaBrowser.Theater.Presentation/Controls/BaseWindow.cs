@@ -152,15 +152,12 @@ namespace MediaBrowser.Theater.Presentation.Controls
             {
                 Cursor = Cursors.Arrow;
 
-                if (ModifyWindowsFormsCursor)
+                lock (_cursorLock)
                 {
-                    lock (_cursorLock)
+                    while (_showHideCount < 0)
                     {
-                        while (_showHideCount < 0)
-                        {
-                            System.Windows.Forms.Cursor.Show();
-                            _showHideCount++;
-                        }
+                        System.Windows.Forms.Cursor.Show();
+                        _showHideCount++;
                     }
                 }
 

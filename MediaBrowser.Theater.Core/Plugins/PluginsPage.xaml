@@ -68,6 +68,46 @@
                 </Grid>
             </Grid>
         </DataTemplate>
+
+        <DataTemplate x:Key="PackageInfoViewModelItemTemplate" DataType="{x:Type plugins:PackageInfoViewModel}">
+            <Grid Width="432">
+                <Grid.Background>
+                    <LinearGradientBrush SpreadMethod="Reflect" ColorInterpolationMode="SRgbLinearInterpolation" StartPoint="0,0" EndPoint="0,1" >
+                        <GradientStop Color="#ffCBCBCB" Offset="0" />
+                        <GradientStop Color="#ff545358" Offset="1" />
+                    </LinearGradientBrush>
+                </Grid.Background>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="auto"></RowDefinition>
+                </Grid.RowDefinitions>
+
+                <Image x:Name="image" Stretch="UniformToFill" Height="243" Source="{Binding ThumbUri}" Visibility="{Binding ThumbImageVisibility}" Grid.Row="0"></Image>
+
+                <Image x:Name="SupporterImage" Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Top" Source="../Resources/Images/Plugins/supporterflag.png" Stretch="None" Visibility="{Binding SupporterImageVisibility}"></Image>
+                <Image x:Name="PremiumImage" Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Top" Source="../Resources/Images/Plugins/premiumflag.png" Stretch="None" Visibility="{Binding PremiumImageVisibility}"></Image>
+
+                <Grid Visibility="{Binding DefaultImageVisibility}" Grid.Row="0">
+                    <Grid Height="243" />
+                    <Path Data="F1M689.62,486.729C689.555,486.727,689.499,486.716,689.432,486.716L671.278,486.716 678.821,477.678C679.052,477.402 679.142,477.098 679.111,476.775 679.081,476.424 678.941,476.135 678.7,475.907 678.426,475.675 678.12,475.584 677.8,475.615 677.432,475.646 677.143,475.799 676.926,476.074L669.538,484.898 661.201,476.609C660.958,476.363 660.668,476.244 660.345,476.244 659.98,476.244 659.691,476.363 659.477,476.609 659.217,476.851 659.094,477.143 659.094,477.477 659.094,477.831 659.217,478.136 659.477,478.379L667.888,486.716 657.445,486.716C657.392,486.716,657.349,486.727,657.296,486.729L653.304,486.729 653.304,518.276 657.445,518.276 689.432,518.276 693.554,518.276 693.554,514.154 693.554,511.101 693.554,504.916 693.554,490.84 693.554,486.729 689.62,486.729z M690.091,500.457C690.091,501.175 689.83,501.77 689.294,502.274 688.838,502.763 688.257,503.023 687.57,503.052L687.449,503.052C686.73,503.023 686.134,502.763 685.632,502.274 685.128,501.77 684.882,501.175 684.882,500.457 684.882,499.742 685.128,499.128 685.632,498.594 686.149,498.107 686.776,497.862 687.494,497.862 688.212,497.862 688.805,498.107 689.294,498.594 689.83,499.128 690.091,499.742 690.091,500.457z M682.211,503.052L682.165,503.052 682.165,511.878C681.922,514.109,680.561,515.222,678.075,515.222L660.758,515.222C657.995,515.222,656.622,513.85,656.622,511.101L656.622,493.77C656.622,491.023,657.995,489.648,660.758,489.648L678.075,489.648C680.836,489.648,682.211,491.023,682.211,493.77L682.211,503.052z M689.266,509.908C688.762,510.43 688.165,510.69 687.449,510.69 686.73,510.69 686.12,510.43 685.584,509.908 685.096,509.406 684.853,508.808 684.853,508.093 684.853,507.375 685.096,506.749 685.584,506.23 686.12,505.726 686.73,505.481 687.449,505.481 688.165,505.481 688.762,505.726 689.266,506.23 689.783,506.749 690.044,507.375 690.044,508.093 690.044,508.808 689.783,509.406 689.266,509.908z" Stretch="Uniform" Fill="#FFFFFFFF" Width="96" Height="96" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+                        <Path.RenderTransform>
+                            <TransformGroup>
+                                <TransformGroup.Children>
+                                    <RotateTransform Angle="0" />
+                                    <ScaleTransform ScaleX="1" ScaleY="1" />
+                                </TransformGroup.Children>
+                            </TransformGroup>
+                        </Path.RenderTransform>
+                    </Path>
+                </Grid>
+
+                <Grid VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Background="#a6000000" Grid.Row="1">
+
+                    <TextBlock x:Name="TxtName" Margin="10 5 10 10" TextWrapping="NoWrap" Style="{DynamicResource TextBlockStyle}" Foreground="White" HorizontalAlignment="Center" TextTrimming="CharacterEllipsis" Text="{Binding Name}"></TextBlock>
+                </Grid>
+            </Grid>
+        </DataTemplate>
     </Page.Resources>
 
     <Grid>
@@ -76,7 +116,7 @@
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <controls:ExtendedListBox x:Name="MenuList" ItemsSource="{Binding Sections}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" Grid.Row="0" HorizontalAlignment="Center" Margin="20 50 20 0" ItemContainerStyle="{DynamicResource MenuListBoxItemStyle}">
+        <controls:ExtendedListBox x:Name="MenuList" ItemsSource="{Binding Sections}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" Grid.Row="0" HorizontalAlignment="Center" Margin="20 35 20 0" ItemContainerStyle="{DynamicResource MenuListBoxItemStyle}">
             <controls:ExtendedListBox.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" />
@@ -122,7 +162,38 @@
                                 <DataTrigger Binding="{Binding CurrentSection}" Value="Plugin Catalog">
                                     <Setter Property="Content">
                                         <Setter.Value>
-                                            <Grid>
+                                            <Grid Margin="0 30 0 0">
+                                                <ItemsControl DataContext="{Binding ContentViewModel}" ItemsSource="{Binding ListCollectionView}" Focusable="False">
+                                                    <ItemsControl.ItemsPanel>
+                                                        <ItemsPanelTemplate>
+                                                            <StackPanel Orientation="Horizontal"></StackPanel>
+                                                        </ItemsPanelTemplate>
+                                                    </ItemsControl.ItemsPanel>
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate>
+
+                                                            <Grid>
+
+                                                                <Grid.RowDefinitions>
+                                                                    <RowDefinition Height="auto"></RowDefinition>
+                                                                    <RowDefinition Height="*"></RowDefinition>
+                                                                </Grid.RowDefinitions>
+
+                                                                <TextBlock Text="{Binding Name}" Grid.Row="0" Style="{DynamicResource TextBlockStyle}" Margin="20 0 0 0"></TextBlock>
+
+                                                                <controls:ExtendedListBox Margin="-30 -35" ItemsSource="{Binding Packages}" Command="{Binding NavigateCommand}" Grid.Row="1" KeyboardNavigation.DirectionalNavigation="Continue" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{DynamicResource PackageInfoViewModelItemTemplate}">
+                                                                    <controls:ExtendedListBox.ItemsPanel>
+                                                                        <ItemsPanelTemplate>
+                                                                            <WrapPanel Margin="40 35" Orientation="Vertical"></WrapPanel>
+                                                                        </ItemsPanelTemplate>
+                                                                    </controls:ExtendedListBox.ItemsPanel>
+                                                                </controls:ExtendedListBox>
+
+                                                            </Grid>
+                                                        </DataTemplate>
+
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
                                             </Grid>
                                         </Setter.Value>
                                     </Setter>

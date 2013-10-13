@@ -50,7 +50,8 @@ namespace MediaBrowser.Theater.Core.Plugins
             {
                 return new InstalledPluginListViewModel(_appHost, _nav, _installationManager, _presentationManager);
             }
-            return null;
+
+            return new PluginCategoryListViewModel(_presentationManager, _installationManager, _nav, _appHost);
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using System.Threading;
-using MediaBrowser.Model.ApiClient;
+﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
@@ -14,6 +13,7 @@ using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Home
@@ -115,6 +115,25 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             return views;
         }
 
+        public void EnableActivePresentation()
+        {
+            var content = ContentViewModel as IHasActivePresentation;
+
+            if (content != null)
+            {
+                content.EnableActivePresentation();
+            }
+        }
+        public void DisableActivePresentation()
+        {
+            var content = ContentViewModel as IHasActivePresentation;
+
+            if (content != null)
+            {
+                content.DisableActivePresentation();
+            }
+        }
+        
         internal static string GetDisplayName(BaseItemDto item)
         {
             var name = item.Name;

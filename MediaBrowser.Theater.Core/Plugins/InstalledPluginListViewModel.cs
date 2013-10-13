@@ -6,7 +6,6 @@ using MediaBrowser.Theater.Interfaces.ViewModels;
 using System.Linq;
 using System.Windows.Data;
 using System.Windows.Input;
-using MediaBrowser.Theater.Presentation.ViewModels;
 
 namespace MediaBrowser.Theater.Core.Plugins
 {
@@ -15,7 +14,6 @@ namespace MediaBrowser.Theater.Core.Plugins
         private readonly IPresentationManager _presentationManager;
         private readonly IInstallationManager _installationManager;
         private readonly INavigationService _nav;
-
         private readonly IApplicationHost _appHost;
 
         private readonly RangeObservableCollection<InstalledPluginViewModel> _listItems = new RangeObservableCollection<InstalledPluginViewModel>();

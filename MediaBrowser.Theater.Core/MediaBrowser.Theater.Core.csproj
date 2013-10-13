@@ -126,12 +126,9 @@
     <Compile Include="Plugins\PackageInfoPage.xaml.cs">
       <DependentUpon>PackageInfoPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Plugins\PluginCatalog.xaml.cs">
-      <DependentUpon>PluginCatalog.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Plugins\PluginCategory.xaml.cs">
-      <DependentUpon>PluginCategory.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="Plugins\PackageInfoViewModel.cs" />
+    <Compile Include="Plugins\PluginCategoryListViewModel.cs" />
+    <Compile Include="Plugins\PluginCategoryViewModel.cs" />
     <Compile Include="Plugins\PluginsPage.xaml.cs">
       <DependentUpon>PluginsPage.xaml</DependentUpon>
     </Compile>
@@ -246,14 +243,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Plugins\PackageInfoPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Plugins\PluginCatalog.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Plugins\PluginCategory.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

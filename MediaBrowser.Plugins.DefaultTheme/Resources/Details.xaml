@@ -211,6 +211,9 @@
                                 <DataTrigger Binding="{Binding IsNew}" Value="False">
                                     <Setter Property="Visibility" Value="Hidden" />
                                 </DataTrigger>
+                                <DataTrigger Binding="{Binding IsPlayed}" Value="True">
+                                    <Setter Property="Visibility" Value="Hidden" />
+                                </DataTrigger>
                             </Style.Triggers>
                         </Style>
                     </Grid.Style>
@@ -229,14 +232,17 @@
                                 <DataTrigger Binding="{Binding IsFolder}" Value="False">
                                     <Setter Property="Visibility" Value="Hidden" />
                                 </DataTrigger>
-                                <DataTrigger Binding="{Binding RecentlyAddedItemCount}" Value="0">
+                                <DataTrigger Binding="{Binding PlayedPercentage}" Value="0">
+                                    <Setter Property="Visibility" Value="Hidden" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding RecursiveUnplayedItemCount}" Value="0">
                                     <Setter Property="Visibility" Value="Hidden" />
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
                     </StackPanel.Style>
 
-                    <TextBlock Style="{DynamicResource SmallTextBlockStyle}" Foreground="White" Margin="10 5 0 5" Text="{Binding RecentlyAddedItemCount}"></TextBlock>
+                    <TextBlock Style="{DynamicResource SmallTextBlockStyle}" Foreground="White" Margin="10 5 0 5" Text="{Binding RecursiveUnplayedItemCount}"></TextBlock>
                     <TextBlock Style="{DynamicResource SmallTextBlockStyle}" Foreground="White" Margin="5 5 10 5">NEW</TextBlock>
                 </StackPanel>
 

@@ -20,7 +20,7 @@ using System.Windows.Media;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Home
 {
-    public class MoviesViewModel : BaseHomePageSectionViewModel, IDisposable
+    public class MoviesViewModel : BaseHomePageSectionViewModel, IDisposable, IHasActivePresentation
     {
         private readonly ISessionManager _sessionManager;
         private readonly IImageManager _imageManager;
@@ -442,7 +442,16 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             }).ToList();
 
             SpotlightViewModel.Images.AddRange(images);
-            SpotlightViewModel.StartRotating(8000);
+            SpotlightViewModel.StartRotating(10000);
+        }
+
+        public void EnableActivePresentation()
+        {
+            SpotlightViewModel.StartRotating(10000);
+        }
+        public void DisableActivePresentation()
+        {
+            SpotlightViewModel.StopRotating();
         }
 
         private Task<ItemsResult> GetResumeablesAsync(ItemListViewModel viewModel)

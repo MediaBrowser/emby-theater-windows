@@ -76,6 +76,7 @@
     <Compile Include="Configuration\ConfigurationPage.xaml.cs">
       <DependentUpon>ConfigurationPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="CustomCursor.cs" />
     <Compile Include="DirectShowPlayer.cs">
       <SubType>Component</SubType>
     </Compile>

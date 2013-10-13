@@ -1,4 +1,5 @@
-﻿using DirectShowLib;
+﻿using System.Drawing;
+using DirectShowLib;
 using DirectShowLib.Dvd;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
@@ -470,7 +471,10 @@ namespace MediaBrowser.Theater.DirectShow
             SetVideoPositions();
             _hiddenWindow.SizeChanged += _hiddenWindow_SizeChanged;
 
-            //_videoWindow.HideCursor(OABool.True);
+            if (_cursorHidden)
+            {
+                _videoWindow.HideCursor(OABool.True);
+            }
             _videoWindow.put_Owner(VideoWindowHandle);
             _videoWindow.put_WindowStyle(DirectShowLib.WindowStyle.Child | DirectShowLib.WindowStyle.Visible | DirectShowLib.WindowStyle.ClipSiblings);
             _videoWindow.SetWindowForeground(OABool.True);
@@ -481,6 +485,33 @@ namespace MediaBrowser.Theater.DirectShow
             {
                 SetExclusiveMode(false);
             }
+        }
+
+        private readonly Bitmap _cursorBitmap = new Bitmap(1, 1);
+        private Cursor _blankCursor;
+        private bool _cursorHidden;
+
+        public void ShowCursor()
+        {
+            Cursor = Cursors.Default;
+
+            if (_videoWindow != null)
+            {
+                _videoWindow.HideCursor(OABool.False);
+            }
+            _cursorHidden = false;
+        }
+
+        public void HideCursor()
+        {
+            _blankCursor = _blankCursor ?? (_blankCursor = CustomCursor.CreateCursor(_cursorBitmap, 1, 1));
+            Cursor = _blankCursor;
+
+            if (_videoWindow != null)
+            {
+                _videoWindow.HideCursor(OABool.True);
+            }
+            _cursorHidden = true;
         }
 
         private void SetVideoPositions()

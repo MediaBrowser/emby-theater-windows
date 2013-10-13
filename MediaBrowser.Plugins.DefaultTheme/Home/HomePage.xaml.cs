@@ -63,11 +63,25 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         void HomePage_Unloaded(object sender, RoutedEventArgs e)
         {
+            var viewModel = DataContext as HomePageViewModel;
+
+            if (viewModel != null)
+            {
+                viewModel.DisableActivePresentation();
+            }
+            
             _presentationManager.RemoveResourceDictionary(_dynamicResourceDictionary);
         }
 
         void HomePage_Loaded(object sender, RoutedEventArgs e)
         {
+            var viewModel = DataContext as HomePageViewModel;
+
+            if (viewModel != null)
+            {
+                viewModel.EnableActivePresentation();
+            }
+            
             _presentationManager.SetDefaultPageTitle();
 
             if (_dynamicResourceDictionary == null)
@@ -83,11 +97,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             _presentationManager.AddResourceDictionary(_dynamicResourceDictionary);
 
-            var vm = DataContext as HomePageViewModel;
-
-            if (vm != null)
+            if (viewModel != null)
             {
-                vm.SetBackdrops();
+                viewModel.SetBackdrops();
             }
         }
 

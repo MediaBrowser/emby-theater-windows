@@ -172,9 +172,6 @@ namespace MediaBrowser.Theater.DirectShow
 
         private Dispatcher _currentPlaybackDispatcher;
 
-        private readonly Bitmap _cursorBitmap = new Bitmap(1, 1);
-        private Cursor _blankCursor;
-
         public async Task Play(PlayOptions options)
         {
             CurrentPlaylistIndex = 0;
@@ -194,7 +191,7 @@ namespace MediaBrowser.Theater.DirectShow
                         BorderStyle = BorderStyle.None
                     };
 
-                    HideCursor();
+                    //HideCursor();
                 });
 
                 await PlayTrack(0, options.StartPositionTicks);
@@ -211,40 +208,12 @@ namespace MediaBrowser.Theater.DirectShow
 
         private void ShowCursor()
         {
-            _mediaPlayer.Cursor = Cursors.Default;
+            _mediaPlayer.ShowCursor();
         }
 
         private void HideCursor()
         {
-            _blankCursor = _blankCursor ?? (_blankCursor = CreateCursor(_cursorBitmap, 1, 1));
-
-            _mediaPlayer.Cursor = _blankCursor;
-        }
-
-        [DllImport("user32.dll")]
-        public static extern IntPtr CreateIconIndirect(ref IconInfo icon);
-
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool GetIconInfo(IntPtr hIcon, ref IconInfo pIconInfo);
-
-        public static Cursor CreateCursor(Bitmap bmp, int xHotSpot, int yHotSpot)
-        {
-            IconInfo tmp = new IconInfo();
-            GetIconInfo(bmp.GetHicon(), ref tmp);
-            tmp.xHotspot = xHotSpot;
-            tmp.yHotspot = yHotSpot;
-            tmp.fIcon = false;
-            return new Cursor(CreateIconIndirect(ref tmp));
-        }
-
-        public struct IconInfo
-        {
-            public bool fIcon;
-            public int xHotspot;
-            public int yHotspot;
-            public IntPtr hbmMask;
-            public IntPtr hbmColor;
+            _mediaPlayer.HideCursor();
         }
 
         private async Task PlayTrack(int index, long? startPositionTicks)

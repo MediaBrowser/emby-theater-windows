@@ -356,17 +356,14 @@ namespace MediaBrowser.Theater.Presentation.Controls
                 return rectangle;
             }
 
-            var scaleX = CanHorizontallyScroll ? 1.15 : 1;
-            var scaleY = CanVerticallyScroll ? 1.15 : 1;
-            rectangle.Scale(scaleX, scaleY);
+            var scaleX = CanHorizontallyScroll ? (rectangle.Width * .6) : 0;
+            var scaleY = CanVerticallyScroll ? (rectangle.Height * .6) : 0;
+            rectangle.Inflate(scaleX, scaleY);
 
             var rect = new Rect(HorizontalOffset, VerticalOffset, ViewportWidth, ViewportHeight);
 
             rectangle.X += rect.X;
             rectangle.Y += rect.Y;
-
-            //rect.X = CalculateNewScrollOffset(rect.Left, rect.Right, rectangle.Left, rectangle.Right);
-            //rect.Y = CalculateNewScrollOffset(rect.Top, rect.Bottom, rectangle.Top, rectangle.Bottom);
 
             rect.X = ComputeScrollOffsetWithMinimalScroll(rect.Left, rect.Right, rectangle.Left, rectangle.Right);
             rect.Y = ComputeScrollOffsetWithMinimalScroll(rect.Top, rect.Bottom, rectangle.Top, rectangle.Bottom);
@@ -403,34 +400,6 @@ namespace MediaBrowser.Theater.Presentation.Controls
                 return bottomChild - (bottomView - topView);
             }
             return topView;
-        }
-
-        /// <summary>
-        /// Calculates the new scroll offset.
-        /// </summary>
-        /// <param name="topView">The top view.</param>
-        /// <param name="bottomView">The bottom view.</param>
-        /// <param name="topChild">The top child.</param>
-        /// <param name="bottomChild">The bottom child.</param>
-        /// <returns>System.Double.</returns>
-        private static double CalculateNewScrollOffset(double topView,
-          double bottomView, double topChild, double bottomChild)
-        {
-            bool offBottom = topChild < topView && bottomChild < bottomView;
-            bool offTop = bottomChild > bottomView && topChild > topView;
-            bool tooLarge = (bottomChild - topChild) > (bottomView - topView);
-
-
-            if (!offBottom && !offTop)
-            {
-                //Don't do anything, already in view
-                return topView;
-            }
-
-            if ((offBottom && !tooLarge) || (offTop && tooLarge))
-            { return topChild; }
-
-            return (bottomChild - (bottomView - topView));
         }
 
         /// <summary>
@@ -495,6 +464,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
             if (!DoubleUtil.AreClose(_offset.X, offset))
             {
                 _offset.X = offset;
+
                 InvalidateArrange();
             }
         }

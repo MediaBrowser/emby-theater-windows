@@ -30,6 +30,7 @@ using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Interfaces.UserInput;
 using MediaBrowser.Theater.Presentation.Playback;
 using MediaBrowser.UI.Implementations;
+using MediaBrowser.UI.Networking;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -40,7 +41,6 @@ using System.Net.Http;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using MediaBrowser.UI.Networking;
 
 namespace MediaBrowser.UI
 {
@@ -182,13 +182,24 @@ namespace MediaBrowser.UI
         {
             var logger = LogManager.GetLogger("ApiClient");
 
-            ApiClient = new ApiClient(logger, TheaterConfigurationManager.Configuration.ServerHostName, TheaterConfigurationManager.Configuration.ServerApiPort, "Media Browser Theater", Environment.MachineName, Environment.MachineName, ApplicationVersion.ToString())
+            var apiClient = new ApiClient(logger, TheaterConfigurationManager.Configuration.ServerHostName, TheaterConfigurationManager.Configuration.ServerApiPort, "Media Browser Theater", Environment.MachineName, Environment.MachineName, ApplicationVersion.ToString())
             {
                 JsonSerializer = JsonSerializer,
                 ImageQuality = TheaterConfigurationManager.Configuration.DownloadCompressedImages
                                                        ? 90
                                                        : 100
             };
+
+            ApiClient = apiClient;
+
+            logger = LogManager.GetLogger("ApiWebSocket");
+
+            // WebSocketEntry point will handle figuring out the port and connecting
+            ApiWebSocket = new ApiWebSocket(logger, JsonSerializer, apiClient.ServerHostName, 0,
+                                  ApiClient.DeviceId, apiClient.ApplicationVersion,
+                                  apiClient.ClientName, apiClient.DeviceName, () => ClientWebSocketFactory.CreateWebSocket(logger));
+
+            apiClient.WebSocketConnection = ApiWebSocket;
         }
 
         public override Task Restart()

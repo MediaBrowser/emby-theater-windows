@@ -1,10 +1,15 @@
-﻿using MediaBrowser.Model.Logging;
+﻿using System.Threading.Tasks;
+using MediaBrowser.Common;
+using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
+using MediaBrowser.Theater.Interfaces.Theming;
 using System;
 using System.Threading;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 
@@ -16,20 +21,31 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
         protected readonly ISessionManager SessionManager;
         protected readonly IPlaybackManager PlaybackManager;
         protected readonly ILogger Logger;
+        protected readonly IApplicationHost AppHost;
+        protected readonly IApiClient ApiClient;
+        protected readonly IPresentationManager PresentationManager;
+        protected readonly IServerEvents ServerEvents;
 
         public ICommand HomeCommand { get; private set; }
         public ICommand FullscreenVideoCommand { get; private set; }
         public ICommand SettingsCommand { get; private set; }
 
+        public ICommand RestartServerCommand { get; private set; }
+        public ICommand RestartApplicationCommand { get; private set; }
+
         private readonly Timer _clockTimer;
         private readonly Dispatcher _dispatcher;
 
-        public PageContentViewModel(INavigationService navigationService, ISessionManager sessionManager, IPlaybackManager playbackManager, ILogger logger)
+        public PageContentViewModel(INavigationService navigationService, ISessionManager sessionManager, IPlaybackManager playbackManager, ILogger logger, IApplicationHost appHost, IApiClient apiClient, IPresentationManager presentationManager, IServerEvents serverEvents)
         {
             NavigationService = navigationService;
             SessionManager = sessionManager;
             PlaybackManager = playbackManager;
             Logger = logger;
+            AppHost = appHost;
+            ApiClient = apiClient;
+            PresentationManager = presentationManager;
+            ServerEvents = serverEvents;
 
             NavigationService.Navigated += NavigationServiceNavigated;
             SessionManager.UserLoggedIn += SessionManagerUserLoggedIn;
@@ -40,6 +56,8 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
             SettingsCommand = new RelayCommand(i => NavigationService.NavigateToSettingsPage());
             HomeCommand = new RelayCommand(i => NavigationService.NavigateToHomePage());
             FullscreenVideoCommand = new RelayCommand(i => NavigationService.NavigateToInternalPlayerPage());
+            RestartServerCommand = new RelayCommand(i => RestartServer());
+            RestartApplicationCommand = new RelayCommand(i => RestartApplication());
 
             _dispatcher = Dispatcher.CurrentDispatcher;
 
@@ -49,6 +67,64 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
             var page = NavigationService.CurrentPage;
             IsOnHomePage = page is IHomePage;
             IsOnFullscreenVideo = page is IFullscreenVideoPage;
+
+            ServerEvents.RestartRequired += ServerEvents_RestartRequired;
+            ServerEvents.ServerRestarting += ServerEvents_ServerRestarting;
+            ServerEvents.ServerShuttingDown += ServerEvents_ServerShuttingDown;
+            ServerEvents.Connected += ServerEvents_Connected;
+            AppHost.HasPendingRestartChanged += AppHostHasPendingRestartChanged;
+            RefreshRestartApplicationNotification();
+
+            // If already connected, get system info now.
+            RefreshRestartServerNotification();
+        }
+
+        private bool _serverHasPendingRestart;
+        async void ServerEvents_Connected(object sender, EventArgs e)
+        {
+            try
+            {
+                var systemInfo = await ApiClient.GetSystemInfoAsync();
+                _serverHasPendingRestart = systemInfo.HasPendingRestart;
+                RefreshRestartServerNotification();
+            }
+            catch (Exception)
+            {
+                
+            }
+        }
+
+        void ServerEvents_ServerShuttingDown(object sender, EventArgs e)
+        {
+            _serverHasPendingRestart = false;
+            RefreshRestartServerNotification();
+        }
+
+        void ServerEvents_ServerRestarting(object sender, EventArgs e)
+        {
+            _serverHasPendingRestart = false;
+            RefreshRestartServerNotification();
+        }
+
+        void ServerEvents_RestartRequired(object sender, EventArgs e)
+        {
+            _serverHasPendingRestart = true;
+            RefreshRestartServerNotification();
+        }
+
+        void AppHostHasPendingRestartChanged(object sender, EventArgs e)
+        {
+            RefreshRestartApplicationNotification();
+        }
+
+        private void RefreshRestartApplicationNotification()
+        {
+            _dispatcher.InvokeAsync(() => ShowRestartApplicationNotification = AppHost.HasPendingRestart && SessionManager.CurrentUser != null && SessionManager.CurrentUser.Configuration.IsAdministrator);
+        }
+
+        private void RefreshRestartServerNotification()
+        {
+            _dispatcher.InvokeAsync(() => ShowRestartServerNotification = _serverHasPendingRestart && SessionManager.CurrentUser != null && SessionManager.CurrentUser.Configuration.IsAdministrator);
         }
 
         void PlaybackManager_PlaybackCompleted(object sender, PlaybackStopEventArgs e)
@@ -68,11 +144,15 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
 
         void SessionManagerUserLoggedOut(object sender, EventArgs e)
         {
+            RefreshRestartApplicationNotification();
+            RefreshRestartServerNotification();
             IsLoggedIn = SessionManager.CurrentUser != null;
         }
 
         void SessionManagerUserLoggedIn(object sender, EventArgs e)
         {
+            RefreshRestartApplicationNotification();
+            RefreshRestartServerNotification();
             IsLoggedIn = SessionManager.CurrentUser != null;
         }
 
@@ -100,6 +180,40 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
                 if (changed)
                 {
                     OnPropertyChanged("IsLoggedIn");
+                }
+            }
+        }
+
+        private bool _showRestartServerNotification;
+        public bool ShowRestartServerNotification
+        {
+            get { return _showRestartServerNotification; }
+
+            set
+            {
+                var changed = _showRestartServerNotification != value;
+
+                _showRestartServerNotification = value;
+                if (changed)
+                {
+                    OnPropertyChanged("ShowRestartServerNotification");
+                }
+            }
+        }
+
+        private bool _showRestartApplicationNotification;
+        public bool ShowRestartApplicationNotification
+        {
+            get { return _showRestartApplicationNotification; }
+
+            set
+            {
+                var changed = _showRestartApplicationNotification != value;
+
+                _showRestartApplicationNotification = value;
+                if (changed)
+                {
+                    OnPropertyChanged("ShowRestartApplicationNotification");
                 }
             }
         }
@@ -147,7 +261,7 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
             set
             {
                 var changed = _isPlayingInternalVideo != value;
-                
+
                 _isPlayingInternalVideo = value;
                 if (changed)
                 {
@@ -220,6 +334,109 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
         }
 
         /// <summary>
+        /// Restarts the server.
+        /// </summary>
+        private async void RestartServer()
+        {
+            var result = PresentationManager.ShowMessage(new MessageBoxInfo
+            {
+                Button = MessageBoxButton.OKCancel,
+                Caption = "Restart Media Browser Server",
+                Icon = MessageBoxIcon.Information,
+                Text = "Please restart Media Browser Server in order to finish applying updates."
+            });
+
+            if (result == MessageBoxResult.OK)
+            {
+                try
+                {
+                    var systemInfo = await ApiClient.GetSystemInfoAsync();
+
+                    if (systemInfo.HasPendingRestart)
+                    {
+                        await ApiClient.RestartServerAsync();
+
+                        WaitForServerToRestart();
+                    }
+
+                    _serverHasPendingRestart = false;
+                    RefreshRestartServerNotification();
+                }
+                catch (Exception ex)
+                {
+                    Logger.ErrorException("Error restarting server.", ex);
+
+                    PresentationManager.ShowDefaultErrorMessage();
+                }
+            }
+        }
+
+        private async void WaitForServerToRestart()
+        {
+            PresentationManager.ShowModalLoadingAnimation();
+
+            try
+            {
+                await WaitForServerToRestartInternal();
+            }
+            finally
+            {
+                PresentationManager.HideModalLoadingAnimation();
+            }
+        }
+
+        private async Task WaitForServerToRestartInternal()
+        {
+            var count = 0;
+
+            while (count < 10)
+            {
+                await Task.Delay(3000);
+
+                try
+                {
+                    await ApiClient.GetSystemInfoAsync();
+                    break;
+                }
+                catch
+                {
+                    
+                }
+
+                count++;
+            }
+        }
+
+
+        /// <summary>
+        /// Restarts the application.
+        /// </summary>
+        private async void RestartApplication()
+        {
+            var result = PresentationManager.ShowMessage(new MessageBoxInfo
+            {
+                Button = MessageBoxButton.OKCancel,
+                Caption = "Restart Media Browser Theater",
+                Icon = MessageBoxIcon.Information,
+                Text = "Please restart to finish updating Media Browser Theater."
+            });
+
+            if (result == MessageBoxResult.OK)
+            {
+                try
+                {
+                    await AppHost.Restart();
+                }
+                catch (Exception ex)
+                {
+                    Logger.ErrorException("Error restarting application.", ex);
+
+                    PresentationManager.ShowDefaultErrorMessage();
+                }
+            }
+        }
+
+        /// <summary>
         /// Releases unmanaged and - optionally - managed resources.
         /// </summary>
         /// <param name="dispose"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
@@ -231,6 +448,11 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
             {
                 _clockTimer.Dispose();
 
+                ServerEvents.Connected -= ServerEvents_Connected;
+                ServerEvents.RestartRequired -= ServerEvents_RestartRequired;
+                ServerEvents.ServerRestarting -= ServerEvents_ServerRestarting;
+                ServerEvents.ServerShuttingDown -= ServerEvents_ServerShuttingDown;
+                AppHost.HasPendingRestartChanged -= AppHostHasPendingRestartChanged;
                 NavigationService.Navigated -= NavigationServiceNavigated;
                 SessionManager.UserLoggedIn -= SessionManagerUserLoggedIn;
                 SessionManager.UserLoggedOut -= SessionManagerUserLoggedOut;

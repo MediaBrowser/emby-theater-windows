@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.ApiClient;
+﻿using MediaBrowser.Common;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
@@ -53,10 +54,11 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// </summary>
         private readonly ILogger _logger;
         private readonly IServerEventsFactory _serverEvents;
+        private readonly IApplicationHost _appHost;
 
         public static DefaultTheme Current;
 
-        public DefaultTheme(IPlaybackManager playbackManager, IImageManager imageManager, IApiClient apiClient, INavigationService navService, ISessionManager sessionManager, IPresentationManager presentationManager, ILogManager logManager, IServerEventsFactory serverEvents)
+        public DefaultTheme(IPlaybackManager playbackManager, IImageManager imageManager, IApiClient apiClient, INavigationService navService, ISessionManager sessionManager, IPresentationManager presentationManager, ILogManager logManager, IServerEventsFactory serverEvents, IApplicationHost appHost)
         {
             Current = this;
 
@@ -67,6 +69,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
             _sessionManager = sessionManager;
             _presentationManager = presentationManager;
             _serverEvents = serverEvents;
+            _appHost = appHost;
             _logger = logManager.GetLogger(GetType().Name);
         }
 
@@ -116,7 +119,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// <returns>Page.</returns>
         public Page GetFolderPage(BaseItemDto item, ViewType context, DisplayPreferences displayPreferences)
         {
-            if (context == ViewType.Folders || context == ViewType.Home || !_folderTypesWithDetailPages.Contains(item.Type, StringComparer.OrdinalIgnoreCase))
+            if (!_folderTypesWithDetailPages.Contains(item.Type, StringComparer.OrdinalIgnoreCase))
             {
                 return new FolderPage(item, displayPreferences, _apiClient, _imageManager, _sessionManager, _presentationManager, _navService, _playbackManager, _logger, _serverEvents.GetServerEvents());
             }
@@ -182,7 +185,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
 
         public PageContentViewModel CreatePageContentDataContext()
         {
-            PageContentDataContext = new DefaultThemePageContentViewModel(_navService, _sessionManager, _apiClient, _imageManager, _presentationManager, _playbackManager, _logger);
+            PageContentDataContext = new DefaultThemePageContentViewModel(_navService, _sessionManager, _apiClient, _imageManager, _presentationManager, _playbackManager, _logger, _appHost, _serverEvents.GetServerEvents());
 
             return PageContentDataContext;
         }

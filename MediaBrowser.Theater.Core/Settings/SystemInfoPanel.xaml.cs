@@ -134,12 +134,6 @@ namespace MediaBrowser.Theater.Core.Settings
             var currentlyDisplayedInstalls =
                 InProgressInstallationsPanel.Children.OfType<InProgressInstallation>().ToList();
 
-            // First remove completed ones
-            foreach (var install in currentlyDisplayedInstalls.Where(i => currentInstalls.All(c => c.Item1.Name != i.InstallationInfo.Name)))
-            {
-                InProgressInstallationsPanel.Children.Remove(install);
-            }
-
             // Update
             foreach (var install in currentlyDisplayedInstalls)
             {

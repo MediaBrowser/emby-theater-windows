@@ -9,7 +9,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                    <TextBlock Opacity=".5" x:Name="MenuText" Margin="45 0" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Text="{Binding DisplayName}" Style="{DynamicResource Heading2TextBlockStyle}"></TextBlock>
+                    <TextBlock Opacity=".6" x:Name="MenuText" Margin="45 0" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Text="{Binding DisplayName}" Style="{DynamicResource Heading2TextBlockStyle}"></TextBlock>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsSelected" Value="true">
                             <Setter TargetName="MenuText" Property="Opacity" Value="1"/>
@@ -197,10 +197,9 @@
 
                 </Image>
 
-                <Grid Background="#a666C010" VerticalAlignment="Top" HorizontalAlignment="Right">
-
-                    <Grid.Style>
-                        <Style TargetType="{x:Type Grid}">
+                <TextBlock Foreground="White" Background="#c666C010" VerticalAlignment="Top" HorizontalAlignment="Right" Padding="10 2 10 5" Text="NEW">
+                    <TextBlock.Style>
+                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding IsOffline}" Value="True">
                                     <Setter Property="Visibility" Value="Hidden" />
@@ -216,20 +215,14 @@
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
-                    </Grid.Style>
+                    </TextBlock.Style>
+                </TextBlock>
 
-                    <TextBlock Style="{DynamicResource SmallTextBlockStyle}" Foreground="White" Margin="10 5">NEW</TextBlock>
-                </Grid>
-
-                <StackPanel Background="#a666C010" VerticalAlignment="Top" HorizontalAlignment="Right" Orientation="Horizontal">
-
-                    <StackPanel.Style>
-                        <Style TargetType="{x:Type StackPanel}">
+                <TextBlock Background="#c666C010" VerticalAlignment="Top" HorizontalAlignment="Right" Foreground="White" Padding="10 2 10 5" Text="{Binding RecursiveUnplayedItemCount, StringFormat='{}{0} NEW'}">
+                    <TextBlock.Style>
+                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SmallTextBlockStyle}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding IsOffline}" Value="True">
-                                    <Setter Property="Visibility" Value="Hidden" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding IsFolder}" Value="False">
                                     <Setter Property="Visibility" Value="Hidden" />
                                 </DataTrigger>
                                 <DataTrigger Binding="{Binding PlayedPercentage}" Value="0">
@@ -240,11 +233,8 @@
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
-                    </StackPanel.Style>
-
-                    <TextBlock Style="{DynamicResource SmallTextBlockStyle}" Foreground="White" Margin="10 5 0 5" Text="{Binding RecursiveUnplayedItemCount}"></TextBlock>
-                    <TextBlock Style="{DynamicResource SmallTextBlockStyle}" Foreground="White" Margin="5 5 10 5">NEW</TextBlock>
-                </StackPanel>
+                    </TextBlock.Style>
+                </TextBlock>
 
                 <Grid Background="#a6cc3333" VerticalAlignment="Top" HorizontalAlignment="Right">
 

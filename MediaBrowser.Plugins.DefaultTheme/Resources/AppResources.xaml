@@ -145,7 +145,47 @@
 
                     <StackPanel x:Name="HeaderContent" Orientation="Horizontal" Margin="0 15 0 0">
 
-                        <Button x:Name="FullscreenButton" Margin="0 0 30 0" Command="{Binding FullscreenVideoCommand}">
+                        <Button Margin="0 0 30 0" Command="{Binding RestartServerCommand}">
+
+                            <Button.Style>
+                                <Style TargetType="{x:Type Button}" BasedOn="{StaticResource ImageButton}">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ShowRestartServerNotification}" Value="True">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+
+                            <Grid>
+                                <Grid Width="48" Height="48" />
+                                <Path Fill="#4BB3DD" Data="F1M1350.51,1910.79C1339.79,1910.79,1330.8,1918.3,1328.49,1928.33L1319.8,1928.23 1331.56,1947.22 1343.76,1928.52 1335.7,1928.42C1337.8,1922.21 1343.61,1917.71 1350.51,1917.71 1359.17,1917.71 1366.22,1924.76 1366.22,1933.41 1366.22,1942.08 1359.17,1949.12 1350.51,1949.12 1347.31,1949.12 1344.34,1948.15 1341.85,1946.5L1338.07,1952.29C1341.64,1954.66 1345.92,1956.04 1350.51,1956.04 1362.99,1956.04 1373.14,1945.89 1373.14,1933.41 1373.14,1920.94 1362.99,1910.79 1350.51,1910.79z" Stretch="Uniform" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+                                </Path>
+                            </Grid>
+                        </Button>
+
+                        <Button Margin="0 0 30 0" Command="{Binding RestartApplicationCommand}">
+
+                            <Button.Style>
+                                <Style TargetType="{x:Type Button}" BasedOn="{StaticResource ImageButton}">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ShowRestartApplicationNotification}" Value="True">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+
+                            <Grid>
+                                <Grid Width="48" Height="48" />
+                                <Path Fill="#52B54B" Data="F1M1350.51,1910.79C1339.79,1910.79,1330.8,1918.3,1328.49,1928.33L1319.8,1928.23 1331.56,1947.22 1343.76,1928.52 1335.7,1928.42C1337.8,1922.21 1343.61,1917.71 1350.51,1917.71 1359.17,1917.71 1366.22,1924.76 1366.22,1933.41 1366.22,1942.08 1359.17,1949.12 1350.51,1949.12 1347.31,1949.12 1344.34,1948.15 1341.85,1946.5L1338.07,1952.29C1341.64,1954.66 1345.92,1956.04 1350.51,1956.04 1362.99,1956.04 1373.14,1945.89 1373.14,1933.41 1373.14,1920.94 1362.99,1910.79 1350.51,1910.79z" Stretch="Uniform" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+                                </Path>
+                            </Grid>
+                        </Button>
+
+                        <Button Margin="0 0 30 0" Command="{Binding FullscreenVideoCommand}">
 
                             <Button.Style>
                                 <Style TargetType="{x:Type Button}" BasedOn="{StaticResource ImageButton}">
@@ -167,7 +207,7 @@
                             </Grid>
                         </Button>
 
-                        <Button x:Name="ViewButton" Margin="0 0 30 0" Command="{Binding DisplayPreferencesCommand}">
+                        <Button Margin="0 0 30 0" Command="{Binding DisplayPreferencesCommand}">
 
                             <Button.Style>
                                 <Style TargetType="{x:Type Button}" BasedOn="{StaticResource ImageButton}">
@@ -361,6 +401,9 @@
                                 <DataTrigger Binding="{Binding ItemType}" Value="Series">
                                     <Setter Property="Visibility" Value="Collapsed" />
                                 </DataTrigger>
+                                <DataTrigger Binding="{Binding ItemType}" Value="Season">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
                                 <DataTrigger Binding="{Binding ItemType}" Value="MusicAlbum">
                                     <Setter Property="Visibility" Value="Collapsed" />
                                 </DataTrigger>
@@ -437,10 +480,9 @@
                 </Path>
             </Grid>
 
-            <Grid Background="#a666C010" VerticalAlignment="Top" HorizontalAlignment="Right">
-
-                <Grid.Style>
-                    <Style TargetType="{x:Type Grid}">
+            <TextBlock Foreground="White" Background="#c666C010" VerticalAlignment="Top" HorizontalAlignment="Right" Padding="10 2 10 5" Text="NEW">
+                <TextBlock.Style>
+                    <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding IsOffline}" Value="True">
                                 <Setter Property="Visibility" Value="Hidden" />
@@ -456,12 +498,10 @@
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
-                </Grid.Style>
+                </TextBlock.Style>
+            </TextBlock>
 
-                <TextBlock Style="{DynamicResource SmallTextBlockStyle}" Foreground="White" Margin="10 5">NEW</TextBlock>
-            </Grid>
-
-            <TextBlock Background="#a666C010" VerticalAlignment="Top" HorizontalAlignment="Right" Foreground="White" Padding="10 5 10 5" Text="{Binding RecursiveUnplayedItemCount, StringFormat='{}{0} NEW'}">
+            <TextBlock Background="#c666C010" VerticalAlignment="Top" HorizontalAlignment="Right" Foreground="White" Padding="10 2 10 5" Text="{Binding RecursiveUnplayedItemCount, StringFormat='{}{0} NEW'}">
                 <TextBlock.Style>
                     <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SmallTextBlockStyle}">
                         <Style.Triggers>
@@ -472,9 +512,6 @@
                                 <Setter Property="Visibility" Value="Hidden" />
                             </DataTrigger>
                             <DataTrigger Binding="{Binding RecursiveUnplayedItemCount}" Value="0">
-                                <Setter Property="Visibility" Value="Hidden" />
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding ItemType}" Value="Season">
                                 <Setter Property="Visibility" Value="Hidden" />
                             </DataTrigger>
                         </Style.Triggers>
@@ -589,7 +626,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ListBoxItem}">
 
-                    <TextBlock Opacity=".5" x:Name="MenuText" Margin="35 0" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Text="{Binding DisplayName}" Style="{DynamicResource Heading1TextBlockStyle}"></TextBlock>
+                    <TextBlock Opacity=".6" x:Name="MenuText" Margin="35 0" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Text="{Binding DisplayName}" Style="{DynamicResource Heading1TextBlockStyle}"></TextBlock>
 
                     <ControlTemplate.Triggers>
                         <DataTrigger Binding="{Binding TabType}" Value="Alphabet">

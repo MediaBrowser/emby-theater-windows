@@ -99,21 +99,21 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             ActorsViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {
                 GalleryHeight = TileHeight,
-                GalleryWidth = TileWidth * tileScaleFactor / 16,
+                GalleryWidth = TileWidth * 10.5 / 16,
                 CustomCommandAction = () => NavigateWithLoading(NavigateToActorsInternal)
             };
 
             GenresViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {
                 GalleryHeight = TileHeight,
-                GalleryWidth = TileWidth * tileScaleFactor / 16,
+                GalleryWidth = TileWidth * 10.5 / 16,
                 CustomCommandAction = () => NavigateWithLoading(NavigateToGenresInternal)
             };
 
             YearsViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {
                 GalleryHeight = TileHeight,
-                GalleryWidth = TileWidth * tileScaleFactor / 16,
+                GalleryWidth = TileWidth * 10.5 / 16,
                 CustomCommandAction = () => NavigateWithLoading(NavigateToYearsInternal)
             };
 
@@ -504,7 +504,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
                 Filters = new[] { ItemFilter.IsUnplayed },
 
-                Limit = 6,
+                Limit = 8,
 
                 Recursive = true
             };
@@ -533,7 +533,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
                 Filters = new[] { ItemFilter.IsUnplayed },
 
-                Limit = 6,
+                Limit = 8,
 
                 Recursive = true
             };

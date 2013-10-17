@@ -18,7 +18,7 @@
             <RowDefinition Height="auto"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <TextBlock Text="please sign in >" Grid.Row="0" HorizontalAlignment="Left" Style="{DynamicResource Heading2TextBlockStyle}" Margin="300 50 0 0" Foreground="#ddd"></TextBlock>
+        <TextBlock Text="please sign in >" Grid.Row="0" HorizontalAlignment="Left" Style="{DynamicResource Heading1TextBlockStyle}" Margin="300 50 0 0"></TextBlock>
 
         <controls:ExtendedScrollViewer Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalAlignment="Top" HorizontalAlignment="Center" CanContentScroll="True">
             <controls:ScrollingPanel CanHorizontallyScroll="True" CanVerticallyScroll="False">

@@ -156,5 +156,15 @@ namespace MediaBrowser.Theater.Interfaces.Presentation
         /// Hides the loading animation.
         /// </summary>
         void HideLoadingAnimation();
+
+        /// <summary>
+        /// Shows the loading animation.
+        /// </summary>
+        void ShowModalLoadingAnimation();
+
+        /// <summary>
+        /// Hides the loading animation.
+        /// </summary>
+        void HideModalLoadingAnimation();
     }
 }

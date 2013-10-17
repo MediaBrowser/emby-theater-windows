@@ -180,7 +180,7 @@
                         <RowDefinition Height="auto"></RowDefinition>
                     </Grid.RowDefinitions>
 
-                    <ContentControl Grid.Row="0" Grid.RowSpan="3" Grid.Column="0" VerticalAlignment="Top" Style="{StaticResource ModalIconContent}" Margin="0 0 10 0" KeyboardNavigation.IsTabStop="False"></ContentControl>
+                    <ContentControl Grid.Row="0" Grid.RowSpan="3" Grid.Column="0" VerticalAlignment="Top" Style="{StaticResource ModalIconContent}" Margin="0 2 10 0" KeyboardNavigation.IsTabStop="False"></ContentControl>
 
                     <TextBlock Text="{Binding Caption}" Grid.Row="0" Grid.Column="1" Margin="0 5 0 10">
                         <TextBlock.Style>

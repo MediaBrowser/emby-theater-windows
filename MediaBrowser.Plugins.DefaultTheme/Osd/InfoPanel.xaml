@@ -32,7 +32,7 @@
 
             </Grid>
 
-            <Grid Height="320" Grid.Row="1" Margin="20">
+            <Grid Height="320" Grid.Row="1">
 
                 <controls:ExtendedScrollViewer x:Name="ScrollViewer" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalAlignment="Stretch" CanContentScroll="True">
                     <controls:ScrollingPanel CanHorizontallyScroll="True" CanVerticallyScroll="False">
@@ -44,7 +44,7 @@
                                         <DataTrigger Binding="{Binding CurrentSection}" Value="Info">
                                             <Setter Property="Content">
                                                 <Setter.Value>
-                                                    <Grid>
+                                                    <Grid Margin="20">
                                                         <osd:NowPlayingInfo DataContext="{Binding ContentViewModel}" HorizontalAlignment="Center"></osd:NowPlayingInfo>
                                                     </Grid>
                                                 </Setter.Value>
@@ -53,7 +53,7 @@
                                         <DataTrigger Binding="{Binding CurrentSection}" Value="Scenes">
                                             <Setter Property="Content">
                                                 <Setter.Value>
-                                                    <Grid>
+                                                    <Grid Margin="20 0">
                                                         <controls:ExtendedListBox Margin="0" DataContext="{Binding ContentViewModel}" ItemsSource="{Binding ListCollectionView}" Command="{Binding SeekCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource ItemChaptersTemplate}">
                                                             <controls:ExtendedListBox.ItemsPanel>
                                                                 <ItemsPanelTemplate>
@@ -68,7 +68,7 @@
                                         <DataTrigger Binding="{Binding CurrentSection}" Value="Cast">
                                             <Setter Property="Content">
                                                 <Setter.Value>
-                                                    <Grid>
+                                                    <Grid Margin="20 0">
                                                         <controls:ExtendedListBox Margin="0" DataContext="{Binding ContentViewModel}" ItemsSource="{Binding ListCollectionView}" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource PersonInfoTemplate}">
                                                             <controls:ExtendedListBox.ItemsPanel>
                                                                 <ItemsPanelTemplate>
@@ -83,7 +83,7 @@
                                         <DataTrigger Binding="{Binding CurrentSection}" Value="Audio">
                                             <Setter Property="Content">
                                                 <Setter.Value>
-                                                    <Grid>
+                                                    <Grid Margin="20 0">
                                                         <controls:ExtendedListBox Margin="0" DataContext="{Binding ContentViewModel}" Command="{Binding ActivateCommand}" ItemsSource="{Binding ListCollectionView}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource SelectableMediaStreamTemplate}">
                                                             <controls:ExtendedListBox.ItemsPanel>
                                                                 <ItemsPanelTemplate>
@@ -98,7 +98,7 @@
                                         <DataTrigger Binding="{Binding CurrentSection}" Value="Subtitles">
                                             <Setter Property="Content">
                                                 <Setter.Value>
-                                                    <Grid>
+                                                    <Grid Margin="20 0">
                                                         <controls:ExtendedListBox Margin="0" DataContext="{Binding ContentViewModel}" Command="{Binding ActivateCommand}" ItemsSource="{Binding ListCollectionView}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource SelectableMediaStreamTemplate}">
                                                             <controls:ExtendedListBox.ItemsPanel>
                                                                 <ItemsPanelTemplate>

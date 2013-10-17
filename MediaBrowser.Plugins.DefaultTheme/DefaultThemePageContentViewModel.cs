@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.ApiClient;
+﻿using MediaBrowser.Common;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
@@ -18,19 +19,15 @@ namespace MediaBrowser.Plugins.DefaultTheme
 {
     public class DefaultThemePageContentViewModel : PageContentViewModel
     {
-        private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
-        private readonly IPresentationManager _presentation;
 
         public ICommand UserCommand { get; private set; }
         public ICommand DisplayPreferencesCommand { get; private set; }
 
-        public DefaultThemePageContentViewModel(INavigationService navigationService, ISessionManager sessionManager, IApiClient apiClient, IImageManager imageManager, IPresentationManager presentation, IPlaybackManager playbackManager, ILogger logger)
-            : base(navigationService, sessionManager, playbackManager, logger)
+        public DefaultThemePageContentViewModel(INavigationService navigationService, ISessionManager sessionManager, IApiClient apiClient, IImageManager imageManager, IPresentationManager presentation, IPlaybackManager playbackManager, ILogger logger, IApplicationHost appHost, IServerEvents serverEvents)
+            : base(navigationService, sessionManager, playbackManager, logger, appHost, apiClient, presentation, serverEvents)
         {
-            _apiClient = apiClient;
             _imageManager = imageManager;
-            _presentation = presentation;
 
             NavigationService.Navigated += NavigationService_Navigated;
             SessionManager.UserLoggedIn += SessionManager_UserLoggedIn;
@@ -57,7 +54,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
 
             if (user.HasPrimaryImage)
             {
-                var imageUrl = _apiClient.GetUserImageUrl(user, new ImageOptions
+                var imageUrl = ApiClient.GetUserImageUrl(user, new ImageOptions
                 {
                     ImageType = ImageType.Primary
                 });
@@ -222,7 +219,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
 
         private void ShowUserMenu()
         {
-            new UserProfileWindow(SessionManager, _imageManager, _apiClient).ShowModal(_presentation.Window);
+            new UserProfileWindow(SessionManager, _imageManager, ApiClient).ShowModal(PresentationManager.Window);
         }
 
         private void ShowDisplayPreferences()
@@ -239,7 +236,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         {
             if (item.HasLogo || !string.IsNullOrEmpty(item.ParentLogoItemId))
             {
-                var url = _apiClient.GetLogoImageUrl(item, new ImageOptions
+                var url = ApiClient.GetLogoImageUrl(item, new ImageOptions
                 {
                 });
 

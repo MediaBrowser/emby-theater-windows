@@ -80,17 +80,20 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
         }
 
         private bool _serverHasPendingRestart;
+        private bool _serverCanSelfRestart;
+
         async void ServerEvents_Connected(object sender, EventArgs e)
         {
             try
             {
                 var systemInfo = await ApiClient.GetSystemInfoAsync();
                 _serverHasPendingRestart = systemInfo.HasPendingRestart;
+                _serverCanSelfRestart = systemInfo.CanSelfRestart;
                 RefreshRestartServerNotification();
             }
             catch (Exception)
             {
-                
+
             }
         }
 
@@ -338,6 +341,19 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
         /// </summary>
         private async void RestartServer()
         {
+            if (!_serverCanSelfRestart)
+            {
+                PresentationManager.ShowMessage(new MessageBoxInfo
+                {
+                    Button = MessageBoxButton.OK,
+                    Caption = "Restart Media Browser Server",
+                    Icon = MessageBoxIcon.Information,
+                    Text = "Please logon to Media Browser Server and restart in order to finish applying updates."
+                });
+
+                return;
+            }
+
             var result = PresentationManager.ShowMessage(new MessageBoxInfo
             {
                 Button = MessageBoxButton.OKCancel,
@@ -400,7 +416,7 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
                 }
                 catch
                 {
-                    
+
                 }
 
                 count++;

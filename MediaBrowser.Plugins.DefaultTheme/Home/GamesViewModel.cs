@@ -31,6 +31,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         public ImageViewerViewModel SpotlightViewModel { get; private set; }
 
         public ItemListViewModel GameSystemsViewModel { get; private set; }
+        public ItemListViewModel MiniSpotlightsViewModel { get; private set; }
+        public ItemListViewModel MiniSpotlightsViewModel2 { get; private set; }
         public GalleryViewModel GenresViewModel { get; private set; }
         public GalleryViewModel YearsViewModel { get; private set; }
         public GalleryViewModel MultiPlayerViewModel { get; private set; }
@@ -68,7 +70,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 EnableBackdropsForCurrentItem = false
             };
 
-            const int tileScaleFactor = 12;
+            const int tileScaleFactor = 13;
 
             RecentlyPlayedViewModel = new ItemListViewModel(GetRecentlyPlayedAsync, presentation, imageManager, apiClient, nav, playback, logger, _serverEvents)
             {
@@ -117,6 +119,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 LoadGenresViewModel(view);
                 LoadYearsViewModel(view);
                 LoadMultiPlayerViewModel(view);
+
+                LoadMiniSpotlightsViewModel(view);
+                LoadMiniSpotlightsViewModel2(view);
             }
             catch (Exception ex)
             {
@@ -128,6 +133,60 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 PresentationManager.HideLoadingAnimation();
                 DisposeMainViewCancellationTokenSource(false);
             }
+        }
+
+        private void LoadMiniSpotlightsViewModel(GamesView view)
+        {
+            Func<ItemListViewModel, Task<ItemsResult>> getItems = vm =>
+            {
+                var items = view.MiniSpotlights.Take(2).ToArray();
+
+                return Task.FromResult(new ItemsResult
+                {
+                    TotalRecordCount = items.Length,
+                    Items = items
+                });
+            };
+
+            MiniSpotlightsViewModel = new ItemListViewModel(getItems, PresentationManager, _imageManager, ApiClient, _navService, _playbackManager, _logger, _serverEvents)
+            {
+                ImageDisplayWidth = TileWidth + (TilePadding / 4) - 1,
+                ImageDisplayHeightGenerator = v => TileHeight,
+                DisplayNameGenerator = HomePageViewModel.GetDisplayName,
+                EnableBackdropsForCurrentItem = false,
+                ImageStretch = Stretch.UniformToFill,
+                PreferredImageTypesGenerator = vm => new[] { ImageType.Backdrop },
+                DownloadImageAtExactSize = true
+            };
+
+            OnPropertyChanged("MiniSpotlightsViewModel");
+        }
+
+        private void LoadMiniSpotlightsViewModel2(GamesView view)
+        {
+            Func<ItemListViewModel, Task<ItemsResult>> getItems = vm =>
+            {
+                var items = view.MiniSpotlights.Skip(2).Take(3).ToArray();
+
+                return Task.FromResult(new ItemsResult
+                {
+                    TotalRecordCount = items.Length,
+                    Items = items
+                });
+            };
+
+            MiniSpotlightsViewModel2 = new ItemListViewModel(getItems, PresentationManager, _imageManager, ApiClient, _navService, _playbackManager, _logger, _serverEvents)
+            {
+                ImageDisplayWidth = TileWidth,
+                ImageDisplayHeightGenerator = v => TileHeight,
+                DisplayNameGenerator = HomePageViewModel.GetDisplayName,
+                EnableBackdropsForCurrentItem = false,
+                ImageStretch = Stretch.UniformToFill,
+                PreferredImageTypesGenerator = vm => new[] { ImageType.Backdrop },
+                DownloadImageAtExactSize = true
+            };
+
+            OnPropertyChanged("MiniSpotlightsViewModel2");
         }
 
         private bool _showMultiPlayer;
@@ -173,7 +232,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             var tileWidth = TileWidth * 2 + TilePadding;
             var tileHeight = tileWidth * 9 / 16;
 
-            BackdropItems = view.SpotlightItems.OrderBy(i => Guid.NewGuid()).ToArray();
+            BackdropItems = view.BackdropItems.ToArray();
 
             var images = view.SpotlightItems.Select(i => new ImageViewerImage
             {
@@ -212,7 +271,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         private void LoadMultiPlayerViewModel(GamesView view)
         {
-            ShowMultiPlayer = view.MultiPlayerItems.Length > 0;
+            ShowMultiPlayer = view.MultiPlayerItems.Count > 0;
 
             var images = view.MultiPlayerItems.Take(1).Select(i => ApiClient.GetImageUrl(i.Id, new ImageOptions
             {
@@ -377,7 +436,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
                 SortOrder = SortOrder.Descending,
 
-                Filters = new[] { ItemFilter.IsPlayed },
+                //Filters = new[] { ItemFilter.IsPlayed },
 
                 IncludeItemTypes = new[] { "Game" },
 
@@ -482,6 +541,34 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             if (SpotlightViewModel != null)
             {
                 SpotlightViewModel.Dispose();
+            }
+            if (GameSystemsViewModel != null)
+            {
+                GameSystemsViewModel.Dispose();
+            }
+            if (MiniSpotlightsViewModel != null)
+            {
+                MiniSpotlightsViewModel.Dispose();
+            }
+            if (MiniSpotlightsViewModel2 != null)
+            {
+                MiniSpotlightsViewModel2.Dispose();
+            }
+            if (GenresViewModel != null)
+            {
+                GenresViewModel.Dispose();
+            }
+            if (YearsViewModel != null)
+            {
+                YearsViewModel.Dispose();
+            }
+            if (MultiPlayerViewModel != null)
+            {
+                MultiPlayerViewModel.Dispose();
+            }
+            if (RecentlyPlayedViewModel != null)
+            {
+                RecentlyPlayedViewModel.Dispose();
             }
             DisposeMainViewCancellationTokenSource(true);
         }

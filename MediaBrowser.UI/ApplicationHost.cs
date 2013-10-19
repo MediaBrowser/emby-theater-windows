@@ -139,9 +139,7 @@ namespace MediaBrowser.UI
             UserInputManager = new UserInputManager();
             RegisterSingleInstance(UserInputManager);
 
-            var serverEventsFactory = new ServerEventsFactory(this);
-
-            NavigationService = new NavigationService(ThemeManager, () => PlaybackManager, ApiClient, PresentationManager, TheaterConfigurationManager, () => SessionManager, this, InstallationManager, ImageManager, Logger, UserInputManager, serverEventsFactory);
+            NavigationService = new NavigationService(ThemeManager, () => PlaybackManager, ApiClient, PresentationManager, TheaterConfigurationManager, () => SessionManager, this, InstallationManager, ImageManager, Logger, UserInputManager, ApiWebSocket);
             RegisterSingleInstance(NavigationService);
 
             PlaybackManager = new PlaybackManager(TheaterConfigurationManager, Logger, ApiClient, NavigationService, PresentationManager);
@@ -154,7 +152,7 @@ namespace MediaBrowser.UI
 
             RegisterSingleInstance<IHiddenWindow>(new AppHiddenWIndow());
 
-            RegisterSingleInstance<IServerEventsFactory>(serverEventsFactory);
+            RegisterSingleInstance<IServerEvents>(ApiWebSocket);
         }
 
         /// <summary>
@@ -350,20 +348,4 @@ namespace MediaBrowser.UI
             }
         }
     }
-
-    internal class ServerEventsFactory : IServerEventsFactory
-    {
-        private readonly ApplicationHost _appHost;
-
-        public ServerEventsFactory(ApplicationHost appHost)
-        {
-            _appHost = appHost;
-        }
-
-        public IServerEvents GetServerEvents()
-        {
-            return _appHost.ApiWebSocket;
-        }
-    }
-
 }

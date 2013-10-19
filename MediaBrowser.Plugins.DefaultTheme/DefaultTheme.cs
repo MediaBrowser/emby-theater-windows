@@ -53,12 +53,12 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// The _logger
         /// </summary>
         private readonly ILogger _logger;
-        private readonly IServerEventsFactory _serverEvents;
+        private readonly IServerEvents _serverEvents;
         private readonly IApplicationHost _appHost;
 
         public static DefaultTheme Current;
 
-        public DefaultTheme(IPlaybackManager playbackManager, IImageManager imageManager, IApiClient apiClient, INavigationService navService, ISessionManager sessionManager, IPresentationManager presentationManager, ILogManager logManager, IServerEventsFactory serverEvents, IApplicationHost appHost)
+        public DefaultTheme(IPlaybackManager playbackManager, IImageManager imageManager, IApiClient apiClient, INavigationService navService, ISessionManager sessionManager, IPresentationManager presentationManager, ILogManager logManager, IServerEvents serverEvents, IApplicationHost appHost)
         {
             Current = this;
 
@@ -96,7 +96,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// <returns>Page.</returns>
         public Page GetItemPage(BaseItemDto item, ViewType context)
         {
-            var itemViewModel = new ItemViewModel(_apiClient, _imageManager, _playbackManager, _presentationManager, _logger, _serverEvents.GetServerEvents())
+            var itemViewModel = new ItemViewModel(_apiClient, _imageManager, _playbackManager, _presentationManager, _logger, _serverEvents)
             {
                 Item = item,
                 ImageWidth = 550
@@ -104,7 +104,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
 
             return new DetailPage(itemViewModel, _presentationManager)
             {
-                DataContext = new DetailPageViewModel(itemViewModel, _apiClient, _sessionManager, _imageManager, _presentationManager, _playbackManager, _navService, _logger, _serverEvents.GetServerEvents(), context)
+                DataContext = new DetailPageViewModel(itemViewModel, _apiClient, _sessionManager, _imageManager, _presentationManager, _playbackManager, _navService, _logger, _serverEvents, context)
             };
         }
 
@@ -121,7 +121,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         {
             if (!_folderTypesWithDetailPages.Contains(item.Type, StringComparer.OrdinalIgnoreCase))
             {
-                return new FolderPage(item, displayPreferences, _apiClient, _imageManager, _sessionManager, _presentationManager, _navService, _playbackManager, _logger, _serverEvents.GetServerEvents());
+                return new FolderPage(item, displayPreferences, _apiClient, _imageManager, _sessionManager, _presentationManager, _navService, _playbackManager, _logger, _serverEvents);
             }
 
             return GetItemPage(item, context);
@@ -185,7 +185,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
 
         public PageContentViewModel CreatePageContentDataContext()
         {
-            PageContentDataContext = new DefaultThemePageContentViewModel(_navService, _sessionManager, _apiClient, _imageManager, _presentationManager, _playbackManager, _logger, _appHost, _serverEvents.GetServerEvents());
+            PageContentDataContext = new DefaultThemePageContentViewModel(_navService, _sessionManager, _apiClient, _imageManager, _presentationManager, _playbackManager, _logger, _appHost, _serverEvents);
 
             return PageContentDataContext;
         }

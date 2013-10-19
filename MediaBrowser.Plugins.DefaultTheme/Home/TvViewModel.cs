@@ -32,6 +32,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         public ItemListViewModel LatestEpisodesViewModel { get; private set; }
         public ItemListViewModel NextUpViewModel { get; private set; }
         public ItemListViewModel ResumeViewModel { get; private set; }
+        public ItemListViewModel MiniSpotlightsViewModel { get; private set; }
+        public ItemListViewModel MiniSpotlightsViewModel2 { get; private set; }
 
         public GalleryViewModel AllShowsViewModel { get; private set; }
         public GalleryViewModel ActorsViewModel { get; private set; }
@@ -79,8 +81,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             };
             ResumeViewModel.PropertyChanged += ResumeViewModel_PropertyChanged;
 
-            const int tileScaleFactor = 12;
-            
+            const double tileScaleFactor = 13;
+
             ActorsViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {
                 GalleryHeight = TileHeight,
@@ -167,6 +169,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 LoadComedySeriesViewModel(view);
                 LoadActorsViewModel(view);
                 LoadGenresViewModel(view);
+                LoadMiniSpotlightsViewModel(view);
+                LoadMiniSpotlightsViewModel2(view);
             }
             catch (Exception ex)
             {
@@ -177,6 +181,60 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 DisposeMainViewCancellationTokenSource(false);
             }
+        }
+
+        private void LoadMiniSpotlightsViewModel(TvView view)
+        {
+            Func<ItemListViewModel, Task<ItemsResult>> getItems = vm =>
+            {
+                var items = view.MiniSpotlights.Take(2).ToArray();
+
+                return Task.FromResult(new ItemsResult
+                {
+                    TotalRecordCount = items.Length,
+                    Items = items
+                });
+            };
+
+            MiniSpotlightsViewModel = new ItemListViewModel(getItems, PresentationManager, _imageManager, ApiClient, _navService, _playbackManager, _logger, _serverEvents)
+            {
+                ImageDisplayWidth = TileWidth + (TilePadding / 4) - 1,
+                ImageDisplayHeightGenerator = v => TileHeight,
+                DisplayNameGenerator = HomePageViewModel.GetDisplayName,
+                EnableBackdropsForCurrentItem = false,
+                ImageStretch = Stretch.UniformToFill,
+                PreferredImageTypesGenerator = vm => new[] { ImageType.Backdrop },
+                DownloadImageAtExactSize = true
+            };
+
+            OnPropertyChanged("MiniSpotlightsViewModel");
+        }
+
+        private void LoadMiniSpotlightsViewModel2(TvView view)
+        {
+            Func<ItemListViewModel, Task<ItemsResult>> getItems = vm =>
+            {
+                var items = view.MiniSpotlights.Skip(2).Take(3).ToArray();
+
+                return Task.FromResult(new ItemsResult
+                {
+                    TotalRecordCount = items.Length,
+                    Items = items
+                });
+            };
+
+            MiniSpotlightsViewModel2 = new ItemListViewModel(getItems, PresentationManager, _imageManager, ApiClient, _navService, _playbackManager, _logger, _serverEvents)
+            {
+                ImageDisplayWidth = TileWidth,
+                ImageDisplayHeightGenerator = v => TileHeight,
+                DisplayNameGenerator = HomePageViewModel.GetDisplayName,
+                EnableBackdropsForCurrentItem = false,
+                ImageStretch = Stretch.UniformToFill,
+                PreferredImageTypesGenerator = vm => new[] { ImageType.Backdrop },
+                DownloadImageAtExactSize = true
+            };
+
+            OnPropertyChanged("MiniSpotlightsViewModel2");
         }
 
         void ResumeViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -281,7 +339,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             var tileWidth = TileWidth * 2 + TilePadding;
             var tileHeight = tileWidth * 9 / 16;
 
-            BackdropItems = view.SpotlightItems.OrderBy(i => Guid.NewGuid()).ToArray();
+            BackdropItems = view.BackdropItems.ToArray();
 
             var images = view.SpotlightItems.Select(i => new ImageViewerImage
             {
@@ -310,7 +368,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         {
             SpotlightViewModel.StopRotating();
         }
-        
+
         private void LoadActorsViewModel(TvView view)
         {
             var images = view.ActorItems.Take(1).Select(i => ApiClient.GetPersonImageUrl(i.Name, new ImageOptions
@@ -343,15 +401,15 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             if (now.DayOfWeek == DayOfWeek.Friday)
             {
-                ShowRomanticSeries = view.RomanceItems.Length > 0 && now.Hour >= 15;
+                ShowRomanticSeries = view.RomanceItems.Count > 0 && now.Hour >= 15;
             }
             else if (now.DayOfWeek == DayOfWeek.Saturday)
             {
-                ShowRomanticSeries = view.RomanceItems.Length > 0 && (now.Hour < 3 || now.Hour >= 15);
+                ShowRomanticSeries = view.RomanceItems.Count > 0 && (now.Hour < 3 || now.Hour >= 15);
             }
             else if (now.DayOfWeek == DayOfWeek.Sunday)
             {
-                ShowRomanticSeries = view.RomanceItems.Length > 0 && now.Hour < 3;
+                ShowRomanticSeries = view.RomanceItems.Count > 0 && now.Hour < 3;
             }
             else
             {
@@ -375,12 +433,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             if (now.DayOfWeek == DayOfWeek.Thursday)
             {
-                ShowComedyItems = view.ComedyItems.Length > 0 && now.Hour >= 12;
+                ShowComedyItems = view.ComedyItems.Count > 0 && now.Hour >= 12;
                 ComedyItemsViewModel.Name = "Comedy Night";
             }
             else if (now.DayOfWeek == DayOfWeek.Sunday)
             {
-                ShowComedyItems = view.ComedyItems.Length > 0;
+                ShowComedyItems = view.ComedyItems.Count > 0;
                 ComedyItemsViewModel.Name = "Sunday Funnies";
             }
             else
@@ -693,6 +751,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
                 UserId = _sessionManager.CurrentUser.Id,
 
+                ExcludeLocationTypes = new[] { LocationType.Virtual },
+
                 Limit = 15
             };
 
@@ -722,9 +782,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
                 IncludeItemTypes = new[] { "Episode" },
 
+                ExcludeLocationTypes = new[] { LocationType.Virtual },
+
                 Filters = new[] { ItemFilter.IsUnplayed },
 
-                Limit = 6,
+                Limit = 9,
 
                 Recursive = true
             };
@@ -767,9 +829,29 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         public void Dispose()
         {
-            if (SpotlightViewModel != null)
+            if (LatestEpisodesViewModel != null)
             {
-                SpotlightViewModel.Dispose();
+                LatestEpisodesViewModel.Dispose();
+            }
+            if (NextUpViewModel != null)
+            {
+                NextUpViewModel.Dispose();
+            }
+            if (ResumeViewModel != null)
+            {
+                ResumeViewModel.Dispose();
+            }
+            if (MiniSpotlightsViewModel != null)
+            {
+                MiniSpotlightsViewModel.Dispose();
+            }
+            if (MiniSpotlightsViewModel2 != null)
+            {
+                MiniSpotlightsViewModel2.Dispose();
+            }
+            if (AllShowsViewModel != null)
+            {
+                AllShowsViewModel.Dispose();
             }
             if (ActorsViewModel != null)
             {
@@ -779,17 +861,17 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 GenresViewModel.Dispose();
             }
-            if (AllShowsViewModel != null)
+            if (SpotlightViewModel != null)
             {
-                AllShowsViewModel.Dispose();
+                SpotlightViewModel.Dispose();
             }
-            if (ResumeViewModel != null)
+            if (RomanticSeriesViewModel != null)
             {
-                ResumeViewModel.Dispose();
+                RomanticSeriesViewModel.Dispose();
             }
-            if (NextUpViewModel != null)
+            if (ComedyItemsViewModel != null)
             {
-                NextUpViewModel.Dispose();
+                ComedyItemsViewModel.Dispose();
             }
             DisposeMainViewCancellationTokenSource(true);
         }

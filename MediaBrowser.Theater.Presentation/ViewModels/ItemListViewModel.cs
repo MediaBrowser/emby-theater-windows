@@ -426,7 +426,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                         var vm = new ItemViewModel(_apiClient, _imageManager, _playbackManager,
                                                    _presentationManager, _logger, _serverEvents)
                         {
-                            DownloadPrimaryImageAtExactSize = IsCloseToMedianPrimaryImageAspectRatio(i),
+                            DownloadPrimaryImageAtExactSize = DownloadImageAtExactSize ?? IsCloseToMedianPrimaryImageAspectRatio(i),
                             ImageHeight = imageDisplayHeight,
                             ImageWidth = childWidth,
                             Item = i,

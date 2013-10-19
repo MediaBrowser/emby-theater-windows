@@ -17,11 +17,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         private readonly IPresentationManager _presentationManager;
         private readonly INavigationService _navigationManager;
         private readonly IPlaybackManager _playbackManager;
-        private readonly IServerEventsFactory _serverEvents;
+        private readonly IServerEvents _serverEvents;
 
         private readonly ILogger _logger;
 
-        public HomePageInfo(IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IPresentationManager presentationManager, INavigationService navigationManager, ILogger logger, IPlaybackManager playbackManager, IServerEventsFactory serverEvents)
+        public HomePageInfo(IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IPresentationManager presentationManager, INavigationService navigationManager, ILogger logger, IPlaybackManager playbackManager, IServerEvents serverEvents)
         {
             _apiClient = apiClient;
             _imageManager = imageManager;
@@ -42,7 +42,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         {
             return new HomePage(rootFolder, _presentationManager)
             {
-                DataContext = new HomePageViewModel(_presentationManager, _apiClient, _sessionManager, _logger, _imageManager, _navigationManager, _playbackManager, _serverEvents.GetServerEvents())
+                DataContext = new HomePageViewModel(_presentationManager, _apiClient, _sessionManager, _logger, _imageManager, _navigationManager, _playbackManager, _serverEvents)
             };
         }
     }

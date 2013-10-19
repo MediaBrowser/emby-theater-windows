@@ -29,9 +29,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         private readonly ILogger _logger;
         private readonly IServerEvents _serverEvents;
 
-        public ItemListViewModel ResumeViewModel { get; private set; }
         public ItemListViewModel LatestTrailersViewModel { get; private set; }
         public ItemListViewModel LatestMoviesViewModel { get; private set; }
+        public ItemListViewModel MiniSpotlightsViewModel { get; private set; }
+        public ItemListViewModel MiniSpotlightsViewModel2 { get; private set; }
 
         public ImageViewerViewModel SpotlightViewModel { get; private set; }
 
@@ -60,16 +61,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             TileWidth = tileWidth;
             TileHeight = tileHeight;
 
-            ResumeViewModel = new ItemListViewModel(GetResumeablesAsync, presentation, imageManager, apiClient, nav, playback, logger, _serverEvents)
-            {
-                ImageDisplayWidth = TileWidth,
-                ImageDisplayHeightGenerator = v => TileHeight,
-                DisplayNameGenerator = HomePageViewModel.GetDisplayName,
-                PreferredImageTypesGenerator = vm => new[] { ImageType.Backdrop, ImageType.Thumb, ImageType.Primary },
-                EnableBackdropsForCurrentItem = false
-            };
-            ResumeViewModel.PropertyChanged += ResumeViewModel_PropertyChanged;
-
             var trailerTileHeight = (TileHeight * 1.46) + TilePadding / 2;
             var trailerTileWidth = trailerTileHeight * 2 / 3;
 
@@ -83,7 +74,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             };
             LatestTrailersViewModel.PropertyChanged += TrailersViewModel_PropertyChanged;
 
-            const int tileScaleFactor = 12;
+            const double tileScaleFactor = 13;
 
             LatestMoviesViewModel = new ItemListViewModel(GetLatestMoviesAsync, presentation, imageManager, apiClient, nav, playback, logger, _serverEvents)
             {
@@ -99,21 +90,21 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             ActorsViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {
                 GalleryHeight = TileHeight,
-                GalleryWidth = TileWidth * 10.5 / 16,
+                GalleryWidth = TileWidth * tileScaleFactor / 16,
                 CustomCommandAction = () => NavigateWithLoading(NavigateToActorsInternal)
             };
 
             GenresViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {
                 GalleryHeight = TileHeight,
-                GalleryWidth = TileWidth * 10.5 / 16,
+                GalleryWidth = TileWidth * tileScaleFactor / 16,
                 CustomCommandAction = () => NavigateWithLoading(NavigateToGenresInternal)
             };
 
             YearsViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {
                 GalleryHeight = TileHeight,
-                GalleryWidth = TileWidth * 10.5 / 16,
+                GalleryWidth = TileWidth * tileScaleFactor / 16,
                 CustomCommandAction = () => NavigateWithLoading(NavigateToYearsInternal)
             };
 
@@ -209,6 +200,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 LoadActorsViewModel(view);
                 LoadGenresViewModel(view);
                 LoadYearsViewModel(view);
+                LoadMiniSpotlightsViewModel(view);
+                LoadMiniSpotlightsViewModel2(view);
             }
             catch (Exception ex)
             {
@@ -222,6 +215,60 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             }
         }
 
+        private void LoadMiniSpotlightsViewModel(MoviesView view)
+        {
+            Func<ItemListViewModel, Task<ItemsResult>> getItems = vm =>
+            {
+                var items = view.MiniSpotlights.Take(2).ToArray();
+
+                return Task.FromResult(new ItemsResult
+                {
+                    TotalRecordCount = items.Length,
+                    Items = items
+                });
+            };
+
+            MiniSpotlightsViewModel = new ItemListViewModel(getItems, PresentationManager, _imageManager, ApiClient, _navService, _playbackManager, _logger, _serverEvents)
+            {
+                ImageDisplayWidth = TileWidth + (TilePadding / 4) - 1,
+                ImageDisplayHeightGenerator = v => TileHeight,
+                DisplayNameGenerator = HomePageViewModel.GetDisplayName,
+                EnableBackdropsForCurrentItem = false,
+                ImageStretch = Stretch.UniformToFill,
+                PreferredImageTypesGenerator = vm => new[] { ImageType.Backdrop },
+                DownloadImageAtExactSize = true
+            };
+
+            OnPropertyChanged("MiniSpotlightsViewModel");
+        }
+
+        private void LoadMiniSpotlightsViewModel2(MoviesView view)
+        {
+            Func<ItemListViewModel, Task<ItemsResult>> getItems = vm =>
+            {
+                var items = view.MiniSpotlights.Skip(2).Take(3).ToArray();
+
+                return Task.FromResult(new ItemsResult
+                {
+                    TotalRecordCount = items.Length,
+                    Items = items
+                });
+            };
+
+            MiniSpotlightsViewModel2 = new ItemListViewModel(getItems, PresentationManager, _imageManager, ApiClient, _navService, _playbackManager, _logger, _serverEvents)
+            {
+                ImageDisplayWidth = TileWidth,
+                ImageDisplayHeightGenerator = v => TileHeight,
+                DisplayNameGenerator = HomePageViewModel.GetDisplayName,
+                EnableBackdropsForCurrentItem = false,
+                ImageStretch = Stretch.UniformToFill,
+                PreferredImageTypesGenerator = vm => new[] { ImageType.Backdrop },
+                DownloadImageAtExactSize = true
+            };
+
+            OnPropertyChanged("MiniSpotlightsViewModel2");
+        }
+
         void LatestMoviesViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             ShowLatestMovies = LatestMoviesViewModel.ItemCount > 0;
@@ -230,11 +277,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         void TrailersViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             ShowLatestTrailers = LatestTrailersViewModel.ItemCount > 0;
-        }
-
-        void ResumeViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            ShowResume = ResumeViewModel.ItemCount > 0;
         }
 
         private bool _showLatestMovies;
@@ -287,24 +329,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 if (changed)
                 {
                     OnPropertyChanged("ShowTrailers");
-                }
-            }
-        }
-
-        private bool _showResume;
-        public bool ShowResume
-        {
-            get { return _showResume; }
-
-            set
-            {
-                var changed = _showResume != value;
-
-                _showResume = value;
-
-                if (changed)
-                {
-                    OnPropertyChanged("ShowResume");
                 }
             }
         }
@@ -424,7 +448,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             var tileWidth = TileWidth * 2 + TilePadding;
             var tileHeight = tileWidth * 9 / 16;
 
-            BackdropItems = view.SpotlightItems.OrderBy(i => Guid.NewGuid()).ToArray();
+            BackdropItems = view.BackdropItems.ToArray();
 
             var images = view.SpotlightItems.Select(i => new ImageViewerImage
             {
@@ -680,7 +704,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         private void LoadHDMoviesViewModel(MoviesView view)
         {
-            ShowHDMovies = view.HDItems.Length > 0 && view.HDMoviePercentage > 10 && view.HDMoviePercentage < 90;
+            ShowHDMovies = view.HDItems.Count > 0 && view.HDMoviePercentage > 10 && view.HDMoviePercentage < 90;
 
             var images = view.HDItems.Take(1).Select(i => ApiClient.GetImageUrl(i.Id, new ImageOptions
             {
@@ -699,15 +723,15 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             if (now.DayOfWeek == DayOfWeek.Friday)
             {
-                ShowRomanticMovies = view.RomanceItems.Length > 0 && now.Hour >= 15;
+                ShowRomanticMovies = view.RomanceItems.Count > 0 && now.Hour >= 15;
             }
             else if (now.DayOfWeek == DayOfWeek.Saturday)
             {
-                ShowRomanticMovies = view.RomanceItems.Length > 0 && (now.Hour < 3 || now.Hour >= 15);
+                ShowRomanticMovies = view.RomanceItems.Count > 0 && (now.Hour < 3 || now.Hour >= 15);
             }
             else if (now.DayOfWeek == DayOfWeek.Sunday)
             {
-                ShowRomanticMovies = view.RomanceItems.Length > 0 && now.Hour < 3;
+                ShowRomanticMovies = view.RomanceItems.Count > 0 && now.Hour < 3;
             }
             else
             {
@@ -731,12 +755,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             if (now.DayOfWeek == DayOfWeek.Thursday)
             {
-                ShowComedyItems = view.ComedyItems.Length > 0 && now.Hour >= 12;
+                ShowComedyItems = view.ComedyItems.Count > 0 && now.Hour >= 12;
                 ComedyItemsViewModel.Name = "Comedy Night";
             }
             else if (now.DayOfWeek == DayOfWeek.Sunday)
             {
-                ShowComedyItems = view.ComedyItems.Length > 0;
+                ShowComedyItems = view.ComedyItems.Count > 0;
                 ComedyItemsViewModel.Name = "Sunday Funnies";
             }
             else
@@ -757,7 +781,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         private void LoadFamilyMoviesViewModel(MoviesView view)
         {
-            ShowFamilyMovies = view.FamilyMovies.Length > 0 && view.FamilyMoviePercentage > 10 && view.FamilyMoviePercentage < 90;
+            ShowFamilyMovies = view.FamilyMovies.Count > 0 && view.FamilyMoviePercentage > 10 && view.FamilyMoviePercentage < 90;
 
             var images = view.FamilyMovies.Take(1).Select(i => ApiClient.GetImageUrl(i.Id, new ImageOptions
             {
@@ -772,7 +796,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         private void Load3DMoviesViewModel(MoviesView view)
         {
-            Show3DMovies = view.ThreeDItems.Length > 0;
+            Show3DMovies = view.ThreeDItems.Count > 0;
 
             var images = view.ThreeDItems.Take(1).Select(i => ApiClient.GetImageUrl(i.Id, new ImageOptions
             {
@@ -787,7 +811,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         private void LoadBoxsetsViewModel(MoviesView view)
         {
-            ShowBoxSets = view.BoxSetItems.Length > 0;
+            ShowBoxSets = view.BoxSetItems.Count > 0;
 
             var images = view.BoxSetItems.Take(1).Select(i => ApiClient.GetImageUrl(i.Id, new ImageOptions
             {
@@ -802,7 +826,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         private void LoadTrailersViewModel(MoviesView view)
         {
-            ShowTrailers = view.TrailerItems.Length > 0;
+            ShowTrailers = view.TrailerItems.Count > 0;
 
             var images = view.TrailerItems.Take(1).Select(i => ApiClient.GetImageUrl(i.Id, new ImageOptions
             {
@@ -1286,9 +1310,65 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 LatestTrailersViewModel.Dispose();
             }
-            if (ResumeViewModel != null)
+            if (LatestMoviesViewModel != null)
             {
-                ResumeViewModel.Dispose();
+                LatestMoviesViewModel.Dispose();
+            }
+            if (MiniSpotlightsViewModel != null)
+            {
+                MiniSpotlightsViewModel.Dispose();
+            }
+            if (MiniSpotlightsViewModel2 != null)
+            {
+                MiniSpotlightsViewModel2.Dispose();
+            }
+            if (SpotlightViewModel != null)
+            {
+                SpotlightViewModel.Dispose();
+            }
+            if (GenresViewModel != null)
+            {
+                GenresViewModel.Dispose();
+            }
+            if (AllMoviesViewModel != null)
+            {
+                AllMoviesViewModel.Dispose();
+            }
+            if (ActorsViewModel != null)
+            {
+                ActorsViewModel.Dispose();
+            }
+            if (BoxsetsViewModel != null)
+            {
+                BoxsetsViewModel.Dispose();
+            }
+            if (TrailersViewModel != null)
+            {
+                TrailersViewModel.Dispose();
+            }
+            if (HDMoviesViewModel != null)
+            {
+                HDMoviesViewModel.Dispose();
+            }
+            if (ThreeDMoviesViewModel != null)
+            {
+                ThreeDMoviesViewModel.Dispose();
+            }
+            if (FamilyMoviesViewModel != null)
+            {
+                FamilyMoviesViewModel.Dispose();
+            }
+            if (ComedyItemsViewModel != null)
+            {
+                ComedyItemsViewModel.Dispose();
+            }
+            if (RomanticMoviesViewModel != null)
+            {
+                RomanticMoviesViewModel.Dispose();
+            }
+            if (YearsViewModel != null)
+            {
+                YearsViewModel.Dispose();
             }
             DisposeMainViewCancellationTokenSource(true);
         }

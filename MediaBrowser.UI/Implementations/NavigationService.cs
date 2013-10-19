@@ -74,7 +74,7 @@ namespace MediaBrowser.UI.Implementations
 
         private readonly IImageManager _imageManager;
         private readonly ILogger _logger;
-        private readonly IServerEventsFactory _serverEvents;
+        private readonly IServerEvents _serverEvents;
 
         private readonly IUserInputManager _userInputManager;
 
@@ -85,7 +85,7 @@ namespace MediaBrowser.UI.Implementations
         /// <param name="playbackManagerFactory">The playback manager factory.</param>
         /// <param name="apiClient">The API client.</param>
         /// <param name="presentationManager">The presentation manager.</param>
-        public NavigationService(IThemeManager themeManager, Func<IPlaybackManager> playbackManagerFactory, IApiClient apiClient, IPresentationManager presentationManager, ITheaterConfigurationManager config, Func<ISessionManager> sessionFactory, IApplicationHost appHost, IInstallationManager installationManager, IImageManager imageManager, ILogger logger, IUserInputManager userInputManager, IServerEventsFactory serverEvents)
+        public NavigationService(IThemeManager themeManager, Func<IPlaybackManager> playbackManagerFactory, IApiClient apiClient, IPresentationManager presentationManager, ITheaterConfigurationManager config, Func<ISessionManager> sessionFactory, IApplicationHost appHost, IInstallationManager installationManager, IImageManager imageManager, ILogger logger, IUserInputManager userInputManager, IServerEvents serverEvents)
         {
             _themeManager = themeManager;
             _playbackManagerFactory = playbackManagerFactory;
@@ -192,7 +192,7 @@ namespace MediaBrowser.UI.Implementations
 
             App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(async () =>
             {
-                var page = new FullscreenVideoPage(_userInputManager, _playbackManagerFactory(), this, _presentationManager, _apiClient, _imageManager, _logger, _serverEvents.GetServerEvents());
+                var page = new FullscreenVideoPage(_userInputManager, _playbackManagerFactory(), this, _presentationManager, _apiClient, _imageManager, _logger, _serverEvents);
 
                 new InternalPlayerPageBehavior(page).AdjustPresentationForPlayback();
 

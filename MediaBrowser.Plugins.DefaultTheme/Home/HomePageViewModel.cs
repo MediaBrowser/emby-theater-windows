@@ -29,7 +29,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         private readonly IPlaybackManager _playbackManager;
         private readonly IServerEvents _serverEvents;
 
-        private const double TileWidth = 352;
+        private const double TileWidth = 336;
         private const double TileHeight = TileWidth * 9 / 16;
 
         public HomePageViewModel(IPresentationManager presentationManager, IApiClient apiClient, ISessionManager sessionManager, ILogger logger, IImageManager imageManager, INavigationService nav, IPlaybackManager playbackManager, IServerEvents serverEvents)

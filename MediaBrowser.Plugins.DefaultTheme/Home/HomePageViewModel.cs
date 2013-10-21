@@ -50,16 +50,13 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 {
                     //_sessionManager.CurrentUser.Name.ToLower()
                 };
-
-            //views.Add(new TabItem
-            //{
-            //    Name = "start",
-            //    DisplayName = "start"
-            //});
             
             try
             {
-                var itemCounts = await _apiClient.GetItemCountsAsync(_sessionManager.CurrentUser.Id);
+                var itemCounts = await _apiClient.GetItemCountsAsync(new ItemCountsQuery
+                {
+                    UserId = _sessionManager.CurrentUser.Id
+                });
 
                 if (itemCounts.MovieCount > 0 || itemCounts.TrailerCount > 0)
                 {
@@ -96,6 +93,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 _logger.ErrorException("Error getting item counts", ex);
             }
+
+            views.Add(new TabItem
+            {
+                Name = "favorites",
+                DisplayName = "favorites"
+            });
 
             if (_presentationManager.GetApps(_sessionManager.CurrentUser).Any())
             {
@@ -185,7 +188,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                                            _playbackManager, _logger, TileWidth, TileHeight, _serverEvents);
             }
 
-            return new UserTabViewModel(_presentationManager, _imageManager, _apiClient, _sessionManager, _nav, _playbackManager, _logger, TileWidth, TileHeight, _serverEvents);
+            return new FavoritesViewModel(_presentationManager, _imageManager, _apiClient, _sessionManager, _nav, _playbackManager, _logger, TileWidth, TileHeight, _serverEvents);
         }
 
         private Task<ItemsResult> GetMediaCollectionsAsync(ItemListViewModel viewModel)

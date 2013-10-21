@@ -204,6 +204,19 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
+        private bool? _showTitle;
+        public bool? ShowTitle
+        {
+            get { return _showTitle; }
+
+            set
+            {
+                _showTitle = value;
+
+                OnPropertyChanged("ShowTitle");
+            }
+        }
+
         private bool _hasImage;
         public bool HasImage
         {

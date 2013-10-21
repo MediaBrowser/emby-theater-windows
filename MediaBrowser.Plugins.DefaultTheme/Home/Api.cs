@@ -58,9 +58,16 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         public List<BaseItemDto> MiniSpotlights { get; set; }
     }
 
-    public class HomeView
+    public class FavoritesView : BaseView
     {
-        public List<BaseItemDto> SpotlightItems { get; set; }
+        public List<BaseItemDto> Artists { get; set; }
+        public List<BaseItemDto> Movies { get; set; }
+        public List<BaseItemDto> Series { get; set; }
+        public List<BaseItemDto> Episodes { get; set; }
+        public List<BaseItemDto> Games { get; set; }
+        public List<BaseItemDto> Books { get; set; }
+        public List<BaseItemDto> Albums { get; set; }
+        public List<BaseItemDto> Songs { get; set; }
     }
 
     public static class ApiClientExtensions
@@ -83,11 +90,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             return apiClient.GetAsync<MoviesView>(url, cancellationToken);
         }
 
-        public static Task<HomeView> GetHomeView(this IApiClient apiClient, string userId, CancellationToken cancellationToken)
+        public static Task<FavoritesView> GetFavoritesView(this IApiClient apiClient, string userId, CancellationToken cancellationToken)
         {
-            var url = apiClient.GetApiUrl("MBT/DefaultTheme/Home?userId=" + userId);
+            var url = apiClient.GetApiUrl("MBT/DefaultTheme/Favorites?userId=" + userId);
 
-            return apiClient.GetAsync<HomeView>(url, cancellationToken);
+            return apiClient.GetAsync<FavoritesView>(url, cancellationToken);
         }
 
         public static Task<GamesView> GetGamesView(this IApiClient apiClient, string userId, CancellationToken cancellationToken)

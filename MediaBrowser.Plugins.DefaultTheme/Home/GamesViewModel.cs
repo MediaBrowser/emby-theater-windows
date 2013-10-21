@@ -436,7 +436,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
                 SortOrder = SortOrder.Descending,
 
-                //Filters = new[] { ItemFilter.IsPlayed },
+                Filters = new[] { ItemFilter.IsPlayed },
 
                 IncludeItemTypes = new[] { "Game" },
 

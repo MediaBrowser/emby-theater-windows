@@ -478,35 +478,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             SpotlightViewModel.StopRotating();
         }
 
-        private Task<ItemsResult> GetResumeablesAsync(ItemListViewModel viewModel)
-        {
-            var query = new ItemQuery
-            {
-                Fields = new[]
-                        {
-                            ItemFields.PrimaryImageAspectRatio,
-                            ItemFields.DateCreated,
-                            ItemFields.DisplayPreferencesId
-                        },
-
-                UserId = _sessionManager.CurrentUser.Id,
-
-                SortBy = new[] { ItemSortBy.DatePlayed },
-
-                SortOrder = SortOrder.Descending,
-
-                IncludeItemTypes = new[] { "Movie" },
-
-                Filters = new[] { ItemFilter.IsResumable },
-
-                Limit = 3,
-
-                Recursive = true
-            };
-
-            return ApiClient.GetItemsAsync(query);
-        }
-
         private Task<ItemsResult> GetLatestTrailersAsync(ItemListViewModel viewModel)
         {
             var query = new ItemQuery
@@ -528,7 +499,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
                 Filters = new[] { ItemFilter.IsUnplayed },
 
-                Limit = 8,
+                Limit = 10,
 
                 Recursive = true
             };
@@ -557,7 +528,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
                 Filters = new[] { ItemFilter.IsUnplayed },
 
-                Limit = 8,
+                Limit = 10,
 
                 Recursive = true
             };

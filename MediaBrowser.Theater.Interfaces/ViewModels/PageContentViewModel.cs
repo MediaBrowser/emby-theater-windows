@@ -137,7 +137,7 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
 
         void PlaybackManager_PlaybackStarted(object sender, PlaybackStartEventArgs e)
         {
-            IsPlayingInternalVideo = e.Player is IInternalMediaPlayer && e.Player is IVideoPlayer;
+            IsPlayingInternalVideo = e.Player is IInternalMediaPlayer && e.Player is IVideoPlayer && e.Player.CurrentMedia != null && e.Player.CurrentMedia.IsVideo;
         }
 
         private void ClockTimerCallback(object state)
@@ -147,16 +147,16 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
 
         void SessionManagerUserLoggedOut(object sender, EventArgs e)
         {
+            IsLoggedIn = SessionManager.CurrentUser != null;
             RefreshRestartApplicationNotification();
             RefreshRestartServerNotification();
-            IsLoggedIn = SessionManager.CurrentUser != null;
         }
 
         void SessionManagerUserLoggedIn(object sender, EventArgs e)
         {
+            IsLoggedIn = SessionManager.CurrentUser != null;
             RefreshRestartApplicationNotification();
             RefreshRestartServerNotification();
-            IsLoggedIn = SessionManager.CurrentUser != null;
         }
 
         void NavigationServiceNavigated(object sender, NavigationEventArgs e)

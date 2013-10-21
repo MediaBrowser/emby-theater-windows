@@ -39,9 +39,7 @@ namespace MediaBrowser.Theater.DirectShow
                 return apiClient.GetVideoStreamUrl(new VideoStreamOptions
                 {
                     ItemId = item.Id,
-                    AudioCodec = AudioCodecs.Copy,
-                    VideoCodec = VideoCodecs.Copy,
-                    OutputFileExtension = ".mp4"
+                    Static = true
                 });
             }
 

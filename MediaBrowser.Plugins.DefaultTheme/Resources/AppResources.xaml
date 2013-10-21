@@ -371,7 +371,10 @@
                                 <DataTrigger Binding="{Binding ItemType}" Value="Audio">
                                     <Setter Property="Visibility" Value="Visible" />
                                 </DataTrigger>
-                                <DataTrigger Binding="{Binding ItemType}" Value="IndexFolder">
+                                <DataTrigger Binding="{Binding ItemType}" Value="Artist">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding ItemType}" Value="MusicAlbum">
                                     <Setter Property="Visibility" Value="Visible" />
                                 </DataTrigger>
                                 <DataTrigger Binding="{Binding ItemType}" Value="Person">

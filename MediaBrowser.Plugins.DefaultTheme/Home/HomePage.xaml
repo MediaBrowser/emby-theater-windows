@@ -18,12 +18,27 @@
             </controls:ExtendedListBox.ItemsPanel>
         </controls:ExtendedListBox>
 
-        <controls:ExtendedScrollViewer x:Name="ScrollViewer" Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalAlignment="Top" HorizontalAlignment="Center" CanContentScroll="True">
+        <controls:ExtendedScrollViewer x:Name="ScrollViewer" Grid.Row="1" KeyboardNavigation.IsTabStop="False" Focusable="False" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalAlignment="Top" CanContentScroll="True">
+            
+            <ScrollViewer.Style>
+                <Style TargetType="{x:Type ContentControl}">
+                    <Setter Property="HorizontalAlignment" Value="left"></Setter>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding CurrentSection}" Value="apps">
+                            <Setter Property="HorizontalAlignment" Value="Center"></Setter>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding CurrentSection}" Value="media collections">
+                            <Setter Property="HorizontalAlignment" Value="Center"></Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ScrollViewer.Style>
+            
             <controls:ScrollingPanel x:Name="ScrollingPanel" CanHorizontallyScroll="True" CanVerticallyScroll="False">
-                <ContentControl x:Name="PageContent" Margin="90 60 90 40" Focusable="False">
+                <ContentControl x:Name="PageContent" Margin="100 60 100 40" Focusable="False">
                     <ContentControl.Style>
                         <Style TargetType="{x:Type ContentControl}">
-
+                            
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding CurrentSection}" Value="movies">
                                     <Setter Property="Content">
@@ -89,11 +104,11 @@
                                         </Setter.Value>
                                     </Setter>
                                 </DataTrigger>
-                                <DataTrigger Binding="{Binding CurrentSection}" Value="start">
+                                <DataTrigger Binding="{Binding CurrentSection}" Value="favorites">
                                     <Setter Property="Content">
                                         <Setter.Value>
                                             <Grid>
-                                                <ContentControl Content="{Binding ContentViewModel}" ContentTemplate="{DynamicResource UserViewTemplate}"></ContentControl>
+                                                <ContentControl Content="{Binding ContentViewModel}" ContentTemplate="{DynamicResource FavoritesViewTemplate}"></ContentControl>
                                             </Grid>
                                         </Setter.Value>
                                     </Setter>

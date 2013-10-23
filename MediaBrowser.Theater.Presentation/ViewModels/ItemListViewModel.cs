@@ -23,7 +23,7 @@ using System.Windows.Threading;
 namespace MediaBrowser.Theater.Presentation.ViewModels
 {
     [TypeDescriptionProvider(typeof(HyperTypeDescriptionProvider))]
-    public class ItemListViewModel : BaseViewModel, IDisposable
+    public class ItemListViewModel : BaseViewModel, IDisposable, IAcceptsPlayCommand
     {
         private readonly IPresentationManager _presentationManager;
         private readonly IApiClient _apiClient;
@@ -714,6 +714,11 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                     _indexSelectionChangeTimer = null;
                 }
             }
+        }
+
+        public void HandlePlayCommand()
+        {
+            Play(CurrentItem);
         }
     }
 }

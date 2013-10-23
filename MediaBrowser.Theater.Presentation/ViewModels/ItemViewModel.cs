@@ -19,7 +19,7 @@ using System.Windows.Media.Imaging;
 namespace MediaBrowser.Theater.Presentation.ViewModels
 {
     [TypeDescriptionProvider(typeof(HyperTypeDescriptionProvider))]
-    public class ItemViewModel : BaseViewModel, IDisposable
+    public class ItemViewModel : BaseViewModel, IDisposable, IAcceptsPlayCommand
     {
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
@@ -933,12 +933,32 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         {
             try
             {
-                await _playbackManager.Play(new PlayOptions(_item));
+                var item = _item;
+
+                if (item.IsVideo && (item.Chapters == null || item.MediaStreams == null))
+                {
+                    item = await _apiClient.GetItemAsync(item.Id, _apiClient.CurrentUserId);
+                }
+                else if (item.IsAudio && (item.MediaStreams == null))
+                {
+                    item = await _apiClient.GetItemAsync(item.Id, _apiClient.CurrentUserId);
+                }
+                else if (string.IsNullOrEmpty(item.Path))
+                {
+                    item = await _apiClient.GetItemAsync(item.Id, _apiClient.CurrentUserId);
+                }
+
+                await _playbackManager.Play(new PlayOptions(item));
             }
             catch (Exception)
             {
                 _presentation.ShowDefaultErrorMessage();
             }
+        }
+
+        public void HandlePlayCommand()
+        {
+            Play();
         }
 
         public async void Resume()

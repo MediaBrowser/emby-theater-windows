@@ -407,6 +407,17 @@ namespace MediaBrowser.UI.EntryPoints
 
         private void SendPlayCommandToPresentation()
         {
+            _presenation.Window.Dispatcher.InvokeAsync(() =>
+            {
+                var currentPage = _nav.CurrentPage;
+
+                var accepts = currentPage.DataContext as IAcceptsPlayCommand;
+
+                if (accepts != null)
+                {
+                    accepts.HandlePlayCommand();
+                }
+            });
         }
 
         private void Stop()

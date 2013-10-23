@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Details
 {
-    public class DetailPageViewModel : TabbedViewModel
+    public class DetailPageViewModel : TabbedViewModel, IAcceptsPlayCommand
     {
         private readonly IApiClient _apiClient;
         private readonly ISessionManager _sessionManager;
@@ -697,6 +697,16 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 TotalRecordCount = items.Length,
                 Items = items
             };
+        }
+
+        public void HandlePlayCommand()
+        {
+            var accepts = ContentViewModel as IAcceptsPlayCommand;
+
+            if (accepts != null)
+            {
+                accepts.HandlePlayCommand();
+            }
         }
     }
 }

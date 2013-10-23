@@ -106,7 +106,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
             }
 
             // Don't eat left/right if horizontal scrolling is disabled
-            if (e.Key == Key.Left || e.Key == Key.Right)
+            else if (e.Key == Key.Left || e.Key == Key.Right)
             {
                 if (ScrollViewer.GetHorizontalScrollBarVisibility(this) == ScrollBarVisibility.Disabled)
                 {
@@ -115,7 +115,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
             }
 
             // Don't eat up/down if vertical scrolling is disabled
-            if (e.Key == Key.Up || e.Key == Key.Down)
+            else if (e.Key == Key.Up || e.Key == Key.Down)
             {
                 if (ScrollViewer.GetVerticalScrollBarVisibility(this) == ScrollBarVisibility.Disabled)
                 {
@@ -123,9 +123,69 @@ namespace MediaBrowser.Theater.Presentation.Controls
                 }
             }
 
+            else if (e.Key == Key.Next || e.Key == Key.PageDown)
+            {
+                if (ScrollViewer.GetHorizontalScrollBarVisibility(this) != ScrollBarVisibility.Disabled)
+                {
+                    // Going to have to use reflection to call the below
+                    //base.NavigateByPage(FocusNavigationDirection.Right, new ItemsControl.ItemNavigateArgs(e.Device, Keyboard.Modifiers));
+                    // e.Handled = true;
+                    //return;
+                }
+            }
+
+            else if (e.Key == Key.Prior || e.Key == Key.PageUp)
+            {
+                if (ScrollViewer.GetHorizontalScrollBarVisibility(this) != ScrollBarVisibility.Disabled)
+                {
+                    // Going to have to use reflection to call the below
+                    //base.NavigateByPage(FocusNavigationDirection.Left, new ItemsControl.ItemNavigateArgs(e.Device, Keyboard.Modifiers));
+                    // e.Handled = true;
+                    //return;
+                }
+            }
+
+            else if (e.Key == Key.End)
+            {
+                if (ScrollViewer.GetHorizontalScrollBarVisibility(this) != ScrollBarVisibility.Disabled)
+                {
+                    if (Items.Count > 0)
+                    {
+                        SelectedIndex = Items.Count - 1;
+                        ScrollViewer.ScrollToRightEnd();
+                        e.Handled = true;
+                        return;
+                    }
+                }
+            }
+
+            else if (e.Key == Key.Home)
+            {
+                if (ScrollViewer.GetHorizontalScrollBarVisibility(this) != ScrollBarVisibility.Disabled)
+                {
+                    if (Items.Count > 0)
+                    {
+                        SelectedIndex = 0;
+                        ScrollViewer.ScrollToLeftEnd();
+                        e.Handled = true;
+                        return;
+                    }
+                }
+            }
+
             base.OnKeyDown(e);
         }
 
+        private ScrollViewer ScrollViewer
+        {
+            get
+            {
+                var border = (Border)VisualTreeHelper.GetChild(this, 0);
+
+                return (ScrollViewer)VisualTreeHelper.GetChild(border, 0);
+            }
+        }
+        
         /// <summary>
         /// Invoked when an unhandled <see cref="E:System.Windows.Input.Keyboard.KeyUp" /> attached event reaches an element in its route that is derived from this class. Implement this method to add class handling for this event.
         /// </summary>

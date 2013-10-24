@@ -16,7 +16,7 @@
 
             <StackPanel Orientation="Vertical">
 
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 25 0 0">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 20 0 0">
 
                     <Button x:Name="PreviousChapterButton" Command="{Binding PreviousChapterCommand}">
                         <Button.Style>
@@ -94,7 +94,7 @@
 
                 </StackPanel>
 
-                <Grid x:Name="SeekGrid" Margin="400 15 300 20">
+                <Grid x:Name="SeekGrid" Margin="400 10 300 20">
 
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"></ColumnDefinition>

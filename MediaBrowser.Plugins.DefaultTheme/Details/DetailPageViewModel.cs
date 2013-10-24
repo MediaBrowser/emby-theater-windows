@@ -330,7 +330,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             return views;
         }
 
-        protected override BaseViewModel GetContentViewModel(string section)
+        protected override object GetContentViewModel(string section)
         {
             if (string.Equals(section, "overview"))
             {
@@ -449,11 +449,15 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             {
                 return GetItemByNameItemListViewModel("Episode", 496, 279);
             }
+            if (string.Equals(section, "media info"))
+            {
+                return _itemViewModel.MediaStreams.Select(i => new MediaStreamViewModel { MediaStream = i, OwnerItem = _itemViewModel.Item }).ToList();
+            }
 
             return _itemViewModel;
         }
 
-        protected override void DisposePreviousSection(BaseViewModel old)
+        protected override void DisposePreviousSection(object old)
         {
             // Don't dispose the page view model on tab change
             if (old is ItemViewModel)

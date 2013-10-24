@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Theater.Interfaces;
+﻿using System.Windows.Data;
+using MediaBrowser.Theater.Interfaces;
 using System;
 using System.ComponentModel;
 using System.Windows;

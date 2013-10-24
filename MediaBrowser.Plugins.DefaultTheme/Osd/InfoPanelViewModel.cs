@@ -64,7 +64,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Osd
             return Task.FromResult<IEnumerable<TabItem>>(list);
         }
 
-        protected override BaseViewModel GetContentViewModel(string section)
+        protected override object GetContentViewModel(string section)
         {
             if (string.Equals(section, "Scenes"))
             {
@@ -101,7 +101,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Osd
             return _transportViewModel;
         }
 
-        protected override void DisposePreviousSection(BaseViewModel old)
+        protected override void DisposePreviousSection(object old)
         {
             if (!(old is TransportOsdViewModel))
             {

@@ -120,7 +120,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
 
             await player.Play(options);
 
-            if (player is IInternalMediaPlayer && player is IVideoPlayer)
+            if (player is IInternalMediaPlayer && player is IVideoPlayer && firstItem.IsVideo)
             {
                 await _presentationManager.Window.Dispatcher.InvokeAsync(() => _presentationManager.WindowOverlay.SetResourceReference(FrameworkElement.StyleProperty, "WindowBackgroundContentDuringPlayback"));
 

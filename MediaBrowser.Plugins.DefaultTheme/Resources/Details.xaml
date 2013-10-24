@@ -63,112 +63,40 @@
         </Grid>
     </DataTemplate>
 
-    <DataTemplate x:Key="MediaStreamTemplate" DataType="{x:Type entities:MediaStream}">
+    <DataTemplate x:Key="MediaStreamTemplate" DataType="{x:Type viewModels:MediaStreamViewModel}">
         <Grid Background="#a6000000" MinWidth="300">
 
-            <StackPanel Orientation="Vertical" Margin="30">
+            <StackPanel Orientation="Horizontal" Margin="20">
 
-                <StackPanel Orientation="Horizontal" Margin="0 0 0 20">
+                <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding Type}" Width="150"></TextBlock>
 
-                    <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding Type}"></TextBlock>
-
-                    <TextBlock Text="{Binding Language, StringFormat=' - {0}'}">
-                        <TextBlock.Style>
-                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Language}" Value="{x:Null}">
-                                        <Setter Property="Visibility" Value="Collapsed" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBlock.Style>
-                    </TextBlock>
-                </StackPanel>
-
-                <TextBlock Text="{Binding Codec, Converter={controls:UpperCaseConverter}}" Margin="0 10 0 0">
-                    <TextBlock.Style>
-                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
+                <ItemsControl ItemsSource="{Binding Attributes}" Focusable="False" Margin="0 0 50 0">
+                    <ItemsControl.Style>
+                        <Style TargetType="{x:Type ItemsControl}">
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding Codec}" Value="{x:Null}">
-                                    <Setter Property="Visibility" Value="Collapsed" />
-                                </DataTrigger>
                             </Style.Triggers>
                         </Style>
-                    </TextBlock.Style>
-                </TextBlock>
+                    </ItemsControl.Style>
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal"></WrapPanel>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{DynamicResource TextBlockStyle}" Foreground="#cc3333" x:Name="Delimiter" Text=" • "/>
+                                <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding .}"/>
+                            </StackPanel>
+                            <DataTemplate.Triggers>
+                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource PreviousData}}" Value="{x:Null}">
+                                    <Setter Property="Visibility" TargetName="Delimiter" Value="Collapsed"/>
+                                </DataTrigger>
+                            </DataTemplate.Triggers>
+                        </DataTemplate>
 
-                <TextBlock Text="{Binding AspectRatio}" Margin="0 10 0 0">
-                    <TextBlock.Style>
-                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding AspectRatio}" Value="{x:Null}">
-                                    <Setter Property="Visibility" Value="Collapsed" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
-                </TextBlock>
-                
-                <TextBlock Text="{Binding Channels, StringFormat='{}{0} channel'}" Margin="0 10 0 0">
-                    <TextBlock.Style>
-                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Channels}" Value="{x:Null}">
-                                    <Setter Property="Visibility" Value="Collapsed" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
-                </TextBlock>
-
-                <TextBlock Text="{Binding SampleRate, StringFormat='{}{0} khz'}" Margin="0 10 0 0">
-                    <TextBlock.Style>
-                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding SampleRate}" Value="{x:Null}">
-                                    <Setter Property="Visibility" Value="Collapsed" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
-                </TextBlock>
-
-                <TextBlock Text="Default" Margin="0 10 0 0">
-                    <TextBlock.Style>
-                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsDefault}" Value="False">
-                                    <Setter Property="Visibility" Value="Collapsed" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
-                </TextBlock>
-
-                <TextBlock Text="Forced" Margin="0 10 0 0">
-                    <TextBlock.Style>
-                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsForced}" Value="False">
-                                    <Setter Property="Visibility" Value="Collapsed" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
-                </TextBlock>
-
-                <TextBlock Text="{Binding Path}" Margin="0 10 0 0">
-                    <TextBlock.Style>
-                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Path}" Value="{x:Null}">
-                                    <Setter Property="Visibility" Value="Collapsed" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
-                </TextBlock>
-            
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
             </StackPanel>
         </Grid>
     </DataTemplate>
@@ -1289,10 +1217,10 @@
                 <Setter Property="Content">
                     <Setter.Value>
                         <Grid>
-                            <controls:ExtendedListBox Margin="0 -15 0 -15" VerticalAlignment="Top" DataContext="{Binding ContentViewModel}" ItemsSource="{Binding MediaStreams}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{DynamicResource MediaStreamTemplate}">
+                            <controls:ExtendedListBox VerticalAlignment="Top" DataContext="{Binding ContentViewModel}" ItemsSource="{Binding}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{DynamicResource MediaStreamTemplate}">
                                 <controls:ExtendedListBox.ItemsPanel>
                                     <ItemsPanelTemplate>
-                                        <StackPanel Orientation="Horizontal" Margin="80 35"></StackPanel>
+                                        <WrapPanel Orientation="Vertical" Margin="80 20"></WrapPanel>
                                     </ItemsPanelTemplate>
                                 </controls:ExtendedListBox.ItemsPanel>
                             </controls:ExtendedListBox>

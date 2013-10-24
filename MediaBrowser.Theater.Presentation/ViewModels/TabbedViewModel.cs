@@ -35,8 +35,8 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
-        private BaseViewModel _contentViewModel;
-        public BaseViewModel ContentViewModel
+        private object _contentViewModel;
+        public object ContentViewModel
         {
             get { return _contentViewModel; }
 
@@ -101,7 +101,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
-        protected virtual void DisposePreviousSection(BaseViewModel old)
+        protected virtual void DisposePreviousSection(object old)
         {
             var disposable = old as IDisposable;
 
@@ -179,7 +179,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         }
 
         protected abstract Task<IEnumerable<TabItem>> GetSections();
-        protected abstract BaseViewModel GetContentViewModel(string section);
+        protected abstract object GetContentViewModel(string section);
 
         public void Dispose()
         {

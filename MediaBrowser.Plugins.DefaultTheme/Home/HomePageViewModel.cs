@@ -29,7 +29,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         private readonly IPlaybackManager _playbackManager;
         private readonly IServerEvents _serverEvents;
 
-        private const double TileWidth = 336;
+        private const double TileWidth = 320;
         private const double TileHeight = TileWidth * 9 / 16;
 
         public HomePageViewModel(IPresentationManager presentationManager, IApiClient apiClient, ISessionManager sessionManager, ILogger logger, IImageManager imageManager, INavigationService nav, IPlaybackManager playbackManager, IServerEvents serverEvents)
@@ -147,7 +147,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
                 if (item.IndexNumber.HasValue && item.ParentIndexNumber.HasValue)
                 {
-                    name = name + ": " + string.Format("S{0}, Ep. {1}", item.ParentIndexNumber.Value, item.IndexNumber.Value);
+                    name = name + " " + string.Format("S{0}, Ep. {1}", item.ParentIndexNumber.Value, item.IndexNumber.Value);
                 }
 
             }
@@ -155,7 +155,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             return name;
         }
 
-        protected override BaseViewModel GetContentViewModel(string section)
+        protected override object GetContentViewModel(string section)
         {
             if (string.Equals(section, "apps"))
             {

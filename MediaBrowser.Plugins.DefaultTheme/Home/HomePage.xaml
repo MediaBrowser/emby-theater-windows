@@ -35,7 +35,7 @@
             </ScrollViewer.Style>
             
             <controls:ScrollingPanel x:Name="ScrollingPanel" CanHorizontallyScroll="True" CanVerticallyScroll="False">
-                <ContentControl x:Name="PageContent" Margin="100 60 100 40" Focusable="False">
+                <ContentControl x:Name="PageContent" Margin="100 75 100 40" Focusable="False">
                     <ContentControl.Style>
                         <Style TargetType="{x:Type ContentControl}">
                             

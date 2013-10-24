@@ -402,7 +402,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                             {
                                 return "480p";
                             }
-                            return stream.Width + "/" + stream.Height;
+                            return stream.Width + "x" + stream.Height;
                         }
                     }
                 }

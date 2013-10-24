@@ -44,7 +44,7 @@ namespace MediaBrowser.Theater.Core.Plugins
             return Task.FromResult<IEnumerable<TabItem>>(list);
         }
 
-        protected override BaseViewModel GetContentViewModel(string section)
+        protected override object GetContentViewModel(string section)
         {
             if (string.Equals(section, "Installed Plugins", System.StringComparison.OrdinalIgnoreCase))
             {

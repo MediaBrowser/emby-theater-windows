@@ -63,7 +63,7 @@
                                     <BlurEffect Radius="11" KernelType="Gaussian"></BlurEffect>
                                 </Border.Effect>
                             </Border>
-                            <ContentPresenter Margin="10" HorizontalAlignment="Stretch" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Stretch"/>
+                            <ContentPresenter Margin="5" HorizontalAlignment="Stretch" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Stretch"/>
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
@@ -97,7 +97,7 @@
                                     <BlurEffect Radius="11" KernelType="Gaussian"></BlurEffect>
                                 </Border.Effect>
                             </Border>
-                            <ContentPresenter Margin="10" HorizontalAlignment="Stretch" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Stretch"/>
+                            <ContentPresenter Margin="5" HorizontalAlignment="Stretch" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Stretch"/>
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>

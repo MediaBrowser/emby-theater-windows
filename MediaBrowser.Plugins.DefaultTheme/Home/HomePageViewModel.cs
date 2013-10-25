@@ -63,7 +63,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                     views.Add(new TabItem
                     {
                         Name = "movies",
-                        DisplayName = "movies"
+                        DisplayName = "Movies"
                     });
                 }
 
@@ -72,7 +72,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                     views.Add(new TabItem
                     {
                         Name = "tv",
-                        DisplayName = "tv"
+                        DisplayName = "TV"
                     });
                 }
 
@@ -85,7 +85,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                     views.Add(new TabItem
                     {
                         Name = "games",
-                        DisplayName = "games"
+                        DisplayName = "Games"
                     });
                 }
             }
@@ -97,7 +97,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             views.Add(new TabItem
             {
                 Name = "favorites",
-                DisplayName = "favorites"
+                DisplayName = "Favorites"
             });
 
             if (_presentationManager.GetApps(_sessionManager.CurrentUser).Any())
@@ -105,14 +105,14 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 views.Add(new TabItem
                 {
                     Name = "apps",
-                    DisplayName = "apps"
+                    DisplayName = "Apps"
                 });
             }
 
             views.Add(new TabItem
             {
                 Name = "media collections",
-                DisplayName = "collections"
+                DisplayName = "Collections"
             });
 
             return views;

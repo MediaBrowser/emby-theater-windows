@@ -25,4 +25,6 @@
     <FontFamily x:Key="Heading2FontFamily">Segoe UI SemiLight, Lucida Sans Unicode, Verdana</FontFamily>
     <FontWeight x:Key="Heading2FontWeight">Normal</FontWeight>
     <Brush x:Key="Heading2Foreground">#000</Brush>
+
+    <Brush x:Key="MediaBrowserAccent">#52B54B</Brush>
 </ResourceDictionary>

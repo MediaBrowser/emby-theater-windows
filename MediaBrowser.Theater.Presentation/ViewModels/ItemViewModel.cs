@@ -128,6 +128,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                     OnPropertyChanged("ArtistCount");
                     OnPropertyChanged("ParentIndexNumber");
                     OnPropertyChanged("MediaStreams");
+                    OnPropertyChanged("DateText");
 
                     RefreshUserDataFields();
                 }
@@ -407,6 +408,38 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                     }
                 }
 
+                return null;
+            }
+        }
+
+        public string DateText
+        {
+            get
+            {
+                if (_item == null)
+                {
+                    return null;
+                }
+
+                if (_item.PremiereDate.HasValue && _item.IsType("episode"))
+                {
+                    return _item.PremiereDate.Value.ToShortDateString();
+                }
+                if (_item.ProductionYear.HasValue)
+                {
+                    var text = _item.ProductionYear.Value.ToString();
+
+                    if (_item.EndDate.HasValue && _item.EndDate.Value.Year != _item.ProductionYear)
+                    {
+                        text += "-" + _item.EndDate.Value.Year;
+                    }
+                    else if (_item.Status.HasValue && _item.Status.Value == SeriesStatus.Continuing)
+                    {
+                        text += "-Present";
+                    }
+
+                    return text;
+                }
                 return null;
             }
         }

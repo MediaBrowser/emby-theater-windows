@@ -44,6 +44,7 @@
                 </controls:ScrollingPanel>
             </controls:ExtendedScrollViewer>
         </Grid>
+        
         <Grid Grid.Row="1">
 
             <Grid.Style>
@@ -83,8 +84,20 @@
                 <listPage:Sidebar DataContext="{Binding CurrentItem}"></listPage:Sidebar>
             </Grid>
 
-            <controls:ExtendedListBox Command="{Binding NavigateCommand}" Style="{StaticResource ListPageListBoxStyle}" Grid.Column="1" ItemsSource="{Binding ListCollectionView}">
-            </controls:ExtendedListBox>
+            <Grid Grid.Column="1">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                </Grid.RowDefinitions>
+                
+                <Grid Background="#a6000000" Height="80" Width="600" Margin="30 30 0 0" Visibility="Collapsed">
+
+                </Grid>
+                <controls:ExtendedListBox Grid.Row="1" Command="{Binding NavigateCommand}" Style="{StaticResource ListPageListBoxStyle}" ItemsSource="{Binding ListCollectionView}">
+                </controls:ExtendedListBox>
+
+            </Grid>
         </Grid>
 
         <Grid Grid.Row="2" Name="PnlThumbstripInfo">
@@ -105,7 +118,7 @@
             </Grid.Style>
             <StackPanel Orientation="Vertical">
 
-                <TextBlock DataContext="{Binding CurrentItem}" Style="{DynamicResource Heading1TextBlockStyle}" Text="{Binding DisplayName, Converter={controls:UpperCaseConverter}}" Margin="25 0 25 40" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" HorizontalAlignment="Center" FontFamily="Segoe UI" FontWeight="ExtraBold" FontSize="170" Foreground="#ccc" Opacity=".9"></TextBlock>
+                <TextBlock DataContext="{Binding CurrentItem}" Style="{DynamicResource Heading1TextBlockStyle}" Text="{Binding DisplayName, Converter={controls:UpperCaseConverter}}" Margin="25 0 25 40" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" HorizontalAlignment="Center" FontFamily="Segoe UI" FontWeight="ExtraBold" FontSize="150" Foreground="#ccc" Opacity=".9"></TextBlock>
 
                 <ItemsControl x:Name="GenresControl" Margin="300 0 300 0" HorizontalAlignment="Center" DataContext="{Binding CurrentItem}" ItemsSource="{Binding Genres}">
                     <ItemsControl.Style>
@@ -128,8 +141,8 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Foreground="OrangeRed" Style="{DynamicResource TextBlockStyle}" x:Name="Delimiter" Text=" • "/>
-                                <TextBlock Foreground="OrangeRed" Style="{DynamicResource TextBlockStyle}" Text="{Binding .}"/>
+                                <TextBlock Foreground="{DynamicResource MediaBrowserAccent}" Style="{DynamicResource Heading2TextBlockStyle}" x:Name="Delimiter" Text=" • "/>
+                                <TextBlock Style="{DynamicResource Heading2TextBlockStyle}" Foreground="#ccc" Text="{Binding .}"/>
                             </StackPanel>
                             <DataTemplate.Triggers>
                                 <DataTrigger Binding="{Binding RelativeSource={RelativeSource PreviousData}}" Value="{x:Null}">

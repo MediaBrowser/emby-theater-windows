@@ -6,7 +6,7 @@
                     xmlns:ee="clr-namespace:Microsoft.Expression.Media.Effects;assembly=Microsoft.Expression.Effects">
 
     <Style TargetType="ProgressBar" x:Key="ResumeProgressBar">
-        <Setter Property="Foreground" Value="#cc3333"/>
+        <Setter Property="Foreground" Value="{DynamicResource MediaBrowserAccent}"/>
         <Setter Property="Background" Value="Black"/>
         <Setter Property="BorderBrush" Value="#666666"/>
         <Setter Property="BorderThickness" Value="1"/>
@@ -165,10 +165,10 @@
                 <RowDefinition Height="*"></RowDefinition>
             </Grid.RowDefinitions>
 
-            <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Column="0" Grid.Row="0" Padding="10 0 0 0">Spotlight</TextBlock>
-            <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Column="2" Grid.Row="0" Padding="45 0 0 0">Library</TextBlock>
+            <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Column="0" Grid.Row="0" Padding="5 0 0 0">Spotlight</TextBlock>
+            <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Column="2" Grid.Row="0" Padding="40 0 0 0">Library</TextBlock>
 
-            <TextBlock Grid.Column="3" Grid.Row="0" Padding="40 0 0 0" Text="Resume">
+            <TextBlock Grid.Column="3" Grid.Row="0" Padding="35 0 0 0" Text="Resume">
                 <TextBlock.Style>
                     <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
                         <Style.Triggers>
@@ -192,7 +192,7 @@
                     </Style>
                 </StackPanel.Style>
 
-                <TextBlock Style="{DynamicResource TextBlockStyle}" Padding="40 0 0 0" Text="Latest Episodes">
+                <TextBlock Style="{DynamicResource TextBlockStyle}" Padding="35 0 0 0" Text="Latest Episodes">
                 </TextBlock>
             </StackPanel>
 
@@ -208,7 +208,7 @@
                     </Style>
                 </StackPanel.Style>
 
-                <TextBlock Style="{DynamicResource TextBlockStyle}" Padding="40 0 0 0" Text="Next Up">
+                <TextBlock Style="{DynamicResource TextBlockStyle}" Padding="35 0 0 0" Text="Next Up">
                 </TextBlock>
             </StackPanel>
 
@@ -481,9 +481,9 @@
                 <RowDefinition Height="*"></RowDefinition>
             </Grid.RowDefinitions>
 
-            <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Column="0" Grid.Row="0" Padding="10 0 0 0">Spotlight</TextBlock>
+            <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Column="0" Grid.Row="0" Padding="5 0 0 0">Spotlight</TextBlock>
 
-            <Button Grid.Column="2" Grid.Row="0" Margin="40 0 0 0" HorizontalAlignment="Left" Command="{Binding NavigateToFavoriteMoviesCommand}">
+            <Button Grid.Column="2" Grid.Row="0" Margin="35 0 0 0" HorizontalAlignment="Left" Command="{Binding NavigateToFavoriteMoviesCommand}">
                 <Button.Style>
                     <Style TargetType="{x:Type Button}" BasedOn="{StaticResource TextButtonStyle}">
                         <Style.Triggers>
@@ -501,7 +501,7 @@
                 </StackPanel>
             </Button>
 
-            <Button Grid.Column="3" Grid.Row="0" Margin="40 0 0 0" HorizontalAlignment="Left">
+            <Button Grid.Column="3" Grid.Row="0" Margin="35 0 0 0" HorizontalAlignment="Left">
                 <Button.Style>
                     <Style TargetType="{x:Type Button}" BasedOn="{StaticResource TextButtonStyle}">
                         <Style.Triggers>
@@ -519,7 +519,7 @@
                 </StackPanel>
             </Button>
 
-            <Button Grid.Column="4" Grid.Row="0" Margin="40 0 0 0" HorizontalAlignment="Left">
+            <Button Grid.Column="4" Grid.Row="0" Margin="35 0 0 0" HorizontalAlignment="Left">
                 <Button.Style>
                     <Style TargetType="{x:Type Button}" BasedOn="{StaticResource TextButtonStyle}">
                         <Style.Triggers>
@@ -537,7 +537,7 @@
                 </StackPanel>
             </Button>
 
-            <Button Grid.Column="5" Grid.Row="0" Margin="40 0 0 0" HorizontalAlignment="Left">
+            <Button Grid.Column="5" Grid.Row="0" Margin="35 0 0 0" HorizontalAlignment="Left">
                 <Button.Style>
                     <Style TargetType="{x:Type Button}" BasedOn="{StaticResource TextButtonStyle}">
                         <Style.Triggers>
@@ -555,7 +555,7 @@
                 </StackPanel>
             </Button>
 
-            <Button Grid.Column="6" Grid.Row="0" Margin="40 0 0 0" HorizontalAlignment="Left">
+            <Button Grid.Column="6" Grid.Row="0" Margin="35 0 0 0" HorizontalAlignment="Left">
                 <Button.Style>
                     <Style TargetType="{x:Type Button}" BasedOn="{StaticResource TextButtonStyle}">
                         <Style.Triggers>
@@ -573,7 +573,7 @@
                 </StackPanel>
             </Button>
 
-            <Button Grid.Column="7" Grid.Row="0" Margin="40 0 0 0" HorizontalAlignment="Left">
+            <Button Grid.Column="7" Grid.Row="0" Margin="35 0 0 0" HorizontalAlignment="Left">
                 <Button.Style>
                     <Style TargetType="{x:Type Button}" BasedOn="{StaticResource TextButtonStyle}">
                         <Style.Triggers>
@@ -591,7 +591,7 @@
                 </StackPanel>
             </Button>
 
-            <Button Grid.Column="8" Grid.Row="0" Margin="40 0 0 0" HorizontalAlignment="Left">
+            <Button Grid.Column="8" Grid.Row="0" Margin="35 0 0 0" HorizontalAlignment="Left">
                 <Button.Style>
                     <Style TargetType="{x:Type Button}" BasedOn="{StaticResource TextButtonStyle}">
                         <Style.Triggers>
@@ -825,10 +825,10 @@
                 <RowDefinition Height="*"></RowDefinition>
             </Grid.RowDefinitions>
 
-            <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Column="0" Grid.Row="0" Padding="10 0 0 0">Spotlight</TextBlock>
-            <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Column="2" Grid.Row="0" Padding="45 0 0 0">Library</TextBlock>
+            <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Column="0" Grid.Row="0" Padding="5 0 0 0">Spotlight</TextBlock>
+            <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Column="2" Grid.Row="0" Padding="40 0 0 0">Library</TextBlock>
 
-            <TextBlock Grid.Column="3" Grid.Row="0" Padding="40 0 0 0" Text="Latest Movies">
+            <TextBlock Grid.Column="3" Grid.Row="0" Padding="35 0 0 0" Text="Latest Movies">
                 <TextBlock.Style>
                     <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
                         <Style.Triggers>
@@ -840,7 +840,7 @@
                 </TextBlock.Style>
             </TextBlock>
 
-            <TextBlock Grid.Column="4" Grid.Row="0" Padding="40 0 0 0" Text="Latest Trailers">
+            <TextBlock Grid.Column="4" Grid.Row="0" Padding="35 0 0 0" Text="Latest Trailers">
                 <TextBlock.Style>
                     <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
                         <Style.Triggers>
@@ -1283,11 +1283,11 @@
                 <RowDefinition Height="*"></RowDefinition>
             </Grid.RowDefinitions>
 
-            <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Column="0" Grid.Row="0" Padding="10 0 0 0">Spotlight</TextBlock>
+            <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Column="0" Grid.Row="0" Padding="5 0 0 0">Spotlight</TextBlock>
 
-            <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Column="2" Grid.Row="0" Padding="45 0 0 0">Library</TextBlock>
+            <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Column="2" Grid.Row="0" Padding="40 0 0 0">Library</TextBlock>
 
-            <TextBlock Grid.Column="3" Grid.Row="0" Padding="45 0 0 0" Text="Recently Played">
+            <TextBlock Grid.Column="3" Grid.Row="0" Padding="40 0 0 0" Text="Recently Played">
                 <TextBlock.Style>
                     <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
                         <Style.Triggers>
@@ -1299,7 +1299,7 @@
                 </TextBlock.Style>
             </TextBlock>
 
-            <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Column="4" Grid.Row="0" Padding="45 0 0 0">Game Systems</TextBlock>
+            <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Column="4" Grid.Row="0" Padding="40 0 0 0">Game Systems</TextBlock>
 
             <Grid Grid.Row="1" Grid.Column="0">
 

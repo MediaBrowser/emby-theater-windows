@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:controls="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
 
@@ -46,8 +47,19 @@
         </StackPanel>
 
         <StackPanel Orientation="Horizontal" Name="PnlDate">
+
+            <StackPanel.Style>
+                <Style TargetType="{x:Type StackPanel}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding DateText}" Value="{x:Null}">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </StackPanel.Style>
+            
             <Border Style="{StaticResource MediaInfoSeparator}"></Border>
-            <TextBlock Style="{DynamicResource TextBlockStyle}" x:Name="TxtDate" VerticalAlignment="Center"></TextBlock>
+            <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding DateText}" VerticalAlignment="Center"></TextBlock>
         </StackPanel>
 
         <StackPanel Orientation="Horizontal">
@@ -118,24 +130,17 @@
             <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding AudioCodec}" VerticalAlignment="Center"></TextBlock>
         </StackPanel>
 
-        <StackPanel Orientation="Horizontal" Margin="30 0 0 0">
-
-            <StackPanel.Style>
-                <Style TargetType="{x:Type StackPanel}">
+        <controls:ItemRating DataContext="{Binding}" Margin="30 0 0 0">
+            <controls:ItemRating.Style>
+                <Style TargetType="{x:Type controls:ItemRating}">
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding CommunityRating}" Value="{x:Null}">
                             <Setter Property="Visibility" Value="Collapsed" />
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
-            </StackPanel.Style>
-
-            <Image x:Name="ImgCommunityRating1" Style="{DynamicResource CommunityRatingImage}"></Image>
-            <Image x:Name="ImgCommunityRating2" Style="{DynamicResource CommunityRatingImage}"></Image>
-            <Image x:Name="ImgCommunityRating3" Style="{DynamicResource CommunityRatingImage}"></Image>
-            <Image x:Name="ImgCommunityRating4" Style="{DynamicResource CommunityRatingImage}"></Image>
-            <Image x:Name="ImgCommunityRating5" Style="{DynamicResource CommunityRatingImage}"></Image>
-        </StackPanel>
+            </controls:ItemRating.Style>
+        </controls:ItemRating>
 
         <StackPanel Orientation="Horizontal" Margin="30 0 0 0">
 

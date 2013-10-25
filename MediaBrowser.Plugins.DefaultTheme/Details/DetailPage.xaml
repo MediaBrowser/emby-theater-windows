@@ -5,7 +5,6 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                                  xmlns:pages="clr-namespace:MediaBrowser.Theater.Presentation.Pages;assembly=MediaBrowser.Theater.Presentation"
                 xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
-                xmlns:details="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Controls"
                 mc:Ignorable="d" 
       d:DesignHeight="300" d:DesignWidth="300"
 	Title="DetailPage">
@@ -16,7 +15,6 @@
             <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
-            <RowDefinition Height="auto"></RowDefinition>
         </Grid.RowDefinitions>
 
         <TextBlock Name="TxtName" Style="{DynamicResource TextBlockStyle}" HorizontalAlignment="Center" Margin="300 0 300 10" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"></TextBlock>
@@ -34,7 +32,7 @@
         </controls:ExtendedScrollViewer>
         
 
-        <controls:ExtendedScrollViewer x:Name="ScrollViewer" Grid.Row="2" Margin="0 40 0 0" VerticalAlignment="Stretch" HorizontalAlignment="Center" CanContentScroll="True" Focusable="False">
+        <controls:ExtendedScrollViewer x:Name="ScrollViewer" Grid.Row="2" Margin="0 40 0 40" VerticalAlignment="Stretch" HorizontalAlignment="Center" CanContentScroll="True" Focusable="False">
 
             <controls:ExtendedScrollViewer.Style>
                 <Style TargetType="{x:Type controls:ExtendedScrollViewer}">
@@ -66,21 +64,6 @@
                 </ContentControl>
             </controls:ScrollingPanel>
         </controls:ExtendedScrollViewer>
-
-        <Grid Grid.Row="3" Margin="25 0 25 15" DataContext="{Binding ItemViewModel}">
-            <Grid.Style>
-                <Style TargetType="{x:Type Grid}">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding ItemType}" Value="Person">
-                            <Setter Property="Visibility" Value="Collapsed"></Setter>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Grid.Style>
-
-            <details:ItemInfoFooter HorizontalAlignment="Right" VerticalAlignment="Bottom">
-            </details:ItemInfoFooter>
-        </Grid>
 
     </Grid>
 </pages:BasePage>

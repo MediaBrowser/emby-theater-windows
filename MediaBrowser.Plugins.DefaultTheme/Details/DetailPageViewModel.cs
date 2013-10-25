@@ -119,7 +119,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                     new TabItem
                     {
                         Name = "overview",
-                        DisplayName = "overview"
+                        DisplayName = "Overview"
                     }
                 };
 
@@ -130,7 +130,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                     views.Add(new TabItem
                     {
                         Name = "seasons",
-                        DisplayName = "seasons"
+                        DisplayName = "Seasons"
                     });
                 }
                 else if (item.IsType("season"))
@@ -138,7 +138,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                     views.Add(new TabItem
                     {
                         Name = "episodes",
-                        DisplayName = "episodes"
+                        DisplayName = "Episodes"
                     });
                 }
                 else if (item.IsType("musicalbum"))
@@ -146,7 +146,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                     views.Add(new TabItem
                     {
                         Name = "songs",
-                        DisplayName = "songs"
+                        DisplayName = "Songs"
                     });
                 }
             }
@@ -156,7 +156,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 views.Add(new TabItem
                 {
                     Name = "cast",
-                    DisplayName = "cast"
+                    DisplayName = "Cast"
                 });
             }
 
@@ -165,7 +165,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 views.Add(new TabItem
                 {
                     Name = "trailers",
-                    DisplayName = "trailers"
+                    DisplayName = "Trailers"
                 });
             }
 
@@ -174,7 +174,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 views.Add(new TabItem
                 {
                     Name = "scenes",
-                    DisplayName = "scenes"
+                    DisplayName = "Scenes"
                 });
             }
 
@@ -183,7 +183,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 views.Add(new TabItem
                 {
                     Name = "media info",
-                    DisplayName = "media info"
+                    DisplayName = "Media Info"
                 });
             }
 
@@ -192,7 +192,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 views.Add(new TabItem
                 {
                     Name = "special features",
-                    DisplayName = "special features"
+                    DisplayName = "Special Features"
                 });
             }
 
@@ -201,7 +201,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 views.Add(new TabItem
                 {
                     Name = "similar",
-                    DisplayName = "similar"
+                    DisplayName = "Similar"
                 });
             }
 
@@ -210,7 +210,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 views.Add(new TabItem
                 {
                     Name = "reviews",
-                    DisplayName = "reviews"
+                    DisplayName = "Reviews"
                 });
             }
 
@@ -221,7 +221,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                     views.Add(new TabItem
                     {
                         Name = "soundtracks",
-                        DisplayName = "soundtracks"
+                        DisplayName = "Soundtracks"
                     });
                 }
                 else if (item.SoundtrackIds.Length > 0)
@@ -229,7 +229,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                     views.Add(new TabItem
                     {
                         Name = "soundtrack",
-                        DisplayName = "soundtrack"
+                        DisplayName = "Soundtrack"
                     });
                 }
             }
@@ -239,7 +239,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 views.Add(new TabItem
                 {
                     Name = "themes",
-                    DisplayName = "themes"
+                    DisplayName = "Themes"
                 });
             }
 
@@ -250,7 +250,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                     views.Add(new TabItem
                     {
                         Name = "itemmovies",
-                        DisplayName = string.Format("movies ({0})", item.MovieCount.Value)
+                        DisplayName = string.Format("Movies ({0})", item.MovieCount.Value)
                     });
                 }
 
@@ -259,7 +259,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                     views.Add(new TabItem
                     {
                         Name = "itemseries",
-                        DisplayName = string.Format("series ({0})", item.SeriesCount.Value)
+                        DisplayName = string.Format("Series ({0})", item.SeriesCount.Value)
                     });
                 }
 
@@ -268,7 +268,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                     views.Add(new TabItem
                     {
                         Name = "itemepisodes",
-                        DisplayName = string.Format("episodes ({0})", item.EpisodeCount.Value)
+                        DisplayName = string.Format("Episodes ({0})", item.EpisodeCount.Value)
                     });
                 }
 
@@ -277,7 +277,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                     views.Add(new TabItem
                     {
                         Name = "itemtrailers",
-                        DisplayName = string.Format("trailers ({0})", item.TrailerCount.Value)
+                        DisplayName = string.Format("Trailers ({0})", item.TrailerCount.Value)
                     });
                 }
 
@@ -286,7 +286,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                     views.Add(new TabItem
                     {
                         Name = "itemgames",
-                        DisplayName = string.Format("games ({0})", item.GameCount.Value)
+                        DisplayName = string.Format("Games ({0})", item.GameCount.Value)
                     });
                 }
 
@@ -295,7 +295,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                     views.Add(new TabItem
                     {
                         Name = "itemalbums",
-                        DisplayName = string.Format("albums ({0})", item.AlbumCount.Value)
+                        DisplayName = string.Format("Albums ({0})", item.AlbumCount.Value)
                     });
                 }
 
@@ -304,7 +304,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                     views.Add(new TabItem
                     {
                         Name = "itemsongs",
-                        DisplayName = string.Format("songs ({0})", item.SongCount.Value)
+                        DisplayName = string.Format("Songs ({0})", item.SongCount.Value)
                     });
                 }
 
@@ -313,7 +313,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                     views.Add(new TabItem
                     {
                         Name = "itemmusicvideos",
-                        DisplayName = string.Format("music videos ({0})", item.MusicVideoCount.Value)
+                        DisplayName = string.Format("Music Videos ({0})", item.MusicVideoCount.Value)
                     });
                 }
             }
@@ -323,7 +323,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 views.Add(new TabItem
                 {
                     Name = "gallery",
-                    DisplayName = "gallery"
+                    DisplayName = "Gallery"
                 });
             }
 

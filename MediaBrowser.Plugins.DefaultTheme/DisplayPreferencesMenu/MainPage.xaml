@@ -51,26 +51,6 @@
                         </Style.Triggers>
                     </Style>
                 </Grid.Style>
-
-                <Button Style="{DynamicResource ViewMenuButton}" Command="{Binding ToggleScrollDirectionCommand}">
-
-                    <StackPanel Orientation="Horizontal">
-                        <Image Source="..\Resources\Images\ViewMenu\Scroll.png" Stretch="None" />
-
-                        <TextBlock x:Name="txtScrollDirection" VerticalAlignment="Center" Margin="10 0 0 0">
-                            <TextBlock.Style>
-                                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
-                                    <Setter Property="Text" Value="Scroll: Vertical" />
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding ScrollDirection}" Value="Horizontal">
-                                            <Setter Property="Text" Value="Scroll: Horizontal" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBlock.Style>
-                        </TextBlock>
-                    </StackPanel>
-                </Button>
             </Grid>
 
             <Grid Margin="0 20 0 0">

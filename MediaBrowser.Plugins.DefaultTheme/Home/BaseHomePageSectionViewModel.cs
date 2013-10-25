@@ -16,7 +16,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         protected readonly IPresentationManager PresentationManager;
         protected readonly IApiClient ApiClient;
 
-        protected const int TilePadding = 36;
+        protected const int TilePadding = 18;
 
         public double TileHeight { get; set; }
         public double TileWidth { get; set; }

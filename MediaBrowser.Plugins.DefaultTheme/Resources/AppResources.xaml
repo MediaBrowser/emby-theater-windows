@@ -374,6 +374,9 @@
                                 <DataTrigger Binding="{Binding ItemType}" Value="Artist">
                                     <Setter Property="Visibility" Value="Visible" />
                                 </DataTrigger>
+                                <DataTrigger Binding="{Binding ItemType}" Value="MusicArtist">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
                                 <DataTrigger Binding="{Binding ItemType}" Value="MusicAlbum">
                                     <Setter Property="Visibility" Value="Visible" />
                                 </DataTrigger>
@@ -674,32 +677,6 @@
     <!--List Page ListBox. -->
     <Style TargetType="controls:ExtendedListBox" x:Key="ListPageListBoxStyle" BasedOn="{StaticResource ListBoxStyle}">
         <Style.Triggers>
-            <DataTrigger Binding="{Binding ViewType}" Value="{x:Null}">
-                <Setter Property="ItemTemplate" Value="{StaticResource ListItemTemplate}"></Setter>
-                <Setter Property="ItemContainerStyle" Value="{StaticResource HighlightedBorderListBoxItemStyle}"></Setter>
-                <Setter Property="Margin" Value="0 0"></Setter>
-                <Setter Property="ItemsPanel">
-                    <Setter.Value>
-                        <ItemsPanelTemplate>
-                            <controls:VirtualizingWrapPanel ItemHeight="{Binding ItemContainerHeight}" ItemWidth="{Binding ItemContainerWidth}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="20 20">
-                                <controls:VirtualizingWrapPanel.Style>
-                                    <Style TargetType="{x:Type controls:VirtualizingWrapPanel}">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding ScrollDirection}" Value="Vertical">
-                                                <Setter Property="Orientation" Value="Horizontal" />
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding ScrollDirection}" Value="Horizontal">
-                                                <Setter Property="Orientation" Value="Vertical" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </controls:VirtualizingWrapPanel.Style>
-                            </controls:VirtualizingWrapPanel>
-                        </ItemsPanelTemplate>
-                    </Setter.Value>
-                </Setter>
-            </DataTrigger>
-
             <DataTrigger Binding="{Binding ViewType}" Value="Poster">
                 <Setter Property="ItemTemplate" Value="{StaticResource ListItemTemplate}"></Setter>
                 <Setter Property="ItemContainerStyle" Value="{StaticResource HighlightedBorderListBoxItemStyle}"></Setter>

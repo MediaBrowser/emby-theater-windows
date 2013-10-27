@@ -1,6 +1,7 @@
 ﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
+using MediaBrowser.Model.Games;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Plugins.DefaultTheme.ListPage;
@@ -67,7 +68,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 ImageDisplayWidth = TileWidth,
                 ImageDisplayHeightGenerator = v => TileHeight,
                 DisplayNameGenerator = HomePageViewModel.GetDisplayName,
-                EnableBackdropsForCurrentItem = false
+                EnableBackdropsForCurrentItem = false,
+                Context = ViewType.Games
             };
 
             const int tileScaleFactor = 13;
@@ -78,7 +80,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 ImageDisplayHeightGenerator = v => TileHeight,
                 DisplayNameGenerator = HomePageViewModel.GetDisplayName,
                 EnableBackdropsForCurrentItem = false,
-                ImageStretch = Stretch.UniformToFill
+                ImageStretch = Stretch.UniformToFill,
+                Context = ViewType.Games
             };
 
             GenresViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
@@ -105,6 +108,43 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             LoadViewModels();
         }
 
+        public const int PosterWidth = 210;
+        public const int ThumbstripWidth = 600;
+        public const int ListImageWidth = 160;
+
+        public static void SetDefaults(ListPageConfig config, string gameSystem)
+        {
+            config.DefaultViewType = ListViewTypes.Poster;
+            config.PosterImageWidth = PosterWidth;
+            config.ThumbImageWidth = ThumbstripWidth;
+            config.ListImageWidth = ListImageWidth;
+
+            if (string.Equals(gameSystem, GameSystem.Nintendo64, StringComparison.OrdinalIgnoreCase))
+            {
+                config.PosterImageWidth = 400;
+            }
+            else if (string.Equals(gameSystem, GameSystem.SuperNintendo, StringComparison.OrdinalIgnoreCase))
+            {
+                config.PosterImageWidth = 400;
+            }
+            else if (string.Equals(gameSystem, GameSystem.SegaSaturn, StringComparison.OrdinalIgnoreCase))
+            {
+                config.PosterImageWidth = PosterWidth - 20;
+            }
+            else if (string.Equals(gameSystem, GameSystem.SegaCD, StringComparison.OrdinalIgnoreCase))
+            {
+                config.PosterImageWidth = PosterWidth - 20;
+            }
+            else if (string.Equals(gameSystem, GameSystem.SonyPlaystation, StringComparison.OrdinalIgnoreCase))
+            {
+                config.PosterImageWidth = 300;
+            }
+            else if (string.Equals(gameSystem, GameSystem.SegaDreamcast, StringComparison.OrdinalIgnoreCase))
+            {
+                config.PosterImageWidth = 300;
+            }
+        }
+        
         private async void LoadViewModels()
         {
             PresentationManager.ShowLoadingAnimation();
@@ -298,14 +338,20 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 DisplayName = i.Name + " Player (" + i.ItemCount + ")"
             });
 
+            var options = new ListPageConfig
+            {
+                IndexOptions = indexOptions.ToList(),
+                PageTitle = "Games | Multi-Player",
+                CustomItemQuery = GetMultiPlayerGames
+            };
+
+            SetDefaults(options, null);
+
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger, indexOptions, _serverEvents);
-
-            //page.SortOptions = GetSeriesSortOptions();
-            page.CustomPageTitle = "Games | Multi-Player";
-
-            page.ViewType = ViewType.Games;
-            page.CustomItemQuery = GetMultiPlayerGames;
+                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
+            {
+                ViewType = ViewType.Games
+            };
 
             await _navService.Navigate(page);
         }
@@ -355,14 +401,20 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 DisplayName = i.Name + " (" + i.ItemCount + ")"
             });
 
+            var options = new ListPageConfig
+            {
+                IndexOptions = indexOptions.ToList(),
+                PageTitle = "Games | Timeline",
+                CustomItemQuery = GetGamesByYear
+            };
+
+            SetDefaults(options, null);
+
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger, indexOptions, _serverEvents);
-
-            //page.SortOptions = GetSeriesSortOptions();
-            page.CustomPageTitle = "Games | Timeline";
-
-            page.ViewType = ViewType.Games;
-            page.CustomItemQuery = GetGamesByYear;
+                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
+            {
+                ViewType = ViewType.Games
+            };
 
             await _navService.Navigate(page);
         }
@@ -472,16 +524,20 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 DisplayName = i.Name + " (" + i.GameCount + ")"
             });
 
+            var options = new ListPageConfig
+            {
+                IndexOptions = indexOptions.ToList(),
+                PageTitle = "Games | Genres",
+                CustomItemQuery = GetGamesByGenre
+            };
+
+            SetDefaults(options, null);
+
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger, indexOptions, _serverEvents);
-
-            var sortOptions = new Dictionary<string, string>();
-
-            page.SortOptions = sortOptions;
-            page.CustomPageTitle = "Games | Genres";
-
-            page.ViewType = ViewType.Games;
-            page.CustomItemQuery = GetGamesByGenre;
+                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
+            {
+                ViewType = ViewType.Games
+            };
 
             await _navService.Navigate(page);
         }

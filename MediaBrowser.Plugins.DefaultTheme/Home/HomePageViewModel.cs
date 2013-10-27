@@ -247,14 +247,20 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             var displayPreferences = await _presentationManager.GetDisplayPreferences("Shows", CancellationToken.None);
 
+            var options = new ListPageConfig
+            {
+                PageTitle = "TV Shows",
+                CustomItemQuery = GetAllShows,
+                SortOptions = TvViewModel.GetSeriesSortOptions()
+            };
+
+            TvViewModel.SetDefaults(options);
+
             var page = new FolderPage(item, displayPreferences, _apiClient, _imageManager, _sessionManager,
-                                      _presentationManager, _nav, _playbackManager, _logger, _serverEvents);
-
-            page.SortOptions = TvViewModel.GetSeriesSortOptions();
-            page.CustomPageTitle = "TV Shows";
-
-            page.ViewType = ViewType.Tv;
-            page.CustomItemQuery = GetAllShows;
+                                      _presentationManager, _nav, _playbackManager, _logger, _serverEvents, options)
+            {
+                ViewType = ViewType.Tv
+            };
 
             await _nav.Navigate(page);
         }
@@ -287,14 +293,20 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             var displayPreferences = await _presentationManager.GetDisplayPreferences("Movies", CancellationToken.None);
 
+            var options = new ListPageConfig
+            {
+                PageTitle = "Movies",
+                CustomItemQuery = GetAllMovies,
+                SortOptions = MoviesViewModel.GetMovieSortOptions()
+            };
+
+            MoviesViewModel.SetDefaults(options);
+
             var page = new FolderPage(item, displayPreferences, _apiClient, _imageManager, _sessionManager,
-                                      _presentationManager, _nav, _playbackManager, _logger, _serverEvents);
-
-            page.SortOptions = MoviesViewModel.GetMovieSortOptions();
-            page.CustomPageTitle = "Movies";
-
-            page.ViewType = ViewType.Movies;
-            page.CustomItemQuery = GetAllMovies;
+                                      _presentationManager, _nav, _playbackManager, _logger, _serverEvents, options)
+            {
+                ViewType = ViewType.Movies
+            };
 
             await _nav.Navigate(page);
         }

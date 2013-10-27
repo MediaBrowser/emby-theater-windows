@@ -17,9 +17,9 @@
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <TextBlock Name="TxtName" Style="{DynamicResource TextBlockStyle}" HorizontalAlignment="Center" Margin="300 0 300 10" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"></TextBlock>
+        <TextBlock Name="TxtName" Style="{DynamicResource TextBlockStyle}" HorizontalAlignment="Center" Margin="300 0 300 20" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"></TextBlock>
 
-        <controls:ExtendedScrollViewer Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalAlignment="Top" HorizontalAlignment="Center" CanContentScroll="True" Margin="20 40 20 0">
+        <controls:ExtendedScrollViewer Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalAlignment="Top" HorizontalAlignment="Center" CanContentScroll="True" Margin="20 30 20 0">
             <controls:ScrollingPanel CanHorizontallyScroll="True" CanVerticallyScroll="False">
                 <controls:ExtendedListBox x:Name="MenuList" ItemsSource="{Binding Sections}" ScrollViewer.CanContentScroll="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" HorizontalAlignment="Center" ItemContainerStyle="{DynamicResource DetailPageMenuListBoxItemStyle}">
                     <controls:ExtendedListBox.ItemsPanel>
@@ -41,8 +41,14 @@
                     <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"></Setter>
 
                     <Style.Triggers>
+                        <DataTrigger Binding="{Binding ScrollDirection}" Value="Vertical">
+                            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"></Setter>
+                            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Hidden"></Setter>
+                        </DataTrigger>
+                        
                         <DataTrigger Binding="{Binding EnableScrolling}" Value="false">
                             <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"></Setter>
+                            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"></Setter>
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
@@ -54,8 +60,13 @@
                         <Setter Property="CanHorizontallyScroll" Value="True"></Setter>
                         <Setter Property="CanVerticallyScroll" Value="False"></Setter>
                         <Style.Triggers>
+                            <DataTrigger Binding="{Binding ScrollDirection}" Value="Vertical">
+                                <Setter Property="CanHorizontallyScroll" Value="False"></Setter>
+                                <Setter Property="CanVerticallyScroll" Value="True"></Setter>
+                            </DataTrigger>
                             <DataTrigger Binding="{Binding EnableScrolling}" Value="False">
                                 <Setter Property="CanHorizontallyScroll" Value="False"></Setter>
+                                <Setter Property="CanVerticallyScroll" Value="False"></Setter>
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>

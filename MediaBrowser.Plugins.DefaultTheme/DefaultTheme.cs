@@ -4,6 +4,7 @@ using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Plugins.DefaultTheme.Details;
+using MediaBrowser.Plugins.DefaultTheme.Home;
 using MediaBrowser.Plugins.DefaultTheme.ListPage;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
@@ -122,10 +123,37 @@ namespace MediaBrowser.Plugins.DefaultTheme
         {
             if (!_folderTypesWithDetailPages.Contains(item.Type, StringComparer.OrdinalIgnoreCase))
             {
-                return new FolderPage(item, displayPreferences, _apiClient, _imageManager, _sessionManager, _presentationManager, _navService, _playbackManager, _logger, _serverEvents);
+                var options = GetListPageConfig(item, context);
+
+                return new FolderPage(item, displayPreferences, _apiClient, _imageManager, _sessionManager, _presentationManager, _navService, _playbackManager, _logger, _serverEvents, options);
             }
 
             return GetItemPage(item, context);
+        }
+
+        private ListPageConfig GetListPageConfig(BaseItemDto item, ViewType context)
+        {
+            var config = new ListPageConfig();
+
+            if (context == ViewType.Tv)
+            {
+                TvViewModel.SetDefaults(config);
+
+                if (item.IsType("season"))
+                {
+                    config.DefaultViewType = ListViewTypes.List;
+                }
+            }
+            else if (context == ViewType.Movies)
+            {
+                MoviesViewModel.SetDefaults(config);
+            }
+            else if (context == ViewType.Games)
+            {
+                GamesViewModel.SetDefaults(config, item.GameSystem);
+            }
+
+            return config;
         }
 
         /// <summary>

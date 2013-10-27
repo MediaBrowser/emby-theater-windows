@@ -24,18 +24,6 @@
                     <TextBlock Style="{DynamicResource TextBlockStyle}" VerticalAlignment="Center" Margin="10 0 0 0">Sort Menu</TextBlock>
                 </StackPanel>
             </Button>
-            <Button x:Name="btnIncrease" Style="{DynamicResource ViewMenuButton}" Command="{Binding IncreaseImageSizeCommand}">
-                <StackPanel Orientation="Horizontal">
-                    <Image Source="..\Resources\Images\ViewMenu\Increase.png" Stretch="None" />
-                    <TextBlock Style="{DynamicResource TextBlockStyle}" VerticalAlignment="Center" Margin="10 0 0 0">Increase Image Size</TextBlock>
-                </StackPanel>
-            </Button>
-            <Button x:Name="btnDecrease" Style="{DynamicResource ViewMenuButton}" Command="{Binding DecreaseImageSizeCommand}">
-                <StackPanel Orientation="Horizontal">
-                    <Image Source="..\Resources\Images\ViewMenu\Decrease.png" Stretch="None" />
-                    <TextBlock Style="{DynamicResource TextBlockStyle}" VerticalAlignment="Center" Margin="10 0 0 0">Decrease Image Size</TextBlock>
-                </StackPanel>
-            </Button>
             
             <Grid>
                 <Grid.Style>

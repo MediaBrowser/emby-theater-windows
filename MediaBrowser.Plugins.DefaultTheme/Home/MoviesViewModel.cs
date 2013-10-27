@@ -178,6 +178,18 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             LoadViewModels();
         }
 
+        public const int PosterWidth = 210;
+        public const int ThumbstripWidth = 600;
+        public const int ListImageWidth = 160;
+
+        public static void SetDefaults(ListPageConfig config)
+        {
+            config.DefaultViewType = ListViewTypes.Poster;
+            config.PosterImageWidth = PosterWidth;
+            config.ThumbImageWidth = ThumbstripWidth;
+            config.ListImageWidth = ListImageWidth;
+        }
+
         private async void LoadViewModels()
         {
             PresentationManager.ShowLoadingAnimation();
@@ -198,8 +210,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 LoadComedyMoviesViewModel(view);
                 LoadRomanticMoviesViewModel(view);
                 LoadActorsViewModel(view);
-                LoadGenresViewModel(view);
-                LoadYearsViewModel(view);
                 LoadMiniSpotlightsViewModel(view);
                 LoadMiniSpotlightsViewModel2(view);
             }
@@ -549,32 +559,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             ActorsViewModel.AddImages(images);
         }
 
-        private void LoadGenresViewModel(MoviesView view)
-        {
-            //var images = view.PeopleItems.Take(1).Select(i => ApiClient.GetPersonImageUrl(i.Name, new ImageOptions
-            //{
-            //    ImageType = i.ImageType,
-            //    Tag = i.ImageTag,
-            //    Height = Convert.ToInt32(TileWidth * 2),
-            //    EnableImageEnhancers = false
-            //}));
-
-            //GenresViewModel.AddImages(images);
-        }
-
-        private void LoadYearsViewModel(MoviesView view)
-        {
-            //var images = view.PeopleItems.Take(1).Select(i => ApiClient.GetPersonImageUrl(i.Name, new ImageOptions
-            //{
-            //    ImageType = i.ImageType,
-            //    Tag = i.ImageTag,
-            //    Height = Convert.ToInt32(TileWidth * 2),
-            //    EnableImageEnhancers = false
-            //}));
-
-            //GenresViewModel.AddImages(images);
-        }
-
         private async Task NavigateToGenresInternal()
         {
             var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
@@ -595,16 +579,20 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 DisplayName = i.Name + " (" + i.MovieCount + ")"
             });
 
+            var options = new ListPageConfig
+            {
+                IndexOptions = indexOptions.ToList(),
+                PageTitle = "Movies | Genres",
+                CustomItemQuery = GetMoviesByGenre
+            };
+
+            SetDefaults(options);
+
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger, indexOptions, _serverEvents);
-
-            var sortOptions = new Dictionary<string, string>();
-
-            page.SortOptions = sortOptions;
-            page.CustomPageTitle = "Movies | Genres";
-
-            page.ViewType = ViewType.Movies;
-            page.CustomItemQuery = GetMoviesByGenre;
+                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
+            {
+                ViewType = ViewType.Movies
+            };
 
             await _navService.Navigate(page);
         }
@@ -615,19 +603,20 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             var displayPreferences = await PresentationManager.GetDisplayPreferences("People", CancellationToken.None);
 
+            var options = new ListPageConfig
+            {
+                IndexOptions = AlphabetIndex,
+                PageTitle = "Movies | People",
+                CustomItemQuery = GetAllActors
+            };
+
+            SetDefaults(options);
+
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger, AlphabetIndex, _serverEvents);
-
-            var sortOptions = new Dictionary<string, string>();
-            sortOptions["Name"] = ItemSortBy.SortName;
-            sortOptions["Movie count"] = ItemSortBy.MovieCount;
-            sortOptions["Trailer count"] = ItemSortBy.TrailerCount;
-
-            page.SortOptions = sortOptions;
-            page.CustomPageTitle = "Movies | People";
-
-            page.ViewType = ViewType.Movies;
-            page.CustomItemQuery = GetAllActors;
+                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
+            {
+                ViewType = ViewType.Movies
+            };
 
             await _navService.Navigate(page);
         }
@@ -646,16 +635,20 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 DisplayName = i.Name + " (" + i.ItemCount + ")"
             });
 
+            var options = new ListPageConfig
+            {
+                IndexOptions = indexOptions.ToList(),
+                PageTitle = "Movies | Timeline",
+                CustomItemQuery = GetMoviesByYear
+            };
+
+            SetDefaults(options);
+
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger, indexOptions, _serverEvents);
-
-            var sortOptions = new Dictionary<string, string>();
-
-            page.SortOptions = sortOptions;
-            page.CustomPageTitle = "Movies | Timeline";
-
-            page.ViewType = ViewType.Movies;
-            page.CustomItemQuery = GetMoviesByYear;
+                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
+            {
+                ViewType = ViewType.Movies
+            };
 
             await _navService.Navigate(page);
         }
@@ -816,14 +809,20 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             var displayPreferences = await PresentationManager.GetDisplayPreferences("Trailers", CancellationToken.None);
 
+            var options = new ListPageConfig
+            {
+                SortOptions = GetMovieSortOptions(),
+                PageTitle = "Trailers",
+                CustomItemQuery = GetTrailers
+            };
+
+            SetDefaults(options);
+
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents);
-
-            page.SortOptions = GetMovieSortOptions();
-            page.CustomPageTitle = "Trailers";
-
-            page.ViewType = ViewType.Movies;
-            page.CustomItemQuery = GetTrailers;
+                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
+            {
+                ViewType = ViewType.Movies
+            };
 
             await _navService.Navigate(page);
         }
@@ -856,13 +855,19 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             var displayPreferences = await PresentationManager.GetDisplayPreferences("Boxsets", CancellationToken.None);
 
+            var options = new ListPageConfig
+            {
+                PageTitle = "Box Sets",
+                CustomItemQuery = GetBoxSets
+            };
+
+            SetDefaults(options);
+
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents);
-
-            page.CustomPageTitle = "Box Sets";
-
-            page.ViewType = ViewType.Movies;
-            page.CustomItemQuery = GetBoxSets;
+                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
+            {
+                ViewType = ViewType.Movies
+            };
 
             await _navService.Navigate(page);
         }
@@ -895,14 +900,20 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             var displayPreferences = await PresentationManager.GetDisplayPreferences("Movies", CancellationToken.None);
 
+            var options = new ListPageConfig
+            {
+                PageTitle = "Movies",
+                CustomItemQuery = GetAllMovies,
+                SortOptions = GetMovieSortOptions()
+            };
+
+            SetDefaults(options);
+
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents);
-
-            page.SortOptions = GetMovieSortOptions();
-            page.CustomPageTitle = "Movies";
-
-            page.ViewType = ViewType.Movies;
-            page.CustomItemQuery = GetAllMovies;
+                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
+            {
+                ViewType = ViewType.Movies
+            };
 
             await _navService.Navigate(page);
         }
@@ -913,14 +924,20 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             var displayPreferences = await PresentationManager.GetDisplayPreferences("Movies", CancellationToken.None);
 
+            var options = new ListPageConfig
+            {
+                PageTitle = "Date Night",
+                CustomItemQuery = GetRomanticMovies,
+                SortOptions = GetMovieSortOptions()
+            };
+
+            SetDefaults(options);
+
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents);
-
-            page.SortOptions = GetMovieSortOptions();
-            page.CustomPageTitle = "Date Night";
-
-            page.ViewType = ViewType.Movies;
-            page.CustomItemQuery = GetRomanticMovies;
+                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
+            {
+                ViewType = ViewType.Movies
+            };
 
             await _navService.Navigate(page);
         }
@@ -955,14 +972,20 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             var displayPreferences = await PresentationManager.GetDisplayPreferences("Movies", CancellationToken.None);
 
+            var options = new ListPageConfig
+            {
+                PageTitle = "Comedy Night",
+                CustomItemQuery = GetComedyMovies,
+                SortOptions = GetMovieSortOptions()
+            };
+
+            SetDefaults(options);
+
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents);
-
-            page.SortOptions = GetMovieSortOptions();
-            page.CustomPageTitle = "Comedy Night";
-
-            page.ViewType = ViewType.Movies;
-            page.CustomItemQuery = GetComedyMovies;
+                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
+            {
+                ViewType = ViewType.Movies
+            };
 
             await _navService.Navigate(page);
         }
@@ -1077,14 +1100,20 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             var displayPreferences = await PresentationManager.GetDisplayPreferences("Movies", CancellationToken.None);
 
+            var options = new ListPageConfig
+            {
+                PageTitle = "HD Movies",
+                CustomItemQuery = GetHDMovies,
+                SortOptions = GetMovieSortOptions()
+            };
+
+            SetDefaults(options);
+
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents);
-
-            page.SortOptions = GetMovieSortOptions();
-            page.CustomPageTitle = "HD Movies";
-
-            page.ViewType = ViewType.Movies;
-            page.CustomItemQuery = GetHDMovies;
+                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
+            {
+                ViewType = ViewType.Movies
+            };
 
             await _navService.Navigate(page);
         }
@@ -1119,14 +1148,20 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             var displayPreferences = await PresentationManager.GetDisplayPreferences("Movies", CancellationToken.None);
 
+            var options = new ListPageConfig
+            {
+                PageTitle = "Family Movies",
+                CustomItemQuery = GetFamilyMovies,
+                SortOptions = GetMovieSortOptions()
+            };
+
+            SetDefaults(options);
+
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents);
-
-            page.SortOptions = GetMovieSortOptions();
-            page.CustomPageTitle = "Family Movies";
-
-            page.ViewType = ViewType.Movies;
-            page.CustomItemQuery = GetFamilyMovies;
+                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
+            {
+                ViewType = ViewType.Movies
+            };
 
             await _navService.Navigate(page);
         }
@@ -1161,14 +1196,20 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             var displayPreferences = await PresentationManager.GetDisplayPreferences("Movies", CancellationToken.None);
 
+            var options = new ListPageConfig
+            {
+                PageTitle = "3D Movies",
+                CustomItemQuery = Get3DMovies,
+                SortOptions = GetMovieSortOptions()
+            };
+
+            SetDefaults(options);
+
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents);
-
-            page.SortOptions = GetMovieSortOptions();
-            page.CustomPageTitle = "3D Movies";
-
-            page.ViewType = ViewType.Movies;
-            page.CustomItemQuery = Get3DMovies;
+                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
+            {
+                ViewType = ViewType.Movies
+            };
 
             await _navService.Navigate(page);
         }

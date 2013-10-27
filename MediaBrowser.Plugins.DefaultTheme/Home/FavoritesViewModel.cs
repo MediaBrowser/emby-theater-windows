@@ -489,18 +489,20 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
                 var displayPreferences = await PresentationManager.GetDisplayPreferences("Favorites", CancellationToken.None);
 
-                var indexOptions = GetFavoriteTabs(itemCounts);
+                displayPreferences.PrimaryImageWidth = GetImageWidth(type);
+
+                var options = new ListPageConfig
+                {
+                    IndexOptions = GetFavoriteTabs(itemCounts).ToList(),
+                    PageTitle = "Favorites",
+                    CustomItemQuery = GetFavoriteItems
+                };
 
                 var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                          PresentationManager, _navService, _playbackManager, _logger, indexOptions, _serverEvents);
-
-                var sortOptions = new Dictionary<string, string>();
-
-                page.SortOptions = sortOptions;
-                page.CustomPageTitle = "Favorites";
-
-                page.ViewType = ViewType.Folders;
-                page.CustomItemQuery = GetFavoriteItems;
+                                          PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
+                {
+                    ViewType = ViewType.Folders
+                };
 
                 await _navService.Navigate(page);
             }
@@ -510,6 +512,16 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
                 PresentationManager.ShowDefaultErrorMessage();
             }
+        }
+
+        private int GetImageWidth(string type)
+        {
+            if (string.Equals(type, "movie", StringComparison.OrdinalIgnoreCase))
+            {
+                return Home.MoviesViewModel.PosterWidth;
+            }
+
+            return TvViewModel.PosterWidth;
         }
 
         private IEnumerable<TabItem> GetFavoriteTabs(ItemCounts counts)
@@ -623,7 +635,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                     Name = "AdultVideo"
                 });
             }
-            
+
             return list;
         }
 

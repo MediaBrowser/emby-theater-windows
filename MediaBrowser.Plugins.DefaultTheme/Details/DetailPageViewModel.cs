@@ -4,6 +4,7 @@ using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Plugins.DefaultTheme.Home;
+using MediaBrowser.Plugins.DefaultTheme.ListPage;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
@@ -72,6 +73,20 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             }
         }
 
+        private ScrollDirection _scrollDirection = ScrollDirection.Horizontal;
+        public ScrollDirection ScrollDirection
+        {
+            get
+            {
+                return _scrollDirection;
+            }
+            set
+            {
+                _scrollDirection = value;
+                OnPropertyChanged("ScrollDirection");
+            }
+        }
+
         public override void OnPropertyChanged(string name)
         {
             base.OnPropertyChanged(name);
@@ -79,6 +94,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             if (string.Equals(name, "CurrentSection"))
             {
                 var section = CurrentSection;
+
+                ScrollDirection = string.Equals(section, "songs", StringComparison.OrdinalIgnoreCase)
+                             ? ScrollDirection.Vertical
+                             : ScrollDirection.Horizontal;
 
                 EnableScrolling = !string.Equals(section, "overview", StringComparison.OrdinalIgnoreCase) &&
                     !string.Equals(section, "seasons", StringComparison.OrdinalIgnoreCase) &&
@@ -344,7 +363,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 return new ChapterInfoListViewModel(_apiClient, _imageManager, _playback, _presentationManager)
                 {
                     Item = _itemViewModel.Item,
-                    ImageWidth = 380
+                    ImageWidth = 410
                 };
             }
             if (string.Equals(section, "cast"))
@@ -352,13 +371,13 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 return new ItemPersonListViewModel(_apiClient, _imageManager, _presentationManager, _navigation)
                 {
                     Item = _itemViewModel.Item,
-                    ImageWidth = 300,
+                    ImageWidth = 240,
                     ViewType = Context
                 };
             }
             if (string.Equals(section, "gallery"))
             {
-                const int imageHeight = 280;
+                const int imageHeight = 230;
 
                 var vm = new GalleryViewModel(_apiClient, _imageManager, _navigation)
                 {
@@ -385,7 +404,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             {
                 return new ItemListViewModel(GetSpecialFeatures, _presentationManager, _imageManager, _apiClient, _navigation, _playback, _logger, _serverEvents)
                 {
-                    ImageDisplayWidth = 576,
+                    ImageDisplayWidth = 600,
                     EnableBackdropsForCurrentItem = false,
                     ListType = "SpecialFeatures",
                     Context = Context
@@ -395,7 +414,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             {
                 return new ItemListViewModel(GetConvertedThemeMediaResult, _presentationManager, _imageManager, _apiClient, _navigation, _playback, _logger, _serverEvents)
                 {
-                    ImageDisplayWidth = 576,
+                    ImageDisplayWidth = 600,
                     EnableBackdropsForCurrentItem = false,
                     ListType = "SpecialFeatures"
                 };
@@ -409,20 +428,30 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                     Context = Context
                 };
             }
-            if (string.Equals(section, "seasons") || string.Equals(section, "episodes") || string.Equals(section, "songs"))
+            if (string.Equals(section, "seasons") || string.Equals(section, "episodes"))
             {
                 return new ItemListViewModel(GetChildren, _presentationManager, _imageManager, _apiClient, _navigation, _playback, _logger, _serverEvents)
                 {
-                    ImageDisplayWidth = 300,
+                    ImageDisplayWidth = 240,
                     EnableBackdropsForCurrentItem = false,
                     Context = Context
+                };
+            }
+            if (string.Equals(section, "songs"))
+            {
+                return new ItemListViewModel(GetAlbumSongs, _presentationManager, _imageManager, _apiClient, _navigation, _playback, _logger, _serverEvents)
+                {
+                    ImageDisplayWidth = 40,
+                    EnableBackdropsForCurrentItem = false,
+                    Context = Context,
+                    DisplayNameGenerator = FolderPage.GetDisplayName
                 };
             }
             if (string.Equals(section, "trailers"))
             {
                 return new ItemListViewModel(GetTrailers, _presentationManager, _imageManager, _apiClient, _navigation, _playback, _logger, _serverEvents)
                 {
-                    ImageDisplayWidth = 384,
+                    ImageDisplayWidth = 600,
                     EnableBackdropsForCurrentItem = false,
                     ListType = "Trailers",
                     Context = Context
@@ -430,15 +459,15 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             }
             if (string.Equals(section, "itemmovies"))
             {
-                return GetItemByNameItemListViewModel("Movie", 200, 300);
+                return GetItemByNameItemListViewModel("Movie", MoviesViewModel.PosterWidth, MoviesViewModel.PosterWidth * 1.5);
             }
             if (string.Equals(section, "itemtrailers"))
             {
-                return GetItemByNameItemListViewModel("Trailer", 200, 300);
+                return GetItemByNameItemListViewModel("Trailer", MoviesViewModel.PosterWidth, MoviesViewModel.PosterWidth * 1.5);
             }
             if (string.Equals(section, "itemseries"))
             {
-                return GetItemByNameItemListViewModel("Series", 200, 300);
+                return GetItemByNameItemListViewModel("Series", TvViewModel.PosterWidth, TvViewModel.PosterWidth * 1.5);
             }
             if (string.Equals(section, "itemalbums"))
             {
@@ -467,7 +496,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             base.DisposePreviousSection(old);
         }
 
-        private ItemListViewModel GetItemByNameItemListViewModel(string type, int width, int height)
+        private ItemListViewModel GetItemByNameItemListViewModel(string type, int width, double height)
         {
             Func<ItemListViewModel, Task<ItemsResult>> itemGenerator = (vm) => GetItemByNameItemsAsync(type);
 
@@ -684,6 +713,29 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 SortBy = new[] { ItemSortBy.SortName },
 
                 MinIndexNumber = item.IsType("Series") ? 1 : (int?)null
+            };
+
+            return _apiClient.GetItemsAsync(query);
+        }
+
+        private Task<ItemsResult> GetAlbumSongs(ItemListViewModel viewModel)
+        {
+            var item = ItemViewModel.Item;
+
+            var query = new ItemQuery
+            {
+                UserId = _sessionManager.CurrentUser.Id,
+                Fields = new[]
+                        {
+                                 ItemFields.PrimaryImageAspectRatio,
+                                 ItemFields.DateCreated
+                        },
+                ParentId = item.Id,
+                SortBy = new[] { ItemSortBy.SortName },
+
+                Recursive = true,
+
+                IncludeItemTypes = new[] { "Audio" }
             };
 
             return _apiClient.GetItemsAsync(query);

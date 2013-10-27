@@ -109,6 +109,7 @@
     <Compile Include="Home\TvViewModel.cs" />
     <Compile Include="Home\FavoritesViewModel.cs" />
     <Compile Include="IHasDisplayPreferences.cs" />
+    <Compile Include="ListPage\ListPageConfig.cs" />
     <Compile Include="Osd\FullscreenVideoTransportOsd.xaml.cs">
       <DependentUpon>FullscreenVideoTransportOsd.xaml</DependentUpon>
     </Compile>

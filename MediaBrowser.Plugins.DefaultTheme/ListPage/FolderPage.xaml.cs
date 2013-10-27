@@ -41,12 +41,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
 
         private readonly ItemListViewModel _viewModel;
 
-        public FolderPage(BaseItemDto parent, DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IPresentationManager presentation, INavigationService navigationManager, IPlaybackManager playbackManager, ILogger logger, IServerEvents serverEvents)
-            : this(parent, displayPreferences, apiClient, imageManager, sessionManager, presentation, navigationManager, playbackManager, logger, new List<TabItem>(), serverEvents)
-        {
-        }
+        private readonly ListPageConfig _options;
 
-        public FolderPage(BaseItemDto parent, DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IPresentationManager presentation, INavigationService navigationManager, IPlaybackManager playbackManager, ILogger logger, IEnumerable<TabItem> indexOptions, IServerEvents serverEvents)
+        public FolderPage(BaseItemDto parent, DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IPresentationManager presentation, INavigationService navigationManager, IPlaybackManager playbackManager, ILogger logger, IServerEvents serverEvents, ListPageConfig options)
         {
             _navigationManager = navigationManager;
             _playbackManager = playbackManager;
@@ -56,6 +53,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
             _sessionManager = sessionManager;
             _imageManager = imageManager;
             _apiClient = apiClient;
+            _options = options;
 
             _displayPreferences = displayPreferences;
             _parentItem = parent;
@@ -63,6 +61,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
             InitializeComponent();
 
             Loaded += FolderPage_Loaded;
+
+            SetDefaults(displayPreferences);
 
             _viewModel = new ItemListViewModel(GetItemsAsync, _presentationManager, _imageManager, _apiClient, _navigationManager, _playbackManager, _logger, _serverEvents)
             {
@@ -78,7 +78,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                 ShowLoadingAnimation = true
             };
 
-            _viewModel.AddIndexOptions(indexOptions);
+            _viewModel.AddIndexOptions(options.IndexOptions);
 
             _viewModel.PropertyChanged += _viewModel_PropertyChanged;
 
@@ -87,13 +87,32 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
             DataContext = _viewModel;
         }
 
-        public string CustomPageTitle { get; set; }
+        private void SetDefaults(DisplayPreferences displayPreferences)
+        {
+            if (string.IsNullOrEmpty(displayPreferences.ViewType))
+            {
+                displayPreferences.ViewType = _options.DefaultViewType;
+            }
+
+            if (string.Equals(displayPreferences.ViewType, ListViewTypes.Poster, StringComparison.OrdinalIgnoreCase))
+            {
+                displayPreferences.PrimaryImageWidth = _options.PosterImageWidth;
+            }
+            else if (string.Equals(displayPreferences.ViewType, ListViewTypes.List, StringComparison.OrdinalIgnoreCase))
+            {
+                displayPreferences.PrimaryImageWidth = _options.ListImageWidth;
+            }
+            else if (string.Equals(displayPreferences.ViewType, ListViewTypes.Thumbstrip, StringComparison.OrdinalIgnoreCase))
+            {
+                displayPreferences.PrimaryImageWidth = _options.ThumbImageWidth;
+            }
+        }
+
         public ViewType ViewType
         {
             get { return _viewModel.Context; }
             set { _viewModel.Context = value; }
         }
-        public Dictionary<string, string> SortOptions { get; set; }
 
         private ScrollDirection GetScrollDirection(ItemListViewModel viewModel)
         {
@@ -149,9 +168,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
 
         private void SetPageTitle(BaseItemDto parentItem)
         {
-            if (!string.IsNullOrEmpty(CustomPageTitle))
+            if (!string.IsNullOrEmpty(_options.PageTitle))
             {
-                _presentationManager.SetPageTitle(CustomPageTitle);
+                _presentationManager.SetPageTitle(_options.PageTitle);
             }
             else
             {
@@ -166,6 +185,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
             if (item.IndexNumber.HasValue && !item.IsType("season"))
             {
                 name = item.IndexNumber + " - " + name;
+            }
+
+            if (item.ParentIndexNumber.HasValue && item.IsAudio)
+            {
+                name = item.ParentIndexNumber + "." + name;
             }
 
             return name;
@@ -204,13 +228,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                 ItemFields.DisplayPreferencesId
             };
 
-        public Func<ItemListViewModel, DisplayPreferences, Task<ItemsResult>> CustomItemQuery { get; set; }
 
         private Task<ItemsResult> GetItemsAsync(ItemListViewModel viewModel)
         {
-            if (CustomItemQuery != null)
+            if (_options.CustomItemQuery != null)
             {
-                return CustomItemQuery(viewModel, _displayPreferences);
+                return _options.CustomItemQuery(viewModel, _displayPreferences);
             }
 
             var query = new ItemQuery
@@ -346,7 +369,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
         {
             var viewModel = new DisplayPreferencesViewModel(_viewModel.DisplayPreferences, _presentationManager);
 
-            var sortOptions = SortOptions;
+            var sortOptions = _options.SortOptions;
 
             if (sortOptions == null)
             {

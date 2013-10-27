@@ -153,6 +153,18 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             }
         }
 
+        public const int PosterWidth = 210;
+        public const int ThumbstripWidth = 600;
+        public const int ListImageWidth = 160;
+
+        public static void SetDefaults(ListPageConfig config)
+        {
+            config.DefaultViewType = ListViewTypes.Poster;
+            config.PosterImageWidth = PosterWidth;
+            config.ThumbImageWidth = ThumbstripWidth;
+            config.ListImageWidth = ListImageWidth;
+        }
+
         private async void LoadViewModels()
         {
             var cancellationSource = _mainViewCancellationTokenSource = new CancellationTokenSource();
@@ -168,7 +180,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 LoadRomanticSeriesViewModel(view);
                 LoadComedySeriesViewModel(view);
                 LoadActorsViewModel(view);
-                LoadGenresViewModel(view);
                 LoadMiniSpotlightsViewModel(view);
                 LoadMiniSpotlightsViewModel2(view);
             }
@@ -382,19 +393,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             ActorsViewModel.AddImages(images);
         }
 
-        private void LoadGenresViewModel(TvView view)
-        {
-            //var images = view.ActorItems.Take(1).Select(i => ApiClient.GetPersonImageUrl(i.Name, new ImageOptions
-            //{
-            //    ImageType = i.ImageType,
-            //    Tag = i.ImageTag,
-            //    Height = Convert.ToInt32(TileWidth * 2),
-            //    EnableImageEnhancers = false
-            //}));
-
-            //GenresViewModel.AddImages(images);
-        }
-
         private void LoadRomanticSeriesViewModel(TvView view)
         {
             var now = DateTime.Now;
@@ -463,19 +461,20 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             var displayPreferences = await PresentationManager.GetDisplayPreferences("People", CancellationToken.None);
 
+            var options = new ListPageConfig
+            {
+                IndexOptions = AlphabetIndex,
+                PageTitle = "TV | Actors",
+                CustomItemQuery = GetAllActors
+            };
+
+            SetDefaults(options);
+
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger, AlphabetIndex, _serverEvents);
-
-            var sortOptions = new Dictionary<string, string>();
-            sortOptions["Name"] = ItemSortBy.SortName;
-            sortOptions["Series count"] = ItemSortBy.SeriesCount;
-            sortOptions["Episode count"] = ItemSortBy.EpisodeCount;
-
-            page.SortOptions = sortOptions;
-            page.CustomPageTitle = "TV | Actors";
-
-            page.ViewType = ViewType.Tv;
-            page.CustomItemQuery = GetAllActors;
+                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
+            {
+                ViewType = ViewType.Tv
+            };
 
             await _navService.Navigate(page);
         }
@@ -500,16 +499,20 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 DisplayName = i.Name + " (" + i.SeriesCount + ")"
             });
 
+            var options = new ListPageConfig
+            {
+                IndexOptions = indexOptions.ToList(),
+                PageTitle = "TV | Genres",
+                CustomItemQuery = GetSeriesByGenre
+            };
+
+            SetDefaults(options);
+
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger, indexOptions, _serverEvents);
-
-            var sortOptions = new Dictionary<string, string>();
-
-            page.SortOptions = sortOptions;
-            page.CustomPageTitle = "TV | Genres";
-
-            page.ViewType = ViewType.Tv;
-            page.CustomItemQuery = GetSeriesByGenre;
+                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
+            {
+                ViewType = ViewType.Tv
+            };
 
             await _navService.Navigate(page);
         }
@@ -533,14 +536,20 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             var displayPreferences = await PresentationManager.GetDisplayPreferences("Shows", CancellationToken.None);
 
+            var options = new ListPageConfig
+            {
+                PageTitle = "TV Shows",
+                CustomItemQuery = GetAllShows,
+                SortOptions = GetSeriesSortOptions()
+            };
+
+            SetDefaults(options);
+
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents);
-
-            page.SortOptions = GetSeriesSortOptions();
-            page.CustomPageTitle = "TV Shows";
-
-            page.ViewType = ViewType.Tv;
-            page.CustomItemQuery = GetAllShows;
+                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
+            {
+                ViewType = ViewType.Tv
+            };
 
             await _navService.Navigate(page);
         }
@@ -565,14 +574,20 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             var displayPreferences = await PresentationManager.GetDisplayPreferences("Shows", CancellationToken.None);
 
+            var options = new ListPageConfig
+            {
+                PageTitle = "Comedy Night",
+                CustomItemQuery = GetComedySeries,
+                SortOptions = GetSeriesSortOptions()
+            };
+
+            SetDefaults(options);
+
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents);
-
-            page.SortOptions = GetSeriesSortOptions();
-            page.CustomPageTitle = "Comedy Night";
-
-            page.ViewType = ViewType.Movies;
-            page.CustomItemQuery = GetComedySeries;
+                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
+            {
+                ViewType = ViewType.Tv
+            };
 
             await _navService.Navigate(page);
         }
@@ -702,14 +717,20 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             var displayPreferences = await PresentationManager.GetDisplayPreferences("Shows", CancellationToken.None);
 
+            var options = new ListPageConfig
+            {
+                PageTitle = "Date Night",
+                CustomItemQuery = GetRomanticSeries,
+                SortOptions = GetSeriesSortOptions()
+            };
+
+            SetDefaults(options);
+
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents);
-
-            page.SortOptions = GetSeriesSortOptions();
-            page.CustomPageTitle = "Date Night";
-
-            page.ViewType = ViewType.Tv;
-            page.CustomItemQuery = GetRomanticSeries;
+                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
+            {
+                ViewType = ViewType.Tv
+            };
 
             await _navService.Navigate(page);
         }

@@ -129,6 +129,9 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                     OnPropertyChanged("ParentIndexNumber");
                     OnPropertyChanged("MediaStreams");
                     OnPropertyChanged("DateText");
+                    OnPropertyChanged("AirTimeText");
+                    OnPropertyChanged("IsMissingEpisode");
+                    OnPropertyChanged("IsVirtualUnairedEpisode");
 
                     RefreshUserDataFields();
                 }
@@ -170,7 +173,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         {
             get
             {
-                return _item != null && !_item.IsFolder && !string.IsNullOrEmpty(Item.MediaType);
+                return _item != null && _playbackManager.CanPlay(_item);
             }
         }
 
@@ -185,6 +188,16 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         public bool HasTrailer
         {
             get { return _item != null && _item.LocalTrailerCount > 0; }
+        }
+
+        public bool IsVirtualUnairedEpisode
+        {
+            get { return _item != null && _item.LocationType == LocationType.Virtual && _item.PremiereDate.HasValue && _item.PremiereDate.Value > DateTime.UtcNow; }
+        }
+
+        public bool IsMissingEpisode
+        {
+            get { return _item != null && _item.LocationType == LocationType.Virtual && _item.PremiereDate.HasValue && _item.PremiereDate.Value <= DateTime.UtcNow; }
         }
 
         private ImageType[] _preferredImageTypes = new[] { ImageType.Primary };
@@ -441,6 +454,61 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                     return text;
                 }
                 return null;
+            }
+        }
+
+        public string SeriesAirTimeLabel
+        {
+            get
+            {
+                if (_item == null)
+                {
+                    return null;
+                }
+
+                if (!_item.IsType("series"))
+                {
+                    return null;
+                }
+
+                return (_item.Status ?? SeriesStatus.Continuing) == SeriesStatus.Continuing ? "Airs" : "Aired";
+            }
+        }
+
+        public string SeriesAirTimeText
+        {
+            get
+            {
+                if (_item == null)
+                {
+                    return null;
+                }
+
+                if (!_item.IsType("series"))
+                {
+                    return null;
+                }
+
+                var text = string.Empty;
+
+                if (_item.AirDays != null && _item.AirDays.Count > 0)
+                {
+                    text += string.Join(",", _item.AirDays.Select(i => i.ToString() + "s").ToArray());
+                }
+
+                if (!string.IsNullOrEmpty(_item.AirTime))
+                {
+                    text += " at " + _item.AirTime;
+                }
+
+                var studio = _item.Studios.FirstOrDefault();
+
+                if (studio != null)
+                {
+                    text += " on " + studio.Name;
+                }
+
+                return text;
             }
         }
 
@@ -885,6 +953,11 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 imageOptions.Height = Convert.ToInt32(ImageHeight * scaleFactor);
             }
 
+            if (imageType == ImageType.Thumb)
+            {
+                return _apiClient.GetThumbImageUrl(Item, imageOptions);
+            }
+
             return _apiClient.GetImageUrl(Item, imageOptions);
         }
 
@@ -898,6 +971,13 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 if (imageType == ImageType.Backdrop)
                 {
                     if (item.BackdropCount == 0)
+                    {
+                        continue;
+                    }
+                }
+                else if (imageType == ImageType.Thumb)
+                {
+                    if (!item.ImageTags.ContainsKey(imageType) && !item.ParentThumbImageTag.HasValue && !item.SeriesThumbImageTag.HasValue)
                     {
                         continue;
                     }

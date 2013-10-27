@@ -41,6 +41,7 @@
     <Brush x:Key="Heading2Foreground">#ffffff</Brush>
 
     <Brush x:Key="SelectedMenuItemForeground">#ffffff</Brush>
+    <Brush x:Key="SpecialIndicatorBackground">#a6cc3333</Brush>
 
     <Style TargetType="Path" x:Key="IconPath">
         <Setter Property="Fill">

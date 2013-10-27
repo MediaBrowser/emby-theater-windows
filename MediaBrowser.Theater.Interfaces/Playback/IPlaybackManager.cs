@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using MediaBrowser.Model.Dto;
 
 namespace MediaBrowser.Theater.Interfaces.Playback
 {
@@ -13,6 +14,13 @@ namespace MediaBrowser.Theater.Interfaces.Playback
         /// Occurs when [volume changed].
         /// </summary>
         event EventHandler VolumeChanged;
+
+        /// <summary>
+        /// Determines whether this instance can play the specified item.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <returns><c>true</c> if this instance can play the specified item; otherwise, <c>false</c>.</returns>
+        bool CanPlay(BaseItemDto item);
 
         /// <summary>
         /// Gets a value indicating whether this instance is muted.

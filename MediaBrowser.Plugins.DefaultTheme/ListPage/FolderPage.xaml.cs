@@ -114,10 +114,19 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
         private ImageType[] GetPreferredImageTypes(ItemListViewModel viewModel)
         {
             return string.Equals(viewModel.ViewType, ListViewTypes.Thumbstrip) || string.Equals(viewModel.ViewType, ListViewTypes.List)
-                       ? new[] { ImageType.Backdrop, ImageType.Thumb, ImageType.Primary }
+                       ? GetListViewPreferredImageTypes()
                        : new[] { ImageType.Primary };
         }
 
+        private ImageType[] GetListViewPreferredImageTypes()
+        {
+            if (_parentItem.IsType("Season") || _parentItem.IsType("Series"))
+            {
+                return new[] { ImageType.Primary, ImageType.Thumb };
+            }
+
+            return new[] { ImageType.Backdrop, ImageType.Thumb, ImageType.Primary };
+        }
 
         private bool GetShowSidebar(ItemListViewModel viewModel)
         {

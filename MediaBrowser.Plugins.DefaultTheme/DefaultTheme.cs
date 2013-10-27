@@ -99,7 +99,8 @@ namespace MediaBrowser.Plugins.DefaultTheme
             var itemViewModel = new ItemViewModel(_apiClient, _imageManager, _playbackManager, _presentationManager, _logger, _serverEvents)
             {
                 Item = item,
-                ImageWidth = 550
+                ImageWidth = 550,
+                PreferredImageTypes = new[] { ImageType.Primary, ImageType.Thumb }
             };
 
             return new DetailPage(itemViewModel, _presentationManager)

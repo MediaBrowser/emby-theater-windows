@@ -522,7 +522,7 @@
                 </TextBlock.Style>
             </TextBlock>
 
-            <TextBlock Background="#a6cc3333" VerticalAlignment="Top" HorizontalAlignment="Right" Foreground="White" Margin="10 5" Text="OFFLINE">
+            <TextBlock Background="{DynamicResource SpecialIndicatorBackground}" VerticalAlignment="Top" HorizontalAlignment="Right" Foreground="White" Margin="10 5" Text="OFFLINE">
                 <TextBlock.Style>
                     <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SmallTextBlockStyle}">
                         <Style.Triggers>
@@ -564,21 +564,42 @@
 
                 <StackPanel Grid.Column="2" Orientation="Horizontal">
 
-                    <Grid Background="#a6cc3333" VerticalAlignment="Center" Margin="0 0 10 0" Height="50">
-
-                        <Grid.Style>
-                            <Style TargetType="{x:Type Grid}">
+                    <TextBlock Background="{DynamicResource SpecialIndicatorBackground}" Foreground="White" Padding="10 5" Margin="0 0 10 0" Height="50" VerticalAlignment="Center" Text="OFFLINE">
+                        <TextBlock.Style>
+                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SmallTextBlockStyle}">
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsOffline}" Value="False">
                                         <Setter Property="Visibility" Value="Collapsed" />
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
-                        </Grid.Style>
+                        </TextBlock.Style>
+                    </TextBlock>
 
-                        <TextBlock Style="{DynamicResource SmallTextBlockStyle}" Foreground="White" Margin="10 5" VerticalAlignment="Center">OFFLINE</TextBlock>
-                    </Grid>
+                    <TextBlock Background="{DynamicResource SpecialIndicatorBackground}" Foreground="White" Padding="10 5" Margin="0 0 10 0" Height="50" VerticalAlignment="Center" Text="MISSING">
+                        <TextBlock.Style>
+                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SmallTextBlockStyle}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsMissingEpisode}" Value="False">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
 
+                    <TextBlock Background="{DynamicResource SpecialIndicatorBackground}" Foreground="White" Padding="10 5" Margin="0 0 10 0" Height="50" VerticalAlignment="Center" Text="UNAIRED">
+                        <TextBlock.Style>
+                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SmallTextBlockStyle}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsVirtualUnairedEpisode}" Value="False">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                    
                     <ProgressBar Minimum="0" Maximum="100" Value="{Binding PlayedPercentage, Mode=OneWay}" Margin="0 0 10 0" Width="100" Height="50">
                         <ProgressBar.Style>
                             <Style TargetType="{x:Type ProgressBar}" BasedOn="{StaticResource ResumeProgressBar}">

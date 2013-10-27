@@ -751,8 +751,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
                 UserId = _sessionManager.CurrentUser.Id,
 
-                ExcludeLocationTypes = new[] { LocationType.Virtual },
-
                 Limit = 15
             };
 

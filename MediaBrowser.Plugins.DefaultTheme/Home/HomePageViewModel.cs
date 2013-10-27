@@ -165,8 +165,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 var vm = new ItemListViewModel(GetMediaCollectionsAsync, _presentationManager, _imageManager, _apiClient, _nav, _playbackManager, _logger, _serverEvents)
                 {
-                    ImageDisplayWidth = TileWidth,
-                    ImageDisplayHeightGenerator = v => TileHeight,
+                    ImageDisplayWidth = 400,
+                    ImageDisplayHeightGenerator = v => 225,
                     DisplayNameGenerator = GetDisplayName
                 };
 

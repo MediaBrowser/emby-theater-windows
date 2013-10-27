@@ -192,7 +192,15 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
             _dispatcher = Dispatcher.CurrentDispatcher;
             _imageManager = imageManager;
 
-            CustomCommand = new RelayCommand(o => CustomCommandAction(_currentIndex == -1 ? null : Images[_currentIndex]));
+            CustomCommand = new RelayCommand(o =>
+            {
+                var img = _currentIndex == -1 ? null : Images[_currentIndex];
+
+                if (img != null)
+                {
+                    CustomCommandAction(img);
+                }
+            });
         }
 
         private async void OnIndexChanged()

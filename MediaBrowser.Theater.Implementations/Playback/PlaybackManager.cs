@@ -494,5 +494,33 @@ namespace MediaBrowser.Theater.Implementations.Playback
                 audioDevice.AudioEndpointVolume.VolumeStepDown();
             }
         }
+
+        /// <summary>
+        /// Determines whether this instance can play the specified item.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <returns><c>true</c> if this instance can play the specified item; otherwise, <c>false</c>.</returns>
+        public bool CanPlay(BaseItemDto item)
+        {
+            if (item.IsFolder)
+            {
+                return false;
+            }
+
+            if (string.IsNullOrEmpty(item.MediaType))
+            {
+                return false;
+            }
+
+            if (item.LocationType == LocationType.Virtual)
+            {
+                return false;
+            }
+
+            PlayerConfiguration config;
+            var player = GetPlayer(new[] { item }, out config);
+
+            return player != null;
+        }
     }
 }

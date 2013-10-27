@@ -8,7 +8,6 @@ using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
-using MediaBrowser.Theater.Interfaces.ViewModels;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -234,15 +233,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 }
             }
 
-            if (themeMediaResult.ThemeVideosResult.TotalRecordCount > 0 || themeMediaResult.ThemeSongsResult.TotalRecordCount > 0)
-            {
-                views.Add(new TabItem
-                {
-                    Name = "themes",
-                    DisplayName = "Themes"
-                });
-            }
-
             if (item.IsArtist || item.IsGameGenre || item.IsGenre || item.IsMusicGenre || item.IsPerson || item.IsStudio)
             {
                 if (item.MovieCount.HasValue && item.MovieCount.Value > 0)
@@ -324,6 +314,15 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 {
                     Name = "gallery",
                     DisplayName = "Gallery"
+                });
+            }
+
+            if (themeMediaResult.ThemeVideosResult.TotalRecordCount > 0 || themeMediaResult.ThemeSongsResult.TotalRecordCount > 0)
+            {
+                views.Add(new TabItem
+                {
+                    Name = "themes",
+                    DisplayName = "Themes"
                 });
             }
 

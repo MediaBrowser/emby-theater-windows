@@ -922,7 +922,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         {
             var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
 
-            var displayPreferences = await PresentationManager.GetDisplayPreferences("Movies", CancellationToken.None);
+            var displayPreferences = await PresentationManager.GetDisplayPreferences("RomanticMovies", CancellationToken.None);
 
             var options = new ListPageConfig
             {
@@ -970,7 +970,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         {
             var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
 
-            var displayPreferences = await PresentationManager.GetDisplayPreferences("Movies", CancellationToken.None);
+            var displayPreferences = await PresentationManager.GetDisplayPreferences("ComedyMovies", CancellationToken.None);
 
             var options = new ListPageConfig
             {
@@ -1098,7 +1098,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         {
             var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
 
-            var displayPreferences = await PresentationManager.GetDisplayPreferences("Movies", CancellationToken.None);
+            var displayPreferences = await PresentationManager.GetDisplayPreferences("HDMovies", CancellationToken.None);
 
             var options = new ListPageConfig
             {
@@ -1146,7 +1146,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         {
             var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
 
-            var displayPreferences = await PresentationManager.GetDisplayPreferences("Movies", CancellationToken.None);
+            var displayPreferences = await PresentationManager.GetDisplayPreferences("FamilyMovies", CancellationToken.None);
 
             var options = new ListPageConfig
             {
@@ -1194,7 +1194,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         {
             var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
 
-            var displayPreferences = await PresentationManager.GetDisplayPreferences("Movies", CancellationToken.None);
+            var displayPreferences = await PresentationManager.GetDisplayPreferences("3DMovies", CancellationToken.None);
 
             var options = new ListPageConfig
             {
@@ -1285,11 +1285,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             var sortOptions = new Dictionary<string, string>();
             sortOptions["Name"] = ItemSortBy.SortName;
 
-            sortOptions["Community rating"] = ItemSortBy.CommunityRating;
-            sortOptions["Critic rating"] = ItemSortBy.CriticRating;
-            sortOptions["Date added"] = ItemSortBy.DateCreated;
-            sortOptions["Parental rating"] = ItemSortBy.OfficialRating;
-            sortOptions["Release date"] = ItemSortBy.PremiereDate;
+            sortOptions["Critic Rating"] = ItemSortBy.CriticRating;
+            sortOptions["Date Added"] = ItemSortBy.DateCreated;
+            sortOptions["IMDb Rating"] = ItemSortBy.CommunityRating;
+            sortOptions["Parental Rating"] = ItemSortBy.OfficialRating;
+            sortOptions["Release Date"] = ItemSortBy.PremiereDate;
             sortOptions["Runtime"] = ItemSortBy.Runtime;
 
             return sortOptions;

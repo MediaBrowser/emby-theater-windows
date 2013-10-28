@@ -1,0 +1,51 @@
+﻿<controls:BaseModalWindow x:Class="MediaBrowser.Plugins.DefaultTheme.ListPage.SortWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                        xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
+                                        Title="SortWindow" Height="300" Width="300"
+        AllowsTransparency="True"
+        Background="Transparent"
+        Style="{DynamicResource ModalWindow}">
+    <Grid>
+        <Grid Style="{DynamicResource ModalOverlayStyle}">
+
+        </Grid>
+        <Grid Style="{DynamicResource ModalContentStyle}" HorizontalAlignment="Right" VerticalAlignment="Stretch">
+
+            <Grid Margin="50 40 120 0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"></RowDefinition>
+                    <RowDefinition Height="auto"></RowDefinition>
+                </Grid.RowDefinitions>
+
+                <StackPanel Orientation="Vertical" Grid.Row="0" MinWidth="500">
+                    <TextBlock Style="{DynamicResource Heading2TextBlockStyle}">Sort By</TextBlock>
+                    <StackPanel x:Name="PnlOptions" Orientation="Vertical"></StackPanel>
+
+                    <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Row="2" Grid.Column="0" Margin="0 30 0 0">Sort Order</TextBlock>
+                    <RadioButton x:Name="RadioAscending" GroupName="SortOrder" Margin="0 25 0 0">
+                        <TextBlock Style="{DynamicResource TextBlockStyle}">Ascending</TextBlock>
+                    </RadioButton>
+                    <RadioButton x:Name="RadioDescending" GroupName="SortOrder" Margin="0 20 0 0">
+                        <TextBlock Style="{DynamicResource TextBlockStyle}">Descending</TextBlock>
+                    </RadioButton>
+
+                    <CheckBox x:Name="ChkRemember" Margin="0 30 0 0" IsChecked="{Binding RememberSorting}">
+                        <TextBlock Text="Remember sorting" Style="{DynamicResource TextBlockStyle}"></TextBlock>
+                    </CheckBox>
+                </StackPanel>
+
+                <Button x:Name="btnClose" Style="{DynamicResource ViewMenuButton}" HorizontalAlignment="Left" Margin="0 50 0 0" Grid.Row="1">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="..\Resources\Images\ViewMenu\Close.png" Stretch="None" />
+                        <TextBlock Style="{DynamicResource TextBlockStyle}" VerticalAlignment="Center" Margin="10 0 0 0">Close</TextBlock>
+                    </StackPanel>
+                </Button>
+            </Grid>
+        </Grid>
+
+        <Grid.LayoutTransform>
+            <ScaleTransform ScaleX="{Binding Path=ContentScale}" ScaleY="{Binding Path=ContentScale}" CenterX="0" CenterY="0" />
+        </Grid.LayoutTransform>
+    </Grid>
+</controls:BaseModalWindow>

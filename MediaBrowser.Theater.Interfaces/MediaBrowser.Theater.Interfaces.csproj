@@ -82,7 +82,6 @@
     <Compile Include="Presentation\IStartupEntryPoint.cs" />
     <Compile Include="Presentation\IApp.cs" />
     <Compile Include="Presentation\MessageBoxInfo.cs" />
-    <Compile Include="Presentation\ListViewTypes.cs" />
     <Compile Include="Presentation\ViewType.cs" />
     <Compile Include="Reflection\ChainingPropertyDescriptor.cs" />
     <Compile Include="Reflection\HyperTypeDescriptionProvider.cs" />

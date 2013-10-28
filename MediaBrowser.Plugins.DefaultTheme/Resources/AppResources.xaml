@@ -207,26 +207,6 @@
                             </Grid>
                         </Button>
 
-                        <Button Margin="0 0 30 0" Command="{Binding DisplayPreferencesCommand}">
-
-                            <Button.Style>
-                                <Style TargetType="{x:Type Button}" BasedOn="{StaticResource ImageButton}">
-
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsOnPageWithDisplayPreferences}" Value="False">
-                                            <Setter Property="Visibility" Value="Collapsed" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-
-                            <Grid>
-                                <Grid Width="48" Height="48" />
-                                <Path Style="{DynamicResource IconPath}" Data="M3.5234878,31.704002L21.136544,31.704002C23.074021,31.704002,24.66,33.292845,24.66,35.2276L24.66,52.841503C24.66,54.779058,23.074021,56.365002,21.136544,56.365002L3.5234878,56.365002C1.5860111,56.365002,4.4521053E-07,54.779058,0,52.841503L0,35.2276C4.4521053E-07,33.292845,1.5860111,31.704002,3.5234878,31.704002z M35.228287,31.704001L52.841515,31.704001C54.779007,31.704001,56.364998,33.292846,56.364998,35.2276L56.364998,52.841499C56.364998,54.779055,54.779007,56.365,52.841515,56.365L35.228287,56.365C33.290894,56.365,31.705,54.779055,31.705,52.841499L31.705,35.2276C31.705,33.292846,33.290894,31.704001,35.228287,31.704001z M35.228287,0L52.841515,0C54.779007,0,56.364998,1.5872669,56.364998,3.5234127L56.364998,21.136529C56.364998,23.074013,54.779007,24.66,52.841515,24.660001L35.228287,24.660001C33.290894,24.66,31.705,23.074013,31.705,21.136529L31.705,3.5234127C31.705,1.5872669,33.290894,0,35.228287,0z M3.5234878,0L21.136544,0C23.074021,0,24.66,1.5872669,24.66,3.5234127L24.66,21.136529C24.66,23.074013,23.074021,24.66,21.136544,24.660001L3.5234878,24.660001C1.5860111,24.66,4.4521053E-07,23.074013,0,21.136529L0,3.5234127C4.4521053E-07,1.5872669,1.5860111,0,3.5234878,0z" Stretch="Uniform" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
-                                </Path>
-                            </Grid>
-                        </Button>
-
                         <Button Style="{DynamicResource ImageButton}" Margin="0 0 30 0" Visibility="Collapsed">
                             <Grid>
                                 <Grid Width="48" Height="48" />
@@ -684,7 +664,7 @@
                 <Setter Property="ItemsPanel">
                     <Setter.Value>
                         <ItemsPanelTemplate>
-                            <controls:VirtualizingWrapPanel ItemHeight="{Binding ItemContainerHeight}" ItemWidth="{Binding ItemContainerWidth}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="20 20">
+                            <controls:VirtualizingWrapPanel ItemHeight="{Binding ItemContainerHeight}" ItemWidth="{Binding ItemContainerWidth}" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="20 20">
                                 <controls:VirtualizingWrapPanel.Style>
                                     <Style TargetType="{x:Type controls:VirtualizingWrapPanel}">
                                         <Style.Triggers>
@@ -710,7 +690,7 @@
                 <Setter Property="ItemsPanel">
                     <Setter.Value>
                         <ItemsPanelTemplate>
-                            <controls:VirtualizingWrapPanel ItemHeight="{Binding ItemContainerHeight}" ItemWidth="{Binding ItemContainerWidth}" Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="20 20">
+                            <controls:VirtualizingWrapPanel ItemHeight="{Binding ItemContainerHeight}" ItemWidth="{Binding ItemContainerWidth}" Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="20 20">
                             </controls:VirtualizingWrapPanel>
                         </ItemsPanelTemplate>
                     </Setter.Value>

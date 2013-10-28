@@ -559,10 +559,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             var sortOptions = new Dictionary<string, string>();
             sortOptions["Name"] = ItemSortBy.SortName;
 
-            sortOptions["Community rating"] = ItemSortBy.CommunityRating;
-            sortOptions["Date added"] = ItemSortBy.DateCreated;
-            sortOptions["Parental rating"] = ItemSortBy.OfficialRating;
-            sortOptions["Premiere date"] = ItemSortBy.PremiereDate;
+            sortOptions["Date Added"] = ItemSortBy.DateCreated;
+            sortOptions["IMDb Rating"] = ItemSortBy.CommunityRating;
+            sortOptions["Parental Rating"] = ItemSortBy.OfficialRating;
+            sortOptions["Premiere Date"] = ItemSortBy.PremiereDate;
             sortOptions["Runtime"] = ItemSortBy.Runtime;
 
             return sortOptions;
@@ -572,7 +572,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         {
             var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
 
-            var displayPreferences = await PresentationManager.GetDisplayPreferences("Shows", CancellationToken.None);
+            var displayPreferences = await PresentationManager.GetDisplayPreferences("ComedyShows", CancellationToken.None);
 
             var options = new ListPageConfig
             {
@@ -715,7 +715,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         {
             var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
 
-            var displayPreferences = await PresentationManager.GetDisplayPreferences("Shows", CancellationToken.None);
+            var displayPreferences = await PresentationManager.GetDisplayPreferences("RomanticShows", CancellationToken.None);
 
             var options = new ListPageConfig
             {

@@ -12,7 +12,6 @@ using MediaBrowser.Theater.Presentation.Extensions;
 using MediaBrowser.Theater.Presentation.Pages;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading;
@@ -24,10 +23,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
     /// <summary>
     /// Interaction logic for FolderPage.xaml
     /// </summary>
-    public partial class FolderPage : BasePage, ISupportsItemThemeMedia, ISupportsBackdrops, IItemPage, IHasDisplayPreferences
+    public partial class FolderPage : BasePage, ISupportsItemThemeMedia, ISupportsBackdrops, IItemPage
     {
         private readonly DisplayPreferences _displayPreferences;
-
+        
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
         private readonly ISessionManager _sessionManager;
@@ -54,13 +53,14 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
             _imageManager = imageManager;
             _apiClient = apiClient;
             _options = options;
-
             _displayPreferences = displayPreferences;
+
             _parentItem = parent;
 
             InitializeComponent();
 
             Loaded += FolderPage_Loaded;
+            Unloaded += FolderPage_Unloaded;
 
             SetDefaults(displayPreferences);
 
@@ -82,9 +82,63 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
 
             _viewModel.PropertyChanged += _viewModel_PropertyChanged;
 
-            _viewModel.DisplayPreferences = _displayPreferences;
+            _viewModel.DisplayPreferences = displayPreferences;
 
             DataContext = _viewModel;
+
+            UpdateSortTitle();
+            UpdateSortOrder();
+
+            BtnSort.Visibility = _options.SortOptions.Count > 0
+                                     ? Visibility.Visible
+                                     : Visibility.Collapsed;
+
+            BtnSort.Click += BtnSort_Click;
+        }
+
+        void FolderPage_Loaded(object sender, RoutedEventArgs e)
+        {
+            _displayPreferences.PropertyChanged += _displayPreferencesViewModel_PropertyChanged;
+
+            SetPageTitle(_parentItem);
+        }
+
+        void FolderPage_Unloaded(object sender, RoutedEventArgs e)
+        {
+            _displayPreferences.PropertyChanged -= _displayPreferencesViewModel_PropertyChanged;
+        }
+
+        void _displayPreferencesViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (string.Equals(e.PropertyName, "SortBy"))
+            {
+                UpdateSortTitle();
+            }
+            else if (string.Equals(e.PropertyName, "SortOrder"))
+            {
+                UpdateSortOrder();
+            }
+        }
+
+        private void UpdateSortTitle()
+        {
+            var pairs = _options.SortOptions
+                .Where(i => string.Equals(i.Value, _displayPreferences.SortBy))
+                .ToList();
+
+            if (pairs.Count > 0)
+            {
+                TxtSortName.Text = pairs[0].Key;
+            }
+            else if (_options.SortOptions.Count > 0)
+            {
+                TxtSortName.Text = _options.SortOptions.First().Key;
+            }
+        }
+
+        private void UpdateSortOrder()
+        {
+            BtnSortScale.ScaleY = _displayPreferences.SortOrder == SortOrder.Ascending ? -1 : 1;
         }
 
         private void SetDefaults(DisplayPreferences displayPreferences)
@@ -159,11 +213,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
             }
 
             return viewModel.DisplayPreferences != null && viewModel.DisplayPreferences.ShowSidebar;
-        }
-
-        void FolderPage_Loaded(object sender, RoutedEventArgs e)
-        {
-            SetPageTitle(_parentItem);
         }
 
         private void SetPageTitle(BaseItemDto parentItem)
@@ -365,23 +414,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
             }
         }
 
-        public void ShowDisplayPreferencesMenu()
+        void BtnSort_Click(object sender, RoutedEventArgs e)
         {
-            var viewModel = new DisplayPreferencesViewModel(_viewModel.DisplayPreferences, _presentationManager);
+            var viewModel = new DisplayPreferencesViewModel(_displayPreferences, _presentationManager);
 
-            var sortOptions = _options.SortOptions;
-
-            if (sortOptions == null)
-            {
-                sortOptions = new Dictionary<string, string>();
-                sortOptions["Name"] = ItemSortBy.SortName;
-                sortOptions["CommunityRating"] = ItemSortBy.CommunityRating;
-                sortOptions["Date Added"] = ItemSortBy.DateCreated;
-                sortOptions["Runtime"] = ItemSortBy.Runtime;
-                sortOptions["Year"] = ItemSortBy.ProductionYear;
-            }
-
-            var menu = new DisplayPreferencesMenu.DisplayPreferencesMenu(viewModel, sortOptions);
+            var menu = new SortWindow(viewModel, _options.SortOptions);
 
             menu.ShowModal(this.GetWindow());
 

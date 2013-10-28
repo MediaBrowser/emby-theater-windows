@@ -90,9 +90,6 @@
     <Compile Include="DisplayPreferencesMenu\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="DisplayPreferencesMenu\SortMenuPage.xaml.cs">
-      <DependentUpon>SortMenuPage.xaml</DependentUpon>
-    </Compile>
     <Compile Include="DisplayPreferencesMenu\ViewMenuPage.xaml.cs">
       <DependentUpon>ViewMenuPage.xaml</DependentUpon>
     </Compile>
@@ -108,8 +105,11 @@
     <Compile Include="Home\MoviesViewModel.cs" />
     <Compile Include="Home\TvViewModel.cs" />
     <Compile Include="Home\FavoritesViewModel.cs" />
-    <Compile Include="IHasDisplayPreferences.cs" />
     <Compile Include="ListPage\ListPageConfig.cs" />
+    <Compile Include="ListPage\ListViewTypes.cs" />
+    <Compile Include="ListPage\SortWindow.xaml.cs">
+      <DependentUpon>SortWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Osd\FullscreenVideoTransportOsd.xaml.cs">
       <DependentUpon>FullscreenVideoTransportOsd.xaml</DependentUpon>
     </Compile>
@@ -186,15 +186,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="DisplayPreferencesMenu\SortMenuPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="DisplayPreferencesMenu\ViewMenuPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Home\HomePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ListPage\SortWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

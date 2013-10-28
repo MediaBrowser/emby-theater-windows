@@ -1,5 +1,5 @@
 ﻿
-namespace MediaBrowser.Theater.Interfaces.Presentation
+namespace MediaBrowser.Plugins.DefaultTheme.ListPage
 {
     /// <summary>
     /// These represent only a set of known view types. Themes are free to add more, or use their own names entirely.

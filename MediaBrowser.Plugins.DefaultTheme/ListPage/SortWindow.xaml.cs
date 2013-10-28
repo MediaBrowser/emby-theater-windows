@@ -1,32 +1,29 @@
 ﻿using MediaBrowser.Model.Entities;
-using MediaBrowser.Theater.Presentation.Pages;
+using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
-namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferencesMenu
+namespace MediaBrowser.Plugins.DefaultTheme.ListPage
 {
     /// <summary>
-    /// Interaction logic for SortMenuPage.xaml
+    /// Interaction logic for SortWindow.xaml
     /// </summary>
-    public partial class SortMenuPage : BasePage
+    public partial class SortWindow : BaseModalWindow
     {
         private readonly Dictionary<string, string> _sortOptions = new Dictionary<string, string>();
 
         private readonly DisplayPreferencesViewModel _displayPreferencesViewModel;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SortMenuPage" /> class.
-        /// </summary>
-        public SortMenuPage(DisplayPreferencesViewModel displayPreferencesViewModel, Dictionary<string,string> sortOptions)
+        public SortWindow(DisplayPreferencesViewModel displayPreferencesViewModel, Dictionary<string, string> sortOptions)
         {
             _displayPreferencesViewModel = displayPreferencesViewModel;
             InitializeComponent();
 
-            DataContext = _displayPreferencesViewModel;
+            btnClose.Click += btnClose_Click;
 
             Loaded += SortMenuPage_Loaded;
 
@@ -34,6 +31,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferencesMenu
 
             RadioAscending.Click += RadioAscending_Click;
             RadioDescending.Click += RadioDescending_Click;
+
+            ChkRemember.DataContext = displayPreferencesViewModel;
         }
 
         void RadioDescending_Click(object sender, RoutedEventArgs e)
@@ -49,6 +48,13 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferencesMenu
         void SortMenuPage_Loaded(object sender, RoutedEventArgs e)
         {
             AddFields();
+
+            MoveFocus(new TraversalRequest(FocusNavigationDirection.First));
+        }
+
+        void btnClose_Click(object sender, RoutedEventArgs e)
+        {
+            CloseModal();
         }
 
         /// <summary>

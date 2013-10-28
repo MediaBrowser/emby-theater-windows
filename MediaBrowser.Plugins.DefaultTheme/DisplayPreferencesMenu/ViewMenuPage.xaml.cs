@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Theater.Interfaces.Presentation;
+﻿using MediaBrowser.Plugins.DefaultTheme.ListPage;
+using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Presentation.Pages;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using System.Windows;

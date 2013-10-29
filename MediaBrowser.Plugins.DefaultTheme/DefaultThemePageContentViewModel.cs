@@ -22,6 +22,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         private readonly IImageManager _imageManager;
 
         public ICommand UserCommand { get; private set; }
+        public ICommand DisplayPreferencesCommand { get; private set; }
 
         public DefaultThemePageContentViewModel(INavigationService navigationService, ISessionManager sessionManager, IApiClient apiClient, IImageManager imageManager, IPresentationManager presentation, IPlaybackManager playbackManager, ILogger logger, IApplicationHost appHost, IServerEvents serverEvents)
             : base(navigationService, sessionManager, playbackManager, logger, appHost, apiClient, presentation, serverEvents)
@@ -32,6 +33,8 @@ namespace MediaBrowser.Plugins.DefaultTheme
             SessionManager.UserLoggedIn += SessionManager_UserLoggedIn;
             SessionManager.UserLoggedOut += SessionManager_UserLoggedOut;
             UserCommand = new RelayCommand(i => ShowUserMenu());
+
+            DisplayPreferencesCommand = new RelayCommand(i => ShowDisplayPreferences());
         }
 
         void SessionManager_UserLoggedOut(object sender, EventArgs e)
@@ -75,6 +78,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
 
         void NavigationService_Navigated(object sender, NavigationEventArgs e)
         {
+            IsOnPageWithDisplayPreferences = e.NewPage is IHasDisplayPreferences;
             RefreshHomeButton(e.NewPage as Page);
         }
 
@@ -143,7 +147,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
                 }
             }
         }
-        
+
         private BitmapImage _logoImage;
         public BitmapImage LogoImage
         {
@@ -156,7 +160,24 @@ namespace MediaBrowser.Plugins.DefaultTheme
                 OnPropertyChanged("LogoImage");
             }
         }
-        
+
+        private bool _isOnPageWithDisplayPreferences;
+        public bool IsOnPageWithDisplayPreferences
+        {
+            get { return _isOnPageWithDisplayPreferences; }
+
+            set
+            {
+                var changed = _isOnPageWithDisplayPreferences != value;
+
+                _isOnPageWithDisplayPreferences = value;
+                if (changed)
+                {
+                    OnPropertyChanged("IsOnPageWithDisplayPreferences");
+                }
+            }
+        }
+
         private string _timeLeft;
         public string TimeLeft
         {
@@ -199,6 +220,16 @@ namespace MediaBrowser.Plugins.DefaultTheme
         private void ShowUserMenu()
         {
             new UserProfileWindow(SessionManager, _imageManager, ApiClient).ShowModal(PresentationManager.Window);
+        }
+
+        private void ShowDisplayPreferences()
+        {
+            var page = NavigationService.CurrentPage as IHasDisplayPreferences;
+
+            if (page != null)
+            {
+                page.ShowDisplayPreferencesMenu();
+            }
         }
 
         public async void SetPageTitle(BaseItemDto item)
@@ -311,7 +342,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
                 SessionManager.UserLoggedIn -= SessionManager_UserLoggedIn;
                 SessionManager.UserLoggedOut -= SessionManager_UserLoggedOut;
             }
-            
+
             base.Dispose(dispose);
         }
     }

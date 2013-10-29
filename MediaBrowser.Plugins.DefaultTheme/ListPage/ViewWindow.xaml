@@ -1,9 +1,8 @@
-﻿<controls:BaseModalWindow x:Class="MediaBrowser.Plugins.DefaultTheme.DisplayPreferencesMenu.DisplayPreferencesMenu"
+﻿<controls:BaseModalWindow x:Class="MediaBrowser.Plugins.DefaultTheme.ListPage.ViewWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                          xmlns:ee="http://schemas.microsoft.com/expression/2010/effects"
-                          xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
-                          Title="DisplayPreferencesMenu" Height="300" Width="300"
+                                        xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
+                                        Title="ViewWindow" Height="300" Width="300"
         AllowsTransparency="True"
         Background="Transparent"
         Style="{DynamicResource ModalWindow}">
@@ -13,22 +12,26 @@
         </Grid>
         <Grid Style="{DynamicResource ModalContentStyle}" HorizontalAlignment="Right" VerticalAlignment="Stretch">
 
-            <Grid Margin="50 50 120 0">
+            <Grid Margin="50 40 120 0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto"></RowDefinition>
                     <RowDefinition Height="auto"></RowDefinition>
                 </Grid.RowDefinitions>
 
-                <controls:TransitionFrame x:Name="PageFrame" Grid.Row="0" MinWidth="400" MinHeight="550">
-                    <controls:TransitionFrame.TransitionAnimation>
-                        <DoubleAnimation Duration="0:0:0.25" >
-                        </DoubleAnimation>
-                    </controls:TransitionFrame.TransitionAnimation>
-                    <controls:TransitionFrame.TransitionType>
-                        <ee:SlideInTransitionEffect SlideDirection="RightToLeft"></ee:SlideInTransitionEffect>
-                    </controls:TransitionFrame.TransitionType>
-                </controls:TransitionFrame>
-                
+                <StackPanel Orientation="Vertical" Grid.Row="0" MinWidth="500">
+                    <TextBlock Style="{DynamicResource Heading2TextBlockStyle}">Select View</TextBlock>
+
+                    <RadioButton x:Name="radioList" GroupName="View" Margin="0 25 0 0">
+                        <TextBlock Style="{DynamicResource TextBlockStyle}">List</TextBlock>
+                    </RadioButton>
+                    <RadioButton x:Name="radioPoster" GroupName="View" Margin="0 25 0 0">
+                        <TextBlock Style="{DynamicResource TextBlockStyle}">Poster</TextBlock>
+                    </RadioButton>
+                    <RadioButton x:Name="radioThumbstrip" GroupName="View" Margin="0 25 0 0">
+                        <TextBlock Style="{DynamicResource TextBlockStyle}">Thumbstrip</TextBlock>
+                    </RadioButton>
+                </StackPanel>
+
                 <Button x:Name="btnClose" Style="{DynamicResource ViewMenuButton}" HorizontalAlignment="Left" Margin="0 50 0 0" Grid.Row="1">
                     <StackPanel Orientation="Horizontal">
                         <Image Source="..\Resources\Images\ViewMenu\Close.png" Stretch="None" />

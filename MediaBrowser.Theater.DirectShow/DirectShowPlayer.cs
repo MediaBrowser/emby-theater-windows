@@ -518,8 +518,8 @@ namespace MediaBrowser.Theater.DirectShow
         {
             var hiddenWindowContentSize = _hiddenWindow.ContentPixelSize;
 
-            var screenWidth = Convert.ToInt32(hiddenWindowContentSize.Width);
-            var screenHeight = Convert.ToInt32(hiddenWindowContentSize.Height);
+            var screenWidth = Convert.ToInt32(Math.Round(hiddenWindowContentSize.Width));
+            var screenHeight = Convert.ToInt32(Math.Round(hiddenWindowContentSize.Height));
 
             _logger.Info("window content width: {0}, window height: {1}", screenWidth, screenHeight);
 

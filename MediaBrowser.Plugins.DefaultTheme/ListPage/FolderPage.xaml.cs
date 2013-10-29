@@ -23,7 +23,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
     /// <summary>
     /// Interaction logic for FolderPage.xaml
     /// </summary>
-    public partial class FolderPage : BasePage, ISupportsItemThemeMedia, ISupportsBackdrops, IItemPage
+    public partial class FolderPage : BasePage, ISupportsItemThemeMedia, ISupportsBackdrops, IItemPage, IHasDisplayPreferences
     {
         private readonly DisplayPreferences _displayPreferences;
         
@@ -419,6 +419,17 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
             var viewModel = new DisplayPreferencesViewModel(_displayPreferences, _presentationManager);
 
             var menu = new SortWindow(viewModel, _options.SortOptions);
+
+            menu.ShowModal(this.GetWindow());
+
+            viewModel.Save();
+        }
+
+        public void ShowDisplayPreferencesMenu()
+        {
+            var viewModel = new DisplayPreferencesViewModel(_displayPreferences, _presentationManager);
+
+            var menu = new ViewWindow(viewModel, _options);
 
             menu.ShowModal(this.GetWindow());
 

@@ -1,37 +1,45 @@
-﻿using MediaBrowser.Plugins.DefaultTheme.ListPage;
-using MediaBrowser.Theater.Interfaces.Presentation;
-using MediaBrowser.Theater.Presentation.Pages;
+﻿using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using System.Windows;
+using System.Windows.Input;
 
-namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferencesMenu
+namespace MediaBrowser.Plugins.DefaultTheme.ListPage
 {
     /// <summary>
-    /// Interaction logic for ViewMenuPage.xaml
+    /// Interaction logic for ViewWindow.xaml
     /// </summary>
-    public partial class ViewMenuPage : BasePage
+    public partial class ViewWindow : BaseModalWindow
     {
         private readonly DisplayPreferencesViewModel _displayPreferencesViewModel;
+
+        private ListPageConfig _options;
         
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ViewMenuPage" /> class.
-        /// </summary>
-        public ViewMenuPage(DisplayPreferencesViewModel displayPreferencesViewModel)
+        public ViewWindow(DisplayPreferencesViewModel displayPreferencesViewModel, ListPageConfig options)
         {
             _displayPreferencesViewModel = displayPreferencesViewModel;
+            _options = options;
             InitializeComponent();
 
-            DataContext = _displayPreferencesViewModel;
-            
+            DataContext = this;
+
+            btnClose.Click += btnClose_Click;
             radioList.Click += radioList_Click;
             radioPoster.Click += radioPoster_Click;
             radioThumbstrip.Click += radioThumbstrip_Click;
-            Loaded += ViewMenuPage_Loaded;
+
+            Loaded += SortMenuPage_Loaded;
         }
 
-        void ViewMenuPage_Loaded(object sender, RoutedEventArgs e)
+        void SortMenuPage_Loaded(object sender, RoutedEventArgs e)
         {
             UpdateFields();
+            
+            MoveFocus(new TraversalRequest(FocusNavigationDirection.First));
+        }
+
+        void btnClose_Click(object sender, RoutedEventArgs e)
+        {
+            CloseModal();
         }
 
         /// <summary>
@@ -41,7 +49,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferencesMenu
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         void radioThumbstrip_Click(object sender, RoutedEventArgs e)
         {
-            _displayPreferencesViewModel.PrimaryImageWidth = 600;
+            _displayPreferencesViewModel.PrimaryImageWidth = _options.ThumbImageWidth;
 
             _displayPreferencesViewModel.ViewType = ListViewTypes.Thumbstrip;
         }
@@ -53,7 +61,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferencesMenu
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         void radioPoster_Click(object sender, RoutedEventArgs e)
         {
-            _displayPreferencesViewModel.PrimaryImageWidth = 240;
+            _displayPreferencesViewModel.PrimaryImageWidth = _options.PosterImageWidth;
 
             _displayPreferencesViewModel.ViewType = ListViewTypes.Poster;
         }
@@ -65,7 +73,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.DisplayPreferencesMenu
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         void radioList_Click(object sender, RoutedEventArgs e)
         {
-            _displayPreferencesViewModel.PrimaryImageWidth = 140;
+            _displayPreferencesViewModel.PrimaryImageWidth = _options.ListImageWidth;
 
             _displayPreferencesViewModel.ViewType = ListViewTypes.List;
         }

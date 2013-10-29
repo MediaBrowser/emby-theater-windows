@@ -32,6 +32,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
             RadioAscending.Click += RadioAscending_Click;
             RadioDescending.Click += RadioDescending_Click;
 
+            DataContext = this;
             ChkRemember.DataContext = displayPreferencesViewModel;
         }
 

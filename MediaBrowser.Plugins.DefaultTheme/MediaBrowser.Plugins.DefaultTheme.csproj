@@ -84,15 +84,6 @@
     </Compile>
     <Compile Include="DefaultThemePageContentViewModel.cs" />
     <Compile Include="Details\DetailPageViewModel.cs" />
-    <Compile Include="DisplayPreferencesMenu\DisplayPreferencesMenu.xaml.cs">
-      <DependentUpon>DisplayPreferencesMenu.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="DisplayPreferencesMenu\MainPage.xaml.cs">
-      <DependentUpon>MainPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="DisplayPreferencesMenu\ViewMenuPage.xaml.cs">
-      <DependentUpon>ViewMenuPage.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Home\Api.cs" />
     <Compile Include="Home\BaseHomePageSectionViewModel.cs" />
     <Compile Include="Home\GamesViewModel.cs" />
@@ -105,10 +96,14 @@
     <Compile Include="Home\MoviesViewModel.cs" />
     <Compile Include="Home\TvViewModel.cs" />
     <Compile Include="Home\FavoritesViewModel.cs" />
+    <Compile Include="IHasDisplayPreferences.cs" />
     <Compile Include="ListPage\ListPageConfig.cs" />
     <Compile Include="ListPage\ListViewTypes.cs" />
     <Compile Include="ListPage\SortWindow.xaml.cs">
       <DependentUpon>SortWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ListPage\ViewWindow.xaml.cs">
+      <DependentUpon>ViewWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Osd\FullscreenVideoTransportOsd.xaml.cs">
       <DependentUpon>FullscreenVideoTransportOsd.xaml</DependentUpon>
@@ -178,23 +173,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="DisplayPreferencesMenu\DisplayPreferencesMenu.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="DisplayPreferencesMenu\MainPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="DisplayPreferencesMenu\ViewMenuPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Home\HomePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ListPage\SortWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ListPage\ViewWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

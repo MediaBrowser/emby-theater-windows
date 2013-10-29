@@ -508,7 +508,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                     text += " on " + studio.Name;
                 }
 
-                return text;
+                return text.Trim();
             }
         }
 

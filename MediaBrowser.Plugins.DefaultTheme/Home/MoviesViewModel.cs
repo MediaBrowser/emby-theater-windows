@@ -509,7 +509,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
                 Filters = new[] { ItemFilter.IsUnplayed },
 
-                Limit = 10,
+                Limit = 8,
 
                 Recursive = true
             };
@@ -538,7 +538,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
                 Filters = new[] { ItemFilter.IsUnplayed },
 
-                Limit = 10,
+                Limit = 8,
 
                 Recursive = true
             };

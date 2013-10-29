@@ -217,7 +217,18 @@ namespace MediaBrowser.Theater.Presentation.Playback
         {
             if (_currentProcess != null)
             {
-                if (!_currentProcess.CloseMainWindow())
+                var closed = false;
+
+                try
+                {
+                    closed = _currentProcess.CloseMainWindow();
+                }
+                catch (InvalidOperationException)
+                {
+                    // Will throw this if there's no main window
+                }
+
+                if (!closed)
                 {
                     _currentProcess.Kill();
                 }

@@ -313,6 +313,8 @@ namespace MediaBrowser.Theater.Presentation.Playback
         /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
         void CurrentProcess_Exited(object sender, EventArgs e)
         {
+            _currentProcess = null;
+
             _userInput.KeyDown -= KeyboardListener_KeyDown;
 
             var process = (Process)sender;

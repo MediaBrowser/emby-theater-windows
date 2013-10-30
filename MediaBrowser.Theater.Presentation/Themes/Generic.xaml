@@ -4,6 +4,12 @@
     xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls">
 
     <Style TargetType="controls:TransitionControl">
+        <Setter Property="CacheMode">
+            <Setter.Value>
+                <BitmapCache EnableClearType="True" RenderAtScale="1" SnapsToDevicePixels="True"  />
+            </Setter.Value>
+        </Setter>
+        
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="controls:TransitionControl">

@@ -53,10 +53,16 @@
 
     <!--Defines the styles for ListBoxItems. Themes should override this if they choose. -->
     <Style x:Key="HighlightedBorderListBoxItemStyle" TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource ListBoxItemStyle}">
+        <Setter Property="CacheMode">
+            <Setter.Value>
+                <BitmapCache EnableClearType="True" RenderAtScale="1" SnapsToDevicePixels="True"  />
+            </Setter.Value>
+        </Setter>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ListBoxItem}">
                     <Border x:Name="Bd" SnapsToDevicePixels="true" RenderTransformOrigin="0.5,0.5" Padding="0">
+
                         <Grid x:Name="ContentGrid">
                             <Border x:Name="BdDropShadow" Margin="-8" BorderBrush="{DynamicResource SelectedItemHighlightColor}" BorderThickness="16" Background="Transparent" SnapsToDevicePixels="true" CornerRadius="0" Visibility="Hidden">
                                 <Border.Effect>
@@ -87,10 +93,18 @@
         <Setter Property="Padding" Value="0"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+
+        <Setter Property="CacheMode">
+            <Setter.Value>
+                <BitmapCache EnableClearType="True" RenderAtScale="1" SnapsToDevicePixels="True"  />
+            </Setter.Value>
+        </Setter>
+        
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
                     <Border x:Name="Bd" SnapsToDevicePixels="true" RenderTransformOrigin="0.5,0.5" Padding="0">
+
                         <Grid x:Name="ContentGrid">
                             <Border x:Name="BdDropShadow" Margin="-8" BorderBrush="{DynamicResource SelectedItemHighlightColor}" BorderThickness="16" Background="Transparent" SnapsToDevicePixels="true" CornerRadius="0" Visibility="Hidden">
                                 <Border.Effect>

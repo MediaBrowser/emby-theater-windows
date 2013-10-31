@@ -32,15 +32,17 @@
         </controls:ExtendedScrollViewer>
         
 
-        <controls:ExtendedScrollViewer x:Name="ScrollViewer" Grid.Row="2" Margin="0 40 0 40" VerticalAlignment="Stretch" HorizontalAlignment="Center" CanContentScroll="True" Focusable="False">
+        <controls:ExtendedScrollViewer x:Name="ScrollViewer" Grid.Row="2" VerticalAlignment="Stretch" HorizontalAlignment="Center" CanContentScroll="True" Focusable="False">
 
             <controls:ExtendedScrollViewer.Style>
                 <Style TargetType="{x:Type controls:ExtendedScrollViewer}">
 
                     <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Hidden"></Setter>
                     <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"></Setter>
+                    <Setter Property="Margin" Value="0 40 0 40"></Setter>
 
                     <Style.Triggers>
+
                         <DataTrigger Binding="{Binding ScrollDirection}" Value="Vertical">
                             <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"></Setter>
                             <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Hidden"></Setter>

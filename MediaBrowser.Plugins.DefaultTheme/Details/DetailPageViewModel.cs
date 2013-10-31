@@ -105,7 +105,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                     !string.Equals(section, "itemtrailers", StringComparison.OrdinalIgnoreCase) &&
                     !string.Equals(section, "itemseries", StringComparison.OrdinalIgnoreCase) &&
                     !string.Equals(section, "itemepisodes", StringComparison.OrdinalIgnoreCase) &&
-                    !string.Equals(section, "itemalbums", StringComparison.OrdinalIgnoreCase);
+                    !string.Equals(section, "itemalbums", StringComparison.OrdinalIgnoreCase) &&
+                    !string.Equals(section, "special features", StringComparison.OrdinalIgnoreCase) &&
+                    !string.Equals(section, "episodes", StringComparison.OrdinalIgnoreCase);
             }
         }
 
@@ -143,12 +145,20 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
             if (item.ChildCount > 0)
             {
-                if (item.IsType("series"))
+                if (item.IsType("series") && item.SeasonCount > 1)
                 {
                     views.Add(new TabItem
                     {
                         Name = "seasons",
                         DisplayName = "Seasons"
+                    });
+                }
+                else if (item.IsType("series") && item.SeasonCount == 1)
+                {
+                    views.Add(new TabItem
+                    {
+                        Name = "episodes",
+                        DisplayName = "Episodes"
                     });
                 }
                 else if (item.IsType("season"))
@@ -407,7 +417,19 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                     ImageDisplayWidth = 600,
                     EnableBackdropsForCurrentItem = false,
                     ListType = "SpecialFeatures",
-                    Context = Context
+                    Context = Context,
+                    DisplayNameGenerator = FolderPage.GetDisplayName
+                };
+            }
+            if (string.Equals(section, "episodes"))
+            {
+                return new ItemListViewModel(GetSeriesEpisodes, _presentationManager, _imageManager, _apiClient, _navigation, _playback, _logger, _serverEvents)
+                {
+                    ImageDisplayWidth = 600,
+                    EnableBackdropsForCurrentItem = false,
+                    ListType = "SpecialFeatures",
+                    Context = Context,
+                    DisplayNameGenerator = FolderPage.GetDisplayName
                 };
             }
             if (string.Equals(section, "themes"))
@@ -428,7 +450,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                     Context = Context
                 };
             }
-            if (string.Equals(section, "seasons") || string.Equals(section, "episodes"))
+            if (string.Equals(section, "seasons"))
             {
                 return new ItemListViewModel(GetChildren, _presentationManager, _imageManager, _apiClient, _navigation, _playback, _logger, _serverEvents)
                 {
@@ -707,12 +729,38 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 Fields = new[]
                         {
                                  ItemFields.PrimaryImageAspectRatio,
-                                 ItemFields.DateCreated
+                                 ItemFields.DateCreated,
+                                 ItemFields.Overview
                         },
                 ParentId = item.Id,
                 SortBy = new[] { ItemSortBy.SortName },
 
                 MinIndexNumber = item.IsType("Series") ? 1 : (int?)null
+            };
+
+            return _apiClient.GetItemsAsync(query);
+        }
+
+        private Task<ItemsResult> GetSeriesEpisodes(ItemListViewModel viewModel)
+        {
+            var item = ItemViewModel.Item;
+
+            var query = new ItemQuery
+            {
+                UserId = _sessionManager.CurrentUser.Id,
+                Fields = new[]
+                        {
+                                 ItemFields.PrimaryImageAspectRatio,
+                                 ItemFields.DateCreated,
+                                 ItemFields.Overview
+                        },
+                ParentId = item.Id,
+                SortBy = new[] { ItemSortBy.SortName },
+
+                ParentIndexNumber = 1,
+
+                IncludeItemTypes = new[] { "Episode" },
+                Recursive = true
             };
 
             return _apiClient.GetItemsAsync(query);
@@ -728,7 +776,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 Fields = new[]
                         {
                                  ItemFields.PrimaryImageAspectRatio,
-                                 ItemFields.DateCreated
+                                 ItemFields.DateCreated,
+                                 ItemFields.Overview
                         },
                 ParentId = item.Id,
                 SortBy = new[] { ItemSortBy.SortName },

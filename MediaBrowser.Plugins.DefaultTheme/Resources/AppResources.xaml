@@ -355,10 +355,7 @@
                 <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding DisplayName}" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="White"></TextBlock>
             </Border>
 
-            <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Orientation="Vertical">
-                <StackPanel.Background>
-                    <SolidColorBrush Color="#A6000000"></SolidColorBrush>
-                </StackPanel.Background>
+            <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Orientation="Vertical" Background="{DynamicResource TextBackground}">
 
                 <TextBlock x:Name="TxtName" Foreground="White" Margin="10 5 10 0" TextWrapping="NoWrap" Text="{Binding DisplayName}" TextTrimming="CharacterEllipsis" MaxWidth="{Binding ImageWidth}" HorizontalAlignment="Left">
                     <TextBlock.Style>
@@ -427,9 +424,6 @@
                             <Setter Property="Visibility" Value="Collapsed"></Setter>
 
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding ListType}" Value="SpecialFeatures">
-                                    <Setter Property="Visibility" Value="Visible" />
-                                </DataTrigger>
                                 <DataTrigger Binding="{Binding ListType}" Value="Trailers">
                                     <Setter Property="Visibility" Value="Visible" />
                                 </DataTrigger>

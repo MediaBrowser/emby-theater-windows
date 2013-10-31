@@ -146,9 +146,9 @@
             </Grid.Style>
             <StackPanel Orientation="Vertical">
 
-                <TextBlock DataContext="{Binding CurrentItem}" Style="{DynamicResource Heading1TextBlockStyle}" Text="{Binding DisplayName, Converter={controls:UpperCaseConverter}}" Margin="25 0 25 40" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" HorizontalAlignment="Center" FontFamily="Segoe UI" FontWeight="ExtraBold" FontSize="150" Foreground="#ccc" Opacity=".9"></TextBlock>
+                <TextBlock DataContext="{Binding CurrentItem}" Style="{DynamicResource Heading1TextBlockStyle}" Text="{Binding DisplayName, Converter={controls:UpperCaseConverter}}" Margin="25 0 25 0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" HorizontalAlignment="Center" FontFamily="Segoe UI" FontWeight="ExtraBold" FontSize="130" Foreground="#ccc" Opacity=".9"></TextBlock>
 
-                <ItemsControl x:Name="GenresControl" Margin="300 0 300 0" HorizontalAlignment="Center" DataContext="{Binding CurrentItem}" ItemsSource="{Binding Genres}">
+                <ItemsControl x:Name="GenresControl" Margin="300 20 300 80" HorizontalAlignment="Center" DataContext="{Binding CurrentItem}" ItemsSource="{Binding Genres}">
                     <ItemsControl.Style>
                         <Style TargetType="{x:Type ItemsControl}">
                             <Style.Triggers>
@@ -183,7 +183,7 @@
                 </ItemsControl>
 
                 <!--Placeholder to make sure genres always consume a fixed amount of space-->
-                <TextBlock Margin="300 0 300 0" Text="Genres">
+                <TextBlock Margin="300 0 300 80" Text="Genres">
                     <TextBlock.Style>
                         <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
                             <Setter Property="Visibility" Value="Collapsed" />

@@ -153,7 +153,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             }
         }
 
-        public const int PosterWidth = 210;
+        public const int PosterWidth = 220;
         public const int ThumbstripWidth = 600;
         public const int ListImageWidth = 160;
 

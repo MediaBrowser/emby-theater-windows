@@ -17,10 +17,9 @@
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
-            <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Margin="0 60 0 0">
+        <Grid Grid.Row="0" Margin="0 50 0 0">
 
             <Grid.Style>
                 <Style TargetType="{x:Type Grid}">
@@ -54,7 +53,7 @@
 
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding ScrollDirection}" Value="Vertical">
-                            <Setter Property="Margin" Value="0 50 0 0" />
+                            <Setter Property="Margin" Value="0 40 0 0" />
                             <Setter Property="VerticalAlignment" Value="Top" />
                         </DataTrigger>
                     </Style.Triggers>
@@ -64,6 +63,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
             </Grid.RowDefinitions>
 
             <Grid.ColumnDefinitions>
@@ -102,7 +102,7 @@
                         <TextBlock x:Name="TxtSortName" Style="{DynamicResource TextBlockStyle}" VerticalAlignment="Center" Margin="10 -3 0 0"></TextBlock>
                     </StackPanel>
                 </controls:ExtendedButton>
-            
+
             </StackPanel>
             <Grid x:Name="Sidebar" Grid.Column="0" Grid.Row="1" Width="600">
                 <Grid.Style>
@@ -126,107 +126,80 @@
 
             <controls:ExtendedListBox Grid.Column="1" Grid.Row="1" Command="{Binding NavigateCommand}" Style="{StaticResource ListPageListBoxStyle}" ItemsSource="{Binding ListCollectionView}">
             </controls:ExtendedListBox>
-        </Grid>
 
-        <Grid Grid.Row="2" Name="PnlThumbstripInfo">
-            <Grid.Style>
-                <Style TargetType="{x:Type Grid}">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding ViewType}" Value="{x:Null}">
-                            <Setter Property="Visibility" Value="Collapsed" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding ViewType}" Value="Poster">
-                            <Setter Property="Visibility" Value="Collapsed" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding ViewType}" Value="List">
-                            <Setter Property="Visibility" Value="Collapsed" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Grid.Style>
-            <StackPanel Orientation="Vertical">
 
-                <TextBlock DataContext="{Binding CurrentItem}" Style="{DynamicResource Heading1TextBlockStyle}" Text="{Binding DisplayName, Converter={controls:UpperCaseConverter}}" Margin="25 -40 25 0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" HorizontalAlignment="Center" FontFamily="Segoe UI" FontWeight="ExtraBold" FontSize="130" Foreground="#ccc" Opacity=".9"></TextBlock>
-
-                <ItemsControl x:Name="GenresControl" Margin="300 20 300 20" HorizontalAlignment="Center" DataContext="{Binding CurrentItem}" ItemsSource="{Binding Genres}">
-                    <ItemsControl.Style>
-                        <Style TargetType="{x:Type ItemsControl}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding GenreCount}" Value="0">
-                                    <Setter Property="Visibility" Value="Collapsed" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding ItemType}" Value="Episode">
-                                    <Setter Property="Visibility" Value="Collapsed" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </ItemsControl.Style>
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <WrapPanel Orientation="Horizontal"></WrapPanel>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Foreground="{DynamicResource MediaBrowserAccent}" Style="{DynamicResource Heading2TextBlockStyle}" x:Name="Delimiter" Text=" • "/>
-                                <TextBlock Style="{DynamicResource Heading2TextBlockStyle}" Foreground="#ccc" Text="{Binding .}"/>
-                            </StackPanel>
-                            <DataTemplate.Triggers>
-                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource PreviousData}}" Value="{x:Null}">
-                                    <Setter Property="Visibility" TargetName="Delimiter" Value="Collapsed"/>
-                                </DataTrigger>
-                            </DataTemplate.Triggers>
-                        </DataTemplate>
-
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-
-                <!--Placeholder to make sure genres always consume a fixed amount of space-->
-                <TextBlock Margin="300 20 300 20" Text="Genres">
-                    <TextBlock.Style>
-                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
-                            <Setter Property="Visibility" Value="Collapsed" />
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Visibility, ElementName=GenresControl}" Value="Collapsed">
-                                    <Setter Property="Visibility" Value="Hidden" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
-                </TextBlock>
-            </StackPanel>
-        </Grid>
-
-        <Grid Grid.Row="3" Margin="25 25 25 15">
-
-            <Grid HorizontalAlignment="Left" VerticalAlignment="Bottom">
+            <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Name="PnlThumbstripInfo" >
                 <Grid.Style>
                     <Style TargetType="{x:Type Grid}">
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding Visibility, ElementName=Sidebar}" Value="Visible">
+                            <DataTrigger Binding="{Binding ViewType}" Value="Poster">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding ViewType}" Value="List">
                                 <Setter Property="Visibility" Value="Collapsed" />
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
                 </Grid.Style>
+                <StackPanel Orientation="Vertical">
 
-                <TextBlock VerticalAlignment="Bottom" DataContext="{Binding CurrentItem}" Text="{Binding DisplayName}">
-                    <TextBlock.Style>
-                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Visibility, ElementName=ImgLogo}" Value="Visible">
-                                    <Setter Property="Visibility" Value="Collapsed" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
-                </TextBlock>
+                    <TextBlock DataContext="{Binding CurrentItem}" Style="{DynamicResource Heading1TextBlockStyle}" Text="{Binding DisplayName, Converter={controls:UpperCaseConverter}}" Margin="25 10 25 0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" HorizontalAlignment="Center" FontFamily="Segoe UI" FontWeight="ExtraBold" FontSize="100" Foreground="#ccc" Opacity=".9"></TextBlock>
 
-                <Grid x:Name="LogoGrid" Height="140">
-                    <Image Name="ImgLogo" Stretch="Uniform" MaxWidth="700" VerticalAlignment="Bottom"></Image>
-                </Grid>
+                    <ItemsControl x:Name="GenresControl" Margin="300 10 300 0" HorizontalAlignment="Center" DataContext="{Binding CurrentItem}" ItemsSource="{Binding Genres}">
+                        <ItemsControl.Style>
+                            <Style TargetType="{x:Type ItemsControl}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ItemType}" Value="Episode">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ItemsControl.Style>
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal"></WrapPanel>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Foreground="{DynamicResource MediaBrowserAccent}" Style="{DynamicResource Heading2TextBlockStyle}" x:Name="Delimiter" Text=" • "/>
+                                    <TextBlock Style="{DynamicResource Heading2TextBlockStyle}" Foreground="#ccc" Text="{Binding .}"/>
+                                </StackPanel>
+                                <DataTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource PreviousData}}" Value="{x:Null}">
+                                        <Setter Property="Visibility" TargetName="Delimiter" Value="Collapsed"/>
+                                    </DataTrigger>
+                                </DataTemplate.Triggers>
+                            </DataTemplate>
+
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <!--Placeholder to make sure genres always consume a fixed amount of space-->
+                    <TextBlock Margin="300 10 300 0" Text=" " HorizontalAlignment="Center">
+                        <TextBlock.Style>
+                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource Heading2TextBlockStyle}">
+                                <Setter Property="Visibility" Value="Hidden" />
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </StackPanel>
             </Grid>
+        </Grid>
+
+        <Grid Grid.Row="2">
+            <Grid.Style>
+                <Style TargetType="{x:Type Grid}">
+                    <Setter Property="Margin" Value="25 25 25 15" />
+
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ScrollDirection}" Value="Vertical">
+                            <Setter Property="Margin" Value="25 25 25 15" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
 
             <Grid HorizontalAlignment="Right" VerticalAlignment="Bottom">
                 <Grid.Style>
@@ -240,7 +213,35 @@
                 </Grid.Style>
                 <controls1:ItemInfoFooter VerticalContentAlignment="Center" KeyboardNavigation.IsTabStop="False" DataContext="{Binding CurrentItem}"></controls1:ItemInfoFooter>
             </Grid>
-
         </Grid>
+
+        <Grid HorizontalAlignment="Left" VerticalAlignment="Bottom" Grid.Row="0" Grid.RowSpan="3" Margin="25 10 25 15">
+            <Grid.Style>
+                <Style TargetType="{x:Type Grid}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Visibility, ElementName=Sidebar}" Value="Visible">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+
+            <TextBlock VerticalAlignment="Bottom" DataContext="{Binding CurrentItem}" Text="{Binding DisplayName}">
+                <TextBlock.Style>
+                    <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Visibility, ElementName=ImgLogo}" Value="Visible">
+                                <Setter Property="Visibility" Value="Hidden" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+
+            <Grid x:Name="LogoGrid" Height="140">
+                <Image Name="ImgLogo" Stretch="Uniform" MaxWidth="700" VerticalAlignment="Bottom"></Image>
+            </Grid>
+        </Grid>
+
     </Grid>
 </pages:BasePage>

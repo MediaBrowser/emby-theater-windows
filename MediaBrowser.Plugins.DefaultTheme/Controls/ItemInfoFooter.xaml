@@ -10,7 +10,7 @@
     <StackPanel Orientation="Horizontal">
 
         <!--This textblock is just to make sure the panel always takes up the same amount of vertical space, so that content never moves due to height changes -->
-        <TextBlock Style="{DynamicResource TextBlockStyle}" Visibility="Hidden" Text=" "></TextBlock>
+        <TextBlock Style="{DynamicResource TextBlockStyle}" Visibility="Hidden" Text="P"></TextBlock>
 
         <Grid x:Name="ProgressGrid">
             <StackPanel Orientation="Horizontal">

@@ -644,6 +644,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             SetDefaults(options);
 
+            options.DefaultViewType = ListViewTypes.PosterStrip;
+
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
                                       PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
             {
@@ -817,6 +819,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             };
 
             SetDefaults(options);
+
+            options.DefaultViewType = ListViewTypes.PosterStrip;
 
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
                                       PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)

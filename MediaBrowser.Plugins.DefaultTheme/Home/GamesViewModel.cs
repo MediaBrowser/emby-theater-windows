@@ -118,30 +118,37 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             config.PosterImageWidth = PosterWidth;
             config.ThumbImageWidth = ThumbstripWidth;
             config.ListImageWidth = ListImageWidth;
+            config.PosterStripImageWidth = 320;
 
             if (string.Equals(gameSystem, GameSystem.Nintendo64, StringComparison.OrdinalIgnoreCase))
             {
                 config.PosterImageWidth = 400;
+                config.PosterStripImageWidth = 480;
             }
             else if (string.Equals(gameSystem, GameSystem.SuperNintendo, StringComparison.OrdinalIgnoreCase))
             {
                 config.PosterImageWidth = 400;
+                config.PosterStripImageWidth = 480;
             }
             else if (string.Equals(gameSystem, GameSystem.SegaSaturn, StringComparison.OrdinalIgnoreCase))
             {
                 config.PosterImageWidth = PosterWidth - 20;
+                config.PosterStripImageWidth = 250;
             }
             else if (string.Equals(gameSystem, GameSystem.SegaCD, StringComparison.OrdinalIgnoreCase))
             {
                 config.PosterImageWidth = PosterWidth - 20;
+                config.PosterStripImageWidth = 250;
             }
             else if (string.Equals(gameSystem, GameSystem.SonyPlaystation, StringComparison.OrdinalIgnoreCase))
             {
                 config.PosterImageWidth = 300;
+                config.PosterStripImageWidth = 380;
             }
             else if (string.Equals(gameSystem, GameSystem.SegaDreamcast, StringComparison.OrdinalIgnoreCase))
             {
                 config.PosterImageWidth = 300;
+                config.PosterStripImageWidth = 380;
             }
         }
         
@@ -409,6 +416,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             };
 
             SetDefaults(options, null);
+
+            options.DefaultViewType = ListViewTypes.PosterStrip;
 
             var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
                                       PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)

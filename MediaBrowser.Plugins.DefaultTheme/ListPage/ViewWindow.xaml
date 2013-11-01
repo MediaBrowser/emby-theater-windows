@@ -24,8 +24,11 @@
                     <RadioButton x:Name="radioList" GroupName="View" Margin="0 25 0 0">
                         <TextBlock Style="{DynamicResource TextBlockStyle}">List</TextBlock>
                     </RadioButton>
+                    <RadioButton x:Name="radioPosterStrip" GroupName="View" Margin="0 25 0 0">
+                        <TextBlock Style="{DynamicResource TextBlockStyle}">Poster Strip</TextBlock>
+                    </RadioButton>
                     <RadioButton x:Name="radioPoster" GroupName="View" Margin="0 25 0 0">
-                        <TextBlock Style="{DynamicResource TextBlockStyle}">Poster</TextBlock>
+                        <TextBlock Style="{DynamicResource TextBlockStyle}">Poster Wall</TextBlock>
                     </RadioButton>
                     <RadioButton x:Name="radioThumbstrip" GroupName="View" Margin="0 25 0 0">
                         <TextBlock Style="{DynamicResource TextBlockStyle}">Thumbstrip</TextBlock>

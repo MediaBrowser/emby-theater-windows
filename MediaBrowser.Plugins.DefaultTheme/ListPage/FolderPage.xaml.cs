@@ -26,7 +26,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
     public partial class FolderPage : BasePage, ISupportsItemThemeMedia, ISupportsBackdrops, IItemPage, IHasDisplayPreferences
     {
         private readonly DisplayPreferences _displayPreferences;
-        
+
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
         private readonly ISessionManager _sessionManager;
@@ -152,6 +152,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
             {
                 displayPreferences.PrimaryImageWidth = _options.PosterImageWidth;
             }
+            else if (string.Equals(displayPreferences.ViewType, ListViewTypes.PosterStrip, StringComparison.OrdinalIgnoreCase))
+            {
+                displayPreferences.PrimaryImageWidth = _options.PosterStripImageWidth;
+            }
             else if (string.Equals(displayPreferences.ViewType, ListViewTypes.List, StringComparison.OrdinalIgnoreCase))
             {
                 displayPreferences.PrimaryImageWidth = _options.ListImageWidth;
@@ -175,6 +179,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                 return ScrollDirection.Vertical;
             }
             if (string.Equals(viewModel.ViewType, ListViewTypes.Thumbstrip))
+            {
+                return ScrollDirection.Horizontal;
+            }
+            if (string.Equals(viewModel.ViewType, ListViewTypes.PosterStrip))
             {
                 return ScrollDirection.Horizontal;
             }
@@ -208,6 +216,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                 return true;
             }
             if (string.Equals(viewModel.ViewType, ListViewTypes.Thumbstrip))
+            {
+                return false;
+            }
+            if (string.Equals(viewModel.ViewType, ListViewTypes.PosterStrip))
             {
                 return false;
             }
@@ -246,6 +258,18 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
 
         void _viewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
+            if (string.Equals(e.PropertyName, "ViewType"))
+            {
+                if (string.Equals(_viewModel.ViewType, ListViewTypes.Thumbstrip) || string.Equals(_viewModel.ViewType, ListViewTypes.PosterStrip))
+                {
+                    LogoGrid.Height = 140;
+                }
+                else
+                {
+                    LogoGrid.Height = 80;
+                }
+            }
+
             if (string.Equals(e.PropertyName, "ViewType") || string.Equals(e.PropertyName, "ImageWidth") || string.Equals(e.PropertyName, "MedianPrimaryImageAspectRatio"))
             {
                 _viewModel.ItemContainerWidth = _viewModel.ImageDisplayWidth + 20;
@@ -357,12 +381,29 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
         {
             if (Sidebar.Visibility != Visibility.Visible)
             {
-                if (item != null && (item.HasLogo || item.ParentLogoImageTag.HasValue))
+                if (string.Equals(_viewModel.ViewType, ListViewTypes.Thumbstrip) && item != null && (item.HasArtImage || item.ParentArtImageTag.HasValue))
+                {
+                    SetLogo(_apiClient.GetArtImageUrl(item, new ImageOptions
+                    {
+                        ImageType = ImageType.Art
+                    }));
+                    ImgLogo.MaxHeight = 140;
+                }
+                else if (string.Equals(_viewModel.ViewType, ListViewTypes.PosterStrip) && item != null && (item.HasArtImage || item.ParentArtImageTag.HasValue))
+                {
+                    SetLogo(_apiClient.GetArtImageUrl(item, new ImageOptions
+                    {
+                        ImageType = ImageType.Art
+                    }));
+                    ImgLogo.MaxHeight = 140;
+                }
+                else if (item != null && (item.HasLogo || item.ParentLogoImageTag.HasValue))
                 {
                     SetLogo(_apiClient.GetLogoImageUrl(item, new ImageOptions
                     {
                         ImageType = ImageType.Logo
                     }));
+                    ImgLogo.MaxHeight = 80;
                 }
                 else if (item != null && (item.HasArtImage || item.ParentArtImageTag.HasValue))
                 {
@@ -370,6 +411,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                     {
                         ImageType = ImageType.Art
                     }));
+                    ImgLogo.MaxHeight = 80;
                 }
                 else
                 {

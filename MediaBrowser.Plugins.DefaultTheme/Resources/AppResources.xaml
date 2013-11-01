@@ -383,6 +383,9 @@
                                 <DataTrigger Binding="{Binding ViewType}" Value="Thumbstrip">
                                     <Setter Property="Visibility" Value="Collapsed" />
                                 </DataTrigger>
+                                <DataTrigger Binding="{Binding ViewType}" Value="PosterStrip">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
                                 <DataTrigger Binding="{Binding HasImage}" Value="false">
                                     <Setter Property="Visibility" Value="Collapsed" />
                                 </DataTrigger>
@@ -698,6 +701,20 @@
             </DataTrigger>
 
             <DataTrigger Binding="{Binding ViewType}" Value="Thumbstrip">
+                <Setter Property="ItemTemplate" Value="{StaticResource ListItemTemplate}"></Setter>
+                <Setter Property="ItemContainerStyle" Value="{StaticResource HighlightedBorderListBoxItemStyle}"></Setter>
+                <Setter Property="Margin" Value="0 0 0 0"></Setter>
+                <Setter Property="ItemsPanel">
+                    <Setter.Value>
+                        <ItemsPanelTemplate>
+                            <controls:VirtualizingWrapPanel ItemHeight="{Binding ItemContainerHeight}" ItemWidth="{Binding ItemContainerWidth}" Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="20 20">
+                            </controls:VirtualizingWrapPanel>
+                        </ItemsPanelTemplate>
+                    </Setter.Value>
+                </Setter>
+            </DataTrigger>
+
+            <DataTrigger Binding="{Binding ViewType}" Value="PosterStrip">
                 <Setter Property="ItemTemplate" Value="{StaticResource ListItemTemplate}"></Setter>
                 <Setter Property="ItemContainerStyle" Value="{StaticResource HighlightedBorderListBoxItemStyle}"></Setter>
                 <Setter Property="Margin" Value="0 0 0 0"></Setter>

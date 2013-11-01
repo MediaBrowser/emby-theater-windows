@@ -14,6 +14,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
         public int PosterImageWidth = 210;
         public int ThumbImageWidth = 600;
         public int ListImageWidth = 160;
+        public int PosterStripImageWidth = 270;
 
         public string DefaultViewType = ListViewTypes.Poster;
 

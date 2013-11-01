@@ -12,7 +12,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
     {
         private readonly DisplayPreferencesViewModel _displayPreferencesViewModel;
 
-        private ListPageConfig _options;
+        private readonly ListPageConfig _options;
         
         public ViewWindow(DisplayPreferencesViewModel displayPreferencesViewModel, ListPageConfig options)
         {
@@ -26,8 +26,15 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
             radioList.Click += radioList_Click;
             radioPoster.Click += radioPoster_Click;
             radioThumbstrip.Click += radioThumbstrip_Click;
-
+            radioPosterStrip.Click += radioPosterStrip_Click;
             Loaded += SortMenuPage_Loaded;
+        }
+
+        void radioPosterStrip_Click(object sender, RoutedEventArgs e)
+        {
+            _displayPreferencesViewModel.PrimaryImageWidth = _options.PosterStripImageWidth;
+
+            _displayPreferencesViewModel.ViewType = ListViewTypes.PosterStrip;
         }
 
         void SortMenuPage_Loaded(object sender, RoutedEventArgs e)
@@ -86,8 +93,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
             radioList.IsChecked = _displayPreferencesViewModel.ViewType == ListViewTypes.List;
             radioPoster.IsChecked = _displayPreferencesViewModel.ViewType == ListViewTypes.Poster;
             radioThumbstrip.IsChecked = _displayPreferencesViewModel.ViewType == ListViewTypes.Thumbstrip;
+            radioPosterStrip.IsChecked = _displayPreferencesViewModel.ViewType == ListViewTypes.PosterStrip;
 
-            if (!radioList.IsChecked.Value && !radioPoster.IsChecked.Value && !radioThumbstrip.IsChecked.Value)
+            if (!radioList.IsChecked.Value && !radioPoster.IsChecked.Value && !radioThumbstrip.IsChecked.Value && !radioPosterStrip.IsChecked.Value)
             {
                 radioPoster.IsChecked = true;
             }

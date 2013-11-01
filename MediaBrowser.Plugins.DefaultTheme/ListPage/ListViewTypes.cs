@@ -7,6 +7,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
     public class ListViewTypes
     {
         public const string Poster = "Poster";
+        public const string PosterStrip = "PosterStrip";
         public const string Thumbstrip = "Thumbstrip";
         public const string CoverFlow = "CoverFlow";
         public const string List = "List";

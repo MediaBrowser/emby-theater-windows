@@ -91,7 +91,7 @@
                     <RowDefinition Height="*"></RowDefinition>
                 </Grid.RowDefinitions>
 
-                <details:ItemInfoFooter Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" DataContext="{Binding CurrentItem}" Margin="0 20 0 0">
+                <details:ItemInfoFooter Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" DataContext="{Binding CurrentItem}" Margin="0 25 0 0">
                     <details:ItemInfoFooter.Style>
                         <Style TargetType="{x:Type details:ItemInfoFooter}">
                             <Style.Triggers>
@@ -103,7 +103,7 @@
                     </details:ItemInfoFooter.Style>
                 </details:ItemInfoFooter>
 
-                <TextBlock Grid.Row="1" DataContext="{Binding CurrentItem}" HorizontalAlignment="Center" Text="{Binding Overview}" VerticalAlignment="Top" Margin="0 25 0 0" MaxWidth="1600">
+                <TextBlock Grid.Row="1" DataContext="{Binding CurrentItem}" HorizontalAlignment="Center" Text="{Binding Overview}" VerticalAlignment="Top" Margin="0 30 0 0" MaxWidth="1600">
                     <TextBlock.Style>
                         <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
                             <Style.Triggers>

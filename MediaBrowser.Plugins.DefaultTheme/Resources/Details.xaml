@@ -5,7 +5,7 @@
                     xmlns:details="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Controls"
                     xmlns:entities="clr-namespace:MediaBrowser.Model.Entities;assembly=MediaBrowser.Model">
 
-    <Style x:Key="DetailPageMenuListBoxItemStyle" TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource ListBoxItemStyle}">
+    <Style x:Key="DetailPageMenuListBoxItemStyle" TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource BaseListBoxItemStyle}">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ListBoxItem}">
@@ -88,10 +88,18 @@
 
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto"></RowDefinition>
+                    <RowDefinition Height="auto"></RowDefinition>
                     <RowDefinition Height="*"></RowDefinition>
                 </Grid.RowDefinitions>
 
-                <details:ItemInfoFooter Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" DataContext="{Binding CurrentItem}" Margin="0 25 0 0">
+                <TextBlock Grid.Row="0" DataContext="{Binding CurrentItem}" HorizontalAlignment="Center" Text="{Binding DisplayName}" VerticalAlignment="Top" Margin="0 20 0 0" MaxWidth="1600">
+                    <TextBlock.Style>
+                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource Heading2TextBlockStyle}">
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+
+                <details:ItemInfoFooter Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" DataContext="{Binding CurrentItem}" Margin="0 25 0 0" ShowResumeProgress="false">
                     <details:ItemInfoFooter.Style>
                         <Style TargetType="{x:Type details:ItemInfoFooter}">
                             <Style.Triggers>
@@ -103,7 +111,7 @@
                     </details:ItemInfoFooter.Style>
                 </details:ItemInfoFooter>
 
-                <TextBlock Grid.Row="1" DataContext="{Binding CurrentItem}" HorizontalAlignment="Center" Text="{Binding Overview}" VerticalAlignment="Top" Margin="0 30 0 0" MaxWidth="1600">
+                <TextBlock Grid.Row="2" DataContext="{Binding CurrentItem}" HorizontalAlignment="Center" Text="{Binding Overview}" VerticalAlignment="Top" Margin="0 30 0 0" MaxWidth="1600">
                     <TextBlock.Style>
                         <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
                             <Style.Triggers>
@@ -1253,30 +1261,16 @@
             <DataTrigger Binding="{Binding CurrentSection}" Value="soundtrack">
                 <Setter Property="Content">
                     <Setter.Value>
-                        <Grid>
-                            <controls:ExtendedListBox DataContext="{Binding ContentViewModel}" ItemsSource="{Binding ListCollectionView}" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{DynamicResource ListItemTemplate}">
-                                <controls:ExtendedListBox.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <UniformGrid Rows="2" Margin="80 20"></UniformGrid>
-                                    </ItemsPanelTemplate>
-                                </controls:ExtendedListBox.ItemsPanel>
-                            </controls:ExtendedListBox>
-                        </Grid>
+                        <ContentControl ContentTemplate="{StaticResource DetailPageSpecialFeaturesTemplate}" Content="{Binding ContentViewModel}">
+                        </ContentControl>
                     </Setter.Value>
                 </Setter>
             </DataTrigger>
             <DataTrigger Binding="{Binding CurrentSection}" Value="soundtracks">
                 <Setter Property="Content">
                     <Setter.Value>
-                        <Grid>
-                            <controls:ExtendedListBox DataContext="{Binding ContentViewModel}" ItemsSource="{Binding ListCollectionView}" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{DynamicResource ListItemTemplate}">
-                                <controls:ExtendedListBox.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <UniformGrid Rows="2" Margin="80 20"></UniformGrid>
-                                    </ItemsPanelTemplate>
-                                </controls:ExtendedListBox.ItemsPanel>
-                            </controls:ExtendedListBox>
-                        </Grid>
+                        <ContentControl ContentTemplate="{StaticResource DetailPageSpecialFeaturesTemplate}" Content="{Binding ContentViewModel}">
+                        </ContentControl>
                     </Setter.Value>
                 </Setter>
             </DataTrigger>

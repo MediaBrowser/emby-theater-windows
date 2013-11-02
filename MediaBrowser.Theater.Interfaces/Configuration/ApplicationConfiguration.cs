@@ -73,7 +73,6 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
             ServerHostName = "localhost";
             ServerApiPort = 8096;
 
-            EnableHighQualityImageScaling = true;
             EnableBackdrops = true;
             MediaPlayers = new PlayerConfiguration[] { };
 

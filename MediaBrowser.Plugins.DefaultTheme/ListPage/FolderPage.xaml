@@ -155,6 +155,9 @@
                                     <DataTrigger Binding="{Binding ItemType}" Value="Episode">
                                         <Setter Property="Visibility" Value="Collapsed" />
                                     </DataTrigger>
+                                    <DataTrigger Binding="{Binding GenreCount}" Value="0">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
                                 </Style.Triggers>
                             </Style>
                         </ItemsControl.Style>
@@ -180,7 +183,7 @@
                     </ItemsControl>
 
                     <!--Placeholder to make sure genres always consume a fixed amount of space-->
-                    <TextBlock Margin="300 10 300 0" Text=" " HorizontalAlignment="Center">
+                    <TextBlock Margin="300 10 300 0" Text="Genres" HorizontalAlignment="Center">
                         <TextBlock.Style>
                             <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource Heading2TextBlockStyle}">
                                 <Setter Property="Visibility" Value="Hidden" />
@@ -247,7 +250,7 @@
             </TextBlock>
 
             <Grid x:Name="LogoGrid" Height="140">
-                <Image Name="ImgLogo" Stretch="Uniform" MaxWidth="700" VerticalAlignment="Bottom"></Image>
+                <Image Name="ImgLogo" Stretch="Uniform" MaxWidth="700" VerticalAlignment="Bottom" HorizontalAlignment="Left"></Image>
             </Grid>
         </Grid>
 

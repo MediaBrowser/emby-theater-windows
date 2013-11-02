@@ -1,19 +1,14 @@
-﻿using System.ComponentModel;
-using System.Net;
-using System.Text;
-using MediaBrowser.ApiInteraction;
-using MediaBrowser.Common.Configuration;
+﻿using MediaBrowser.ApiInteraction;
 using MediaBrowser.Common.Constants;
 using MediaBrowser.Common.Implementations.Logging;
 using MediaBrowser.Common.Implementations.Updates;
 using MediaBrowser.Model.Logging;
-using MediaBrowser.Model.Net;
-using MediaBrowser.Model.System;
 using MediaBrowser.Theater.Implementations.Configuration;
 using MediaBrowser.Theater.Interfaces.System;
 using MediaBrowser.UI.StartupWizard;
 using Microsoft.Win32;
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -36,7 +31,7 @@ namespace MediaBrowser.UI
         /// </summary>
         /// <value>The logger.</value>
         private ILogger _logger;
-        private ILogManager _logManager;
+        private readonly ILogManager _logManager;
 
         /// <summary>
         /// Gets or sets the composition root.
@@ -227,7 +222,7 @@ namespace MediaBrowser.UI
             HiddenWindow.Top = ApplicationWindow.Top;
             HiddenWindow.Left = ApplicationWindow.Left;
             HiddenWindow.WindowState = ApplicationWindow.WindowState;
-         
+
             ApplicationWindow.Activate();
         }
 
@@ -240,7 +235,7 @@ namespace MediaBrowser.UI
         /// <summary>
         /// Loads the kernel.
         /// </summary>
-        protected async void LoadKernel()
+        protected async void LoadApplication()
         {
             try
             {
@@ -250,11 +245,15 @@ namespace MediaBrowser.UI
 
                 await _appHost.Init();
 
+                LoadListBoxItemResourceFile();
+                
                 // Load default theme
                 await _appHost.ThemeManager.LoadDefaultTheme();
 
                 HiddenWindow = new HiddenWindow(_logManager.GetLogger("HiddenWindow"));
                 HiddenWindow.Show();
+
+                _appHost.TheaterConfigurationManager.ConfigurationUpdated += TheaterConfigurationManager_ConfigurationUpdated;
 
                 ShowApplicationWindow();
 
@@ -271,6 +270,34 @@ namespace MediaBrowser.UI
                 // Shutdown the app with an error code
                 Shutdown(1);
             }
+        }
+
+        void TheaterConfigurationManager_ConfigurationUpdated(object sender, EventArgs e)
+        {
+            if (_enableHighQualityImageScaling != _appHost.TheaterConfigurationManager.Configuration.EnableHighQualityImageScaling)
+            {
+                ApplicationWindow.Dispatcher.InvokeAsync(LoadListBoxItemResourceFile);
+            }
+        }
+
+        private ResourceDictionary _listBoxItemResource;
+        private bool _enableHighQualityImageScaling;
+        private void LoadListBoxItemResourceFile()
+        {
+            if (_listBoxItemResource != null)
+            {
+                _appHost.PresentationManager.RemoveResourceDictionary(_listBoxItemResource);
+            }
+
+            _enableHighQualityImageScaling = _appHost.TheaterConfigurationManager.Configuration.EnableHighQualityImageScaling;
+            var filename = _enableHighQualityImageScaling ? "ListBoxItemsHighQuality" : "ListBoxItems";
+
+            _listBoxItemResource = new ResourceDictionary
+            {
+                Source = new Uri("pack://application:,,,/Resources/" + filename + ".xaml", UriKind.Absolute)
+            };
+
+            _appHost.PresentationManager.AddResourceDictionary(_listBoxItemResource);
         }
 
         /// <summary>
@@ -344,7 +371,7 @@ namespace MediaBrowser.UI
         protected override void OnStartup(StartupEventArgs e)
         {
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-            LoadKernel();
+            LoadApplication();
 
             SystemEvents.SessionEnding += SystemEvents_SessionEnding;
         }

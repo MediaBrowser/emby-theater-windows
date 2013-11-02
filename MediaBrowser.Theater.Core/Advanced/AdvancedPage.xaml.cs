@@ -1,8 +1,6 @@
 ﻿using MediaBrowser.Theater.Interfaces.Configuration;
-using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.Pages;
 using System;
-using System.Linq;
 using System.Windows;
 
 namespace MediaBrowser.Theater.Core.Advanced

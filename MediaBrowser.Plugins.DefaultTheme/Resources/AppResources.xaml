@@ -374,9 +374,6 @@
                                 <DataTrigger Binding="{Binding ItemType}" Value="MusicArtist">
                                     <Setter Property="Visibility" Value="Visible" />
                                 </DataTrigger>
-                                <DataTrigger Binding="{Binding ItemType}" Value="MusicAlbum">
-                                    <Setter Property="Visibility" Value="Visible" />
-                                </DataTrigger>
                                 <DataTrigger Binding="{Binding ItemType}" Value="Person">
                                     <Setter Property="Visibility" Value="Visible" />
                                 </DataTrigger>
@@ -390,6 +387,9 @@
                                     <Setter Property="Visibility" Value="Collapsed" />
                                 </DataTrigger>
                                 <DataTrigger Binding="{Binding ListType}" Value="SpecialFeatures">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding ListType}" Value="Themes">
                                     <Setter Property="Visibility" Value="Visible" />
                                 </DataTrigger>
                             </Style.Triggers>
@@ -428,6 +428,9 @@
 
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding ListType}" Value="Trailers">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding ListType}" Value="Themes">
                                     <Setter Property="Visibility" Value="Visible" />
                                 </DataTrigger>
                             </Style.Triggers>
@@ -645,7 +648,7 @@
         </StackPanel>
     </DataTemplate>
 
-    <Style x:Key="IndexMenuListBoxItemStyle" TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource ListBoxItemStyle}">
+    <Style x:Key="IndexMenuListBoxItemStyle" TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource BaseListBoxItemStyle}">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ListBoxItem}">

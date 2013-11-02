@@ -11,7 +11,7 @@
 	Title="PluginsPage">
 
     <Page.Resources>
-        <Style x:Key="MenuListBoxItemStyle" TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource ListBoxItemStyle}">
+        <Style x:Key="MenuListBoxItemStyle" TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource BaseListBoxItemStyle}">
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ListBoxItem}">

@@ -438,7 +438,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 {
                     ImageDisplayWidth = 600,
                     EnableBackdropsForCurrentItem = false,
-                    ListType = "SpecialFeatures"
+                    ListType = "Themes",
+                    Context = Context,
+                    DisplayNameGenerator = FolderPage.GetDisplayName
                 };
             }
             if (string.Equals(section, "soundtrack") || string.Equals(section, "soundtracks"))
@@ -447,14 +449,15 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 {
                     ImageDisplayWidth = 400,
                     EnableBackdropsForCurrentItem = false,
-                    Context = Context
+                    Context = Context,
+                    DisplayNameGenerator = FolderPage.GetDisplayName
                 };
             }
             if (string.Equals(section, "seasons"))
             {
                 return new ItemListViewModel(GetChildren, _presentationManager, _imageManager, _apiClient, _navigation, _playback, _logger, _serverEvents)
                 {
-                    ImageDisplayWidth = 240,
+                    ImageDisplayWidth = 300,
                     EnableBackdropsForCurrentItem = false,
                     Context = Context
                 };

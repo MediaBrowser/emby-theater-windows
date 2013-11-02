@@ -149,6 +149,9 @@
                         <ItemsControl.Style>
                             <Style TargetType="{x:Type ItemsControl}">
                                 <Style.Triggers>
+                                    <DataTrigger Binding="{Binding}" Value="{x:Null}">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
                                     <DataTrigger Binding="{Binding ItemType}" Value="Episode">
                                         <Setter Property="Visibility" Value="Collapsed" />
                                     </DataTrigger>
@@ -181,6 +184,11 @@
                         <TextBlock.Style>
                             <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource Heading2TextBlockStyle}">
                                 <Setter Property="Visibility" Value="Hidden" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Visibility,ElementName=GenresControl}" Value="Visible">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
                             </Style>
                         </TextBlock.Style>
                     </TextBlock>

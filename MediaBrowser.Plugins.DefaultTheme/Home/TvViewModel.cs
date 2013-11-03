@@ -582,7 +582,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             tabs.Add(new TabItem
             {
-                DisplayName = "All Shows (" + tvView.SeriesCount + ")",
+                DisplayName = "All Shows",
                 Name = "AllShows"
             });
 
@@ -590,7 +590,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 tabs.Add(new TabItem
                 {
-                    DisplayName = "Shows In Progress (" + tvView.SeriesIdsInProgress.Count + ")",
+                    DisplayName = "In Progress",
                     Name = "ShowsInProgress",
                     TabType = string.Join(",", tvView.SeriesIdsInProgress.ToArray())
                 });
@@ -598,7 +598,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             tabs.Add(new TabItem
             {
-                DisplayName = "Favorite Shows (" + tvView.FavoriteSeriesCount + ")",
+                DisplayName = "Favorites",
                 Name = "FavoriteShows"
             });
 
@@ -606,7 +606,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 tabs.Add(new TabItem
                 {
-                    DisplayName = GetComedyViewName() + " (" + tvView.ComedySeriesCount + ")",
+                    DisplayName = GetComedyViewName(),
                     Name = "Comedy",
                 });
             }
@@ -615,14 +615,14 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 tabs.Add(new TabItem
                 {
-                    DisplayName = "Date Night (" + tvView.RomanticSeriesCount + ")",
+                    DisplayName = "Date Night",
                     Name = "Romance",
                 });
             }
 
             tabs.Add(new TabItem
             {
-                DisplayName = "Top Rated on IMDb (" + tvView.TopCommunityRatedSeriesCount + ")",
+                DisplayName = "Top Rated on IMDb",
                 Name = "TopRated",
             });
 
@@ -630,7 +630,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 tabs.Add(new TabItem
                 {
-                    DisplayName = fav.Name + " Shows (" + fav.ItemCount + ")",
+                    DisplayName = fav.Name + " Shows",
                     Name = "Genre:" + fav.Name,
                 });
             }
@@ -639,7 +639,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 tabs.Add(new TabItem
                 {
-                    DisplayName = "Shows on " + fav.Name + " (" + fav.ItemCount + ")",
+                    DisplayName = "Shows on " + fav.Name,
                     Name = "Studio:" + fav.Name,
                 });
             }

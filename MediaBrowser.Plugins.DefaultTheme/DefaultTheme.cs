@@ -110,7 +110,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
             };
         }
 
-        private readonly string[] _folderTypesWithDetailPages = new[] { "series", "musicalbum" };
+        private readonly string[] _folderTypesWithDetailPages = new[] { "series", "musicalbum", "musicartist" };
 
         /// <summary>
         /// Gets the folder page.
@@ -135,13 +135,17 @@ namespace MediaBrowser.Plugins.DefaultTheme
         {
             var config = new ListPageConfig();
 
-            if (context == ViewType.Tv)
+            if (context == ViewType.Tv || item.IsType("season"))
             {
                 TvViewModel.SetDefaults(config);
 
                 if (item.IsType("season"))
                 {
                     config.DefaultViewType = ListViewTypes.List;
+
+                    config.PosterImageWidth = 480;
+                    config.PosterStripImageWidth = 560;
+                    config.ThumbImageWidth = 560;
                 }
             }
             else if (context == ViewType.Movies)

@@ -9,28 +9,7 @@
 
     <StackPanel Orientation="Horizontal">
 
-        <!--This textblock is just to make sure the panel always takes up the same amount of vertical space, so that content never moves due to height changes -->
-        <TextBlock Style="{DynamicResource TextBlockStyle}" Visibility="Hidden" Text="P"></TextBlock>
-
-        <Grid x:Name="ProgressGrid">
-            <StackPanel Orientation="Horizontal">
-
-                <StackPanel.Style>
-                    <Style TargetType="{x:Type StackPanel}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding IsInProgress}" Value="False">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </StackPanel.Style>
-
-                <ProgressBar Minimum="0" Maximum="100" Value="{Binding PlayedPercentage, Mode=OneWay}" Margin="3 5 0 0" Width="200" Height="24" Style="{DynamicResource ResumeProgressBar}" VerticalAlignment="Center">
-                </ProgressBar>
-            </StackPanel>
-        </Grid>
-
-        <StackPanel Orientation="Horizontal">
+        <StackPanel Orientation="Horizontal" Margin="0 0 35 0">
             <StackPanel.Style>
                 <Style TargetType="{x:Type StackPanel}">
                     <Style.Triggers>
@@ -41,12 +20,11 @@
                 </Style>
             </StackPanel.Style>
 
-            <Border Style="{StaticResource MediaInfoSeparator}"></Border>
             <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding Players}" VerticalAlignment="Center"></TextBlock>
             <TextBlock Style="{DynamicResource TextBlockStyle}" Text=" Player" VerticalAlignment="Center"></TextBlock>
         </StackPanel>
 
-        <StackPanel Orientation="Horizontal" Name="PnlDate">
+        <StackPanel Orientation="Horizontal" Name="PnlDate" Margin="0 0 35 0">
 
             <StackPanel.Style>
                 <Style TargetType="{x:Type StackPanel}">
@@ -54,15 +32,20 @@
                         <DataTrigger Binding="{Binding DateText}" Value="{x:Null}">
                             <Setter Property="Visibility" Value="Collapsed" />
                         </DataTrigger>
+                        <DataTrigger Binding="{Binding ItemType}" Value="Artist">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding ItemType}" Value="MusicArtist">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
                     </Style.Triggers>
                 </Style>
             </StackPanel.Style>
             
-            <Border Style="{StaticResource MediaInfoSeparator}"></Border>
             <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding DateText}" VerticalAlignment="Center"></TextBlock>
         </StackPanel>
 
-        <StackPanel Orientation="Horizontal">
+        <StackPanel Orientation="Horizontal" Margin="0 0 35 0">
             <StackPanel.Style>
                 <Style TargetType="{x:Type StackPanel}">
                     <Style.Triggers>
@@ -76,11 +59,10 @@
                 </Style>
             </StackPanel.Style>
 
-            <Border Style="{StaticResource MediaInfoSeparator}"></Border>
             <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding OfficialRating}" VerticalAlignment="Center"></TextBlock>
         </StackPanel>
 
-        <StackPanel Orientation="Horizontal">
+        <StackPanel Orientation="Horizontal" Margin="0 0 35 0">
             <StackPanel.Style>
                 <Style TargetType="{x:Type StackPanel}">
                     <Style.Triggers>
@@ -91,11 +73,10 @@
                 </Style>
             </StackPanel.Style>
 
-            <Border Style="{StaticResource MediaInfoSeparator}"></Border>
             <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding RuntimeMinutesText}" VerticalAlignment="Center"></TextBlock>
         </StackPanel>
 
-        <StackPanel Orientation="Horizontal">
+        <StackPanel Orientation="Horizontal" Margin="0 0 35 0">
 
             <StackPanel.Style>
                 <Style TargetType="{x:Type StackPanel}">
@@ -107,11 +88,10 @@
                 </Style>
             </StackPanel.Style>
 
-            <Border Style="{StaticResource MediaInfoSeparator}"></Border>
             <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding Resolution}" VerticalAlignment="Center"></TextBlock>
         </StackPanel>
 
-        <StackPanel Orientation="Horizontal">
+        <StackPanel Orientation="Horizontal" Margin="0 0 35 0">
 
             <StackPanel.Style>
                 <Style TargetType="{x:Type StackPanel}">
@@ -126,11 +106,10 @@
                 </Style>
             </StackPanel.Style>
 
-            <Border Style="{StaticResource MediaInfoSeparator}"></Border>
             <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding AudioCodec}" VerticalAlignment="Center"></TextBlock>
         </StackPanel>
 
-        <controls:ItemRating DataContext="{Binding}" Margin="30 0 0 0">
+        <controls:ItemRating DataContext="{Binding}" Margin="0 0 35 0">
             <controls:ItemRating.Style>
                 <Style TargetType="{x:Type controls:ItemRating}">
                     <Style.Triggers>
@@ -142,7 +121,7 @@
             </controls:ItemRating.Style>
         </controls:ItemRating>
 
-        <StackPanel Orientation="Horizontal" Margin="30 0 0 0">
+        <StackPanel Orientation="Horizontal" Margin="0 0 35 0">
 
             <StackPanel.Style>
                 <Style TargetType="{x:Type StackPanel}">
@@ -183,7 +162,25 @@
             <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding CriticRating}" VerticalAlignment="Center"></TextBlock>
         </StackPanel>
 
-        <Grid Margin="30 0 0 0">
+        <Grid x:Name="ProgressGrid" Margin="0 0 30 0">
+            <StackPanel Orientation="Horizontal">
+
+                <StackPanel.Style>
+                    <Style TargetType="{x:Type StackPanel}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsInProgress}" Value="False">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </StackPanel.Style>
+
+                <ProgressBar Minimum="0" Maximum="100" Value="{Binding PlayedPercentage, Mode=OneWay}" Margin="0 5 0 0" Width="120" Height="24" Style="{DynamicResource ResumeProgressBar}" VerticalAlignment="Center">
+                </ProgressBar>
+            </StackPanel>
+        </Grid>
+
+        <Grid Margin="0 0 30 0">
             <Grid.Style>
                 <Style TargetType="{x:Type Grid}">
                     <Style.Triggers>
@@ -199,7 +196,7 @@
             <Image Style="{DynamicResource LikeImage}"></Image>
         </Grid>
 
-        <Grid Margin="30 0 0 0">
+        <Grid Margin="0 0 30 0">
             <Grid.Style>
                 <Style TargetType="{x:Type Grid}">
                     <Style.Triggers>
@@ -212,7 +209,7 @@
             <Image Style="{DynamicResource DislikeImage}"></Image>
         </Grid>
 
-        <Grid Margin="30 0 0 0">
+        <Grid Margin="0 0 30 0">
             <Grid.Style>
                 <Style TargetType="{x:Type Grid}">
                     <Style.Triggers>
@@ -224,5 +221,8 @@
             </Grid.Style>
             <Image Style="{DynamicResource FavoriteImage}"></Image>
         </Grid>
+
+        <!--This textblock is just to make sure the panel always takes up the same amount of vertical space, so that content never moves due to height changes -->
+        <TextBlock Style="{DynamicResource TextBlockStyle}" Visibility="Hidden" Text="P"></TextBlock>
     </StackPanel>
 </UserControl>

@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.Dto;
+﻿using System.Threading.Tasks;
+using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
@@ -82,11 +83,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                 PnlTitle.Visibility = Visibility.Visible;
 
                 UpdateLogoForListView(viewModel, item);
-
-                return;
             }
+        }
 
-            if (item != null && (item.HasLogo || item.ParentLogoImageTag.HasValue))
+        private async void UpdateLogoForListView(ItemViewModel viewModel, BaseItemDto item)
+        {
+            if (item != null && item.BackdropCount > 0)
             {
                 var tokenSource = new CancellationTokenSource();
 
@@ -96,44 +98,31 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                 {
                     var img = await viewModel.GetBitmapImageAsync(new ImageOptions
                     {
-                        ImageType = ImageType.Logo
+                        ImageType = ImageType.Backdrop,
+                        Height = 320
 
                     }, tokenSource.Token);
 
+                    tokenSource.Token.ThrowIfCancellationRequested();
+
                     LogoImage.Source = img;
-
                     LogoImage.Visibility = Visibility.Visible;
-                    LogoImage.HorizontalAlignment = HorizontalAlignment.Center;
-
-                    // If the logo is owned by the current item, don't show the title
-                    if (item.HasLogo)
-                    {
-                        PnlTitle.Visibility = Visibility.Collapsed;
-                    }
+                    LogoImage.HorizontalAlignment = HorizontalAlignment.Left;
                 }
                 catch (OperationCanceledException)
                 {
+                    LogoImage.Visibility = Visibility.Collapsed;
                 }
                 catch
                 {
                     LogoImage.Visibility = Visibility.Collapsed;
-                    PnlTitle.Visibility = Visibility.Visible;
                 }
                 finally
                 {
                     DisposeLogoCancellationToken(tokenSource, false);
                 }
             }
-            else
-            {
-                LogoImage.Visibility = Visibility.Collapsed;
-                PnlTitle.Visibility = Visibility.Visible;
-            }
-        }
-
-        private async void UpdateLogoForListView(ItemViewModel viewModel, BaseItemDto item)
-        {
-            if (item != null && item.HasPrimaryImage)
+            else if (item != null && item.HasThumb)
             {
                 var tokenSource = new CancellationTokenSource();
 
@@ -143,7 +132,42 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                 {
                     var img = await viewModel.GetBitmapImageAsync(new ImageOptions
                     {
-                        ImageType = ImageType.Primary
+                        ImageType = ImageType.Thumb,
+                        Height = 320
+
+                    }, tokenSource.Token);
+
+                    tokenSource.Token.ThrowIfCancellationRequested();
+
+                    LogoImage.Source = img;
+                    LogoImage.Visibility = Visibility.Visible;
+                    LogoImage.HorizontalAlignment = HorizontalAlignment.Left;
+                }
+                catch (OperationCanceledException)
+                {
+                    LogoImage.Visibility = Visibility.Collapsed;
+                }
+                catch
+                {
+                    LogoImage.Visibility = Visibility.Collapsed;
+                }
+                finally
+                {
+                    DisposeLogoCancellationToken(tokenSource, false);
+                }
+            }
+            else if (item != null && item.HasPrimaryImage)
+            {
+                var tokenSource = new CancellationTokenSource();
+
+                _logoCancellationTokenSource = tokenSource;
+
+                try
+                {
+                    var img = await viewModel.GetBitmapImageAsync(new ImageOptions
+                    {
+                        ImageType = ImageType.Primary,
+                        Height = 320
 
                     }, tokenSource.Token);
 
@@ -156,6 +180,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                 }
                 catch (OperationCanceledException)
                 {
+                    LogoImage.Visibility = Visibility.Collapsed;
                 }
                 catch
                 {

@@ -582,7 +582,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             var options = new ListPageConfig
             {
                 IndexOptions = indexOptions.ToList(),
-                PageTitle = "Movies | Genres",
+                PageTitle = "Movies",
                 CustomItemQuery = GetMoviesByGenre
             };
 
@@ -638,7 +638,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             var options = new ListPageConfig
             {
                 IndexOptions = indexOptions.ToList(),
-                PageTitle = "Movies | Timeline",
+                PageTitle = "Movies",
                 CustomItemQuery = GetMoviesByYear
             };
 

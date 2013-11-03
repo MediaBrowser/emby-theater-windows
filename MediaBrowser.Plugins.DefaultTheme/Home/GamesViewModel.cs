@@ -348,7 +348,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             var options = new ListPageConfig
             {
                 IndexOptions = indexOptions.ToList(),
-                PageTitle = "Games | Multi-Player",
+                PageTitle = "Games",
                 CustomItemQuery = GetMultiPlayerGames
             };
 
@@ -411,7 +411,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             var options = new ListPageConfig
             {
                 IndexOptions = indexOptions.ToList(),
-                PageTitle = "Games | Timeline",
+                PageTitle = "Games",
                 CustomItemQuery = GetGamesByYear
             };
 
@@ -536,7 +536,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             var options = new ListPageConfig
             {
                 IndexOptions = indexOptions.ToList(),
-                PageTitle = "Games | Genres",
+                PageTitle = "Games",
                 CustomItemQuery = GetGamesByGenre
             };
 

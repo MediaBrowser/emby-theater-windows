@@ -359,6 +359,17 @@
                     </controls:ExtendedButton>
                 </Grid>
 
+                <controls:ExtendedButton Style="{DynamicResource BaseItemButtonStyle}" DataContext="{Binding GenresViewModel}" Command="{Binding CustomCommand}">
+                    <Grid Height="{Binding GalleryHeight}" Width="{Binding GalleryWidth}">
+
+                        <Image Source="Images/tvgenres.jpg" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Top"></Image>
+
+                        <Border HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Background="{DynamicResource TextBackground}" Margin="0 0 0 -1">
+                            <TextBlock Text="Genres" Style="{DynamicResource SmallTextBlockStyle}" Margin="10 5 10 10"></TextBlock>
+                        </Border>
+                    </Grid>
+                </controls:ExtendedButton>
+
                 <controls:ExtendedButton Style="{DynamicResource BaseItemButtonStyle}" DataContext="{Binding ActorsViewModel}" Command="{Binding CustomCommand}">
                     <Grid Height="{Binding GalleryHeight}" Width="{Binding GalleryWidth}">
 
@@ -377,18 +388,7 @@
                         </ItemsControl>
 
                         <Border HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Background="{DynamicResource TextBackground}" Margin="0 0 0 -1">
-                            <TextBlock Text="Actors" Style="{DynamicResource SmallTextBlockStyle}" Margin="10 5 10 10"></TextBlock>
-                        </Border>
-                    </Grid>
-                </controls:ExtendedButton>
-
-                <controls:ExtendedButton Style="{DynamicResource BaseItemButtonStyle}" DataContext="{Binding GenresViewModel}" Command="{Binding CustomCommand}">
-                    <Grid Height="{Binding GalleryHeight}" Width="{Binding GalleryWidth}">
-
-                        <Image Source="Images/tvgenres.jpg" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Top"></Image>
-
-                        <Border HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Background="{DynamicResource TextBackground}" Margin="0 0 0 -1">
-                            <TextBlock Text="Genres" Style="{DynamicResource SmallTextBlockStyle}" Margin="10 5 10 10"></TextBlock>
+                            <TextBlock Text="People" Style="{DynamicResource SmallTextBlockStyle}" Margin="10 5 10 10"></TextBlock>
                         </Border>
                     </Grid>
                 </controls:ExtendedButton>

@@ -258,18 +258,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
 
         void _viewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (string.Equals(e.PropertyName, "ViewType"))
-            {
-                if (string.Equals(_viewModel.ViewType, ListViewTypes.Thumbstrip) || string.Equals(_viewModel.ViewType, ListViewTypes.PosterStrip))
-                {
-                    LogoGrid.Height = 140;
-                }
-                else
-                {
-                    LogoGrid.Height = 80;
-                }
-            }
-
             if (string.Equals(e.PropertyName, "ViewType") || string.Equals(e.PropertyName, "ImageWidth") || string.Equals(e.PropertyName, "MedianPrimaryImageAspectRatio"))
             {
                 _viewModel.ItemContainerWidth = _viewModel.ImageDisplayWidth + 20;
@@ -381,7 +369,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
         {
             if (Sidebar.Visibility != Visibility.Visible)
             {
-                if (string.Equals(_viewModel.ViewType, ListViewTypes.Thumbstrip) && item != null && (item.HasArtImage || item.ParentArtImageTag.HasValue))
+                var isStripView = string.Equals(_viewModel.ViewType, ListViewTypes.Thumbstrip) ||
+                                  string.Equals(_viewModel.ViewType, ListViewTypes.PosterStrip);
+
+                if (isStripView && item != null && (item.HasArtImage || item.ParentArtImageTag.HasValue))
                 {
                     SetLogo(_apiClient.GetArtImageUrl(item, new ImageOptions
                     {
@@ -389,17 +380,17 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                     }));
                     ImgLogo.MaxHeight = 140;
                 }
-                else if (string.Equals(_viewModel.ViewType, ListViewTypes.PosterStrip) && item != null && (item.HasArtImage || item.ParentArtImageTag.HasValue))
-                {
-                    SetLogo(_apiClient.GetArtImageUrl(item, new ImageOptions
-                    {
-                        ImageType = ImageType.Art
-                    }));
-                    ImgLogo.MaxHeight = 140;
-                }
-                else if (item != null && (item.HasLogo || item.ParentLogoImageTag.HasValue))
+                else if (isStripView && item != null && (item.HasLogo || item.ParentLogoImageTag.HasValue))
                 {
                     SetLogo(_apiClient.GetLogoImageUrl(item, new ImageOptions
+                    {
+                        ImageType = ImageType.Logo
+                    }));
+                    ImgLogo.MaxHeight = 80;
+                }
+                else if (item != null && (item.HasLogo))
+                {
+                    SetLogo(_apiClient.GetImageUrl(item, new ImageOptions
                     {
                         ImageType = ImageType.Logo
                     }));

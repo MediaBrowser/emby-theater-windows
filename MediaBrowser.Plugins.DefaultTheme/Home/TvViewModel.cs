@@ -464,7 +464,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             var options = new ListPageConfig
             {
                 IndexOptions = AlphabetIndex,
-                PageTitle = "TV | Actors",
+                PageTitle = "TV | People",
                 CustomItemQuery = GetAllActors
             };
 
@@ -502,7 +502,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             var options = new ListPageConfig
             {
                 IndexOptions = indexOptions.ToList(),
-                PageTitle = "TV | Genres",
+                PageTitle = "TV",
                 CustomItemQuery = GetSeriesByGenre
             };
 

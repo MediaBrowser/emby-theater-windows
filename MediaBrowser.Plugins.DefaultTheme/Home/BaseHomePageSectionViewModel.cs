@@ -23,10 +23,22 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         private BaseItemDto[] _backdropItems;
 
+        private BaseItemDto _rootFolder;
+
         public BaseHomePageSectionViewModel(IPresentationManager presentationManager, IApiClient apiClient)
         {
             PresentationManager = presentationManager;
             ApiClient = apiClient;
+        }
+
+        protected async Task<BaseItemDto> GetRootFolder()
+        {
+            if (_rootFolder == null)
+            {
+                _rootFolder = await ApiClient.GetRootFolderAsync(ApiClient.CurrentUserId);
+            }
+
+            return _rootFolder;
         }
 
         protected async void NavigateWithLoading(Func<Task> navTask)

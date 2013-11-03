@@ -94,6 +94,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                                      : Visibility.Collapsed;
 
             BtnSort.Click += BtnSort_Click;
+
+            if (!string.IsNullOrEmpty(options.IndexValue))
+            {
+                var index = options.IndexOptions.First(i => string.Equals(i.Name, options.IndexValue));
+                _viewModel.IndexOptionsCollectionView.MoveCurrentTo(index);
+            }
         }
 
         void FolderPage_Loaded(object sender, RoutedEventArgs e)
@@ -386,7 +392,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                     {
                         ImageType = ImageType.Logo
                     }));
-                    ImgLogo.MaxHeight = 80;
+                    ImgLogo.MaxHeight = 140;
                 }
                 else if (item != null && (item.HasLogo))
                 {

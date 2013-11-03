@@ -755,7 +755,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                         {
                                  ItemFields.PrimaryImageAspectRatio,
                                  ItemFields.DateCreated,
-                                 ItemFields.Overview
+                                 ItemFields.Overview,
+                                 ItemFields.MediaStreams
                         },
                 ParentId = item.Id,
                 SortBy = new[] { ItemSortBy.SortName },

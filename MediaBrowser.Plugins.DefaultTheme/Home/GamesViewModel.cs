@@ -333,7 +333,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         private async Task NavigateToMultiPlayerGamesInternal()
         {
-            var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
+            var item = await GetRootFolder();
 
             var displayPreferences = await PresentationManager.GetDisplayPreferences("MultiPlayerGames", CancellationToken.None);
 
@@ -396,7 +396,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         private async Task NavigateToYearsInternal()
         {
-            var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
+            var item = await GetRootFolder();
 
             var displayPreferences = await PresentationManager.GetDisplayPreferences("GameYears", CancellationToken.None);
 
@@ -515,7 +515,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         private async Task NavigateToGenresInternal()
         {
-            var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
+            var item = await GetRootFolder();
 
             var displayPreferences = await PresentationManager.GetDisplayPreferences("GameGenres", CancellationToken.None);
 

@@ -43,6 +43,26 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         public List<ItemStub> RomanceItems { get; set; }
         public List<ItemStub> ComedyItems { get; set; }
+
+        public int SeriesCount { get; set; }
+        public int FavoriteSeriesCount { get; set; }
+        public int TopCommunityRatedSeriesCount { get; set; }
+        public int ComedySeriesCount { get; set; }
+        public int RomanticSeriesCount { get; set; }
+
+        public List<ItemByNameInfo> FavoriteGenres { get; set; }
+        public List<ItemByNameInfo> FavoriteStudios { get; set; }
+        public List<string> SeriesIdsInProgress { get; set; }
+
+        public List<BaseItemDto> LatestEpisodes { get; set; }
+        public List<BaseItemDto> NextUpEpisodes { get; set; }
+        public List<BaseItemDto> ResumableEpisodes { get; set; }
+    }
+
+    public class ItemByNameInfo
+    {
+        public string Name { get; set; }
+        public int ItemCount { get; set; }
     }
 
     public class GamesView : BaseView
@@ -76,9 +96,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         public const string RomanceGenre = "romance";
         public const string FamilyGenre = "family";
 
+        public const double TopTvCommunityRating = 8.5;
+
         public static Task<TvView> GetTvView(this IApiClient apiClient, string userId, CancellationToken cancellationToken)
         {
-            var url = apiClient.GetApiUrl("MBT/DefaultTheme/TV?userId=" + userId + "&ComedyGenre=" + ComedyGenre + "&RomanceGenre=" + RomanceGenre);
+            var url = apiClient.GetApiUrl("MBT/DefaultTheme/TV?userId=" + userId + "&ComedyGenre=" + ComedyGenre + "&RomanceGenre=" + RomanceGenre + "&TopCommunityRating=" + TopTvCommunityRating + "&NextUpEpisodeLimit=15&LatestEpisodeLimit=9&ResumableEpisodeLimit=3");
 
             return apiClient.GetAsync<TvView>(url, cancellationToken);
         }

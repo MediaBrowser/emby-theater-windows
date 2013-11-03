@@ -42,6 +42,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         public ImageViewerViewModel SpotlightViewModel { get; private set; }
 
         public ICommand NavigateToFavoriteMoviesCommand { get; set; }
+        public ICommand NavigateToFavoriteSeriesCommand { get; set; }
 
         public FavoritesViewModel(IPresentationManager presentation, IImageManager imageManager, IApiClient apiClient, ISessionManager session, INavigationService nav, IPlaybackManager playback, ILogger logger, double tileWidth, double tileHeight, IServerEvents serverEvents)
             : base(presentation, apiClient)
@@ -69,6 +70,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             LoadViewModels();
 
             NavigateToFavoriteMoviesCommand = new RelayCommand(o => NavigateToFavorites("Movie"));
+            NavigateToFavoriteSeriesCommand = new RelayCommand(o => NavigateToFavorites("Series"));
         }
 
         private async void LoadViewModels()
@@ -485,7 +487,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                     IsFavorite = true
                 });
 
-                var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
+                var item = await GetRootFolder();
 
                 var displayPreferences = await PresentationManager.GetDisplayPreferences("Favorites", CancellationToken.None);
 
@@ -495,7 +497,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 {
                     IndexOptions = GetFavoriteTabs(itemCounts).ToList(),
                     PageTitle = "Favorites",
-                    CustomItemQuery = GetFavoriteItems
+                    CustomItemQuery = GetFavoriteItems,
+                    IndexValue = type
                 };
 
                 var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,

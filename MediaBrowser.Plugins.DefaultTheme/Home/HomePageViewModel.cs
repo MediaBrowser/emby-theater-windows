@@ -50,7 +50,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 {
                     //_sessionManager.CurrentUser.Name.ToLower()
                 };
-            
+
             try
             {
                 var itemCounts = await _apiClient.GetItemCountsAsync(new ItemCountsQuery
@@ -136,7 +136,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 content.DisableActivePresentation();
             }
         }
-        
+
         internal static string GetDisplayName(BaseItemDto item)
         {
             var name = item.Name;
@@ -180,7 +180,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             }
             if (string.Equals(section, "tv"))
             {
-                return new TvViewModel(_presentationManager, _imageManager, _apiClient, _sessionManager, _nav, _playbackManager, _logger, TileWidth, TileHeight, _serverEvents);
+                return GetTvViewModel();
             }
             if (string.Equals(section, "movies"))
             {
@@ -189,6 +189,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             }
 
             return new FavoritesViewModel(_presentationManager, _imageManager, _apiClient, _sessionManager, _nav, _playbackManager, _logger, TileWidth, TileHeight, _serverEvents);
+        }
+
+        private TvViewModel GetTvViewModel()
+        {
+            return new TvViewModel(_presentationManager, _imageManager, _apiClient, _sessionManager, _nav, _playbackManager, _logger, TileWidth, TileHeight, _serverEvents);
         }
 
         private Task<ItemsResult> GetMediaCollectionsAsync(ItemListViewModel viewModel)
@@ -241,28 +246,16 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             }
         }
 
-        private async Task NavigateToAllShowsInternal()
+        private Task NavigateToAllShowsInternal()
         {
-            var item = await _apiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
+            var vm = ContentViewModel as TvViewModel;
 
-            var displayPreferences = await _presentationManager.GetDisplayPreferences("Shows", CancellationToken.None);
-
-            var options = new ListPageConfig
+            if (vm == null)
             {
-                PageTitle = "TV Shows",
-                CustomItemQuery = GetAllShows,
-                SortOptions = TvViewModel.GetSeriesSortOptions()
-            };
+                vm = GetTvViewModel();
+            }
 
-            TvViewModel.SetDefaults(options);
-
-            var page = new FolderPage(item, displayPreferences, _apiClient, _imageManager, _sessionManager,
-                                      _presentationManager, _nav, _playbackManager, _logger, _serverEvents, options)
-            {
-                ViewType = ViewType.Tv
-            };
-
-            await _nav.Navigate(page);
+            return vm.NavigateToAllShows();
         }
 
         private Task<ItemsResult> GetAllShows(ItemListViewModel viewModel, DisplayPreferences displayPreferences)

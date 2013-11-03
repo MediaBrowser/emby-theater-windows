@@ -43,6 +43,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         public GalleryViewModel RomanticSeriesViewModel { get; private set; }
         public GalleryViewModel ComedyItemsViewModel { get; private set; }
 
+        private TvView _tvView;
+
         public TvViewModel(IPresentationManager presentation, IImageManager imageManager, IApiClient apiClient, ISessionManager session, INavigationService nav, IPlaybackManager playback, ILogger logger, double tileWidth, double tileHeight, IServerEvents serverEvents)
             : base(presentation, apiClient)
         {
@@ -55,31 +57,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             TileWidth = tileWidth;
             TileHeight = tileHeight;
-
-            NextUpViewModel = new ItemListViewModel(GetNextUpAsync, presentation, imageManager, apiClient, nav, playback, logger, _serverEvents)
-            {
-                ImageDisplayWidth = TileWidth,
-                ImageDisplayHeightGenerator = v => TileHeight,
-                DisplayNameGenerator = HomePageViewModel.GetDisplayName,
-                EnableBackdropsForCurrentItem = false
-            };
-
-            LatestEpisodesViewModel = new ItemListViewModel(GetLatestEpisodes, presentation, imageManager, apiClient, nav, playback, logger, _serverEvents)
-            {
-                ImageDisplayWidth = TileWidth,
-                ImageDisplayHeightGenerator = v => TileHeight,
-                DisplayNameGenerator = HomePageViewModel.GetDisplayName,
-                EnableBackdropsForCurrentItem = false
-            };
-
-            ResumeViewModel = new ItemListViewModel(GetResumeablesAsync, presentation, imageManager, apiClient, nav, playback, logger, _serverEvents)
-            {
-                ImageDisplayWidth = TileWidth,
-                ImageDisplayHeightGenerator = v => TileHeight,
-                DisplayNameGenerator = HomePageViewModel.GetDisplayName,
-                EnableBackdropsForCurrentItem = false
-            };
-            ResumeViewModel.PropertyChanged += ResumeViewModel_PropertyChanged;
 
             const double tileScaleFactor = 13;
 
@@ -101,21 +78,21 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 GalleryHeight = TileHeight,
                 GalleryWidth = TileWidth * tileScaleFactor / 16,
-                CustomCommandAction = () => NavigateWithLoading(NavigateToAllShowsInternal)
+                CustomCommandAction = () => NavigateWithLoading(() => NavigateToAllShowsInternal("AllShows"))
             };
 
             RomanticSeriesViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {
                 GalleryHeight = TileHeight,
                 GalleryWidth = TileWidth * tileScaleFactor / 16,
-                CustomCommandAction = () => NavigateWithLoading(NavigateToRomanticTvInternal)
+                CustomCommandAction = () => NavigateWithLoading(() => NavigateToAllShowsInternal("Romance"))
             };
 
             ComedyItemsViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {
                 GalleryHeight = TileHeight,
                 GalleryWidth = TileWidth * tileScaleFactor / 16,
-                CustomCommandAction = () => NavigateWithLoading(NavigateToComedySeriesInternal)
+                CustomCommandAction = () => NavigateWithLoading(() => NavigateToAllShowsInternal("Comedy"))
             };
 
             var spotlightTileWidth = TileWidth * 2 + TilePadding;
@@ -153,7 +130,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             }
         }
 
-        public const int PosterWidth = 220;
+        public const int PosterWidth = 214;
         public const int ThumbstripWidth = 600;
         public const int ListImageWidth = 160;
 
@@ -173,6 +150,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 var view = await ApiClient.GetTvView(_sessionManager.CurrentUser.Id, cancellationSource.Token);
 
+                _tvView = view;
+
                 cancellationSource.Token.ThrowIfCancellationRequested();
 
                 LoadSpotlightViewModel(view);
@@ -182,6 +161,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 LoadActorsViewModel(view);
                 LoadMiniSpotlightsViewModel(view);
                 LoadMiniSpotlightsViewModel2(view);
+                LoadNextUpViewModel(view);
+                LoadLatestEpisodesViewModel(view);
+                LoadResumableViewModel(view);
             }
             catch (Exception ex)
             {
@@ -192,6 +174,45 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 DisposeMainViewCancellationTokenSource(false);
             }
+        }
+
+        private void LoadResumableViewModel(TvView view)
+        {
+            ResumeViewModel = new ItemListViewModel(GetResumeablesAsync, PresentationManager, _imageManager, ApiClient, _navService, _playbackManager, _logger, _serverEvents)
+            {
+                ImageDisplayWidth = TileWidth,
+                ImageDisplayHeightGenerator = v => TileHeight,
+                DisplayNameGenerator = HomePageViewModel.GetDisplayName,
+                EnableBackdropsForCurrentItem = false
+            };
+
+            OnPropertyChanged("ResumeViewModel");
+        }
+
+        private void LoadLatestEpisodesViewModel(TvView view)
+        {
+            LatestEpisodesViewModel = new ItemListViewModel(GetLatestEpisodes, PresentationManager, _imageManager, ApiClient, _navService, _playbackManager, _logger, _serverEvents)
+            {
+                ImageDisplayWidth = TileWidth,
+                ImageDisplayHeightGenerator = v => TileHeight,
+                DisplayNameGenerator = HomePageViewModel.GetDisplayName,
+                EnableBackdropsForCurrentItem = false
+            };
+
+            OnPropertyChanged("LatestEpisodesViewModel");
+        }
+
+        private void LoadNextUpViewModel(TvView view)
+        {
+            NextUpViewModel = new ItemListViewModel(GetNextUpAsync, PresentationManager, _imageManager, ApiClient, _navService, _playbackManager, _logger, _serverEvents)
+            {
+                ImageDisplayWidth = TileWidth,
+                ImageDisplayHeightGenerator = v => TileHeight,
+                DisplayNameGenerator = HomePageViewModel.GetDisplayName,
+                EnableBackdropsForCurrentItem = false
+            };
+
+            OnPropertyChanged("NextUpViewModel");
         }
 
         private void LoadMiniSpotlightsViewModel(TvView view)
@@ -246,11 +267,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             };
 
             OnPropertyChanged("MiniSpotlightsViewModel2");
-        }
-
-        void ResumeViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            ShowResume = ResumeViewModel.ItemCount > 0;
         }
 
         private bool _showLatestEpisodes;
@@ -393,26 +409,28 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             ActorsViewModel.AddImages(images);
         }
 
-        private void LoadRomanticSeriesViewModel(TvView view)
+        public bool ShouldShowRomanticSeries(TvView view)
         {
             var now = DateTime.Now;
 
             if (now.DayOfWeek == DayOfWeek.Friday)
             {
-                ShowRomanticSeries = view.RomanceItems.Count > 0 && now.Hour >= 15;
+                return view.RomanceItems.Count > 0 && now.Hour >= 15;
             }
-            else if (now.DayOfWeek == DayOfWeek.Saturday)
+            if (now.DayOfWeek == DayOfWeek.Saturday)
             {
-                ShowRomanticSeries = view.RomanceItems.Count > 0 && (now.Hour < 3 || now.Hour >= 15);
+                return view.RomanceItems.Count > 0 && (now.Hour < 3 || now.Hour >= 15);
             }
-            else if (now.DayOfWeek == DayOfWeek.Sunday)
+            if (now.DayOfWeek == DayOfWeek.Sunday)
             {
-                ShowRomanticSeries = view.RomanceItems.Count > 0 && now.Hour < 3;
+                return view.RomanceItems.Count > 0 && now.Hour < 3;
             }
-            else
-            {
-                ShowRomanticSeries = false;
-            }
+            return false;
+        }
+
+        private void LoadRomanticSeriesViewModel(TvView view)
+        {
+            ShowRomanticSeries = ShouldShowRomanticSeries(view);
 
             var images = view.RomanceItems.Take(1).Select(i => ApiClient.GetImageUrl(i.Id, new ImageOptions
             {
@@ -425,24 +443,41 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             RomanticSeriesViewModel.AddImages(images);
         }
 
-        private void LoadComedySeriesViewModel(TvView view)
+        private string GetComedyViewName()
         {
             var now = DateTime.Now;
 
             if (now.DayOfWeek == DayOfWeek.Thursday)
             {
-                ShowComedyItems = view.ComedyItems.Count > 0 && now.Hour >= 12;
-                ComedyItemsViewModel.Name = "Comedy Night";
+                return "Comedy Night";
             }
-            else if (now.DayOfWeek == DayOfWeek.Sunday)
+            if (now.DayOfWeek == DayOfWeek.Sunday)
             {
-                ShowComedyItems = view.ComedyItems.Count > 0;
-                ComedyItemsViewModel.Name = "Sunday Funnies";
+                return "Sunday Funnies";
             }
-            else
+
+            return "Comedy";
+        }
+
+        private bool ShowComedy(TvView view)
+        {
+            var now = DateTime.Now;
+
+            if (now.DayOfWeek == DayOfWeek.Thursday)
             {
-                ShowComedyItems = false;
+                return view.ComedyItems.Count > 0 && now.Hour >= 12;
             }
+            if (now.DayOfWeek == DayOfWeek.Sunday)
+            {
+                return view.ComedyItems.Count > 0;
+            }
+            return false;
+        }
+
+        private void LoadComedySeriesViewModel(TvView view)
+        {
+            ShowComedyItems = ShowComedy(view);
+            ComedyItemsViewModel.Name = GetComedyViewName();
 
             var images = view.ComedyItems.Take(1).Select(i => ApiClient.GetImageUrl(i.Id, new ImageOptions
             {
@@ -457,7 +492,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         private async Task NavigateToActorsInternal()
         {
-            var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
+            var item = await GetRootFolder();
 
             var displayPreferences = await PresentationManager.GetDisplayPreferences("People", CancellationToken.None);
 
@@ -481,7 +516,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         private async Task NavigateToGenresInternal()
         {
-            var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
+            var item = await GetRootFolder();
 
             var displayPreferences = await PresentationManager.GetDisplayPreferences("TVGenres", CancellationToken.None);
 
@@ -530,17 +565,92 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             AllShowsViewModel.AddImages(images);
         }
 
-        private async Task NavigateToAllShowsInternal()
+        public Task NavigateToAllShows()
         {
-            var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
+            return NavigateToAllShowsInternal("AllShows");
+        }
+
+        private async Task NavigateToAllShowsInternal(string indexValue)
+        {
+            var item = await GetRootFolder();
 
             var displayPreferences = await PresentationManager.GetDisplayPreferences("Shows", CancellationToken.None);
 
+            var tvView = _tvView ?? await ApiClient.GetTvView(_sessionManager.CurrentUser.Id, CancellationToken.None);
+
+            var tabs = new List<TabItem>();
+
+            tabs.Add(new TabItem
+            {
+                DisplayName = "All Shows (" + tvView.SeriesCount + ")",
+                Name = "AllShows"
+            });
+
+            if (tvView.SeriesIdsInProgress.Count > 0)
+            {
+                tabs.Add(new TabItem
+                {
+                    DisplayName = "Shows In Progress (" + tvView.SeriesIdsInProgress.Count + ")",
+                    Name = "ShowsInProgress",
+                    TabType = string.Join(",", tvView.SeriesIdsInProgress.ToArray())
+                });
+            }
+
+            tabs.Add(new TabItem
+            {
+                DisplayName = "Favorite Shows (" + tvView.FavoriteSeriesCount + ")",
+                Name = "FavoriteShows"
+            });
+
+            if (ShowComedy(tvView))
+            {
+                tabs.Add(new TabItem
+                {
+                    DisplayName = GetComedyViewName() + " (" + tvView.ComedySeriesCount + ")",
+                    Name = "Comedy",
+                });
+            }
+
+            if (ShouldShowRomanticSeries(tvView))
+            {
+                tabs.Add(new TabItem
+                {
+                    DisplayName = "Date Night (" + tvView.RomanticSeriesCount + ")",
+                    Name = "Romance",
+                });
+            }
+
+            tabs.Add(new TabItem
+            {
+                DisplayName = "Top Rated on IMDb (" + tvView.TopCommunityRatedSeriesCount + ")",
+                Name = "TopRated",
+            });
+
+            foreach (var fav in tvView.FavoriteGenres)
+            {
+                tabs.Add(new TabItem
+                {
+                    DisplayName = fav.Name + " Shows (" + fav.ItemCount + ")",
+                    Name = "Genre:" + fav.Name,
+                });
+            }
+
+            foreach (var fav in tvView.FavoriteStudios)
+            {
+                tabs.Add(new TabItem
+                {
+                    DisplayName = "Shows on " + fav.Name + " (" + fav.ItemCount + ")",
+                    Name = "Studio:" + fav.Name,
+                });
+            }
+
             var options = new ListPageConfig
             {
-                PageTitle = "TV Shows",
+                PageTitle = "TV",
                 CustomItemQuery = GetAllShows,
-                SortOptions = GetSeriesSortOptions()
+                SortOptions = GetSeriesSortOptions(),
+                IndexOptions = tabs,
+                IndexValue = indexValue
             };
 
             SetDefaults(options);
@@ -552,68 +662,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             };
 
             await _navService.Navigate(page);
-        }
-
-        internal static Dictionary<string, string> GetSeriesSortOptions()
-        {
-            var sortOptions = new Dictionary<string, string>();
-            sortOptions["Name"] = ItemSortBy.SortName;
-
-            sortOptions["Date Added"] = ItemSortBy.DateCreated;
-            sortOptions["IMDb Rating"] = ItemSortBy.CommunityRating;
-            sortOptions["Parental Rating"] = ItemSortBy.OfficialRating;
-            sortOptions["Premiere Date"] = ItemSortBy.PremiereDate;
-            sortOptions["Runtime"] = ItemSortBy.Runtime;
-
-            return sortOptions;
-        }
-
-        private async Task NavigateToComedySeriesInternal()
-        {
-            var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
-
-            var displayPreferences = await PresentationManager.GetDisplayPreferences("ComedyShows", CancellationToken.None);
-
-            var options = new ListPageConfig
-            {
-                PageTitle = "Comedy Night",
-                CustomItemQuery = GetComedySeries,
-                SortOptions = GetSeriesSortOptions()
-            };
-
-            SetDefaults(options);
-
-            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
-            {
-                ViewType = ViewType.Tv
-            };
-
-            await _navService.Navigate(page);
-        }
-
-        private Task<ItemsResult> GetComedySeries(ItemListViewModel viewModel, DisplayPreferences displayPreferences)
-        {
-            var query = new ItemQuery
-            {
-                Fields = FolderPage.QueryFields,
-
-                UserId = _sessionManager.CurrentUser.Id,
-
-                IncludeItemTypes = new[] { "Series" },
-
-                Genres = new[] { ApiClientExtensions.ComedyGenre },
-
-                SortBy = !String.IsNullOrEmpty(displayPreferences.SortBy)
-                             ? new[] { displayPreferences.SortBy }
-                             : new[] { ItemSortBy.SortName },
-
-                SortOrder = displayPreferences.SortOrder,
-
-                Recursive = true
-            };
-
-            return ApiClient.GetItemsAsync(query);
         }
 
         private Task<ItemsResult> GetAllShows(ItemListViewModel viewModel, DisplayPreferences displayPreferences)
@@ -635,7 +683,73 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 Recursive = true
             };
 
+            var indexOption = viewModel.CurrentIndexOption == null ? string.Empty : viewModel.CurrentIndexOption.Name;
+
+            if (string.Equals(indexOption, "TopRated"))
+            {
+                query.MinCommunityRating = ApiClientExtensions.TopTvCommunityRating;
+
+                query.SortBy = new[] { ItemSortBy.SortName };
+                query.SortOrder = SortOrder.Ascending;
+            }
+            else if (string.Equals(indexOption, "FavoriteShows"))
+            {
+                query.Filters = new[] { ItemFilter.IsFavorite };
+
+                query.SortBy = new[] { ItemSortBy.SortName };
+                query.SortOrder = SortOrder.Ascending;
+            }
+            else if (string.Equals(indexOption, "Comedy"))
+            {
+                query.Genres = new[] { ApiClientExtensions.ComedyGenre };
+
+                query.SortBy = new[] { ItemSortBy.SortName };
+                query.SortOrder = SortOrder.Ascending;
+            }
+            else if (string.Equals(indexOption, "Romance"))
+            {
+                query.Genres = new[] { ApiClientExtensions.RomanceGenre };
+
+                query.SortBy = new[] { ItemSortBy.SortName };
+                query.SortOrder = SortOrder.Ascending;
+            }
+            else if (string.Equals(indexOption, "ShowsInProgress"))
+            {
+                query.Ids = viewModel.CurrentIndexOption.TabType.Split(',');
+
+                query.SortBy = new[] { ItemSortBy.SortName };
+                query.SortOrder = SortOrder.Ascending;
+            }
+            else if (indexOption.StartsWith("Genre:"))
+            {
+                query.Genres = new[] { indexOption.Split(':').Last() };
+
+                query.SortBy = new[] { ItemSortBy.SortName };
+                query.SortOrder = SortOrder.Ascending;
+            }
+            else if (indexOption.StartsWith("Studio:"))
+            {
+                query.Studios = new[] { indexOption.Split(':').Last() };
+
+                query.SortBy = new[] { ItemSortBy.SortName };
+                query.SortOrder = SortOrder.Ascending;
+            }
+
             return ApiClient.GetItemsAsync(query);
+        }
+
+        internal static Dictionary<string, string> GetSeriesSortOptions()
+        {
+            var sortOptions = new Dictionary<string, string>();
+            //sortOptions["Name"] = ItemSortBy.SortName;
+
+            //sortOptions["Date Added"] = ItemSortBy.DateCreated;
+            //sortOptions["IMDb Rating"] = ItemSortBy.CommunityRating;
+            //sortOptions["Parental Rating"] = ItemSortBy.OfficialRating;
+            //sortOptions["Premiere Date"] = ItemSortBy.PremiereDate;
+            //sortOptions["Runtime"] = ItemSortBy.Runtime;
+
+            return sortOptions;
         }
 
         private Task<ItemsResult> GetSeriesByGenre(ItemListViewModel viewModel, DisplayPreferences displayPreferences)
@@ -711,139 +825,43 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             return ApiClient.GetPeopleAsync(query);
         }
 
-        private async Task NavigateToRomanticTvInternal()
+        private Task<ItemsResult> GetNextUpAsync(ItemListViewModel viewModel)
         {
-            var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
-
-            var displayPreferences = await PresentationManager.GetDisplayPreferences("RomanticShows", CancellationToken.None);
-
-            var options = new ListPageConfig
+            var result = new ItemsResult
             {
-                PageTitle = "Date Night",
-                CustomItemQuery = GetRomanticSeries,
-                SortOptions = GetSeriesSortOptions()
+                Items = _tvView.NextUpEpisodes.ToArray(),
+                TotalRecordCount = _tvView.NextUpEpisodes.Count
             };
-
-            SetDefaults(options);
-
-            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
-            {
-                ViewType = ViewType.Tv
-            };
-
-            await _navService.Navigate(page);
-        }
-
-        private Task<ItemsResult> GetRomanticSeries(ItemListViewModel viewModel, DisplayPreferences displayPreferences)
-        {
-            var query = new ItemQuery
-            {
-                Fields = FolderPage.QueryFields,
-
-                UserId = _sessionManager.CurrentUser.Id,
-
-                IncludeItemTypes = new[] { "Series" },
-
-                Genres = new[] { ApiClientExtensions.RomanceGenre },
-
-                SortBy = !String.IsNullOrEmpty(displayPreferences.SortBy)
-                             ? new[] { displayPreferences.SortBy }
-                             : new[] { ItemSortBy.SortName },
-
-                SortOrder = displayPreferences.SortOrder,
-
-                Recursive = true
-            };
-
-            return ApiClient.GetItemsAsync(query);
-        }
-
-        private async Task<ItemsResult> GetNextUpAsync(ItemListViewModel viewModel)
-        {
-            var query = new NextUpQuery
-            {
-                Fields = new[]
-                        {
-                            ItemFields.PrimaryImageAspectRatio,
-                            ItemFields.DateCreated,
-                            ItemFields.DisplayPreferencesId
-                        },
-
-                UserId = _sessionManager.CurrentUser.Id,
-
-                Limit = 15
-            };
-
-            var result = await ApiClient.GetNextUpAsync(query);
 
             ShowNextUp = result.TotalRecordCount > 0;
 
-            return result;
+            return Task.FromResult(result);
         }
 
-        private async Task<ItemsResult> GetLatestEpisodes(ItemListViewModel viewModel)
+        private Task<ItemsResult> GetLatestEpisodes(ItemListViewModel viewModel)
         {
-            var query = new ItemQuery
+            var result = new ItemsResult
             {
-                Fields = new[]
-                        {
-                            ItemFields.PrimaryImageAspectRatio,
-                            ItemFields.DateCreated,
-                            ItemFields.DisplayPreferencesId
-                        },
-
-                UserId = _sessionManager.CurrentUser.Id,
-
-                SortBy = new[] { ItemSortBy.DateCreated },
-
-                SortOrder = SortOrder.Descending,
-
-                IncludeItemTypes = new[] { "Episode" },
-
-                ExcludeLocationTypes = new[] { LocationType.Virtual },
-
-                Filters = new[] { ItemFilter.IsUnplayed },
-
-                Limit = 9,
-
-                Recursive = true
+                Items = _tvView.LatestEpisodes.ToArray(),
+                TotalRecordCount = _tvView.LatestEpisodes.Count
             };
-
-            var result = await ApiClient.GetItemsAsync(query);
 
             ShowLatestEpisodes = result.TotalRecordCount > 0;
 
-            return result;
+            return Task.FromResult(result);
         }
 
         private Task<ItemsResult> GetResumeablesAsync(ItemListViewModel viewModel)
         {
-            var query = new ItemQuery
+            var result = new ItemsResult
             {
-                Fields = new[]
-                        {
-                            ItemFields.PrimaryImageAspectRatio,
-                            ItemFields.DateCreated,
-                            ItemFields.DisplayPreferencesId
-                        },
-
-                UserId = _sessionManager.CurrentUser.Id,
-
-                SortBy = new[] { ItemSortBy.DatePlayed },
-
-                SortOrder = SortOrder.Descending,
-
-                IncludeItemTypes = new[] { "Episode" },
-
-                Filters = new[] { ItemFilter.IsResumable },
-
-                Limit = 3,
-
-                Recursive = true
+                Items = _tvView.ResumableEpisodes.ToArray(),
+                TotalRecordCount = _tvView.ResumableEpisodes.Count
             };
 
-            return ApiClient.GetItemsAsync(query);
+            ShowResume = result.TotalRecordCount > 0;
+
+            return Task.FromResult(result);
         }
 
         public void Dispose()

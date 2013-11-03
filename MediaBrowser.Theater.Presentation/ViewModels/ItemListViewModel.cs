@@ -146,6 +146,15 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 _itemCount = value;
 
                 OnPropertyChanged("ItemCount");
+                OnPropertyChanged("RequiresVirtualization");
+            }
+        }
+
+        public bool RequiresVirtualization
+        {
+            get
+            {
+                return ItemCount > 30;
             }
         }
 
@@ -633,8 +642,8 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
-        private bool _isFirstChange = true;
         private readonly object _indexSyncLock = new object();
+        private object _lastIndexValue;
 
         void _indexOptionsCollectionView_CurrentChanged(object sender, EventArgs e)
         {
@@ -643,15 +652,22 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 return;
             }
 
-            if (_isFirstChange)
-            {
-                OnIndexSelectionChange(null);
-                _isFirstChange = false;
-                return;
-            }
-
             lock (_indexSyncLock)
             {
+                if (_lastIndexValue==null)
+                {
+                    OnIndexSelectionChange(null);
+                    _lastIndexValue = _indexOptionsCollectionView.CurrentItem;
+                    return;
+                }
+
+                if (_lastIndexValue == _indexOptionsCollectionView.CurrentItem)
+                {
+                    return;
+                }
+
+                _lastIndexValue = _indexOptionsCollectionView.CurrentItem;
+                
                 if (_indexSelectionChangeTimer == null)
                 {
                     _indexSelectionChangeTimer = new Timer(OnIndexSelectionChange, null, 600, Timeout.Infinite);

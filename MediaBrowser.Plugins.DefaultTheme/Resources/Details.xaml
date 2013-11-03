@@ -94,7 +94,7 @@
 
                 <TextBlock Grid.Row="0" DataContext="{Binding CurrentItem}" HorizontalAlignment="Center" Text="{Binding DisplayName}" VerticalAlignment="Top" Margin="0 20 0 0" MaxWidth="1600">
                     <TextBlock.Style>
-                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource Heading2TextBlockStyle}">
+                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource Heading1TextBlockStyle}">
                         </Style>
                     </TextBlock.Style>
                 </TextBlock>
@@ -282,7 +282,7 @@
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Row="0">
 
-                    <Button Command="{Binding PlayCommand}">
+                    <Button Command="{Binding PlayCommand}" Margin="0 0 10 0">
 
                         <Button.Style>
                             <Style TargetType="{x:Type Button}" BasedOn="{StaticResource BaseButtonStyle}">
@@ -298,7 +298,7 @@
                         <TextBlock Style="{DynamicResource TextBlockStyle}">Play</TextBlock>
                     </Button>
 
-                    <Button Margin="10 0 0 0" Command="{Binding ResumeCommand}">
+                    <Button Margin="0 0 10 0" Command="{Binding ResumeCommand}">
 
                         <Button.Style>
                             <Style TargetType="{x:Type Button}" BasedOn="{StaticResource BaseButtonStyle}">
@@ -334,7 +334,7 @@
                         </StackPanel>
                     </Button>
 
-                    <Button Margin="10 0 0 0" Command="{Binding PlayTrailerCommand}">
+                    <Button Margin="0 0 10 0" Command="{Binding PlayTrailerCommand}">
 
                         <Button.Style>
                             <Style TargetType="{x:Type Button}" BasedOn="{StaticResource BaseButtonStyle}">

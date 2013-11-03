@@ -9,7 +9,7 @@
       d:DesignHeight="300" d:DesignWidth="300"
 	Title="DetailPage">
 
-    <Grid>
+    <Grid Margin="0 10 0 0">
 
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"></RowDefinition>

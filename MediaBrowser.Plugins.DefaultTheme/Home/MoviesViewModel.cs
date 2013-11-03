@@ -178,7 +178,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             LoadViewModels();
         }
 
-        public const int PosterWidth = 220;
+        public const int PosterWidth = 214;
         public const int ThumbstripWidth = 600;
         public const int ListImageWidth = 160;
 
@@ -561,7 +561,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         private async Task NavigateToGenresInternal()
         {
-            var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
+            var item = await GetRootFolder();
 
             var displayPreferences = await PresentationManager.GetDisplayPreferences("MovieGenres", CancellationToken.None);
 
@@ -599,7 +599,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         private async Task NavigateToActorsInternal()
         {
-            var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
+            var item = await GetRootFolder();
 
             var displayPreferences = await PresentationManager.GetDisplayPreferences("People", CancellationToken.None);
 
@@ -623,7 +623,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         private async Task NavigateToYearsInternal()
         {
-            var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
+            var item = await GetRootFolder();
 
             var displayPreferences = await PresentationManager.GetDisplayPreferences("MovieYears", CancellationToken.None);
 
@@ -807,7 +807,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         private async Task NavigateToTrailersInternal()
         {
-            var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
+            var item = await GetRootFolder();
 
             var displayPreferences = await PresentationManager.GetDisplayPreferences("Trailers", CancellationToken.None);
 
@@ -855,7 +855,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         private async Task NavigateToBoxsetsInternal()
         {
-            var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
+            var item = await GetRootFolder();
 
             var displayPreferences = await PresentationManager.GetDisplayPreferences("Boxsets", CancellationToken.None);
 
@@ -900,7 +900,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         private async Task NavigateToAllMoviesInternal()
         {
-            var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
+            var item = await GetRootFolder();
 
             var displayPreferences = await PresentationManager.GetDisplayPreferences("Movies", CancellationToken.None);
 
@@ -924,7 +924,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         private async Task NavigateToRomanticMoviesInternal()
         {
-            var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
+            var item = await GetRootFolder();
 
             var displayPreferences = await PresentationManager.GetDisplayPreferences("RomanticMovies", CancellationToken.None);
 
@@ -972,7 +972,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         private async Task NavigateToComedyMoviesInternal()
         {
-            var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
+            var item = await GetRootFolder();
 
             var displayPreferences = await PresentationManager.GetDisplayPreferences("ComedyMovies", CancellationToken.None);
 
@@ -1100,7 +1100,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         private async Task NavigateToHDMoviesInternal()
         {
-            var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
+            var item = await GetRootFolder();
 
             var displayPreferences = await PresentationManager.GetDisplayPreferences("HDMovies", CancellationToken.None);
 
@@ -1148,7 +1148,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         private async Task NavigateToFamilyMoviesInternal()
         {
-            var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
+            var item = await GetRootFolder();
 
             var displayPreferences = await PresentationManager.GetDisplayPreferences("FamilyMovies", CancellationToken.None);
 
@@ -1196,7 +1196,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         private async Task NavigateTo3DMoviesInternal()
         {
-            var item = await ApiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
+            var item = await GetRootFolder();
 
             var displayPreferences = await PresentationManager.GetDisplayPreferences("3DMovies", CancellationToken.None);
 

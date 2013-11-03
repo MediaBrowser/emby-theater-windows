@@ -19,6 +19,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
         public string DefaultViewType = ListViewTypes.Poster;
 
         public string PageTitle;
+        public string IndexValue;
         public Dictionary<string, string> SortOptions;
 
         public ViewType Context;

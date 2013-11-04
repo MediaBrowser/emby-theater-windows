@@ -60,7 +60,6 @@
             </Grid.Style>
 
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="*"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
@@ -71,40 +70,7 @@
                 <ColumnDefinition Width="*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
-            <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" HorizontalAlignment="Left" Margin="70 0 0 0" Orientation="Horizontal">
-
-                <StackPanel.Style>
-                    <Style TargetType="{x:Type StackPanel}">
-                        <Setter Property="Visibility" Value="Collapsed" />
-
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding Visibility,ElementName=BtnSort}" Value="Visible">
-                                <Setter Property="Visibility" Value="Visible" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </StackPanel.Style>
-
-                <controls:ExtendedButton Style="{DynamicResource ImageButton}" x:Name="BtnSort" Margin="0 0 50 0">
-
-                    <StackPanel Orientation="Horizontal">
-                        <Path Style="{DynamicResource IconPath}" VerticalAlignment="Center" Data="M2.4179878,23.744L20.455954,23.744 26.486,31.232901 2.4179878,31.241999C1.082037,31.241999,0,30.157487,0,28.823094L0,26.160506C0,24.825814,1.082037,23.744,2.4179878,23.744z M2.4179688,11.471001L24.102999,11.471001 24.102999,16.372296 23.063999,16.361796C21.142099,16.346195 20.048299,17.024623 19.470199,17.597445 19.076899,17.988261 18.806199,18.46088 18.643299,18.970001L2.4179688,18.970001C1.0820293,18.970001,0,17.886557,0,16.550604L0,13.889097C0,12.554443,1.0820293,11.471,2.4179688,11.471001z M28.320365,3.6159997L32.061206,3.6159997C33.011567,3.616,33.787634,4.3867452,33.787634,5.3424765L33.787634,18.946365 37.356583,18.977664C39.202703,18.993363,39.950272,19.919045,39.016714,21.038924L37.097393,23.338279C36.159932,24.454158,34.636498,26.283522,33.702936,27.399401L31.779921,29.700156C30.847659,30.816035,29.335923,30.804335,28.423362,29.670157L26.545842,27.3382C25.63178,26.204123,24.134544,24.34866,23.222983,23.214482L21.345562,20.877427C20.431601,19.745848,21.194468,18.831766,23.041991,18.850067L26.59264,18.881264 26.59264,5.3424765C26.59264,4.3867452,27.366106,3.616,28.320365,3.6159997z M2.4179764,0L29.505493,0C30.366796,0,31.117998,0.45237422,31.547,1.1287329L28.320389,1.1287329C25.993782,1.1287332,24.103076,3.019285,24.103076,5.3435291L24.103076,7.497 2.4179764,7.497C1.0820332,7.4969997,0,6.4136746,0,5.0791401L0,2.41775C0,1.0818651,1.0820332,0,2.4179764,0z" Stretch="Uniform" Width="40" Height="40" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
-                            <Path.RenderTransform>
-                                <TransformGroup>
-                                    <TransformGroup.Children>
-                                        <RotateTransform Angle="0" />
-                                        <ScaleTransform x:Name="BtnSortScale" ScaleX="1" ScaleY="1">
-                                        </ScaleTransform>
-                                    </TransformGroup.Children>
-                                </TransformGroup>
-                            </Path.RenderTransform>
-                        </Path>
-                        <TextBlock x:Name="TxtSortName" Style="{DynamicResource TextBlockStyle}" VerticalAlignment="Center" Margin="10 -3 0 0"></TextBlock>
-                    </StackPanel>
-                </controls:ExtendedButton>
-
-            </StackPanel>
-            <Grid x:Name="Sidebar" Grid.Column="0" Grid.Row="1" Width="800">
+            <Grid x:Name="Sidebar" Grid.Column="0" Grid.Row="0" Width="800">
                 <Grid.Style>
                     <Style TargetType="{x:Type Grid}">
                         <Setter Property="Margin" Value="60 0 60 0" />
@@ -118,10 +84,10 @@
                 <listPage:Sidebar DataContext="{Binding CurrentItem}"></listPage:Sidebar>
             </Grid>
 
-            <controls:ExtendedListBox Grid.Column="1" Grid.Row="1" Command="{Binding NavigateCommand}" Style="{StaticResource ListPageListBoxStyle}" ItemsSource="{Binding ListCollectionView}">
+            <controls:ExtendedListBox Grid.Column="1" Grid.Row="0" Command="{Binding NavigateCommand}" Style="{StaticResource ListPageListBoxStyle}" ItemsSource="{Binding ListCollectionView}">
             </controls:ExtendedListBox>
 
-            <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" >
+            <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" >
                 <Grid.Style>
                     <Style TargetType="{x:Type Grid}">
                         <Style.Triggers>
@@ -140,7 +106,7 @@
                 </StackPanel>
             </Grid>
 
-            <Grid Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0 30 0 0">
+            <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0 30 0 0">
 
                 <Grid.Style>
                     <Style TargetType="{x:Type Grid}">
@@ -185,6 +151,7 @@
 
                         <Image Name="ImgLogo" Stretch="Uniform" MaxWidth="600" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0 0 0 0"></Image>
                     </Grid>
+                    <TextBlock x:Name="TxtLogoName" Style="{DynamicResource TextBlockStyle}" DataContext="{Binding CurrentItem}" Text="{Binding DisplayName}" VerticalAlignment="Center"></TextBlock>
                     <controls1:ItemInfoFooter VerticalContentAlignment="Center" KeyboardNavigation.IsTabStop="False" DataContext="{Binding CurrentItem}" VerticalAlignment="Center" Margin="40 0 0 0"></controls1:ItemInfoFooter>
 
                 </StackPanel>

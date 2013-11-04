@@ -133,6 +133,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         public const int PosterWidth = 214;
         public const int ThumbstripWidth = 600;
         public const int ListImageWidth = 160;
+        public const int PosterStripWidth = 290;
 
         public static void SetDefaults(ListPageConfig config)
         {
@@ -140,6 +141,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             config.PosterImageWidth = PosterWidth;
             config.ThumbImageWidth = ThumbstripWidth;
             config.ListImageWidth = ListImageWidth;
+            config.PosterStripImageWidth = PosterStripWidth;
         }
 
         private async void LoadViewModels()
@@ -622,7 +624,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             tabs.Add(new TabItem
             {
-                DisplayName = "Top Rated on IMDb",
+                DisplayName = "Top Rated",
                 Name = "TopRated",
             });
 
@@ -804,7 +806,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
                 UserId = _sessionManager.CurrentUser.Id,
 
-                PersonTypes = new[] { PersonType.Actor, PersonType.GuestStar }
+                ImageTypes = new[] { ImageType.Primary }
             };
 
             var indexOption = viewModel.CurrentIndexOption;

@@ -1037,7 +1037,16 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         /// <returns>Task{BitmapImage}.</returns>
         public Task<BitmapImage> GetBitmapImageAsync(ImageOptions options, CancellationToken cancellationToken)
         {
-            var url = _apiClient.GetImageUrl(Item, options);
+            string url;
+
+            if (options.ImageType == ImageType.Logo)
+            {
+                url = _apiClient.GetLogoImageUrl(Item, options);
+            }
+            else
+            {
+                url = _apiClient.GetImageUrl(Item, options);
+            }
 
             return _imageManager.GetRemoteBitmapAsync(url, cancellationToken);
         }

@@ -144,8 +144,8 @@ namespace MediaBrowser.Plugins.DefaultTheme
                     config.DefaultViewType = ListViewTypes.List;
 
                     config.PosterImageWidth = 480;
-                    config.PosterStripImageWidth = 576;
-                    config.ThumbImageWidth = 576;
+                    config.PosterStripImageWidth = 592;
+                    config.ThumbImageWidth = 592;
                 }
             }
             else if (context == ViewType.Movies)

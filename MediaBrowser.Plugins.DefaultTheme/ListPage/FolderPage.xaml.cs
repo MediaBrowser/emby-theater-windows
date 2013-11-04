@@ -31,10 +31,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
         private readonly IImageManager _imageManager;
         private readonly ISessionManager _sessionManager;
         private readonly IPresentationManager _presentationManager;
-        private readonly INavigationService _navigationManager;
-        private readonly IPlaybackManager _playbackManager;
         private readonly ILogger _logger;
-        private readonly IServerEvents _serverEvents;
 
         private readonly BaseItemDto _parentItem;
 
@@ -44,10 +41,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
 
         public FolderPage(BaseItemDto parent, DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IPresentationManager presentation, INavigationService navigationManager, IPlaybackManager playbackManager, ILogger logger, IServerEvents serverEvents, ListPageConfig options)
         {
-            _navigationManager = navigationManager;
-            _playbackManager = playbackManager;
             _logger = logger;
-            _serverEvents = serverEvents;
             _presentationManager = presentation;
             _sessionManager = sessionManager;
             _imageManager = imageManager;
@@ -60,11 +54,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
             InitializeComponent();
 
             Loaded += FolderPage_Loaded;
-            Unloaded += FolderPage_Unloaded;
 
             SetDefaults(displayPreferences);
 
-            _viewModel = new ItemListViewModel(GetItemsAsync, _presentationManager, _imageManager, _apiClient, _navigationManager, _playbackManager, _logger, _serverEvents)
+            _viewModel = new ItemListViewModel(GetItemsAsync, _presentationManager, _imageManager, _apiClient, navigationManager, playbackManager, _logger, serverEvents)
             {
                 ImageDisplayHeightGenerator = GetImageDisplayHeight,
                 DisplayNameGenerator = GetDisplayName,
@@ -86,15 +79,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
 
             DataContext = _viewModel;
 
-            UpdateSortTitle();
-            UpdateSortOrder();
-
-            BtnSort.Visibility = _options.SortOptions.Count > 0
-                                     ? Visibility.Visible
-                                     : Visibility.Collapsed;
-
-            BtnSort.Click += BtnSort_Click;
-
             if (!string.IsNullOrEmpty(options.IndexValue))
             {
                 var index = options.IndexOptions.First(i => string.Equals(i.Name, options.IndexValue));
@@ -104,47 +88,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
 
         void FolderPage_Loaded(object sender, RoutedEventArgs e)
         {
-            _displayPreferences.PropertyChanged += _displayPreferencesViewModel_PropertyChanged;
-
             SetPageTitle(_parentItem);
-        }
-
-        void FolderPage_Unloaded(object sender, RoutedEventArgs e)
-        {
-            _displayPreferences.PropertyChanged -= _displayPreferencesViewModel_PropertyChanged;
-        }
-
-        void _displayPreferencesViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (string.Equals(e.PropertyName, "SortBy"))
-            {
-                UpdateSortTitle();
-            }
-            else if (string.Equals(e.PropertyName, "SortOrder"))
-            {
-                UpdateSortOrder();
-            }
-        }
-
-        private void UpdateSortTitle()
-        {
-            var pairs = _options.SortOptions
-                .Where(i => string.Equals(i.Value, _displayPreferences.SortBy))
-                .ToList();
-
-            if (pairs.Count > 0)
-            {
-                TxtSortName.Text = pairs[0].Key;
-            }
-            else if (_options.SortOptions.Count > 0)
-            {
-                TxtSortName.Text = _options.SortOptions.First().Key;
-            }
-        }
-
-        private void UpdateSortOrder()
-        {
-            BtnSortScale.ScaleY = _displayPreferences.SortOrder == SortOrder.Ascending ? -1 : 1;
         }
 
         private void SetDefaults(DisplayPreferences displayPreferences)
@@ -414,6 +358,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                 {
                     // Just hide it so that it still takes up the same amount of space
                     ImgLogo.Visibility = Visibility.Hidden;
+                    TxtLogoName.Visibility = Visibility.Visible;
                 }
             }
         }
@@ -441,32 +386,23 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                 ImgLogo.Source = img;
 
                 ImgLogo.Visibility = Visibility.Visible;
+                TxtLogoName.Visibility = Visibility.Collapsed;
             }
             catch (OperationCanceledException)
             {
                 _logger.Debug("Image download cancelled: {0}", url);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Just hide it so that it still takes up the same amount of space
                 ImgLogo.Visibility = Visibility.Hidden;
+                TxtLogoName.Visibility = Visibility.Visible;
             }
-        }
-
-        void BtnSort_Click(object sender, RoutedEventArgs e)
-        {
-            var viewModel = new DisplayPreferencesViewModel(_displayPreferences, _presentationManager);
-
-            var menu = new SortWindow(viewModel, _options.SortOptions);
-
-            menu.ShowModal(this.GetWindow());
-
-            viewModel.Save();
         }
 
         public void ShowDisplayPreferencesMenu()
         {
-            var viewModel = new DisplayPreferencesViewModel(_displayPreferences, _presentationManager);
+            var viewModel = new DisplayPreferencesViewModel(_viewModel.DisplayPreferences, _presentationManager);
 
             var menu = new ViewWindow(viewModel, _options);
 

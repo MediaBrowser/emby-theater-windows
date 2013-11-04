@@ -482,17 +482,18 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                     Context = Context
                 };
             }
+
             if (string.Equals(section, "itemmovies"))
             {
-                return GetItemByNameItemListViewModel("Movie", MoviesViewModel.PosterWidth, MoviesViewModel.PosterWidth * 1.5);
+                return GetItemByNameItemListViewModel("Movie", MoviesViewModel.PosterStripWidth, MoviesViewModel.PosterStripWidth * 1.5);
             }
             if (string.Equals(section, "itemtrailers"))
             {
-                return GetItemByNameItemListViewModel("Trailer", MoviesViewModel.PosterWidth, MoviesViewModel.PosterWidth * 1.5);
+                return GetItemByNameItemListViewModel("Trailer", MoviesViewModel.PosterStripWidth, MoviesViewModel.PosterStripWidth * 1.5);
             }
             if (string.Equals(section, "itemseries"))
             {
-                return GetItemByNameItemListViewModel("Series", TvViewModel.PosterWidth, TvViewModel.PosterWidth * 1.5);
+                return GetItemByNameItemListViewModel("Series", TvViewModel.PosterStripWidth, TvViewModel.PosterStripWidth * 1.5);
             }
             if (string.Equals(section, "itemalbums"))
             {

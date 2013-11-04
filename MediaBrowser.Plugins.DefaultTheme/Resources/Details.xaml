@@ -3,7 +3,8 @@
                     xmlns:viewModels="clr-namespace:MediaBrowser.Theater.Presentation.ViewModels;assembly=MediaBrowser.Theater.Presentation"
                     xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
                     xmlns:details="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Controls"
-                    xmlns:entities="clr-namespace:MediaBrowser.Model.Entities;assembly=MediaBrowser.Model">
+                    xmlns:entities="clr-namespace:MediaBrowser.Model.Entities;assembly=MediaBrowser.Model"
+                    xmlns:details1="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Details">
 
     <Style x:Key="DetailPageMenuListBoxItemStyle" TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource BaseListBoxItemStyle}">
         <Setter Property="Template">
@@ -37,28 +38,29 @@
             <controls:ExtendedListBox Grid.Column="0" Command="{Binding NavigateCommand}" Style="{StaticResource ListBoxStyle}" ItemsSource="{Binding ListCollectionView}" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" ItemTemplate="{DynamicResource ListItemTemplate}" ItemContainerStyle="{StaticResource HighlightedBorderListBoxItemStyle}">
                 <controls:ExtendedListBox.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <controls:VirtualizingWrapPanel ItemHeight="{Binding ItemContainerHeight}" ItemWidth="{Binding ItemContainerWidth}" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="50" CanVerticallyScroll="False" CanHorizontallyScroll="True">
+                        <controls:VirtualizingWrapPanel ItemHeight="{Binding ItemContainerHeight}" ItemWidth="{Binding ItemContainerWidth}" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="80 20" CanVerticallyScroll="False" CanHorizontallyScroll="True">
                         </controls:VirtualizingWrapPanel>
                     </ItemsPanelTemplate>
                 </controls:ExtendedListBox.ItemsPanel>
             </controls:ExtendedListBox>
 
-            <!--TODO: The fixed width is a hack until i figure out why it won't stretch-->
-            <Grid Grid.Row="1" Margin="25 0 25 15" Width="1750">
+            <StackPanel Grid.Row="1" Margin="25 0 25 25" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
 
-                <Grid.Style>
-                    <Style TargetType="{x:Type Grid}">
+                <StackPanel.Style>
+                    <Style TargetType="{x:Type StackPanel}">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding CurrentItem}" Value="{x:Null}">
                                 <Setter Property="Visibility" Value="Hidden" />
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
-                </Grid.Style>
+                </StackPanel.Style>
 
-                <details:ItemInfoFooter HorizontalAlignment="Right" VerticalAlignment="Bottom" DataContext="{Binding CurrentItem}">
+                <details1:ItemLogo HorizontalAlignment="Center" VerticalAlignment="Center" DataContext="{Binding CurrentItem}" Height="80" MaxWidth="500" Margin="0 0 40 0"></details1:ItemLogo>
+                
+                <details:ItemInfoFooter HorizontalAlignment="Center" VerticalAlignment="Center" DataContext="{Binding CurrentItem}">
                 </details:ItemInfoFooter>
-            </Grid>
+            </StackPanel>
 
         </Grid>
     </DataTemplate>

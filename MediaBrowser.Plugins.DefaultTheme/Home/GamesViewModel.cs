@@ -108,16 +108,14 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             LoadViewModels();
         }
 
-        public const int PosterWidth = 220;
-        public const int ThumbstripWidth = 600;
-        public const int ListImageWidth = 160;
+        public const int PosterWidth = 250;
 
         public static void SetDefaults(ListPageConfig config, string gameSystem)
         {
             config.DefaultViewType = ListViewTypes.Poster;
             config.PosterImageWidth = PosterWidth;
-            config.ThumbImageWidth = ThumbstripWidth;
-            config.ListImageWidth = ListImageWidth;
+            config.ThumbImageWidth = 600;
+            config.ListImageWidth = 160;
             config.PosterStripImageWidth = 320;
 
             if (string.Equals(gameSystem, GameSystem.Nintendo64, StringComparison.OrdinalIgnoreCase))
@@ -132,12 +130,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             }
             else if (string.Equals(gameSystem, GameSystem.SegaSaturn, StringComparison.OrdinalIgnoreCase))
             {
-                config.PosterImageWidth = PosterWidth - 20;
+                config.PosterImageWidth = 200;
                 config.PosterStripImageWidth = 250;
             }
             else if (string.Equals(gameSystem, GameSystem.SegaCD, StringComparison.OrdinalIgnoreCase))
             {
-                config.PosterImageWidth = PosterWidth - 20;
+                config.PosterImageWidth = 200;
                 config.PosterStripImageWidth = 250;
             }
             else if (string.Equals(gameSystem, GameSystem.SonyPlaystation, StringComparison.OrdinalIgnoreCase))

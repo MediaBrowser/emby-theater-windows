@@ -84,6 +84,9 @@
     </Compile>
     <Compile Include="DefaultThemePageContentViewModel.cs" />
     <Compile Include="Details\DetailPageViewModel.cs" />
+    <Compile Include="Details\ItemLogo.xaml.cs">
+      <DependentUpon>ItemLogo.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Home\Api.cs" />
     <Compile Include="Home\BaseHomePageSectionViewModel.cs" />
     <Compile Include="Home\GamesViewModel.cs" />
@@ -170,6 +173,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\ItemRating.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Details\ItemLogo.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

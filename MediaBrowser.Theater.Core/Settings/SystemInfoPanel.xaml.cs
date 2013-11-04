@@ -1,6 +1,5 @@
 ﻿using MediaBrowser.Common;
 using MediaBrowser.Common.Updates;
-using MediaBrowser.Model.Net;
 using MediaBrowser.Model.Updates;
 using System;
 using System.Linq;
@@ -88,11 +87,19 @@ namespace MediaBrowser.Theater.Core.Settings
             if (update.IsUpdateAvailable)
             {
                 _appHost.UpdateApplication(update.Package, CancellationToken.None, new Progress<double>());
+
+                LoadApplicationUpdates();
             }
         }
 
         private async void LoadApplicationUpdates()
         {
+            if (_appHost.HasPendingRestart || _installationManager.CompletedInstallations.Any() || _installationManager.CurrentInstallations.Any())
+            {
+                PanelNewVersion.Visibility = Visibility.Collapsed;
+                PanelUpToDate.Visibility = Visibility.Collapsed;
+            }
+
             try
             {
                 var update = await _appHost.CheckForApplicationUpdate(CancellationToken.None, new Progress<double>());

@@ -491,8 +491,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
                 var displayPreferences = await PresentationManager.GetDisplayPreferences("Favorites", CancellationToken.None);
 
-                displayPreferences.PrimaryImageWidth = GetImageWidth(type);
-
                 var options = new ListPageConfig
                 {
                     IndexOptions = GetFavoriteTabs(itemCounts).ToList(),
@@ -517,16 +515,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             }
         }
 
-        private int GetImageWidth(string type)
-        {
-            if (string.Equals(type, "movie", StringComparison.OrdinalIgnoreCase))
-            {
-                return Home.MoviesViewModel.PosterWidth;
-            }
-
-            return TvViewModel.PosterWidth;
-        }
-
         private IEnumerable<TabItem> GetFavoriteTabs(ItemCounts counts)
         {
             var list = new List<TabItem>();
@@ -535,7 +523,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 list.Add(new TabItem
                 {
-                    DisplayName = "Movies (" + counts.MovieCount + ")",
+                    DisplayName = "Movies",
                     Name = "Movie"
                 });
             }
@@ -544,7 +532,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 list.Add(new TabItem
                 {
-                    DisplayName = "Box Sets (" + counts.BoxSetCount + ")",
+                    DisplayName = "Box Sets",
                     Name = "BoxSet"
                 });
             }
@@ -553,7 +541,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 list.Add(new TabItem
                 {
-                    DisplayName = "TV Shows (" + counts.SeriesCount + ")",
+                    DisplayName = "TV Shows",
                     Name = "Series"
                 });
             }
@@ -562,7 +550,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 list.Add(new TabItem
                 {
-                    DisplayName = "Episodes (" + counts.EpisodeCount + ")",
+                    DisplayName = "Episodes",
                     Name = "Episode"
                 });
             }
@@ -571,7 +559,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 list.Add(new TabItem
                 {
-                    DisplayName = "People (" + counts.PersonCount + ")",
+                    DisplayName = "People",
                     Name = "Person"
                 });
             }
@@ -580,7 +568,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 list.Add(new TabItem
                 {
-                    DisplayName = "Artists (" + counts.ArtistCount + ")",
+                    DisplayName = "Artists",
                     Name = "Artist"
                 });
             }
@@ -589,7 +577,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 list.Add(new TabItem
                 {
-                    DisplayName = "Albums (" + counts.AlbumCount + ")",
+                    DisplayName = "Albums",
                     Name = "MusicAlbum"
                 });
             }
@@ -598,7 +586,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 list.Add(new TabItem
                 {
-                    DisplayName = "Songs (" + counts.SongCount + ")",
+                    DisplayName = "Songs",
                     Name = "Audio"
                 });
             }
@@ -607,7 +595,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 list.Add(new TabItem
                 {
-                    DisplayName = "Music Videos (" + counts.MusicVideoCount + ")",
+                    DisplayName = "Music Videos",
                     Name = "MusicVideo"
                 });
             }
@@ -616,7 +604,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 list.Add(new TabItem
                 {
-                    DisplayName = "Games (" + counts.GameCount + ")",
+                    DisplayName = "Games",
                     Name = "Game"
                 });
             }
@@ -625,7 +613,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 list.Add(new TabItem
                 {
-                    DisplayName = "Books (" + counts.BookCount + ")",
+                    DisplayName = "Books",
                     Name = "Book"
                 });
             }
@@ -634,7 +622,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 list.Add(new TabItem
                 {
-                    DisplayName = "Adult Videos (" + counts.AdultVideoCount + ")",
+                    DisplayName = "Adult Videos",
                     Name = "AdultVideo"
                 });
             }
@@ -646,6 +634,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         {
             var indexOption = viewModel.CurrentIndexOption;
 
+            if (indexOption != null)
+            {
+                displayPreferences.PrimaryImageWidth = GetPrimaryImageWidth(indexOption.Name);
+            }
+            
             if (indexOption != null)
             {
                 if (string.Equals(indexOption.Name, "Artist", StringComparison.OrdinalIgnoreCase))
@@ -681,6 +674,35 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             }
 
             return ApiClient.GetItemsAsync(query);
+        }
+
+        private int GetPrimaryImageWidth(string type)
+        {
+            if (string.Equals(type, "Series", StringComparison.OrdinalIgnoreCase))
+            {
+                return TvViewModel.PosterWidth;
+            }
+
+            if (string.Equals(type, "Episode", StringComparison.OrdinalIgnoreCase))
+            {
+                return 496;
+            }
+
+            if (string.Equals(type, "Game", StringComparison.OrdinalIgnoreCase))
+            {
+                return Home.GamesViewModel.PosterWidth;
+            }
+            
+            if (string.Equals(type, "Movie", StringComparison.OrdinalIgnoreCase) || 
+                string.Equals(type, "Trailer", StringComparison.OrdinalIgnoreCase) || 
+                string.Equals(type, "BoxSet", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(type, "AdultVideo", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(type, "Person", StringComparison.OrdinalIgnoreCase))
+            {
+                return Home.MoviesViewModel.PosterWidth;
+            }
+
+            return new ListPageConfig().PosterImageWidth;
         }
 
         private Task<ItemsResult> GetFavoritePeople(ItemListViewModel viewModel, DisplayPreferences displayPreferences)

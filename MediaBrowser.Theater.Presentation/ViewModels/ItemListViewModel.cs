@@ -571,8 +571,15 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
             UpdateContainerSizes();
 
-            ScrollDirection = ScrollDirectionGenerator == null ? displayPreferences.ScrollDirection : ScrollDirectionGenerator(this);
-            ShowSidebar = ShowSidebarGenerator == null ? displayPreferences.ShowSidebar : ShowSidebarGenerator(this);
+            if (ScrollDirectionGenerator != null)
+            {
+                ScrollDirection = ScrollDirectionGenerator(this);
+            }
+
+            if (ShowSidebarGenerator != null)
+            {
+                ShowSidebar = ShowSidebarGenerator(this);
+            }
 
             var imageTypes = GetPreferredImageTypes();
             var imageDisplayHeight = GetImageDisplayHeight();

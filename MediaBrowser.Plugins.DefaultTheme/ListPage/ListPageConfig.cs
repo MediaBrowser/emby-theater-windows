@@ -11,7 +11,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
     public class ListPageConfig
     {
         public List<TabItem> IndexOptions;
-        public int PosterImageWidth = 210;
+        public int PosterImageWidth = 214;
         public int ThumbImageWidth = 600;
         public int ListImageWidth = 160;
         public int PosterStripImageWidth = 290;

@@ -641,7 +641,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 tabs.Add(new TabItem
                 {
-                    DisplayName = fav.Name + " Shows",
+                    DisplayName = fav.Name,
                     Name = "Genre:" + fav.Name,
                 });
             }
@@ -650,7 +650,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 tabs.Add(new TabItem
                 {
-                    DisplayName = "Shows on " + fav.Name,
+                    DisplayName = fav.Name,
                     Name = "Studio:" + fav.Name,
                 });
             }

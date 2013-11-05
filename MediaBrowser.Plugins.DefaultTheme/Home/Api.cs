@@ -34,6 +34,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         public double FamilyMoviePercentage { get; set; }
 
         public double HDMoviePercentage { get; set; }
+
+        public List<BaseItemDto> LatestTrailers { get; set; }
+        public List<BaseItemDto> LatestMovies { get; set; }
     }
 
     public class TvView : BaseView
@@ -101,7 +104,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         public static Task<MoviesView> GetMovieView(this IApiClient apiClient, string userId, CancellationToken cancellationToken)
         {
-            var url = apiClient.GetApiUrl("MBT/DefaultTheme/Movies?familyrating=pg&userId=" + userId + "&ComedyGenre=" + ComedyGenre + "&RomanceGenre=" + RomanceGenre + "&FamilyGenre=" + FamilyGenre);
+            var url = apiClient.GetApiUrl("MBT/DefaultTheme/Movies?familyrating=pg&userId=" + userId + "&ComedyGenre=" + ComedyGenre + "&RomanceGenre=" + RomanceGenre + "&FamilyGenre=" + FamilyGenre + "&LatestMoviesLimit=8&LatestTrailersLimit=8");
 
             return apiClient.GetAsync<MoviesView>(url, cancellationToken);
         }

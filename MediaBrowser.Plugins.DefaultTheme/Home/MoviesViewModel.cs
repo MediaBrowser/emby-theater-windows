@@ -48,6 +48,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         public GalleryViewModel RomanticMoviesViewModel { get; private set; }
         public GalleryViewModel YearsViewModel { get; private set; }
 
+        private readonly double _posterTileHeight;
+        private readonly double _posterTileWidth;
+
+        private MoviesView _moviesView;
+
         public MoviesViewModel(IPresentationManager presentation, IImageManager imageManager, IApiClient apiClient, ISessionManager session, INavigationService nav, IPlaybackManager playback, ILogger logger, double tileWidth, double tileHeight, IServerEvents serverEvents)
             : base(presentation, apiClient)
         {
@@ -61,31 +66,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             TileWidth = tileWidth;
             TileHeight = tileHeight;
 
-            var trailerTileHeight = (TileHeight * 1.46) + TilePadding / 2;
-            var trailerTileWidth = trailerTileHeight * 2 / 3;
-
-            LatestTrailersViewModel = new ItemListViewModel(GetLatestTrailersAsync, presentation, imageManager, apiClient, nav, playback, logger, _serverEvents)
-            {
-                ImageDisplayWidth = trailerTileWidth,
-                ImageDisplayHeightGenerator = v => trailerTileHeight,
-                DisplayNameGenerator = HomePageViewModel.GetDisplayName,
-                PreferredImageTypesGenerator = vm => new[] { ImageType.Primary },
-                EnableBackdropsForCurrentItem = false
-            };
-            LatestTrailersViewModel.PropertyChanged += TrailersViewModel_PropertyChanged;
+            _posterTileHeight = (TileHeight * 1.46) + TilePadding / 2;
+            _posterTileWidth = _posterTileHeight * 2 / 3;
 
             const double tileScaleFactor = 13;
-
-            LatestMoviesViewModel = new ItemListViewModel(GetLatestMoviesAsync, presentation, imageManager, apiClient, nav, playback, logger, _serverEvents)
-            {
-                ImageDisplayWidth = trailerTileWidth,
-                ImageDisplayHeightGenerator = v => trailerTileHeight,
-                DisplayNameGenerator = HomePageViewModel.GetDisplayName,
-                PreferredImageTypesGenerator = vm => new[] { ImageType.Primary, ImageType.Backdrop, ImageType.Thumb, },
-                EnableBackdropsForCurrentItem = false,
-                ListType = "LatestMovies"
-            };
-            LatestMoviesViewModel.PropertyChanged += LatestMoviesViewModel_PropertyChanged;
 
             ActorsViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {
@@ -202,6 +186,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 var view = await ApiClient.GetMovieView(_sessionManager.CurrentUser.Id, cancellationSource.Token);
 
+                _moviesView = view;
+
                 LoadSpotlightViewModel(view);
                 LoadBoxsetsViewModel(view);
                 LoadTrailersViewModel(view);
@@ -214,6 +200,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 LoadActorsViewModel(view);
                 LoadMiniSpotlightsViewModel(view);
                 LoadMiniSpotlightsViewModel2(view);
+                LoadLatestMoviesViewModel(view);
+                LoadLatestTrailersViewModel(view);
             }
             catch (Exception ex)
             {
@@ -225,6 +213,61 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 PresentationManager.HideLoadingAnimation();
                 DisposeMainViewCancellationTokenSource(false);
             }
+        }
+
+        private void LoadLatestMoviesViewModel(MoviesView view)
+        {
+            LatestMoviesViewModel = new ItemListViewModel(GetLatestMoviesAsync, PresentationManager, _imageManager, ApiClient, _navService, _playbackManager, _logger, _serverEvents)
+            {
+                ImageDisplayWidth = _posterTileWidth,
+                ImageDisplayHeightGenerator = v => _posterTileHeight,
+                DisplayNameGenerator = HomePageViewModel.GetDisplayName,
+                PreferredImageTypesGenerator = vm => new[] { ImageType.Primary, ImageType.Backdrop, ImageType.Thumb, },
+                EnableBackdropsForCurrentItem = false,
+                ListType = "LatestMovies"
+            };
+
+            OnPropertyChanged("LatestMoviesViewModel");
+
+            ShowLatestMovies = view.LatestMovies.Count > 0;
+        }
+
+        private void LoadLatestTrailersViewModel(MoviesView view)
+        {
+            LatestTrailersViewModel = new ItemListViewModel(GetLatestTrailersAsync, PresentationManager, _imageManager, ApiClient, _navService, _playbackManager, _logger, _serverEvents)
+            {
+                ImageDisplayWidth = _posterTileWidth,
+                ImageDisplayHeightGenerator = v => _posterTileHeight,
+                DisplayNameGenerator = HomePageViewModel.GetDisplayName,
+                PreferredImageTypesGenerator = vm => new[] { ImageType.Primary },
+                EnableBackdropsForCurrentItem = false
+            };
+
+            OnPropertyChanged("LatestTrailersViewModel");
+
+            ShowLatestTrailers = view.LatestTrailers.Count > 0;
+        }
+
+        private Task<ItemsResult> GetLatestTrailersAsync(ItemListViewModel viewModel)
+        {
+            var result = new ItemsResult
+            {
+                Items = _moviesView.LatestTrailers.ToArray(),
+                TotalRecordCount = _moviesView.LatestTrailers.Count
+            };
+
+            return Task.FromResult(result);
+        }
+
+        private Task<ItemsResult> GetLatestMoviesAsync(ItemListViewModel viewModel)
+        {
+            var result = new ItemsResult
+            {
+                Items = _moviesView.LatestMovies.ToArray(),
+                TotalRecordCount = _moviesView.LatestMovies.Count
+            };
+
+            return Task.FromResult(result);
         }
 
         private void LoadMiniSpotlightsViewModel(MoviesView view)
@@ -279,16 +322,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             };
 
             OnPropertyChanged("MiniSpotlightsViewModel2");
-        }
-
-        void LatestMoviesViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            ShowLatestMovies = LatestMoviesViewModel.ItemCount > 0;
-        }
-
-        void TrailersViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            ShowLatestTrailers = LatestTrailersViewModel.ItemCount > 0;
         }
 
         private bool _showLatestMovies;
@@ -488,64 +521,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         public void DisableActivePresentation()
         {
             SpotlightViewModel.StopRotating();
-        }
-
-        private Task<ItemsResult> GetLatestTrailersAsync(ItemListViewModel viewModel)
-        {
-            var query = new ItemQuery
-            {
-                Fields = new[]
-                        {
-                            ItemFields.PrimaryImageAspectRatio,
-                            ItemFields.DateCreated,
-                            ItemFields.DisplayPreferencesId
-                        },
-
-                UserId = _sessionManager.CurrentUser.Id,
-
-                SortBy = new[] { ItemSortBy.DateCreated },
-
-                SortOrder = SortOrder.Descending,
-
-                IncludeItemTypes = new[] { "Trailer" },
-
-                Filters = new[] { ItemFilter.IsUnplayed },
-
-                Limit = 8,
-
-                Recursive = true
-            };
-
-            return ApiClient.GetItemsAsync(query);
-        }
-
-        private Task<ItemsResult> GetLatestMoviesAsync(ItemListViewModel viewModel)
-        {
-            var query = new ItemQuery
-            {
-                Fields = new[]
-                        {
-                            ItemFields.PrimaryImageAspectRatio,
-                            ItemFields.DateCreated,
-                            ItemFields.DisplayPreferencesId
-                        },
-
-                UserId = _sessionManager.CurrentUser.Id,
-
-                SortBy = new[] { ItemSortBy.DateCreated },
-
-                SortOrder = SortOrder.Descending,
-
-                IncludeItemTypes = new[] { "Movie" },
-
-                Filters = new[] { ItemFilter.IsUnplayed },
-
-                Limit = 8,
-
-                Recursive = true
-            };
-
-            return ApiClient.GetItemsAsync(query);
         }
 
         private void LoadActorsViewModel(MoviesView view)

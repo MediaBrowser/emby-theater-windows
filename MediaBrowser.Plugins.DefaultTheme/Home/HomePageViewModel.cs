@@ -94,11 +94,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 _logger.ErrorException("Error getting item counts", ex);
             }
 
-            views.Add(new TabItem
-            {
-                Name = "favorites",
-                DisplayName = "Favorites"
-            });
+            //views.Add(new TabItem
+            //{
+            //    Name = "favorites",
+            //    DisplayName = "Favorites"
+            //});
 
             if (_presentationManager.GetApps(_sessionManager.CurrentUser).Any())
             {

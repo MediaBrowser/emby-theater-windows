@@ -109,14 +109,16 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         }
 
         public const int PosterWidth = 250;
+        public const int PosterStripWidth = 320;
+        public const int ThumbstripWidth = 600;
 
         public static void SetDefaults(ListPageConfig config, string gameSystem)
         {
             config.DefaultViewType = ListViewTypes.Poster;
             config.PosterImageWidth = PosterWidth;
-            config.ThumbImageWidth = 600;
+            config.ThumbImageWidth = ThumbstripWidth;
             config.ListImageWidth = 160;
-            config.PosterStripImageWidth = 320;
+            config.PosterStripImageWidth = PosterStripWidth;
 
             if (string.Equals(gameSystem, GameSystem.Nintendo64, StringComparison.OrdinalIgnoreCase))
             {
@@ -352,8 +354,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             SetDefaults(options, null);
 
-            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
+            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
             {
                 ViewType = ViewType.Games
             };
@@ -417,8 +418,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             options.DefaultViewType = ListViewTypes.PosterStrip;
 
-            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
+            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
             {
                 ViewType = ViewType.Games
             };
@@ -540,8 +540,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             SetDefaults(options, null);
 
-            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
+            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
             {
                 ViewType = ViewType.Games
             };

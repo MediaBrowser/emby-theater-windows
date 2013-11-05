@@ -25,11 +25,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
     /// </summary>
     public partial class FolderPage : BasePage, ISupportsItemThemeMedia, ISupportsBackdrops, IItemPage, IHasDisplayPreferences
     {
-        private readonly DisplayPreferences _displayPreferences;
-
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
-        private readonly ISessionManager _sessionManager;
         private readonly IPresentationManager _presentationManager;
         private readonly ILogger _logger;
 
@@ -39,15 +36,13 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
 
         private readonly ListPageConfig _options;
 
-        public FolderPage(BaseItemDto parent, DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IPresentationManager presentation, INavigationService navigationManager, IPlaybackManager playbackManager, ILogger logger, IServerEvents serverEvents, ListPageConfig options)
+        public FolderPage(BaseItemDto parent, DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, IPresentationManager presentation, INavigationService navigationManager, IPlaybackManager playbackManager, ILogger logger, IServerEvents serverEvents, ListPageConfig options)
         {
             _logger = logger;
             _presentationManager = presentation;
-            _sessionManager = sessionManager;
             _imageManager = imageManager;
             _apiClient = apiClient;
             _options = options;
-            _displayPreferences = displayPreferences;
 
             _parentItem = parent;
 
@@ -57,10 +52,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
 
             SetDefaults(displayPreferences);
 
-            _viewModel = new ItemListViewModel(GetItemsAsync, _presentationManager, _imageManager, _apiClient, navigationManager, playbackManager, _logger, serverEvents)
+            _viewModel = new ItemListViewModel(vm => options.CustomItemQuery(vm, displayPreferences), _presentationManager, _imageManager, _apiClient, navigationManager, playbackManager, _logger, serverEvents)
             {
                 ImageDisplayHeightGenerator = GetImageDisplayHeight,
-                DisplayNameGenerator = GetDisplayName,
+                DisplayNameGenerator = options.DisplayNameGenerator ?? GetDisplayName,
                 PreferredImageTypesGenerator = GetPreferredImageTypes,
 
                 ShowSidebarGenerator = GetShowSidebar,
@@ -77,13 +72,13 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
 
             _viewModel.DisplayPreferences = displayPreferences;
 
-            DataContext = _viewModel;
-
             if (!string.IsNullOrEmpty(options.IndexValue))
             {
                 var index = options.IndexOptions.First(i => string.Equals(i.Name, options.IndexValue));
                 _viewModel.IndexOptionsCollectionView.MoveCurrentTo(index);
             }
+
+            DataContext = _viewModel;
         }
 
         void FolderPage_Loaded(object sender, RoutedEventArgs e)
@@ -239,30 +234,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                 ItemFields.DisplayPreferencesId
             };
 
-
-        private Task<ItemsResult> GetItemsAsync(ItemListViewModel viewModel)
-        {
-            if (_options.CustomItemQuery != null)
-            {
-                return _options.CustomItemQuery(viewModel, _displayPreferences);
-            }
-
-            var query = new ItemQuery
-            {
-                ParentId = _parentItem.Id,
-
-                SortBy = !String.IsNullOrEmpty(_displayPreferences.SortBy)
-                             ? new[] { _displayPreferences.SortBy }
-                             : new[] { ItemSortBy.SortName },
-
-                SortOrder = _displayPreferences.SortOrder,
-                UserId = _sessionManager.CurrentUser.Id,
-                Fields = QueryFields
-            };
-
-            return _apiClient.GetItemsAsync(query);
-        }
-
         public string ThemeMediaItemId
         {
             get { return _parentItem.Id; }
@@ -334,7 +305,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                 {
                     SetLogo(_apiClient.GetLogoImageUrl(item, new ImageOptions
                     {
-                        ImageType = ImageType.Logo
+                        ImageType = ImageType.Logo,
+                        CropWhitespace = false
                     }));
                     ImgLogo.MaxHeight = 140;
                 }
@@ -342,7 +314,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                 {
                     SetLogo(_apiClient.GetImageUrl(item, new ImageOptions
                     {
-                        ImageType = ImageType.Logo
+                        ImageType = ImageType.Logo,
+                        CropWhitespace = false
                     }));
                     ImgLogo.MaxHeight = 80;
                 }

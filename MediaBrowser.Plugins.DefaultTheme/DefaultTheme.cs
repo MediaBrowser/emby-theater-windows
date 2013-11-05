@@ -1,8 +1,10 @@
-﻿using MediaBrowser.Common;
+﻿using System.Threading.Tasks;
+using MediaBrowser.Common;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
+using MediaBrowser.Model.Querying;
 using MediaBrowser.Plugins.DefaultTheme.Details;
 using MediaBrowser.Plugins.DefaultTheme.Home;
 using MediaBrowser.Plugins.DefaultTheme.ListPage;
@@ -125,7 +127,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
             {
                 var options = GetListPageConfig(item, context);
 
-                return new FolderPage(item, displayPreferences, _apiClient, _imageManager, _sessionManager, _presentationManager, _navService, _playbackManager, _logger, _serverEvents, options);
+                return new FolderPage(item, displayPreferences, _apiClient, _imageManager, _presentationManager, _navService, _playbackManager, _logger, _serverEvents, options);
             }
 
             return GetItemPage(item, context);
@@ -155,6 +157,27 @@ namespace MediaBrowser.Plugins.DefaultTheme
             else if (context == ViewType.Games)
             {
                 GamesViewModel.SetDefaults(config, item.GameSystem);
+            }
+
+            if (item.IsFolder)
+            {
+                config.CustomItemQuery = (vm, displayPreferences) =>
+                {
+                    var query = new ItemQuery
+                    {
+                        UserId = _sessionManager.CurrentUser.Id,
+
+                        ParentId = item.Id,
+
+                        SortBy = new[] { ItemSortBy.SortName },
+
+                        SortOrder = displayPreferences.SortOrder,
+
+                        Fields = FolderPage.QueryFields
+                    };
+
+                    return _apiClient.GetItemsAsync(query);
+                };
             }
 
             return config;

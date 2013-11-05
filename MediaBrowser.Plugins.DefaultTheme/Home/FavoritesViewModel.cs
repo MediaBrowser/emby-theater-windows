@@ -495,12 +495,14 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 {
                     IndexOptions = GetFavoriteTabs(itemCounts).ToList(),
                     PageTitle = "Favorites",
-                    CustomItemQuery = GetFavoriteItems,
-                    IndexValue = type
+                    IndexValue = type,
+
+                    DisplayNameGenerator = i=> i.IsType("episode") ? HomePageViewModel.GetDisplayName(i) : FolderPage.GetDisplayName(i)
                 };
 
-                var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                          PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
+                options.CustomItemQuery = (vm, d) => GetFavoriteItems(vm, d, options);
+
+                var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
                 {
                     ViewType = ViewType.Folders
                 };
@@ -630,15 +632,30 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             return list;
         }
 
-        private Task<ItemsResult> GetFavoriteItems(ItemListViewModel viewModel, DisplayPreferences displayPreferences)
+        private Task<ItemsResult> GetFavoriteItems(ItemListViewModel viewModel, DisplayPreferences displayPreferences, ListPageConfig options)
         {
             var indexOption = viewModel.CurrentIndexOption;
 
             if (indexOption != null)
             {
-                displayPreferences.PrimaryImageWidth = GetPrimaryImageWidth(indexOption.Name);
+                options.PosterImageWidth = GetPosterImageWidth(indexOption.Name);
+                options.PosterStripImageWidth = GetPosterStripImageWidth(indexOption.Name);
+                options.ThumbImageWidth = GetThumbStripImageWidth(indexOption.Name);
+
+                if (string.Equals(displayPreferences.ViewType, ListViewTypes.PosterStrip))
+                {
+                    displayPreferences.PrimaryImageWidth = options.PosterStripImageWidth;
+                }
+                else if (string.Equals(displayPreferences.ViewType, ListViewTypes.Thumbstrip))
+                {
+                    displayPreferences.PrimaryImageWidth = options.ThumbImageWidth;
+                }
+                else
+                {
+                    displayPreferences.PrimaryImageWidth = options.PosterImageWidth;
+                }
             }
-            
+
             if (indexOption != null)
             {
                 if (string.Equals(indexOption.Name, "Artist", StringComparison.OrdinalIgnoreCase))
@@ -676,7 +693,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             return ApiClient.GetItemsAsync(query);
         }
 
-        private int GetPrimaryImageWidth(string type)
+        private int GetPosterImageWidth(string type)
         {
             if (string.Equals(type, "Series", StringComparison.OrdinalIgnoreCase))
             {
@@ -692,9 +709,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 return Home.GamesViewModel.PosterWidth;
             }
-            
-            if (string.Equals(type, "Movie", StringComparison.OrdinalIgnoreCase) || 
-                string.Equals(type, "Trailer", StringComparison.OrdinalIgnoreCase) || 
+
+            if (string.Equals(type, "Movie", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(type, "Trailer", StringComparison.OrdinalIgnoreCase) ||
                 string.Equals(type, "BoxSet", StringComparison.OrdinalIgnoreCase) ||
                 string.Equals(type, "AdultVideo", StringComparison.OrdinalIgnoreCase) ||
                 string.Equals(type, "Person", StringComparison.OrdinalIgnoreCase))
@@ -703,6 +720,64 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             }
 
             return new ListPageConfig().PosterImageWidth;
+        }
+
+        private int GetPosterStripImageWidth(string type)
+        {
+            if (string.Equals(type, "Series", StringComparison.OrdinalIgnoreCase))
+            {
+                return TvViewModel.PosterStripWidth;
+            }
+
+            if (string.Equals(type, "Episode", StringComparison.OrdinalIgnoreCase))
+            {
+                return 592;
+            }
+
+            if (string.Equals(type, "Game", StringComparison.OrdinalIgnoreCase))
+            {
+                return Home.GamesViewModel.PosterStripWidth;
+            }
+
+            if (string.Equals(type, "Movie", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(type, "Trailer", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(type, "BoxSet", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(type, "AdultVideo", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(type, "Person", StringComparison.OrdinalIgnoreCase))
+            {
+                return Home.MoviesViewModel.PosterStripWidth;
+            }
+
+            return new ListPageConfig().PosterStripImageWidth;
+        }
+
+        private int GetThumbStripImageWidth(string type)
+        {
+            if (string.Equals(type, "Series", StringComparison.OrdinalIgnoreCase))
+            {
+                return TvViewModel.ThumbstripWidth;
+            }
+
+            if (string.Equals(type, "Episode", StringComparison.OrdinalIgnoreCase))
+            {
+                return 592;
+            }
+
+            if (string.Equals(type, "Game", StringComparison.OrdinalIgnoreCase))
+            {
+                return Home.GamesViewModel.ThumbstripWidth;
+            }
+
+            if (string.Equals(type, "Movie", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(type, "Trailer", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(type, "BoxSet", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(type, "AdultVideo", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(type, "Person", StringComparison.OrdinalIgnoreCase))
+            {
+                return Home.MoviesViewModel.ThumbstripWidth;
+            }
+
+            return new ListPageConfig().ThumbImageWidth;
         }
 
         private Task<ItemsResult> GetFavoritePeople(ItemListViewModel viewModel, DisplayPreferences displayPreferences)

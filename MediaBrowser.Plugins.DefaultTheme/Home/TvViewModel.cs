@@ -12,7 +12,6 @@ using MediaBrowser.Theater.Interfaces.ViewModels;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -507,8 +506,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             SetDefaults(options);
 
-            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
+            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
             {
                 ViewType = ViewType.Tv
             };
@@ -545,8 +543,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             SetDefaults(options);
 
-            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
+            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
             {
                 ViewType = ViewType.Tv
             };
@@ -597,6 +594,18 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                     TabType = string.Join(",", tvView.SeriesIdsInProgress.ToArray())
                 });
             }
+
+            //tabs.Add(new TabItem
+            //{
+            //    DisplayName = "Latest",
+            //    Name = "Latest"
+            //});
+
+            //tabs.Add(new TabItem
+            //{
+            //    DisplayName = "Next Up",
+            //    Name = "NextUp"
+            //});
 
             tabs.Add(new TabItem
             {
@@ -657,8 +666,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             SetDefaults(options);
 
-            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
+            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
             {
                 ViewType = ViewType.Tv
             };

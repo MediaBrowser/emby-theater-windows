@@ -590,8 +590,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             SetDefaults(options);
 
-            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
+            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
             {
                 ViewType = ViewType.Movies
             };
@@ -614,8 +613,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             SetDefaults(options);
 
-            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
+            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
             {
                 ViewType = ViewType.Movies
             };
@@ -648,8 +646,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             options.DefaultViewType = ListViewTypes.PosterStrip;
 
-            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
+            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
             {
                 ViewType = ViewType.Movies
             };
@@ -824,8 +821,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             options.DefaultViewType = ListViewTypes.PosterStrip;
 
-            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
+            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
             {
                 ViewType = ViewType.Movies
             };
@@ -869,8 +865,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             SetDefaults(options);
 
-            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
+            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
             {
                 ViewType = ViewType.Movies
             };
@@ -915,8 +910,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             SetDefaults(options);
 
-            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
+            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
             {
                 ViewType = ViewType.Movies
             };
@@ -939,8 +933,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             SetDefaults(options);
 
-            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
+            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
             {
                 ViewType = ViewType.Movies
             };
@@ -987,8 +980,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             SetDefaults(options);
 
-            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
+            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
             {
                 ViewType = ViewType.Movies
             };
@@ -1115,8 +1107,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             SetDefaults(options);
 
-            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
+            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
             {
                 ViewType = ViewType.Movies
             };
@@ -1163,8 +1154,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             SetDefaults(options);
 
-            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
+            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
             {
                 ViewType = ViewType.Movies
             };
@@ -1211,8 +1201,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             SetDefaults(options);
 
-            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, _sessionManager,
-                                      PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
+            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
             {
                 ViewType = ViewType.Movies
             };

@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.Entities;
+﻿using MediaBrowser.Model.Dto;
+using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Presentation.ViewModels;
@@ -18,6 +19,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
 
         public string DefaultViewType = ListViewTypes.Poster;
 
+        public Func<BaseItemDto, string> DisplayNameGenerator { get; set; }
+        
         public string PageTitle;
         public string IndexValue;
         public Dictionary<string, string> SortOptions;

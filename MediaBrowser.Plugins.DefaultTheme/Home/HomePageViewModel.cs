@@ -295,8 +295,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             MoviesViewModel.SetDefaults(options);
 
-            var page = new FolderPage(item, displayPreferences, _apiClient, _imageManager, _sessionManager,
-                                      _presentationManager, _nav, _playbackManager, _logger, _serverEvents, options)
+            var page = new FolderPage(item, displayPreferences, _apiClient, _imageManager, _presentationManager, _nav, _playbackManager, _logger, _serverEvents, options)
             {
                 ViewType = ViewType.Movies
             };

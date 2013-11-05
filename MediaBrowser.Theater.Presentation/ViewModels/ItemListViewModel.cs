@@ -146,15 +146,6 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 _itemCount = value;
 
                 OnPropertyChanged("ItemCount");
-                OnPropertyChanged("RequiresVirtualization");
-            }
-        }
-
-        public bool RequiresVirtualization
-        {
-            get
-            {
-                return ItemCount > 30;
             }
         }
 
@@ -173,6 +164,21 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 {
                     OnPropertyChanged("CurrentItem");
                 }
+            }
+        }
+
+        private int _currentItemIndex;
+        public int CurrentItemIndex
+        {
+            get
+            {
+                return _currentItemIndex;
+            }
+            set
+            {
+                _currentItemIndex = value;
+
+                OnPropertyChanged("CurrentItemIndex");
             }
         }
 
@@ -487,7 +493,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                     ListCollectionView.MoveCurrentToPosition(selectedIndex.Value);
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 _presentationManager.ShowDefaultErrorMessage();
             }
@@ -527,10 +533,12 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         void _listCollectionView_CurrentChanged(object sender, EventArgs e)
         {
+            var item = ListCollectionView.CurrentItem as ItemViewModel;
+
+            CurrentItemIndex = item == null ? -1 : _listItems.IndexOf(item) + 1;
+
             if (EnableBackdropsForCurrentItem)
             {
-                var item = ListCollectionView.CurrentItem as ItemViewModel;
-
                 if (item != null)
                 {
                     _presentationManager.SetBackdrops(item.Item);
@@ -632,7 +640,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 {
                     await _navigationService.NavigateToItem(item.Item, Context);
                 }
-                catch
+                catch (Exception)
                 {
                     _presentationManager.ShowDefaultErrorMessage();
                 }

@@ -199,6 +199,16 @@ namespace MediaBrowser.Theater.Core.FullscreenVideo
 
         async void _playbackManager_PlaybackCompleted(object sender, PlaybackStopEventArgs e)
         {
+            if (_infoWindow != null)
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    _infoWindow.Close();
+
+                    _infoWindow = null;
+                });
+            }
+
             await _nav.NavigateBack();
         }
 

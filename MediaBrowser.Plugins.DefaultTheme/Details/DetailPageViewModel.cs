@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.ApiClient;
+﻿using System.Windows.Data;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
@@ -9,6 +10,7 @@ using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
+using MediaBrowser.Theater.Interfaces.ViewModels;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -405,7 +407,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             {
                 return new ItemListViewModel(GetSimilarItemsAsync, _presentationManager, _imageManager, _apiClient, _navigation, _playback, _logger, _serverEvents)
                 {
-                    ImageDisplayWidth = 300,
+                    ImageDisplayWidth = GetSimilarItemsImageDisplayWidth(),
                     EnableBackdropsForCurrentItem = false,
                     Context = Context
                 };
@@ -505,10 +507,20 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             }
             if (string.Equals(section, "media info"))
             {
-                return _itemViewModel.MediaStreams.Select(i => new MediaStreamViewModel { MediaStream = i, OwnerItem = _itemViewModel.Item }).ToList();
+                var list = new RangeObservableCollection<MediaStreamViewModel>();
+
+                var view = new ListCollectionView(list);
+
+                list.AddRange(_itemViewModel.MediaStreams.Select(i => new MediaStreamViewModel { MediaStream = i, OwnerItem = _itemViewModel.Item }));
+                return view;
             }
 
             return _itemViewModel;
+        }
+
+        private double GetSimilarItemsImageDisplayWidth()
+        {
+            return 300;
         }
 
         protected override void DisposePreviousSection(object old)

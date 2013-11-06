@@ -197,9 +197,8 @@ namespace MediaBrowser.Theater.Implementations.Presentation
         {
             var bitmapImage = new BitmapImage
             {
-                CreateOptions = BitmapCreateOptions.DelayCreation,
-                CacheOption = BitmapCacheOption.Default,
-                UriCachePolicy = new RequestCachePolicy(RequestCacheLevel.BypassCache)
+                CacheOption = BitmapCacheOption.OnLoad,
+                UriCachePolicy = new RequestCachePolicy(RequestCacheLevel.CacheIfAvailable)
             };
 
             var scalingMode = _config.Configuration.EnableHighQualityImageScaling

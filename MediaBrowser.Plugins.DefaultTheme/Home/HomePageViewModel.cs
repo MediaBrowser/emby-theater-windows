@@ -3,17 +3,14 @@ using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Querying;
-using MediaBrowser.Plugins.DefaultTheme.ListPage;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
-using MediaBrowser.Theater.Interfaces.ViewModels;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Home
@@ -184,8 +181,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             }
             if (string.Equals(section, "movies"))
             {
-                return new MoviesViewModel(_presentationManager, _imageManager, _apiClient, _sessionManager, _nav,
-                                           _playbackManager, _logger, TileWidth, TileHeight, _serverEvents);
+                return GetMoviesViewModel();
             }
 
             return new FavoritesViewModel(_presentationManager, _imageManager, _apiClient, _sessionManager, _nav, _playbackManager, _logger, TileWidth, TileHeight, _serverEvents);
@@ -194,6 +190,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         private TvViewModel GetTvViewModel()
         {
             return new TvViewModel(_presentationManager, _imageManager, _apiClient, _sessionManager, _nav, _playbackManager, _logger, TileWidth, TileHeight, _serverEvents);
+        }
+
+        private MoviesViewModel GetMoviesViewModel()
+        {
+            return new MoviesViewModel(_presentationManager, _imageManager, _apiClient, _sessionManager, _nav,
+                                       _playbackManager, _logger, TileWidth, TileHeight, _serverEvents);
         }
 
         private Task<ItemsResult> GetMediaCollectionsAsync(ItemListViewModel viewModel)
@@ -258,71 +260,16 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             return vm.NavigateToAllShows();
         }
 
-        private Task<ItemsResult> GetAllShows(ItemListViewModel viewModel, DisplayPreferences displayPreferences)
+        private Task NavigateToAllMoviesInternal()
         {
-            var query = new ItemQuery
+            var vm = ContentViewModel as MoviesViewModel;
+
+            if (vm == null)
             {
-                Fields = FolderPage.QueryFields,
+                vm = GetMoviesViewModel();
+            }
 
-                UserId = _sessionManager.CurrentUser.Id,
-
-                IncludeItemTypes = new[] { "Series" },
-
-                SortBy = !String.IsNullOrEmpty(displayPreferences.SortBy)
-                             ? new[] { displayPreferences.SortBy }
-                             : new[] { ItemSortBy.SortName },
-
-                SortOrder = displayPreferences.SortOrder,
-
-                Recursive = true
-            };
-
-            return _apiClient.GetItemsAsync(query);
-        }
-
-        private async Task NavigateToAllMoviesInternal()
-        {
-            var item = await _apiClient.GetRootFolderAsync(_sessionManager.CurrentUser.Id);
-
-            var displayPreferences = await _presentationManager.GetDisplayPreferences("Movies", CancellationToken.None);
-
-            var options = new ListPageConfig
-            {
-                PageTitle = "Movies",
-                CustomItemQuery = GetAllMovies,
-                SortOptions = MoviesViewModel.GetMovieSortOptions()
-            };
-
-            MoviesViewModel.SetDefaults(options);
-
-            var page = new FolderPage(item, displayPreferences, _apiClient, _imageManager, _presentationManager, _nav, _playbackManager, _logger, _serverEvents, options)
-            {
-                ViewType = ViewType.Movies
-            };
-
-            await _nav.Navigate(page);
-        }
-
-        private Task<ItemsResult> GetAllMovies(ItemListViewModel viewModel, DisplayPreferences displayPreferences)
-        {
-            var query = new ItemQuery
-            {
-                Fields = FolderPage.QueryFields,
-
-                UserId = _sessionManager.CurrentUser.Id,
-
-                IncludeItemTypes = new[] { "Movie" },
-
-                SortBy = !String.IsNullOrEmpty(displayPreferences.SortBy)
-                             ? new[] { displayPreferences.SortBy }
-                             : new[] { ItemSortBy.SortName },
-
-                SortOrder = displayPreferences.SortOrder,
-
-                Recursive = true
-            };
-
-            return _apiClient.GetItemsAsync(query);
+            return vm.NavigateToMovies();
         }
     }
 }

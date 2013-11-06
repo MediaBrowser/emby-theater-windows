@@ -94,6 +94,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         public const string FamilyGenre = "family";
 
         public const double TopTvCommunityRating = 8.5;
+        public const double TopMovieCommunityRating = 8.2;
 
         public static Task<TvView> GetTvView(this IApiClient apiClient, string userId, CancellationToken cancellationToken)
         {

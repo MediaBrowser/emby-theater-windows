@@ -447,6 +447,8 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 var childWidth = Convert.ToInt32(ImageDisplayWidth);
                 var imageDisplayHeight = Convert.ToInt32(GetImageDisplayHeight());
 
+                var index = 0;
+
                 var viewModels = items.Select(
                     i =>
                     {
@@ -476,6 +478,12 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                         if (stretch.HasValue)
                         {
                             vm.ImageStretch = stretch.Value;
+                        }
+
+                        if (index < 30)
+                        {
+                            index++;
+                            Task.Run(() => vm.DownloadImage());
                         }
 
                         return vm;

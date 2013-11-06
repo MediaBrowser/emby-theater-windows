@@ -69,8 +69,8 @@
         <Grid>
 
             <Grid.RowDefinitions>
-                <RowDefinition Height="2*"></RowDefinition>
-                <RowDefinition Height="2*"></RowDefinition>
+                <RowDefinition Height="3*"></RowDefinition>
+                <RowDefinition Height="4*"></RowDefinition>
             </Grid.RowDefinitions>
 
             <controls:ExtendedScrollViewer Grid.Row="0" Margin="0 0 0 0" VerticalAlignment="Stretch" HorizontalAlignment="Center" CanContentScroll="True" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" >
@@ -94,7 +94,7 @@
                     <RowDefinition Height="*"></RowDefinition>
                 </Grid.RowDefinitions>
 
-                <TextBlock Grid.Row="0" DataContext="{Binding CurrentItem}" HorizontalAlignment="Center" Text="{Binding DisplayName}" VerticalAlignment="Top" Margin="0 20 0 0" MaxWidth="1600">
+                <TextBlock Grid.Row="0" DataContext="{Binding CurrentItem}" HorizontalAlignment="Center" Text="{Binding DisplayName, Converter={controls:UpperCaseConverter}}" VerticalAlignment="Top" Margin="0 20 0 0" MaxWidth="1600" FontFamily="Segoe UI" FontWeight="ExtraBold" Opacity=".9">
                     <TextBlock.Style>
                         <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource Heading1TextBlockStyle}">
                         </Style>

@@ -12,7 +12,6 @@ using MediaBrowser.Theater.Interfaces.ViewModels;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -96,56 +95,56 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 GalleryHeight = TileHeight,
                 GalleryWidth = TileWidth * tileScaleFactor / 16,
-                CustomCommandAction = () => NavigateWithLoading(NavigateToAllMoviesInternal)
+                CustomCommandAction = () => NavigateWithLoading(() => NavigateToMoviesInternal("AllMovies"))
             };
 
             BoxsetsViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {
                 GalleryHeight = TileHeight,
                 GalleryWidth = TileWidth * tileScaleFactor / 16,
-                CustomCommandAction = () => NavigateWithLoading(NavigateToBoxsetsInternal)
+                CustomCommandAction = () => NavigateWithLoading(() => NavigateToMoviesInternal("BoxSets"))
             };
 
             TrailersViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {
                 GalleryHeight = TileHeight,
                 GalleryWidth = TileWidth * tileScaleFactor / 16,
-                CustomCommandAction = () => NavigateWithLoading(NavigateToTrailersInternal)
+                CustomCommandAction = () => NavigateWithLoading(() => NavigateToMoviesInternal("Trailers"))
             };
 
             HDMoviesViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {
                 GalleryHeight = TileHeight,
                 GalleryWidth = TileWidth * tileScaleFactor / 16,
-                CustomCommandAction = () => NavigateWithLoading(NavigateToHDMoviesInternal)
+                CustomCommandAction = () => NavigateWithLoading(() => NavigateToMoviesInternal("HDMovies"))
             };
 
             FamilyMoviesViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {
                 GalleryHeight = TileHeight,
                 GalleryWidth = TileWidth * tileScaleFactor / 16,
-                CustomCommandAction = () => NavigateWithLoading(NavigateToFamilyMoviesInternal)
+                CustomCommandAction = () => NavigateWithLoading(() => NavigateToMoviesInternal("Family"))
             };
 
             ThreeDMoviesViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {
                 GalleryHeight = TileHeight,
                 GalleryWidth = TileWidth * tileScaleFactor / 16,
-                CustomCommandAction = () => NavigateWithLoading(NavigateTo3DMoviesInternal)
+                CustomCommandAction = () => NavigateWithLoading(() => NavigateToMoviesInternal("3DMovies"))
             };
 
             RomanticMoviesViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {
                 GalleryHeight = TileHeight,
                 GalleryWidth = TileWidth * tileScaleFactor / 16,
-                CustomCommandAction = () => NavigateWithLoading(NavigateToRomanticMoviesInternal)
+                CustomCommandAction = () => NavigateWithLoading(() => NavigateToMoviesInternal("Romance"))
             };
 
             ComedyItemsViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {
                 GalleryHeight = TileHeight,
                 GalleryWidth = TileWidth * tileScaleFactor / 16,
-                CustomCommandAction = () => NavigateWithLoading(NavigateToComedyMoviesInternal)
+                CustomCommandAction = () => NavigateWithLoading(() => NavigateToMoviesInternal("Comedy"))
             };
 
             var spotlightTileWidth = TileWidth * 2 + TilePadding;
@@ -779,108 +778,132 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             TrailersViewModel.AddImages(images);
         }
 
-        private async Task NavigateToTrailersInternal()
+        public Task NavigateToMovies()
         {
-            var item = await GetRootFolder();
-
-            var displayPreferences = await PresentationManager.GetDisplayPreferences("Trailers", CancellationToken.None);
-
-            var options = new ListPageConfig
-            {
-                SortOptions = GetMovieSortOptions(),
-                PageTitle = "Trailers",
-                CustomItemQuery = GetTrailers
-            };
-
-            SetDefaults(options);
-
-            options.DefaultViewType = ListViewTypes.PosterStrip;
-
-            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
-            {
-                ViewType = ViewType.Movies
-            };
-
-            await _navService.Navigate(page);
+            return NavigateToMoviesInternal("AllMovies");
         }
 
-        private Task<ItemsResult> GetTrailers(ItemListViewModel viewModel, DisplayPreferences displayPreferences)
-        {
-            var query = new ItemQuery
-            {
-                Fields = FolderPage.QueryFields,
-
-                UserId = _sessionManager.CurrentUser.Id,
-
-                IncludeItemTypes = new[] { "Trailer" },
-
-                SortBy = !String.IsNullOrEmpty(displayPreferences.SortBy)
-                             ? new[] { displayPreferences.SortBy }
-                             : new[] { ItemSortBy.SortName },
-
-                SortOrder = displayPreferences.SortOrder,
-
-                Recursive = true
-            };
-
-            return ApiClient.GetItemsAsync(query);
-        }
-
-        private async Task NavigateToBoxsetsInternal()
-        {
-            var item = await GetRootFolder();
-
-            var displayPreferences = await PresentationManager.GetDisplayPreferences("Boxsets", CancellationToken.None);
-
-            var options = new ListPageConfig
-            {
-                PageTitle = "Box Sets",
-                CustomItemQuery = GetBoxSets
-            };
-
-            SetDefaults(options);
-
-            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
-            {
-                ViewType = ViewType.Movies
-            };
-
-            await _navService.Navigate(page);
-        }
-
-        private Task<ItemsResult> GetBoxSets(ItemListViewModel viewModel, DisplayPreferences displayPreferences)
-        {
-            var query = new ItemQuery
-            {
-                Fields = FolderPage.QueryFields,
-
-                UserId = _sessionManager.CurrentUser.Id,
-
-                IncludeItemTypes = new[] { "BoxSet" },
-
-                SortBy = !String.IsNullOrEmpty(displayPreferences.SortBy)
-                             ? new[] { displayPreferences.SortBy }
-                             : new[] { ItemSortBy.SortName },
-
-                SortOrder = displayPreferences.SortOrder,
-
-                Recursive = true
-            };
-
-            return ApiClient.GetItemsAsync(query);
-        }
-
-        private async Task NavigateToAllMoviesInternal()
+        private async Task NavigateToMoviesInternal(string indexValue)
         {
             var item = await GetRootFolder();
 
             var displayPreferences = await PresentationManager.GetDisplayPreferences("Movies", CancellationToken.None);
 
+            var view = _moviesView ?? await ApiClient.GetMovieView(_sessionManager.CurrentUser.Id, CancellationToken.None);
+
+            var tabs = new List<TabItem>();
+
+            tabs.Add(new TabItem
+            {
+                DisplayName = "Movies",
+                Name = "AllMovies"
+            });
+
+            tabs.Add(new TabItem
+            {
+                DisplayName = "Favorites",
+                Name = "FavoriteMovies"
+            });
+
+            if (ShowComedy(view))
+            {
+                tabs.Add(new TabItem
+                {
+                    DisplayName = GetComedyViewName(),
+                    Name = "Comedy",
+                });
+            }
+
+            if (ShouldShowRomance(view))
+            {
+                tabs.Add(new TabItem
+                {
+                    DisplayName = "Date Night",
+                    Name = "Romance",
+                });
+            }
+
+            if (ShowTrailers)
+            {
+                tabs.Add(new TabItem
+                {
+                    DisplayName = "Trailers",
+                    Name = "Trailers",
+                });
+            }
+
+            if (ShowBoxSets)
+            {
+                tabs.Add(new TabItem
+                {
+                    DisplayName = "Box Sets",
+                    Name = "BoxSets",
+                });
+            }
+            
+            if (ShowFamilyMovies)
+            {
+                tabs.Add(new TabItem
+                {
+                    DisplayName = "Family",
+                    Name = "Family",
+                });
+            }
+
+            tabs.Add(new TabItem
+            {
+                DisplayName = "Popular",
+                Name = "TopRated",
+            });
+
+            tabs.Add(new TabItem
+            {
+                DisplayName = "Critically Acclaimed",
+                Name = "TopCriticRated",
+            });
+
+            if (ShowHDMovies)
+            {
+                tabs.Add(new TabItem
+                {
+                    DisplayName = "HD Movies",
+                    Name = "HDMovies",
+                });
+            }
+
+            if (Show3DMovies)
+            {
+                tabs.Add(new TabItem
+                {
+                    DisplayName = "3D Movies",
+                    Name = "3DMovies",
+                });
+            }
+            
+            //foreach (var fav in tvView.FavoriteGenres)
+            //{
+            //    tabs.Add(new TabItem
+            //    {
+            //        DisplayName = fav.Name,
+            //        Name = "Genre:" + fav.Name,
+            //    });
+            //}
+
+            //foreach (var fav in tvView.FavoriteStudios)
+            //{
+            //    tabs.Add(new TabItem
+            //    {
+            //        DisplayName = fav.Name,
+            //        Name = "Studio:" + fav.Name,
+            //    });
+            //}
+
             var options = new ListPageConfig
             {
                 PageTitle = "Movies",
-                CustomItemQuery = GetAllMovies,
-                SortOptions = GetMovieSortOptions()
+                CustomItemQuery = GetMovies,
+                IndexOptions = tabs,
+                IndexValue = indexValue
             };
 
             SetDefaults(options);
@@ -893,101 +916,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             await _navService.Navigate(page);
         }
 
-        private async Task NavigateToRomanticMoviesInternal()
-        {
-            var item = await GetRootFolder();
-
-            var displayPreferences = await PresentationManager.GetDisplayPreferences("RomanticMovies", CancellationToken.None);
-
-            var options = new ListPageConfig
-            {
-                PageTitle = "Date Night",
-                CustomItemQuery = GetRomanticMovies,
-                SortOptions = GetMovieSortOptions()
-            };
-
-            SetDefaults(options);
-
-            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
-            {
-                ViewType = ViewType.Movies
-            };
-
-            await _navService.Navigate(page);
-        }
-
-        private Task<ItemsResult> GetRomanticMovies(ItemListViewModel viewModel, DisplayPreferences displayPreferences)
-        {
-            var query = new ItemQuery
-            {
-                Fields = FolderPage.QueryFields,
-
-                UserId = _sessionManager.CurrentUser.Id,
-
-                IncludeItemTypes = new[] { "Movie" },
-
-                Genres = new[] { ApiClientExtensions.RomanceGenre },
-
-                SortBy = !String.IsNullOrEmpty(displayPreferences.SortBy)
-                             ? new[] { displayPreferences.SortBy }
-                             : new[] { ItemSortBy.SortName },
-
-                SortOrder = displayPreferences.SortOrder,
-
-                Recursive = true
-            };
-
-            return ApiClient.GetItemsAsync(query);
-        }
-
-        private async Task NavigateToComedyMoviesInternal()
-        {
-            var item = await GetRootFolder();
-
-            var displayPreferences = await PresentationManager.GetDisplayPreferences("ComedyMovies", CancellationToken.None);
-
-            var options = new ListPageConfig
-            {
-                PageTitle = "Comedy Night",
-                CustomItemQuery = GetComedyMovies,
-                SortOptions = GetMovieSortOptions()
-            };
-
-            SetDefaults(options);
-
-            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
-            {
-                ViewType = ViewType.Movies
-            };
-
-            await _navService.Navigate(page);
-        }
-
-        private Task<ItemsResult> GetComedyMovies(ItemListViewModel viewModel, DisplayPreferences displayPreferences)
-        {
-            var query = new ItemQuery
-            {
-                Fields = FolderPage.QueryFields,
-
-                UserId = _sessionManager.CurrentUser.Id,
-
-                IncludeItemTypes = new[] { "Movie" },
-
-                Genres = new[] { ApiClientExtensions.ComedyGenre },
-
-                SortBy = !String.IsNullOrEmpty(displayPreferences.SortBy)
-                             ? new[] { displayPreferences.SortBy }
-                             : new[] { ItemSortBy.SortName },
-
-                SortOrder = displayPreferences.SortOrder,
-
-                Recursive = true
-            };
-
-            return ApiClient.GetItemsAsync(query);
-        }
-
-        private Task<ItemsResult> GetAllMovies(ItemListViewModel viewModel, DisplayPreferences displayPreferences)
+        private Task<ItemsResult> GetMovies(ItemListViewModel viewModel, DisplayPreferences displayPreferences)
         {
             var query = new ItemQuery
             {
@@ -1006,7 +935,151 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 Recursive = true
             };
 
+            var indexOption = viewModel.CurrentIndexOption == null ? string.Empty : viewModel.CurrentIndexOption.Name;
+
+            if (string.Equals(indexOption, "TopRated"))
+            {
+                query.MinCommunityRating = ApiClientExtensions.TopMovieCommunityRating;
+
+                query.SortBy = new[] { ItemSortBy.SortName };
+                query.SortOrder = SortOrder.Ascending;
+            }
+            else if (string.Equals(indexOption, "HDMovies"))
+            {
+                query.IsHD = true;
+
+                query.SortBy = new[] { ItemSortBy.SortName };
+                query.SortOrder = SortOrder.Ascending;
+            }
+            else if (string.Equals(indexOption, "3DMovies"))
+            {
+                query.Is3D = true;
+
+                query.SortBy = new[] { ItemSortBy.SortName };
+                query.SortOrder = SortOrder.Ascending;
+            }
+            else if (string.Equals(indexOption, "Trailers"))
+            {
+                query.IncludeItemTypes = new[] { "Trailer" };
+
+                query.SortBy = new[] { ItemSortBy.SortName };
+                query.SortOrder = SortOrder.Ascending;
+            }
+            else if (string.Equals(indexOption, "BoxSets"))
+            {
+                query.IncludeItemTypes = new[] { "BoxSet" };
+
+                query.SortBy = new[] { ItemSortBy.SortName };
+                query.SortOrder = SortOrder.Ascending;
+            }
+            else if (string.Equals(indexOption, "FavoriteMovies"))
+            {
+                query.Filters = new[] { ItemFilter.IsFavorite };
+
+                query.SortBy = new[] { ItemSortBy.SortName };
+                query.SortOrder = SortOrder.Ascending;
+            }
+            else if (string.Equals(indexOption, "TopCriticRated"))
+            {
+                query.MinCriticRating = 95;
+
+                query.SortBy = new[] { ItemSortBy.SortName };
+                query.SortOrder = SortOrder.Ascending;
+            }
+            else if (string.Equals(indexOption, "Family"))
+            {
+                query.Genres = new[] { "Family" };
+
+                query.SortBy = new[] { ItemSortBy.SortName };
+                query.SortOrder = SortOrder.Ascending;
+            }
+            else if (string.Equals(indexOption, "Comedy"))
+            {
+                query.Genres = new[] { ApiClientExtensions.ComedyGenre };
+
+                query.SortBy = new[] { ItemSortBy.SortName };
+                query.SortOrder = SortOrder.Ascending;
+            }
+            else if (string.Equals(indexOption, "Romance"))
+            {
+                query.Genres = new[] { ApiClientExtensions.RomanceGenre };
+
+                query.SortBy = new[] { ItemSortBy.SortName };
+                query.SortOrder = SortOrder.Ascending;
+            }
+            //else if (string.Equals(indexOption, "ShowsInProgress"))
+            //{
+            //    query.Ids = viewModel.CurrentIndexOption.TabType.Split(',');
+
+            //    query.SortBy = new[] { ItemSortBy.SortName };
+            //    query.SortOrder = SortOrder.Ascending;
+            //}
+            else if (indexOption.StartsWith("Genre:"))
+            {
+                query.Genres = new[] { indexOption.Split(':').Last() };
+
+                query.SortBy = new[] { ItemSortBy.SortName };
+                query.SortOrder = SortOrder.Ascending;
+            }
+            else if (indexOption.StartsWith("Studio:"))
+            {
+                query.Studios = new[] { indexOption.Split(':').Last() };
+
+                query.SortBy = new[] { ItemSortBy.SortName };
+                query.SortOrder = SortOrder.Ascending;
+            }
+
             return ApiClient.GetItemsAsync(query);
+        }
+
+        public bool ShouldShowRomance(MoviesView view)
+        {
+            var now = DateTime.Now;
+
+            if (now.DayOfWeek == DayOfWeek.Friday)
+            {
+                return view.RomanceItems.Count > 0 && now.Hour >= 15;
+            }
+            if (now.DayOfWeek == DayOfWeek.Saturday)
+            {
+                return view.RomanceItems.Count > 0 && (now.Hour < 3 || now.Hour >= 15);
+            }
+            if (now.DayOfWeek == DayOfWeek.Sunday)
+            {
+                return view.RomanceItems.Count > 0 && now.Hour < 3;
+            }
+            return false;
+        }
+
+        private string GetComedyViewName()
+        {
+            var now = DateTime.Now;
+
+            if (now.DayOfWeek == DayOfWeek.Thursday)
+            {
+                return "Comedy Night";
+            }
+            if (now.DayOfWeek == DayOfWeek.Sunday)
+            {
+                return "Sunday Funnies";
+            }
+
+            return "Comedy";
+        }
+
+        private bool ShowComedy(MoviesView view)
+        {
+            var now = DateTime.Now;
+
+            if (now.DayOfWeek == DayOfWeek.Thursday)
+            {
+                return view.ComedyItems.Count > 0 && now.Hour >= 12;
+            }
+            if (now.DayOfWeek == DayOfWeek.Sunday)
+            {
+                return view.ComedyItems.Count > 0;
+            }
+            return false;
         }
 
         private Task<ItemsResult> GetMoviesByGenre(ItemListViewModel viewModel, DisplayPreferences displayPreferences)
@@ -1063,147 +1136,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 query.Years = new[] { int.Parse(indexOption.Name) };
             }
-
-            return ApiClient.GetItemsAsync(query);
-        }
-
-        private async Task NavigateToHDMoviesInternal()
-        {
-            var item = await GetRootFolder();
-
-            var displayPreferences = await PresentationManager.GetDisplayPreferences("HDMovies", CancellationToken.None);
-
-            var options = new ListPageConfig
-            {
-                PageTitle = "HD Movies",
-                CustomItemQuery = GetHDMovies,
-                SortOptions = GetMovieSortOptions()
-            };
-
-            SetDefaults(options);
-
-            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
-            {
-                ViewType = ViewType.Movies
-            };
-
-            await _navService.Navigate(page);
-        }
-
-        private Task<ItemsResult> GetHDMovies(ItemListViewModel viewModel, DisplayPreferences displayPreferences)
-        {
-            var query = new ItemQuery
-            {
-                Fields = FolderPage.QueryFields,
-
-                UserId = _sessionManager.CurrentUser.Id,
-
-                IncludeItemTypes = new[] { "Movie" },
-
-                SortBy = !String.IsNullOrEmpty(displayPreferences.SortBy)
-                             ? new[] { displayPreferences.SortBy }
-                             : new[] { ItemSortBy.SortName },
-
-                SortOrder = displayPreferences.SortOrder,
-
-                IsHD = true,
-
-                Recursive = true
-            };
-
-            return ApiClient.GetItemsAsync(query);
-        }
-
-        private async Task NavigateToFamilyMoviesInternal()
-        {
-            var item = await GetRootFolder();
-
-            var displayPreferences = await PresentationManager.GetDisplayPreferences("FamilyMovies", CancellationToken.None);
-
-            var options = new ListPageConfig
-            {
-                PageTitle = "Family Movies",
-                CustomItemQuery = GetFamilyMovies,
-                SortOptions = GetMovieSortOptions()
-            };
-
-            SetDefaults(options);
-
-            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
-            {
-                ViewType = ViewType.Movies
-            };
-
-            await _navService.Navigate(page);
-        }
-
-        private Task<ItemsResult> GetFamilyMovies(ItemListViewModel viewModel, DisplayPreferences displayPreferences)
-        {
-            var query = new ItemQuery
-            {
-                Fields = FolderPage.QueryFields,
-
-                UserId = _sessionManager.CurrentUser.Id,
-
-                IncludeItemTypes = new[] { "Movie" },
-
-                Genres = new[] { ApiClientExtensions.FamilyGenre },
-
-                SortBy = !String.IsNullOrEmpty(displayPreferences.SortBy)
-                             ? new[] { displayPreferences.SortBy }
-                             : new[] { ItemSortBy.SortName },
-
-                SortOrder = displayPreferences.SortOrder,
-
-                Recursive = true
-            };
-
-            return ApiClient.GetItemsAsync(query);
-        }
-
-        private async Task NavigateTo3DMoviesInternal()
-        {
-            var item = await GetRootFolder();
-
-            var displayPreferences = await PresentationManager.GetDisplayPreferences("3DMovies", CancellationToken.None);
-
-            var options = new ListPageConfig
-            {
-                PageTitle = "3D Movies",
-                CustomItemQuery = Get3DMovies,
-                SortOptions = GetMovieSortOptions()
-            };
-
-            SetDefaults(options);
-
-            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
-            {
-                ViewType = ViewType.Movies
-            };
-
-            await _navService.Navigate(page);
-        }
-
-        private Task<ItemsResult> Get3DMovies(ItemListViewModel viewModel, DisplayPreferences displayPreferences)
-        {
-            var query = new ItemQuery
-            {
-                Fields = FolderPage.QueryFields,
-
-                UserId = _sessionManager.CurrentUser.Id,
-
-                IncludeItemTypes = new[] { "Movie" },
-
-                SortBy = !String.IsNullOrEmpty(displayPreferences.SortBy)
-                             ? new[] { displayPreferences.SortBy }
-                             : new[] { ItemSortBy.SortName },
-
-                SortOrder = displayPreferences.SortOrder,
-
-                Recursive = true,
-
-                Is3D = true
-            };
 
             return ApiClient.GetItemsAsync(query);
         }

@@ -114,7 +114,7 @@ namespace MediaBrowser.Theater.Implementations.Presentation
                 cancellationToken.ThrowIfCancellationRequested();
 
                 var semaphore = GetImageFileLock(cachePath);
-                await semaphore.WaitAsync().ConfigureAwait(false);
+                await semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
 
                 // Look in the cache again
                 try
@@ -132,8 +132,6 @@ namespace MediaBrowser.Theater.Implementations.Presentation
                 {
                     using (var httpStream = await _apiClient.GetImageStreamAsync(url, cancellationToken).ConfigureAwait(false))
                     {
-                        cancellationToken.ThrowIfCancellationRequested();
-
                         var parentPath = Path.GetDirectoryName(cachePath);
 
                         if (!Directory.Exists(parentPath))

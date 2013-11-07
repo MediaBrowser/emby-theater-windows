@@ -483,7 +483,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                         if (index < 30)
                         {
                             index++;
-                            Task.Run(() => vm.DownloadImage());
+                            //Task.Run(() => vm.DownloadImage());
                         }
 
                         return vm;

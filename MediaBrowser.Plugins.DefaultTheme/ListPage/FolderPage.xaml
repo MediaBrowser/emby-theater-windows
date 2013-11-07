@@ -174,9 +174,9 @@
             </Grid.Style>
             
             <StackPanel Orientation="Horizontal">
-                <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding CurrentItemIndex}" VerticalAlignment="Center" Foreground="{DynamicResource MediaBrowserAccent}"></TextBlock>
-                <TextBlock Style="{DynamicResource TextBlockStyle}" Text=" | " VerticalAlignment="Top" Margin="0 -3 0 0"></TextBlock>
-                <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding ItemCount}" VerticalAlignment="Center"></TextBlock>
+                <TextBlock Style="{DynamicResource Heading2TextBlockStyle}" Text="{Binding CurrentItemIndex}" VerticalAlignment="Center" Foreground="{DynamicResource MediaBrowserAccent}"></TextBlock>
+                <TextBlock Style="{DynamicResource Heading2TextBlockStyle}" Text=" | " VerticalAlignment="Top" Margin="0 -3 0 0"></TextBlock>
+                <TextBlock Style="{DynamicResource Heading2TextBlockStyle}" Text="{Binding ItemCount}" VerticalAlignment="Center"></TextBlock>
             </StackPanel>
         </Grid>
     </Grid>

@@ -805,6 +805,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 Name = "FavoriteMovies"
             });
 
+            tabs.Add(new TabItem
+            {
+                DisplayName = "New Releases",
+                Name = "NewReleases",
+            });
+            
             if (ShowComedy(view))
             {
                 tabs.Add(new TabItem
@@ -879,24 +885,24 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                     Name = "3DMovies",
                 });
             }
-            
-            //foreach (var fav in tvView.FavoriteGenres)
-            //{
-            //    tabs.Add(new TabItem
-            //    {
-            //        DisplayName = fav.Name,
-            //        Name = "Genre:" + fav.Name,
-            //    });
-            //}
 
-            //foreach (var fav in tvView.FavoriteStudios)
-            //{
-            //    tabs.Add(new TabItem
-            //    {
-            //        DisplayName = fav.Name,
-            //        Name = "Studio:" + fav.Name,
-            //    });
-            //}
+            foreach (var fav in view.FavoriteGenres)
+            {
+                tabs.Add(new TabItem
+                {
+                    DisplayName = fav.Name,
+                    Name = "Genre:" + fav.Name,
+                });
+            }
+
+            foreach (var fav in view.FavoriteStudios)
+            {
+                tabs.Add(new TabItem
+                {
+                    DisplayName = fav.Name,
+                    Name = "Studio:" + fav.Name,
+                });
+            }
 
             var options = new ListPageConfig
             {
@@ -943,6 +949,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
                 query.SortBy = new[] { ItemSortBy.SortName };
                 query.SortOrder = SortOrder.Ascending;
+            }
+            else if (string.Equals(indexOption, "NewReleases"))
+            {
+                query.SortBy = new[] { ItemSortBy.PremiereDate };
+                query.SortOrder = SortOrder.Descending;
+                query.Limit = 100;
             }
             else if (string.Equals(indexOption, "HDMovies"))
             {

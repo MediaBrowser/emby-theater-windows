@@ -70,7 +70,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Osd
             {
                 var vm = _transportViewModel.CreateChaptersViewModel();
 
-                vm.ImageWidth = 400;
+                vm.ImageWidth = 600;
 
                 return vm;
             }
@@ -79,7 +79,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Osd
             {
                 var vm = _transportViewModel.CreatePeopleViewModel();
 
-                vm.ImageWidth = 200;
+                vm.ImageWidth = 220;
 
                 return vm;
             }

@@ -135,8 +135,9 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         private BitmapImage _image;
 
-        public ItemPersonViewModel(IApiClient apiClient, IImageManager imageManager)
+        public ItemPersonViewModel(BaseItemPerson person, IApiClient apiClient, IImageManager imageManager)
         {
+            _person = person;
             _apiClient = apiClient;
             _imageManager = imageManager;
         }

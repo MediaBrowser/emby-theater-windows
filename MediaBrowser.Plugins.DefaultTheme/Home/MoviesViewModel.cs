@@ -68,7 +68,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             _posterTileHeight = (TileHeight * 1.46) + TilePadding / 2;
             _posterTileWidth = _posterTileHeight * 2 / 3;
 
-            const double tileScaleFactor = 13;
+            const double tileScaleFactor = 11;
 
             ActorsViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {
@@ -795,14 +795,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             tabs.Add(new TabItem
             {
-                DisplayName = "Movies",
+                DisplayName = "All Movies",
                 Name = "AllMovies"
-            });
-
-            tabs.Add(new TabItem
-            {
-                DisplayName = "Favorites",
-                Name = "FavoriteMovies"
             });
 
             tabs.Add(new TabItem
@@ -837,6 +831,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                     Name = "Trailers",
                 });
             }
+
+            tabs.Add(new TabItem
+            {
+                DisplayName = "Favorites",
+                Name = "FavoriteMovies"
+            });
 
             if (ShowBoxSets)
             {

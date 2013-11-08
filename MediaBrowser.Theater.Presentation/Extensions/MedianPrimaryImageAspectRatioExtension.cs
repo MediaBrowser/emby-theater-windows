@@ -27,7 +27,31 @@ namespace MediaBrowser.Theater.Presentation.Extensions
 
             if (values.Count > 0)
             {
-                return values.Median();
+                var result = values.Median();
+
+                // If really close to 2:3 (poster image), just return 2:3
+                if (Math.Abs(0.66666666667 - result) <= .05)
+                {
+                    return 0.66666666667;
+                }
+
+                // If really close to 16:9 (episode image), just return 16:9
+                if (Math.Abs(1.777777778 - result) <= .05)
+                {
+                    return 1.777777778;
+                }
+
+                // If really close to 1 (square image), just return 1
+                if (Math.Abs(1 - result) <= .05)
+                {
+                    return 1;
+                }
+
+                // If really close to 4:3 (poster image), just return 2:3
+                if (Math.Abs(1.33333333333 - result) <= .05)
+                {
+                    return 1.33333333333;
+                }
             }
 
             return 1;

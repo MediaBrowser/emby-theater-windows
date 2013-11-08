@@ -452,13 +452,12 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 var viewModels = items.Select(
                     i =>
                     {
-                        var vm = new ItemViewModel(_apiClient, _imageManager, _playbackManager,
+                        var vm = new ItemViewModel(i, _apiClient, _imageManager, _playbackManager,
                                                    _presentationManager, _logger, _serverEvents)
                         {
                             DownloadPrimaryImageAtExactSize = DownloadImageAtExactSize ?? IsCloseToMedianPrimaryImageAspectRatio(i),
                             ImageHeight = imageDisplayHeight,
                             ImageWidth = childWidth,
-                            Item = i,
                             ViewType = ViewType,
                             DisplayName = DisplayNameGenerator == null ? i.Name : DisplayNameGenerator(i),
                             DownloadImagesAtExactSize = DownloadImageAtExactSize ?? true,

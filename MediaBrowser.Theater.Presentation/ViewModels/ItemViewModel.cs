@@ -58,6 +58,12 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             _serverEvents.UserDataChanged += _serverEvents_UserDataChanged;
         }
 
+        public ItemViewModel(BaseItemDto item, IApiClient apiClient, IImageManager imageManager, IPlaybackManager playbackManager, IPresentationManager presentation, ILogger logger, IServerEvents serverEvents)
+            : this(apiClient, imageManager, playbackManager, presentation, logger, serverEvents)
+        {
+            _item = item;
+        }
+        
         void _serverEvents_UserDataChanged(object sender, UserDataChangedEventArgs e)
         {
             var key = _item.UserData == null ? string.Empty : _item.UserData.Key;

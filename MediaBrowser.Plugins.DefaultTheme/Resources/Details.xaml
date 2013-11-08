@@ -57,7 +57,7 @@
                 </StackPanel.Style>
 
                 <details1:ItemLogo HorizontalAlignment="Center" VerticalAlignment="Center" DataContext="{Binding CurrentItem}" Height="80" MaxWidth="500" Margin="0 0 40 0"></details1:ItemLogo>
-                
+
                 <details:ItemInfoFooter HorizontalAlignment="Center" VerticalAlignment="Center" DataContext="{Binding CurrentItem}">
                 </details:ItemInfoFooter>
             </StackPanel>
@@ -966,7 +966,6 @@
                 </Grid>
 
                 <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding Overview}"  Grid.Row="3" Margin="0 20 0 30" TextTrimming="CharacterEllipsis" MinWidth="900"></TextBlock>
-
             </Grid>
         </Grid>
     </DataTemplate>

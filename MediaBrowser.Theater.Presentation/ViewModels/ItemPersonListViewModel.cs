@@ -135,10 +135,9 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
             _listItems.Clear();
 
-            _listItems.AddRange(people.Select(i => new ItemPersonViewModel(_apiClient, _imageManager)
+            _listItems.AddRange(people.Select(i => new ItemPersonViewModel(i, _apiClient, _imageManager)
             {
                 ImageWidth = ImageWidth,
-                Person = i,
                 ImageHeight = ImageHeight
             }));
 

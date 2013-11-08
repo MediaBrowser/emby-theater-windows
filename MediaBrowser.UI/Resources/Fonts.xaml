@@ -15,7 +15,7 @@
     <System:Double x:Key="SmallFontSize">26</System:Double>
 
     <!--Default font for h1 headers. Themes should override these as needed-->
-    <System:Double x:Key="Heading1FontSize">46</System:Double>
+    <System:Double x:Key="Heading1FontSize">45</System:Double>
     <FontFamily x:Key="Heading1FontFamily">Segoe UI SemiLight, Lucida Sans Unicode, Verdana</FontFamily>
     <FontWeight x:Key="Heading1FontWeight">Normal</FontWeight>
     <Brush x:Key="Heading1Foreground">#000</Brush>

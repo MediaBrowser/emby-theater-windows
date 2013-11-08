@@ -180,6 +180,8 @@ namespace MediaBrowser.UI
             HiddenWindow.Activated += HiddenWindow_Activated;
             HiddenWindow.IsVisibleChanged += HiddenWindow_IsVisibleChanged;
 
+            win.Topmost = true;
+
             ApplicationWindow = win;
 
             ApplicationWindow.Show();

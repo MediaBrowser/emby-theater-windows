@@ -13,7 +13,7 @@
 
         <TextBlock Style="{DynamicResource Heading2TextBlockStyle}" Margin="0 15 25 0" VerticalAlignment="Top" HorizontalAlignment="Right" Foreground="#fff" Text="{Binding ClockShortTime, Converter={controls:LowerCaseConverter}}"></TextBlock>
 
-        <Grid VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="0 0 0 150" Background="{DynamicResource TextBackground}">
+        <Grid VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="0 0 0 150" Background="#86000000">
 
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"></RowDefinition>
@@ -32,7 +32,7 @@
 
             </Grid>
 
-            <Grid Height="320" Grid.Row="1">
+            <Grid Height="380" Grid.Row="1">
 
                 <controls:ExtendedScrollViewer x:Name="ScrollViewer" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalAlignment="Stretch" CanContentScroll="True">
                     <controls:ScrollingPanel CanHorizontallyScroll="True" CanVerticallyScroll="False">

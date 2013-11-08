@@ -166,7 +166,7 @@
             </Grid.RowDefinitions>
 
             <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Column="0" Grid.Row="0" Padding="5 0 0 0">Spotlight</TextBlock>
-            <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Column="2" Grid.Row="0" Padding="40 0 0 0">Library</TextBlock>
+            <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Column="2" Grid.Row="0" Padding="35 0 0 0">Library</TextBlock>
 
             <TextBlock Grid.Column="3" Grid.Row="0" Padding="35 0 0 0" Text="Resume">
                 <TextBlock.Style>
@@ -261,7 +261,7 @@
                 </controls:ExtendedListBox>
             </Grid>
 
-            <WrapPanel Grid.Row="1" Grid.Column="2" Orientation="Vertical" Margin="35 0 0 0">
+            <WrapPanel Grid.Row="1" Grid.Column="2" Orientation="Vertical" Margin="30 0 0 0">
 
                 <controls:ExtendedButton Style="{DynamicResource BaseItemButtonStyle}" DataContext="{Binding AllShowsViewModel}" Command="{Binding CustomCommand}">
                     <Grid Height="{Binding GalleryHeight}" Width="{Binding GalleryWidth}">
@@ -826,7 +826,7 @@
             </Grid.RowDefinitions>
 
             <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Column="0" Grid.Row="0" Padding="5 0 0 0">Spotlight</TextBlock>
-            <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Column="2" Grid.Row="0" Padding="40 0 0 0">Library</TextBlock>
+            <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Column="2" Grid.Row="0" Padding="35 0 0 0">Library</TextBlock>
 
             <TextBlock Grid.Column="3" Grid.Row="0" Padding="35 0 0 0" Text="Latest Movies">
                 <TextBlock.Style>
@@ -900,7 +900,7 @@
                 </controls:ExtendedListBox>
             </Grid>
 
-            <WrapPanel Grid.Row="2" Grid.Column="2" Orientation="Vertical" Margin="35 0 0 0">
+            <WrapPanel Grid.Row="2" Grid.Column="2" Orientation="Vertical" Margin="30 0 0 0">
                 <controls:ExtendedButton Style="{DynamicResource BaseItemButtonStyle}" DataContext="{Binding AllMoviesViewModel}" Command="{Binding CustomCommand}">
                     <Grid Height="{Binding GalleryHeight}" Width="{Binding GalleryWidth}">
 
@@ -1285,9 +1285,9 @@
 
             <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Column="0" Grid.Row="0" Padding="5 0 0 0">Spotlight</TextBlock>
 
-            <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Column="2" Grid.Row="0" Padding="40 0 0 0">Library</TextBlock>
+            <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Column="2" Grid.Row="0" Padding="35 0 0 0">Library</TextBlock>
 
-            <TextBlock Grid.Column="3" Grid.Row="0" Padding="40 0 0 0" Text="Recently Played">
+            <TextBlock Grid.Column="3" Grid.Row="0" Padding="35 0 0 0" Text="Recently Played">
                 <TextBlock.Style>
                     <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
                         <Style.Triggers>
@@ -1299,7 +1299,7 @@
                 </TextBlock.Style>
             </TextBlock>
 
-            <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Column="4" Grid.Row="0" Padding="40 0 0 0">Game Systems</TextBlock>
+            <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Column="4" Grid.Row="0" Padding="35 0 0 0">Game Systems</TextBlock>
 
             <Grid Grid.Row="1" Grid.Column="0">
 
@@ -1349,7 +1349,7 @@
                 </controls:ExtendedListBox>
             </Grid>
 
-            <WrapPanel Grid.Row="1" Grid.Column="2" Orientation="Vertical" Margin="35 0 0 0">
+            <WrapPanel Grid.Row="1" Grid.Column="2" Orientation="Vertical" Margin="30 0 0 0">
 
                 <Grid>
                     <Grid.Style>
@@ -1381,7 +1381,7 @@
                             </ItemsControl>
 
                             <Border HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Background="{DynamicResource TextBackground}" Margin="0 0 0 -1">
-                                <TextBlock Text="Multiplayer Games" Style="{DynamicResource SmallTextBlockStyle}" Margin="10 5 10 10"></TextBlock>
+                                <TextBlock Text="Multiplayer" Style="{DynamicResource SmallTextBlockStyle}" Margin="10 5 10 10"></TextBlock>
                             </Border>
                         </Grid>
                     </controls:ExtendedButton>
@@ -1426,7 +1426,7 @@
                 <controls:ExtendedListBox Margin="-35 -35" DataContext="{Binding RecentlyPlayedViewModel}" ItemsSource="{Binding ListCollectionView}" KeyboardNavigation.DirectionalNavigation="Continue" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource HomePageItemTemplate}">
                     <controls:ExtendedListBox.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <WrapPanel Margin="40 35" Orientation="Vertical"></WrapPanel>
+                            <WrapPanel Margin="35 35" Orientation="Vertical"></WrapPanel>
                         </ItemsPanelTemplate>
                     </controls:ExtendedListBox.ItemsPanel>
                 </controls:ExtendedListBox>
@@ -1437,7 +1437,7 @@
                 <controls:ExtendedListBox Margin="-35 -35" DataContext="{Binding GameSystemsViewModel}" ItemsSource="{Binding ListCollectionView}" KeyboardNavigation.DirectionalNavigation="Continue" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource HomePageItemTemplate}">
                     <controls:ExtendedListBox.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <WrapPanel Margin="40 35" Orientation="Vertical"></WrapPanel>
+                            <WrapPanel Margin="35 35" Orientation="Vertical"></WrapPanel>
                         </ItemsPanelTemplate>
                     </controls:ExtendedListBox.ItemsPanel>
                 </controls:ExtendedListBox>

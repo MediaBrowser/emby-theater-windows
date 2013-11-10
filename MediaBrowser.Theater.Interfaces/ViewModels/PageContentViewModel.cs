@@ -398,7 +398,19 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
             finally
             {
                 PresentationManager.HideModalLoadingAnimation();
+
+                FocusElement();
             }
+        }
+
+        private void FocusElement()
+        {
+            var win = PresentationManager.Window;
+
+            win.Activate();
+            win.Focus();
+
+            win.MoveFocus(new TraversalRequest(FocusNavigationDirection.First));
         }
 
         private async Task WaitForServerToRestartInternal()

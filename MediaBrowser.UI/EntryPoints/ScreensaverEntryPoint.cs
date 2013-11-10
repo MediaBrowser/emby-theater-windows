@@ -9,6 +9,8 @@ using System;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Windows;
+using System.Windows.Threading;
 
 namespace MediaBrowser.UI.EntryPoints
 {
@@ -21,11 +23,12 @@ namespace MediaBrowser.UI.EntryPoints
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
         private readonly ILogger _logger;
+        private readonly IServerEvents _serverEvents;
 
         private DateTime _lastInputTime;
         private Timer _timer;
 
-        public ScreensaverEntryPoint(IUserInputManager userInput, IPresentationManager presentationManager, IPlaybackManager playback, ISessionManager session, IApiClient apiClient, IImageManager imageManager, ILogger logger)
+        public ScreensaverEntryPoint(IUserInputManager userInput, IPresentationManager presentationManager, IPlaybackManager playback, ISessionManager session, IApiClient apiClient, IImageManager imageManager, ILogger logger, IServerEvents serverEvents)
         {
             _userInput = userInput;
             _presentationManager = presentationManager;
@@ -34,12 +37,57 @@ namespace MediaBrowser.UI.EntryPoints
             _apiClient = apiClient;
             _imageManager = imageManager;
             _logger = logger;
+            _serverEvents = serverEvents;
         }
 
         public void Run()
         {
             _playback.PlaybackCompleted += _playback_PlaybackCompleted;
+
+            _serverEvents.BrowseCommand += _serverEvents_BrowseCommand;
+            _serverEvents.MessageCommand += _serverEvents_MessageCommand;
+            _serverEvents.PlayCommand += _serverEvents_PlayCommand;
+            _serverEvents.PlaystateCommand += _serverEvents_PlaystateCommand;
+            _serverEvents.SystemCommand += _serverEvents_SystemCommand;
+
             StartTimer();
+        }
+
+        void _serverEvents_SystemCommand(object sender, SystemCommandEventArgs e)
+        {
+            _presentationManager.Window.Dispatcher.InvokeAsync(OnRemoteControlCommand, DispatcherPriority.Background);
+        }
+
+        void _serverEvents_PlaystateCommand(object sender, PlaystateRequestEventArgs e)
+        {
+            _presentationManager.Window.Dispatcher.InvokeAsync(OnRemoteControlCommand, DispatcherPriority.Background);
+        }
+
+        void _serverEvents_PlayCommand(object sender, PlayRequestEventArgs e)
+        {
+            _presentationManager.Window.Dispatcher.InvokeAsync(OnRemoteControlCommand, DispatcherPriority.Background);
+        }
+
+        void _serverEvents_MessageCommand(object sender, MessageCommandEventArgs e)
+        {
+            _presentationManager.Window.Dispatcher.InvokeAsync(OnRemoteControlCommand, DispatcherPriority.Background);
+        }
+
+        void _serverEvents_BrowseCommand(object sender, BrowseRequestEventArgs e)
+        {
+            _presentationManager.Window.Dispatcher.InvokeAsync(OnRemoteControlCommand, DispatcherPriority.Background);
+        }
+
+        private void OnRemoteControlCommand()
+        {
+            _lastInputTime = DateTime.Now;
+
+            var win = Application.Current.Windows.OfType<ScreensaverWindow>().FirstOrDefault();
+
+            if (win != null)
+            {
+                win.Close();
+            }
         }
 
         void _playback_PlaybackCompleted(object sender, PlaybackStopEventArgs e)
@@ -109,6 +157,12 @@ namespace MediaBrowser.UI.EntryPoints
 
         public void Dispose()
         {
+            _serverEvents.BrowseCommand -= _serverEvents_BrowseCommand;
+            _serverEvents.MessageCommand -= _serverEvents_MessageCommand;
+            _serverEvents.PlayCommand -= _serverEvents_PlayCommand;
+            _serverEvents.PlaystateCommand -= _serverEvents_PlaystateCommand;
+            _serverEvents.SystemCommand -= _serverEvents_SystemCommand;
+            
             StopTimer();
         }
 
@@ -117,7 +171,12 @@ namespace MediaBrowser.UI.EntryPoints
             _logger.Debug("Calling SetThreadExecutionState to prevent system idle");
 
             // Prevent system screen saver and monitor power off
-            SetThreadExecutionState(EXECUTION_STATE.ES_DISPLAY_REQUIRED | EXECUTION_STATE.ES_SYSTEM_REQUIRED | EXECUTION_STATE.ES_CONTINUOUS);
+            var result = SetThreadExecutionState(EXECUTION_STATE.ES_DISPLAY_REQUIRED | EXECUTION_STATE.ES_SYSTEM_REQUIRED | EXECUTION_STATE.ES_CONTINUOUS);
+
+            if (result == 0)
+            {
+                _logger.Warn("SetThreadExecutionState failed");
+            }
         }
 
         private void AllowSystemIdle()
@@ -125,7 +184,12 @@ namespace MediaBrowser.UI.EntryPoints
             _logger.Debug("Calling SetThreadExecutionState to allow system idle");
             
             // Clear EXECUTION_STATE flags to disable away mode and allow the system to idle to sleep normally.
-            SetThreadExecutionState(EXECUTION_STATE.ES_CONTINUOUS);
+            var result = SetThreadExecutionState(EXECUTION_STATE.ES_CONTINUOUS);
+
+            if (result == 0)
+            {
+                _logger.Warn("SetThreadExecutionState failed");
+            }
         }
 
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]

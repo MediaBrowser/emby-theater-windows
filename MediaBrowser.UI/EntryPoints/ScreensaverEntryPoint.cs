@@ -167,26 +167,32 @@ namespace MediaBrowser.UI.EntryPoints
         {
             _logger.Debug("Calling SetThreadExecutionState to prevent system idle");
 
-            // Prevent system screen saver and monitor power off
-            var result = SetThreadExecutionState(EXECUTION_STATE.ES_DISPLAY_REQUIRED | EXECUTION_STATE.ES_SYSTEM_REQUIRED | EXECUTION_STATE.ES_CONTINUOUS);
-
-            if (result == 0)
+            _presentationManager.Window.Dispatcher.InvokeAsync(() =>
             {
-                _logger.Warn("SetThreadExecutionState failed");
-            }
+                // Prevent system screen saver and monitor power off
+                var result = SetThreadExecutionState(EXECUTION_STATE.ES_DISPLAY_REQUIRED | EXECUTION_STATE.ES_SYSTEM_REQUIRED | EXECUTION_STATE.ES_CONTINUOUS);
+
+                if (result == 0)
+                {
+                    _logger.Warn("SetThreadExecutionState failed");
+                }
+            });
         }
 
         private void AllowSystemIdle()
         {
             _logger.Debug("Calling SetThreadExecutionState to allow system idle");
-            
-            // Clear EXECUTION_STATE flags to disable away mode and allow the system to idle to sleep normally.
-            var result = SetThreadExecutionState(EXECUTION_STATE.ES_CONTINUOUS);
 
-            if (result == 0)
+            _presentationManager.Window.Dispatcher.InvokeAsync(() =>
             {
-                _logger.Warn("SetThreadExecutionState failed");
-            }
+                // Clear EXECUTION_STATE flags to disable away mode and allow the system to idle to sleep normally.
+                var result = SetThreadExecutionState(EXECUTION_STATE.ES_CONTINUOUS);
+
+                if (result == 0)
+                {
+                    _logger.Warn("SetThreadExecutionState failed");
+                }
+            });
         }
 
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]

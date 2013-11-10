@@ -181,7 +181,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 }
             }
 
-            if (item.People.Length > 0)
+            if (item.People.Any(i => i.HasPrimaryImage))
             {
                 views.Add(new TabItem
                 {

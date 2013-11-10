@@ -121,6 +121,8 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
             var people = item.People ?? new BaseItemPerson[] { };
 
+            people = people.Where(i => i.HasPrimaryImage).ToArray();
+
             int? selectedIndex = null;
 
             if (currentItem != null)

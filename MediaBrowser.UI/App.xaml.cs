@@ -255,6 +255,8 @@ namespace MediaBrowser.UI
                 HiddenWindow = new HiddenWindow(_logManager.GetLogger("HiddenWindow"));
                 HiddenWindow.Show();
 
+                HiddenWindow.Topmost = true;
+
                 _appHost.TheaterConfigurationManager.ConfigurationUpdated += TheaterConfigurationManager_ConfigurationUpdated;
 
                 ShowApplicationWindow();

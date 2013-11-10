@@ -166,6 +166,13 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
             CurrentSection = tab == null ? null : tab.Name;
             CurrentSectionDisplayName = tab == null ? null : tab.DisplayName;
+
+            Task.Run(() =>
+            {
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                GC.Collect();
+            });
         }
 
         private async Task ReloadSections()

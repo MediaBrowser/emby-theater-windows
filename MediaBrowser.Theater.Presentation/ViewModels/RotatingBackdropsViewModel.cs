@@ -24,6 +24,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         private readonly IPlaybackManager _playbackManager;
         private readonly ITheaterConfigurationManager _config;
         private readonly ILogger _logger;
+        private readonly IPresentationManager _presenatation;
 
         private readonly object _rotationTimerLock = new object();
         private readonly object _initialSetTimerLock = new object();
@@ -33,13 +34,14 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         private string[] _currentBackdrops;
         
-        public RotatingBackdropsViewModel(IApiClient apiClient, ITheaterConfigurationManager config, IImageManager imageManager, IPlaybackManager playbackManager, ILogger logger)
+        public RotatingBackdropsViewModel(IApiClient apiClient, ITheaterConfigurationManager config, IImageManager imageManager, IPlaybackManager playbackManager, ILogger logger, IPresentationManager presenatation)
         {
             _apiClient = apiClient;
             _config = config;
             _imageManager = imageManager;
             _playbackManager = playbackManager;
             _logger = logger;
+            _presenatation = presenatation;
             _dispatcher = Dispatcher.CurrentDispatcher;
         }
 
@@ -236,12 +238,17 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 }
             }
 
+            if (_presenatation.IsScreenSaverRunning)
+            {
+                return;
+            }
+
             if (CurrentImage == null)
             {
                 CurrentImage = _defaultImage;
             }
 
-            _logger.Info("Setting backdtop to {0}", _currentBackdrops[index]);
+            _logger.Info("Setting backdrop to {0}", _currentBackdrops[index]);
 
             var currentSource = _backdropDownloadCancellationTokenSource;
 

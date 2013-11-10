@@ -166,5 +166,16 @@ namespace MediaBrowser.Theater.Interfaces.Presentation
         /// Hides the loading animation.
         /// </summary>
         void HideModalLoadingAnimation();
+
+        /// <summary>
+        /// Gets a value indicating whether this instance is screen saver running.
+        /// </summary>
+        /// <value><c>true</c> if this instance is screen saver running; otherwise, <c>false</c>.</value>
+        bool IsScreenSaverRunning { get; }
+
+        /// <summary>
+        /// Stops the screen saver.
+        /// </summary>
+        void StopScreenSaver();
     }
 }

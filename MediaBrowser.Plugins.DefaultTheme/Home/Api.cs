@@ -37,9 +37,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         public List<BaseItemDto> LatestTrailers { get; set; }
         public List<BaseItemDto> LatestMovies { get; set; }
-
-        public List<ItemByNameInfo> FavoriteGenres { get; set; }
-        public List<ItemByNameInfo> FavoriteStudios { get; set; }
     }
 
     public class TvView : BaseView
@@ -50,8 +47,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         public List<ItemStub> RomanceItems { get; set; }
         public List<ItemStub> ComedyItems { get; set; }
 
-        public List<ItemByNameInfo> FavoriteGenres { get; set; }
-        public List<ItemByNameInfo> FavoriteStudios { get; set; }
         public List<string> SeriesIdsInProgress { get; set; }
 
         public List<BaseItemDto> LatestEpisodes { get; set; }

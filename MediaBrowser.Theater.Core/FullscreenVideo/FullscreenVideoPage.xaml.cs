@@ -242,6 +242,16 @@ namespace MediaBrowser.Theater.Core.FullscreenVideo
             {
                 _viewModel.Dispose();
             }
+
+            if (_infoWindow != null)
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    _infoWindow.Close();
+
+                    _infoWindow = null;
+                });
+            }
         }
 
         void _userInputManager_MouseMove(object sender, MouseEventArgs e)

@@ -674,15 +674,15 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 return;
             }
 
+            if (_lastIndexValue == null)
+            {
+                OnIndexSelectionChange(null);
+                _lastIndexValue = _indexOptionsCollectionView.CurrentItem;
+                return;
+            }
+
             lock (_indexSyncLock)
             {
-                if (_lastIndexValue==null)
-                {
-                    OnIndexSelectionChange(null);
-                    _lastIndexValue = _indexOptionsCollectionView.CurrentItem;
-                    return;
-                }
-
                 if (_lastIndexValue == _indexOptionsCollectionView.CurrentItem)
                 {
                     return;
@@ -711,6 +711,13 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             CurrentIndexOption = IndexOptionsCollectionView.CurrentItem as TabItem;
 
             ReloadItems(false);
+
+            Task.Run(() =>
+            {
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                GC.Collect();
+            });
         }
 
         public void Dispose()

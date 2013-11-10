@@ -531,7 +531,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             var indexOptions = genres.Items.Select(i => new TabItem
             {
                 Name = i.Name,
-                DisplayName = i.Name + " (" + i.SeriesCount + ")"
+                DisplayName = i.Name
             });
 
             var options = new ListPageConfig
@@ -636,24 +636,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 DisplayName = "Top Rated",
                 Name = "TopRated",
             });
-
-            foreach (var fav in tvView.FavoriteGenres)
-            {
-                tabs.Add(new TabItem
-                {
-                    DisplayName = fav.Name,
-                    Name = "Genre:" + fav.Name,
-                });
-            }
-
-            foreach (var fav in tvView.FavoriteStudios)
-            {
-                tabs.Add(new TabItem
-                {
-                    DisplayName = fav.Name,
-                    Name = "Studio:" + fav.Name,
-                });
-            }
 
             var options = new ListPageConfig
             {

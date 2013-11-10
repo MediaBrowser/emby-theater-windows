@@ -552,7 +552,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             var indexOptions = genres.Items.Select(i => new TabItem
             {
                 Name = i.Name,
-                DisplayName = i.Name + " (" + i.MovieCount + ")"
+                DisplayName = i.Name
             });
 
             var options = new ListPageConfig
@@ -883,24 +883,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 {
                     DisplayName = "3D Movies",
                     Name = "3DMovies",
-                });
-            }
-
-            foreach (var fav in view.FavoriteGenres)
-            {
-                tabs.Add(new TabItem
-                {
-                    DisplayName = fav.Name,
-                    Name = "Genre:" + fav.Name,
-                });
-            }
-
-            foreach (var fav in view.FavoriteStudios)
-            {
-                tabs.Add(new TabItem
-                {
-                    DisplayName = fav.Name,
-                    Name = "Studio:" + fav.Name,
                 });
             }
 

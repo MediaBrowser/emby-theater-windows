@@ -222,7 +222,8 @@ namespace MediaBrowser.Theater.Implementations.Playback
         /// <returns>IMediaPlayer.</returns>
         private IMediaPlayer GetPlayer(IEnumerable<BaseItemDto> items, out PlayerConfiguration configuration)
         {
-            var configuredPlayer = _configurationManager.Configuration.MediaPlayers.FirstOrDefault(p => IsConfiguredToPlay(p, items));
+            var configuredPlayer = _configurationManager.Configuration.MediaPlayers
+                .FirstOrDefault(p => IsConfiguredToPlay(p, items));
 
             if (configuredPlayer != null)
             {

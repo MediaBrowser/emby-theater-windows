@@ -226,6 +226,14 @@ namespace MediaBrowser.UI
                     OldPage = current
 
                 }, _logger);
+
+                Task.Run(() =>
+                {
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+                    GC.Collect();
+                });
+
             });
 
             return task.Task;

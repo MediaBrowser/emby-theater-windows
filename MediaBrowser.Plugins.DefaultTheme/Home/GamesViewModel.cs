@@ -528,7 +528,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             var indexOptions = genres.Items.Select(i => new TabItem
             {
                 Name = i.Name,
-                DisplayName = i.Name + " (" + i.GameCount + ")"
+                DisplayName = i.Name
             });
 
             var options = new ListPageConfig

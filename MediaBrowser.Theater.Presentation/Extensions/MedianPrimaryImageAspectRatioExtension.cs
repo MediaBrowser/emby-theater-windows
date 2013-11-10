@@ -52,6 +52,8 @@ namespace MediaBrowser.Theater.Presentation.Extensions
                 {
                     return 1.33333333333;
                 }
+
+                return result;
             }
 
             return 1;

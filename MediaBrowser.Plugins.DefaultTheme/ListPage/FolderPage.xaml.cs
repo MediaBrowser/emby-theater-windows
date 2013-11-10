@@ -123,18 +123,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
             {
                 return ScrollDirection.Vertical;
             }
-            if (string.Equals(viewModel.ViewType, ListViewTypes.Thumbstrip))
-            {
-                return ScrollDirection.Horizontal;
-            }
-            if (string.Equals(viewModel.ViewType, ListViewTypes.PosterStrip))
-            {
-                return ScrollDirection.Horizontal;
-            }
-
-            return viewModel.DisplayPreferences == null
-                       ? ScrollDirection.Horizontal
-                       : viewModel.DisplayPreferences.ScrollDirection;
+            
+            return ScrollDirection.Horizontal;
         }
 
         private ImageType[] GetPreferredImageTypes(ItemListViewModel viewModel)

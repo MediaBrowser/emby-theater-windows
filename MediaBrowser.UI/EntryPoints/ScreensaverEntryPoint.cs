@@ -9,7 +9,6 @@ using System;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
-using System.Windows;
 using System.Windows.Threading;
 
 namespace MediaBrowser.UI.EntryPoints
@@ -82,11 +81,9 @@ namespace MediaBrowser.UI.EntryPoints
         {
             _lastInputTime = DateTime.Now;
 
-            var win = Application.Current.Windows.OfType<ScreensaverWindow>().FirstOrDefault();
-
-            if (win != null)
+            if (_presentationManager.IsScreenSaverRunning)
             {
-                win.Close();
+                _presentationManager.StopScreenSaver();
             }
         }
 

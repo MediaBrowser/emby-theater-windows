@@ -5,6 +5,7 @@ using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Core.Loading;
 using MediaBrowser.Theater.Core.Modals;
+using MediaBrowser.Theater.Core.Screensaver;
 using MediaBrowser.Theater.Interfaces;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
@@ -333,6 +334,21 @@ namespace MediaBrowser.UI.Implementations
                 {
                     Window.Dispatcher.InvokeAsync(() => _loadingWindow.Hide());
                 }
+            }
+        }
+
+        public bool IsScreenSaverRunning
+        {
+            get { return Application.Current.Windows.OfType<ScreensaverWindow>().Any(); }
+        }
+
+        public void StopScreenSaver()
+        {
+            var win = Application.Current.Windows.OfType<ScreensaverWindow>().FirstOrDefault();
+
+            if (win != null)
+            {
+                win.Close();
             }
         }
     }

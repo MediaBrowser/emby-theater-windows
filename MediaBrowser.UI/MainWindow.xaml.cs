@@ -57,7 +57,7 @@ namespace MediaBrowser.UI
 
             InitializeComponent();
 
-            RotatingBackdrops = new RotatingBackdropsViewModel(apiClient, _config, imageManager, playbackManager, logger);
+            RotatingBackdrops = new RotatingBackdropsViewModel(apiClient, _config, imageManager, playbackManager, logger, _appWindow);
 
             _config.ConfigurationUpdated += _config_ConfigurationUpdated;
             _playbackManager.PlaybackStarted += _playbackManager_PlaybackStarted;

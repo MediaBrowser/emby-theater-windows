@@ -46,6 +46,13 @@ namespace MediaBrowser.UI.StartupWizard
 
             BtnInstall.IsEnabled = false;
 
+            var isOnTop = _presentation.Window.Topmost;
+
+            if (isOnTop)
+            {
+                _presentation.Window.Topmost = false;
+            }
+
             try
             {
                 Progress.Visibility = Visibility.Visible;
@@ -62,6 +69,11 @@ namespace MediaBrowser.UI.StartupWizard
             }
             finally
             {
+                if (isOnTop)
+                {
+                    _presentation.Window.Topmost = true;
+                }
+
                 BtnInstall.IsEnabled = true;
                 DisposeCancellationTokenSource();
                 UpdateNextButtonEnabled();

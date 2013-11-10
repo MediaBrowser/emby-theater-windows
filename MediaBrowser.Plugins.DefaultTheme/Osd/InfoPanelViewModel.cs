@@ -1,5 +1,4 @@
-﻿using MediaBrowser.Theater.Interfaces.ViewModels;
-using MediaBrowser.Theater.Presentation.ViewModels;
+﻿using MediaBrowser.Theater.Presentation.ViewModels;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -79,7 +78,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Osd
             {
                 var vm = _transportViewModel.CreatePeopleViewModel();
 
-                vm.ImageWidth = 220;
+                vm.ImageWidth = 240;
 
                 return vm;
             }

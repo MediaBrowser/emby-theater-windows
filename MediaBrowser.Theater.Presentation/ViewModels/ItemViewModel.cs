@@ -1215,6 +1215,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         {
             _serverEvents.UserDataChanged -= _serverEvents_UserDataChanged;
             DisposeCancellationTokenSource();
+            Image = null;
         }
 
         private void DisposeCancellationTokenSource()

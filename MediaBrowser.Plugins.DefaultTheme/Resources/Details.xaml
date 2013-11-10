@@ -1027,7 +1027,7 @@
                     <TextBlock.Style>
                         <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding Text, ElementName=TxtRole}" Value="as ">
+                                <DataTrigger Binding="{Binding Role}" Value="{x:Null}">
                                     <Setter Property="Visibility" Value="Collapsed" />
                                 </DataTrigger>
                             </Style.Triggers>
@@ -1038,9 +1038,10 @@
                 <TextBlock Foreground="White" Margin="0 20 0 0" TextTrimming="CharacterEllipsis" TextWrapping="Wrap" Text="{Binding PersonType}">
                     <TextBlock.Style>
                         <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
+                            <Setter Property="Visibility" Value="Collapsed" />
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding Visibility, ElementName=TxtRole}" Value="Visible">
-                                    <Setter Property="Visibility" Value="Collapsed" />
+                                <DataTrigger Binding="{Binding Role}" Value="{x:Null}">
+                                    <Setter Property="Visibility" Value="Visible" />
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>

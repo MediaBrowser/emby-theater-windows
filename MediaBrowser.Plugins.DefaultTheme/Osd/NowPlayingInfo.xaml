@@ -18,15 +18,15 @@
 
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"></RowDefinition>
-                <RowDefinition Height="*"></RowDefinition>
                 <RowDefinition Height="auto"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
             </Grid.RowDefinitions>
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"></ColumnDefinition>
                 <ColumnDefinition Width="auto"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            
+
             <TextBlock Name="TxtName" Style="{DynamicResource TextBlockStyle}" Grid.Row="0" Grid.Column="0" Margin="0 -5 0 0"></TextBlock>
 
             <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="1" Margin="0 -5 0 0" HorizontalAlignment="Right">
@@ -114,11 +114,11 @@
                     </Grid>
                 </Button>
             </StackPanel>
-            
-            <TextBlock DataContext="{Binding NowPlayingItemViewModel}" Style="{DynamicResource SmallTextBlockStyle}" Text="{Binding Overview}" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="0 15 0 25"></TextBlock>
 
-            <details:ItemInfoFooter ShowResumeProgress="False"  HorizontalAlignment="Right" VerticalAlignment="Bottom" DataContext="{Binding NowPlayingItemViewModel}" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
+            <details:ItemInfoFooter ShowResumeProgress="False"  HorizontalAlignment="Left" VerticalAlignment="Bottom" DataContext="{Binding NowPlayingItemViewModel}" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="0 15 0 0">
             </details:ItemInfoFooter>
+
+            <TextBlock DataContext="{Binding NowPlayingItemViewModel}" Style="{DynamicResource TextBlockStyle}" Text="{Binding Overview}" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0 15 0 0"></TextBlock>
         </Grid>
     </Grid>
 </UserControl>

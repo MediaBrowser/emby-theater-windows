@@ -91,7 +91,24 @@ namespace MediaBrowser.Plugins.DefaultTheme.Osd
 
             var media = viewModel.NowPlayingItem;
 
-            TxtName.Text = media == null ? string.Empty : media.Name;
+            TxtName.Text = media == null ? string.Empty : GetName(media);
+        }
+
+        private string GetName(BaseItemDto item)
+        {
+            var name = item.Name;
+
+            if (item.IndexNumber.HasValue)
+            {
+                name = string.Format("Ep. {0} - {1}", item.IndexNumber.Value, name);
+            }
+
+            if (item.ParentIndexNumber.HasValue)
+            {
+                name = string.Format("Season {0}, {1}", item.ParentIndexNumber.Value, name);
+            }
+
+            return name;
         }
     }
 }

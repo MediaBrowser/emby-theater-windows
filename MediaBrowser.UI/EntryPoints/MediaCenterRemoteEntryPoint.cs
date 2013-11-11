@@ -237,6 +237,69 @@ namespace MediaBrowser.UI.EntryPoints
                 case System.Windows.Input.Key.MediaStop:
                     ExecuteCommand(Stop);
                     break;
+                case System.Windows.Input.Key.P:
+                    {
+                        if (IsControlKeyDown(e))
+                        {
+                            if (IsShiftKeyDown(e))
+                            {
+                                ExecuteCommand(Play);
+                            }
+                            else
+                            {
+                                ExecuteCommand(Pause);
+                            }
+                        }
+                        break;
+                    }
+                case System.Windows.Input.Key.S:
+                    {
+                        if (IsControlKeyDown(e) && IsShiftKeyDown(e))
+                        {
+                            ExecuteCommand(Stop);
+                        }
+                        break;
+                    }
+                case System.Windows.Input.Key.B:
+                    {
+                        if (IsControlKeyDown(e))
+                        {
+                            if (IsShiftKeyDown(e))
+                            {
+                                ExecuteCommand(SkipBackward);
+                            }
+                            else
+                            {
+                                ExecuteCommand(OnPreviousTrackButton);
+                            }
+                        }
+                        break;
+                    }
+                case System.Windows.Input.Key.F:
+                    {
+                        if (IsControlKeyDown(e))
+                        {
+                            if (IsShiftKeyDown(e))
+                            {
+                                ExecuteCommand(SkipForward);
+                            }
+                            else
+                            {
+                                ExecuteCommand(OnNextTrackButton);
+                            }
+                        }
+                        break;
+                    }
+                case System.Windows.Input.Key.Multiply:
+                    {
+                        ExecuteCommand(ToggleInfoPanel);
+                        break;
+                    }
+                case System.Windows.Input.Key.D8:
+                    {
+                        ExecuteCommand(ToggleInfoPanel);
+                        break;
+                    }
                 default:
                     return;
             }
@@ -285,6 +348,26 @@ namespace MediaBrowser.UI.EntryPoints
                 default:
                     return;
             }
+        }
+
+        private bool IsShiftKeyDown(System.Windows.Input.KeyEventArgs e)
+        {
+            return e.Key.HasFlag(System.Windows.Input.Key.LeftShift) ||
+                e.Key.HasFlag(System.Windows.Input.Key.RightShift) ||
+                e.SystemKey.HasFlag(System.Windows.Input.Key.LeftShift) ||
+                e.SystemKey.HasFlag(System.Windows.Input.Key.RightShift) ||
+                e.KeyboardDevice.IsKeyDown(System.Windows.Input.Key.LeftShift) ||
+                e.KeyboardDevice.IsKeyDown(System.Windows.Input.Key.RightShift);
+        }
+
+        private bool IsControlKeyDown(System.Windows.Input.KeyEventArgs e)
+        {
+            return e.Key.HasFlag(System.Windows.Input.Key.LeftCtrl) ||
+                e.Key.HasFlag(System.Windows.Input.Key.RightCtrl) ||
+                e.SystemKey.HasFlag(System.Windows.Input.Key.LeftCtrl) ||
+                e.SystemKey.HasFlag(System.Windows.Input.Key.RightCtrl) ||
+                e.KeyboardDevice.IsKeyDown(System.Windows.Input.Key.LeftCtrl) ||
+                e.KeyboardDevice.IsKeyDown(System.Windows.Input.Key.RightCtrl);
         }
 
         private void ExecuteCommand(Action action)
@@ -337,11 +420,6 @@ namespace MediaBrowser.UI.EntryPoints
                 }
                 ShowFullscreenVideoOsd();
             }
-        }
-
-        private void NavigateBack()
-        {
-            _nav.NavigateBack();
         }
 
         private void Close()

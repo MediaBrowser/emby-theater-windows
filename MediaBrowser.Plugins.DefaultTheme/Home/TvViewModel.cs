@@ -57,7 +57,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             TileWidth = tileWidth;
             TileHeight = tileHeight;
 
-            const double tileScaleFactor = 11;
+            const double tileScaleFactor = 12;
 
             ActorsViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {

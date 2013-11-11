@@ -248,8 +248,6 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 CurrentImage = _defaultImage;
             }
 
-            _logger.Info("Setting backdrop to {0}", _currentBackdrops[index]);
-
             var currentSource = _backdropDownloadCancellationTokenSource;
 
             if (currentSource != null)

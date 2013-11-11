@@ -112,6 +112,7 @@ namespace MediaBrowser.UI.EntryPoints
 
             if (activeMedias.Any(i => !i.IsAudio))
             {
+                _lastInputTime = DateTime.Now;
                 return;
             }
 

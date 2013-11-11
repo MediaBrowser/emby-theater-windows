@@ -36,21 +36,13 @@ namespace MediaBrowser.Theater.DirectShow
             // Stream remote items through the api
             if (item.LocationType == LocationType.Remote)
             {
-                return apiClient.GetVideoStreamUrl(new VideoStreamOptions
-                {
-                    ItemId = item.Id,
-                    Static = true
-                });
+                return GetStreamedPath(item, apiClient);
             }
 
             // Stream if we can't access the file system
             if (!File.Exists(item.Path) && !Directory.Exists(item.Path))
             {
-                return apiClient.GetVideoStreamUrl(new VideoStreamOptions
-                {
-                    Static = true,
-                    ItemId = item.Id
-                });
+                return GetStreamedPath(item, apiClient);
             }
 
             if (item.VideoType.HasValue && item.VideoType.Value == VideoType.BluRay)
@@ -59,6 +51,42 @@ namespace MediaBrowser.Theater.DirectShow
             }
 
             return item.Path;
+        }
+
+        private static string GetStreamedPath(BaseItemDto item, IApiClient apiClient)
+        {
+            if (item.VideoType.HasValue)
+            {
+                if (item.VideoType.Value != VideoType.VideoFile)
+                {
+                    return apiClient.GetVideoStreamUrl(new VideoStreamOptions
+                    {
+                        ItemId = item.Id,
+                        OutputFileExtension = "mp4",
+                        VideoCodec = VideoCodecs.H264,
+                        AudioCodec = AudioCodecs.Aac
+                    });
+                }
+            }
+
+            var extension = item.LocationType == LocationType.Remote ? null : Path.GetExtension(item.Path);
+
+            if (item.IsAudio)
+            {
+                return apiClient.GetAudioStreamUrl(new VideoStreamOptions
+                {
+                    Static = true,
+                    ItemId = item.Id,
+                    OutputFileExtension = extension
+                });
+            }
+
+            return apiClient.GetVideoStreamUrl(new VideoStreamOptions
+            {
+                Static = true,
+                ItemId = item.Id,
+                OutputFileExtension = extension
+            });
         }
 
         private static string GetBlurayPath(string root)

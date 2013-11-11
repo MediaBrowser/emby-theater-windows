@@ -1,5 +1,7 @@
 ﻿using MediaBrowser.Common.Events;
 using MediaBrowser.Model.Dto;
+using MediaBrowser.Model.Entities;
+using MediaBrowser.Model.IO;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.UserInput;
@@ -7,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -28,6 +31,10 @@ namespace MediaBrowser.Theater.Presentation.Playback
         /// The _playback manager
         /// </summary>
         private readonly IPlaybackManager _playbackManager;
+
+        private readonly IIsoManager _isoManager;
+
+        private IIsoMount _currentIsoMount;
 
         /// <summary>
         /// The _current process
@@ -192,21 +199,17 @@ namespace MediaBrowser.Theater.Presentation.Playback
         }
 
         /// <summary>
-        /// The _null task result
-        /// </summary>
-        private readonly Task _nullTaskResult = Task.FromResult(true);
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="GenericExternalPlayer" /> class.
         /// </summary>
         /// <param name="playbackManager">The playback manager.</param>
         /// <param name="logger">The logger.</param>
         /// <param name="userInput">The user input.</param>
-        public GenericExternalPlayer(IPlaybackManager playbackManager, ILogger logger, IUserInputManager userInput)
+        public GenericExternalPlayer(IPlaybackManager playbackManager, ILogger logger, IUserInputManager userInput, IIsoManager isoManager)
         {
             _playbackManager = playbackManager;
             Logger = logger;
             _userInput = userInput;
+            _isoManager = isoManager;
         }
 
         /// <summary>
@@ -240,47 +243,65 @@ namespace MediaBrowser.Theater.Presentation.Playback
         /// </summary>
         /// <param name="options">The options.</param>
         /// <returns>Task.</returns>
-        public Task Play(PlayOptions options)
+        public async Task Play(PlayOptions options)
         {
-            return Task.Run(() =>
+            _currentIsoMount = options.Items.Count == 1 ? await GetIsoMount(options.Items[0], CancellationToken.None) : null;
+
+            CurrentPlaylistIndex = 0;
+            CurrentPlayOptions = options;
+
+            _playlist = options.Items.ToList();
+
+            var process = new Process
             {
-                CurrentPlaylistIndex = 0;
-                CurrentPlayOptions = options;
+                EnableRaisingEvents = true,
+                StartInfo = GetProcessStartInfo(options.Items, options, _currentIsoMount)
+            };
 
-                _playlist = options.Items.ToList();
+            Logger.Info("{0} {1}", process.StartInfo.FileName, process.StartInfo.Arguments);
 
-                var process = new Process
-                {
-                    EnableRaisingEvents = true,
-                    StartInfo = GetProcessStartInfo(options.Items, options)
-                };
+            try
+            {
+                process.Start();
+            }
+            catch (Exception ex)
+            {
+                Logger.ErrorException("Error starting player", ex);
 
-                Logger.Info("{0} {1}", process.StartInfo.FileName, process.StartInfo.Arguments);
+                _playlist.Clear();
 
+                throw;
+            }
+
+            if (options.Configuration.CloseOnStopButton && !CanCloseAutomaticallyOnStopButton)
+            {
+                _userInput.KeyDown += KeyboardListener_KeyDown;
+            }
+
+            process.Exited += CurrentProcess_Exited;
+
+            _currentProcess = process;
+
+            OnPlayerLaunched();
+        }
+
+        private async Task<IIsoMount> GetIsoMount(BaseItemDto item, CancellationToken cancellationToken)
+        {
+            IIsoMount mountedIso = null;
+
+            if (item.VideoType.HasValue && item.VideoType.Value == VideoType.Iso && item.IsoType.HasValue && _isoManager.CanMount(item.Path))
+            {
                 try
                 {
-                    process.Start();
+                    mountedIso = await _isoManager.Mount(item.Path, cancellationToken);
                 }
                 catch (Exception ex)
                 {
-                    Logger.ErrorException("Error starting player", ex);
-
-                    _playlist.Clear();
-
-                    throw;
+                    Logger.ErrorException("Error mounting iso {0}", ex, item.Path);
                 }
+            }
 
-                if (options.Configuration.CloseOnStopButton && !CanCloseAutomaticallyOnStopButton)
-                {
-                    _userInput.KeyDown += KeyboardListener_KeyDown;
-                }
-
-                process.Exited += CurrentProcess_Exited;
-
-                _currentProcess = process;
-
-                OnPlayerLaunched();
-            });
+            return mountedIso;
         }
 
         protected virtual void OnPlayerLaunched()
@@ -324,6 +345,12 @@ namespace MediaBrowser.Theater.Presentation.Playback
             var ticks = CurrentPositionTicks;
 
             process.Dispose();
+
+            if (_currentIsoMount != null)
+            {
+                _currentIsoMount.Dispose();
+                _currentIsoMount = null;
+            }
 
             var media = index != -1 && playlist.Count > 0 ? playlist[index] : null;
 
@@ -394,13 +421,14 @@ namespace MediaBrowser.Theater.Presentation.Playback
         /// </summary>
         /// <param name="items">The items.</param>
         /// <param name="options">The options.</param>
+        /// <param name="isoMount">The iso mount.</param>
         /// <returns>ProcessStartInfo.</returns>
-        protected virtual ProcessStartInfo GetProcessStartInfo(IEnumerable<BaseItemDto> items, PlayOptions options)
+        protected virtual ProcessStartInfo GetProcessStartInfo(IEnumerable<BaseItemDto> items, PlayOptions options, IIsoMount isoMount)
         {
             return new ProcessStartInfo
             {
                 FileName = options.Configuration.Command,
-                Arguments = GetCommandArguments(items, options)
+                Arguments = GetCommandArguments(items, options, isoMount)
             };
         }
 
@@ -409,10 +437,11 @@ namespace MediaBrowser.Theater.Presentation.Playback
         /// </summary>
         /// <param name="items">The items.</param>
         /// <param name="options">The options.</param>
+        /// <param name="isoMount">The iso mount.</param>
         /// <returns>System.String.</returns>
-        protected virtual string GetCommandArguments(IEnumerable<BaseItemDto> items, PlayOptions options)
+        protected virtual string GetCommandArguments(IEnumerable<BaseItemDto> items, PlayOptions options, IIsoMount isoMount)
         {
-            return GetCommandArguments(items, options.Configuration.Args);
+            return GetCommandArguments(items, options.Configuration.Args, isoMount);
         }
 
         /// <summary>
@@ -420,29 +449,37 @@ namespace MediaBrowser.Theater.Presentation.Playback
         /// </summary>
         /// <param name="items">The items.</param>
         /// <param name="formatString">The format string.</param>
+        /// <param name="isoMount">The iso mount.</param>
         /// <returns>System.String.</returns>
-        protected string GetCommandArguments(IEnumerable<BaseItemDto> items, string formatString)
+        protected string GetCommandArguments(IEnumerable<BaseItemDto> items, string formatString, IIsoMount isoMount)
         {
             var list = items.ToList();
 
-            var paths = list.Select(i => "\"" + GetPathForCommandLine(i) + "\"");
+            string path;
 
-            if (!SupportsMultiFilePlayback)
+            if (list.Count == 1 || !SupportsMultiFilePlayback || isoMount != null)
             {
-                paths = paths.Take(1);
+                path = "\"" + GetPathForCommandLine(list[0], isoMount) + "\"";
+            }
+            else
+            {
+                var paths = list.Select(i => "\"" + GetPathForCommandLine(i, null) + "\"");
+
+                path = string.Join(" ", paths.ToArray());
             }
 
-            return formatString.Replace("{PATH}", string.Join(" ", paths.ToArray()));
+            return formatString.Replace("{PATH}", path);
         }
 
         /// <summary>
         /// Gets the path for command line.
         /// </summary>
         /// <param name="item">The item.</param>
+        /// <param name="isoMount">The iso mount.</param>
         /// <returns>System.String.</returns>
-        protected virtual string GetPathForCommandLine(BaseItemDto item)
+        protected virtual string GetPathForCommandLine(BaseItemDto item, IIsoMount isoMount)
         {
-            return item.Path;
+            return isoMount == null ? item.Path : isoMount.MountedPath;
         }
 
         /// <summary>

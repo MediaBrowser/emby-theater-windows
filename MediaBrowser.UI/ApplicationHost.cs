@@ -312,7 +312,7 @@ namespace MediaBrowser.UI
 
             var serverVersion = new Version(serverInfo.Version);
 
-            var version = InstallationManager.GetLatestCompatibleVersion(availablePackages, Constants.MbTheaterPkgName, serverVersion, ConfigurationManager.CommonConfiguration.SystemUpdateLevel);
+            var version = InstallationManager.GetLatestCompatibleVersion(availablePackages, Constants.MbTheaterPkgName, null, serverVersion, ConfigurationManager.CommonConfiguration.SystemUpdateLevel);
 
             return version != null ? new CheckForUpdateResult { AvailableVersion = version.version, IsUpdateAvailable = version.version > ApplicationVersion, Package = version } :
                        new CheckForUpdateResult { AvailableVersion = ApplicationVersion, IsUpdateAvailable = false };

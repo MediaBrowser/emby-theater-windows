@@ -1,9 +1,9 @@
-﻿using MediaBrowser.Model.Dto;
+﻿using System.Collections.Generic;
+using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.IO;
-using System.Collections.Generic;
 
-namespace MediaBrowser.Theater.DirectShow
+namespace MediaBrowser.Theater.Presentation.Playback
 {
     public class PlayableItem
     {

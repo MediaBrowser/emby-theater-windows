@@ -72,7 +72,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 Context = ViewType.Games
             };
 
-            const double tileScaleFactor = 11;
+            const double tileScaleFactor = 12;
 
             RecentlyPlayedViewModel = new ItemListViewModel(GetRecentlyPlayedAsync, presentation, imageManager, apiClient, nav, playback, logger, _serverEvents)
             {

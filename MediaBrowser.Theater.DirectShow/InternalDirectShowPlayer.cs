@@ -17,6 +17,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Threading;
+using MediaBrowser.Theater.Presentation.Playback;
 
 namespace MediaBrowser.Theater.DirectShow
 {
@@ -204,16 +205,6 @@ namespace MediaBrowser.Theater.DirectShow
 
                 throw;
             }
-        }
-
-        private void ShowCursor()
-        {
-            _mediaPlayer.ShowCursor();
-        }
-
-        private void HideCursor()
-        {
-            _mediaPlayer.HideCursor();
         }
 
         private async Task PlayTrack(int index, long? startPositionTicks)

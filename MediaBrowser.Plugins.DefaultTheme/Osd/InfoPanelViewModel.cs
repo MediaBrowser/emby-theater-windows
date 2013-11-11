@@ -1,5 +1,6 @@
 ﻿using MediaBrowser.Theater.Presentation.ViewModels;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Osd
@@ -33,7 +34,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Osd
             }
 
             var nowPlaying = _transportViewModel.NowPlayingItem;
-            if (nowPlaying != null && nowPlaying.People.Length > 0)
+            if (nowPlaying != null && nowPlaying.People.Any(i => i.HasPrimaryImage))
             {
                 list.Add(new TabItem
                 {
@@ -96,7 +97,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Osd
 
                 return vm;
             }
-            
+
             return _transportViewModel;
         }
 

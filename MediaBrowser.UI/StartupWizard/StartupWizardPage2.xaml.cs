@@ -90,7 +90,7 @@ namespace MediaBrowser.UI.StartupWizard
                     _config.Configuration.ServerHostName = TxtHost.Text;
                     _config.SaveConfiguration();
 
-                    await _nav.Navigate(new StartupWizardLav(_nav, _presentation, _mediaFilters));
+                    await _nav.Navigate(new StartupWizardLav(_nav, _presentation, _mediaFilters, _apiClient));
                 }
                 catch (Exception)
                 {

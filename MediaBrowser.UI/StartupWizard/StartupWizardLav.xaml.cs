@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Theater.Interfaces.Navigation;
+﻿using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.System;
 using MediaBrowser.Theater.Presentation.Pages;
@@ -16,14 +17,16 @@ namespace MediaBrowser.UI.StartupWizard
         private readonly IPresentationManager _presentation;
         private readonly INavigationService _nav;
         private readonly IMediaFilters _mediaFilters;
+        private readonly IApiClient _apiClient;
 
         private readonly Progress<double> _installProgress = new Progress<double>();
 
-        public StartupWizardLav(INavigationService nav, IPresentationManager presentation, IMediaFilters mediaFilters)
+        public StartupWizardLav(INavigationService nav, IPresentationManager presentation, IMediaFilters mediaFilters, IApiClient apiClient)
         {
             _nav = nav;
             _presentation = presentation;
             _mediaFilters = mediaFilters;
+            _apiClient = apiClient;
             InitializeComponent();
         }
 
@@ -88,7 +91,7 @@ namespace MediaBrowser.UI.StartupWizard
 
         async void BtnNext_Click(object sender, RoutedEventArgs e)
         {
-            await _nav.Navigate(new StartupWizardXyVsFilter(_nav, _presentation, _mediaFilters));
+            await _nav.Navigate(new StartupWizardXyVsFilter(_nav, _presentation, _mediaFilters, _apiClient));
         }
 
         void StartupWizardPage_Loaded(object sender, RoutedEventArgs e)

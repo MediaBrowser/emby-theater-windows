@@ -213,6 +213,9 @@
     <Compile Include="StartupWizard\StartupWizardLav.xaml.cs">
       <DependentUpon>StartupWizardLav.xaml</DependentUpon>
     </Compile>
+    <Compile Include="StartupWizard\ThemeVideosPage.xaml.cs">
+      <DependentUpon>ThemeVideosPage.xaml</DependentUpon>
+    </Compile>
     <Page Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -318,6 +321,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="StartupWizard\StartupWizardLav.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="StartupWizard\ThemeVideosPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -246,7 +246,7 @@ namespace MediaBrowser.UI
                 await _appHost.Init();
 
                 LoadListBoxItemResourceFile();
-                
+
                 // Load default theme
                 await _appHost.ThemeManager.LoadDefaultTheme();
 
@@ -346,8 +346,6 @@ namespace MediaBrowser.UI
             }
             else
             {
-                // TODO: Open web socket using systemInfo
-
                 await _appHost.NavigationService.NavigateToLoginPage();
             }
         }

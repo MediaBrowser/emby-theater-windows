@@ -68,7 +68,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             _posterTileHeight = (TileHeight * 1.46) + TilePadding / 2;
             _posterTileWidth = _posterTileHeight * 2 / 3;
 
-            const double tileScaleFactor = 12;
+            const double tileScaleFactor = 11;
 
             ActorsViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {

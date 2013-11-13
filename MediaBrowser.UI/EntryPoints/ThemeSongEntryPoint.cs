@@ -125,7 +125,12 @@ namespace MediaBrowser.UI.EntryPoints
                 return themeMediaResult.ThemeVideosResult;
             }
 
-            return themeMediaResult.ThemeSongsResult;
+            if (themeMediaResult.ThemeSongsResult.Items.Length > 0)
+            {
+                return themeMediaResult.ThemeSongsResult;
+            }
+            
+            return themeMediaResult.SoundtrackSongsResult;
         }
 
         public void Dispose()

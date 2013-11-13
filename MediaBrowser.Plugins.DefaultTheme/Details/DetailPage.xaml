@@ -19,12 +19,12 @@
 
         <TextBlock Name="TxtName" Style="{DynamicResource TextBlockStyle}" HorizontalAlignment="Center" Margin="300 0 300 15" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"></TextBlock>
 
-        <controls:ExtendedScrollViewer Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalAlignment="Top" HorizontalAlignment="Center" CanContentScroll="True" Margin="20 35 20 0">
+        <controls:ExtendedScrollViewer Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalAlignment="Top" HorizontalAlignment="Stretch" CanContentScroll="True" Margin="20 35 20 0">
             <controls:ScrollingPanel CanHorizontallyScroll="True" CanVerticallyScroll="False">
-                <controls:ExtendedListBox x:Name="MenuList" ItemsSource="{Binding Sections}" ScrollViewer.CanContentScroll="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" HorizontalAlignment="Center" ItemContainerStyle="{DynamicResource DetailPageMenuListBoxItemStyle}">
+                <controls:ExtendedListBox x:Name="MenuList" ItemsSource="{Binding Sections}" ScrollViewer.CanContentScroll="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" HorizontalAlignment="Stretch" ItemContainerStyle="{DynamicResource DetailPageMenuListBoxItemStyle}">
                     <controls:ExtendedListBox.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" />
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" />
                         </ItemsPanelTemplate>
                     </controls:ExtendedListBox.ItemsPanel>
                 </controls:ExtendedListBox>

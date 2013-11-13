@@ -42,7 +42,7 @@ namespace MediaBrowser.Theater.Implementations.Session
 
         public async Task Logout()
         {
-             _playback.StopAllPlayback();
+            _playback.StopAllPlayback();
 
             _apiClient.CurrentUserId = null;
 
@@ -74,7 +74,7 @@ namespace MediaBrowser.Theater.Implementations.Session
 
             EventHelper.FireEventIfNotNull(UserLoggedIn, this, EventArgs.Empty, _logger);
 
-            var userConfig = await _config.GetUserTheaterConfiguration(CurrentUser.Id);
+            var userConfig = _config.GetUserTheaterConfiguration(CurrentUser.Id);
 
             var theme = _themeManager.Themes.FirstOrDefault(i => string.Equals(i.Name, userConfig.Theme)) ?? _themeManager.DefaultTheme;
 

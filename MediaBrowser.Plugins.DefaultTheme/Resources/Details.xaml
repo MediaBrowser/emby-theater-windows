@@ -3,14 +3,13 @@
                     xmlns:viewModels="clr-namespace:MediaBrowser.Theater.Presentation.ViewModels;assembly=MediaBrowser.Theater.Presentation"
                     xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
                     xmlns:details="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Controls"
-                    xmlns:entities="clr-namespace:MediaBrowser.Model.Entities;assembly=MediaBrowser.Model"
                     xmlns:details1="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Details">
 
     <Style x:Key="DetailPageMenuListBoxItemStyle" TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource BaseListBoxItemStyle}">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                    <TextBlock Opacity=".6" x:Name="MenuText" Margin="45 0" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Text="{Binding DisplayName}" Style="{DynamicResource Heading2TextBlockStyle}"></TextBlock>
+                    <TextBlock Opacity=".6" x:Name="MenuText" Margin="35 0" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Text="{Binding DisplayName}" Style="{DynamicResource Heading2TextBlockStyle}"></TextBlock>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsSelected" Value="true">
                             <Setter TargetName="MenuText" Property="Opacity" Value="1"/>
@@ -1316,10 +1315,10 @@
                 <Setter Property="Content">
                     <Setter.Value>
                         <Grid>
-                            <controls:ExtendedListBox DataContext="{Binding ContentViewModel}" ItemsSource="{Binding ListCollectionView}" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{DynamicResource ListPageListViewItemTemplate}">
+                            <controls:ExtendedListBox DataContext="{Binding ContentViewModel}" ItemsSource="{Binding ListCollectionView}" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{DynamicResource ListPageListViewItemTemplate}">
                                 <controls:ExtendedListBox.ItemsPanel>
                                     <ItemsPanelTemplate>
-                                        <StackPanel Orientation="Vertical" Margin="80 20"></StackPanel>
+                                        <StackPanel Orientation="Vertical" Margin="80 20" MinWidth="1200"></StackPanel>
                                     </ItemsPanelTemplate>
                                 </controls:ExtendedListBox.ItemsPanel>
                             </controls:ExtendedListBox>

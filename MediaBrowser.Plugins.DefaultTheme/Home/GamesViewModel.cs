@@ -72,17 +72,17 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 Context = ViewType.Games
             };
 
-            const double tileScaleFactor = 12;
-
             RecentlyPlayedViewModel = new ItemListViewModel(GetRecentlyPlayedAsync, presentation, imageManager, apiClient, nav, playback, logger, _serverEvents)
             {
-                ImageDisplayWidth = TileWidth * tileScaleFactor / 16,
+                ImageDisplayWidth = TileWidth * 10 / 16,
                 ImageDisplayHeightGenerator = v => TileHeight,
                 DisplayNameGenerator = HomePageViewModel.GetDisplayName,
                 EnableBackdropsForCurrentItem = false,
                 ImageStretch = Stretch.UniformToFill,
                 Context = ViewType.Games
             };
+
+            const double tileScaleFactor = 11;
 
             GenresViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {

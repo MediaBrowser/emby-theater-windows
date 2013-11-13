@@ -10,7 +10,7 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
 
         ApplicationConfiguration Configuration { get; }
 
-        Task<UserTheaterConfiguration> GetUserTheaterConfiguration(string userId);
+        UserTheaterConfiguration GetUserTheaterConfiguration(string userId);
 
         Task UpdateUserTheaterConfiguration(string userId, UserTheaterConfiguration configuration);
     }

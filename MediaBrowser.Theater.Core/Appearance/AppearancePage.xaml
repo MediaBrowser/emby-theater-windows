@@ -52,6 +52,10 @@
         <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Row="2" Grid.Column="0" Margin="0 30 0 0">Home page:</TextBlock>
         <controls:SelectList x:Name="SelectHomePage" Margin="40 30 0 0" Grid.Row="2" Grid.Column="1"></controls:SelectList>
 
+        <CheckBox x:Name="ChkShowBackButton" Margin="0 30 0 0" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center">
+            <TextBlock Style="{DynamicResource TextBlockStyle}">Show back button</TextBlock>
+        </CheckBox>
+
         <Button x:Name="BtnApply" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Margin="0 60 0 0">
             <TextBlock Style="{DynamicResource TextBlockStyle}">Apply</TextBlock>
         </Button>

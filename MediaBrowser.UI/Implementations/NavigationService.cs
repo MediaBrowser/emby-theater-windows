@@ -34,7 +34,7 @@ namespace MediaBrowser.UI.Implementations
     {
         private readonly List<EventHandler<NavigationEventArgs>> _pendingEventHandlers =
             new List<EventHandler<NavigationEventArgs>>();
- 
+
         public event EventHandler<NavigationEventArgs> Navigated
         {
             add
@@ -217,7 +217,7 @@ namespace MediaBrowser.UI.Implementations
             {
                 var userId = _sessionFactory().CurrentUser.Id;
 
-                var userConfig = await _config.GetUserTheaterConfiguration(userId);
+                var userConfig = _config.GetUserTheaterConfiguration(userId);
 
                 var homePages = _presentationManager.HomePages.ToList();
 

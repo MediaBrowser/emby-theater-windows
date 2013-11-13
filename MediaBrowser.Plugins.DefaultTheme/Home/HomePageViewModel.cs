@@ -26,7 +26,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         private readonly IPlaybackManager _playbackManager;
         private readonly IServerEvents _serverEvents;
 
-        private const double TileWidth = 320;
+        private const double TileWidth = 352;
         private const double TileHeight = TileWidth * 9 / 16;
 
         public HomePageViewModel(IPresentationManager presentationManager, IApiClient apiClient, ISessionManager sessionManager, ILogger logger, IImageManager imageManager, INavigationService nav, IPlaybackManager playbackManager, IServerEvents serverEvents)
@@ -162,8 +162,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 var vm = new ItemListViewModel(GetMediaCollectionsAsync, _presentationManager, _imageManager, _apiClient, _nav, _playbackManager, _logger, _serverEvents)
                 {
-                    ImageDisplayWidth = 400,
-                    ImageDisplayHeightGenerator = v => 225,
+                    ImageDisplayWidth = 528,
+                    ImageDisplayHeightGenerator = v => 297,
                     DisplayNameGenerator = GetDisplayName
                 };
 

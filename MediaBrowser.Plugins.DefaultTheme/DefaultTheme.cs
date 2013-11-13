@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using MediaBrowser.Common;
+﻿using MediaBrowser.Common;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
@@ -8,6 +7,7 @@ using MediaBrowser.Model.Querying;
 using MediaBrowser.Plugins.DefaultTheme.Details;
 using MediaBrowser.Plugins.DefaultTheme.Home;
 using MediaBrowser.Plugins.DefaultTheme.ListPage;
+using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
@@ -58,10 +58,11 @@ namespace MediaBrowser.Plugins.DefaultTheme
         private readonly ILogger _logger;
         private readonly IServerEvents _serverEvents;
         private readonly IApplicationHost _appHost;
+        private readonly ITheaterConfigurationManager _config;
 
         public static DefaultTheme Current;
 
-        public DefaultTheme(IPlaybackManager playbackManager, IImageManager imageManager, IApiClient apiClient, INavigationService navService, ISessionManager sessionManager, IPresentationManager presentationManager, ILogManager logManager, IServerEvents serverEvents, IApplicationHost appHost)
+        public DefaultTheme(IPlaybackManager playbackManager, IImageManager imageManager, IApiClient apiClient, INavigationService navService, ISessionManager sessionManager, IPresentationManager presentationManager, ILogManager logManager, IServerEvents serverEvents, IApplicationHost appHost, ITheaterConfigurationManager config)
         {
             Current = this;
 
@@ -73,6 +74,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
             _presentationManager = presentationManager;
             _serverEvents = serverEvents;
             _appHost = appHost;
+            _config = config;
             _logger = logManager.GetLogger(GetType().Name);
         }
 
@@ -241,7 +243,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
 
         public PageContentViewModel CreatePageContentDataContext()
         {
-            PageContentDataContext = new DefaultThemePageContentViewModel(_navService, _sessionManager, _apiClient, _imageManager, _presentationManager, _playbackManager, _logger, _appHost, _serverEvents);
+            PageContentDataContext = new DefaultThemePageContentViewModel(_navService, _sessionManager, _apiClient, _imageManager, _presentationManager, _playbackManager, _logger, _appHost, _serverEvents, _config);
 
             return PageContentDataContext;
         }

@@ -55,26 +55,22 @@ namespace MediaBrowser.Theater.Implementations.Configuration
             return Path.Combine(ApplicationPaths.ConfigurationDirectoryPath, userId + ".xml");
         }
 
-        public Task<UserTheaterConfiguration> GetUserTheaterConfiguration(string userId)
+        public UserTheaterConfiguration GetUserTheaterConfiguration(string userId)
         {
-            return Task.Run(() =>
+            var path = GetConfigPath(userId);
+
+            try
             {
-                var path = GetConfigPath(userId);
-
-                try
-                {
-                    return (UserTheaterConfiguration)XmlSerializer.DeserializeFromFile(typeof(UserTheaterConfiguration), path);
-                }
-                catch (DirectoryNotFoundException)
-                {
-                    return new UserTheaterConfiguration();
-                }
-                catch (FileNotFoundException)
-                {
-                    return new UserTheaterConfiguration();
-                }
-
-            });
+                return (UserTheaterConfiguration)XmlSerializer.DeserializeFromFile(typeof(UserTheaterConfiguration), path);
+            }
+            catch (DirectoryNotFoundException)
+            {
+                return new UserTheaterConfiguration();
+            }
+            catch (FileNotFoundException)
+            {
+                return new UserTheaterConfiguration();
+            }
         }
 
         public Task UpdateUserTheaterConfiguration(string userId, UserTheaterConfiguration configuration)

@@ -30,12 +30,12 @@
                 </Style>
             </Grid.Style>
 
-            <controls:ExtendedScrollViewer ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalAlignment="Top" HorizontalAlignment="Center" CanContentScroll="True">
+            <controls:ExtendedScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" VerticalAlignment="Top" HorizontalAlignment="Stretch" CanContentScroll="True">
                 <controls:ScrollingPanel CanHorizontallyScroll="True" CanVerticallyScroll="False">
-                    <controls:ExtendedListBox x:Name="IndexMenu" ItemsSource="{Binding IndexOptionsCollectionView}" ScrollViewer.CanContentScroll="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" HorizontalAlignment="Center" ItemContainerStyle="{DynamicResource IndexMenuListBoxItemStyle}">
+                    <controls:ExtendedListBox x:Name="IndexMenu" ItemsSource="{Binding IndexOptionsCollectionView}" ScrollViewer.CanContentScroll="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" HorizontalAlignment="Stretch" ItemContainerStyle="{DynamicResource IndexMenuListBoxItemStyle}">
                         <controls:ExtendedListBox.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="100 0 100 0" />
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="60 0 60 0" />
                             </ItemsPanelTemplate>
                         </controls:ExtendedListBox.ItemsPanel>
                     </controls:ExtendedListBox>
@@ -47,12 +47,12 @@
 
             <Grid.Style>
                 <Style TargetType="{x:Type Grid}">
-                    <Setter Property="Margin" Value="0 -25 0 0" />
+                    <Setter Property="Margin" Value="0 -30 0 0" />
                     <Setter Property="VerticalAlignment" Value="Center" />
 
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding ScrollDirection}" Value="Vertical">
-                            <Setter Property="Margin" Value="0 35 0 35" />
+                            <Setter Property="Margin" Value="0 40 0 35" />
                             <Setter Property="VerticalAlignment" Value="Top" />
                         </DataTrigger>
                     </Style.Triggers>

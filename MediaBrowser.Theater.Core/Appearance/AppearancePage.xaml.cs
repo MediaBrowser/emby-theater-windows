@@ -119,12 +119,12 @@ namespace MediaBrowser.Theater.Core.Appearance
             UserImage.Visibility = Visibility.Collapsed;
         }
 
-        private async void LoadConfiguration()
+        private void LoadConfiguration()
         {
-            var userConfig = await _config.GetUserTheaterConfiguration(_session.CurrentUser.Id);
+            var userConfig = _config.GetUserTheaterConfiguration(_session.CurrentUser.Id);
 
-            var homePageOption = SelectHomePage.Options.FirstOrDefault(i => string.Equals(i.Text, userConfig.HomePage, StringComparison.OrdinalIgnoreCase)) ?? 
-                SelectHomePage.Options.FirstOrDefault(i => string.Equals(i.Text, "Default")) ?? 
+            var homePageOption = SelectHomePage.Options.FirstOrDefault(i => string.Equals(i.Text, userConfig.HomePage, StringComparison.OrdinalIgnoreCase)) ??
+                SelectHomePage.Options.FirstOrDefault(i => string.Equals(i.Text, "Default")) ??
                 SelectHomePage.Options.First();
 
             SelectHomePage.SelectedValue = homePageOption.Value;
@@ -134,14 +134,17 @@ namespace MediaBrowser.Theater.Core.Appearance
                 SelectTheme.Options.First();
 
             SelectTheme.SelectedValue = themeOption.Value;
+
+            ChkShowBackButton.IsChecked = userConfig.ShowBackButton;
         }
 
         private async Task SaveConfiguration()
         {
-            var userConfig = await _config.GetUserTheaterConfiguration(_session.CurrentUser.Id);
+            var userConfig = _config.GetUserTheaterConfiguration(_session.CurrentUser.Id);
 
             userConfig.HomePage = SelectHomePage.SelectedValue;
             userConfig.Theme = SelectTheme.SelectedValue;
+            userConfig.ShowBackButton = ChkShowBackButton.IsChecked ?? false;
 
             await _config.UpdateUserTheaterConfiguration(_session.CurrentUser.Id, userConfig);
         }

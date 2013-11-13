@@ -180,7 +180,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
 
             if (item.IndexNumber.HasValue && !item.IsType("season"))
             {
-                name = item.IndexNumber + " - " + name;
+                name = item.IndexNumber + "  -  " + name;
             }
 
             if (item.ParentIndexNumber.HasValue && item.IsAudio)

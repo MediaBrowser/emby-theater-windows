@@ -26,7 +26,7 @@
         </Setter>
     </Style>
 
-    <Brush x:Key="TextBackground">#86000000</Brush>
+    <Brush x:Key="TextBackground">#96000000</Brush>
 
     <!--Default font for text. Themes should override these as needed-->
     <Brush x:Key="DefaultForeground">#ffffff</Brush>

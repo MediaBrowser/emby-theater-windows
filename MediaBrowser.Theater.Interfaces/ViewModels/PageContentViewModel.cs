@@ -29,6 +29,7 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
         public ICommand HomeCommand { get; private set; }
         public ICommand FullscreenVideoCommand { get; private set; }
         public ICommand SettingsCommand { get; private set; }
+        public ICommand GoBackCommand { get; private set; }
 
         public ICommand RestartServerCommand { get; private set; }
         public ICommand RestartApplicationCommand { get; private set; }
@@ -58,6 +59,7 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
             FullscreenVideoCommand = new RelayCommand(i => NavigationService.NavigateToInternalPlayerPage());
             RestartServerCommand = new RelayCommand(i => RestartServer());
             RestartApplicationCommand = new RelayCommand(i => RestartApplication());
+            GoBackCommand = new RelayCommand(i => GoBack());
 
             _dispatcher = Dispatcher.CurrentDispatcher;
 
@@ -385,6 +387,11 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
                     PresentationManager.ShowDefaultErrorMessage();
                 }
             }
+        }
+
+        private async void GoBack()
+        {
+            await NavigationService.NavigateBack();
         }
 
         private async void WaitForServerToRestart()

@@ -4,6 +4,7 @@ using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Plugins.DefaultTheme.UserProfileMenu;
+using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
@@ -20,14 +21,16 @@ namespace MediaBrowser.Plugins.DefaultTheme
     public class DefaultThemePageContentViewModel : PageContentViewModel
     {
         private readonly IImageManager _imageManager;
+        private readonly ITheaterConfigurationManager _config;
 
         public ICommand UserCommand { get; private set; }
         public ICommand DisplayPreferencesCommand { get; private set; }
 
-        public DefaultThemePageContentViewModel(INavigationService navigationService, ISessionManager sessionManager, IApiClient apiClient, IImageManager imageManager, IPresentationManager presentation, IPlaybackManager playbackManager, ILogger logger, IApplicationHost appHost, IServerEvents serverEvents)
+        public DefaultThemePageContentViewModel(INavigationService navigationService, ISessionManager sessionManager, IApiClient apiClient, IImageManager imageManager, IPresentationManager presentation, IPlaybackManager playbackManager, ILogger logger, IApplicationHost appHost, IServerEvents serverEvents, ITheaterConfigurationManager config)
             : base(navigationService, sessionManager, playbackManager, logger, appHost, apiClient, presentation, serverEvents)
         {
             _imageManager = imageManager;
+            _config = config;
 
             NavigationService.Navigated += NavigationService_Navigated;
             SessionManager.UserLoggedIn += SessionManager_UserLoggedIn;
@@ -35,17 +38,33 @@ namespace MediaBrowser.Plugins.DefaultTheme
             UserCommand = new RelayCommand(i => ShowUserMenu());
 
             DisplayPreferencesCommand = new RelayCommand(i => ShowDisplayPreferences());
+
+            _config.UserConfigurationUpdated += _config_UserConfigurationUpdated;
+        }
+
+        void _config_UserConfigurationUpdated(object sender, UserConfigurationUpdatedEventArgs e)
+        {
+            UpdateUserConfiguredValues();
         }
 
         void SessionManager_UserLoggedOut(object sender, EventArgs e)
         {
             RefreshHomeButton(NavigationService.CurrentPage);
+            ShowBackButton = true;
         }
 
         void SessionManager_UserLoggedIn(object sender, EventArgs e)
         {
             UpdateUserImage();
             RefreshHomeButton(NavigationService.CurrentPage);
+            UpdateUserConfiguredValues();
+        }
+
+        private void UpdateUserConfiguredValues()
+        {
+            var config = _config.GetUserTheaterConfiguration(SessionManager.CurrentUser.Id);
+
+            ShowBackButton = config.ShowBackButton;
         }
 
         private async void UpdateUserImage()
@@ -109,6 +128,23 @@ namespace MediaBrowser.Plugins.DefaultTheme
                 if (changed)
                 {
                     OnPropertyChanged("ShowDefaultUserImage");
+                }
+            }
+        }
+
+        private bool _showBackButton = true;
+        public bool ShowBackButton
+        {
+            get { return _showBackButton; }
+
+            set
+            {
+                var changed = _showBackButton != value;
+
+                _showBackButton = value;
+                if (changed)
+                {
+                    OnPropertyChanged("ShowBackButton");
                 }
             }
         }

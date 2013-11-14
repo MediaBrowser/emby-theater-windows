@@ -178,6 +178,19 @@ namespace MediaBrowser.Plugins.DefaultTheme
                         Fields = FolderPage.QueryFields
                     };
 
+                    if (item.IsType("series") || item.IsType("season"))
+                    {
+                        var userConfig = _sessionManager.CurrentUser.Configuration;
+                        if (!userConfig.DisplayMissingEpisodes)
+                        {
+                            query.IsMissing = false;
+                        }
+                        if (!userConfig.DisplayUnairedEpisodes)
+                        {
+                            query.IsVirtualUnaired = false;
+                        }
+                    }
+
                     return _apiClient.GetItemsAsync(query);
                 };
             }

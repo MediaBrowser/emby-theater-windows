@@ -1,4 +1,5 @@
 ﻿using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Reflection;
 using MediaBrowser.Theater.Interfaces.Session;
@@ -17,6 +18,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         public IApiClient ApiClient { get; private set; }
         public IImageManager ImageManager { get; private set; }
         public ISessionManager SessionManager { get; private set; }
+        private readonly INavigationService _navigation;
 
         private readonly RangeObservableCollection<UserDtoViewModel> _listItems =
             new RangeObservableCollection<UserDtoViewModel>();
@@ -66,9 +68,10 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
-        public UserListViewModel(IPresentationManager presentationManager, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager)
+        public UserListViewModel(IPresentationManager presentationManager, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigation)
         {
             SessionManager = sessionManager;
+            _navigation = navigation;
             ImageManager = imageManager;
             ApiClient = apiClient;
             PresentationManager = presentationManager;
@@ -101,7 +104,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
                 _listItems.Clear();
 
-                _listItems.AddRange(users.Select(i => new UserDtoViewModel(ApiClient, ImageManager, SessionManager) { User = i }));
+                _listItems.AddRange(users.Select(i => new UserDtoViewModel(ApiClient, ImageManager, SessionManager, _navigation) { User = i }));
 
                 if (selectedIndex.HasValue)
                 {

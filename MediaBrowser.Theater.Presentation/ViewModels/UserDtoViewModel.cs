@@ -1,6 +1,7 @@
 ﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
+using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Reflection;
 using MediaBrowser.Theater.Interfaces.Session;
@@ -32,8 +33,10 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         private readonly IImageManager _imageManager;
 
         private readonly ISessionManager _session;
-        
+        private readonly INavigationService _navigation;
+
         public ICommand LogoutCommand { get; private set; }
+        public ICommand GoHomeCommand { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserDtoViewModel" /> class.
@@ -41,13 +44,16 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         /// <param name="apiClient">The API client.</param>
         /// <param name="imageManager">The image manager.</param>
         /// <param name="session">The session.</param>
-        public UserDtoViewModel(IApiClient apiClient, IImageManager imageManager, ISessionManager session)
+        public UserDtoViewModel(IApiClient apiClient, IImageManager imageManager, ISessionManager session, INavigationService navigation)
         {
             _apiClient = apiClient;
             _imageManager = imageManager;
             _session = session;
+            _navigation = navigation;
 
             LogoutCommand = new RelayCommand(Logout);
+
+            GoHomeCommand = new RelayCommand(GoHome);
         }
 
         private async void Logout(object commandParameter)
@@ -58,6 +64,11 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
 
             await _session.Logout();
+        }
+
+        private async void GoHome(object commandParameter)
+        {
+            await _navigation.NavigateToHomePage();
         }
 
         public string Username

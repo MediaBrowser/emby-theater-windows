@@ -16,10 +16,11 @@
             <RowDefinition Height="auto"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <TextBlock Style="{DynamicResource Heading1TextBlockStyle}" Grid.Row="0">Theme Videos Plugin</TextBlock>
+        <TextBlock Style="{DynamicResource Heading1TextBlockStyle}" Grid.Row="0">Theme Video Plugins</TextBlock>
 
         <StackPanel Orientation="Vertical" Grid.Row="1" Margin="0 40 0 0">
-            <TextBlock Style="{DynamicResource TextBlockStyle}">For the best possible experience with Media Browser Theater please consider installing the theme videos plugin.</TextBlock>
+            <TextBlock Style="{DynamicResource TextBlockStyle}">For the best possible experience with Media Browser Theater please consider installing the Movie and TV Theme Video Plugins.</TextBlock>
+            <TextBlock Margin="0 20 0 0" Style="{DynamicResource TextBlockStyle}">The plugin will download theme videos for your movies and tv series which can be used as live video backdrops within Media Browser Theater.</TextBlock>
             <Button x:Name="BtnInstall" Margin="0 20 0 0">
                 <TextBlock Style="{DynamicResource TextBlockStyle}">More Information</TextBlock>
             </Button>

@@ -255,7 +255,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
 
         private void ShowUserMenu()
         {
-            new UserProfileWindow(SessionManager, _imageManager, ApiClient).ShowModal(PresentationManager.Window);
+            new UserProfileWindow(SessionManager, _imageManager, ApiClient, NavigationService).ShowModal(PresentationManager.Window);
         }
 
         private void ShowDisplayPreferences()

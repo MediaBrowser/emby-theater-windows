@@ -32,16 +32,13 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsKeyboardFocused" Value="true">
-                            <Setter TargetName="Border" Property="Opacity" Value=".5" />
-                            <Setter TargetName="Border" Property="Background" Value="#888888" />
+                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource ButtonBackgroundPressed}" />
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="true">
-                            <Setter TargetName="Border" Property="Opacity" Value=".5" />
-                            <Setter TargetName="Border" Property="Background" Value="#888888" />
+                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource ButtonBackgroundPressed}" />
                         </Trigger>
                         <Trigger Property="IsPressed" Value="true">
-                            <Setter TargetName="Border" Property="Opacity" Value=".5" />
-                            <Setter TargetName="Border" Property="Background" Value="#888888" />
+                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource ButtonBackgroundPressed}" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="false">
                             <Setter TargetName="Border" Property="Opacity" Value=".2" />

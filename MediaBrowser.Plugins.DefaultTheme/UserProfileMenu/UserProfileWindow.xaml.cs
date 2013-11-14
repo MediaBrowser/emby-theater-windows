@@ -1,4 +1,5 @@
 ﻿using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Presentation.Controls;
@@ -16,7 +17,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.UserProfileMenu
     {
         private readonly ISessionManager _session;
 
-        public UserProfileWindow(ISessionManager session, IImageManager imageManager, IApiClient apiClient)
+        public UserProfileWindow(ISessionManager session, IImageManager imageManager, IApiClient apiClient, INavigationService navigation)
             : base()
         {
             _session = session;
@@ -28,7 +29,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.UserProfileMenu
 
             BtnClose.Click += BtnClose_Click;
 
-            ContentGrid.DataContext = new UserDtoViewModel(apiClient, imageManager, session)
+            ContentGrid.DataContext = new UserDtoViewModel(apiClient, imageManager, session, navigation)
             {
                 User = session.CurrentUser,
                 ImageHeight = 54

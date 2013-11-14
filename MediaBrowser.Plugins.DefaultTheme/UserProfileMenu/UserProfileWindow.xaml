@@ -4,17 +4,34 @@
                                         xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
                           Title="UserProfileWindow" Height="300" Width="300"
         Style="{DynamicResource ModalWindow}" Cursor="None">
-    
+
     <Grid x:Name="MainGrid">
         <Grid Style="{DynamicResource ModalOverlayStyle}">
 
         </Grid>
         <Grid Style="{DynamicResource ModalContentStyle}" HorizontalAlignment="Right" VerticalAlignment="Stretch" x:Name="ContentGrid">
 
-            <StackPanel Margin="50 50 50 0" Orientation="Vertical" MinWidth="350">
+            <Button x:Name="BtnClose" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="25 33 0 0" Style="{DynamicResource ImageButton}">
+                <Grid>
+                    <Grid Width="40" Height="40">
+                        <Path Style="{DynamicResource IconPath}" Data="M50.5,4.7500001C25.232973,4.75 4.75,25.232973 4.7500001,50.5 4.75,75.767029 25.232973,96.25 50.5,96.25 75.767029,96.25 96.25,75.767029 96.25,50.5 96.25,25.232973 75.767029,4.75 50.5,4.7500001z M50.5,0C78.390381,0 101,22.609621 101,50.5 101,78.390381 78.390381,101 50.5,101 22.609621,101 0,78.390381 0,50.5 0,22.609621 22.609621,0 50.5,0z" Stretch="Fill" Name="Stroke" Visibility="Visible" />
+                    </Grid>
+                    <Path Style="{DynamicResource IconPath}" Data="F1M-800.86,-1379.55L-781.99,-1360.68 -782.125,-1360.54 -792.356,-1360.54 -809.825,-1378.01 -815.075,-1383.26 -792.494,-1405.84 -781.99,-1405.84 -800.86,-1386.97 -751.074,-1386.97 -751.074,-1379.55 -800.86,-1379.55z" Stretch="Uniform" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+                        <Path.RenderTransform>
+                            <TransformGroup>
+                                <TransformGroup.Children>
+                                    <RotateTransform Angle="0" />
+                                    <ScaleTransform ScaleX="1" ScaleY="1" />
+                                </TransformGroup.Children>
+                            </TransformGroup>
+                        </Path.RenderTransform>
+                    </Path>
+                </Grid>
+            </Button>
 
-                <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
+            <StackPanel Margin="85 30 50 0" Orientation="Vertical" MinWidth="350">
 
+                <StackPanel Orientation="Horizontal">
 
                     <Grid>
                         <Grid.Style>
@@ -26,7 +43,7 @@
                                 </Style.Triggers>
                             </Style>
                         </Grid.Style>
-                        
+
                         <Grid Width="54" Height="54" />
                         <Path Data="M15.930851,36.710608C22.14356,36.647291 30.005098,41.570198 30.005098,41.570198 38.080673,46.45562 45.657448,38.281082 45.657448,38.281082 48.847534,35.288968 53.432121,42.865801 53.432121,42.865801 59.214702,51.040343 59.414001,64.000004 59.414001,64.000004L0,64.000004C2.092523,41.669198 12.360659,37.482978 12.360659,37.482978 13.423015,36.951675 14.64142,36.723749 15.930851,36.710608z M33.0965,0C42.015587,0 49.245998,7.8997269 49.245998,17.644449 49.245998,27.390621 42.015587,35.288998 33.0965,35.288999 24.177311,35.288998 16.947,27.390621 16.947,17.644449 16.947,7.8997269 24.177311,0 33.0965,0z" Stretch="Uniform" Fill="#FFFFFFFF" Width="54" Height="54" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
                             <Path.RenderTransform>
@@ -55,23 +72,15 @@
                     <TextBlock Style="{DynamicResource Heading2TextBlockStyle}" Margin="20 0 0 0" Text="{Binding Username}"></TextBlock>
                 </StackPanel>
 
-                <Button x:Name="BtnClose" HorizontalAlignment="Left" Margin="0 50 0 0">
+                <Button HorizontalAlignment="Left" Margin="0 30 0 0" Command="{Binding GoHomeCommand}">
                     <StackPanel Orientation="Horizontal">
-                        <Path Data="F1M54.0573,47.8776L38.1771,31.9974 54.0547,16.1198C55.7604,14.4141 55.7604,11.6511 54.0573,9.94531 52.3516,8.23962 49.5859,8.23962 47.8802,9.94531L32.0026,25.8229 16.1224,9.94531C14.4167,8.23962 11.6511,8.23962 9.94794,9.94531 8.24219,11.6511 8.24219,14.4141 9.94794,16.1198L25.8255,32 9.94794,47.8776C8.24219,49.5834 8.24219,52.3477 9.94794,54.0534 11.6511,55.7572 14.4167,55.7585 16.1224,54.0534L32.0026,38.1745 47.8802,54.0534C49.5859,55.7585 52.3516,55.7572 54.0573,54.0534 55.7604,52.3477 55.763,49.5834 54.0573,47.8776z" Stretch="Uniform" Fill="#FFFFFFFF" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5" VerticalAlignment="Center">
-                            <Path.RenderTransform>
-                                <TransformGroup>
-                                    <TransformGroup.Children>
-                                        <RotateTransform Angle="0" />
-                                        <ScaleTransform ScaleX="1" ScaleY="1" />
-                                    </TransformGroup.Children>
-                                </TransformGroup>
-                            </Path.RenderTransform>
+                        <Path Style="{DynamicResource IconPath}" Data="M31.427649,15.523999L53.103002,34.871683 53.103002,59.723391C53.088601,60.666094 52.466603,61.263796 51.961408,61.544996 51.426911,61.845797 50.850717,61.972101 50.232221,61.976L38.688001,61.976C38.2909,61.976 37.902205,61.821096 37.619008,61.544996 37.340407,61.272898 37.179908,60.890093 37.179908,60.502092L37.179908,48.548944 25.677389,48.548944 25.677389,60.502092C25.677389,60.890093 25.514991,61.272898 25.235993,61.544996 24.953094,61.821096 24.564398,61.976 24.1673,61.976L12.622781,61.976C12.008585,61.972101 11.428489,61.845797 10.895992,61.544996 10.390396,61.263796 9.7670005,60.666094 9.752,59.723391L9.752,34.871683z M31.430007,0C32.412786,0,33.395349,0.34765434,34.172341,1.0429621L61.536054,25.469772C63.191937,26.947757 63.306836,29.45413 61.791253,31.072613 60.273667,32.685896 57.703996,32.796495 56.048413,31.31991L31.427569,9.3424339 6.8067472,31.31991C6.0245249,32.015303 5.0434551,32.358999 4.0678854,32.358999 2.9643769,32.358999 1.8680081,31.925505 1.0659571,31.072613L1.0623569,31.066113C-0.44769764,29.45413,-0.33539391,26.945057,1.3191938,25.469772L28.686399,1.0429621C29.46424,0.34765434,30.44723,0,31.430007,0z" Stretch="Uniform" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
                         </Path>
-                        <TextBlock Style="{DynamicResource TextBlockStyle}" VerticalAlignment="Center" Margin="20 0 0 5">Close</TextBlock>
+                        <TextBlock Style="{DynamicResource TextBlockStyle}" VerticalAlignment="Center" Margin="20 0 0 5">Home</TextBlock>
                     </StackPanel>
                 </Button>
 
-                <Button x:Name="BtnLogout" HorizontalAlignment="Left" Margin="0 30 0 0" Command="{Binding LogoutCommand}">
+                <Button HorizontalAlignment="Left" Margin="0 30 0 0" Command="{Binding LogoutCommand}">
                     <StackPanel Orientation="Horizontal">
                         <Path Data="M34.201,35.752792L36.154999,37.072937 36.154999,61.028999 26.27,61.028999 26.27,58.465 34.201,58.465z M18.94405,30.222998C17.962244,30.222998 17.167,31.018967 17.167,32.00045 17.167,32.982033 17.962244,33.778 18.94405,33.778 19.925556,33.778 20.721001,32.982033 20.721001,32.00045 20.721001,31.018967 19.925556,30.222998 18.94405,30.222998z M44.257435,25.653L44.257435,29.183289 51.842999,29.183289 51.842999,35.705292 44.257435,35.705292 44.257435,39.237999 34.201,32.444984z M26.27,3.8619995L36.154999,3.8619995 36.154999,27.81745 34.201,29.137484 34.201,6.2989998 26.27,6.2989998z M24.27,0L24.27,64 0,60 0,4.0000029z" Stretch="Uniform" Fill="#FFFFFFFF" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
                             <Path.RenderTransform>

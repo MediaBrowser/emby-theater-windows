@@ -34,7 +34,7 @@ namespace MediaBrowser.UI.StartupWizard
 
         void BtnInstall_Click(object sender, RoutedEventArgs e)
         {
-            var url = _apiClient.GetApiUrl("dashboard/addPlugin.html?name=TV%20Theme%20Videos&guid=341E0063-2167-4602-803C-D761F6836851");
+            var url = _apiClient.GetApiUrl("dashboard/plugincatalog.html");
 
             Process.Start(url);
         }

@@ -404,7 +404,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             var indexOptions = yearIndex.Where(i => !string.IsNullOrEmpty(i.Name)).Select(i => new TabItem
             {
                 Name = i.Name,
-                DisplayName = i.Name + " (" + i.ItemCount + ")"
+                DisplayName = i.Name
             });
 
             var options = new ListPageConfig

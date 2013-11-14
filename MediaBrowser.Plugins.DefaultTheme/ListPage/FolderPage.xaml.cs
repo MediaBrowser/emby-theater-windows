@@ -298,7 +298,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                         ImageType = ImageType.Logo,
                         CropWhitespace = false
                     }));
-                    ImgLogo.MaxHeight = 140;
+                    ImgLogo.MaxHeight = 100;
                 }
                 else if (item != null && (item.HasLogo))
                 {

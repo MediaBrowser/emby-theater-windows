@@ -149,7 +149,7 @@
                             </Style>
                         </Grid.Style>
 
-                        <Image Name="ImgLogo" Stretch="Uniform" MaxWidth="600" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0 0 0 0"></Image>
+                        <Image Name="ImgLogo" Stretch="Uniform" MaxWidth="258" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0 0 0 0"></Image>
                     </Grid>
                     <TextBlock x:Name="TxtLogoName" Style="{DynamicResource TextBlockStyle}" DataContext="{Binding CurrentItem}" Text="{Binding DisplayName}" VerticalAlignment="Center"></TextBlock>
                     <controls1:ItemInfoFooter VerticalContentAlignment="Center" KeyboardNavigation.IsTabStop="False" DataContext="{Binding CurrentItem}" VerticalAlignment="Center" Margin="40 0 0 0"></controls1:ItemInfoFooter>

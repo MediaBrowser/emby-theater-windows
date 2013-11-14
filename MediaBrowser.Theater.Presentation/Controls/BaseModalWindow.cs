@@ -29,7 +29,6 @@ namespace MediaBrowser.Theater.Presentation.Controls
             ShowDialog();
 
             owner.Activate();
-            owner.Focus();
         }
 
         /// <summary>

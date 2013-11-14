@@ -850,7 +850,7 @@
                 </TextBlock.Style>
             </TextBlock>
 
-            <Grid Grid.Row="1" Grid.Column="0">
+            <Grid Grid.Row="1" Grid.Column="1">
 
                 <Grid.RowDefinitions>
                     <RowDefinition Height="2*"></RowDefinition>
@@ -887,7 +887,7 @@
                 </controls:ExtendedListBox>
             </Grid>
 
-            <Grid Grid.Row="1" Grid.Column="1" Margin="0 0 0 0">
+            <Grid Grid.Row="1" Grid.Column="2" Margin="0 0 0 0">
 
                 <controls:ExtendedListBox Margin="-35 -35" DataContext="{Binding MiniSpotlightsViewModel2}" ItemsSource="{Binding ListCollectionView}" KeyboardNavigation.DirectionalNavigation="Continue" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource HomePageItemTemplate}">
                     <controls:ExtendedListBox.ItemsPanel>
@@ -898,7 +898,7 @@
                 </controls:ExtendedListBox>
             </Grid>
 
-            <WrapPanel Grid.Row="2" Grid.Column="2" Orientation="Vertical" Margin="30 0 0 0">
+            <WrapPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" Margin="0 0 0 0">
                 <controls:ExtendedButton Style="{DynamicResource BaseItemButtonStyle}" DataContext="{Binding AllMoviesViewModel}" Command="{Binding CustomCommand}">
                     <Grid Height="{Binding GalleryHeight}" Width="{Binding GalleryWidth}">
 

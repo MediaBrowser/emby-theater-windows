@@ -452,7 +452,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                     EnableBackdropsForCurrentItem = false,
                     ListType = "SpecialFeatures",
                     Context = Context,
-                    DisplayNameGenerator = FolderPage.GetDisplayName
+                    DisplayNameGenerator = FolderPage.GetDisplayNameWithAiredSpecial
                 };
             }
             if (string.Equals(section, "themes"))
@@ -795,7 +795,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 ParentId = item.Id,
                 SortBy = new[] { ItemSortBy.SortName },
 
-                ParentIndexNumber = 1,
+                AiredDuringSeason = 1,
 
                 IncludeItemTypes = new[] { "Episode" },
                 Recursive = true

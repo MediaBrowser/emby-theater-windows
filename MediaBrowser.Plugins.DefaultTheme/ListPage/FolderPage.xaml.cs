@@ -191,6 +191,16 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
             return name;
         }
 
+        public static string GetDisplayNameWithAiredSpecial(BaseItemDto item)
+        {
+            if (item.IsType("episode") && item.ParentIndexNumber.HasValue && item.ParentIndexNumber.Value == 0 && item.SpecialSeasonNumber.HasValue)
+            {
+                return "Special - " + item.Name;
+            }
+
+            return GetDisplayName(item);
+        }
+
         void _viewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (string.Equals(e.PropertyName, "ViewType") || string.Equals(e.PropertyName, "ImageWidth") || string.Equals(e.PropertyName, "MedianPrimaryImageAspectRatio"))

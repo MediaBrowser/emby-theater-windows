@@ -191,8 +191,22 @@ namespace MediaBrowser.Plugins.DefaultTheme
                         }
                     }
 
+                    if (item.IsType("season") && item.IndexNumber.HasValue)
+                    {
+                        query.ParentId = item.SeriesId;
+                        query.Recursive = true;
+                        query.AiredDuringSeason = item.IndexNumber.Value;
+                        query.SortBy = new[] { ItemSortBy.PremiereDate, ItemSortBy.SortName };
+                        query.SortOrder = SortOrder.Ascending;
+                    }
+
                     return _apiClient.GetItemsAsync(query);
                 };
+
+                if (item.IsType("season") && item.IndexNumber.HasValue && item.IndexNumber.Value > 0)
+                {
+                    config.DisplayNameGenerator = FolderPage.GetDisplayNameWithAiredSpecial;
+                }
             }
 
             return config;

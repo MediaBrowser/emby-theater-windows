@@ -1,4 +1,6 @@
 ﻿using MediaBrowser.Theater.Interfaces.Configuration;
+using MediaBrowser.Theater.Interfaces.Presentation;
+using MediaBrowser.Theater.Interfaces.System;
 using MediaBrowser.Theater.Presentation.Pages;
 using System;
 using System.Windows;
@@ -9,12 +11,16 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
     /// Interaction logic for ConfigurationPage.xaml
     /// </summary>
     public partial class ConfigurationPage : BasePage
-    {
+    { 
         private readonly ITheaterConfigurationManager _config;
+        private readonly IMediaFilters _mediaFilters;
+        private readonly IPresentationManager _presentation;
 
-        public ConfigurationPage(ITheaterConfigurationManager config)
+        public ConfigurationPage(ITheaterConfigurationManager config, IPresentationManager presentation, IMediaFilters mediaFilters)
         {
             _config = config;
+            _presentation = presentation;
+            _mediaFilters = mediaFilters;
             InitializeComponent();
         }
 
@@ -24,6 +30,33 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
 
             Loaded += GeneralSettingsPage_Loaded;
             Unloaded += GeneralSettingsPage_Unloaded;
+
+            BtnConfigureAudio.Click += BtnConfigureAudio_Click;
+            BtnConfigureSubtitles.Click += BtnConfigureSubtitles_Click;
+        }
+
+        void BtnConfigureSubtitles_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                _mediaFilters.LaunchLavSplitterConfiguration();
+            }
+            catch 
+            {
+                _presentation.ShowDefaultErrorMessage();
+            }
+        }
+
+        void BtnConfigureAudio_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                _mediaFilters.LaunchLavAudioConfiguration();
+            }
+            catch
+            {
+                _presentation.ShowDefaultErrorMessage();
+            }
         }
 
         void GeneralSettingsPage_Loaded(object sender, RoutedEventArgs e)

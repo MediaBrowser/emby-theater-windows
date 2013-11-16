@@ -65,7 +65,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             TileWidth = tileWidth;
             TileHeight = tileHeight;
 
-            _posterTileHeight = (TileHeight * 1.46) + TilePadding / 2;
+            _posterTileHeight = (TileHeight * 1.48) + TilePadding / 2;
             _posterTileWidth = _posterTileHeight * 2 / 3;
 
             const double tileScaleFactor = 11;

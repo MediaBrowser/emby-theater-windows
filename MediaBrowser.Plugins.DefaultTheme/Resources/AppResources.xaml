@@ -4,6 +4,21 @@
                     xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
                     xmlns:osd="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Osd">
 
+    <Style TargetType="Border" x:Key="MediaInfoTextBorder">
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="CornerRadius" Value="4" />
+        <Setter Property="Background" Value="#a6ffffff" />
+        <Setter Property="Padding" Value="7 2 7 2" />
+    </Style>
+    
+    <Style TargetType="TextBlock" x:Key="MediaInfoTextBlock" BasedOn="{StaticResource SmallTextBlockStyle}">
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="FontSize" Value="26" />
+        <Setter Property="Foreground" Value="#000" />
+        <Setter Property="FontFamily" Value="pack://application:,,,/MediaBrowser.Plugins.DefaultTheme;component/Resources/#Gotham Medium" />
+    </Style>
+
     <Style TargetType="Image" x:Key="CommunityRatingImage">
         <Setter Property="Stretch" Value="Uniform"/>
         <Setter Property="Height" Value="30" />
@@ -63,7 +78,7 @@
                     <ColumnDefinition Width="*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
 
-                <StackPanel VerticalAlignment="Top" HorizontalAlignment="Left" Margin="25 15 0 0" Grid.Column="0" Grid.Row="0" Orientation="Horizontal">
+                <StackPanel VerticalAlignment="Top" HorizontalAlignment="Left" Margin="30 20 0 0" Grid.Column="0" Grid.Row="0" Orientation="Horizontal">
                     <StackPanel.Style>
                         <Style TargetType="{x:Type StackPanel}">
                             <Style.Triggers>
@@ -152,7 +167,7 @@
                     </TextBlock>
                 </StackPanel>
 
-                <Grid Grid.Column="1" Panel.ZIndex="3" Grid.Row="0" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0 5 25 0">
+                <Grid Grid.Column="1" Panel.ZIndex="3" Grid.Row="0" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0 10 30 0">
                     <Grid.Style>
                         <Style TargetType="{x:Type Grid}">
                             <Style.Triggers>
@@ -555,11 +570,11 @@
                     </Image>
                 </Grid>
 
-                <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding DisplayName}" Grid.Column="1" Margin="20 -5 0 0" VerticalAlignment="Center"></TextBlock>
+                <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding DisplayName}" Grid.Column="1" Margin="20 -5 90 0" MaxWidth="700" VerticalAlignment="Center"></TextBlock>
 
                 <StackPanel Grid.Column="2" Orientation="Horizontal">
 
-                    <TextBlock Background="{DynamicResource SpecialIndicatorBackground}" Foreground="White" Padding="10 5" Margin="0 0 10 0" Height="50" VerticalAlignment="Center" Text="OFFLINE">
+                    <TextBlock Background="{DynamicResource SpecialIndicatorBackground}" Foreground="White" Padding="10 5" Margin="10 0 0 0" Height="50" VerticalAlignment="Center" Text="OFFLINE">
                         <TextBlock.Style>
                             <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SmallTextBlockStyle}">
                                 <Style.Triggers>
@@ -571,7 +586,7 @@
                         </TextBlock.Style>
                     </TextBlock>
 
-                    <TextBlock Background="{DynamicResource SpecialIndicatorBackground}" Foreground="White" Padding="10 5" Margin="0 0 10 0" Height="50" VerticalAlignment="Center" Text="MISSING">
+                    <TextBlock Background="{DynamicResource SpecialIndicatorBackground}" Foreground="White" Padding="10 5" Margin="10 0 0 0" Height="50" VerticalAlignment="Center" Text="MISSING">
                         <TextBlock.Style>
                             <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SmallTextBlockStyle}">
                                 <Style.Triggers>
@@ -583,7 +598,7 @@
                         </TextBlock.Style>
                     </TextBlock>
 
-                    <TextBlock Background="{DynamicResource SpecialIndicatorBackground}" Foreground="White" Padding="10 5" Margin="0 0 10 0" Height="50" VerticalAlignment="Center" Text="UNAIRED">
+                    <TextBlock Background="{DynamicResource SpecialIndicatorBackground}" Foreground="White" Padding="10 5" Margin="10 0 0 0" Height="50" VerticalAlignment="Center" Text="UNAIRED">
                         <TextBlock.Style>
                             <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SmallTextBlockStyle}">
                                 <Style.Triggers>
@@ -595,7 +610,7 @@
                         </TextBlock.Style>
                     </TextBlock>
 
-                    <ProgressBar Minimum="0" Maximum="100" Value="{Binding PlayedPercentage, Mode=OneWay}" Margin="0 0 10 0" Width="100" Height="50">
+                    <ProgressBar Minimum="0" Maximum="100" Value="{Binding PlayedPercentage, Mode=OneWay}" Margin="10 0 0 0" Width="100" Height="50">
                         <ProgressBar.Style>
                             <Style TargetType="{x:Type ProgressBar}" BasedOn="{StaticResource ResumeProgressBar}">
                                 <Style.Triggers>
@@ -610,7 +625,7 @@
                         </ProgressBar.Style>
                     </ProgressBar>
 
-                    <Grid Background="#a6CC3333" Width="50" Height="50">
+                    <Grid Background="#a6CC3333" Width="50" Height="50" Margin="10 0 0 0">
 
                         <Grid.Style>
                             <Style TargetType="{x:Type Grid}">
@@ -645,7 +660,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ListBoxItem}">
 
-                    <TextBlock Opacity=".6" x:Name="MenuText" Margin="30 0" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Text="{Binding DisplayName}" Style="{DynamicResource Heading1TextBlockStyle}"></TextBlock>
+                    <TextBlock Opacity=".35" x:Name="MenuText" Margin="40 0" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Text="{Binding DisplayName}" Style="{DynamicResource Heading1TextBlockStyle}"></TextBlock>
 
                     <ControlTemplate.Triggers>
                         <DataTrigger Binding="{Binding TabType}" Value="Alphabet">

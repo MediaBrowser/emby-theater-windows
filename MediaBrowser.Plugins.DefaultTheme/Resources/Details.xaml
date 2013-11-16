@@ -72,7 +72,7 @@
                 <RowDefinition Height="4*"></RowDefinition>
             </Grid.RowDefinitions>
 
-            <controls:ExtendedScrollViewer Grid.Row="0" Margin="0 0 0 0" VerticalAlignment="Stretch" HorizontalAlignment="Center" CanContentScroll="True" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" >
+            <controls:ExtendedScrollViewer Grid.Row="0" Margin="0 0 0 0" VerticalAlignment="Stretch" HorizontalAlignment="Center" CanContentScroll="True" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" >
 
                 <controls:ScrollingPanel HorizontalAlignment="Stretch" CanHorizontallyScroll="True" CanVerticallyScroll="False">
                     <controls:ExtendedListBox ItemsSource="{Binding ListCollectionView}" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{DynamicResource ListItemTemplate}">
@@ -128,6 +128,57 @@
         </Grid>
     </DataTemplate>
 
+    <DataTemplate x:Key="DetailPageEpisodesTemplate" DataType="{x:Type viewModels:ItemListViewModel}">
+        <Grid>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <Grid Grid.Column="0">
+
+                <StackPanel Orientation="Vertical">
+                    <StackPanel.Style>
+                        <Style TargetType="{x:Type StackPanel}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding CurrentItem}" Value="{x:Null}">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+
+                    <details1:ItemImage DataContext="{Binding CurrentItem}" ImageType="EpisodeThumb" MaxHeight="320" Margin="0 25 0 20" HorizontalAlignment="Left"></details1:ItemImage>
+
+                    <TextBlock Style="{DynamicResource Heading2TextBlockStyle}" DataContext="{Binding CurrentItem}" Text="{Binding DisplayName}" Margin="0 0 0 0" MaxWidth="900"></TextBlock>
+
+                    <Border Background="#999" Height="2" Margin="0 10 0 0"></Border>
+
+                    <TextBlock Style="{DynamicResource TextBlockStyle}" Margin="0 10 0 0" DataContext="{Binding CurrentItem}" Text="{Binding Overview}" MaxHeight="290" Width="900"></TextBlock>
+
+                    <details:ItemInfoFooter DataContext="{Binding CurrentItem}" ShowResumeProgress="False" Margin="0 30 0 0">
+                    </details:ItemInfoFooter>
+
+                </StackPanel>
+
+            </Grid>
+
+            <controls:ExtendedScrollViewer Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Right" CanContentScroll="True" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Hidden" >
+
+                <controls:ScrollingPanel HorizontalAlignment="Stretch" CanHorizontallyScroll="False" CanVerticallyScroll="True">
+                    <controls:ExtendedListBox ItemsSource="{Binding ListCollectionView}" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{DynamicResource ListPageListViewItemTemplate}">
+                        <controls:ExtendedListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Vertical" Margin="50 20 30 20"></StackPanel>
+                            </ItemsPanelTemplate>
+                        </controls:ExtendedListBox.ItemsPanel>
+                    </controls:ExtendedListBox>
+                </controls:ScrollingPanel>
+            </controls:ExtendedScrollViewer>
+        </Grid>
+    </DataTemplate>
+
     <DataTemplate x:Key="MediaStreamTemplate" DataType="{x:Type viewModels:MediaStreamViewModel}">
         <Grid Background="#a6000000">
 
@@ -136,12 +187,6 @@
                 <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding Type}" Width="150"></TextBlock>
 
                 <ItemsControl ItemsSource="{Binding Attributes}" Focusable="False" Margin="0 0 50 0">
-                    <ItemsControl.Style>
-                        <Style TargetType="{x:Type ItemsControl}">
-                            <Style.Triggers>
-                            </Style.Triggers>
-                        </Style>
-                    </ItemsControl.Style>
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <WrapPanel Orientation="Horizontal"></WrapPanel>
@@ -279,6 +324,7 @@
                     <RowDefinition Height="auto"></RowDefinition>
                     <RowDefinition Height="auto"></RowDefinition>
                     <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="auto"></RowDefinition>
                 </Grid.RowDefinitions>
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Row="0">
@@ -480,132 +526,9 @@
                     </Button>
                 </StackPanel>
 
-                <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0 30 0 0">
+                <details:ItemInfoFooter Grid.Row="1" Margin="0 35 0 0" DataContext="{Binding}" ShowUserRating="false"></details:ItemInfoFooter>
 
-                    <TextBlock Text="{Binding DateText}" VerticalAlignment="Center" Margin="0 0 50 0">
-                        <TextBlock.Style>
-                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding DateText}" Value="{x:Null}">
-                                        <Setter Property="Visibility" Value="Collapsed" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBlock.Style>
-                    </TextBlock>
-
-                    <TextBlock Text="{Binding OfficialRating}" VerticalAlignment="Center" Margin="0 0 50 0">
-                        <TextBlock.Style>
-                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding OfficialRating}" Value="{x:Null}">
-                                        <Setter Property="Visibility" Value="Collapsed" />
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding ItemType}" Value="Episode">
-                                        <Setter Property="Visibility" Value="Collapsed" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBlock.Style>
-                    </TextBlock>
-
-                    <TextBlock Text="{Binding RuntimeMinutesText}" VerticalAlignment="Center" Margin="0 0 50 0">
-                        <TextBlock.Style>
-                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding RuntimeMinutesText}" Value="{x:Null}">
-                                        <Setter Property="Visibility" Value="Collapsed" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBlock.Style>
-                    </TextBlock>
-
-                    <TextBlock Text="{Binding Resolution}" VerticalAlignment="Center" Margin="0 0 50 0">
-                        <TextBlock.Style>
-                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Resolution}" Value="{x:Null}">
-                                        <Setter Property="Visibility" Value="Collapsed" />
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding MediaType}" Value="Audio">
-                                        <Setter Property="Visibility" Value="Collapsed" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBlock.Style>
-                    </TextBlock>
-
-                    <TextBlock Text="{Binding AudioCodec}" VerticalAlignment="Center" Margin="0 0 50 0">
-                        <TextBlock.Style>
-                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding AudioCodec}" Value="{x:Null}">
-                                        <Setter Property="Visibility" Value="Collapsed" />
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding MediaType}" Value="Video">
-                                        <Setter Property="Visibility" Value="Collapsed" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBlock.Style>
-                    </TextBlock>
-
-                    <details:ItemRating DataContext="{Binding}" Margin="0 0 50 0">
-                        <details:ItemRating.Style>
-                            <Style TargetType="{x:Type details:ItemRating}">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding CommunityRating}" Value="{x:Null}">
-                                        <Setter Property="Visibility" Value="Collapsed" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </details:ItemRating.Style>
-                    </details:ItemRating>
-
-                    <StackPanel Orientation="Horizontal" Margin="0 0 50 0">
-
-                        <StackPanel.Style>
-                            <Style TargetType="{x:Type StackPanel}">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding CriticRating}" Value="{x:Null}">
-                                        <Setter Property="Visibility" Value="Collapsed" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </StackPanel.Style>
-
-                        <Grid Margin="0 0 5 0">
-                            <Grid.Style>
-                                <Style TargetType="{x:Type Grid}">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding HasNegativeCriticRating}" Value="False">
-                                            <Setter Property="Visibility" Value="Collapsed" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Grid.Style>
-                            <Image Style="{DynamicResource RottenImage}"></Image>
-                        </Grid>
-
-                        <Grid Margin="0 0 5 0">
-                            <Grid.Style>
-                                <Style TargetType="{x:Type Grid}">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding HasPositiveCriticRating}" Value="False">
-                                            <Setter Property="Visibility" Value="Collapsed" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Grid.Style>
-                            <Image Style="{DynamicResource FreshImage}"></Image>
-                        </Grid>
-
-                        <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding CriticRating}" VerticalAlignment="Center"></TextBlock>
-                    </StackPanel>
-                </StackPanel>
-
-                <Grid Grid.Row="2" Margin="0 25 0 0">
+                <Grid Grid.Row="2" Margin="0 30 0 0">
 
                     <Grid.RowDefinitions>
                         <RowDefinition Height="auto"></RowDefinition>
@@ -872,6 +795,12 @@
                                     <DataTrigger Binding="{Binding ItemType}" Value="Series">
                                         <Setter Property="Visibility" Value="Collapsed" />
                                     </DataTrigger>
+                                    <DataTrigger Binding="{Binding ItemType}" Value="Movie">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding ItemType}" Value="Trailer">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
                                 </Style.Triggers>
                             </Style>
                         </TextBlock.Style>
@@ -888,6 +817,12 @@
                                         <Setter Property="Visibility" Value="Collapsed" />
                                     </DataTrigger>
                                     <DataTrigger Binding="{Binding ItemType}" Value="Series">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding ItemType}" Value="Movie">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding ItemType}" Value="Trailer">
                                         <Setter Property="Visibility" Value="Collapsed" />
                                     </DataTrigger>
                                 </Style.Triggers>
@@ -964,7 +899,47 @@
 
                 </Grid>
 
-                <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding Overview}"  Grid.Row="3" Margin="0 20 0 30" TextTrimming="CharacterEllipsis" MinWidth="900"></TextBlock>
+                <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding Overview}" Grid.Row="3" Margin="0 25 0 30" TextTrimming="CharacterEllipsis" MinWidth="900"></TextBlock>
+
+                <StackPanel Grid.Row="4" Margin="0 0 0 0" Orientation="Horizontal">
+
+                    <StackPanel.Style>
+                        <Style TargetType="{x:Type StackPanel}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding SubtitleCount}" Value="0">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+
+                    <Border Style="{DynamicResource MediaInfoTextBorder}" Margin="0 0 20 0">
+
+                        <TextBlock Style="{DynamicResource MediaInfoTextBlock}" Text="SUBTITLES" VerticalAlignment="Center"></TextBlock>
+
+
+                    </Border>
+
+                    <ItemsControl ItemsSource="{Binding SubtitleLanguages}" Focusable="False">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal"></WrapPanel>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Style="{DynamicResource MediaInfoTextBorder}" Margin="0 0 10 0">
+
+                                    <TextBlock Style="{DynamicResource MediaInfoTextBlock}" Text="{Binding ., Converter={controls:UpperCaseConverter}}" VerticalAlignment="Center"></TextBlock>
+
+                                </Border>
+                            </DataTemplate>
+
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                </StackPanel>
+
             </Grid>
         </Grid>
     </DataTemplate>

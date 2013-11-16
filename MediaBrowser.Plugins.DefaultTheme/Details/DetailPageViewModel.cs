@@ -1,4 +1,5 @@
-﻿using System.Windows.Data;
+﻿using System.Windows;
+using System.Windows.Data;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
@@ -75,6 +76,20 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             }
         }
 
+        private HorizontalAlignment _horizontalAlignment = HorizontalAlignment.Center;
+        public HorizontalAlignment HorizontalAlignment
+        {
+            get
+            {
+                return _horizontalAlignment;
+            }
+            set
+            {
+                _horizontalAlignment = value;
+                OnPropertyChanged("HorizontalAlignment");
+            }
+        }
+
         private ScrollDirection _scrollDirection = ScrollDirection.Horizontal;
         public ScrollDirection ScrollDirection
         {
@@ -97,7 +112,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             {
                 var section = CurrentSection;
 
-                ScrollDirection = string.Equals(section, "songs", StringComparison.OrdinalIgnoreCase)
+                ScrollDirection = string.Equals(section, "songs", StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(section, "episodes", StringComparison.OrdinalIgnoreCase)
                              ? ScrollDirection.Vertical
                              : ScrollDirection.Horizontal;
 
@@ -110,6 +126,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                     !string.Equals(section, "itemalbums", StringComparison.OrdinalIgnoreCase) &&
                     !string.Equals(section, "special features", StringComparison.OrdinalIgnoreCase) &&
                     !string.Equals(section, "episodes", StringComparison.OrdinalIgnoreCase);
+
+                HorizontalAlignment = string.Equals(section, "songs", StringComparison.OrdinalIgnoreCase)
+                             ? HorizontalAlignment.Stretch
+                             : HorizontalAlignment.Center;
+
             }
         }
 
@@ -226,15 +247,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 });
             }
 
-            if (item.IsType("movie") || item.IsType("trailer") || item.IsType("series") || item.IsType("musicalbum") || item.IsGame)
-            {
-                views.Add(new TabItem
-                {
-                    Name = "similar",
-                    DisplayName = "Similar"
-                });
-            }
-
             if (reviewsResult.TotalRecordCount > 0 || !string.IsNullOrEmpty(item.CriticRatingSummary))
             {
                 views.Add(new TabItem
@@ -262,6 +274,15 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                         DisplayName = "Soundtrack"
                     });
                 }
+            }
+
+            if (item.IsType("movie") || item.IsType("trailer") || item.IsType("series") || item.IsType("musicalbum") || item.IsGame)
+            {
+                views.Add(new TabItem
+                {
+                    Name = "similar",
+                    DisplayName = "Similar"
+                });
             }
 
             if (item.IsArtist || item.IsGameGenre || item.IsGenre || item.IsMusicGenre || item.IsPerson || item.IsStudio)

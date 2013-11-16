@@ -80,8 +80,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
 
             if (string.Equals(viewModel.ViewType, ListViewTypes.List))
             {
-                PnlTitle.Visibility = Visibility.Visible;
-
                 UpdateLogoForListView(viewModel, item);
             }
         }

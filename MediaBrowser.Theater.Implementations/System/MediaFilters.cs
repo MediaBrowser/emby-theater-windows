@@ -110,7 +110,7 @@ namespace MediaBrowser.Theater.Implementations.System
             // Guess we'll have to hard-code the latest version?
             // https://code.google.com/p/lavfilters/downloads/list
 
-            const string url = "https://lavfilters.googlecode.com/files/LAVFilters-0.58.2.exe";
+            const string url = "https://lavfilters.googlecode.com/files/LAVFilters-0.59.1.exe";
 
             var tempFile = await _httpClient.GetTempFile(new HttpRequestOptions
             {
@@ -155,6 +155,29 @@ namespace MediaBrowser.Theater.Implementations.System
             }
 
             return true;
+        }
+
+        public void LaunchLavAudioConfiguration()
+        {
+            var lavPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "LAV Filters\\x86", "LAVAudio.ax");
+
+            OpenLavConfiguration(lavPath);
+        }
+
+        public void LaunchLavSplitterConfiguration()
+        {
+            var lavPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "LAV Filters\\x86", "LAVSplitter.ax");
+
+            OpenLavConfiguration(lavPath);
+        }
+
+        private void OpenLavConfiguration(string path)
+        {
+            var rundllPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.SystemX86), "rundll32.exe");
+
+            var args = string.Format("\"{0}\",OpenConfiguration", path);
+
+            Process.Start(rundllPath, args);
         }
     }
 }

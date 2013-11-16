@@ -84,6 +84,9 @@
     </Compile>
     <Compile Include="DefaultThemePageContentViewModel.cs" />
     <Compile Include="Details\DetailPageViewModel.cs" />
+    <Compile Include="Details\ItemImage.xaml.cs">
+      <DependentUpon>ItemImage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Details\ItemLogo.xaml.cs">
       <DependentUpon>ItemLogo.xaml</DependentUpon>
     </Compile>
@@ -156,6 +159,7 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
+    <Resource Include="Resources\Gotham-Medium.ttf" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MediaBrowser.Theater.Interfaces\MediaBrowser.Theater.Interfaces.csproj">
@@ -173,6 +177,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\ItemRating.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Details\ItemImage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

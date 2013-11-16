@@ -4,10 +4,23 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:controls="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Controls"
+             xmlns:controls1="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
 
     <StackPanel Orientation="Horizontal">
+
+        <controls:ItemRating DataContext="{Binding}" Margin="0 0 35 0">
+            <controls:ItemRating.Style>
+                <Style TargetType="{x:Type controls:ItemRating}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding CommunityRating}" Value="{x:Null}">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </controls:ItemRating.Style>
+        </controls:ItemRating>
 
         <StackPanel Orientation="Horizontal" Margin="0 0 35 0">
             <StackPanel.Style>
@@ -24,10 +37,10 @@
             <TextBlock Style="{DynamicResource TextBlockStyle}" Text=" Player" VerticalAlignment="Center"></TextBlock>
         </StackPanel>
 
-        <StackPanel Orientation="Horizontal" Name="PnlDate" Margin="0 0 35 0">
+        <Border Margin="0 0 35 0">
 
-            <StackPanel.Style>
-                <Style TargetType="{x:Type StackPanel}">
+            <Border.Style>
+                <Style TargetType="{x:Type Border}" BasedOn="{StaticResource MediaInfoTextBorder}">
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding DateText}" Value="{x:Null}">
                             <Setter Property="Visibility" Value="Collapsed" />
@@ -40,14 +53,15 @@
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
-            </StackPanel.Style>
-            
-            <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding DateText}" VerticalAlignment="Center"></TextBlock>
-        </StackPanel>
+            </Border.Style>
 
-        <StackPanel Orientation="Horizontal" Margin="0 0 35 0">
-            <StackPanel.Style>
-                <Style TargetType="{x:Type StackPanel}">
+            <TextBlock Style="{DynamicResource MediaInfoTextBlock}" Text="{Binding DateText, Converter={controls1:UpperCaseConverter}}" VerticalAlignment="Center"></TextBlock>
+        </Border>
+
+        <Border Margin="0 0 35 0">
+
+            <Border.Style>
+                <Style TargetType="{x:Type Border}" BasedOn="{StaticResource MediaInfoTextBorder}">
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding OfficialRating}" Value="{x:Null}">
                             <Setter Property="Visibility" Value="Collapsed" />
@@ -57,39 +71,61 @@
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
-            </StackPanel.Style>
+            </Border.Style>
 
-            <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding OfficialRating}" VerticalAlignment="Center"></TextBlock>
-        </StackPanel>
+            <TextBlock Style="{DynamicResource MediaInfoTextBlock}" Text="{Binding OfficialRating, Converter={controls1:UpperCaseConverter}}" VerticalAlignment="Center"></TextBlock>
+        </Border>
 
-        <StackPanel Orientation="Horizontal" Margin="0 0 35 0">
-            <StackPanel.Style>
-                <Style TargetType="{x:Type StackPanel}">
+        <Border Margin="0 0 35 0">
+
+            <Border.Style>
+                <Style TargetType="{x:Type Border}" BasedOn="{StaticResource MediaInfoTextBorder}">
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding RuntimeMinutesText}" Value="{x:Null}">
                             <Setter Property="Visibility" Value="Collapsed" />
                         </DataTrigger>
+                        <DataTrigger Binding="{Binding IsFolder}" Value="true">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
                     </Style.Triggers>
                 </Style>
-            </StackPanel.Style>
+            </Border.Style>
 
-            <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding RuntimeMinutesText}" VerticalAlignment="Center"></TextBlock>
-        </StackPanel>
+            <TextBlock Style="{DynamicResource MediaInfoTextBlock}" Text="{Binding RuntimeMinutesText, Converter={controls1:UpperCaseConverter}}" VerticalAlignment="Center"></TextBlock>
+        </Border>
 
-        <StackPanel Orientation="Horizontal" Margin="0 0 35 0">
+        <Border Margin="0 0 35 0">
 
-            <StackPanel.Style>
-                <Style TargetType="{x:Type StackPanel}">
+            <Border.Style>
+                <Style TargetType="{x:Type Border}" BasedOn="{StaticResource MediaInfoTextBorder}">
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding Resolution}" Value="{x:Null}">
                             <Setter Property="Visibility" Value="Collapsed" />
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
-            </StackPanel.Style>
+            </Border.Style>
 
-            <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding Resolution}" VerticalAlignment="Center"></TextBlock>
-        </StackPanel>
+            <TextBlock Style="{DynamicResource MediaInfoTextBlock}" Text="{Binding Resolution, Converter={controls1:UpperCaseConverter}}" VerticalAlignment="Center"></TextBlock>
+        </Border>
+
+        <Border Margin="0 0 35 0">
+
+            <Border.Style>
+                <Style TargetType="{x:Type Border}" BasedOn="{StaticResource MediaInfoTextBorder}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ChannelLayout}" Value="{x:Null}">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding MediaType}" Value="Audio">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+
+            <TextBlock Style="{DynamicResource MediaInfoTextBlock}" Text="{Binding ChannelLayout, Converter={controls1:UpperCaseConverter}}" VerticalAlignment="Center"></TextBlock>
+        </Border>
 
         <StackPanel Orientation="Horizontal" Margin="0 0 35 0">
 
@@ -108,18 +144,6 @@
 
             <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding AudioCodec}" VerticalAlignment="Center"></TextBlock>
         </StackPanel>
-
-        <controls:ItemRating DataContext="{Binding}" Margin="0 0 35 0">
-            <controls:ItemRating.Style>
-                <Style TargetType="{x:Type controls:ItemRating}">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding CommunityRating}" Value="{x:Null}">
-                            <Setter Property="Visibility" Value="Collapsed" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </controls:ItemRating.Style>
-        </controls:ItemRating>
 
         <StackPanel Orientation="Horizontal" Margin="0 0 35 0">
 
@@ -162,8 +186,8 @@
             <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding CriticRating}" VerticalAlignment="Center"></TextBlock>
         </StackPanel>
 
-        <Grid x:Name="ProgressGrid" Margin="0 0 30 0">
-            <StackPanel Orientation="Horizontal">
+        <Grid x:Name="ProgressGrid">
+            <StackPanel Orientation="Horizontal" Margin="0 0 35 0" Visibility="Collapsed">
 
                 <StackPanel.Style>
                     <Style TargetType="{x:Type StackPanel}">
@@ -180,46 +204,52 @@
             </StackPanel>
         </Grid>
 
-        <Grid Margin="0 0 30 0">
-            <Grid.Style>
-                <Style TargetType="{x:Type Grid}">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding IsLiked}" Value="False">
-                            <Setter Property="Visibility" Value="Collapsed" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding IsFavorite}" Value="True">
-                            <Setter Property="Visibility" Value="Collapsed" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Grid.Style>
-            <Image Style="{DynamicResource LikeImage}"></Image>
+        <Grid x:Name="UserLikeGrid">
+            <Grid Margin="0 0 35 0">
+                <Grid.Style>
+                    <Style TargetType="{x:Type Grid}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsLiked}" Value="False">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsFavorite}" Value="True">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+                <Image Style="{DynamicResource LikeImage}"></Image>
+            </Grid>
         </Grid>
 
-        <Grid Margin="0 0 30 0">
-            <Grid.Style>
-                <Style TargetType="{x:Type Grid}">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding IsDisliked}" Value="False">
-                            <Setter Property="Visibility" Value="Collapsed" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Grid.Style>
-            <Image Style="{DynamicResource DislikeImage}"></Image>
+        <Grid x:Name="UserDislikeGrid">
+            <Grid Margin="0 0 35 0">
+                <Grid.Style>
+                    <Style TargetType="{x:Type Grid}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsDisliked}" Value="False">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+                <Image Style="{DynamicResource DislikeImage}"></Image>
+            </Grid>
         </Grid>
 
-        <Grid Margin="0 0 30 0">
-            <Grid.Style>
-                <Style TargetType="{x:Type Grid}">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding IsFavorite}" Value="False">
-                            <Setter Property="Visibility" Value="Collapsed" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Grid.Style>
-            <Image Style="{DynamicResource FavoriteImage}"></Image>
+        <Grid x:Name="UserFavoriteGrid">
+            <Grid Margin="0 0 35 0">
+                <Grid.Style>
+                    <Style TargetType="{x:Type Grid}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsFavorite}" Value="False">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+                <Image Style="{DynamicResource FavoriteImage}"></Image>
+            </Grid>
         </Grid>
 
         <!--This textblock is just to make sure the panel always takes up the same amount of vertical space, so that content never moves due to height changes -->

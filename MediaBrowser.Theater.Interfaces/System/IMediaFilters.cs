@@ -36,5 +36,15 @@ namespace MediaBrowser.Theater.Interfaces.System
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Task.</returns>
         Task InstallLavFilters(IProgress<double> progress, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Launches the lav audio configuration.
+        /// </summary>
+        void LaunchLavAudioConfiguration();
+
+        /// <summary>
+        /// Launches the lav splitter configuration.
+        /// </summary>
+        void LaunchLavSplitterConfiguration();
     }
 }

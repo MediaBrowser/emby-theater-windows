@@ -63,7 +63,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         {
             _item = item;
         }
-        
+
         void _serverEvents_UserDataChanged(object sender, UserDataChangedEventArgs e)
         {
             var key = _item.UserData == null ? string.Empty : _item.UserData.Key;
@@ -106,6 +106,9 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                     OnPropertyChanged("HasPositiveCriticRating");
                     OnPropertyChanged("HasNegativeCriticRating");
                     OnPropertyChanged("AudioCodec");
+                    OnPropertyChanged("ChannelLayout");
+                    OnPropertyChanged("SubtitleCount");
+                    OnPropertyChanged("SubtitleLanguages");
                     OnPropertyChanged("VideoCodec");
                     OnPropertyChanged("AudioChannels");
                     OnPropertyChanged("Resolution");
@@ -353,6 +356,27 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
+        public string ChannelLayout
+        {
+            get
+            {
+
+                if (_item != null && _item.MediaStreams != null)
+                {
+                    var stream = _item.MediaStreams
+                        .OrderBy(i => i.Index)
+                        .FirstOrDefault(i => i.Type == MediaStreamType.Audio);
+
+                    if (stream != null)
+                    {
+                        return stream.ChannelLayout;
+                    }
+                }
+
+                return null;
+            }
+        }
+
         public int? AudioChannels
         {
             get
@@ -371,6 +395,37 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 }
 
                 return null;
+            }
+        }
+
+        public int SubtitleCount
+        {
+            get
+            {
+
+                if (_item != null && _item.MediaStreams != null)
+                {
+                    return _item.MediaStreams.Count(i => i.Type == MediaStreamType.Subtitle);
+                }
+
+                return 0;
+            }
+        }
+
+        public string[] SubtitleLanguages
+        {
+            get
+            {
+
+                if (_item != null && _item.MediaStreams != null)
+                {
+                    return _item.MediaStreams.Where(i => i.Type == MediaStreamType.Subtitle && !string.IsNullOrEmpty(i.Language))
+                        .Select(i => i.Language)
+                        .Distinct(StringComparer.OrdinalIgnoreCase)
+                        .ToArray();
+                }
+
+                return new string[] { };
             }
         }
 
@@ -1048,6 +1103,10 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             if (options.ImageType == ImageType.Logo)
             {
                 url = _apiClient.GetLogoImageUrl(Item, options);
+            }
+            else if (options.ImageType == ImageType.Thumb)
+            {
+                url = _apiClient.GetThumbImageUrl(Item, options);
             }
             else
             {

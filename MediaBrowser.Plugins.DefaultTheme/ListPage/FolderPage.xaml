@@ -52,7 +52,7 @@
 
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding ScrollDirection}" Value="Vertical">
-                            <Setter Property="Margin" Value="0 50 0 50" />
+                            <Setter Property="Margin" Value="0 55 0 55" />
                             <Setter Property="VerticalAlignment" Value="Top" />
                         </DataTrigger>
                     </Style.Triggers>
@@ -73,7 +73,7 @@
             <Grid x:Name="Sidebar" Grid.Column="0" Grid.Row="0" Width="800">
                 <Grid.Style>
                     <Style TargetType="{x:Type Grid}">
-                        <Setter Property="Margin" Value="60 0 60 0" />
+                        <Setter Property="Margin" Value="60 0 70 0" />
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding ShowSidebar}" Value="False">
                                 <Setter Property="Visibility" Value="Collapsed" />
@@ -84,9 +84,21 @@
                 <listPage:Sidebar DataContext="{Binding CurrentItem}"></listPage:Sidebar>
             </Grid>
 
-            <controls:ExtendedListBox Grid.Column="1" Grid.Row="0" Command="{Binding NavigateCommand}" Style="{StaticResource ListPageListBoxStyle}" ItemsSource="{Binding ListCollectionView}">
-            </controls:ExtendedListBox>
+            <ContentControl Grid.Column="1" Grid.Row="0" Content="{Binding }" KeyboardNavigation.IsTabStop="False" Focusable="False">
+                <ContentControl.Style>
+                    <Style TargetType="{x:Type ContentControl}">
 
+                        <Setter Property="ContentTemplate" Value="{StaticResource ListPageListBoxTemplateWithVirtualization}" />
+
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsVirtualizationRequired}" Value="False">
+                                <Setter Property="ContentTemplate" Value="{StaticResource ListPageListBoxTemplate}" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ContentControl.Style>
+            </ContentControl>
+            
             <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" >
                 <Grid.Style>
                     <Style TargetType="{x:Type Grid}">

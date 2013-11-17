@@ -527,7 +527,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             }
             if (string.Equals(section, "itemepisodes"))
             {
-                return GetItemByNameItemListViewModel("Episode", 496, 279);
+                return GetItemByNameItemListViewModel("Episode", 480, 270);
             }
             if (string.Equals(section, "media info"))
             {

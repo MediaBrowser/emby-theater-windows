@@ -34,15 +34,20 @@
                 <RowDefinition Height="auto"></RowDefinition>
             </Grid.RowDefinitions>
 
-            <controls:ExtendedListBox Grid.Column="0" Command="{Binding NavigateCommand}" Style="{StaticResource ListBoxStyle}" ItemsSource="{Binding ListCollectionView}" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" ItemTemplate="{DynamicResource ListItemTemplate}" ItemContainerStyle="{StaticResource HighlightedBorderListBoxItemStyle}">
-                <controls:ExtendedListBox.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <controls:VirtualizingWrapPanel ItemHeight="{Binding ItemContainerHeight}" ItemWidth="{Binding ItemContainerWidth}" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="80 20" CanVerticallyScroll="False" CanHorizontallyScroll="True">
-                        </controls:VirtualizingWrapPanel>
-                    </ItemsPanelTemplate>
-                </controls:ExtendedListBox.ItemsPanel>
-            </controls:ExtendedListBox>
+            <controls:ExtendedScrollViewer Grid.Row="0" Margin="0 0 0 0" VerticalAlignment="Stretch" HorizontalAlignment="Center" CanContentScroll="True" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" >
 
+                <controls:ScrollingPanel HorizontalAlignment="Stretch" CanHorizontallyScroll="True" CanVerticallyScroll="False">
+                    <controls:ExtendedListBox Command="{Binding NavigateCommand}" Style="{StaticResource ListBoxStyle}" ItemsSource="{Binding ListCollectionView}" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Disabled" ItemTemplate="{DynamicResource ListItemTemplate}" ItemContainerStyle="{StaticResource HighlightedBorderListBoxItemStyle}">
+                        <controls:ExtendedListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel ItemHeight="{Binding ItemContainerHeight}" ItemWidth="{Binding ItemContainerWidth}" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="80 20">
+                                </WrapPanel>
+                            </ItemsPanelTemplate>
+                        </controls:ExtendedListBox.ItemsPanel>
+                    </controls:ExtendedListBox>
+                </controls:ScrollingPanel>
+            </controls:ExtendedScrollViewer>
+            
             <StackPanel Grid.Row="1" Margin="25 0 25 25" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
 
                 <StackPanel.Style>

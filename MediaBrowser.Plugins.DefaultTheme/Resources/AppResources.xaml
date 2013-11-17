@@ -356,7 +356,7 @@
             </Grid>
         </Grid>
     </ControlTemplate>
-
+    
     <DataTemplate x:Key="ListItemTemplate" DataType="{x:Type viewModels:ItemViewModel}">
         <Grid>
             <Image HorizontalAlignment="Center" Source="{Binding Image}" Stretch="{Binding ImageStretch}">
@@ -587,7 +587,7 @@
                     </Image>
                 </Grid>
 
-                <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding DisplayName}" Grid.Column="1" Margin="20 -5 90 0" MaxWidth="700" VerticalAlignment="Center"></TextBlock>
+                <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding DisplayName}" Grid.Column="1" Margin="20 -5 90 0" MaxWidth="700" VerticalAlignment="Center" HorizontalAlignment="Left"></TextBlock>
 
                 <StackPanel Grid.Column="2" Orientation="Horizontal">
 
@@ -699,7 +699,7 @@
     </Style>
 
     <!--List Page ListBox. -->
-    <Style TargetType="controls:ExtendedListBox" x:Key="ListPageListBoxStyle" BasedOn="{StaticResource ListBoxStyle}">
+    <Style TargetType="controls:ExtendedListBox" x:Key="ListPageListBoxStyleWithVirtualization" BasedOn="{StaticResource ListBoxStyle}">
         <Style.Triggers>
             <DataTrigger Binding="{Binding ViewType}" Value="Poster">
                 <Setter Property="ItemTemplate" Value="{StaticResource ListItemTemplate}"></Setter>
@@ -769,7 +769,6 @@
                 </Setter>
             </DataTrigger>
 
-
             <DataTrigger Binding="{Binding ScrollDirection}" Value="Vertical">
                 <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"></Setter>
                 <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Hidden"></Setter>
@@ -782,4 +781,129 @@
 
         </Style.Triggers>
     </Style>
+
+    <Style TargetType="controls:ExtendedListBox" x:Key="ListPageListBoxStyle" BasedOn="{StaticResource ListBoxStyle}">
+
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding ViewType}" Value="Poster">
+                <Setter Property="ItemTemplate" Value="{StaticResource ListItemTemplate}"></Setter>
+                <Setter Property="ItemContainerStyle" Value="{StaticResource HighlightedBorderListBoxItemStyle}"></Setter>
+                <Setter Property="Margin" Value="0 0"></Setter>
+                <Setter Property="ItemsPanel">
+                    <Setter.Value>
+                        <ItemsPanelTemplate>
+                            <WrapPanel ItemHeight="{Binding ItemContainerHeight}" ItemWidth="{Binding ItemContainerWidth}" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="80 20">
+                                <WrapPanel.Style>
+                                    <Style TargetType="{x:Type WrapPanel}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ScrollDirection}" Value="Vertical">
+                                                <Setter Property="Orientation" Value="Horizontal" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding ScrollDirection}" Value="Horizontal">
+                                                <Setter Property="Orientation" Value="Vertical" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </WrapPanel.Style>
+                            </WrapPanel>
+                        </ItemsPanelTemplate>
+                    </Setter.Value>
+                </Setter>
+            </DataTrigger>
+
+            <DataTrigger Binding="{Binding ViewType}" Value="Thumbstrip">
+                <Setter Property="ItemTemplate" Value="{StaticResource ListItemTemplate}"></Setter>
+                <Setter Property="ItemContainerStyle" Value="{StaticResource HighlightedBorderListBoxItemStyle}"></Setter>
+                <Setter Property="Margin" Value="0 0 0 0"></Setter>
+                <Setter Property="ItemsPanel">
+                    <Setter.Value>
+                        <ItemsPanelTemplate>
+                            <WrapPanel ItemHeight="{Binding ItemContainerHeight}" ItemWidth="{Binding ItemContainerWidth}" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="80 20">
+                            </WrapPanel>
+                        </ItemsPanelTemplate>
+                    </Setter.Value>
+                </Setter>
+            </DataTrigger>
+
+            <DataTrigger Binding="{Binding ViewType}" Value="PosterStrip">
+                <Setter Property="ItemTemplate" Value="{StaticResource ListItemTemplate}"></Setter>
+                <Setter Property="ItemContainerStyle" Value="{StaticResource HighlightedBorderListBoxItemStyle}"></Setter>
+                <Setter Property="Margin" Value="0 0 0 0"></Setter>
+                <Setter Property="ItemsPanel">
+                    <Setter.Value>
+                        <ItemsPanelTemplate>
+                            <WrapPanel ItemHeight="{Binding ItemContainerHeight}" ItemWidth="{Binding ItemContainerWidth}" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="80 20">
+                            </WrapPanel>
+                        </ItemsPanelTemplate>
+                    </Setter.Value>
+                </Setter>
+            </DataTrigger>
+
+            <DataTrigger Binding="{Binding ViewType}" Value="List">
+                <Setter Property="ItemTemplate" Value="{StaticResource ListPageListViewItemTemplate}"></Setter>
+                <Setter Property="ItemContainerStyle" Value="{StaticResource HighlightedListBoxItemStyle}"></Setter>
+                <Setter Property="Margin" Value="0 0 50 0"></Setter>
+                <Setter Property="ItemsPanel">
+                    <Setter.Value>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            </VirtualizingStackPanel>
+                        </ItemsPanelTemplate>
+                    </Setter.Value>
+                </Setter>
+            </DataTrigger>
+
+        </Style.Triggers>
+    </Style>
+    
+    <DataTemplate x:Key="ListPageListBoxTemplate" DataType="{x:Type viewModels:ItemListViewModel}">
+
+        <controls:ExtendedScrollViewer HorizontalAlignment="Stretch" KeyboardNavigation.IsTabStop="False" Focusable="False" VerticalAlignment="Stretch" CanContentScroll="True">
+
+            <controls:ExtendedScrollViewer.Style>
+                <Style TargetType="{x:Type controls:ExtendedScrollViewer}">
+
+                    <Setter Property="HorizontalScrollBarVisibility" Value="Hidden"></Setter>
+                    <Setter Property="VerticalScrollBarVisibility" Value="Disabled"></Setter>
+                    
+                    <Style.Triggers>
+                        
+                        <DataTrigger Binding="{Binding ScrollDirection}" Value="Vertical">
+                            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"></Setter>
+                            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Hidden"></Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </controls:ExtendedScrollViewer.Style>
+            
+            <controls:ScrollingPanel>
+
+                <controls:ScrollingPanel.Style>
+                    <Style TargetType="{x:Type controls:ScrollingPanel}">
+                        <Setter Property="CanHorizontallyScroll" Value="True"></Setter>
+                        <Setter Property="CanVerticallyScroll" Value="False"></Setter>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ScrollDirection}" Value="Vertical">
+                                <Setter Property="CanHorizontallyScroll" Value="False"></Setter>
+                                <Setter Property="CanVerticallyScroll" Value="True"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </controls:ScrollingPanel.Style>
+                
+                <controls:ExtendedListBox Command="{Binding NavigateCommand}" Style="{StaticResource ListPageListBoxStyle}" ItemsSource="{Binding ListCollectionView}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                </controls:ExtendedListBox>
+            </controls:ScrollingPanel>
+            
+        </controls:ExtendedScrollViewer>
+        
+    </DataTemplate>
+
+    <DataTemplate x:Key="ListPageListBoxTemplateWithVirtualization" DataType="{x:Type viewModels:ItemListViewModel}">
+
+        <controls:ExtendedListBox Command="{Binding NavigateCommand}" Style="{StaticResource ListPageListBoxStyleWithVirtualization}" ItemsSource="{Binding ListCollectionView}">
+        </controls:ExtendedListBox>
+
+    </DataTemplate>
+
 </ResourceDictionary>

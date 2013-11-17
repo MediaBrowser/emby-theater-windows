@@ -152,6 +152,26 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
+        private bool _isVirtualizationRequired = true;
+        public bool IsVirtualizationRequired
+        {
+            get
+            {
+                return _isVirtualizationRequired;
+            }
+            set
+            {
+                var changed = _isVirtualizationRequired != value;
+
+                _isVirtualizationRequired = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("IsVirtualizationRequired");
+                }
+            }
+        }
+
         private ItemViewModel _currentItem;
         public ItemViewModel CurrentItem
         {
@@ -434,6 +454,8 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 var result = await _getItemsDelegate(this);
                 var items = result.Items;
 
+                IsVirtualizationRequired = items.Length > 40;
+
                 int? selectedIndex = null;
 
                 if (isInitialLoad && AutoSelectFirstItem)
@@ -626,7 +648,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             var currentAspectRatio = item.PrimaryImageAspectRatio ?? MedianPrimaryImageAspectRatio ?? layoutAspectRatio;
 
             // Preserve the exact AR if it deviates from the median significantly
-            return Math.Abs(currentAspectRatio - layoutAspectRatio) <= .34;
+            return Math.Abs(currentAspectRatio - layoutAspectRatio) <= .3;
         }
 
         private void UpdateContainerSizes()

@@ -37,6 +37,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         public GalleryViewModel GenresViewModel { get; private set; }
         public GalleryViewModel AllMoviesViewModel { get; private set; }
         public GalleryViewModel YearsViewModel { get; private set; }
+        public GalleryViewModel TrailersViewModel { get; private set; }
 
         private readonly double _posterTileHeight;
         private readonly double _posterTileWidth;
@@ -60,7 +61,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             _posterTileWidth = _posterTileHeight * 2 / 3;
 
             var spotlightTileHeight = TileHeight * 2 + TilePadding / 2;
-            var spotlightTileWidth = 16 * (spotlightTileHeight / 9) + 50;
+            var spotlightTileWidth = 16 * (spotlightTileHeight / 9) + 70;
 
             var lowerSpotlightWidth = ((spotlightTileWidth - (TilePadding)) / 4) - 3.15;
 
@@ -71,6 +72,13 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 CustomCommandAction = () => NavigateWithLoading(NavigateToGenresInternal)
             };
 
+            TrailersViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
+            {
+                GalleryHeight = TileHeight,
+                GalleryWidth = lowerSpotlightWidth,
+                CustomCommandAction = () => NavigateWithLoading(() => NavigateToMoviesInternal("Trailers"))
+            };
+            
             YearsViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {
                 GalleryHeight = TileHeight,
@@ -663,15 +671,20 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         private bool ShowComedy(MoviesView view)
         {
+            if (view.ComedyItems.Count == 0)
+            {
+                return false;
+            }
+
             var now = DateTime.Now;
 
             if (now.DayOfWeek == DayOfWeek.Thursday)
             {
-                return view.ComedyItems.Count > 0 && now.Hour >= 12;
+                return now.Hour >= 12;
             }
             if (now.DayOfWeek == DayOfWeek.Sunday)
             {
-                return view.ComedyItems.Count > 0;
+                return now.Hour >= 6;
             }
             return false;
         }
@@ -791,6 +804,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             if (GenresViewModel != null)
             {
                 GenresViewModel.Dispose();
+            }
+            if (TrailersViewModel != null)
+            {
+                TrailersViewModel.Dispose();
             }
             if (AllMoviesViewModel != null)
             {

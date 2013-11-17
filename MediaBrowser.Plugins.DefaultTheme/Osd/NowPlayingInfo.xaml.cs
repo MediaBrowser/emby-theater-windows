@@ -72,7 +72,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Osd
                 {
                     ImgPrimary.Source = await viewModel.ImageManager.GetRemoteBitmapAsync(viewModel.ApiClient.GetImageUrl(media, new ImageOptions
                     {
-                        Height = 300
+                        Height = 600
 
                     }), CancellationToken.None);
 
@@ -92,6 +92,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Osd
             var media = viewModel.NowPlayingItem;
 
             TxtName.Text = media == null ? string.Empty : GetName(media);
+
+            TxtSeriesName.Text = media == null || string.IsNullOrEmpty(media.SeriesName) ? null : media.SeriesName;
+            TxtSeriesName.Visibility = string.IsNullOrEmpty(TxtSeriesName.Text)
+                ? Visibility.Collapsed
+                : Visibility.Visible;
         }
 
         private string GetName(BaseItemDto item)

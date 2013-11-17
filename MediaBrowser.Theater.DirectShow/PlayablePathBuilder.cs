@@ -55,6 +55,11 @@ namespace MediaBrowser.Theater.DirectShow
 
         private static string GetStreamedPath(BaseItemDto item, IApiClient apiClient)
         {
+            //if (item.LocationType == LocationType.Remote)
+            //{
+            //    return item.Path;
+            //}
+
             if (item.VideoType.HasValue)
             {
                 if (item.VideoType.Value != VideoType.VideoFile)

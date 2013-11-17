@@ -1112,6 +1112,10 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             {
                 url = _apiClient.GetThumbImageUrl(Item, options);
             }
+            else if (options.ImageType == ImageType.Art)
+            {
+                url = _apiClient.GetArtImageUrl(Item, options);
+            }
             else
             {
                 url = _apiClient.GetImageUrl(Item, options);

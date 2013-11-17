@@ -79,7 +79,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Osd
             {
                 var vm = _transportViewModel.CreatePeopleViewModel();
 
-                vm.ImageWidth = 240;
+                vm.ImageWidth = 160;
 
                 return vm;
             }

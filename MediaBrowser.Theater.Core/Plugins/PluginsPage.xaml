@@ -22,6 +22,7 @@
                             </Trigger>
                             <Trigger Property="IsKeyboardFocused" Value="true">
                                 <Setter TargetName="MenuText" Property="Opacity" Value="1"/>
+                                <Setter TargetName="MenuText" Property="TextBlock.TextDecorations" Value="Underline"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>

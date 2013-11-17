@@ -55,7 +55,7 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
             PlaybackManager.PlaybackCompleted += PlaybackManager_PlaybackCompleted;
 
             SettingsCommand = new RelayCommand(i => NavigationService.NavigateToSettingsPage());
-            HomeCommand = new RelayCommand(i => NavigationService.NavigateToHomePage());
+            HomeCommand = new RelayCommand(i => GoHome());
             FullscreenVideoCommand = new RelayCommand(i => NavigationService.NavigateToInternalPlayerPage());
             RestartServerCommand = new RelayCommand(i => RestartServer());
             RestartApplicationCommand = new RelayCommand(i => RestartApplication());
@@ -145,6 +145,18 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
         private void ClockTimerCallback(object state)
         {
             _dispatcher.InvokeAsync(() => OnPropertyChanged("DateTime"), DispatcherPriority.Background);
+        }
+
+        private void GoHome()
+        {
+            if (SessionManager.CurrentUser != null)
+            {
+                NavigationService.NavigateToHomePage();
+            }
+            else
+            {
+                NavigationService.NavigateToLoginPage();
+            }
         }
 
         void SessionManagerUserLoggedOut(object sender, EventArgs e)

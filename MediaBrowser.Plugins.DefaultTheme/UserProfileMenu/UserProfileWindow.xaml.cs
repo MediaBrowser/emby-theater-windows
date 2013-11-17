@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.ApiClient;
+﻿using MediaBrowser.Common;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
@@ -16,11 +17,15 @@ namespace MediaBrowser.Plugins.DefaultTheme.UserProfileMenu
     public partial class UserProfileWindow : BaseModalWindow
     {
         private readonly ISessionManager _session;
+        private readonly IApplicationHost _appHost;
+        private readonly IPresentationManager _presentation;
 
-        public UserProfileWindow(ISessionManager session, IImageManager imageManager, IApiClient apiClient, INavigationService navigation)
+        public UserProfileWindow(ISessionManager session, IImageManager imageManager, IApiClient apiClient, INavigationService navigation, IApplicationHost appHost, IPresentationManager presentation)
             : base()
         {
             _session = session;
+            _appHost = appHost;
+            _presentation = presentation;
 
             InitializeComponent();
 
@@ -28,6 +33,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.UserProfileMenu
             Unloaded += UserProfileWindow_Unloaded;
 
             BtnClose.Click += BtnClose_Click;
+            BtnCloseApplication.Click += BtnCloseApplication_Click;
 
             ContentGrid.DataContext = new UserDtoViewModel(apiClient, imageManager, session, navigation)
             {
@@ -36,6 +42,18 @@ namespace MediaBrowser.Plugins.DefaultTheme.UserProfileMenu
             };
 
             MainGrid.DataContext = this;
+        }
+
+        async void BtnCloseApplication_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                await _appHost.Shutdown();
+            }
+            catch (Exception ex)
+            {
+                _presentation.ShowDefaultErrorMessage();
+            }
         }
 
         void BtnClose_Click(object sender, RoutedEventArgs e)

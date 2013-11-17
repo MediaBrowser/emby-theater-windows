@@ -146,10 +146,27 @@
             </controls:ExtendedScrollViewer>
 
             <StackPanel Grid.Row="1" Orientation="Vertical" VerticalAlignment="Center">
-                <TextBlock DataContext="{Binding Path=CurrentItem}" Style="{DynamicResource BoldHeaderTextBlock}" HorizontalAlignment="Center" Text="{Binding DisplayName, Converter={controls:UpperCaseConverter}}" VerticalAlignment="Center"></TextBlock>
 
-                <details:ItemInfoFooter DataContext="{Binding Path=CurrentItem}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0 50 0 0">
-                </details:ItemInfoFooter>
+                <StackPanel.Style>
+                    <Style TargetType="{x:Type StackPanel}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding CurrentItem}" Value="{x:Null}">
+                                <Setter Property="Visibility" Value="Hidden" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </StackPanel.Style>
+                
+                <TextBlock DataContext="{Binding CurrentItem}" Style="{DynamicResource BoldHeaderTextBlock}" HorizontalAlignment="Center" Text="{Binding DisplayName, Converter={controls:UpperCaseConverter}}" VerticalAlignment="Center"></TextBlock>
+
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0 50 0 0">
+
+                    <details1:ItemImage Height="140" DataContext="{Binding CurrentItem}" ImageType="Art" ImageMargin="0 0 40 0"></details1:ItemImage>
+
+                    <details:ItemInfoFooter DataContext="{Binding CurrentItem}" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    </details:ItemInfoFooter>
+                </StackPanel>
+
             </StackPanel>
         </Grid>
     </DataTemplate>

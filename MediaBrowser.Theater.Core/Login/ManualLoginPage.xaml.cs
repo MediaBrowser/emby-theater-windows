@@ -1,9 +1,8 @@
-﻿using MediaBrowser.Model.Net;
-using MediaBrowser.Theater.Interfaces.Presentation;
+﻿using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Presentation.Pages;
-using System.Net;
+using System;
 using System.Windows;
 
 namespace MediaBrowser.Theater.Core.Login
@@ -15,7 +14,7 @@ namespace MediaBrowser.Theater.Core.Login
     {
         protected ISessionManager SessionManager { get; private set; }
         protected IPresentationManager PresentationManager { get; private set; }
-        
+
         public ManualLoginPage(string initialUsername, ISessionManager sessionManager, IPresentationManager presentationManager)
         {
             PresentationManager = presentationManager;
@@ -51,21 +50,14 @@ namespace MediaBrowser.Theater.Core.Login
             {
                 await SessionManager.Login(TxtUsername.Text, TxtPassword.Password);
             }
-            catch (HttpException ex)
+            catch (Exception ex)
             {
-                if (ex.StatusCode.HasValue && (ex.StatusCode.Value == HttpStatusCode.Unauthorized || ex.StatusCode.Value == HttpStatusCode.Forbidden))
+                PresentationManager.ShowMessage(new MessageBoxInfo
                 {
-                    PresentationManager.ShowMessage(new MessageBoxInfo
-                    {
-                        Caption = "Login Failure",
-                        Text = "Invalid username or password. Please try again.",
-                        Icon = MessageBoxIcon.Error
-                    });
-                }
-                else
-                {
-                    PresentationManager.ShowDefaultErrorMessage();
-                }
+                    Caption = "Login Failure",
+                    Text = ex.Message,
+                    Icon = MessageBoxIcon.Error
+                });
             }
         }
     }

@@ -3,6 +3,7 @@ using MediaBrowser.Common.Constants;
 using MediaBrowser.Common.Implementations.Logging;
 using MediaBrowser.Common.Implementations.Updates;
 using MediaBrowser.Model.Logging;
+using MediaBrowser.Model.System;
 using MediaBrowser.Theater.Implementations.Configuration;
 using MediaBrowser.Theater.Interfaces.System;
 using MediaBrowser.UI.StartupWizard;
@@ -308,9 +309,11 @@ namespace MediaBrowser.UI
         {
             var foundServer = false;
 
+            SystemInfo systemInfo = null;
+
             try
             {
-                var systemInfo = await _appHost.ApiClient.GetSystemInfoAsync().ConfigureAwait(false);
+                systemInfo = await _appHost.ApiClient.GetSystemInfoAsync().ConfigureAwait(false);
 
                 foundServer = true;
             }
@@ -329,6 +332,8 @@ namespace MediaBrowser.UI
 
                     _appHost.ApiClient.ChangeServerLocation(parts[0], address.Port);
 
+                    systemInfo = await _appHost.ApiClient.GetSystemInfoAsync().ConfigureAwait(false);
+
                     foundServer = true;
                 }
                 catch (Exception ex)
@@ -343,11 +348,10 @@ namespace MediaBrowser.UI
             {
                 // Show connection wizard
                 await Dispatcher.InvokeAsync(async () => await _appHost.NavigationService.Navigate(new StartupWizardPage(_appHost.NavigationService, _appHost.TheaterConfigurationManager, _appHost.ApiClient, _appHost.PresentationManager, _logger, mediaFilters)));
+                return;
             }
-            else
-            {
-                await _appHost.NavigationService.NavigateToLoginPage();
-            }
+
+            await _appHost.NavigationService.NavigateToLoginPage();
         }
 
         private bool AreRequiredMediaFiltersInstalled(IMediaFilters mediaFilters)

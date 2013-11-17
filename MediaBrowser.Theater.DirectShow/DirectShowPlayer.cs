@@ -176,15 +176,7 @@ namespace MediaBrowser.Theater.DirectShow
 
             int hr = 0;
 
-            if (!isDvd)
-            {
-                hr = m_graph.AddSourceFilter(path, path, out _pSource);
-                DsError.ThrowExceptionForHR(hr);
-
-                // Try to render the streams.
-                RenderStreams(_pSource, enableReclock, enableMadvr, enableXySubFilter);
-            }
-            else
+            if (isDvd)
             {
                 _logger.Debug("Initializing dvd player to play {0}", path);
 
@@ -195,6 +187,43 @@ namespace MediaBrowser.Theater.DirectShow
 
                 // Try to render the streams.
                 RenderStreams(_dvdNav, enableReclock, enableMadvr, enableXySubFilter);
+            }
+            else if (path.IndexOf("apple.com", StringComparison.OrdinalIgnoreCase) != -1)
+            {
+                var mySourceFilter = Activator.CreateInstance(Type.GetTypeFromCLSID(new Guid("{E436EBB6-524F-11CE-9F53-0020AF0BA770}"))) as DirectShowLib.IBaseFilter;
+                hr = m_graph.AddFilter(mySourceFilter, "File Source (URL)");
+                DsError.ThrowExceptionForHR(hr);
+
+                if (hr == 0 && mySourceFilter != null)
+                {
+                    hr = ((IFileSourceFilter)mySourceFilter).Load(path, null);
+                    DsError.ThrowExceptionForHR(hr);
+                }
+            }
+            else if (path.IndexOf("http://", StringComparison.OrdinalIgnoreCase) != -1)
+            {
+                //shoutcast will need "shoutcast source filter" WITH useragent set to the right value!!!!
+                //{68F540E9-766F-44D2-AB07-E26CC6D27A79}
+                //alternatevely use dc-bass source
+
+                //make sure to test youtube handeling
+                var mySourceFilter = Activator.CreateInstance(Type.GetTypeFromCLSID(new Guid("{E436EBB6-524F-11CE-9F53-0020AF0BA770}"))) as DirectShowLib.IBaseFilter;
+                hr = m_graph.AddFilter(mySourceFilter, "File Source (URL)");
+                DsError.ThrowExceptionForHR(hr);
+
+                if (hr == 0 && mySourceFilter != null)
+                {
+                    hr = ((IFileSourceFilter)mySourceFilter).Load(path, null);
+                    DsError.ThrowExceptionForHR(hr);
+                }
+            }
+            else
+            {
+                hr = m_graph.AddSourceFilter(path, path, out _pSource);
+                DsError.ThrowExceptionForHR(hr);
+
+                // Try to render the streams.
+                RenderStreams(_pSource, enableReclock, enableMadvr, enableXySubFilter);
             }
 
             // Get the seeking capabilities.

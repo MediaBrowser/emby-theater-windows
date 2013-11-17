@@ -18,23 +18,26 @@
             <RowDefinition Height="auto"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <TextBlock Text="Please Sign In" Grid.Row="0" HorizontalAlignment="Left" Style="{DynamicResource Heading1TextBlockStyle}" Margin="300 50 0 0"></TextBlock>
+        <StackPanel Margin="300 50 0 0" Grid.Row="0" HorizontalAlignment="Left" Orientation="Horizontal">
+            <TextBlock Text="Please Sign " Style="{DynamicResource Heading1TextBlockStyle}"></TextBlock>
+            <TextBlock Text="In" Style="{DynamicResource Heading1TextBlockStyle}" Foreground="{DynamicResource MediaBrowserAccent}"></TextBlock>
+        </StackPanel>
 
         <controls:ExtendedScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" VerticalAlignment="Top" HorizontalAlignment="Center" CanContentScroll="True">
             <controls:ScrollingPanel CanHorizontallyScroll="True" CanVerticallyScroll="False">
-                <controls:ExtendedListBox Margin="100 50 100 50" x:Name="LstUsers" ScrollViewer.VerticalScrollBarVisibility="Disabled" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding ListCollectionView}" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}">
+                <controls:ExtendedListBox HorizontalAlignment="Stretch" x:Name="LstUsers" ScrollViewer.VerticalScrollBarVisibility="Disabled" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding ListCollectionView}" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}">
                     <controls:ExtendedListBox.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <UniformGrid Rows="1" Margin="20" />
+                            <StackPanel Orientation="Horizontal" Margin="100 40" HorizontalAlignment="Center" />
                         </ItemsPanelTemplate>
                     </controls:ExtendedListBox.ItemsPanel>
                 </controls:ExtendedListBox>
             </controls:ScrollingPanel>
         </controls:ExtendedScrollViewer>
-        
+
         <Grid Grid.Row="2">
 
-            <TextBlock Style="{DynamicResource Heading1TextBlockStyle}" HorizontalAlignment="Center" Margin="50 0 50 0" Text="{Binding Username}" DataContext="{Binding CurrentItem}" FontFamily="Segoe UI" FontWeight="ExtraBold" FontSize="120" Foreground="#eee" Opacity=".9"></TextBlock>
+            <TextBlock Style="{DynamicResource Heading1TextBlockStyle}" HorizontalAlignment="Center" Margin="50 0 50 0" Text="{Binding Username}" DataContext="{Binding CurrentItem}" FontFamily="Segoe UI" FontWeight="ExtraBold" FontSize="100" Foreground="#eee" Opacity=".9"></TextBlock>
 
         </Grid>
     </Grid>

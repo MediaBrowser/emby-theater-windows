@@ -353,15 +353,20 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         private bool ShowComedy(TvView view)
         {
+            if (view.ComedyItems.Count == 0)
+            {
+                return false;
+            }
+
             var now = DateTime.Now;
 
             if (now.DayOfWeek == DayOfWeek.Thursday)
             {
-                return view.ComedyItems.Count > 0 && now.Hour >= 12;
+                return now.Hour >= 12;
             }
             if (now.DayOfWeek == DayOfWeek.Sunday)
             {
-                return view.ComedyItems.Count > 0;
+                return now.Hour >= 6;
             }
             return false;
         }
@@ -494,7 +499,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 DisplayName = "Upcoming",
                 Name = "Upcoming",
             });
-            
+
             var options = new ListPageConfig
             {
                 PageTitle = "TV",

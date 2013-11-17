@@ -60,8 +60,26 @@ namespace MediaBrowser.Theater.Implementations.Session
             _navService.ClearHistory();
         }
 
+        /// <summary>
+        /// TODO: Create an ITheaterAppHost and add this property to it
+        /// </summary>
+        private Version RequiredServerVersion
+        {
+            get
+            {
+                return Version.Parse("3.0.5068.794");
+            }
+        }
+
         public async Task Login(string username, string password)
         {
+            var systemInfo = await _apiClient.GetSystemInfoAsync();
+
+            if (Version.Parse(systemInfo.Version) < RequiredServerVersion)
+            {
+                throw new ApplicationException(string.Format("Media Browser Server is out of date. Please upgrade to {0} or greater.", RequiredServerVersion));
+            }
+
             using (var provider = SHA1.Create())
             {
                 var hash = provider.ComputeHash(Encoding.UTF8.GetBytes(password ?? string.Empty));

@@ -86,9 +86,10 @@ namespace MediaBrowser.Theater.Core.Settings
 
             if (update.IsUpdateAvailable)
             {
+                PanelNewVersion.Visibility = Visibility.Collapsed;
+                PanelUpToDate.Visibility = Visibility.Collapsed;
+                
                 _appHost.UpdateApplication(update.Package, CancellationToken.None, new Progress<double>());
-
-                LoadApplicationUpdates();
             }
         }
 

@@ -21,6 +21,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
         public string ImageType { get; set; }
 
+        public Thickness ImageMargin { get; set; }
+
         /// <summary>
         /// The _item
         /// </summary>
@@ -115,6 +117,27 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 }
             }
 
+            else if (string.Equals(ImageType, "Art"))
+            {
+                if (item.Item.HasArtImage || item.Item.ParentArtImageTag.HasValue)
+                {
+                    try
+                    {
+                        options.ImageType = Model.Entities.ImageType.Art;
+
+                        var bitmap = await item.GetBitmapImageAsync(options, CancellationToken.None);
+
+                        SetImage(bitmap);
+
+                        return;
+                    }
+                    catch
+                    {
+                        // Logged at lower levels
+                    }
+                }
+            }
+            
             else if (item.Item.HasPrimaryImage)
             {
                 try
@@ -140,6 +163,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
         {
             Img.Source = img;
             Img.Visibility = Visibility.Visible;
+            Img.Margin = ImageMargin;
         }
 
         private ImageOptions GetImageOptions()

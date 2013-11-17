@@ -757,7 +757,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         public string OfficialRating
         {
-            get { return _item == null ? null : _item.OfficialRating; }
+            get { return _item == null || string.IsNullOrEmpty(_item.OfficialRating) ? null : _item.OfficialRating; }
         }
 
         public string AlbumArtist

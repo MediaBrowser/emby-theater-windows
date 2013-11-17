@@ -16,10 +16,9 @@
             <Image x:Name="ImgPrimary" Stretch="Uniform" VerticalAlignment="Top"></Image>
         </Grid>
 
-        <Grid Grid.Column="1" Width="1100" Margin="40 0 0 0">
+        <Grid Grid.Column="1" Width="1100" Margin="50 0 0 0">
 
             <Grid.RowDefinitions>
-                <RowDefinition Height="auto"></RowDefinition>
                 <RowDefinition Height="auto"></RowDefinition>
                 <RowDefinition Height="auto"></RowDefinition>
                 <RowDefinition Height="*"></RowDefinition>
@@ -30,11 +29,9 @@
                 <ColumnDefinition Width="auto"></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
-            <TextBlock Name="TxtSeriesName" Style="{DynamicResource TextBlockStyle}" Grid.Row="0" Grid.Column="0" Margin="0 0 0 15"></TextBlock>
-            
-            <TextBlock Name="TxtName" Style="{DynamicResource TextBlockStyle}" Grid.Row="1" Grid.Column="0" Margin="0 0 0 0"></TextBlock>
+            <TextBlock Name="TxtName" Style="{DynamicResource TextBlockStyle}" Grid.Row="0" Grid.Column="0" Margin="0 0 0 0"></TextBlock>
 
-            <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" Margin="0 -5 0 0" HorizontalAlignment="Right">
+            <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="1" Margin="0 0 0 0" HorizontalAlignment="Right">
                 <Button Style="{DynamicResource ImageButton}" Command="{Binding ToggleDislikesCommand}" DataContext="{Binding NowPlayingItemViewModel}">
                     <Grid>
                         <Grid Width="50" Height="50" />
@@ -120,10 +117,10 @@
                 </Button>
             </StackPanel>
 
-            <details:ItemInfoFooter ShowResumeProgress="False"  HorizontalAlignment="Left" VerticalAlignment="Bottom" DataContext="{Binding NowPlayingItemViewModel}" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0 25 0 0" ShowUserRating="false">
+            <details:ItemInfoFooter ShowResumeProgress="False"  HorizontalAlignment="Left" VerticalAlignment="Bottom" DataContext="{Binding NowPlayingItemViewModel}" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="0 35 0 0" ShowUserRating="false">
             </details:ItemInfoFooter>
 
-            <TextBlock DataContext="{Binding NowPlayingItemViewModel}" Style="{DynamicResource TextBlockStyle}" Text="{Binding Overview}" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="0 25 0 0"></TextBlock>
+            <TextBlock DataContext="{Binding NowPlayingItemViewModel}" Style="{DynamicResource TextBlockStyle}" Text="{Binding Overview}" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0 35 0 0"></TextBlock>
         </Grid>
     </Grid>
 </UserControl>

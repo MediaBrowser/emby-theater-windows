@@ -18,7 +18,7 @@
             <RowDefinition Height="auto"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <StackPanel Margin="300 50 0 0" Grid.Row="0" HorizontalAlignment="Left" Orientation="Horizontal">
+        <StackPanel Margin="300 70 0 0" Grid.Row="0" HorizontalAlignment="Left" Orientation="Horizontal">
             <TextBlock Text="Please Sign " Style="{DynamicResource Heading1TextBlockStyle}"></TextBlock>
             <TextBlock Text="In" Style="{DynamicResource Heading1TextBlockStyle}" Foreground="{DynamicResource MediaBrowserAccent}"></TextBlock>
         </StackPanel>
@@ -28,7 +28,7 @@
                 <controls:ExtendedListBox HorizontalAlignment="Stretch" x:Name="LstUsers" ScrollViewer.VerticalScrollBarVisibility="Disabled" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding ListCollectionView}" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}">
                     <controls:ExtendedListBox.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <StackPanel Orientation="Horizontal" Margin="100 40" HorizontalAlignment="Center" />
+                            <StackPanel Orientation="Horizontal" Margin="100 80" HorizontalAlignment="Center" />
                         </ItemsPanelTemplate>
                     </controls:ExtendedListBox.ItemsPanel>
                 </controls:ExtendedListBox>

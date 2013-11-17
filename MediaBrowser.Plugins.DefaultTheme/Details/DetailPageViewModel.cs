@@ -440,7 +440,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             {
                 return new ItemListViewModel(GetSpecialFeatures, _presentationManager, _imageManager, _apiClient, _navigation, _playback, _logger, _serverEvents)
                 {
-                    ImageDisplayWidth = 600,
+                    ImageDisplayWidth = 505,
                     EnableBackdropsForCurrentItem = false,
                     ListType = "SpecialFeatures",
                     Context = Context,
@@ -451,7 +451,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             {
                 return new ItemListViewModel(GetSeriesEpisodes, _presentationManager, _imageManager, _apiClient, _navigation, _playback, _logger, _serverEvents)
                 {
-                    ImageDisplayWidth = 600,
+                    ImageDisplayWidth = 505,
                     EnableBackdropsForCurrentItem = false,
                     ListType = "SpecialFeatures",
                     Context = Context,

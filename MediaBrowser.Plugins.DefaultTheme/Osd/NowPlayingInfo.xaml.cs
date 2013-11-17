@@ -1,4 +1,5 @@
 ﻿using MediaBrowser.Model.Dto;
+using MediaBrowser.Model.Entities;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using System.ComponentModel;
 using System.Threading;
@@ -66,21 +67,44 @@ namespace MediaBrowser.Plugins.DefaultTheme.Osd
 
             ImgPrimary.Visibility = Visibility.Hidden;
 
-            if (media != null && media.HasPrimaryImage)
+            if (media != null)
             {
-                try
+                if (media.SeriesPrimaryImageTag.HasValue)
                 {
-                    ImgPrimary.Source = await viewModel.ImageManager.GetRemoteBitmapAsync(viewModel.ApiClient.GetImageUrl(media, new ImageOptions
+                    try
                     {
-                        Height = 600
+                        ImgPrimary.Source = await viewModel.ImageManager.GetRemoteBitmapAsync(viewModel.ApiClient.GetImageUrl(media.SeriesId, new ImageOptions
+                        {
+                            Height = 350,
+                            Tag = media.SeriesPrimaryImageTag,
+                            ImageType = ImageType.Primary
 
-                    }), CancellationToken.None);
+                        }), CancellationToken.None);
 
-                    ImgPrimary.Visibility = Visibility.Visible;
+                        ImgPrimary.Visibility = Visibility.Visible;
+                    }
+                    catch
+                    {
+                        // Already logged at lower levels
+                    }
                 }
-                catch
+                else if (media.HasPrimaryImage)
                 {
-                    // Already logged at lower levels
+                    try
+                    {
+                        ImgPrimary.Source = await viewModel.ImageManager.GetRemoteBitmapAsync(viewModel.ApiClient.GetImageUrl(media, new ImageOptions
+                        {
+                            Height = 600,
+                            ImageType = ImageType.Primary
+
+                        }), CancellationToken.None);
+
+                        ImgPrimary.Visibility = Visibility.Visible;
+                    }
+                    catch
+                    {
+                        // Already logged at lower levels
+                    }
                 }
             }
         }
@@ -92,11 +116,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Osd
             var media = viewModel.NowPlayingItem;
 
             TxtName.Text = media == null ? string.Empty : GetName(media);
-
-            TxtSeriesName.Text = media == null || string.IsNullOrEmpty(media.SeriesName) ? null : media.SeriesName;
-            TxtSeriesName.Visibility = string.IsNullOrEmpty(TxtSeriesName.Text)
-                ? Visibility.Collapsed
-                : Visibility.Visible;
         }
 
         private string GetName(BaseItemDto item)

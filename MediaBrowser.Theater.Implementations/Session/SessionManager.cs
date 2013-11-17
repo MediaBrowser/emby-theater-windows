@@ -2,6 +2,7 @@
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
+using MediaBrowser.Model.Net;
 using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
@@ -67,7 +68,7 @@ namespace MediaBrowser.Theater.Implementations.Session
         {
             get
             {
-                return Version.Parse("3.0.5068.794");
+                return Version.Parse("3.0.5069.18843");
             }
         }
 
@@ -84,10 +85,17 @@ namespace MediaBrowser.Theater.Implementations.Session
             {
                 var hash = provider.ComputeHash(Encoding.UTF8.GetBytes(password ?? string.Empty));
 
-                var result = await _apiClient.AuthenticateUserAsync(username, hash);
+                try
+                {
+                    var result = await _apiClient.AuthenticateUserAsync(username, hash);
 
-                CurrentUser = result.User;
-                _apiClient.CurrentUserId = CurrentUser.Id;
+                    CurrentUser = result.User;
+                    _apiClient.CurrentUserId = CurrentUser.Id;
+                }
+                catch (HttpException)
+                {
+                    throw new UnauthorizedAccessException("Invalid username or password. Please try again.");
+                }
             }
 
             EventHelper.FireEventIfNotNull(UserLoggedIn, this, EventArgs.Empty, _logger);

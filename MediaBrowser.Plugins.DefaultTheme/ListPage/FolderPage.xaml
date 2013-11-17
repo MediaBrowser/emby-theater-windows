@@ -52,7 +52,7 @@
 
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding ScrollDirection}" Value="Vertical">
-                            <Setter Property="Margin" Value="0 50 0 35" />
+                            <Setter Property="Margin" Value="0 50 0 50" />
                             <Setter Property="VerticalAlignment" Value="Top" />
                         </DataTrigger>
                     </Style.Triggers>
@@ -106,7 +106,7 @@
                 </StackPanel>
             </Grid>
 
-            <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0 30 0 0">
+            <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0 40 0 0">
 
                 <Grid.Style>
                     <Style TargetType="{x:Type Grid}">
@@ -140,7 +140,7 @@
 
                         <Grid.Style>
                             <Style TargetType="{x:Type Grid}">
-                                <Setter Property="Height" Value="140" />
+                                <Setter Property="Height" Value="120" />
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding ViewType}" Value="Poster">
                                         <Setter Property="Height" Value="80" />
@@ -149,10 +149,13 @@
                             </Style>
                         </Grid.Style>
 
-                        <Image Name="ImgLogo" Stretch="Uniform" MaxWidth="600" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0 0 0 0"></Image>
+                        <Image Name="ImgLogo" Stretch="Uniform" MaxWidth="600" VerticalAlignment="Center" HorizontalAlignment="Right"></Image>
                     </Grid>
-                    <TextBlock x:Name="TxtLogoName" Style="{DynamicResource TextBlockStyle}" DataContext="{Binding CurrentItem}" Text="{Binding DisplayName}" VerticalAlignment="Center"></TextBlock>
-                    <controls1:ItemInfoFooter VerticalContentAlignment="Center" KeyboardNavigation.IsTabStop="False" DataContext="{Binding CurrentItem}" VerticalAlignment="Center" Margin="40 0 0 0"></controls1:ItemInfoFooter>
+                    
+                    <TextBlock x:Name="TxtLogoName" Style="{DynamicResource TextBlockStyle}" DataContext="{Binding CurrentItem}" Text="{Binding DisplayName}" VerticalAlignment="Center" Margin="0 0 40 0">
+                    </TextBlock>
+
+                    <controls1:ItemInfoFooter VerticalContentAlignment="Center" KeyboardNavigation.IsTabStop="False" DataContext="{Binding CurrentItem}" VerticalAlignment="Center" HorizontalAlignment="Center"></controls1:ItemInfoFooter>
 
                 </StackPanel>
             </Grid>

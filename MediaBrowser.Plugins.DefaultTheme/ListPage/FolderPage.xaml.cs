@@ -297,7 +297,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                     {
                         ImageType = ImageType.Art
                     }));
-                    ImgLogo.MaxHeight = 140;
+                    ImgLogo.MaxHeight = 120;
+                    ImgLogo.Margin = new Thickness(0, 0, 40, 0);
+
+                    TxtLogoName.Visibility = Visibility.Collapsed;
                 }
                 else if (isStripView && item != null && (item.HasLogo || item.ParentLogoImageTag.HasValue))
                 {
@@ -306,7 +309,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                         ImageType = ImageType.Logo,
                         CropWhitespace = false
                     }));
-                    ImgLogo.MaxHeight = 140;
+                    ImgLogo.MaxHeight = 120;
+                    ImgLogo.Margin = new Thickness(0, 0, 40, 0);
+                    
+                    TxtLogoName.Visibility = Visibility.Collapsed;
                 }
                 else if (item != null && (item.HasLogo))
                 {
@@ -316,6 +322,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                         CropWhitespace = false
                     }));
                     ImgLogo.MaxHeight = 80;
+                    ImgLogo.Margin = new Thickness(0, 0, 40, 0);
+                    
+                    TxtLogoName.Visibility = Visibility.Collapsed;
                 }
                 else if (item != null && (item.HasArtImage || item.ParentArtImageTag.HasValue))
                 {
@@ -324,12 +333,25 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                         ImageType = ImageType.Art
                     }));
                     ImgLogo.MaxHeight = 80;
+                    ImgLogo.Margin = new Thickness(0, 0, 40, 0);
+                    
+                    TxtLogoName.Visibility = Visibility.Collapsed;
                 }
                 else
                 {
                     // Just hide it so that it still takes up the same amount of space
                     ImgLogo.Visibility = Visibility.Hidden;
-                    TxtLogoName.Visibility = Visibility.Visible;
+                    ImgLogo.Margin = new Thickness(0, 0, 0, 0);
+                    ImgLogo.Source = null;
+
+                    if (isStripView)
+                    {
+                        TxtLogoName.Visibility = Visibility.Collapsed;
+                    }
+                    else
+                    {
+                        TxtLogoName.Visibility = Visibility.Visible;
+                    }
                 }
             }
         }

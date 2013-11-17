@@ -26,7 +26,6 @@ namespace MediaBrowser.Theater.Presentation.Controls
             : base()
         {
             SizeChanged += MainWindow_SizeChanged;
-            StateChanged += BaseWindow_StateChanged;
             Loaded += BaseWindow_Loaded;
         }
 
@@ -236,11 +235,6 @@ namespace MediaBrowser.Theater.Presentation.Controls
         void MainWindow_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             ContentScale = e.NewSize.Height / 1080;
-        }
-
-        void BaseWindow_StateChanged(object sender, EventArgs e)
-        {
-            ContentScale = Height / 1080;
         }
 
         /// <summary>

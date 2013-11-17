@@ -98,7 +98,7 @@ namespace MediaBrowser.UI.EntryPoints
 
             var i = 0;
 
-            while (i < 5)
+            while (i < 3)
             {
                 items.AddRange(result.Items);
                 i++;

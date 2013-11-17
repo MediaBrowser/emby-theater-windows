@@ -31,20 +31,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         public ItemListViewModel LatestTrailersViewModel { get; private set; }
         public ItemListViewModel LatestMoviesViewModel { get; private set; }
         public ItemListViewModel MiniSpotlightsViewModel { get; private set; }
-        public ItemListViewModel MiniSpotlightsViewModel2 { get; private set; }
 
         public ImageViewerViewModel SpotlightViewModel { get; private set; }
 
         public GalleryViewModel GenresViewModel { get; private set; }
         public GalleryViewModel AllMoviesViewModel { get; private set; }
-        public GalleryViewModel ActorsViewModel { get; private set; }
-        public GalleryViewModel BoxsetsViewModel { get; private set; }
-        public GalleryViewModel TrailersViewModel { get; private set; }
-        public GalleryViewModel HDMoviesViewModel { get; private set; }
-        public GalleryViewModel ThreeDMoviesViewModel { get; private set; }
-        public GalleryViewModel FamilyMoviesViewModel { get; private set; }
-        public GalleryViewModel ComedyItemsViewModel { get; private set; }
-        public GalleryViewModel RomanticMoviesViewModel { get; private set; }
         public GalleryViewModel YearsViewModel { get; private set; }
 
         private readonly double _posterTileHeight;
@@ -68,87 +59,31 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             _posterTileHeight = (TileHeight * 1.48) + TilePadding / 2;
             _posterTileWidth = _posterTileHeight * 2 / 3;
 
-            const double tileScaleFactor = 11;
+            var spotlightTileHeight = TileHeight * 2 + TilePadding / 2;
+            var spotlightTileWidth = 16 * (spotlightTileHeight / 9) + 50;
 
-            ActorsViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
-            {
-                GalleryHeight = TileHeight,
-                GalleryWidth = TileWidth * tileScaleFactor / 16,
-                CustomCommandAction = () => NavigateWithLoading(NavigateToActorsInternal)
-            };
+            var lowerSpotlightWidth = ((spotlightTileWidth - (TilePadding)) / 4) - 3.15;
 
             GenresViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {
                 GalleryHeight = TileHeight,
-                GalleryWidth = TileWidth * tileScaleFactor / 16,
+                GalleryWidth = lowerSpotlightWidth,
                 CustomCommandAction = () => NavigateWithLoading(NavigateToGenresInternal)
             };
 
             YearsViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {
                 GalleryHeight = TileHeight,
-                GalleryWidth = TileWidth * tileScaleFactor / 16,
+                GalleryWidth = lowerSpotlightWidth,
                 CustomCommandAction = () => NavigateWithLoading(NavigateToYearsInternal)
             };
 
             AllMoviesViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {
                 GalleryHeight = TileHeight,
-                GalleryWidth = TileWidth * tileScaleFactor / 16,
+                GalleryWidth = lowerSpotlightWidth,
                 CustomCommandAction = () => NavigateWithLoading(() => NavigateToMoviesInternal("AllMovies"))
             };
-
-            BoxsetsViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
-            {
-                GalleryHeight = TileHeight,
-                GalleryWidth = TileWidth * tileScaleFactor / 16,
-                CustomCommandAction = () => NavigateWithLoading(() => NavigateToMoviesInternal("BoxSets"))
-            };
-
-            TrailersViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
-            {
-                GalleryHeight = TileHeight,
-                GalleryWidth = TileWidth * tileScaleFactor / 16,
-                CustomCommandAction = () => NavigateWithLoading(() => NavigateToMoviesInternal("Trailers"))
-            };
-
-            HDMoviesViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
-            {
-                GalleryHeight = TileHeight,
-                GalleryWidth = TileWidth * tileScaleFactor / 16,
-                CustomCommandAction = () => NavigateWithLoading(() => NavigateToMoviesInternal("HDMovies"))
-            };
-
-            FamilyMoviesViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
-            {
-                GalleryHeight = TileHeight,
-                GalleryWidth = TileWidth * tileScaleFactor / 16,
-                CustomCommandAction = () => NavigateWithLoading(() => NavigateToMoviesInternal("Family"))
-            };
-
-            ThreeDMoviesViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
-            {
-                GalleryHeight = TileHeight,
-                GalleryWidth = TileWidth * tileScaleFactor / 16,
-                CustomCommandAction = () => NavigateWithLoading(() => NavigateToMoviesInternal("3DMovies"))
-            };
-
-            RomanticMoviesViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
-            {
-                GalleryHeight = TileHeight,
-                GalleryWidth = TileWidth * tileScaleFactor / 16,
-                CustomCommandAction = () => NavigateWithLoading(() => NavigateToMoviesInternal("Romance"))
-            };
-
-            ComedyItemsViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
-            {
-                GalleryHeight = TileHeight,
-                GalleryWidth = TileWidth * tileScaleFactor / 16,
-                CustomCommandAction = () => NavigateWithLoading(() => NavigateToMoviesInternal("Comedy"))
-            };
-
-            var spotlightTileWidth = TileWidth * 2 + TilePadding;
-            var spotlightTileHeight = spotlightTileWidth * 9 / 16;
 
             SpotlightViewModel = new ImageViewerViewModel(_imageManager, new List<ImageViewerImage>())
             {
@@ -188,17 +123,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 _moviesView = view;
 
                 LoadSpotlightViewModel(view);
-                LoadBoxsetsViewModel(view);
-                LoadTrailersViewModel(view);
                 LoadAllMoviesViewModel(view);
-                LoadHDMoviesViewModel(view);
-                LoadFamilyMoviesViewModel(view);
-                Load3DMoviesViewModel(view);
-                LoadComedyMoviesViewModel(view);
-                LoadRomanticMoviesViewModel(view);
-                LoadActorsViewModel(view);
                 LoadMiniSpotlightsViewModel(view);
-                LoadMiniSpotlightsViewModel2(view);
                 LoadLatestMoviesViewModel(view);
                 LoadLatestTrailersViewModel(view);
             }
@@ -273,7 +199,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         {
             Func<ItemListViewModel, Task<ItemsResult>> getItems = vm =>
             {
-                var items = view.MiniSpotlights.Take(2).ToArray();
+                var items = view.MiniSpotlights.Take(3).ToArray();
 
                 return Task.FromResult(new ItemsResult
                 {
@@ -294,33 +220,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             };
 
             OnPropertyChanged("MiniSpotlightsViewModel");
-        }
-
-        private void LoadMiniSpotlightsViewModel2(MoviesView view)
-        {
-            Func<ItemListViewModel, Task<ItemsResult>> getItems = vm =>
-            {
-                var items = view.MiniSpotlights.Skip(2).Take(3).ToArray();
-
-                return Task.FromResult(new ItemsResult
-                {
-                    TotalRecordCount = items.Length,
-                    Items = items
-                });
-            };
-
-            MiniSpotlightsViewModel2 = new ItemListViewModel(getItems, PresentationManager, _imageManager, ApiClient, _navService, _playbackManager, _logger, _serverEvents)
-            {
-                ImageDisplayWidth = TileWidth,
-                ImageDisplayHeightGenerator = v => TileHeight,
-                DisplayNameGenerator = HomePageViewModel.GetDisplayName,
-                EnableBackdropsForCurrentItem = false,
-                ImageStretch = Stretch.UniformToFill,
-                PreferredImageTypesGenerator = vm => new[] { ImageType.Backdrop },
-                DownloadImageAtExactSize = true
-            };
-
-            OnPropertyChanged("MiniSpotlightsViewModel2");
         }
 
         private bool _showLatestMovies;
@@ -355,132 +254,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 if (changed)
                 {
                     OnPropertyChanged("ShowLatestTrailers");
-                }
-            }
-        }
-
-        private bool _showTrailers;
-        public bool ShowTrailers
-        {
-            get { return _showTrailers; }
-
-            set
-            {
-                var changed = _showTrailers != value;
-
-                _showTrailers = value;
-
-                if (changed)
-                {
-                    OnPropertyChanged("ShowTrailers");
-                }
-            }
-        }
-
-        private bool _showBoxSets;
-        public bool ShowBoxSets
-        {
-            get { return _showBoxSets; }
-
-            set
-            {
-                var changed = _showBoxSets != value;
-
-                _showBoxSets = value;
-
-                if (changed)
-                {
-                    OnPropertyChanged("ShowBoxSets");
-                }
-            }
-        }
-
-        private bool _show3DMovies;
-        public bool Show3DMovies
-        {
-            get { return _show3DMovies; }
-
-            set
-            {
-                var changed = _show3DMovies != value;
-
-                _show3DMovies = value;
-
-                if (changed)
-                {
-                    OnPropertyChanged("Show3DMovies");
-                }
-            }
-        }
-
-        private bool _showRomanticMovies;
-        public bool ShowRomanticMovies
-        {
-            get { return _showRomanticMovies; }
-
-            set
-            {
-                var changed = _showRomanticMovies != value;
-
-                _showRomanticMovies = value;
-
-                if (changed)
-                {
-                    OnPropertyChanged("ShowRomanticMovies");
-                }
-            }
-        }
-
-        private bool _showComedyItems;
-        public bool ShowComedyItems
-        {
-            get { return _showComedyItems; }
-
-            set
-            {
-                var changed = _showComedyItems != value;
-
-                _showComedyItems = value;
-
-                if (changed)
-                {
-                    OnPropertyChanged("ShowComedyItems");
-                }
-            }
-        }
-
-        private bool _showHdMovies;
-        public bool ShowHDMovies
-        {
-            get { return _showHdMovies; }
-
-            set
-            {
-                var changed = _showHdMovies != value;
-
-                _showHdMovies = value;
-
-                if (changed)
-                {
-                    OnPropertyChanged("ShowHDMovies");
-                }
-            }
-        }
-
-        private bool _showFamilyMovies;
-        public bool ShowFamilyMovies
-        {
-            get { return _showFamilyMovies; }
-
-            set
-            {
-                var changed = _showFamilyMovies != value;
-
-                _showFamilyMovies = value;
-
-                if (changed)
-                {
-                    OnPropertyChanged("ShowFamilyMovies");
                 }
             }
         }
@@ -522,19 +295,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             SpotlightViewModel.StopRotating();
         }
 
-        private void LoadActorsViewModel(MoviesView view)
-        {
-            var images = view.PeopleItems.Take(1).Select(i => ApiClient.GetPersonImageUrl(i.Name, new ImageOptions
-            {
-                ImageType = i.ImageType,
-                Tag = i.ImageTag,
-                Height = Convert.ToInt32(TileWidth * 2),
-                EnableImageEnhancers = false
-            }));
-
-            ActorsViewModel.AddImages(images);
-        }
-
         private async Task NavigateToGenresInternal()
         {
             var item = await GetRootFolder();
@@ -572,29 +332,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             await _navService.Navigate(page);
         }
 
-        private async Task NavigateToActorsInternal()
-        {
-            var item = await GetRootFolder();
-
-            var displayPreferences = await PresentationManager.GetDisplayPreferences("People", CancellationToken.None);
-
-            var options = new ListPageConfig
-            {
-                IndexOptions = AlphabetIndex,
-                PageTitle = "Movies | People",
-                CustomItemQuery = GetAllActors
-            };
-
-            SetDefaults(options);
-
-            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
-            {
-                ViewType = ViewType.Movies
-            };
-
-            await _navService.Navigate(page);
-        }
-
         private async Task NavigateToYearsInternal()
         {
             var item = await GetRootFolder();
@@ -603,7 +340,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             var yearIndex = await ApiClient.GetYearIndex(_sessionManager.CurrentUser.Id, new[] { "Movie" }, CancellationToken.None);
 
-            var indexOptions = yearIndex.Where(i => !string.IsNullOrEmpty(i.Name)).Select(i => new TabItem
+            var indexOptions = yearIndex.Where(i => !string.IsNullOrEmpty(i.Name)).OrderByDescending(i => i.Name).Select(i => new TabItem
             {
                 Name = i.Name,
                 DisplayName = i.Name
@@ -641,143 +378,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             AllMoviesViewModel.AddImages(images);
         }
 
-        private void LoadHDMoviesViewModel(MoviesView view)
-        {
-            ShowHDMovies = view.HDItems.Count > 0 && view.HDMoviePercentage > 10 && view.HDMoviePercentage < 90;
-
-            var images = view.HDItems.Take(1).Select(i => ApiClient.GetImageUrl(i.Id, new ImageOptions
-            {
-                ImageType = i.ImageType,
-                Tag = i.ImageTag,
-                Width = Convert.ToInt32(TileWidth * 2),
-                EnableImageEnhancers = false
-            }));
-
-            HDMoviesViewModel.AddImages(images);
-        }
-
-        private void LoadRomanticMoviesViewModel(MoviesView view)
-        {
-            var now = DateTime.Now;
-
-            if (now.DayOfWeek == DayOfWeek.Friday)
-            {
-                ShowRomanticMovies = view.RomanceItems.Count > 0 && now.Hour >= 15;
-            }
-            else if (now.DayOfWeek == DayOfWeek.Saturday)
-            {
-                ShowRomanticMovies = view.RomanceItems.Count > 0 && (now.Hour < 3 || now.Hour >= 15);
-            }
-            else if (now.DayOfWeek == DayOfWeek.Sunday)
-            {
-                ShowRomanticMovies = view.RomanceItems.Count > 0 && now.Hour < 3;
-            }
-            else
-            {
-                ShowRomanticMovies = false;
-            }
-
-            var images = view.RomanceItems.Take(1).Select(i => ApiClient.GetImageUrl(i.Id, new ImageOptions
-            {
-                ImageType = i.ImageType,
-                Tag = i.ImageTag,
-                Width = Convert.ToInt32(TileWidth * 2),
-                EnableImageEnhancers = false
-            }));
-
-            RomanticMoviesViewModel.AddImages(images);
-        }
-
-        private void LoadComedyMoviesViewModel(MoviesView view)
-        {
-            var now = DateTime.Now;
-
-            if (now.DayOfWeek == DayOfWeek.Thursday)
-            {
-                ShowComedyItems = view.ComedyItems.Count > 0 && now.Hour >= 12;
-                ComedyItemsViewModel.Name = "Comedy Night";
-            }
-            else if (now.DayOfWeek == DayOfWeek.Sunday)
-            {
-                ShowComedyItems = view.ComedyItems.Count > 0;
-                ComedyItemsViewModel.Name = "Sunday Funnies";
-            }
-            else
-            {
-                ShowComedyItems = false;
-            }
-
-            var images = view.ComedyItems.Take(1).Select(i => ApiClient.GetImageUrl(i.Id, new ImageOptions
-            {
-                ImageType = i.ImageType,
-                Tag = i.ImageTag,
-                Width = Convert.ToInt32(TileWidth * 2),
-                EnableImageEnhancers = false
-            }));
-
-            ComedyItemsViewModel.AddImages(images);
-        }
-
-        private void LoadFamilyMoviesViewModel(MoviesView view)
-        {
-            ShowFamilyMovies = view.FamilyMovies.Count > 0 && view.FamilyMoviePercentage > 10 && view.FamilyMoviePercentage < 90;
-
-            var images = view.FamilyMovies.Take(1).Select(i => ApiClient.GetImageUrl(i.Id, new ImageOptions
-            {
-                ImageType = i.ImageType,
-                Tag = i.ImageTag,
-                Width = Convert.ToInt32(TileWidth * 2),
-                EnableImageEnhancers = false
-            }));
-
-            FamilyMoviesViewModel.AddImages(images);
-        }
-
-        private void Load3DMoviesViewModel(MoviesView view)
-        {
-            Show3DMovies = view.ThreeDItems.Count > 0;
-
-            var images = view.ThreeDItems.Take(1).Select(i => ApiClient.GetImageUrl(i.Id, new ImageOptions
-            {
-                ImageType = i.ImageType,
-                Tag = i.ImageTag,
-                Width = Convert.ToInt32(TileWidth * 2),
-                EnableImageEnhancers = false
-            }));
-
-            ThreeDMoviesViewModel.AddImages(images);
-        }
-
-        private void LoadBoxsetsViewModel(MoviesView view)
-        {
-            ShowBoxSets = view.BoxSetItems.Count > 0;
-
-            var images = view.BoxSetItems.Take(1).Select(i => ApiClient.GetImageUrl(i.Id, new ImageOptions
-            {
-                ImageType = i.ImageType,
-                Tag = i.ImageTag,
-                Width = Convert.ToInt32(TileWidth * 2),
-                EnableImageEnhancers = false
-            }));
-
-            BoxsetsViewModel.AddImages(images);
-        }
-
-        private void LoadTrailersViewModel(MoviesView view)
-        {
-            ShowTrailers = view.TrailerItems.Count > 0;
-
-            var images = view.TrailerItems.Take(1).Select(i => ApiClient.GetImageUrl(i.Id, new ImageOptions
-            {
-                ImageType = i.ImageType,
-                Tag = i.ImageTag,
-                Width = Convert.ToInt32(TileWidth * 2),
-                EnableImageEnhancers = false
-            }));
-
-            TrailersViewModel.AddImages(images);
-        }
-
         public Task NavigateToMovies()
         {
             return NavigateToMoviesInternal("AllMovies");
@@ -804,7 +404,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 DisplayName = "New Releases",
                 Name = "NewReleases",
             });
-            
+
             if (ShowComedy(view))
             {
                 tabs.Add(new TabItem
@@ -823,7 +423,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 });
             }
 
-            if (ShowTrailers)
+            if (view.TrailerItems.Count > 0)
             {
                 tabs.Add(new TabItem
                 {
@@ -838,7 +438,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 Name = "FavoriteMovies"
             });
 
-            if (ShowBoxSets)
+            if (view.BoxSetItems.Count > 0)
             {
                 tabs.Add(new TabItem
                 {
@@ -846,8 +446,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                     Name = "BoxSets",
                 });
             }
-            
-            if (ShowFamilyMovies)
+
+            if (view.FamilyMovies.Count > 0)
             {
                 tabs.Add(new TabItem
                 {
@@ -868,7 +468,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 Name = "TopCriticRated",
             });
 
-            if (ShowHDMovies)
+            if (view.HDItems.Count > 0)
             {
                 tabs.Add(new TabItem
                 {
@@ -877,7 +477,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 });
             }
 
-            if (Show3DMovies)
+            if (view.ThreeDItems.Count > 0)
             {
                 tabs.Add(new TabItem
                 {
@@ -1134,50 +734,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             return ApiClient.GetItemsAsync(query);
         }
 
-        private Task<ItemsResult> GetAllActors(ItemListViewModel viewModel, DisplayPreferences displayPreferences)
-        {
-            var fields = FolderPage.QueryFields.ToList();
-            fields.Remove(ItemFields.Overview);
-            fields.Remove(ItemFields.DisplayPreferencesId);
-            fields.Remove(ItemFields.DateCreated);
-
-            var query = new PersonsQuery
-            {
-                Fields = fields.ToArray(),
-
-                IncludeItemTypes = new[] { "Movie", "Trailer" },
-
-                SortBy = !String.IsNullOrEmpty(displayPreferences.SortBy)
-                             ? new[] { displayPreferences.SortBy }
-                             : new[] { ItemSortBy.SortName },
-
-                SortOrder = displayPreferences.SortOrder,
-
-                UserId = _sessionManager.CurrentUser.Id,
-
-                ImageTypes = new[] { ImageType.Primary },
-
-                Recursive = true
-            };
-
-            var indexOption = viewModel.CurrentIndexOption;
-
-            if (indexOption != null)
-            {
-                if (string.Equals(indexOption.Name, "#", StringComparison.OrdinalIgnoreCase))
-                {
-                    query.NameLessThan = "A";
-                }
-                else
-                {
-                    query.NameStartsWithOrGreater = indexOption.Name;
-                    query.NameLessThan = indexOption.Name + "zz";
-                }
-            }
-
-            return ApiClient.GetPeopleAsync(query);
-        }
-
         internal static Dictionary<string, string> GetMovieSortOptions()
         {
             var sortOptions = new Dictionary<string, string>();
@@ -1228,10 +784,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 MiniSpotlightsViewModel.Dispose();
             }
-            if (MiniSpotlightsViewModel2 != null)
-            {
-                MiniSpotlightsViewModel2.Dispose();
-            }
             if (SpotlightViewModel != null)
             {
                 SpotlightViewModel.Dispose();
@@ -1243,38 +795,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             if (AllMoviesViewModel != null)
             {
                 AllMoviesViewModel.Dispose();
-            }
-            if (ActorsViewModel != null)
-            {
-                ActorsViewModel.Dispose();
-            }
-            if (BoxsetsViewModel != null)
-            {
-                BoxsetsViewModel.Dispose();
-            }
-            if (TrailersViewModel != null)
-            {
-                TrailersViewModel.Dispose();
-            }
-            if (HDMoviesViewModel != null)
-            {
-                HDMoviesViewModel.Dispose();
-            }
-            if (ThreeDMoviesViewModel != null)
-            {
-                ThreeDMoviesViewModel.Dispose();
-            }
-            if (FamilyMoviesViewModel != null)
-            {
-                FamilyMoviesViewModel.Dispose();
-            }
-            if (ComedyItemsViewModel != null)
-            {
-                ComedyItemsViewModel.Dispose();
-            }
-            if (RomanticMoviesViewModel != null)
-            {
-                RomanticMoviesViewModel.Dispose();
             }
             if (YearsViewModel != null)
             {

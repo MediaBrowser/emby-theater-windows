@@ -337,6 +337,59 @@ namespace MediaBrowser.UI.EntryPoints
                 case Keys.MediaStop:
                     ExecuteCommand(Stop);
                     break;
+                case Keys.P:
+                    {
+                        if (IsControlKeyDown(e))
+                        {
+                            if (IsShiftKeyDown(e))
+                            {
+                                ExecuteCommand(Play);
+                            }
+                            else
+                            {
+                                ExecuteCommand(Pause);
+                            }
+                        }
+                        break;
+                    }
+                case Keys.S:
+                    {
+                        if (IsControlKeyDown(e) && IsShiftKeyDown(e))
+                        {
+                            ExecuteCommand(Stop);
+                        }
+                        break;
+                    }
+                case Keys.B:
+                    {
+                        if (IsControlKeyDown(e))
+                        {
+                            if (IsShiftKeyDown(e))
+                            {
+                                ExecuteCommand(SkipBackward);
+                            }
+                            else
+                            {
+                                ExecuteCommand(OnPreviousTrackButton);
+                            }
+                        }
+                        break;
+                    }
+                case Keys.F:
+                    {
+                        if (IsControlKeyDown(e))
+                        {
+                            if (IsShiftKeyDown(e))
+                            {
+                                ExecuteCommand(SkipForward);
+                            }
+                            else
+                            {
+                                ExecuteCommand(OnNextTrackButton);
+                            }
+                        }
+                        break;
+                    }
                 case Keys.D8:
                     {
                         ExecuteCommand(ToggleInfoPanel);
@@ -368,6 +421,32 @@ namespace MediaBrowser.UI.EntryPoints
                 e.SystemKey.HasFlag(System.Windows.Input.Key.RightCtrl) ||
                 e.KeyboardDevice.IsKeyDown(System.Windows.Input.Key.LeftCtrl) ||
                 e.KeyboardDevice.IsKeyDown(System.Windows.Input.Key.RightCtrl);
+        }
+
+        private bool IsShiftKeyDown(KeyEventArgs e)
+        {
+            return e.Shift || HasShift(e.Modifiers) || HasShift(Control.ModifierKeys);
+        }
+
+        private bool IsControlKeyDown(KeyEventArgs e)
+        {
+            return e.Control || HasControl(e.Modifiers) || HasControl(Control.ModifierKeys);
+        }
+
+        private bool HasControl(Keys keys)
+        {
+            return keys.HasFlag(Keys.Control) ||
+                keys.HasFlag(Keys.ControlKey) ||
+                keys.HasFlag(Keys.LControlKey) ||
+                keys.HasFlag(Keys.RControlKey);
+        }
+
+        private bool HasShift(Keys keys)
+        {
+            return keys.HasFlag(Keys.Shift) ||
+                keys.HasFlag(Keys.ShiftKey) ||
+                keys.HasFlag(Keys.LShiftKey) ||
+                keys.HasFlag(Keys.RShiftKey);
         }
 
         private void ExecuteCommand(Action action)

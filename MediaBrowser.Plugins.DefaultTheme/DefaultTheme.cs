@@ -198,6 +198,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
                         query.AiredDuringSeason = item.IndexNumber.Value;
                         query.SortBy = new[] { ItemSortBy.PremiereDate, ItemSortBy.SortName };
                         query.SortOrder = SortOrder.Ascending;
+                        query.IncludeItemTypes = new[] { "Episode" };
                     }
 
                     return _apiClient.GetItemsAsync(query);

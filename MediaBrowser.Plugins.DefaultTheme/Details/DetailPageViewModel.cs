@@ -125,7 +125,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                     !string.Equals(section, "itemepisodes", StringComparison.OrdinalIgnoreCase) &&
                     !string.Equals(section, "itemalbums", StringComparison.OrdinalIgnoreCase) &&
                     !string.Equals(section, "special features", StringComparison.OrdinalIgnoreCase) &&
-                    !string.Equals(section, "episodes", StringComparison.OrdinalIgnoreCase);
+                    !string.Equals(section, "episodes", StringComparison.OrdinalIgnoreCase) &&
+                    !string.Equals(section, "similar", StringComparison.OrdinalIgnoreCase) &&
+                    !string.Equals(section, "soundtrack", StringComparison.OrdinalIgnoreCase) &&
+                    !string.Equals(section, "soundtracks", StringComparison.OrdinalIgnoreCase);
 
                 HorizontalAlignment = string.Equals(section, "songs", StringComparison.OrdinalIgnoreCase)
                              ? HorizontalAlignment.Stretch
@@ -229,14 +232,14 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 });
             }
 
-            if (item.MediaStreams != null && item.MediaStreams.Count > 0)
-            {
-                views.Add(new TabItem
-                {
-                    Name = "media info",
-                    DisplayName = "Media Info"
-                });
-            }
+            //if (item.MediaStreams != null && item.MediaStreams.Count > 0)
+            //{
+            //    views.Add(new TabItem
+            //    {
+            //        Name = "media info",
+            //        DisplayName = "Media Info"
+            //    });
+            //}
 
             if (item.SpecialFeatureCount > 0)
             {

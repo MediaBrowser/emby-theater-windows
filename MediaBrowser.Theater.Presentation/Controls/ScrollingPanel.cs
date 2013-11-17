@@ -46,6 +46,21 @@ namespace MediaBrowser.Theater.Presentation.Controls
         public ScrollingPanel()
         {
             Focusable = false;
+
+            DataContextChanged += ScrollingPanel_DataContextChanged;
+        }
+
+        void ScrollingPanel_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (CanHorizontallyScroll)
+            {
+                SetHorizontalOffset(0);
+            }
+
+            if (CanVerticallyScroll)
+            {
+                SetVerticalOffset(0);
+            }
         }
 
         /// <summary>

@@ -51,6 +51,8 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         private readonly Dispatcher _dispatcher;
 
+        public bool EnableServerImageEnhancers { get; set; }
+        
         public ItemListViewModel(Func<ItemListViewModel, Task<ItemsResult>> getItemsDelegate, IPresentationManager presentationManager, IImageManager imageManager, IApiClient apiClient, INavigationService navigationService, IPlaybackManager playbackManager, ILogger logger, IServerEvents serverEvents)
         {
             EnableBackdropsForCurrentItem = true;
@@ -64,6 +66,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             _imageManager = imageManager;
             _dispatcher = Dispatcher.CurrentDispatcher;
             _presentationManager = presentationManager;
+            EnableServerImageEnhancers = true;
 
             _indexOptionsCollectionView = new ListCollectionView(_indexOptions);
             _indexOptionsCollectionView.CurrentChanged += _indexOptionsCollectionView_CurrentChanged;
@@ -463,7 +466,8 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                             DownloadImagesAtExactSize = DownloadImageAtExactSize ?? true,
                             PreferredImageTypes = imageTypes,
                             ListType = ListType,
-                            ShowTitle = ShowTitle
+                            ShowTitle = ShowTitle,
+                            EnableServerImageEnhancers = EnableServerImageEnhancers
                         };
 
                         var stretch = ImageStretch;
@@ -622,7 +626,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             var currentAspectRatio = item.PrimaryImageAspectRatio ?? MedianPrimaryImageAspectRatio ?? layoutAspectRatio;
 
             // Preserve the exact AR if it deviates from the median significantly
-            return Math.Abs(currentAspectRatio - layoutAspectRatio) <= .3;
+            return Math.Abs(currentAspectRatio - layoutAspectRatio) <= .34;
         }
 
         private void UpdateContainerSizes()

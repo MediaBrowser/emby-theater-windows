@@ -17,7 +17,8 @@
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <TextBlock Name="TxtName" Style="{DynamicResource TextBlockStyle}" HorizontalAlignment="Center" Margin="300 0 300 25" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"></TextBlock>
+        <TextBlock Grid.Row="0" Name="TxtTagline" Style="{DynamicResource TextBlockStyle}" HorizontalAlignment="Center" Margin="300 0 300 25" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" Foreground="#ddd"></TextBlock>
+        <TextBlock Grid.Row="0" Name="TxtName" Style="{DynamicResource Heading1TextBlockStyle}" HorizontalAlignment="Center" Margin="300 0 300 25" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" Foreground="#eee"></TextBlock>
 
         <controls:ExtendedScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" VerticalAlignment="Top" HorizontalAlignment="Stretch" CanContentScroll="True" Margin="20 25 20 0">
             <controls:ScrollingPanel CanHorizontallyScroll="True" CanVerticallyScroll="False">

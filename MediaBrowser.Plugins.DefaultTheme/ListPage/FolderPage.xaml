@@ -52,7 +52,7 @@
 
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding ScrollDirection}" Value="Vertical">
-                            <Setter Property="Margin" Value="0 40 0 35" />
+                            <Setter Property="Margin" Value="0 50 0 35" />
                             <Setter Property="VerticalAlignment" Value="Top" />
                         </DataTrigger>
                     </Style.Triggers>
@@ -102,7 +102,7 @@
                 </Grid.Style>
                 <StackPanel Orientation="Vertical">
 
-                    <TextBlock DataContext="{Binding CurrentItem}" Style="{DynamicResource Heading1TextBlockStyle}" Text="{Binding DisplayName, Converter={controls:UpperCaseConverter}}" Margin="25 35 25 0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" HorizontalAlignment="Center" FontFamily="Segoe UI" FontWeight="ExtraBold" FontSize="60" Foreground="#ccc" Opacity=".9"></TextBlock>
+                    <TextBlock DataContext="{Binding CurrentItem}" Style="{DynamicResource BoldHeaderTextBlock}" Text="{Binding DisplayName, Converter={controls:UpperCaseConverter}}" Margin="25 35 25 0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" HorizontalAlignment="Center"></TextBlock>
                 </StackPanel>
             </Grid>
 

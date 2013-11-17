@@ -315,6 +315,12 @@
   <ItemGroup>
     <Resource Include="Resources\Images\tvgenres.jpg" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\upcomingtv.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\trailer.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

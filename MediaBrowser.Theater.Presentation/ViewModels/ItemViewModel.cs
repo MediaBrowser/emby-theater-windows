@@ -45,6 +45,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             _presentation = presentation;
             _logger = logger;
             _serverEvents = serverEvents;
+            EnableServerImageEnhancers = true;
 
             PlayCommand = new RelayCommand(o => Play());
             ResumeCommand = new RelayCommand(o => Resume());
@@ -991,6 +992,8 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             return time.ToString(time.TotalHours < 1 ? "m':'ss" : "h':'mm':'ss");
         }
 
+        public bool EnableServerImageEnhancers { get; set; }
+
         /// <summary>
         /// Gets an image url that can be used to download an image from the api
         /// </summary>
@@ -1005,7 +1008,8 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             {
                 ImageType = imageType,
                 ImageIndex = imageIndex,
-                Width = Convert.ToInt32(ImageWidth * scaleFactor)
+                Width = Convert.ToInt32(ImageWidth * scaleFactor),
+                EnableImageEnhancers = EnableServerImageEnhancers
             };
 
             if ((imageType == ImageType.Primary && DownloadPrimaryImageAtExactSize)

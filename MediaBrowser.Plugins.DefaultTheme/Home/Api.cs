@@ -19,7 +19,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
     public class MoviesView : BaseView
     {
         public List<ItemStub> MovieItems { get; set; }
-        public List<ItemStub> PeopleItems { get; set; }
 
         public List<ItemStub> BoxSetItems { get; set; }
         public List<ItemStub> TrailerItems { get; set; }
@@ -42,7 +41,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
     public class TvView : BaseView
     {
         public List<ItemStub> ShowsItems { get; set; }
-        public List<ItemStub> ActorItems { get; set; }
 
         public List<ItemStub> RomanceItems { get; set; }
         public List<ItemStub> ComedyItems { get; set; }
@@ -63,7 +61,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
     public class GamesView : BaseView
     {
         public List<ItemStub> MultiPlayerItems { get; set; }
-
+        public List<BaseItemDto> GameSystems { get; set; }
+        public List<BaseItemDto> RecentlyPlayedGames { get; set; }
     }
 
     public class BaseView
@@ -103,7 +102,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         public static Task<MoviesView> GetMovieView(this IApiClient apiClient, string userId, CancellationToken cancellationToken)
         {
-            var url = apiClient.GetApiUrl("MBT/DefaultTheme/Movies?familyrating=pg&userId=" + userId + "&ComedyGenre=" + ComedyGenre + "&RomanceGenre=" + RomanceGenre + "&FamilyGenre=" + FamilyGenre + "&LatestMoviesLimit=10&LatestTrailersLimit=10");
+            var url = apiClient.GetApiUrl("MBT/DefaultTheme/Movies?familyrating=pg&userId=" + userId + "&ComedyGenre=" + ComedyGenre + "&RomanceGenre=" + RomanceGenre + "&FamilyGenre=" + FamilyGenre + "&LatestMoviesLimit=16&LatestTrailersLimit=6");
 
             return apiClient.GetAsync<MoviesView>(url, cancellationToken);
         }
@@ -117,7 +116,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         public static Task<GamesView> GetGamesView(this IApiClient apiClient, string userId, CancellationToken cancellationToken)
         {
-            var url = apiClient.GetApiUrl("MBT/DefaultTheme/Games?userId=" + userId);
+            var url = apiClient.GetApiUrl("MBT/DefaultTheme/Games?userId=" + userId + "&RecentlyPlayedGamesLimit=3");
 
             return apiClient.GetAsync<GamesView>(url, cancellationToken);
         }

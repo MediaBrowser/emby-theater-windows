@@ -32,12 +32,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         public ImageViewerViewModel SpotlightViewModel { get; private set; }
 
         public ItemListViewModel GameSystemsViewModel { get; private set; }
-        public ItemListViewModel MiniSpotlightsViewModel { get; private set; }
-        public ItemListViewModel MiniSpotlightsViewModel2 { get; private set; }
         public GalleryViewModel GenresViewModel { get; private set; }
         public GalleryViewModel YearsViewModel { get; private set; }
         public GalleryViewModel MultiPlayerViewModel { get; private set; }
         public ItemListViewModel RecentlyPlayedViewModel { get; private set; }
+
+        private GamesView _gamesView;
 
         public GamesViewModel(IPresentationManager presentation, IImageManager imageManager, IApiClient apiClient, ISessionManager session, INavigationService nav, IPlaybackManager playback, ILogger logger, double tileWidth, double tileHeight, IServerEvents serverEvents)
             : base(presentation, apiClient)
@@ -52,8 +52,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             TileWidth = tileWidth;
             TileHeight = tileHeight;
 
-            var spotlightTileWidth = TileWidth * 2 + TilePadding;
-            var spotlightTileHeight = spotlightTileWidth * 9 / 16;
+            var spotlightTileHeight = TileHeight * 2 + TilePadding / 2;
+            var spotlightTileWidth = 16 * (spotlightTileHeight / 9) + 50;
+
+            var lowerSpotlightWidth = ((spotlightTileWidth - (TilePadding)) / 3) - 1.2;
 
             SpotlightViewModel = new ImageViewerViewModel(_imageManager, new List<ImageViewerImage>())
             {
@@ -63,45 +65,24 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 ImageStretch = Stretch.UniformToFill
             };
 
-            GameSystemsViewModel = new ItemListViewModel(GetGameSystems, presentation, imageManager, apiClient, nav, playback, logger, _serverEvents)
-            {
-                ImageDisplayWidth = TileWidth,
-                ImageDisplayHeightGenerator = v => TileHeight,
-                DisplayNameGenerator = HomePageViewModel.GetDisplayName,
-                EnableBackdropsForCurrentItem = false,
-                Context = ViewType.Games
-            };
-
-            RecentlyPlayedViewModel = new ItemListViewModel(GetRecentlyPlayedAsync, presentation, imageManager, apiClient, nav, playback, logger, _serverEvents)
-            {
-                ImageDisplayWidth = TileWidth * 10 / 16,
-                ImageDisplayHeightGenerator = v => TileHeight,
-                DisplayNameGenerator = HomePageViewModel.GetDisplayName,
-                EnableBackdropsForCurrentItem = false,
-                ImageStretch = Stretch.UniformToFill,
-                Context = ViewType.Games
-            };
-
-            const double tileScaleFactor = 11;
-
             GenresViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {
                 GalleryHeight = TileHeight,
-                GalleryWidth = TileWidth * tileScaleFactor / 16,
+                GalleryWidth = lowerSpotlightWidth,
                 CustomCommandAction = () => NavigateWithLoading(NavigateToGenresInternal)
             };
 
             YearsViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {
                 GalleryHeight = TileHeight,
-                GalleryWidth = TileWidth * tileScaleFactor / 16,
+                GalleryWidth = lowerSpotlightWidth,
                 CustomCommandAction = () => NavigateWithLoading(NavigateToYearsInternal)
             };
 
             MultiPlayerViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {
                 GalleryHeight = TileHeight,
-                GalleryWidth = TileWidth * tileScaleFactor / 16,
+                GalleryWidth = lowerSpotlightWidth,
                 CustomCommandAction = () => NavigateWithLoading(NavigateToMultiPlayerGamesInternal)
             };
 
@@ -151,7 +132,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 config.PosterStripImageWidth = 380;
             }
         }
-        
+
         private async void LoadViewModels()
         {
             PresentationManager.ShowLoadingAnimation();
@@ -162,13 +143,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 var view = await ApiClient.GetGamesView(_sessionManager.CurrentUser.Id, cancellationSource.Token);
 
-                LoadSpotlightViewModel(view);
-                LoadGenresViewModel(view);
-                LoadYearsViewModel(view);
-                LoadMultiPlayerViewModel(view);
+                _gamesView = view;
 
-                LoadMiniSpotlightsViewModel(view);
-                LoadMiniSpotlightsViewModel2(view);
+                LoadSpotlightViewModel(view);
+                LoadGameSystemsViewModel(view);
+                LoadMultiPlayerViewModel(view);
+                LoadRecentlyPlayedViewModel(view);
             }
             catch (Exception ex)
             {
@@ -180,60 +160,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 PresentationManager.HideLoadingAnimation();
                 DisposeMainViewCancellationTokenSource(false);
             }
-        }
-
-        private void LoadMiniSpotlightsViewModel(GamesView view)
-        {
-            Func<ItemListViewModel, Task<ItemsResult>> getItems = vm =>
-            {
-                var items = view.MiniSpotlights.Take(2).ToArray();
-
-                return Task.FromResult(new ItemsResult
-                {
-                    TotalRecordCount = items.Length,
-                    Items = items
-                });
-            };
-
-            MiniSpotlightsViewModel = new ItemListViewModel(getItems, PresentationManager, _imageManager, ApiClient, _navService, _playbackManager, _logger, _serverEvents)
-            {
-                ImageDisplayWidth = TileWidth + (TilePadding / 4) - 1,
-                ImageDisplayHeightGenerator = v => TileHeight,
-                DisplayNameGenerator = HomePageViewModel.GetDisplayName,
-                EnableBackdropsForCurrentItem = false,
-                ImageStretch = Stretch.UniformToFill,
-                PreferredImageTypesGenerator = vm => new[] { ImageType.Backdrop },
-                DownloadImageAtExactSize = true
-            };
-
-            OnPropertyChanged("MiniSpotlightsViewModel");
-        }
-
-        private void LoadMiniSpotlightsViewModel2(GamesView view)
-        {
-            Func<ItemListViewModel, Task<ItemsResult>> getItems = vm =>
-            {
-                var items = view.MiniSpotlights.Skip(2).Take(3).ToArray();
-
-                return Task.FromResult(new ItemsResult
-                {
-                    TotalRecordCount = items.Length,
-                    Items = items
-                });
-            };
-
-            MiniSpotlightsViewModel2 = new ItemListViewModel(getItems, PresentationManager, _imageManager, ApiClient, _navService, _playbackManager, _logger, _serverEvents)
-            {
-                ImageDisplayWidth = TileWidth,
-                ImageDisplayHeightGenerator = v => TileHeight,
-                DisplayNameGenerator = HomePageViewModel.GetDisplayName,
-                EnableBackdropsForCurrentItem = false,
-                ImageStretch = Stretch.UniformToFill,
-                PreferredImageTypesGenerator = vm => new[] { ImageType.Backdrop },
-                DownloadImageAtExactSize = true
-            };
-
-            OnPropertyChanged("MiniSpotlightsViewModel2");
         }
 
         private bool _showMultiPlayer;
@@ -308,12 +234,35 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             SpotlightViewModel.StopRotating();
         }
 
-        private void LoadGenresViewModel(GamesView view)
+        private void LoadGameSystemsViewModel(GamesView view)
         {
+            GameSystemsViewModel = new ItemListViewModel(GetGameSystems, PresentationManager, _imageManager, ApiClient, _navService, _playbackManager, _logger, _serverEvents)
+            {
+                ImageDisplayWidth = TileWidth,
+                ImageDisplayHeightGenerator = v => TileHeight,
+                DisplayNameGenerator = HomePageViewModel.GetDisplayName,
+                EnableBackdropsForCurrentItem = false,
+                Context = ViewType.Games,
+                EnableServerImageEnhancers = false
+            };
+
+            OnPropertyChanged("GameSystemsViewModel");
         }
 
-        private void LoadYearsViewModel(GamesView view)
+        private void LoadRecentlyPlayedViewModel(GamesView view)
         {
+            RecentlyPlayedViewModel = new ItemListViewModel(GetRecentlyPlayedAsync, PresentationManager, _imageManager, ApiClient, _navService, _playbackManager, _logger, _serverEvents)
+            {
+                ImageDisplayWidth = TileWidth * 13 / 16,
+                ImageDisplayHeightGenerator = v => TileHeight,
+                DisplayNameGenerator = HomePageViewModel.GetDisplayName,
+                EnableBackdropsForCurrentItem = false,
+                ImageStretch = Stretch.UniformToFill,
+                Context = ViewType.Games,
+                EnableServerImageEnhancers = false
+            };
+
+            OnPropertyChanged("RecentlyPlayedViewModel");
         }
 
         private void LoadMultiPlayerViewModel(GamesView view)
@@ -401,7 +350,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             var yearIndex = await ApiClient.GetYearIndex(_sessionManager.CurrentUser.Id, new[] { "Game" }, CancellationToken.None);
 
-            var indexOptions = yearIndex.Where(i => !string.IsNullOrEmpty(i.Name)).Select(i => new TabItem
+            var indexOptions = yearIndex.Where(i => !string.IsNullOrEmpty(i.Name)).OrderByDescending(i => i.Name).Select(i => new TabItem
             {
                 Name = i.Name,
                 DisplayName = i.Name
@@ -457,58 +406,26 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         private Task<ItemsResult> GetGameSystems(ItemListViewModel viewModel)
         {
-            var query = new ItemQuery
+            var result = new ItemsResult
             {
-                Fields = new[]
-                        {
-                            ItemFields.PrimaryImageAspectRatio,
-                            ItemFields.DateCreated,
-                            ItemFields.DisplayPreferencesId
-                        },
-
-                UserId = _sessionManager.CurrentUser.Id,
-
-                SortBy = new[] { ItemSortBy.SortName },
-
-                IncludeItemTypes = new[] { "GameSystem" },
-
-                Recursive = true
+                Items = _gamesView.GameSystems.ToArray(),
+                TotalRecordCount = _gamesView.GameSystems.Count
             };
 
-            return ApiClient.GetItemsAsync(query);
+            return Task.FromResult(result);
         }
 
-        private async Task<ItemsResult> GetRecentlyPlayedAsync(ItemListViewModel viewModel)
+        private Task<ItemsResult> GetRecentlyPlayedAsync(ItemListViewModel viewModel)
         {
-            var query = new ItemQuery
+            var result = new ItemsResult
             {
-                Fields = new[]
-                        {
-                            ItemFields.PrimaryImageAspectRatio,
-                            ItemFields.DateCreated,
-                            ItemFields.DisplayPreferencesId
-                        },
-
-                UserId = _sessionManager.CurrentUser.Id,
-
-                SortBy = new[] { ItemSortBy.DatePlayed },
-
-                SortOrder = SortOrder.Descending,
-
-                Filters = new[] { ItemFilter.IsPlayed },
-
-                IncludeItemTypes = new[] { "Game" },
-
-                Recursive = true,
-
-                Limit = 6
+                Items = _gamesView.RecentlyPlayedGames.ToArray(),
+                TotalRecordCount = _gamesView.RecentlyPlayedGames.Count
             };
-
-            var result = await ApiClient.GetItemsAsync(query);
 
             ShowRecentlyPlayed = result.Items.Length > 0;
 
-            return result;
+            return Task.FromResult(result);
         }
 
         private async Task NavigateToGenresInternal()
@@ -607,14 +524,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             if (GameSystemsViewModel != null)
             {
                 GameSystemsViewModel.Dispose();
-            }
-            if (MiniSpotlightsViewModel != null)
-            {
-                MiniSpotlightsViewModel.Dispose();
-            }
-            if (MiniSpotlightsViewModel2 != null)
-            {
-                MiniSpotlightsViewModel2.Dispose();
             }
             if (GenresViewModel != null)
             {

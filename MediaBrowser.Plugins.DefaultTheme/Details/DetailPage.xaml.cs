@@ -82,27 +82,32 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
         {
             if (item.Taglines.Count > 0)
             {
-                TxtName.Text = item.Taglines[0];
-                TxtName.Visibility = Visibility.Visible;
+                TxtTagline.Text = item.Taglines[0];
+                TxtTagline.Visibility = Visibility.Visible;
+                TxtName.Visibility = Visibility.Collapsed;
             }
             else if (item.IsType("episode"))
             {
                 TxtName.Text = GetEpisodeTitle(item);
                 TxtName.Visibility = Visibility.Visible;
+                TxtTagline.Visibility = Visibility.Collapsed;
             }
             else if (item.IsType("audio"))
             {
                 TxtName.Text = GetSongTitle(item);
                 TxtName.Visibility = Visibility.Visible;
+                TxtTagline.Visibility = Visibility.Collapsed;
             }
             else if (item.IsPerson || item.IsArtist || item.IsGenre || item.IsGameGenre || item.IsMusicGenre || item.IsStudio)
             {
                 TxtName.Text = item.Name;
                 TxtName.Visibility = Visibility.Visible;
+                TxtTagline.Visibility = Visibility.Collapsed;
             }
             else
             {
                 TxtName.Visibility = Visibility.Collapsed;
+                TxtTagline.Visibility = Visibility.Collapsed;
             }
         }
 

@@ -16,7 +16,7 @@
                 </DoubleAnimation>
             </controls:TransitionControl.TransitionAnimation>
         </controls:TransitionControl>        
-        <TextBlock Style="{DynamicResource Heading1TextBlockStyle}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0 0 90 50" Text="{Binding CurrentText}" FontFamily="Segoe UI" FontWeight="ExtraBold" FontSize="100" Foreground="#eee">
+        <TextBlock Style="{DynamicResource Heading1TextBlockStyle}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0 0 90 40" Text="{Binding CurrentText}" FontFamily="Segoe UI" FontWeight="ExtraBold" FontSize="80" Foreground="#eee">
             <TextBlock.Effect>
                 <DropShadowEffect BlurRadius="8" Color="Black" Direction="0" ShadowDepth="0" />
             </TextBlock.Effect>

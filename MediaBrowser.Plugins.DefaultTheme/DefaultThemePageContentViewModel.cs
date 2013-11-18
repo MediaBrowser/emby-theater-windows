@@ -25,6 +25,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
 
         public ICommand UserCommand { get; private set; }
         public ICommand DisplayPreferencesCommand { get; private set; }
+        public ICommand SortOptionsCommand { get; private set; }
 
         public DefaultThemePageContentViewModel(INavigationService navigationService, ISessionManager sessionManager, IApiClient apiClient, IImageManager imageManager, IPresentationManager presentation, IPlaybackManager playbackManager, ILogger logger, IApplicationHost appHost, IServerEvents serverEvents, ITheaterConfigurationManager config)
             : base(navigationService, sessionManager, playbackManager, logger, appHost, apiClient, presentation, serverEvents)
@@ -38,6 +39,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
             UserCommand = new RelayCommand(i => ShowUserMenu());
 
             DisplayPreferencesCommand = new RelayCommand(i => ShowDisplayPreferences());
+            SortOptionsCommand = new RelayCommand(i => ShowSortMenu());
 
             _config.UserConfigurationUpdated += _config_UserConfigurationUpdated;
         }
@@ -97,7 +99,19 @@ namespace MediaBrowser.Plugins.DefaultTheme
 
         void NavigationService_Navigated(object sender, NavigationEventArgs e)
         {
-            IsOnPageWithDisplayPreferences = e.NewPage is IHasDisplayPreferences;
+            var hasDisplayPreferences = e.NewPage as IHasDisplayPreferences;
+
+            if (hasDisplayPreferences == null)
+            {
+                IsOnPageWithDisplayPreferences = false;
+                IsOnPageWithSortOptions = false;
+            }
+            else
+            {
+                IsOnPageWithDisplayPreferences = true;
+                IsOnPageWithSortOptions = hasDisplayPreferences.HasSortOptions;
+            }
+
             RefreshHomeButton(e.NewPage as Page);
         }
 
@@ -214,6 +228,23 @@ namespace MediaBrowser.Plugins.DefaultTheme
             }
         }
 
+        private bool _isOnPageWithSortOptions;
+        public bool IsOnPageWithSortOptions
+        {
+            get { return _isOnPageWithSortOptions; }
+
+            set
+            {
+                var changed = _isOnPageWithSortOptions != value;
+
+                _isOnPageWithSortOptions = value;
+                if (changed)
+                {
+                    OnPropertyChanged("IsOnPageWithSortOptions");
+                }
+            }
+        }
+
         private string _timeLeft;
         public string TimeLeft
         {
@@ -265,6 +296,16 @@ namespace MediaBrowser.Plugins.DefaultTheme
             if (page != null)
             {
                 page.ShowDisplayPreferencesMenu();
+            }
+        }
+
+        private void ShowSortMenu()
+        {
+            var page = NavigationService.CurrentPage as IHasDisplayPreferences;
+
+            if (page != null)
+            {
+                page.ShowSortMenu();
             }
         }
 

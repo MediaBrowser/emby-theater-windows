@@ -11,7 +11,7 @@
         <Setter Property="Background" Value="#a6ffffff" />
         <Setter Property="Padding" Value="7 2 7 2" />
     </Style>
-    
+
     <Style TargetType="TextBlock" x:Key="MediaInfoTextBlock" BasedOn="{StaticResource SmallTextBlockStyle}">
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="FontSize" Value="25" />
@@ -26,7 +26,7 @@
         <Setter Property="FontFamily" Value="Segoe UI" />
         <Setter Property="FontWeight" Value="ExtraBold" />
     </Style>
-    
+
     <Style TargetType="Image" x:Key="CommunityRatingImage">
         <Setter Property="Stretch" Value="Uniform"/>
         <Setter Property="Height" Value="30" />
@@ -144,7 +144,7 @@
                         <TextBlock Style="{DynamicResource TextBlockStyle}" Text="BROWSER" Foreground="{DynamicResource MediaBrowserAccent}"></TextBlock>
                     </StackPanel>
 
-                    <Image Source="{Binding LogoImage}" Margin="0 10 0 0" MaxHeight="70" MaxWidth="700" VerticalAlignment="Top" HorizontalAlignment="Left" Stretch="Uniform">
+                    <Image Source="{Binding LogoImage}" Margin="0 10 0 0" MaxHeight="80" MaxWidth="550" VerticalAlignment="Top" HorizontalAlignment="Left" Stretch="Uniform">
                         <Image.Style>
                             <Style TargetType="{x:Type Image}">
                                 <Style.Triggers>
@@ -246,6 +246,26 @@
                             <Grid>
                                 <Grid Width="40" Height="40" />
                                 <Path Style="{DynamicResource IconPath}" Data="M17.009024,34.375001L21.992001,39.360691 11.299349,50.047187 17.61442,56.365 0,56.365 0,38.75008 6.3150315,45.065395z M39.355614,34.371001L50.047157,45.065394 56.365002,38.750081 56.365002,56.365 38.750103,56.365 45.065346,50.047185 34.371002,39.360691z M38.750103,0L56.365002,0 56.365002,17.614279 50.049858,11.295294 39.355614,21.992999 34.371002,17.00889 45.065346,6.3150749z M0,0L17.61482,0 11.299606,6.3151321 21.990002,17.009045 17.009411,21.991999 6.3151751,11.295397 0,17.614439z" Stretch="Uniform" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+                                </Path>
+                            </Grid>
+                        </Button>
+
+                        <Button Margin="0 0 30 0" Command="{Binding SortOptionsCommand}">
+
+                            <Button.Style>
+                                <Style TargetType="{x:Type Button}" BasedOn="{StaticResource ImageButton}">
+
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsOnPageWithSortOptions}" Value="False">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+
+                            <Grid>
+                                <Grid Width="40" Height="40" />
+                                <Path Style="{DynamicResource IconPath}" Data="M2.4179878,23.744L20.455954,23.744 26.486,31.232901 2.4179878,31.241999C1.082037,31.241999,0,30.157487,0,28.823094L0,26.160506C0,24.825814,1.082037,23.744,2.4179878,23.744z M2.4179688,11.471001L24.102999,11.471001 24.102999,16.372296 23.063999,16.361796C21.142099,16.346195 20.048299,17.024623 19.470199,17.597445 19.076899,17.988261 18.806199,18.46088 18.643299,18.970001L2.4179688,18.970001C1.0820293,18.970001,0,17.886557,0,16.550604L0,13.889097C0,12.554443,1.0820293,11.471,2.4179688,11.471001z M28.320365,3.6159997L32.061206,3.6159997C33.011567,3.616,33.787634,4.3867452,33.787634,5.3424765L33.787634,18.946365 37.356583,18.977664C39.202703,18.993363,39.950272,19.919045,39.016714,21.038924L37.097393,23.338279C36.159932,24.454158,34.636498,26.283522,33.702936,27.399401L31.779921,29.700156C30.847659,30.816035,29.335923,30.804335,28.423362,29.670157L26.545842,27.3382C25.63178,26.204123,24.134544,24.34866,23.222983,23.214482L21.345562,20.877427C20.431601,19.745848,21.194468,18.831766,23.041991,18.850067L26.59264,18.881264 26.59264,5.3424765C26.59264,4.3867452,27.366106,3.616,28.320365,3.6159997z M2.4179764,0L29.505493,0C30.366796,0,31.117998,0.45237422,31.547,1.1287329L28.320389,1.1287329C25.993782,1.1287332,24.103076,3.019285,24.103076,5.3435291L24.103076,7.497 2.4179764,7.497C1.0820332,7.4969997,0,6.4136746,0,5.0791401L0,2.41775C0,1.0818651,1.0820332,0,2.4179764,0z" Stretch="Uniform" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
                                 </Path>
                             </Grid>
                         </Button>
@@ -356,7 +376,7 @@
             </Grid>
         </Grid>
     </ControlTemplate>
-    
+
     <DataTemplate x:Key="ListItemTemplate" DataType="{x:Type viewModels:ItemViewModel}">
         <Grid>
             <Image HorizontalAlignment="Center" Source="{Binding Image}" Stretch="{Binding ImageStretch}">
@@ -855,7 +875,7 @@
 
         </Style.Triggers>
     </Style>
-    
+
     <DataTemplate x:Key="ListPageListBoxTemplate" DataType="{x:Type viewModels:ItemListViewModel}">
 
         <controls:ExtendedScrollViewer HorizontalAlignment="Stretch" KeyboardNavigation.IsTabStop="False" Focusable="False" VerticalAlignment="Stretch" CanContentScroll="True">
@@ -865,9 +885,9 @@
 
                     <Setter Property="HorizontalScrollBarVisibility" Value="Hidden"></Setter>
                     <Setter Property="VerticalScrollBarVisibility" Value="Disabled"></Setter>
-                    
+
                     <Style.Triggers>
-                        
+
                         <DataTrigger Binding="{Binding ScrollDirection}" Value="Vertical">
                             <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"></Setter>
                             <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Hidden"></Setter>
@@ -875,7 +895,7 @@
                     </Style.Triggers>
                 </Style>
             </controls:ExtendedScrollViewer.Style>
-            
+
             <controls:ScrollingPanel>
 
                 <controls:ScrollingPanel.Style>
@@ -890,13 +910,13 @@
                         </Style.Triggers>
                     </Style>
                 </controls:ScrollingPanel.Style>
-                
+
                 <controls:ExtendedListBox Command="{Binding NavigateCommand}" Style="{StaticResource ListPageListBoxStyle}" ItemsSource="{Binding ListCollectionView}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled">
                 </controls:ExtendedListBox>
             </controls:ScrollingPanel>
-            
+
         </controls:ExtendedScrollViewer>
-        
+
     </DataTemplate>
 
     <DataTemplate x:Key="ListPageListBoxTemplateWithVirtualization" DataType="{x:Type viewModels:ItemListViewModel}">

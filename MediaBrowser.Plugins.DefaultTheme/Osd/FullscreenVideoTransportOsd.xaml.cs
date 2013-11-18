@@ -1,5 +1,5 @@
 ﻿using MediaBrowser.Model.Dto;
-using MediaBrowser.Model.Entities;
+using MediaBrowser.Plugins.DefaultTheme.ListPage;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
@@ -51,6 +51,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Osd
             if (vm != null)
             {
                 vm.PropertyChanged += vm_PropertyChanged;
+
+                TxtNowPlayingName.Text = NowPlayingInfo.GetName(vm.NowPlayingItem);
 
                 UpdateLogo(vm, vm.NowPlayingItem);
             }

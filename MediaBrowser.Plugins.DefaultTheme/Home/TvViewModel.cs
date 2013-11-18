@@ -596,13 +596,13 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         internal static Dictionary<string, string> GetSeriesSortOptions()
         {
             var sortOptions = new Dictionary<string, string>();
-            //sortOptions["Name"] = ItemSortBy.SortName;
+            sortOptions["Name"] = ItemSortBy.SortName;
 
-            //sortOptions["Date Added"] = ItemSortBy.DateCreated;
-            //sortOptions["IMDb Rating"] = ItemSortBy.CommunityRating;
-            //sortOptions["Parental Rating"] = ItemSortBy.OfficialRating;
-            //sortOptions["Premiere Date"] = ItemSortBy.PremiereDate;
-            //sortOptions["Runtime"] = ItemSortBy.Runtime;
+            sortOptions["Date Added"] = ItemSortBy.DateCreated;
+            sortOptions["IMDb Rating"] = ItemSortBy.CommunityRating;
+            sortOptions["Parental Rating"] = ItemSortBy.OfficialRating;
+            sortOptions["Premiere Date"] = ItemSortBy.PremiereDate;
+            sortOptions["Runtime"] = ItemSortBy.Runtime;
 
             return sortOptions;
         }

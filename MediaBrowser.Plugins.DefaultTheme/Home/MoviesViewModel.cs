@@ -431,14 +431,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 });
             }
 
-            if (view.TrailerItems.Count > 0)
+            tabs.Add(new TabItem
             {
-                tabs.Add(new TabItem
-                {
-                    DisplayName = "Trailers",
-                    Name = "Trailers",
-                });
-            }
+                DisplayName = "Trailers",
+                Name = "Trailers",
+            });
 
             tabs.Add(new TabItem
             {
@@ -499,7 +496,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 PageTitle = "Movies",
                 CustomItemQuery = GetMovies,
                 IndexOptions = tabs,
-                IndexValue = indexValue
+                IndexValue = indexValue,
+                SortOptions = GetMovieSortOptions()
             };
 
             SetDefaults(options);

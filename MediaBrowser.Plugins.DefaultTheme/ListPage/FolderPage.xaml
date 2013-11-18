@@ -30,12 +30,12 @@
                 </Style>
             </Grid.Style>
 
-            <controls:ExtendedScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" VerticalAlignment="Top" HorizontalAlignment="Stretch" CanContentScroll="True">
+            <controls:ExtendedScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" VerticalAlignment="Top" CanContentScroll="True">
                 <controls:ScrollingPanel CanHorizontallyScroll="True" CanVerticallyScroll="False">
                     <controls:ExtendedListBox x:Name="IndexMenu" ItemsSource="{Binding IndexOptionsCollectionView}" ScrollViewer.CanContentScroll="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" HorizontalAlignment="Stretch" ItemContainerStyle="{DynamicResource IndexMenuListBoxItemStyle}">
                         <controls:ExtendedListBox.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="60 0 60 0" />
+                                <StackPanel Orientation="Horizontal" Margin="60 0 60 0" />
                             </ItemsPanelTemplate>
                         </controls:ExtendedListBox.ItemsPanel>
                     </controls:ExtendedListBox>

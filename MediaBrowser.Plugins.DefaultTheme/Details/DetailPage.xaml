@@ -74,7 +74,7 @@
                         </Style.Triggers>
                     </Style>
                 </controls:ScrollingPanel.Style>
-                <ContentControl Focusable="False" Style="{StaticResource DetailPageContentStyle}">
+                <ContentControl x:Name="PageContent" Focusable="False" Style="{StaticResource DetailPageContentStyle}">
                 </ContentControl>
             </controls:ScrollingPanel>
         </controls:ExtendedScrollViewer>

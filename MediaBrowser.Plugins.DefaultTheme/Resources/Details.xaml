@@ -47,7 +47,7 @@
                     </controls:ExtendedListBox>
                 </controls:ScrollingPanel>
             </controls:ExtendedScrollViewer>
-            
+
             <StackPanel Grid.Row="1" Margin="25 0 25 25" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
 
                 <StackPanel.Style>
@@ -366,13 +366,13 @@
                     <RowDefinition Height="auto"></RowDefinition>
                     <RowDefinition Height="auto"></RowDefinition>
                     <RowDefinition Height="auto"></RowDefinition>
-                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="auto"></RowDefinition>
                     <RowDefinition Height="auto"></RowDefinition>
                 </Grid.RowDefinitions>
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Row="0">
 
-                    <Button Margin="0 0 10 0" Command="{Binding ResumeCommand}">
+                    <Button x:Name="BtnResume"  Margin="0 0 10 0" Command="{Binding ResumeCommand}">
 
                         <Button.Style>
                             <Style TargetType="{x:Type Button}" BasedOn="{StaticResource BaseButtonStyle}">
@@ -408,7 +408,7 @@
                         </StackPanel>
                     </Button>
 
-                    <Button Command="{Binding PlayCommand}" Margin="0 0 10 0">
+                    <Button x:Name="BtnPlay" Command="{Binding PlayCommand}" Margin="0 0 10 0">
 
                         <Button.Style>
                             <Style TargetType="{x:Type Button}" BasedOn="{StaticResource BaseButtonStyle}">
@@ -942,9 +942,9 @@
 
                 </Grid>
 
-                <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding Overview}" Grid.Row="3" Margin="0 30 0 30" TextTrimming="CharacterEllipsis" MinWidth="900"></TextBlock>
+                <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding Overview}" Grid.Row="3" Margin="0 30 0 30" TextTrimming="CharacterEllipsis" MinWidth="900" MaxHeight="470"></TextBlock>
 
-                <StackPanel Grid.Row="4" Margin="0 0 0 0" Orientation="Horizontal">
+                <StackPanel Grid.Row="4" Margin="0 20 0 0" Orientation="Horizontal">
 
                     <StackPanel.Style>
                         <Style TargetType="{x:Type StackPanel}">

@@ -118,9 +118,14 @@ namespace MediaBrowser.Plugins.DefaultTheme.Osd
             TxtName.Text = media == null ? string.Empty : GetName(media);
         }
 
-        private string GetName(BaseItemDto item)
+        public static string GetName(BaseItemDto item)
         {
             var name = item.Name;
+
+            if (item.IsType("episode") && item.ParentIndexNumber.HasValue && item.ParentIndexNumber.Value == 0)
+            {
+                return string.Format("Special - {0}", name);
+            }
 
             if (item.IndexNumber.HasValue)
             {

@@ -191,7 +191,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
 
         public static string GetDisplayNameWithAiredSpecial(BaseItemDto item)
         {
-            if (item.IsType("episode") && item.ParentIndexNumber.HasValue && item.ParentIndexNumber.Value == 0 && item.SpecialSeasonNumber.HasValue)
+            if (item.IsType("episode") && item.ParentIndexNumber.HasValue && item.ParentIndexNumber.Value == 0)
             {
                 return "Special - " + item.Name;
             }
@@ -398,6 +398,22 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
             var viewModel = new DisplayPreferencesViewModel(_viewModel.DisplayPreferences, _presentationManager);
 
             var menu = new ViewWindow(viewModel, _options);
+
+            menu.ShowModal(this.GetWindow());
+
+            viewModel.Save();
+        }
+
+        public bool HasSortOptions
+        {
+            get { return _options.SortOptions.Any(); }
+        }
+
+        public void ShowSortMenu()
+        {
+            var viewModel = new DisplayPreferencesViewModel(_viewModel.DisplayPreferences, _presentationManager);
+
+            var menu = new SortWindow(viewModel, _options.SortOptions);
 
             menu.ShowModal(this.GetWindow());
 

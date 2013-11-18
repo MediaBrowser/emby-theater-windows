@@ -1,5 +1,6 @@
 ﻿using MediaBrowser.Model.Dto;
 using MediaBrowser.Theater.Interfaces.Presentation;
+using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.Pages;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using System.ComponentModel;

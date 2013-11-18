@@ -8,9 +8,18 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
 
-        <Image Name="ImgLogo" Stretch="Uniform" HorizontalAlignment="Left" VerticalAlignment="Top" Height="80" MaxWidth="700" Margin="25 20 0 0"></Image>
+        <Grid Background="#86000000" VerticalAlignment="Top" HorizontalAlignment="Stretch">
+            <Grid Margin="25 15 25 15">
+                <Image Name="ImgLogo" Stretch="Uniform" HorizontalAlignment="Left" VerticalAlignment="Center" Height="80" MaxWidth="550"></Image>
 
-        <TextBlock Style="{DynamicResource Heading2TextBlockStyle}" Margin="0 15 25 0" VerticalAlignment="Top" HorizontalAlignment="Right" Foreground="#fff" Text="{Binding ClockShortTime, Converter={controls:LowerCaseConverter}}"></TextBlock>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock Style="{DynamicResource TextBlockStyle}" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Now Playing: " Foreground="{DynamicResource MediaBrowserAccent}" Margin="0 0 5 0"></TextBlock>
+                    <TextBlock x:Name="TxtNowPlayingName" Style="{DynamicResource TextBlockStyle}" HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="600" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"></TextBlock>
+                </StackPanel>
+
+                <TextBlock Style="{DynamicResource TextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Right" Foreground="#fff" Text="{Binding ClockShortTime, Converter={controls:LowerCaseConverter}}"></TextBlock>
+            </Grid>
+        </Grid>
 
         <Grid Background="#86000000" VerticalAlignment="Bottom" HorizontalAlignment="Stretch">
 

@@ -13,7 +13,7 @@
         <controls:ExtendedListBox x:Name="MenuList" ItemsSource="{Binding Sections}" Command="{Binding TabCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" Grid.Row="0" HorizontalAlignment="Stretch" Margin="60 80 0 0" ItemContainerStyle="{StaticResource HomePageListBoxItemStyle}">
             <controls:ExtendedListBox.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" />
+                    <StackPanel Orientation="Horizontal" />
                 </ItemsPanelTemplate>
             </controls:ExtendedListBox.ItemsPanel>
         </controls:ExtendedListBox>

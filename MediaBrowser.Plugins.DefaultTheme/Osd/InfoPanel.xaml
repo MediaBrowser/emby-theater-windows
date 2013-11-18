@@ -9,9 +9,14 @@
              d:DesignHeight="300" d:DesignWidth="300">
 
     <Grid>
-        <Image Name="ImgLogo" Stretch="Uniform" HorizontalAlignment="Left" VerticalAlignment="Top" Height="80" MaxWidth="700" Margin="25 20 0 0"></Image>
 
-        <TextBlock Style="{DynamicResource Heading2TextBlockStyle}" Margin="0 15 25 0" VerticalAlignment="Top" HorizontalAlignment="Right" Foreground="#fff" Text="{Binding ClockShortTime, Converter={controls:LowerCaseConverter}}"></TextBlock>
+        <Grid VerticalAlignment="Top" HorizontalAlignment="Stretch">
+            <Grid Margin="25 15 25 15">
+                <Image Name="ImgLogo" Stretch="Uniform" HorizontalAlignment="Left" VerticalAlignment="Center" Height="80" MaxWidth="550"></Image>
+
+                <TextBlock Style="{DynamicResource TextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Right" Foreground="#fff" Text="{Binding ClockShortTime, Converter={controls:LowerCaseConverter}}"></TextBlock>
+            </Grid>
+        </Grid>
 
         <Grid VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="0 0 0 120" Background="#a6000000">
 

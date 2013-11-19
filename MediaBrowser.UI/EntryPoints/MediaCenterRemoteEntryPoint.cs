@@ -473,8 +473,9 @@ namespace MediaBrowser.UI.EntryPoints
                 if (activePlayer.PlayState == PlayState.Paused)
                 {
                     activePlayer.UnPause();
-                    ShowFullscreenVideoOsd();
                 }
+
+                ShowFullscreenVideoOsd();
             }
             else
             {

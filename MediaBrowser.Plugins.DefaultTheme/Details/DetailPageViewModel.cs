@@ -475,8 +475,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 {
                     ImageDisplayWidth = 400,
                     EnableBackdropsForCurrentItem = false,
-                    Context = Context,
-                    DisplayNameGenerator = FolderPage.GetDisplayName
+                    Context = ViewType.Music,
+                    DisplayNameGenerator = FolderPage.GetDisplayName,
                 };
             }
             if (string.Equals(section, "seasons"))
@@ -494,7 +494,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 {
                     ImageDisplayWidth = 40,
                     EnableBackdropsForCurrentItem = false,
-                    Context = Context,
+                    Context = ViewType.Music,
                     DisplayNameGenerator = FolderPage.GetDisplayName
                 };
             }
@@ -511,23 +511,23 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
             if (string.Equals(section, "itemmovies"))
             {
-                return GetItemByNameItemListViewModel("Movie", MoviesViewModel.PosterStripWidth, MoviesViewModel.PosterStripWidth * 1.5);
+                return GetItemByNameItemListViewModel("Movie", MoviesViewModel.PosterStripWidth, MoviesViewModel.PosterStripWidth * 1.5, ViewType.Movies);
             }
             if (string.Equals(section, "itemtrailers"))
             {
-                return GetItemByNameItemListViewModel("Trailer", MoviesViewModel.PosterStripWidth, MoviesViewModel.PosterStripWidth * 1.5);
+                return GetItemByNameItemListViewModel("Trailer", MoviesViewModel.PosterStripWidth, MoviesViewModel.PosterStripWidth * 1.5, ViewType.Movies);
             }
             if (string.Equals(section, "itemseries"))
             {
-                return GetItemByNameItemListViewModel("Series", TvViewModel.PosterStripWidth, TvViewModel.PosterStripWidth * 1.5);
+                return GetItemByNameItemListViewModel("Series", TvViewModel.PosterStripWidth, TvViewModel.PosterStripWidth * 1.5, ViewType.Tv);
             }
             if (string.Equals(section, "itemalbums"))
             {
-                return GetItemByNameItemListViewModel("MusicAlbum", 280, 280);
+                return GetItemByNameItemListViewModel("MusicAlbum", 280, 280, ViewType.Music);
             }
             if (string.Equals(section, "itemepisodes"))
             {
-                return GetItemByNameItemListViewModel("Episode", 480, 270);
+                return GetItemByNameItemListViewModel("Episode", 480, 270, ViewType.Tv);
             }
             if (string.Equals(section, "media info"))
             {
@@ -558,7 +558,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             base.DisposePreviousSection(old);
         }
 
-        private ItemListViewModel GetItemByNameItemListViewModel(string type, int width, double height)
+        private ItemListViewModel GetItemByNameItemListViewModel(string type, int width, double height, ViewType context)
         {
             Func<ItemListViewModel, Task<ItemsResult>> itemGenerator = (vm) => GetItemByNameItemsAsync(type);
 
@@ -582,7 +582,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 AutoSelectFirstItem = false,
 
                 ShowLoadingAnimation = true,
-                EnableBackdropsForCurrentItem = false
+                EnableBackdropsForCurrentItem = false,
+
+                Context = context
             };
 
             return viewModel;

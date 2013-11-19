@@ -113,9 +113,9 @@
                     <Slider x:Name="CurrentPositionSlider" Grid.Column="0" VerticalAlignment="Center" Minimum="0" IsMoveToPointEnabled="True" Maximum="{Binding DurationTicks}" Thumb.DragStarted="CurrentPositionSlider_DragStarted" Thumb.DragCompleted="CurrentPositionSlider_DragCompleted"></Slider>
 
                     <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 0 0 3">
-                        <TextBlock x:Name="TxtCurrentPosition" Style="{DynamicResource SmallTextBlockStyle}" Foreground="{DynamicResource MediaBrowserAccent}" Margin="20 0 0 0" VerticalAlignment="Center" Text="{Binding DisplayPosition}"></TextBlock>
+                        <TextBlock x:Name="TxtCurrentPosition" Style="{DynamicResource TextBlockStyle}" Foreground="{DynamicResource MediaBrowserAccent}" Margin="20 0 0 0" VerticalAlignment="Center" Text="{Binding DisplayPosition}"></TextBlock>
                         <TextBlock Style="{DynamicResource SmallTextBlockStyle}" Margin="5 0 0 0" VerticalAlignment="Center" Text=" / "></TextBlock>
-                        <TextBlock x:Name="TxtDuration" Style="{DynamicResource SmallTextBlockStyle}" Margin="5 0 0 0" VerticalAlignment="Center" Text="{Binding DisplayDuration}"></TextBlock>
+                        <TextBlock x:Name="TxtDuration" Style="{DynamicResource TextBlockStyle}" Margin="5 0 0 0" VerticalAlignment="Center" Text="{Binding DisplayDuration}"></TextBlock>
                     </StackPanel>
 
                 </Grid>

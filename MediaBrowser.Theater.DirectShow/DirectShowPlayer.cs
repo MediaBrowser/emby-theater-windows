@@ -190,7 +190,8 @@ namespace MediaBrowser.Theater.DirectShow
             }
             else if (path.IndexOf("apple.com", StringComparison.OrdinalIgnoreCase) != -1)
             {
-                /*var mySourceFilter*/ //reference will be leaked
+                /*var mySourceFilter*/
+                //reference will be leaked
                 _sourceFilter = Activator.CreateInstance(Type.GetTypeFromCLSID(new Guid("{E436EBB6-524F-11CE-9F53-0020AF0BA770}"))) as DirectShowLib.IBaseFilter;
                 hr = m_graph.AddFilter(_sourceFilter, "File Source (URL)");
                 DsError.ThrowExceptionForHR(hr);
@@ -244,7 +245,7 @@ namespace MediaBrowser.Theater.DirectShow
                     }
                 }
 
-                if(loadSource)
+                if (loadSource)
                 {
                     hr = m_graph.AddSourceFilter(path, path, out _sourceFilter);
                     DsError.ThrowExceptionForHR(hr);
@@ -310,7 +311,7 @@ namespace MediaBrowser.Theater.DirectShow
             {
                 throw new Exception("Could not QueryInterface for the IFilterGraph2");
             }
-            
+
             // Add audio renderer
             var useDefaultRenderer = true;
 
@@ -452,7 +453,7 @@ namespace MediaBrowser.Theater.DirectShow
                     }
                 }
             }
-            
+
             DirectShowLib.IEnumPins pEnum;
             hr = pSource.EnumPins(out pEnum);
             DsError.ThrowExceptionForHR(hr);
@@ -513,7 +514,7 @@ namespace MediaBrowser.Theater.DirectShow
                                 {
                                     hr = _filterGraph.ConnectDirect(decOut, rendIn, null);
                                     DsError.ThrowExceptionForHR(hr);
-                                
+
                                     needsRender = false;
                                     break;
                                 }
@@ -609,7 +610,7 @@ namespace MediaBrowser.Theater.DirectShow
             int hr = 0;
             int j = -1;
             List<Guid> mt = new List<Guid>();
-                                
+
             IEnumMediaTypes emtDvr;
             pin.EnumMediaTypes(out emtDvr);
 
@@ -737,7 +738,7 @@ namespace MediaBrowser.Theater.DirectShow
             // Set the display position to the entire window.
             var rc = new MFRect(0, 0, screenWidth, screenHeight);
 
-            if(_mPDisplay != null)
+            if (_mPDisplay != null)
                 _mPDisplay.SetVideoPosition(null, rc);
             //_mPDisplay.SetFullscreen(true);
 

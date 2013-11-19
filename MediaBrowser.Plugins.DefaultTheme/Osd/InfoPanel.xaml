@@ -11,10 +11,10 @@
     <Grid>
 
         <Grid VerticalAlignment="Top" HorizontalAlignment="Stretch">
-            <Grid Margin="25 15 25 15">
+            <Grid Margin="25 20 25 20">
                 <Image Name="ImgLogo" Stretch="Uniform" HorizontalAlignment="Left" VerticalAlignment="Center" Height="80" MaxWidth="550"></Image>
 
-                <TextBlock Style="{DynamicResource TextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Right" Foreground="#fff" Text="{Binding ClockShortTime, Converter={controls:LowerCaseConverter}}"></TextBlock>
+                <TextBlock Style="{DynamicResource TextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Right" Text="{Binding ClockShortTime, Converter={controls:LowerCaseConverter}}"></TextBlock>
             </Grid>
         </Grid>
 
@@ -62,7 +62,7 @@
                                                         <controls:ExtendedListBox Margin="0" DataContext="{Binding ContentViewModel}" ItemsSource="{Binding ListCollectionView}" Command="{Binding SeekCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource ItemChaptersTemplate}">
                                                             <controls:ExtendedListBox.ItemsPanel>
                                                                 <ItemsPanelTemplate>
-                                                                    <UniformGrid Rows="1" Margin="100 20" VerticalAlignment="Stretch" HorizontalAlignment="Center"></UniformGrid>
+                                                                    <UniformGrid Rows="1" Margin="100 40 100 50" VerticalAlignment="Stretch" HorizontalAlignment="Center"></UniformGrid>
                                                                 </ItemsPanelTemplate>
                                                             </controls:ExtendedListBox.ItemsPanel>
                                                         </controls:ExtendedListBox>
@@ -92,7 +92,7 @@
                                                         <controls:ExtendedListBox Margin="0" DataContext="{Binding ContentViewModel}" Command="{Binding ActivateCommand}" ItemsSource="{Binding ListCollectionView}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource SelectableMediaStreamTemplate}">
                                                             <controls:ExtendedListBox.ItemsPanel>
                                                                 <ItemsPanelTemplate>
-                                                                    <UniformGrid Rows="1" Margin="100 20" VerticalAlignment="Stretch" HorizontalAlignment="Center"></UniformGrid>
+                                                                    <UniformGrid Rows="1" Margin="100 40 100 50" VerticalAlignment="Stretch" HorizontalAlignment="Center"></UniformGrid>
                                                                 </ItemsPanelTemplate>
                                                             </controls:ExtendedListBox.ItemsPanel>
                                                         </controls:ExtendedListBox>
@@ -107,7 +107,7 @@
                                                         <controls:ExtendedListBox Margin="0" DataContext="{Binding ContentViewModel}" Command="{Binding ActivateCommand}" ItemsSource="{Binding ListCollectionView}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource SelectableMediaStreamTemplate}">
                                                             <controls:ExtendedListBox.ItemsPanel>
                                                                 <ItemsPanelTemplate>
-                                                                    <UniformGrid Rows="1" Margin="100 20" VerticalAlignment="Stretch" HorizontalAlignment="Center"></UniformGrid>
+                                                                    <UniformGrid Rows="1" Margin="100 40 100 50" VerticalAlignment="Stretch" HorizontalAlignment="Center"></UniformGrid>
                                                                 </ItemsPanelTemplate>
                                                             </controls:ExtendedListBox.ItemsPanel>
                                                         </controls:ExtendedListBox>

@@ -540,7 +540,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             }
             else if (string.Equals(indexOption, "NewReleases"))
             {
-                query.SortBy = new[] { ItemSortBy.PremiereDate };
+                query.SortBy = new[] { ItemSortBy.ProductionYear, ItemSortBy.PremiereDate };
                 query.SortOrder = SortOrder.Descending;
                 query.Limit = 100;
             }

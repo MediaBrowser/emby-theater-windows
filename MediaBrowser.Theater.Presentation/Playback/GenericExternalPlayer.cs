@@ -3,6 +3,7 @@ using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.IO;
 using MediaBrowser.Model.Logging;
+using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.UserInput;
 using System;
@@ -180,7 +181,7 @@ namespace MediaBrowser.Theater.Presentation.Playback
         public long? CurrentPositionTicks { get; protected set; }
 
         public long? CurrentDurationTicks { get; protected set; }
-        
+
         /// <summary>
         /// Determines whether this instance can play the specified item.
         /// </summary>
@@ -245,7 +246,9 @@ namespace MediaBrowser.Theater.Presentation.Playback
         /// <returns>Task.</returns>
         public async Task Play(PlayOptions options)
         {
-            _currentIsoMount = options.Items.Count == 1 ? await GetIsoMount(options.Items[0], CancellationToken.None) : null;
+            _currentIsoMount = options.Items.Count == 1 && options.Configuration.IsoMethod == IsoConfiguration.Mount ?
+                await GetIsoMount(options.Items[0], CancellationToken.None) :
+                null;
 
             CurrentPlaylistIndex = 0;
             CurrentPlayOptions = options;

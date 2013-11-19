@@ -14,19 +14,13 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type RepeatButton}">
-                    <Border Height="18" CornerRadius="0" Margin="2,2,-12,2">
-                        <Border.Background>
-                            <LinearGradientBrush SpreadMethod="Reflect" ColorInterpolationMode="SRgbLinearInterpolation" StartPoint="0,0" EndPoint="0,1" >
-                                <GradientStop Color="#7EDC3D" Offset="0" />
-                                <GradientStop Color="#3AA728" Offset="1" />
-                            </LinearGradientBrush>
-                        </Border.Background>
+                    <Border Height="16" CornerRadius="0" Margin="0,0,-10,0" Background="{DynamicResource MediaBrowserAccent}" Opacity=".6">
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
-    
+
     <Style x:Key="SliderButtonStyle" TargetType="{x:Type RepeatButton}">
         <Setter Property="SnapsToDevicePixels" Value="true"/>
         <Setter Property="OverridesDefaultStyle" Value="true"/>
@@ -44,12 +38,12 @@
     <Style x:Key="SliderThumbStyle" TargetType="{x:Type Thumb}">
         <Setter Property="SnapsToDevicePixels" Value="true"/>
         <Setter Property="OverridesDefaultStyle" Value="true"/>
-        <Setter Property="Height" Value="34"/>
-        <Setter Property="Width" Value="34"/>
+        <Setter Property="Height" Value="26"/>
+        <Setter Property="Width" Value="26"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Thumb}">
-                    <Ellipse 
+                    <Ellipse  
       Name="Ellipse" 
       Fill="{DynamicResource SliderThumbGradient}"
       Stroke="#404040"
@@ -81,16 +75,14 @@
   Fill="#404040"
   Height="4"
   Visibility="Collapsed" />
-            
+
             <Border 
   Name="TrackBackground"
   Margin="0"
   CornerRadius="0" 
-  Height="24"
+  Height="18"
   Grid.Row="1"
-  Background="#a6292929" 
-  BorderBrush="#a6333333"
-  BorderThickness="2" />
+  Background="#a6333333" />
             <Track Grid.Row="1" Name="PART_Track">
                 <Track.DecreaseRepeatButton>
                     <RepeatButton 
@@ -196,7 +188,7 @@
         <Style.Triggers>
             <Trigger Property="Orientation" Value="Horizontal">
                 <Setter Property="MinWidth" Value="104" />
-                <Setter Property="MinHeight" Value="21" />
+                <Setter Property="MinHeight" Value="16" />
                 <Setter Property="Template" Value="{StaticResource HorizontalSlider}" />
             </Trigger>
             <Trigger Property="Orientation" Value="Vertical">

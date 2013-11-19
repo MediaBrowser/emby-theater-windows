@@ -6,7 +6,6 @@ using MediaBrowser.Theater.Interfaces.UserInput;
 using MediaBrowser.Theater.Presentation.Playback;
 using System;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Interop;
@@ -222,6 +221,7 @@ namespace MediaBrowser.UI.EntryPoints
                 case System.Windows.Input.Key.Play:
                     ExecuteCommand(Play);
                     break;
+                case System.Windows.Input.Key.Space:
                 case System.Windows.Input.Key.Pause:
                     ExecuteCommand(Pause);
                     break;
@@ -322,6 +322,7 @@ namespace MediaBrowser.UI.EntryPoints
                 case Keys.Play:
                     ExecuteCommand(Play);
                     break;
+                case Keys.Space:
                 case Keys.Pause:
                     ExecuteCommand(Pause);
                     break;

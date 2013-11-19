@@ -33,7 +33,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate>
-                    <Path Style="{DynamicResource IconPath}" Data="F1M1188.2,1715.23L1169.93,1728.57 1151.66,1741.9 1151.66,1715.23 1151.66,1688.57 1169.93,1701.9 1188.2,1715.23z" Stretch="Uniform" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+                    <Path Style="{DynamicResource IconPath}" Data="F1M1188.2,1715.23L1169.93,1728.57 1151.66,1741.9 1151.66,1715.23 1151.66,1688.57 1169.93,1701.9 1188.2,1715.23z" Stretch="Uniform" Width="24" Height="24" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
                     </Path>
                 </ControlTemplate>
             </Setter.Value>
@@ -45,7 +45,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate>
-                    <Path Style="{DynamicResource IconPath}" Data="M27.270001,0L44.310001,0 44.310001,48.643002 27.270001,48.643002z M0,0L17.040001,0 17.040001,48.643002 0,48.643002z" Stretch="Uniform" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+                    <Path Style="{DynamicResource IconPath}" Data="M27.270001,0L44.310001,0 44.310001,48.643002 27.270001,48.643002z M0,0L17.040001,0 17.040001,48.643002 0,48.643002z" Stretch="Uniform" Width="24" Height="24" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
                     </Path>
                 </ControlTemplate>
             </Setter.Value>
@@ -57,7 +57,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate>
-                    <Path Style="{DynamicResource IconPath}" Data="M0,0L64,0 64,64 0,64z" Stretch="Uniform" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+                    <Path Style="{DynamicResource IconPath}" Data="M0,0L64,0 64,64 0,64z" Stretch="Uniform" Width="24" Height="24" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
                     </Path>
                 </ControlTemplate>
             </Setter.Value>
@@ -69,7 +69,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate>
-                    <Path Style="{DynamicResource IconPath}" Data="M0,0L15.908,0 15.908,20.125872 28.130381,13.333224 52.118999,0 52.118999,26.66655 52.118999,53.333 28.130381,39.999775 15.908,33.20718 15.908,53.333 0,53.333z" Stretch="Uniform" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+                    <Path Style="{DynamicResource IconPath}" Data="M0,0L15.908,0 15.908,20.125872 28.130381,13.333224 52.118999,0 52.118999,26.66655 52.118999,53.333 28.130381,39.999775 15.908,33.20718 15.908,53.333 0,53.333z" Stretch="Uniform" Width="24" Height="24" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
                         <Path.RenderTransform>
                             <TransformGroup>
                                 <TransformGroup.Children>
@@ -89,7 +89,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate>
-                    <Path Style="{DynamicResource IconPath}" Data="M0,0L15.908,0 15.908,20.125872 28.130381,13.333224 52.118999,0 52.118999,26.66655 52.118999,53.333 28.130381,39.999775 15.908,33.20718 15.908,53.333 0,53.333z" Stretch="Uniform" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+                    <Path Style="{DynamicResource IconPath}" Data="M0,0L15.908,0 15.908,20.125872 28.130381,13.333224 52.118999,0 52.118999,26.66655 52.118999,53.333 28.130381,39.999775 15.908,33.20718 15.908,53.333 0,53.333z" Stretch="Uniform" Width="24" Height="24" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
                     </Path>
                 </ControlTemplate>
             </Setter.Value>
@@ -101,7 +101,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate>
-                    <Path Style="{DynamicResource IconPath}" Data="M51.123999,0L63.451998,0 63.451998,53.695001 51.123999,53.695001 51.123999,31.916129 41.651199,37.180778 23.059999,47.514001 23.059999,34.696918 18.590899,37.180778 0,47.514001 0,26.847556 0,6.1810005 18.590899,16.514234 23.059999,18.998118 23.059999,6.1810005 41.651199,16.514234 51.123999,21.778933z" Stretch="Uniform" Width="30" Height="30" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+                    <Path Style="{DynamicResource IconPath}" Data="M51.123999,0L63.451998,0 63.451998,53.695001 51.123999,53.695001 51.123999,31.916129 41.651199,37.180778 23.059999,47.514001 23.059999,34.696918 18.590899,37.180778 0,47.514001 0,26.847556 0,6.1810005 18.590899,16.514234 23.059999,18.998118 23.059999,6.1810005 41.651199,16.514234 51.123999,21.778933z" Stretch="Uniform" Width="28" Height="28" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
                     </Path>
                 </ControlTemplate>
             </Setter.Value>
@@ -113,7 +113,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate>
-                    <Path Style="{DynamicResource IconPath}" Data="F1M1914.87,1166.52L1914.87,1185.06 1923.04,1180.35 1937.85,1171.8 1937.85,1182.85 1942.18,1180.35 1956.99,1171.8 1956.99,1205.99 1942.18,1197.44 1937.85,1194.94 1937.85,1205.99 1923.04,1197.44 1914.87,1192.73 1914.87,1211.27 1903.62,1211.27 1903.62,1166.52 1914.87,1166.52z" Stretch="Uniform" Width="30" Height="30" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+                    <Path Style="{DynamicResource IconPath}" Data="F1M1914.87,1166.52L1914.87,1185.06 1923.04,1180.35 1937.85,1171.8 1937.85,1182.85 1942.18,1180.35 1956.99,1171.8 1956.99,1205.99 1942.18,1197.44 1937.85,1194.94 1937.85,1205.99 1923.04,1197.44 1914.87,1192.73 1914.87,1211.27 1903.62,1211.27 1903.62,1166.52 1914.87,1166.52z" Stretch="Uniform" Width="28" Height="28" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
                     </Path>
                 </ControlTemplate>
             </Setter.Value>

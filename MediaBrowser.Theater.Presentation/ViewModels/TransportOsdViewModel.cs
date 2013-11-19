@@ -113,7 +113,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         public string ClockShortTime
         {
-            get { return DateTime.Now.ToShortTimeString(); }
+            get { return DateTime.Now.ToShortTimeString().Replace(" ", string.Empty); }
         }
 
         private string _displayDuration;

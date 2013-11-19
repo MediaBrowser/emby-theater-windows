@@ -71,7 +71,7 @@
                     <ColumnDefinition Width="*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Column="0" Style="{DynamicResource TextBlockStyle}" Width="400">Player path:</TextBlock>
+                <TextBlock Grid.Column="0" Style="{DynamicResource TextBlockStyle}" Width="400">Media player path:</TextBlock>
                 <TextBox x:Name="TxtPath" Grid.Column="1"></TextBox>
             </Grid>
             <Grid x:Name="PanelPlayerArgs" Margin="0 20 0 0">

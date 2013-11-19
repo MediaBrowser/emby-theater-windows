@@ -125,7 +125,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// <returns>Page.</returns>
         public Page GetFolderPage(BaseItemDto item, ViewType context, DisplayPreferences displayPreferences)
         {
-            if (/*context == ViewType.Folders ||*/ !_folderTypesWithDetailPages.Contains(item.Type, StringComparer.OrdinalIgnoreCase))
+            if (context == ViewType.Folders || !_folderTypesWithDetailPages.Contains(item.Type, StringComparer.OrdinalIgnoreCase))
             {
                 var options = GetListPageConfig(item, context);
 

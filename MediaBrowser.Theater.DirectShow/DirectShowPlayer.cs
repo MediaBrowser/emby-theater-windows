@@ -39,7 +39,7 @@ namespace MediaBrowser.Theater.DirectShow
         private DirectShowLib.IMediaPosition _mediaPosition;
         private DirectShowLib.IBaseFilter _sourceFilter;
         private DirectShowLib.IFilterGraph2 _filterGraph;
-        private DirectShowLib.IBaseFilter _pSource;
+        //private DirectShowLib.IBaseFilter _pSource;
 
         private XYVSFilter _xyVsFilter;
         private XySubFilter _xySubFilter;
@@ -190,13 +190,14 @@ namespace MediaBrowser.Theater.DirectShow
             }
             else if (path.IndexOf("apple.com", StringComparison.OrdinalIgnoreCase) != -1)
             {
-                var mySourceFilter = Activator.CreateInstance(Type.GetTypeFromCLSID(new Guid("{E436EBB6-524F-11CE-9F53-0020AF0BA770}"))) as DirectShowLib.IBaseFilter;
-                hr = m_graph.AddFilter(mySourceFilter, "File Source (URL)");
+                /*var mySourceFilter*/ //reference will be leaked
+                _sourceFilter = Activator.CreateInstance(Type.GetTypeFromCLSID(new Guid("{E436EBB6-524F-11CE-9F53-0020AF0BA770}"))) as DirectShowLib.IBaseFilter;
+                hr = m_graph.AddFilter(_sourceFilter, "File Source (URL)");
                 DsError.ThrowExceptionForHR(hr);
 
-                if (hr == 0 && mySourceFilter != null)
+                if (hr == 0 && _sourceFilter != null)
                 {
-                    hr = ((IFileSourceFilter)mySourceFilter).Load(path, null);
+                    hr = ((IFileSourceFilter)_sourceFilter).Load(path, null);
                     DsError.ThrowExceptionForHR(hr);
                 }
             }
@@ -207,23 +208,49 @@ namespace MediaBrowser.Theater.DirectShow
                 //alternatevely use dc-bass source
 
                 //make sure to test youtube handeling
-                var mySourceFilter = Activator.CreateInstance(Type.GetTypeFromCLSID(new Guid("{E436EBB6-524F-11CE-9F53-0020AF0BA770}"))) as DirectShowLib.IBaseFilter;
-                hr = m_graph.AddFilter(mySourceFilter, "File Source (URL)");
+                _sourceFilter = Activator.CreateInstance(Type.GetTypeFromCLSID(new Guid("{E436EBB6-524F-11CE-9F53-0020AF0BA770}"))) as DirectShowLib.IBaseFilter;
+                hr = m_graph.AddFilter(_sourceFilter, "File Source (URL)");
                 DsError.ThrowExceptionForHR(hr);
 
-                if (hr == 0 && mySourceFilter != null)
+                if (hr == 0 && _sourceFilter != null)
                 {
-                    hr = ((IFileSourceFilter)mySourceFilter).Load(path, null);
+                    hr = ((IFileSourceFilter)_sourceFilter).Load(path, null);
                     DsError.ThrowExceptionForHR(hr);
                 }
             }
             else
             {
-                hr = m_graph.AddSourceFilter(path, path, out _pSource);
-                DsError.ThrowExceptionForHR(hr);
+                //prefer LAV Spliter Source
+                bool loadSource = true;
+                _sourceFilter = Activator.CreateInstance(Type.GetTypeFromCLSID(new Guid("{B98D13E7-55DB-4385-A33D-09FD1BA26338}"))) as DirectShowLib.IBaseFilter;
+                if (_sourceFilter != null)
+                {
+                    hr = m_graph.AddFilter(_sourceFilter, "LAV Splitter Source");
+                    DsError.ThrowExceptionForHR(hr);
 
+                    if (_sourceFilter != null)
+                    {
+                        hr = ((IFileSourceFilter)_sourceFilter).Load(path, null);
+                        if (hr < 0)
+                        {
+                            //LAV can't load this file type
+                            hr = m_graph.RemoveFilter(_sourceFilter);
+                            Marshal.ReleaseComObject(_sourceFilter);
+                            _sourceFilter = null;
+                            DsError.ThrowExceptionForHR(hr);
+                        }
+                        else
+                            loadSource = false;
+                    }
+                }
+
+                if(loadSource)
+                {
+                    hr = m_graph.AddSourceFilter(path, path, out _sourceFilter);
+                    DsError.ThrowExceptionForHR(hr);
+                }
                 // Try to render the streams.
-                RenderStreams(_pSource, enableReclock, enableMadvr, enableXySubFilter);
+                RenderStreams(_sourceFilter, enableReclock, enableMadvr, enableXySubFilter);
             }
 
             // Get the seeking capabilities.
@@ -283,17 +310,7 @@ namespace MediaBrowser.Theater.DirectShow
             {
                 throw new Exception("Could not QueryInterface for the IFilterGraph2");
             }
-
-            // Add video renderer
-            if (_item.IsVideo)
-            {
-                _mPEvr = (DirectShowLib.IBaseFilter)new EnhancedVideoRenderer();
-                hr = m_graph.AddFilter(_mPEvr, "Enhanced Video Renderer");
-                DsError.ThrowExceptionForHR(hr);
-
-                InitializeEvr(_mPEvr, 1);
-            }
-
+            
             // Add audio renderer
             var useDefaultRenderer = true;
 
@@ -361,10 +378,10 @@ namespace MediaBrowser.Theater.DirectShow
                 if (_item.IsVideo)
                 {
                     var xySubFilterSucceeded = false;
+                    var madVrSucceded = false;
 
                     if (enableMadvr)
                     {
-                        var madVrSucceded = false;
 
                         try
                         {
@@ -405,6 +422,16 @@ namespace MediaBrowser.Theater.DirectShow
                         }
                     }
 
+                    // Add video renderer
+                    if (!madVrSucceded)
+                    {
+                        _mPEvr = (DirectShowLib.IBaseFilter)new EnhancedVideoRenderer();
+                        hr = m_graph.AddFilter(_mPEvr, "Enhanced Video Renderer");
+                        DsError.ThrowExceptionForHR(hr);
+
+                        InitializeEvr(_mPEvr, 1);
+                    }
+
                     // Fallback to xyVsFilter
                     if (!xySubFilterSucceeded)
                     {
@@ -425,7 +452,7 @@ namespace MediaBrowser.Theater.DirectShow
                     }
                 }
             }
-
+            
             DirectShowLib.IEnumPins pEnum;
             hr = pSource.EnumPins(out pEnum);
             DsError.ThrowExceptionForHR(hr);
@@ -437,7 +464,110 @@ namespace MediaBrowser.Theater.DirectShow
             /* Loop over each pin of the source filter */
             while (pEnum.Next(1, pins, IntPtr.Zero) == 0)
             {
-                if (_filterGraph.RenderEx(pins[0], AMRenderExFlags.RenderToExistingRenderers, IntPtr.Zero) >= 0)
+                //explicitly build graph to avoid unwanted filters worming their way in
+                List<Guid> mediaTypes = GetPinMediaTypes(pins[0]);
+                bool needsRender = true;
+
+                for (int m = 0; m < mediaTypes.Count; m++)
+                {
+                    DirectShowLib.IPin decIn = null;
+                    DirectShowLib.IPin decOut = null;
+                    DirectShowLib.IPin rendIn = null;
+
+                    try
+                    {
+                        if (mediaTypes[m] == DirectShowLib.MediaType.Video && _lavvideo != null)
+                        {
+                            decIn = DsFindPin.ByDirection((DirectShowLib.IBaseFilter)_lavvideo, PinDirection.Input, 0);
+                            if (decIn != null)
+                            {
+                                hr = _filterGraph.ConnectDirect(pins[0], decIn, null);
+                                DsError.ThrowExceptionForHR(hr);
+                                decOut = DsFindPin.ByDirection((DirectShowLib.IBaseFilter)_lavvideo, PinDirection.Output, 0);
+                                if (_madvr != null)
+                                {
+                                    rendIn = DsFindPin.ByDirection((DirectShowLib.IBaseFilter)_madvr, PinDirection.Input, 0);
+                                }
+                                else
+                                {
+                                    rendIn = DsFindPin.ByDirection((DirectShowLib.IBaseFilter)_mPEvr, PinDirection.Input, 0);
+                                }
+
+                                if (decOut != null && rendIn != null)
+                                {
+                                    hr = _filterGraph.ConnectDirect(decOut, rendIn, null);
+                                    DsError.ThrowExceptionForHR(hr);
+                                
+                                    needsRender = false;
+                                    break;
+                                }
+                            }
+                        }
+                        else if (mediaTypes[m] == DirectShowLib.MediaType.Audio && _lavaudio != null)
+                        {
+                            decIn = DsFindPin.ByDirection((DirectShowLib.IBaseFilter)_lavaudio, PinDirection.Input, 0);
+                            if (decIn != null)
+                            {
+                                hr = _filterGraph.ConnectDirect(pins[0], decIn, null);
+                                DsError.ThrowExceptionForHR(hr);
+                                decOut = DsFindPin.ByDirection((DirectShowLib.IBaseFilter)_lavaudio, PinDirection.Output, 0);
+
+                                if (_reclockAudioRenderer != null)
+                                {
+                                    rendIn = DsFindPin.ByDirection((DirectShowLib.IBaseFilter)_reclockAudioRenderer, PinDirection.Input, 0);
+                                }
+                                else
+                                {
+                                    rendIn = DsFindPin.ByDirection((DirectShowLib.IBaseFilter)_defaultAudioRenderer, PinDirection.Input, 0);
+                                }
+
+                                if (decOut != null && rendIn != null)
+                                {
+                                    hr = _filterGraph.ConnectDirect(decOut, rendIn, null);
+                                    DsError.ThrowExceptionForHR(hr);
+
+                                    needsRender = false;
+                                    break;
+                                }
+                            }
+                        }
+                        else if (mediaTypes[m] == new Guid("E487EB08-6B26-4be9-9DD3-993434D313FD") /*DirectShowLib.MediaType.Subtitle*/
+                            && (_xySubFilter != null || _xyVsFilter != null))
+                        {
+
+                            if (_xySubFilter != null)
+                            {
+                                rendIn = DsFindPin.ByDirection((DirectShowLib.IBaseFilter)_xySubFilter, PinDirection.Input, 0);
+                            }
+                            else
+                            {
+                                rendIn = DsFindPin.ByDirection((DirectShowLib.IBaseFilter)_xyVsFilter, PinDirection.Input, 0);
+                            }
+
+                            if (rendIn != null)
+                            {
+                                hr = _filterGraph.ConnectDirect(pins[0], rendIn, null);
+                                DsError.ThrowExceptionForHR(hr);
+
+                                needsRender = false;
+                                break;
+                            }
+                        }
+                    }
+                    finally
+                    {
+                        CleanUpInterface(decIn);
+                        CleanUpInterface(decOut);
+                        CleanUpInterface(rendIn);
+                    }
+                }
+
+                if (needsRender)
+                {
+                    if (_filterGraph.RenderEx(pins[0], AMRenderExFlags.RenderToExistingRenderers, IntPtr.Zero) >= 0)
+                        pinsRendered++;
+                }
+                else
                     pinsRendered++;
 
                 Marshal.ReleaseComObject(pins[0]);
@@ -456,6 +586,41 @@ namespace MediaBrowser.Theater.DirectShow
             {
                 SetVideoWindow();
             }
+        }
+
+        private List<Guid> GetPinMediaTypes(DirectShowLib.IPin pin)
+        {
+            int hr = 0;
+            int j = -1;
+            List<Guid> mt = new List<Guid>();
+                                
+            IEnumMediaTypes emtDvr;
+            pin.EnumMediaTypes(out emtDvr);
+
+            while (j != 0)
+            {
+                DirectShowLib.AMMediaType[] amtDvr = new DirectShowLib.AMMediaType[1];
+                IntPtr d = Marshal.AllocCoTaskMem(4);
+                try
+                {
+                    hr = emtDvr.Next(1, amtDvr, d);
+                    DsError.ThrowExceptionForHR(hr);
+                    j = Marshal.ReadInt32(d);
+                }
+                finally
+                {
+                    Marshal.FreeCoTaskMem(d);
+                }
+
+                if (j != 0)
+                {
+                    mt.Add(amtDvr[0].majorType);
+
+                    DsUtils.FreeAMMediaType(amtDvr[0]);
+                    amtDvr[0] = null;
+                }
+            }
+            return mt;
         }
 
         private void InitializeEvr(DirectShowLib.IBaseFilter pEvr, int dwStreams)
@@ -556,7 +721,8 @@ namespace MediaBrowser.Theater.DirectShow
             // Set the display position to the entire window.
             var rc = new MFRect(0, 0, screenWidth, screenHeight);
 
-            _mPDisplay.SetVideoPosition(null, rc);
+            if(_mPDisplay != null)
+                _mPDisplay.SetVideoPosition(null, rc);
             //_mPDisplay.SetFullscreen(true);
 
             // Get Aspect Ratio
@@ -746,6 +912,13 @@ namespace MediaBrowser.Theater.DirectShow
             _logger.Debug("Disposing player");
 
             CloseInterfaces();
+        }
+
+        private void CleanUpInterface(object o)
+        {
+            if (o != null)
+                Marshal.ReleaseComObject(o);
+            o = null;
         }
 
         private void CloseInterfaces()

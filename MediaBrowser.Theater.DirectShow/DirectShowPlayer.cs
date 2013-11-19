@@ -484,6 +484,22 @@ namespace MediaBrowser.Theater.DirectShow
                                 hr = _filterGraph.ConnectDirect(pins[0], decIn, null);
                                 DsError.ThrowExceptionForHR(hr);
                                 decOut = DsFindPin.ByDirection((DirectShowLib.IBaseFilter)_lavvideo, PinDirection.Output, 0);
+
+                                if (_xyVsFilter != null)
+                                {
+                                    //insert xyVsFilter b/w LAV Video and the renderer
+                                    rendIn = DsFindPin.ByName((DirectShowLib.IBaseFilter)_xyVsFilter, "Video");
+                                    if (decOut != null && rendIn != null)
+                                    {
+                                        hr = _filterGraph.ConnectDirect(decOut, rendIn, null);
+                                        DsError.ThrowExceptionForHR(hr);
+                                        CleanUpInterface(decOut);
+                                        CleanUpInterface(rendIn);
+                                        //grab xyVsFilter's output pin so it can be connected to the renderer
+                                        decOut = DsFindPin.ByDirection((DirectShowLib.IBaseFilter)_xyVsFilter, PinDirection.Output, 0);
+                                    }
+                                }
+
                                 if (_madvr != null)
                                 {
                                     rendIn = DsFindPin.ByDirection((DirectShowLib.IBaseFilter)_madvr, PinDirection.Input, 0);
@@ -541,7 +557,7 @@ namespace MediaBrowser.Theater.DirectShow
                             }
                             else
                             {
-                                rendIn = DsFindPin.ByDirection((DirectShowLib.IBaseFilter)_xyVsFilter, PinDirection.Input, 0);
+                                rendIn = DsFindPin.ByName((DirectShowLib.IBaseFilter)_xyVsFilter, "Input");
                             }
 
                             if (rendIn != null)

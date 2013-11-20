@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.Logging;
+﻿using System.Windows.Forms;
+using MediaBrowser.Model.Logging;
 using System;
 using System.ComponentModel;
 using System.Windows;
@@ -15,6 +16,8 @@ namespace MediaBrowser.UI
         /// </summary>
         private readonly ILogger _logger;
 
+        public Panel WindowsFormsPanel;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="HiddenWindow" /> class.
         /// </summary>
@@ -23,6 +26,14 @@ namespace MediaBrowser.UI
         {
             _logger = logger;
             InitializeComponent();
+        }
+
+        protected override void OnInitialized(EventArgs e)
+        {
+            base.OnInitialized(e);
+
+            WindowsFormsPanel = new Panel();
+            WindowsFormsHost.Child = WindowsFormsPanel;
         }
 
         /// <summary>

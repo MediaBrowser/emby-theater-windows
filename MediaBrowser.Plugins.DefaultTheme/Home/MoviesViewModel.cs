@@ -409,6 +409,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             tabs.Add(new TabItem
             {
+                DisplayName = "Unwatched",
+                Name = "Unwatched",
+            });
+            
+            tabs.Add(new TabItem
+            {
                 DisplayName = "New Releases",
                 Name = "NewReleases",
             });
@@ -473,15 +479,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 Name = "TopCriticRated",
             });
 
-            if (view.HDItems.Count > 0)
-            {
-                tabs.Add(new TabItem
-                {
-                    DisplayName = "HD Movies",
-                    Name = "HDMovies",
-                });
-            }
-
             if (view.ThreeDItems.Count > 0)
             {
                 tabs.Add(new TabItem
@@ -537,6 +534,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
                 query.SortBy = new[] { ItemSortBy.SortName };
                 query.SortOrder = SortOrder.Ascending;
+            }
+            else if (string.Equals(indexOption, "Unwatched"))
+            {
+                query.Filters = new[] {ItemFilter.IsUnplayed};
             }
             else if (string.Equals(indexOption, "NewReleases"))
             {

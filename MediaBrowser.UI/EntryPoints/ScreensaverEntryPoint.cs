@@ -42,6 +42,7 @@ namespace MediaBrowser.UI.EntryPoints
         public void Run()
         {
             _playback.PlaybackCompleted += _playback_PlaybackCompleted;
+            _playback.PlaybackStarted += _playback_PlaybackStarted;
 
             _serverEvents.BrowseCommand += _serverEvents_BrowseCommand;
             _serverEvents.MessageCommand += _serverEvents_MessageCommand;
@@ -87,9 +88,16 @@ namespace MediaBrowser.UI.EntryPoints
             }
         }
 
+        void _playback_PlaybackStarted(object sender, PlaybackStartEventArgs e)
+        {
+            PreventSystemIdle();
+        }
+
         void _playback_PlaybackCompleted(object sender, PlaybackStopEventArgs e)
         {
             _lastInputTime = DateTime.Now;
+
+            AllowSystemIdle();
         }
 
         private void TimerCallback(object state)
@@ -136,10 +144,8 @@ namespace MediaBrowser.UI.EntryPoints
 
             if (_timer == null)
             {
-                _timer = new Timer(TimerCallback, null, 1000, 1000);
+                _timer = new Timer(TimerCallback, null, 30000, 30000);
             }
-
-            PreventSystemIdle();
         }
 
         private void StopTimer()
@@ -148,13 +154,14 @@ namespace MediaBrowser.UI.EntryPoints
             {
                 _timer.Dispose();
                 _timer = null;
-
-                AllowSystemIdle();
             }
         }
 
         public void Dispose()
         {
+            _playback.PlaybackCompleted -= _playback_PlaybackCompleted;
+            _playback.PlaybackStarted -= _playback_PlaybackStarted;
+            
             _serverEvents.BrowseCommand -= _serverEvents_BrowseCommand;
             _serverEvents.MessageCommand -= _serverEvents_MessageCommand;
             _serverEvents.PlayCommand -= _serverEvents_PlayCommand;

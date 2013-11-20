@@ -28,16 +28,6 @@
             <TextBlock Style="{DynamicResource TextBlockStyle}" Margin="10 0 0 0">Up to date.</TextBlock>
         </StackPanel>
 
-        <StackPanel x:Name="PanelNewVersion" Orientation="Vertical" Margin="0 30 0 0" Visibility="Collapsed">
-
-            <TextBlock Style="{DynamicResource TextBlockStyle}">A new version is available!</TextBlock>
-
-            <Button x:Name="BtnUpdate" Margin="0 10 0 0">
-                <TextBlock x:Name="TxtNewVersion" Style="{DynamicResource TextBlockStyle}"></TextBlock>
-            </Button>
-
-        </StackPanel>
-
         <StackPanel x:Name="InstallationsPanel" Orientation="Vertical" Margin="0 50 0 0">
 
             <TextBlock Style="{DynamicResource Heading2TextBlockStyle}">Currently Installing...</TextBlock>

@@ -243,11 +243,22 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
             if (item.SpecialFeatureCount > 0)
             {
-                views.Add(new TabItem
+                if (item.IsType("series"))
                 {
-                    Name = "special features",
-                    DisplayName = "Special Features"
-                });
+                    views.Add(new TabItem
+                    {
+                        Name = "special features",
+                        DisplayName = "Specials"
+                    });
+                }
+                else
+                {
+                    views.Add(new TabItem
+                    {
+                        Name = "special features",
+                        DisplayName = "Special Features"
+                    });
+                }
             }
 
             if (reviewsResult.TotalRecordCount > 0 || !string.IsNullOrEmpty(item.CriticRatingSummary))

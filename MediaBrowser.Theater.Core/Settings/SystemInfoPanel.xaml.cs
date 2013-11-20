@@ -30,7 +30,6 @@ namespace MediaBrowser.Theater.Core.Settings
 
             Loaded += SystemInfoPanel_Loaded;
             Unloaded += SystemInfoPanel_Unloaded;
-            BtnUpdate.Click += BtnUpdate_Click;
             BtnRestart.Click += BtnRestart_Click;
 
             TxtVersion.Text = "Version " + _appHost.ApplicationVersion;
@@ -80,24 +79,10 @@ namespace MediaBrowser.Theater.Core.Settings
             _appHost.Restart();
         }
 
-        async void BtnUpdate_Click(object sender, RoutedEventArgs e)
-        {
-            var update = await _appHost.CheckForApplicationUpdate(CancellationToken.None, new Progress<double>());
-
-            if (update.IsUpdateAvailable)
-            {
-                PanelNewVersion.Visibility = Visibility.Collapsed;
-                PanelUpToDate.Visibility = Visibility.Collapsed;
-                
-                _appHost.UpdateApplication(update.Package, CancellationToken.None, new Progress<double>());
-            }
-        }
-
         private async void LoadApplicationUpdates()
         {
             if (_appHost.HasPendingRestart || _installationManager.CompletedInstallations.Any() || _installationManager.CurrentInstallations.Any())
             {
-                PanelNewVersion.Visibility = Visibility.Collapsed;
                 PanelUpToDate.Visibility = Visibility.Collapsed;
             }
 
@@ -107,14 +92,10 @@ namespace MediaBrowser.Theater.Core.Settings
 
                 if (update.IsUpdateAvailable)
                 {
-                    PanelNewVersion.Visibility = Visibility.Visible;
                     PanelUpToDate.Visibility = Visibility.Collapsed;
-
-                    TxtNewVersion.Text = "Update now to version " + update.AvailableVersion;
                 }
                 else
                 {
-                    PanelNewVersion.Visibility = Visibility.Collapsed;
                     PanelUpToDate.Visibility = Visibility.Visible;
                 }
             }
@@ -122,7 +103,6 @@ namespace MediaBrowser.Theater.Core.Settings
             {
                 // Already logged at lower levels
                 PanelUpToDate.Visibility = Visibility.Collapsed;
-                PanelNewVersion.Visibility = Visibility.Collapsed;
             }
         }
 

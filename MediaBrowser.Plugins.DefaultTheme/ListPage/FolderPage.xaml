@@ -15,10 +15,11 @@
 
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Margin="0 30 0 0">
+        <Grid Grid.Row="0" Margin="0 20 0 0">
 
             <Grid.Style>
                 <Style TargetType="{x:Type Grid}">
@@ -43,11 +44,33 @@
             </controls:ExtendedScrollViewer>
         </Grid>
 
-        <Grid Grid.Row="1">
+        <StackPanel Grid.Row="1" Margin="105 25 0 0" Height="380" Orientation="Vertical">
+
+            <StackPanel.Style>
+                <Style TargetType="{x:Type StackPanel}">
+
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ViewType}" Value="Thumbstrip">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </StackPanel.Style>
+
+            <TextBlock DataContext="{Binding CurrentItem}" Style="{DynamicResource BoldHeaderTextBlock}" Text="{Binding DisplayName}" Margin="0 70 0 0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" HorizontalAlignment="Left"></TextBlock>
+
+            <controls1:ItemInfoFooter Margin="0 20 0 0" VerticalContentAlignment="Center" KeyboardNavigation.IsTabStop="False" DataContext="{Binding CurrentItem}" VerticalAlignment="Top" HorizontalAlignment="Left"></controls1:ItemInfoFooter>
+
+            <TextBlock DataContext="{Binding CurrentItem}" Style="{DynamicResource TextBlockStyle}" Text="{Binding Overview}" Margin="0 20 0 0" MaxWidth="900" MaxHeight="220" TextTrimming="CharacterEllipsis" HorizontalAlignment="Left"></TextBlock>
+        </StackPanel>
+        
+        <Grid Grid.Row="2">
 
             <Grid.Style>
                 <Style TargetType="{x:Type Grid}">
-                    <Setter Property="Margin" Value="0 -30 0 0" />
+                    <Setter Property="Margin" Value="0 -40 0 0" />
                     <Setter Property="VerticalAlignment" Value="Center" />
 
                     <Style.Triggers>
@@ -109,6 +132,9 @@
                             <DataTrigger Binding="{Binding ViewType}" Value="List">
                                 <Setter Property="Visibility" Value="Collapsed" />
                             </DataTrigger>
+                            <DataTrigger Binding="{Binding ViewType}" Value="Thumbstrip">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
                         </Style.Triggers>
                     </Style>
                 </Grid.Style>
@@ -128,9 +154,6 @@
                                 <Setter Property="Visibility" Value="Visible" />
                             </DataTrigger>
                             <DataTrigger Binding="{Binding ViewType}" Value="PosterStrip">
-                                <Setter Property="Visibility" Value="Visible" />
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding ViewType}" Value="Thumbstrip">
                                 <Setter Property="Visibility" Value="Visible" />
                             </DataTrigger>
                         </Style.Triggers>
@@ -173,7 +196,7 @@
             </Grid>
         </Grid>
 
-        <Grid Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0 0 25 20">
+        <Grid Grid.Row="0" Grid.RowSpan="3" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0 0 25 20">
 
             <Grid.Style>
                 <Style TargetType="{x:Type Grid}">

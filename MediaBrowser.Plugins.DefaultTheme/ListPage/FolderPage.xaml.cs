@@ -121,13 +121,18 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
             {
                 return ScrollDirection.Vertical;
             }
-            
+
             return ScrollDirection.Horizontal;
         }
 
         private ImageType[] GetPreferredImageTypes(ItemListViewModel viewModel)
         {
-            return string.Equals(viewModel.ViewType, ListViewTypes.Thumbstrip) || string.Equals(viewModel.ViewType, ListViewTypes.List)
+            if (string.Equals(viewModel.ViewType, ListViewTypes.Thumbstrip))
+            {
+                return new[] { ImageType.Thumb, ImageType.Backdrop, ImageType.Primary };
+            }
+
+            return string.Equals(viewModel.ViewType, ListViewTypes.List)
                        ? GetListViewPreferredImageTypes()
                        : new[] { ImageType.Primary };
         }
@@ -253,7 +258,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
             }
             else
             {
-                // 20 = double the margin between items as defined in the resource file
+                // 4x the margin between items as defined in the resource file
                 height += 20;
             }
 
@@ -311,7 +316,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                     }));
                     ImgLogo.MaxHeight = 120;
                     ImgLogo.Margin = new Thickness(0, 0, 40, 0);
-                    
+
                     TxtLogoName.Visibility = Visibility.Collapsed;
                 }
                 else if (item != null && (item.HasLogo))
@@ -323,7 +328,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                     }));
                     ImgLogo.MaxHeight = 80;
                     ImgLogo.Margin = new Thickness(0, 0, 40, 0);
-                    
+
                     TxtLogoName.Visibility = Visibility.Collapsed;
                 }
                 else if (item != null && (item.HasArtImage || item.ParentArtImageTag.HasValue))
@@ -334,7 +339,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                     }));
                     ImgLogo.MaxHeight = 80;
                     ImgLogo.Margin = new Thickness(0, 0, 40, 0);
-                    
+
                     TxtLogoName.Visibility = Visibility.Collapsed;
                 }
                 else

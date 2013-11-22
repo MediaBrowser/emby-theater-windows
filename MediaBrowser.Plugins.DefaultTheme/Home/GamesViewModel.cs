@@ -52,10 +52,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             TileWidth = tileWidth;
             TileHeight = tileHeight;
 
-            var spotlightTileHeight = TileHeight * 2 + TilePadding / 2;
-            var spotlightTileWidth = 16 * (spotlightTileHeight / 9) + 50;
+            var spotlightTileHeight = TileHeight * 2 + TileMargin * 2;
+            var spotlightTileWidth = 16 * (spotlightTileHeight / 9) + 100;
 
-            var lowerSpotlightWidth = ((spotlightTileWidth - (TilePadding)) / 3) - 1.2;
+            var lowerSpotlightWidth = spotlightTileWidth / 3 - (TileMargin * 1.5);
 
             SpotlightViewModel = new ImageViewerViewModel(_imageManager, new List<ImageViewerImage>())
             {
@@ -91,11 +91,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         public const int PosterWidth = 250;
         public const int PosterStripWidth = 320;
-        public const int ThumbstripWidth = 600;
+        public const int ThumbstripWidth = 500;
 
         public static void SetDefaults(ListPageConfig config, string gameSystem)
         {
-            config.DefaultViewType = ListViewTypes.Poster;
+            config.DefaultViewType = ListViewTypes.PosterStrip;
             config.PosterImageWidth = PosterWidth;
             config.ThumbImageWidth = ThumbstripWidth;
             config.ListImageWidth = 160;
@@ -202,7 +202,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         {
             const ImageType imageType = ImageType.Backdrop;
 
-            var tileWidth = TileWidth * 2 + TilePadding;
+            var tileWidth = TileWidth * 2 + TileMargin;
             var tileHeight = tileWidth * 9 / 16;
 
             BackdropItems = view.BackdropItems.ToArray();

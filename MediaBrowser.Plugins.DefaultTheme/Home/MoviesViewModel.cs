@@ -57,13 +57,13 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             TileWidth = tileWidth;
             TileHeight = tileHeight;
 
-            _posterTileHeight = (TileHeight * 1.48) + TilePadding / 2;
+            _posterTileHeight = (TileHeight * 1.5) + TileMargin;
             _posterTileWidth = _posterTileHeight * 2 / 3;
 
-            var spotlightTileHeight = TileHeight * 2 + TilePadding / 2;
-            var spotlightTileWidth = 16 * (spotlightTileHeight / 9) + 70;
+            var spotlightTileHeight = TileHeight * 2 + TileMargin * 2;
+            var spotlightTileWidth = 16 * (spotlightTileHeight / 9) + 100;
 
-            var lowerSpotlightWidth = ((spotlightTileWidth - (TilePadding)) / 4) - 3.15;
+            var lowerSpotlightWidth = spotlightTileWidth / 4 - (TileMargin * 1.5);
 
             GenresViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {
@@ -78,7 +78,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 GalleryWidth = lowerSpotlightWidth,
                 CustomCommandAction = () => NavigateWithLoading(() => NavigateToMoviesInternal("Trailers"))
             };
-            
+
             YearsViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {
                 GalleryHeight = TileHeight,
@@ -105,13 +105,13 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         }
 
         public const int PosterWidth = 214;
-        public const int ThumbstripWidth = 600;
+        public const int ThumbstripWidth = 500;
         public const int ListImageWidth = 160;
         public const int PosterStripWidth = 290;
 
         public static void SetDefaults(ListPageConfig config)
         {
-            config.DefaultViewType = ListViewTypes.Poster;
+            config.DefaultViewType = ListViewTypes.PosterStrip;
             config.PosterImageWidth = PosterWidth;
             config.ThumbImageWidth = ThumbstripWidth;
             config.ListImageWidth = ListImageWidth;
@@ -218,7 +218,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             MiniSpotlightsViewModel = new ItemListViewModel(getItems, PresentationManager, _imageManager, ApiClient, _navService, _playbackManager, _logger, _serverEvents)
             {
-                ImageDisplayWidth = TileWidth + (TilePadding / 4) - 1,
+                ImageDisplayWidth = TileWidth + (TileMargin / 4) - 1,
                 ImageDisplayHeightGenerator = v => TileHeight,
                 DisplayNameGenerator = HomePageViewModel.GetDisplayName,
                 EnableBackdropsForCurrentItem = false,
@@ -270,7 +270,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         {
             const ImageType imageType = ImageType.Backdrop;
 
-            var tileWidth = TileWidth * 2 + TilePadding;
+            var tileWidth = TileWidth * 2 + TileMargin;
             var tileHeight = tileWidth * 9 / 16;
 
             BackdropItems = view.BackdropItems.ToArray();
@@ -412,7 +412,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 DisplayName = "Unwatched",
                 Name = "Unwatched",
             });
-            
+
             tabs.Add(new TabItem
             {
                 DisplayName = "New Releases",
@@ -490,7 +490,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             var options = new ListPageConfig
             {
-                PageTitle = "Movies",
+                PageTitle = " ",
                 CustomItemQuery = GetMovies,
                 IndexOptions = tabs,
                 IndexValue = indexValue,
@@ -537,7 +537,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             }
             else if (string.Equals(indexOption, "Unwatched"))
             {
-                query.Filters = new[] {ItemFilter.IsUnplayed};
+                query.Filters = new[] { ItemFilter.IsUnplayed };
             }
             else if (string.Equals(indexOption, "NewReleases"))
             {

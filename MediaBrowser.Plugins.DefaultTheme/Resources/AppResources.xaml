@@ -85,7 +85,7 @@
                     <ColumnDefinition Width="*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
 
-                <StackPanel VerticalAlignment="Top" HorizontalAlignment="Left" Margin="30 20 0 0" Grid.Column="0" Grid.Row="0" Orientation="Horizontal">
+                <StackPanel VerticalAlignment="Top" HorizontalAlignment="Left" Margin="35 25 0 0" Grid.Column="0" Grid.Row="0" Orientation="Horizontal">
                     <StackPanel.Style>
                         <Style TargetType="{x:Type StackPanel}">
                             <Style.Triggers>
@@ -96,7 +96,7 @@
                         </Style>
                     </StackPanel.Style>
 
-                    <Button Margin="0 11 20 0" Command="{Binding GoBackCommand}" VerticalAlignment="Top" KeyboardNavigation.DirectionalNavigation="None" KeyboardNavigation.IsTabStop="False">
+                    <Button Margin="0 8 20 0" Command="{Binding GoBackCommand}" VerticalAlignment="Top" KeyboardNavigation.DirectionalNavigation="None" KeyboardNavigation.IsTabStop="False">
 
                         <Button.Style>
                             <Style TargetType="{x:Type Button}" BasedOn="{StaticResource ImageButton}">
@@ -143,7 +143,7 @@
                         <TextBlock Style="{DynamicResource TextBlockStyle}" Text="BROWSER" Foreground="{DynamicResource MediaBrowserAccent}"></TextBlock>
                     </StackPanel>
 
-                    <Image Source="{Binding LogoImage}" Margin="0 10 0 0" MaxHeight="80" MaxWidth="550" VerticalAlignment="Top" HorizontalAlignment="Left" Stretch="Uniform">
+                    <Image Source="{Binding LogoImage}" Margin="0 10 0 0" MaxHeight="70" MaxWidth="550" VerticalAlignment="Top" HorizontalAlignment="Left" Stretch="Uniform">
                         <Image.Style>
                             <Style TargetType="{x:Type Image}">
                                 <Style.Triggers>
@@ -174,7 +174,7 @@
                     </TextBlock>
                 </StackPanel>
 
-                <Grid Grid.Column="1" Panel.ZIndex="3" Grid.Row="0" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0 10 30 0">
+                <Grid Grid.Column="1" Panel.ZIndex="3" Grid.Row="0" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0 15 35 0">
                     <Grid.Style>
                         <Style TargetType="{x:Type Grid}">
                             <Style.Triggers>
@@ -696,14 +696,17 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ListBoxItem}">
 
-                    <TextBlock Opacity=".3" x:Name="MenuText" Margin="40 0" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Text="{Binding DisplayName}" Style="{DynamicResource Heading1TextBlockStyle}"></TextBlock>
+                    <StackPanel Margin="50 0" Orientation="Horizontal">
+
+                        <TextBlock Opacity=".3" x:Name="MenuText" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Text="{Binding DisplayName}" Style="{DynamicResource Heading1TextBlockStyle}"></TextBlock>
+                    </StackPanel>
 
                     <ControlTemplate.Triggers>
                         <DataTrigger Binding="{Binding TabType}" Value="Alphabet">
                             <Setter TargetName="MenuText" Property="Margin" Value="15 0" />
                         </DataTrigger>
                         <Trigger Property="IsSelected" Value="true">
-                            <Setter TargetName="MenuText" Property="Opacity" Value="1"/>
+                             <Setter TargetName="MenuText" Property="Opacity" Value="1"/>
                             <Setter TargetName="MenuText" Property="Foreground" Value="{DynamicResource SelectedMenuItemForeground}"></Setter>
                         </Trigger>
                         <Trigger Property="IsKeyboardFocused" Value="true">

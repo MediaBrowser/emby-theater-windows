@@ -184,7 +184,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 return GetMoviesViewModel();
             }
 
-            return new FavoritesViewModel(_presentationManager, _imageManager, _apiClient, _sessionManager, _nav, _playbackManager, _logger, TileWidth, TileHeight, _serverEvents);
+            return null;
         }
 
         private TvViewModel GetTvViewModel()

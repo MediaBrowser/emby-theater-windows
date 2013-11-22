@@ -219,12 +219,6 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
                 return;
             }
 
-            if (CurrentImage == null)
-            {
-                CurrentImage = _defaultImage;
-                CurrentText = string.Empty;
-            }
-
             var currentSource = _imageDownloadCancellationTokenSource;
 
             if (currentSource != null)

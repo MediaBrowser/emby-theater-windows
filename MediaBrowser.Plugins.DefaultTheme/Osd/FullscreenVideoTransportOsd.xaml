@@ -14,7 +14,7 @@
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                     <TextBlock Style="{DynamicResource TextBlockStyle}" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Now Playing: " Foreground="{DynamicResource MediaBrowserAccent}" Margin="0 0 10 0"></TextBlock>
-                    <TextBlock x:Name="TxtNowPlayingName" Style="{DynamicResource TextBlockStyle}" HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="600" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"></TextBlock>
+                    <TextBlock x:Name="TxtNowPlayingName" Style="{DynamicResource TextBlockStyle}" HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="700" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"></TextBlock>
                 </StackPanel>
 
                 <TextBlock Style="{DynamicResource TextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Right" Text="{Binding ClockShortTime, Converter={controls:LowerCaseConverter}}"></TextBlock>

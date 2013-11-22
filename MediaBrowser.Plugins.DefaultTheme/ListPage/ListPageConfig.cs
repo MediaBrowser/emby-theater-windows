@@ -17,7 +17,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
         public int ListImageWidth = 160;
         public int PosterStripImageWidth = 290;
 
-        public string DefaultViewType = ListViewTypes.Poster;
+        public string DefaultViewType = ListViewTypes.PosterStrip;
 
         public Func<BaseItemDto, string> DisplayNameGenerator { get; set; }
         

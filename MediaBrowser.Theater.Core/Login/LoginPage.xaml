@@ -37,7 +37,7 @@
 
         <Grid Grid.Row="2">
 
-            <TextBlock Style="{DynamicResource Heading1TextBlockStyle}" HorizontalAlignment="Center" Margin="50 0 50 0" Text="{Binding Username}" DataContext="{Binding CurrentItem}" FontSize="100" Foreground="#eee" Opacity=".9"></TextBlock>
+            <TextBlock Style="{DynamicResource Heading1TextBlockStyle}" HorizontalAlignment="Center" Margin="50 0 50 0" Text="{Binding Username}" DataContext="{Binding CurrentItem}" FontFamily="Segoe UI" FontSize="100" Opacity=".85"></TextBlock>
 
         </Grid>
     </Grid>

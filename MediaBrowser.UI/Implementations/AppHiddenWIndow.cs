@@ -58,5 +58,10 @@ namespace MediaBrowser.UI.Implementations
 
             return (Size)transformToDevice.Transform((Vector)size);
         }
+
+        public Window Window
+        {
+            get { return App.Instance.HiddenWindow; }
+        }
     }
 }

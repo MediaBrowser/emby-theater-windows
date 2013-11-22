@@ -354,6 +354,8 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
+    <Resource Include="Resources\ProximaNova-Regular.ttf" />
+    <Resource Include="Resources\ProximaNova-Semibold.ttf" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

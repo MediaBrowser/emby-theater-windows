@@ -66,6 +66,8 @@ namespace MediaBrowser.Theater.Core.NetworkSettings
 
                 var url = string.Format("http://{0}:{1}/mediabrowser/system/info", TxtHost.Text, port);
 
+                _presentationManager.ShowModalLoadingAnimation();
+
                 try
                 {
                     using (var client = new HttpClient())
@@ -79,6 +81,8 @@ namespace MediaBrowser.Theater.Core.NetworkSettings
                     _config.Configuration.ServerHostName = TxtHost.Text;
                     _config.SaveConfiguration();
 
+                    _presentationManager.HideModalLoadingAnimation();
+
                     _presentationManager.ShowMessage(new MessageBoxInfo
                     {
                         Button = MessageBoxButton.OK,
@@ -91,6 +95,8 @@ namespace MediaBrowser.Theater.Core.NetworkSettings
                 }
                 catch (Exception)
                 {
+                    _presentationManager.HideModalLoadingAnimation();
+                    
                     _presentationManager.ShowMessage(new MessageBoxInfo
                     {
                         Button = MessageBoxButton.OK,

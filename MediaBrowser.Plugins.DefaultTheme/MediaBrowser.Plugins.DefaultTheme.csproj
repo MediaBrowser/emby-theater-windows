@@ -159,6 +159,7 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
+    <Resource Include="Resources\Gotham-Book.otf" />
     <Resource Include="Resources\Gotham-Medium.ttf" />
   </ItemGroup>
   <ItemGroup>

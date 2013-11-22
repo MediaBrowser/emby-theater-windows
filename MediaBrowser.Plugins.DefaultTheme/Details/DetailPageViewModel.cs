@@ -145,12 +145,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             {
                 var item = ItemViewModel;
 
-                var themeMediaTask = GetThemeMedia(item.Item);
-                var criticReviewsTask = GetCriticReviews(item.Item);
+                var criticReviews = await GetCriticReviews(item.Item);
 
-                await Task.WhenAll(themeMediaTask, criticReviewsTask);
-
-                return GetMenuList(item.Item, themeMediaTask.Result, criticReviewsTask.Result);
+                return GetMenuList(item.Item, criticReviews);
             }
             finally
             {
@@ -158,7 +155,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             }
         }
 
-        private IEnumerable<TabItem> GetMenuList(BaseItemDto item, AllThemeMediaResult themeMediaResult, ItemReviewsResult reviewsResult)
+        private IEnumerable<TabItem> GetMenuList(BaseItemDto item, ItemReviewsResult reviewsResult)
         {
             var views = new List<TabItem>
                 {
@@ -383,14 +380,14 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 });
             }
 
-            if (themeMediaResult.ThemeVideosResult.TotalRecordCount > 0 || themeMediaResult.ThemeSongsResult.TotalRecordCount > 0)
-            {
-                views.Add(new TabItem
-                {
-                    Name = "themes",
-                    DisplayName = "Themes"
-                });
-            }
+            //if (themeMediaResult.ThemeVideosResult.TotalRecordCount > 0 || themeMediaResult.ThemeSongsResult.TotalRecordCount > 0)
+            //{
+            //    views.Add(new TabItem
+            //    {
+            //        Name = "themes",
+            //        DisplayName = "Themes"
+            //    });
+            //}
 
             return views;
         }

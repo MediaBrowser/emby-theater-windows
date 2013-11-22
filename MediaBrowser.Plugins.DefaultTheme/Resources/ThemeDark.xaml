@@ -29,16 +29,16 @@
     <Brush x:Key="TextBackground">#96000000</Brush>
 
     <!--Default font for text. Themes should override these as needed-->
-    <Brush x:Key="DefaultForeground">#eeeeee</Brush>
+    <Brush x:Key="DefaultForeground">#ffffff</Brush>
 
     <!--Default font for small text. Themes should override these as needed-->
-    <Brush x:Key="SmallForeground">#eeeeee</Brush>
+    <Brush x:Key="SmallForeground">#ffffff</Brush>
 
     <!--Default font for h1 headers. Themes should override these as needed-->
-    <Brush x:Key="Heading1Foreground">#eeeeee</Brush>
+    <Brush x:Key="Heading1Foreground">#ffffff</Brush>
 
     <!--Default font for h2 headers. Themes should override these as needed-->
-    <Brush x:Key="Heading2Foreground">#eeeeee</Brush>
+    <Brush x:Key="Heading2Foreground">#ffffff</Brush>
 
     <Brush x:Key="SelectedMenuItemForeground">#ffffff</Brush>
     <Brush x:Key="SpecialIndicatorBackground">#a6cc3333</Brush>

@@ -7,8 +7,8 @@
     <Style TargetType="Border" x:Key="MediaInfoTextBorder">
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="HorizontalAlignment" Value="Left" />
-        <Setter Property="CornerRadius" Value="4" />
-        <Setter Property="Background" Value="#a6ffffff" />
+        <Setter Property="CornerRadius" Value="5" />
+        <Setter Property="Background" Value="#96ffffff" />
         <Setter Property="Padding" Value="7 2 7 2" />
     </Style>
 
@@ -20,11 +20,10 @@
     </Style>
 
     <Style TargetType="TextBlock" x:Key="BoldHeaderTextBlock" BasedOn="{StaticResource Heading1TextBlockStyle}">
-        <Setter Property="Opacity" Value=".9" />
+        <Setter Property="Opacity" Value=".8" />
         <Setter Property="FontSize" Value="60" />
-        <Setter Property="Foreground" Value="#ccc" />
         <Setter Property="FontFamily" Value="Segoe UI" />
-        <Setter Property="FontWeight" Value="ExtraBold" />
+        <Setter Property="FontWeight" Value="Bold" />
     </Style>
 
     <Style TargetType="Image" x:Key="CommunityRatingImage">

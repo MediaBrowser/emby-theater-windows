@@ -10,8 +10,8 @@
 
         <Grid Name="Tbmarquee" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0 300 0 0">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                <TextBlock Style="{DynamicResource Heading1TextBlockStyle}" Foreground="White" FontFamily="Segoe UI" FontSize="170">media</TextBlock>
-                <TextBlock Style="{DynamicResource Heading1TextBlockStyle}" Foreground="{DynamicResource MediaBrowserAccent}" FontFamily="Segoe UI" FontSize="170">browser</TextBlock>
+                <TextBlock Style="{DynamicResource Heading1TextBlockStyle}" Foreground="White" FontSize="170">MEDIA</TextBlock>
+                <TextBlock Style="{DynamicResource Heading1TextBlockStyle}" Foreground="{DynamicResource MediaBrowserAccent}" FontSize="170">BROWSER</TextBlock>
             </StackPanel>
         </Grid>
     </Canvas>

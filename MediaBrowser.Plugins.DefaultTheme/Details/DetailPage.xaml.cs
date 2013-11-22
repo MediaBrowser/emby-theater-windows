@@ -81,13 +81,13 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
         private void SetTitle(BaseItemDto item)
         {
-            if (item.Taglines.Count > 0)
+            /*if (item.Taglines.Count > 0)
             {
                 TxtTagline.Text = item.Taglines[0];
                 TxtTagline.Visibility = Visibility.Visible;
                 TxtName.Visibility = Visibility.Collapsed;
             }
-            else if (item.IsType("episode"))
+            else */if (item.IsType("episode"))
             {
                 TxtName.Text = GetEpisodeTitle(item);
                 TxtName.Visibility = Visibility.Visible;

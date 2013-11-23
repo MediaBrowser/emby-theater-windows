@@ -390,7 +390,9 @@
             <Image HorizontalAlignment="Center" Source="{Binding Image}" Stretch="{Binding ImageStretch}" Visibility="{Binding ImageVisibility}">
             </Image>
 
-            <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding DisplayName}" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="White" Background="#a6000000" Padding="10 0" Visibility="{Binding DefaultImageVisibility}"></TextBlock>
+            <Border Background="#a6000000" Padding="10 0" Visibility="{Binding DefaultImageVisibility}">
+                <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding DisplayName}" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="White"></TextBlock>
+            </Border>
 
             <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Orientation="Vertical" Background="{DynamicResource TextBackground}">
 

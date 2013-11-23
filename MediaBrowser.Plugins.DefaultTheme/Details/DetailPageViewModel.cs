@@ -1,7 +1,4 @@
-﻿using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using MediaBrowser.Model.ApiClient;
+﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
@@ -19,6 +16,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
 using TabItem = MediaBrowser.Theater.Presentation.ViewModels.TabItem;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Details
@@ -521,7 +521,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                     EnableBackdropsForCurrentItem = false,
                     ListType = "SpecialFeatures",
                     Context = Context,
-                    DisplayNameGenerator = FolderPage.GetDisplayName
+                    DisplayNameGenerator = FolderPage.GetDisplayName,
+
+                    OnItemCreated = vm =>
+                    {
+                        vm.DisplayNameVisibility = Visibility.Visible;
+                    }
                 };
             }
             if (string.Equals(section, "episodes"))
@@ -532,7 +537,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                     EnableBackdropsForCurrentItem = false,
                     ListType = "SpecialFeatures",
                     Context = Context,
-                    DisplayNameGenerator = FolderPage.GetDisplayNameWithAiredSpecial
+                    DisplayNameGenerator = FolderPage.GetDisplayNameWithAiredSpecial,
+
+                    OnItemCreated = vm =>
+                    {
+                        vm.DisplayNameVisibility = Visibility.Visible;
+                    }
                 };
             }
             if (string.Equals(section, "themes"))
@@ -543,7 +553,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                     EnableBackdropsForCurrentItem = false,
                     ListType = "Themes",
                     Context = Context,
-                    DisplayNameGenerator = FolderPage.GetDisplayName
+                    DisplayNameGenerator = FolderPage.GetDisplayName,
+
+                    OnItemCreated = vm =>
+                    {
+                        vm.DisplayNameVisibility = Visibility.Visible;
+                    }
                 };
             }
             if (string.Equals(section, "soundtrack") || string.Equals(section, "soundtracks"))
@@ -582,7 +597,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                     ImageDisplayWidth = 600,
                     EnableBackdropsForCurrentItem = false,
                     ListType = "Trailers",
-                    Context = Context
+                    Context = Context,
+
+                    OnItemCreated = vm =>
+                    {
+                        vm.DisplayNameVisibility = Visibility.Visible;
+                    }
                 };
             }
 

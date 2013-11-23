@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.ApiClient;
+﻿using System.Windows;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
@@ -164,7 +165,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 {
                     ImageDisplayWidth = 528,
                     ImageDisplayHeightGenerator = v => 297,
-                    DisplayNameGenerator = GetDisplayName
+                    DisplayNameGenerator = GetDisplayName,
+
+                    OnItemCreated = v =>
+                    {
+                        v.DisplayNameVisibility = Visibility.Visible;
+                    }
                 };
 
                 return vm;

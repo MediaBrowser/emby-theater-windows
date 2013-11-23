@@ -113,6 +113,19 @@ namespace MediaBrowser.Theater.Presentation.Controls
             }
         }
 
+        public static readonly DependencyProperty WindowCommandsVisibilityProperty = DependencyProperty.Register("WindowCommandsVisibility", typeof(Visibility), typeof(BaseWindow), new PropertyMetadata(Visibility.Collapsed));
+        public Visibility WindowCommandsVisibility
+        {
+            get
+            {
+                return (Visibility)GetValue(WindowCommandsVisibilityProperty);
+            }
+            set
+            {
+                SetValue(WindowCommandsVisibilityProperty, value);
+            }
+        }
+
         private static int _showHideCount = 0;
         private readonly object _cursorLock = new object();
 
@@ -125,6 +138,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
                     return;
                 }
 
+                WindowCommandsVisibility = Visibility.Collapsed;
                 Cursor = Cursors.None;
 
                 if (ModifyWindowsFormsCursor)
@@ -149,6 +163,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
         {
             Dispatcher.InvokeAsync(() =>
             {
+                WindowCommandsVisibility = Visibility.Visible;
                 Cursor = Cursors.Arrow;
 
                 lock (_cursorLock)

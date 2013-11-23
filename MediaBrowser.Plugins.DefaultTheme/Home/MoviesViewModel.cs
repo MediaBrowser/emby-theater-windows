@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.ApiClient;
+﻿using System.Windows;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
@@ -162,7 +163,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             OnPropertyChanged("LatestMoviesViewModel");
 
-            ShowLatestMovies = view.LatestMovies.Count > 0;
+            LatestMoviesVisibility = view.MovieItems.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private void LoadLatestTrailersViewModel(MoviesView view)
@@ -178,7 +179,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             OnPropertyChanged("LatestTrailersViewModel");
 
-            ShowLatestTrailers = view.LatestTrailers.Count > 0;
+            LatestTrailersVisibility = view.TrailerItems.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private Task<ItemsResult> GetLatestTrailersAsync(ItemListViewModel viewModel)
@@ -224,44 +225,49 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 EnableBackdropsForCurrentItem = false,
                 ImageStretch = Stretch.UniformToFill,
                 PreferredImageTypesGenerator = vm => new[] { ImageType.Backdrop },
-                DownloadImageAtExactSize = true
+                DownloadImageAtExactSize = true,
+
+                OnItemCreated = vm =>
+                {
+                    vm.DisplayNameVisibility = Visibility.Visible;
+                }
             };
 
             OnPropertyChanged("MiniSpotlightsViewModel");
         }
 
-        private bool _showLatestMovies;
-        public bool ShowLatestMovies
+        private Visibility _latestMoviesVisibility = Visibility.Collapsed;
+        public Visibility LatestMoviesVisibility
         {
-            get { return _showLatestMovies; }
+            get { return _latestMoviesVisibility; }
 
             set
             {
-                var changed = _showLatestMovies != value;
+                var changed = _latestMoviesVisibility != value;
 
-                _showLatestMovies = value;
+                _latestMoviesVisibility = value;
 
                 if (changed)
                 {
-                    OnPropertyChanged("ShowLatestMovies");
+                    OnPropertyChanged("LatestMoviesVisibility");
                 }
             }
         }
 
-        private bool _showLatestTrailers;
-        public bool ShowLatestTrailers
+        private Visibility _latestTrailersVisibility = Visibility.Collapsed;
+        public Visibility LatestTrailersVisibility
         {
-            get { return _showLatestTrailers; }
+            get { return _latestTrailersVisibility; }
 
             set
             {
-                var changed = _showLatestTrailers != value;
+                var changed = _latestTrailersVisibility != value;
 
-                _showLatestTrailers = value;
+                _latestTrailersVisibility = value;
 
                 if (changed)
                 {
-                    OnPropertyChanged("ShowLatestTrailers");
+                    OnPropertyChanged("LatestTrailersVisibility");
                 }
             }
         }

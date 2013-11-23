@@ -265,17 +265,6 @@
             <Grid Grid.Column="0"  VerticalAlignment="Top">
 
                 <Image Stretch="Uniform" VerticalAlignment="Top" HorizontalAlignment="Left" MaxWidth="550" MaxHeight="650" Source="{Binding Image}">
-
-                    <Image.Style>
-                        <Style TargetType="{x:Type Image}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding HasImage}" Value="False">
-                                    <Setter Property="Visibility" Value="Hidden" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Image.Style>
-
                 </Image>
 
                 <TextBlock Foreground="White" Background="#c666C010" VerticalAlignment="Top" HorizontalAlignment="Right" Padding="10 2 10 5" Text="NEW">

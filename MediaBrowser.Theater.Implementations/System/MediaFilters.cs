@@ -102,7 +102,7 @@ namespace MediaBrowser.Theater.Implementations.System
         public bool IsLavFiltersInstalled()
         {
             // Returns true if 32-bit splitter + audio + video are installed
-            return this.CanInstantiate<LAVAudio>();
+            return CanInstantiate<LAVAudio>() && CanInstantiate<LAVVideo>() && CanInstantiate<LAVSplitter>();
         }
 
         public async Task InstallLavFilters(IProgress<double> progress, CancellationToken cancellationToken)

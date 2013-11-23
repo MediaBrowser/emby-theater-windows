@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.ApiClient;
+﻿using System.Windows;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Games;
@@ -162,38 +163,38 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             }
         }
 
-        private bool _showMultiPlayer;
-        public bool ShowMultiPlayer
+        private Visibility _multiPlayerVisibility = Visibility.Collapsed;
+        public Visibility MultiPlayerVisibility
         {
-            get { return _showMultiPlayer; }
+            get { return _multiPlayerVisibility; }
 
             set
             {
-                var changed = _showMultiPlayer != value;
+                var changed = _multiPlayerVisibility != value;
 
-                _showMultiPlayer = value;
+                _multiPlayerVisibility = value;
 
                 if (changed)
                 {
-                    OnPropertyChanged("ShowMultiPlayer");
+                    OnPropertyChanged("MultiPlayerVisibility");
                 }
             }
         }
 
-        private bool _showRecentlyPlayed;
-        public bool ShowRecentlyPlayed
+        private Visibility _recentlyPlayedVisibility = Visibility.Collapsed;
+        public Visibility RecentlyPlayedVisibility
         {
-            get { return _showRecentlyPlayed; }
+            get { return _recentlyPlayedVisibility; }
 
             set
             {
-                var changed = _showRecentlyPlayed != value;
+                var changed = _recentlyPlayedVisibility != value;
 
-                _showRecentlyPlayed = value;
+                _recentlyPlayedVisibility = value;
 
                 if (changed)
                 {
-                    OnPropertyChanged("ShowRecentlyPlayed");
+                    OnPropertyChanged("RecentlyPlayedVisibility");
                 }
             }
         }
@@ -243,7 +244,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 DisplayNameGenerator = HomePageViewModel.GetDisplayName,
                 EnableBackdropsForCurrentItem = false,
                 Context = ViewType.Games,
-                EnableServerImageEnhancers = false
+                EnableServerImageEnhancers = false,
+
+                OnItemCreated = vm =>
+                {
+                    vm.DisplayNameVisibility = Visibility.Visible;
+                }
             };
 
             OnPropertyChanged("GameSystemsViewModel");
@@ -259,7 +265,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 EnableBackdropsForCurrentItem = false,
                 ImageStretch = Stretch.UniformToFill,
                 Context = ViewType.Games,
-                EnableServerImageEnhancers = false
+                EnableServerImageEnhancers = false,
+
+                OnItemCreated = vm =>
+                {
+                    vm.DisplayNameVisibility = Visibility.Visible;
+                }
             };
 
             OnPropertyChanged("RecentlyPlayedViewModel");
@@ -267,7 +278,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         private void LoadMultiPlayerViewModel(GamesView view)
         {
-            ShowMultiPlayer = view.MultiPlayerItems.Count > 0;
+            MultiPlayerVisibility = view.MultiPlayerItems.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
 
             var images = view.MultiPlayerItems.Take(1).Select(i => ApiClient.GetImageUrl(i.Id, new ImageOptions
             {
@@ -423,7 +434,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 TotalRecordCount = _gamesView.RecentlyPlayedGames.Count
             };
 
-            ShowRecentlyPlayed = result.Items.Length > 0;
+            RecentlyPlayedVisibility = result.Items.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
 
             return Task.FromResult(result);
         }

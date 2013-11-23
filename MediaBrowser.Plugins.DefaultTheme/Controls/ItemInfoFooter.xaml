@@ -10,29 +10,10 @@
 
     <StackPanel Orientation="Horizontal">
 
-        <controls:ItemRating DataContext="{Binding}" Margin="0 0 35 0">
-            <controls:ItemRating.Style>
-                <Style TargetType="{x:Type controls:ItemRating}">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding CommunityRating}" Value="{x:Null}">
-                            <Setter Property="Visibility" Value="Collapsed" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </controls:ItemRating.Style>
+        <controls:ItemRating DataContext="{Binding}" Margin="0 0 35 0" Visibility="{Binding CommunityRatingVisibility}">
         </controls:ItemRating>
 
-        <StackPanel Orientation="Horizontal" Margin="0 0 35 0">
-            <StackPanel.Style>
-                <Style TargetType="{x:Type StackPanel}">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding Players}" Value="{x:Null}">
-                            <Setter Property="Visibility" Value="Collapsed" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </StackPanel.Style>
-
+        <StackPanel Orientation="Horizontal" Margin="0 0 35 0" Visibility="{Binding PlayersVisibility}">
             <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding Players}" VerticalAlignment="Center"></TextBlock>
             <TextBlock Style="{DynamicResource TextBlockStyle}" Text=" Player" VerticalAlignment="Center"></TextBlock>
         </StackPanel>
@@ -40,7 +21,7 @@
         <Border Margin="0 0 35 0">
 
             <Border.Style>
-                <Style TargetType="{x:Type Border}" BasedOn="{StaticResource MediaInfoTextBorder}">
+                <Style TargetType="{x:Type Border}">
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding DateText}" Value="{x:Null}">
                             <Setter Property="Visibility" Value="Collapsed" />
@@ -55,7 +36,7 @@
                 </Style>
             </Border.Style>
 
-            <TextBlock Style="{DynamicResource MediaInfoTextBlock}" Text="{Binding DateText, Converter={controls1:UpperCaseConverter}}" VerticalAlignment="Center"></TextBlock>
+            <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding DateText, Converter={controls1:UpperCaseConverter}}" VerticalAlignment="Center"></TextBlock>
         </Border>
 
         <Border Margin="0 0 35 0">
@@ -94,17 +75,7 @@
             <TextBlock Style="{DynamicResource MediaInfoTextBlock}" Text="{Binding RuntimeMinutesText, Converter={controls1:UpperCaseConverter}}" VerticalAlignment="Center"></TextBlock>
         </Border>
 
-        <Border Margin="0 0 35 0">
-
-            <Border.Style>
-                <Style TargetType="{x:Type Border}" BasedOn="{StaticResource MediaInfoTextBorder}">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding Resolution}" Value="{x:Null}">
-                            <Setter Property="Visibility" Value="Collapsed" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Border.Style>
+        <Border Margin="0 0 35 0" Visibility="{Binding ResolutionVisibility}" Style="{DynamicResource MediaInfoTextBorder}">
 
             <TextBlock Style="{DynamicResource MediaInfoTextBlock}" Text="{Binding Resolution, Converter={controls1:UpperCaseConverter}}" VerticalAlignment="Center"></TextBlock>
         </Border>
@@ -145,17 +116,7 @@
             <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding AudioCodec}" VerticalAlignment="Center"></TextBlock>
         </StackPanel>
 
-        <StackPanel Orientation="Horizontal" Margin="0 0 35 0">
-
-            <StackPanel.Style>
-                <Style TargetType="{x:Type StackPanel}">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding CriticRating}" Value="{x:Null}">
-                            <Setter Property="Visibility" Value="Collapsed" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </StackPanel.Style>
+        <StackPanel Orientation="Horizontal" Margin="0 0 35 0" Visibility="{Binding CriticRatingVisibility}">
 
             <Grid Margin="0 0 5 0">
                 <Grid.Style>

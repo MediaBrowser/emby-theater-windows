@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.ApiClient;
+﻿using System.Windows;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
@@ -102,8 +103,13 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                     OnPropertyChanged("RecursiveUnplayedItemCount");
                     OnPropertyChanged("IsOffline");
                     OnPropertyChanged("DurationShortTimeString");
+               
                     OnPropertyChanged("CommunityRating");
+                    OnPropertyChanged("CommunityRatingVisibility");
+
                     OnPropertyChanged("CriticRating");
+                    OnPropertyChanged("CriticRatingVisibility");
+                    
                     OnPropertyChanged("HasPositiveCriticRating");
                     OnPropertyChanged("HasNegativeCriticRating");
                     OnPropertyChanged("AudioCodec");
@@ -112,7 +118,10 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                     OnPropertyChanged("SubtitleLanguages");
                     OnPropertyChanged("VideoCodec");
                     OnPropertyChanged("AudioChannels");
+                 
                     OnPropertyChanged("Resolution");
+                    OnPropertyChanged("ResolutionVisibility");
+
                     OnPropertyChanged("OfficialRating");
                     OnPropertyChanged("RuntimeMinutesText");
                     OnPropertyChanged("Tagline");
@@ -120,7 +129,10 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                     OnPropertyChanged("MediaType");
                     OnPropertyChanged("CanPlay");
                     OnPropertyChanged("HasTrailer");
+
                     OnPropertyChanged("Players");
+                    OnPropertyChanged("PlayersVisibility");
+
                     OnPropertyChanged("SeriesDateRange");
                     OnPropertyChanged("GameSystem");
                     OnPropertyChanged("PremiereShortDate");
@@ -228,20 +240,25 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
-        private bool? _showTitle;
-        public bool? ShowTitle
+        private Visibility _displayNameVisibility = Visibility.Collapsed;
+        public Visibility DisplayNameVisibility
         {
-            get { return _showTitle; }
+            get { return _displayNameVisibility; }
 
             set
             {
-                _showTitle = value;
+                var changed = _displayNameVisibility != value;
 
-                OnPropertyChanged("ShowTitle");
+                _displayNameVisibility = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("DisplayNameVisibility");
+                }
             }
         }
 
-        private bool _hasImage;
+        private bool _hasImage = true;
         public bool HasImage
         {
             get { return _hasImage; }
@@ -253,7 +270,44 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
                 if (changed)
                 {
-                    OnPropertyChanged("HasImage");
+                    ImageVisibility = value ? Visibility.Visible : Visibility.Collapsed;
+                    DefaultImageVisibility = value ? Visibility.Collapsed : Visibility.Visible;
+                }
+            }
+        }
+
+        private Visibility _imageVisibility = Visibility.Visible;
+        public Visibility ImageVisibility
+        {
+            get { return _imageVisibility; }
+
+            set
+            {
+                var changed = _imageVisibility != value;
+
+                _imageVisibility = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("ImageVisibility");
+                }
+            }
+        }
+
+        private Visibility _defaultImageVisibility = Visibility.Collapsed;
+        public Visibility DefaultImageVisibility
+        {
+            get { return _defaultImageVisibility; }
+
+            set
+            {
+                var changed = _defaultImageVisibility != value;
+
+                _defaultImageVisibility = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("DefaultImageVisibility");
                 }
             }
         }
@@ -487,6 +541,14 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
+        public Visibility ResolutionVisibility
+        {
+            get
+            {
+                return !string.IsNullOrEmpty(Resolution) ? Visibility.Visible : Visibility.Collapsed;
+            }
+        }
+
         public string DateText
         {
             get
@@ -576,7 +638,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         private bool IsCloseTo(int x, int y)
         {
-            return Math.Abs(x - y) <= 10;
+            return Math.Abs(x - y) <= 20;
         }
 
         public int StudioCount
@@ -699,6 +761,14 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             get { return _item == null ? null : _item.Players; }
         }
 
+        public Visibility PlayersVisibility
+        {
+            get
+            {
+                return Players.HasValue ? Visibility.Visible : Visibility.Collapsed;
+            }
+        }
+
         public int? ParentIndexNumber
         {
             get { return _item == null ? null : _item.ParentIndexNumber; }
@@ -780,9 +850,25 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             get { return _item == null ? null : _item.CommunityRating; }
         }
 
+        public Visibility CommunityRatingVisibility
+        {
+            get
+            {
+                return CommunityRating.HasValue ? Visibility.Visible : Visibility.Collapsed;
+            }
+        }
+
         public float? CriticRating
         {
             get { return _item == null ? null : _item.CriticRating; }
+        }
+
+        public Visibility CriticRatingVisibility
+        {
+            get
+            {
+                return CriticRating.HasValue ? Visibility.Visible : Visibility.Collapsed;
+            }
         }
 
         public bool HasPositiveCriticRating

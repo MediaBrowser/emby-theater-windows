@@ -158,6 +158,7 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
+    <Resource Include="Resources\ProximaNova-Regular.ttf" />
     <Resource Include="Resources\Gotham-Book.otf" />
     <Resource Include="Resources\Gotham-Medium.ttf" />
   </ItemGroup>

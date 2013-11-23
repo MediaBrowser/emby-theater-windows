@@ -204,19 +204,6 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 OnPropertyChanged("CurrentItemIndex");
             }
         }
-
-        private bool? _showTitle;
-        public bool? ShowTitle
-        {
-            get { return _showTitle; }
-
-            set
-            {
-                _showTitle = value;
-
-                OnPropertyChanged("ShowTitle");
-            }
-        }
         
         private double? _medianPrimaryImageAspectRatio;
         public double? MedianPrimaryImageAspectRatio
@@ -437,6 +424,8 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
+        public Action<ItemViewModel> OnItemCreated { get; set; }
+
         private async Task ReloadItems(bool isInitialLoad)
         {
             if (HasIndexOptions && CurrentIndexOption == null)
@@ -472,8 +461,6 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 var childWidth = Convert.ToInt32(ImageDisplayWidth);
                 var imageDisplayHeight = Convert.ToInt32(GetImageDisplayHeight());
 
-                var index = 0;
-
                 var viewModels = items.Select(
                     i =>
                     {
@@ -488,9 +475,13 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                             DownloadImagesAtExactSize = DownloadImageAtExactSize ?? true,
                             PreferredImageTypes = imageTypes,
                             ListType = ListType,
-                            ShowTitle = ShowTitle,
                             EnableServerImageEnhancers = EnableServerImageEnhancers
                         };
+
+                        if (OnItemCreated != null)
+                        {
+                            OnItemCreated(vm);
+                        }
 
                         var stretch = ImageStretch;
 
@@ -503,12 +494,6 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                         if (stretch.HasValue)
                         {
                             vm.ImageStretch = stretch.Value;
-                        }
-
-                        if (index < 30)
-                        {
-                            index++;
-                            //Task.Run(() => vm.DownloadImage());
                         }
 
                         return vm;

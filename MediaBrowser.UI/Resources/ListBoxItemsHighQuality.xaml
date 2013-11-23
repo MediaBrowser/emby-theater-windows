@@ -29,10 +29,7 @@
                     <Border x:Name="Bd" SnapsToDevicePixels="true" RenderTransformOrigin="0.5,0.5" Padding="0">
 
                         <Grid x:Name="ContentGrid">
-                            <Border x:Name="BdDropShadow" Margin="-8" BorderBrush="{DynamicResource SelectedItemHighlightColor}" BorderThickness="16" Background="Transparent" SnapsToDevicePixels="true" CornerRadius="0" Visibility="Hidden">
-                                <Border.Effect>
-                                    <BlurEffect Radius="11" KernelType="Gaussian"></BlurEffect>
-                                </Border.Effect>
+                            <Border x:Name="BdDropShadow" Margin="-6" BorderBrush="White" BorderThickness="6" Background="Transparent" SnapsToDevicePixels="true" CornerRadius="0" Visibility="Hidden">
                             </Border>
                             <ContentPresenter Margin="5" HorizontalAlignment="Stretch" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Stretch"/>
                         </Grid>
@@ -65,10 +62,7 @@
                     <Border x:Name="Bd" SnapsToDevicePixels="true" RenderTransformOrigin="0.5,0.5" Padding="0">
 
                         <Grid x:Name="ContentGrid">
-                            <Border x:Name="BdDropShadow" Margin="-8" BorderBrush="{DynamicResource SelectedItemHighlightColor}" BorderThickness="16" Background="Transparent" SnapsToDevicePixels="true" CornerRadius="0" Visibility="Hidden">
-                                <Border.Effect>
-                                    <BlurEffect Radius="11" KernelType="Gaussian"></BlurEffect>
-                                </Border.Effect>
+                            <Border x:Name="BdDropShadow" Margin="-6" BorderBrush="White" BorderThickness="6" Background="Transparent" SnapsToDevicePixels="true" CornerRadius="0" Visibility="Hidden">
                             </Border>
                             <ContentPresenter Margin="5" HorizontalAlignment="Stretch" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Stretch"/>
                         </Grid>

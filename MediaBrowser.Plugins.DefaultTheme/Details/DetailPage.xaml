@@ -31,49 +31,11 @@
                 </controls:ExtendedListBox>
             </controls:ScrollingPanel>
         </controls:ExtendedScrollViewer>
-        
 
-        <controls:ExtendedScrollViewer x:Name="ScrollViewer" Grid.Row="2" VerticalAlignment="Stretch" HorizontalAlignment="{Binding HorizontalAlignment}" CanContentScroll="True" Focusable="False">
 
-            <controls:ExtendedScrollViewer.Style>
-                <Style TargetType="{x:Type controls:ExtendedScrollViewer}">
+        <controls:ExtendedScrollViewer x:Name="ScrollViewer" Grid.Row="2" VerticalAlignment="Stretch" HorizontalAlignment="{Binding HorizontalAlignment}" Margin="0 40 0 40" CanContentScroll="True" Focusable="False" VerticalScrollBarVisibility="{Binding VerticalScrollbarVisibility}" HorizontalScrollBarVisibility="{Binding HorizontalScrollBarVisibility}">
 
-                    <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Hidden"></Setter>
-                    <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"></Setter>
-                    <Setter Property="Margin" Value="0 40 0 40"></Setter>
-
-                    <Style.Triggers>
-
-                        <DataTrigger Binding="{Binding ScrollDirection}" Value="Vertical">
-                            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"></Setter>
-                            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Hidden"></Setter>
-                        </DataTrigger>
-                        
-                        <DataTrigger Binding="{Binding EnableScrolling}" Value="false">
-                            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"></Setter>
-                            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"></Setter>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </controls:ExtendedScrollViewer.Style>
-
-            <controls:ScrollingPanel HorizontalAlignment="Stretch">
-                <controls:ScrollingPanel.Style>
-                    <Style TargetType="{x:Type controls:ScrollingPanel}">
-                        <Setter Property="CanHorizontallyScroll" Value="True"></Setter>
-                        <Setter Property="CanVerticallyScroll" Value="False"></Setter>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding ScrollDirection}" Value="Vertical">
-                                <Setter Property="CanHorizontallyScroll" Value="False"></Setter>
-                                <Setter Property="CanVerticallyScroll" Value="True"></Setter>
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding EnableScrolling}" Value="False">
-                                <Setter Property="CanHorizontallyScroll" Value="False"></Setter>
-                                <Setter Property="CanVerticallyScroll" Value="False"></Setter>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </controls:ScrollingPanel.Style>
+            <controls:ScrollingPanel HorizontalAlignment="Stretch" CanVerticallyScroll="{Binding EnableVerticalScrolling}" CanHorizontallyScroll="{Binding EnableHorizontalScrolling}">
                 <ContentControl x:Name="PageContent" Focusable="False" Style="{StaticResource DetailPageContentStyle}">
                 </ContentControl>
             </controls:ScrollingPanel>

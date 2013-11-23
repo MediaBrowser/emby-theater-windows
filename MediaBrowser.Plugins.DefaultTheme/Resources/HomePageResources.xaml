@@ -36,28 +36,10 @@
 
         <Grid Height="{Binding ImageHeight}" Width="{Binding ImageWidth}">
 
-            <Image Stretch="{Binding ImageStretch}" Source="{Binding Image}">
-                <Image.Style>
-                    <Style TargetType="{x:Type Image}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding HasImage}" Value="False">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Image.Style>
+            <Image Stretch="{Binding ImageStretch}" Source="{Binding Image}" Visibility="{Binding ImageVisibility}">
             </Image>
 
-            <Grid Background="#a6000000">
-                <Grid.Style>
-                    <Style TargetType="{x:Type Grid}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding HasImage}" Value="True">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Grid.Style>
+            <Grid Background="#a6000000" Visibility="{Binding DefaultImageVisibility}">
 
                 <Path Style="{DynamicResource IconPath}" Visibility="Collapsed" Data="F1M689.62,486.729C689.555,486.727,689.499,486.716,689.432,486.716L671.278,486.716 678.821,477.678C679.052,477.402 679.142,477.098 679.111,476.775 679.081,476.424 678.941,476.135 678.7,475.907 678.426,475.675 678.12,475.584 677.8,475.615 677.432,475.646 677.143,475.799 676.926,476.074L669.538,484.898 661.201,476.609C660.958,476.363 660.668,476.244 660.345,476.244 659.98,476.244 659.691,476.363 659.477,476.609 659.217,476.851 659.094,477.143 659.094,477.477 659.094,477.831 659.217,478.136 659.477,478.379L667.888,486.716 657.445,486.716C657.392,486.716,657.349,486.727,657.296,486.729L653.304,486.729 653.304,518.276 657.445,518.276 689.432,518.276 693.554,518.276 693.554,514.154 693.554,511.101 693.554,504.916 693.554,490.84 693.554,486.729 689.62,486.729z M690.091,500.457C690.091,501.175 689.83,501.77 689.294,502.274 688.838,502.763 688.257,503.023 687.57,503.052L687.449,503.052C686.73,503.023 686.134,502.763 685.632,502.274 685.128,501.77 684.882,501.175 684.882,500.457 684.882,499.742 685.128,499.128 685.632,498.594 686.149,498.107 686.776,497.862 687.494,497.862 688.212,497.862 688.805,498.107 689.294,498.594 689.83,499.128 690.091,499.742 690.091,500.457z M682.211,503.052L682.165,503.052 682.165,511.878C681.922,514.109,680.561,515.222,678.075,515.222L660.758,515.222C657.995,515.222,656.622,513.85,656.622,511.101L656.622,493.77C656.622,491.023,657.995,489.648,660.758,489.648L678.075,489.648C680.836,489.648,682.211,491.023,682.211,493.77L682.211,503.052z M689.266,509.908C688.762,510.43 688.165,510.69 687.449,510.69 686.73,510.69 686.12,510.43 685.584,509.908 685.096,509.406 684.853,508.808 684.853,508.093 684.853,507.375 685.096,506.749 685.584,506.23 686.12,505.726 686.73,505.481 687.449,505.481 688.165,505.481 688.762,505.726 689.266,506.23 689.783,506.749 690.044,507.375 690.044,508.093 690.044,508.808 689.783,509.406 689.266,509.908z" Stretch="Uniform" Width="80" Height="80" Margin="0,0,0,40" RenderTransformOrigin="0.5,0.5">
                     <Path.RenderTransform>
@@ -71,29 +53,30 @@
                 </Path>
             </Grid>
 
-            <Grid VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Background="{DynamicResource TextBackground}">
+            <Grid VerticalAlignment="Bottom" Background="{DynamicResource TextBackground}">
 
+                <Grid.Style>
+                    <Style TargetType="{x:Type Grid}">
+
+                        <Setter Property="HorizontalAlignment" Value="Stretch" />
+                        
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsInProgress}" Value="False">
+                                <Setter Property="HorizontalAlignment" Value="Left" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsFolder}" Value="True">
+                                <Setter Property="HorizontalAlignment" Value="Left" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+                
                 <Grid.RowDefinitions>
                     <RowDefinition></RowDefinition>
                     <RowDefinition></RowDefinition>
                 </Grid.RowDefinitions>
 
-                <TextBlock Foreground="White" Margin="10 5 10 10" TextWrapping="NoWrap" Text="{Binding DisplayName}" TextTrimming="CharacterEllipsis" Grid.Row="0">
-                    <TextBlock.Style>
-                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SmallTextBlockStyle}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding ItemType}" Value="Trailer">
-                                    <Setter Property="Visibility" Value="Collapsed" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding ListType}" Value="LatestMovies">
-                                    <Setter Property="Visibility" Value="Collapsed" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding ShowTitle}" Value="False">
-                                    <Setter Property="Visibility" Value="Collapsed" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
+                <TextBlock Foreground="White" Margin="10 5 15 10" TextWrapping="NoWrap" Text="{Binding DisplayName}" TextTrimming="CharacterEllipsis" Grid.Row="0" Visibility="{Binding DisplayNameVisibility}" Style="{DynamicResource SmallTextBlockStyle}">
                 </TextBlock>
 
                 <ProgressBar Minimum="0" Maximum="100" Value="{Binding PlayedPercentage, Mode=OneWay}" Margin="10 0 10 10" Grid.Row="1" Height="12">
@@ -164,46 +147,17 @@
             </Grid.RowDefinitions>
 
             <TextBlock Style="{DynamicResource SmallTextBlockStyle}" Grid.Column="1" Grid.Row="0" Padding="35 0 0 0" Visibility="Hidden" Text=" "></TextBlock>
-            
-            <TextBlock Grid.Column="1" Grid.Row="0" Padding="35 0 0 0" Text=" ">
-                <TextBlock.Style>
-                    <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SmallTextBlockStyle}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding ShowResume}" Value="false">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </TextBlock.Style>
+
+            <TextBlock Grid.Column="1" Grid.Row="0" Padding="35 0 0 0" Text=" " Visibility="{Binding ResumeVisibility}" Style="{DynamicResource SmallTextBlockStyle}">
             </TextBlock>
 
-            <StackPanel Orientation="Horizontal" Grid.Column="2" Grid.Row="0">
-
-                <StackPanel.Style>
-                    <Style TargetType="{x:Type StackPanel}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding ShowLatestEpisodes}" Value="false">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </StackPanel.Style>
+            <StackPanel Orientation="Horizontal" Grid.Column="2" Grid.Row="0" Visibility="{Binding LatestEpisodesVisibility}">
 
                 <TextBlock Style="{DynamicResource SmallTextBlockStyle}" Padding="55 0 0 0" Text="LATEST EPISODES">
                 </TextBlock>
             </StackPanel>
 
-            <StackPanel Orientation="Horizontal" Grid.Column="3" Grid.Row="0">
-
-                <StackPanel.Style>
-                    <Style TargetType="{x:Type StackPanel}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding ShowNextUp}" Value="false">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </StackPanel.Style>
+            <StackPanel Orientation="Horizontal" Grid.Column="3" Grid.Row="0" Visibility="{Binding NextUpVisibility}">
 
                 <TextBlock Style="{DynamicResource SmallTextBlockStyle}" Padding="55 0 0 0" Text="NEXT UP">
                 </TextBlock>
@@ -288,17 +242,7 @@
 
             </Grid>
 
-            <Grid Grid.Row="1" Grid.Column="1" Margin="0 0 0 0">
-
-                <Grid.Style>
-                    <Style TargetType="{x:Type Grid}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding ShowResume}" Value="false">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Grid.Style>
+            <Grid Grid.Row="1" Grid.Column="1" Margin="0 0 0 0" Visibility="{Binding ResumeVisibility}">
 
                 <controls:ExtendedListBox Margin="-35" DataContext="{Binding ResumeViewModel}" ItemsSource="{Binding ListCollectionView}" KeyboardNavigation.DirectionalNavigation="Continue" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource HomePageItemTemplate}">
                     <controls:ExtendedListBox.ItemsPanel>
@@ -309,17 +253,7 @@
                 </controls:ExtendedListBox>
             </Grid>
 
-            <Grid Grid.Row="1" Grid.Column="2" Margin="50 0 0 0">
-
-                <Grid.Style>
-                    <Style TargetType="{x:Type Grid}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding ShowLatestEpisodes}" Value="false">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Grid.Style>
+            <Grid Grid.Row="1" Grid.Column="2" Margin="50 0 0 0" Visibility="{Binding LatestEpisodesVisibility}">
 
                 <controls:ExtendedListBox Margin="-35" DataContext="{Binding LatestEpisodesViewModel}" ItemsSource="{Binding ListCollectionView}" KeyboardNavigation.DirectionalNavigation="Continue" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource HomePageItemTemplate}">
                     <controls:ExtendedListBox.ItemsPanel>
@@ -330,17 +264,7 @@
                 </controls:ExtendedListBox>
             </Grid>
 
-            <Grid Grid.Row="1" Grid.Column="3" Margin="50 0 0 0">
-
-                <Grid.Style>
-                    <Style TargetType="{x:Type Grid}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding ShowNextUp}" Value="false">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Grid.Style>
+            <Grid Grid.Row="1" Grid.Column="3" Margin="50 0 0 0" Visibility="{Binding NextUpVisibility}">
 
                 <controls:ExtendedListBox Margin="-35" DataContext="{Binding NextUpViewModel}" ItemsSource="{Binding ListCollectionView}" KeyboardNavigation.DirectionalNavigation="Continue" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource HomePageItemTemplate}">
                     <controls:ExtendedListBox.ItemsPanel>
@@ -371,29 +295,11 @@
             </Grid.RowDefinitions>
 
             <TextBlock Style="{DynamicResource SmallTextBlockStyle}" Grid.Column="1" Grid.Row="0" Padding="35 0 0 0" Visibility="Hidden" Text=" "></TextBlock>
-            
-            <TextBlock Grid.Column="2" Grid.Row="0" Padding="50 0 0 0" Text="LATEST MOVIES">
-                <TextBlock.Style>
-                    <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SmallTextBlockStyle}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding ShowLatestMovies}" Value="false">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </TextBlock.Style>
+
+            <TextBlock Grid.Column="2" Grid.Row="0" Padding="50 0 0 0" Text="LATEST MOVIES" Visibility="{Binding LatestMoviesVisibility}" Style="{DynamicResource SmallTextBlockStyle}">
             </TextBlock>
 
-            <TextBlock Grid.Column="3" Grid.Row="0" Padding="50 0 0 0" Text="LATEST TRAILERS">
-                <TextBlock.Style>
-                    <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SmallTextBlockStyle}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding ShowLatestTrailers}" Value="false">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </TextBlock.Style>
+            <TextBlock Grid.Column="3" Grid.Row="0" Padding="50 0 0 0" Text="LATEST TRAILERS" Visibility="{Binding LatestTrailersVisibility}" Style="{DynamicResource SmallTextBlockStyle}">
             </TextBlock>
 
             <Grid Grid.Row="1" Grid.Column="0" Margin="0 0 0 0">
@@ -494,17 +400,7 @@
                 </controls:ExtendedListBox>
             </Grid>
 
-            <Grid Grid.Row="1" Grid.Column="2" Margin="45 0 0 0">
-
-                <Grid.Style>
-                    <Style TargetType="{x:Type Grid}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding ShowLatestMovies}" Value="false">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Grid.Style>
+            <Grid Grid.Row="1" Grid.Column="2" Margin="45 0 0 0" Visibility="{Binding LatestMoviesVisibility}">
 
                 <controls:ExtendedListBox Margin="-35" DataContext="{Binding LatestMoviesViewModel}" ItemsSource="{Binding ListCollectionView}" KeyboardNavigation.DirectionalNavigation="Continue" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource HomePageItemTemplate}">
                     <controls:ExtendedListBox.ItemsPanel>
@@ -515,17 +411,7 @@
                 </controls:ExtendedListBox>
             </Grid>
 
-            <Grid Grid.Row="1" Grid.Column="3" Margin="45 0 0 0">
-
-                <Grid.Style>
-                    <Style TargetType="{x:Type Grid}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding ShowLatestTrailers}" Value="false">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Grid.Style>
+            <Grid Grid.Row="1" Grid.Column="3" Margin="45 0 0 0" Visibility="{Binding LatestTrailersVisibility}">
 
                 <controls:ExtendedListBox Margin="-35" DataContext="{Binding LatestTrailersViewModel}" ItemsSource="{Binding ListCollectionView}" KeyboardNavigation.DirectionalNavigation="Continue" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource HomePageItemTemplate}">
                     <controls:ExtendedListBox.ItemsPanel>
@@ -585,17 +471,7 @@
 
                 <WrapPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" Margin="0 0 0 0" HorizontalAlignment="Center">
 
-                    <Grid>
-                        <Grid.Style>
-                            <Style TargetType="{x:Type Grid}">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding ShowMultiPlayer}" Value="false">
-                                        <Setter Property="Visibility" Value="Collapsed" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Grid.Style>
-
+                    <Grid Visibility="{Binding MultiPlayerVisibility}">
                         <controls:ExtendedButton Style="{DynamicResource BaseItemButtonStyle}" DataContext="{Binding MultiPlayerViewModel}" Command="{Binding CustomCommand}">
 
                             <Grid Height="{Binding GalleryHeight}" Width="{Binding GalleryWidth}">
@@ -646,17 +522,7 @@
                 </WrapPanel>
             </Grid>
 
-            <Grid Grid.Row="1" Grid.Column="1" Margin="0 0 0 0">
-
-                <Grid.Style>
-                    <Style TargetType="{x:Type Grid}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding ShowRecentlyPlayed}" Value="false">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Grid.Style>
+            <Grid Grid.Row="1" Grid.Column="1" Margin="0 0 0 0" Visibility="{Binding RecentlyPlayedVisibility}">
 
                 <controls:ExtendedListBox Margin="-35 -35" DataContext="{Binding RecentlyPlayedViewModel}" ItemsSource="{Binding ListCollectionView}" KeyboardNavigation.DirectionalNavigation="Continue" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource HomePageItemTemplate}">
                     <controls:ExtendedListBox.ItemsPanel>

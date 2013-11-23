@@ -243,7 +243,7 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
 
                 CurrentImage = img;
 
-                await Task.Delay(500, token);
+                await Task.Delay(200, token);
 
                 CurrentText = image.Caption;
             }

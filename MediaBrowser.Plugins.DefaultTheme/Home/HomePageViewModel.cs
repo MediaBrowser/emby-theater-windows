@@ -144,7 +144,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
                 if (item.IndexNumber.HasValue && item.ParentIndexNumber.HasValue)
                 {
-                    name = name + " " + string.Format("S{0}, Ep. {1}", item.ParentIndexNumber.Value, item.IndexNumber.Value);
+                    name = name + " " + string.Format("S{0}, E{1}", item.ParentIndexNumber.Value, item.IndexNumber.Value);
                 }
 
             }

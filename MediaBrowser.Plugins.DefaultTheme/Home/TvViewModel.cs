@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.ApiClient;
+﻿using System.Windows;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
@@ -164,7 +165,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 ImageDisplayHeightGenerator = v => TileHeight,
                 DisplayNameGenerator = i => i.SeriesName,
                 EnableBackdropsForCurrentItem = false,
-                EnableServerImageEnhancers = false
+                EnableServerImageEnhancers = false,
+
+                OnItemCreated = vm =>
+                {
+                    vm.DisplayNameVisibility = Visibility.Visible;
+                }
             };
 
             OnPropertyChanged("ResumeViewModel");
@@ -178,7 +184,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 ImageDisplayHeightGenerator = v => TileHeight,
                 DisplayNameGenerator = HomePageViewModel.GetDisplayName,
                 EnableBackdropsForCurrentItem = false,
-                EnableServerImageEnhancers = false
+                EnableServerImageEnhancers = false,
+
+                OnItemCreated = vm =>
+                {
+                    vm.DisplayNameVisibility = Visibility.Visible;
+                }
             };
 
             OnPropertyChanged("LatestEpisodesViewModel");
@@ -190,9 +201,14 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 ImageDisplayWidth = TileWidth,
                 ImageDisplayHeightGenerator = v => TileHeight,
-                DisplayNameGenerator = HomePageViewModel.GetDisplayName,
+                DisplayNameGenerator = i => i.SeriesName,
                 EnableBackdropsForCurrentItem = false,
-                EnableServerImageEnhancers = false
+                EnableServerImageEnhancers = false,
+
+                OnItemCreated = vm =>
+                {
+                    vm.DisplayNameVisibility = Visibility.Visible;
+                }
             };
 
             OnPropertyChanged("NextUpViewModel");
@@ -219,62 +235,67 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 EnableBackdropsForCurrentItem = false,
                 ImageStretch = Stretch.UniformToFill,
                 PreferredImageTypesGenerator = vm => new[] { ImageType.Backdrop },
-                DownloadImageAtExactSize = true
+                DownloadImageAtExactSize = true,
+
+                OnItemCreated = vm =>
+                {
+                    vm.DisplayNameVisibility = Visibility.Visible;
+                }
             };
 
             OnPropertyChanged("MiniSpotlightsViewModel");
         }
 
-        private bool _showLatestEpisodes;
-        public bool ShowLatestEpisodes
+        private Visibility _latestEpisodesVisibility = Visibility.Collapsed;
+        public Visibility LatestEpisodesVisibility
         {
-            get { return _showLatestEpisodes; }
+            get { return _latestEpisodesVisibility; }
 
             set
             {
-                var changed = _showLatestEpisodes != value;
+                var changed = _latestEpisodesVisibility != value;
 
-                _showLatestEpisodes = value;
+                _latestEpisodesVisibility = value;
 
                 if (changed)
                 {
-                    OnPropertyChanged("ShowLatestEpisodes");
+                    OnPropertyChanged("LatestEpisodesVisibility");
                 }
             }
         }
 
-        private bool _showNextUp;
-        public bool ShowNextUp
+        private Visibility _nextUpVisibility = Visibility.Collapsed;
+        public Visibility NextUpVisibility
         {
-            get { return _showNextUp; }
+            get { return _nextUpVisibility; }
 
             set
             {
-                var changed = _showNextUp != value;
+                var changed = _nextUpVisibility != value;
 
-                _showNextUp = value;
+                _nextUpVisibility = value;
 
                 if (changed)
                 {
-                    OnPropertyChanged("ShowNextUp");
+                    OnPropertyChanged("NextUpVisibility");
                 }
             }
         }
 
-        private bool _showResume;
-        public bool ShowResume
+        private Visibility _resumeVisibility = Visibility.Collapsed;
+        public Visibility ResumeVisibility
         {
-            get { return _showResume; }
+            get { return _resumeVisibility; }
 
             set
             {
-                var changed = _showResume != value;
+                var changed = _resumeVisibility != value;
 
-                _showResume = value;
+                _resumeVisibility = value;
 
                 if (changed)
                 {
-                    OnPropertyChanged("ShowResume");
+                    OnPropertyChanged("ResumeVisibility");
                 }
             }
         }
@@ -644,7 +665,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 TotalRecordCount = _tvView.NextUpEpisodes.Count
             };
 
-            ShowNextUp = result.TotalRecordCount > 0;
+            NextUpVisibility = result.TotalRecordCount > 0 ? Visibility.Visible : Visibility.Collapsed;
 
             return Task.FromResult(result);
         }
@@ -657,7 +678,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 TotalRecordCount = _tvView.LatestEpisodes.Count
             };
 
-            ShowLatestEpisodes = result.TotalRecordCount > 0;
+            LatestEpisodesVisibility = result.TotalRecordCount > 0 ? Visibility.Visible : Visibility.Collapsed;
 
             return Task.FromResult(result);
         }
@@ -670,7 +691,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 TotalRecordCount = _tvView.ResumableEpisodes.Count
             };
 
-            ShowResume = result.TotalRecordCount > 0;
+            ResumeVisibility = result.TotalRecordCount > 0 ? Visibility.Visible : Visibility.Collapsed;
 
             return Task.FromResult(result);
         }

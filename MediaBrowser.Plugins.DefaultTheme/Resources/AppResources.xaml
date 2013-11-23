@@ -8,8 +8,16 @@
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="HorizontalAlignment" Value="Left" />
         <Setter Property="CornerRadius" Value="5" />
-        <Setter Property="Background" Value="#96ffffff" />
         <Setter Property="Padding" Value="7 2 7 2" />
+        
+        <Setter Property="Background">
+            <Setter.Value>
+                <LinearGradientBrush SpreadMethod="Reflect" ColorInterpolationMode="SRgbLinearInterpolation" StartPoint="0,0" EndPoint="0,1" >
+                    <GradientStop Color="#96dddddd" Offset="0" />
+                    <GradientStop Color="#96ffffff" Offset="1" />
+                </LinearGradientBrush>
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <Style TargetType="TextBlock" x:Key="MediaInfoTextBlock" BasedOn="{StaticResource SmallTextBlockStyle}">
@@ -378,66 +386,15 @@
 
     <DataTemplate x:Key="ListItemTemplate" DataType="{x:Type viewModels:ItemViewModel}">
         <Grid>
-            <Image HorizontalAlignment="Center" Source="{Binding Image}" Stretch="{Binding ImageStretch}">
-                <Image.Style>
-                    <Style TargetType="{x:Type Image}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding HasImage}" Value="False">
-                                <Setter Property="Visibility" Value="Hidden" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Image.Style>
+            
+            <Image HorizontalAlignment="Center" Source="{Binding Image}" Stretch="{Binding ImageStretch}" Visibility="{Binding ImageVisibility}">
             </Image>
 
-            <Border Background="#a6000000" Padding="10 0">
-                <Border.Style>
-                    <Style TargetType="{x:Type Border}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding HasImage}" Value="True">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Border.Style>
-
-                <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding DisplayName}" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="White"></TextBlock>
-            </Border>
+            <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding DisplayName}" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="White" Background="#a6000000" Padding="10 0" Visibility="{Binding DefaultImageVisibility}"></TextBlock>
 
             <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Orientation="Vertical" Background="{DynamicResource TextBackground}">
 
-                <TextBlock x:Name="TxtName" Foreground="White" Margin="10 5 10 0" TextWrapping="NoWrap" Text="{Binding DisplayName}" TextTrimming="CharacterEllipsis" MaxWidth="{Binding ImageWidth}" HorizontalAlignment="Left">
-                    <TextBlock.Style>
-                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
-                            <Setter Property="Visibility" Value="Collapsed" />
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding ItemType}" Value="Episode">
-                                    <Setter Property="Visibility" Value="Visible" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding ItemType}" Value="Audio">
-                                    <Setter Property="Visibility" Value="Visible" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding ItemType}" Value="Person">
-                                    <Setter Property="Visibility" Value="Visible" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding ViewType}" Value="Thumbstrip">
-                                    <Setter Property="Visibility" Value="Collapsed" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding ViewType}" Value="PosterStrip">
-                                    <Setter Property="Visibility" Value="Collapsed" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding HasImage}" Value="false">
-                                    <Setter Property="Visibility" Value="Collapsed" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding ListType}" Value="SpecialFeatures">
-                                    <Setter Property="Visibility" Value="Visible" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding ListType}" Value="Themes">
-                                    <Setter Property="Visibility" Value="Visible" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
+                <TextBlock x:Name="TxtName" Foreground="White" Margin="10 5 10 0" TextWrapping="NoWrap" Text="{Binding DisplayName}" TextTrimming="CharacterEllipsis" MaxWidth="{Binding ImageWidth}" HorizontalAlignment="Left" Visibility="{Binding DisplayNameVisibility}" Style="{DynamicResource TextBlockStyle}">
                 </TextBlock>
 
                 <ProgressBar x:Name="PlaybackProgress"  Minimum="0" Maximum="100" Value="{Binding PlayedPercentage, Mode=OneWay}" Margin="10 10 10 5">

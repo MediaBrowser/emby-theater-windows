@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
@@ -18,6 +19,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using TabItem = MediaBrowser.Theater.Presentation.ViewModels.TabItem;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Details
 {
@@ -76,6 +78,34 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             }
         }
 
+        private bool _enableVerticalScrolling = true;
+        public bool EnableVerticalScrolling
+        {
+            get
+            {
+                return _enableVerticalScrolling;
+            }
+            set
+            {
+                _enableVerticalScrolling = value;
+                OnPropertyChanged("EnableVerticalScrolling");
+            }
+        }
+
+        private bool _enableHorizontalScrolling = true;
+        public bool EnableHorizontalScrolling
+        {
+            get
+            {
+                return _enableHorizontalScrolling;
+            }
+            set
+            {
+                _enableHorizontalScrolling = value;
+                OnPropertyChanged("EnableHorizontalScrolling");
+            }
+        }
+
         private HorizontalAlignment _horizontalAlignment = HorizontalAlignment.Center;
         public HorizontalAlignment HorizontalAlignment
         {
@@ -101,6 +131,34 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             {
                 _scrollDirection = value;
                 OnPropertyChanged("ScrollDirection");
+            }
+        }
+
+        private ScrollBarVisibility _horizontalScrollBarVisibility = ScrollBarVisibility.Hidden;
+        public ScrollBarVisibility HorizontalScrollBarVisibility
+        {
+            get
+            {
+                return _horizontalScrollBarVisibility;
+            }
+            set
+            {
+                _horizontalScrollBarVisibility = value;
+                OnPropertyChanged("HorizontalScrollBarVisibility");
+            }
+        }
+
+        private ScrollBarVisibility _verticalScrollbarVisibility = ScrollBarVisibility.Disabled;
+        public ScrollBarVisibility VerticalScrollbarVisibility
+        {
+            get
+            {
+                return _verticalScrollbarVisibility;
+            }
+            set
+            {
+                _verticalScrollbarVisibility = value;
+                OnPropertyChanged("VerticalScrollbarVisibility");
             }
         }
 
@@ -134,6 +192,17 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                              ? HorizontalAlignment.Stretch
                              : HorizontalAlignment.Center;
 
+                EnableHorizontalScrolling = EnableScrolling && ScrollDirection == ScrollDirection.Horizontal;
+
+                EnableVerticalScrolling = EnableScrolling && ScrollDirection == ScrollDirection.Vertical;
+
+                HorizontalScrollBarVisibility = EnableHorizontalScrolling
+                    ? ScrollBarVisibility.Hidden
+                    : ScrollBarVisibility.Disabled;
+
+                VerticalScrollbarVisibility = EnableVerticalScrolling
+                    ? ScrollBarVisibility.Hidden
+                    : ScrollBarVisibility.Disabled;
             }
         }
 

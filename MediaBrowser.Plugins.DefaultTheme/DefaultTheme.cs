@@ -165,6 +165,17 @@ namespace MediaBrowser.Plugins.DefaultTheme
             {
                 config.CustomItemQuery = (vm, displayPreferences) =>
                 {
+                    if (item.IsType("season") && item.IndexNumber.HasValue)
+                    {
+                        return _apiClient.GetEpisodesAsync(new EpisodeQuery
+                        {
+                            UserId = _sessionManager.CurrentUser.Id,
+                            SeriesId = item.SeriesId,
+                            SeasonNumber = item.IndexNumber.Value,
+                            Fields = FolderPage.QueryFields
+                        });
+                    }
+
                     var query = new ItemQuery
                     {
                         UserId = _sessionManager.CurrentUser.Id,
@@ -178,7 +189,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
                         Fields = FolderPage.QueryFields
                     };
 
-                    if (item.IsType("series") || item.IsType("season"))
+                    if (item.IsType("series") && item.IsType("season"))
                     {
                         var userConfig = _sessionManager.CurrentUser.Configuration;
                         if (!userConfig.DisplayMissingEpisodes)
@@ -189,16 +200,6 @@ namespace MediaBrowser.Plugins.DefaultTheme
                         {
                             query.IsVirtualUnaired = false;
                         }
-                    }
-
-                    if (item.IsType("season") && item.IndexNumber.HasValue)
-                    {
-                        query.ParentId = item.SeriesId;
-                        query.Recursive = true;
-                        query.AiredDuringSeason = item.IndexNumber.Value;
-                        query.SortBy = new[] { ItemSortBy.PremiereDate, ItemSortBy.SortName };
-                        query.SortOrder = SortOrder.Ascending;
-                        query.IncludeItemTypes = new[] { "Episode" };
                     }
 
                     return _apiClient.GetItemsAsync(query);

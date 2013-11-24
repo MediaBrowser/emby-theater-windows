@@ -3,10 +3,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                                         xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
                                         Title="InfoWindow" Height="300" Width="300"
-        Style="{DynamicResource ModalWindow}">
+        Style="{StaticResource ModalWindow}">
     <Grid x:Name="MainGrid">
         <!--Themes will supply this template to outline the window structure.-->
-        <ContentControl x:Name="InfoPanel" Template="{DynamicResource FullscreenVideoInfoTemplate}">
+        <ContentControl x:Name="InfoPanel" Template="{StaticResource FullscreenVideoInfoTemplate}">
         </ContentControl>
 
         <Grid.LayoutTransform>

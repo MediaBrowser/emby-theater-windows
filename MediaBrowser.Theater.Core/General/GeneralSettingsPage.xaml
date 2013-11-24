@@ -22,13 +22,13 @@
             <ColumnDefinition Width="auto"></ColumnDefinition>
         </Grid.ColumnDefinitions>
 
-        <TextBlock Style="{DynamicResource Heading1TextBlockStyle}" Margin="0 30 0 0" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">General Settings</TextBlock>
+        <TextBlock Style="{StaticResource Heading1TextBlockStyle}" Margin="0 30 0 0" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">General Settings</TextBlock>
 
-        <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Row="1" Grid.Column="0" Margin="0 50 0 0">Automatic Update Level:</TextBlock>
+        <TextBlock Style="{StaticResource TextBlockStyle}" Grid.Row="1" Grid.Column="0" Margin="0 50 0 0">Automatic Update Level:</TextBlock>
         <controls:SelectList x:Name="SelectUpdateLevel" Margin="40 50 0 0" Grid.Row="1" Grid.Column="1"></controls:SelectList>
 
         <CheckBox x:Name="ChkAutoRun" Margin="0 30 0 0" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center">
-            <TextBlock Style="{DynamicResource TextBlockStyle}">Auto-run at startup</TextBlock>
+            <TextBlock Style="{StaticResource TextBlockStyle}">Auto-run at startup</TextBlock>
         </CheckBox>
     </Grid>
 </pages:BasePage>

@@ -86,7 +86,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         {
             var namespaceName = GetType().Namespace;
 
-            return new[] { "AppResources", "HomePageResources", "Details", "VolumeOsd", "TransportOsd", "InfoPanel", "DisplayPreferences" }.Select(i => new ResourceDictionary
+            return new[] { "Merged" }.Select(i => new ResourceDictionary
             {
                 Source = new Uri("pack://application:,,,/" + namespaceName + ";component/Resources/" + i + ".xaml", UriKind.Absolute)
 
@@ -235,32 +235,12 @@ namespace MediaBrowser.Plugins.DefaultTheme
             get { return "Default"; }
         }
 
-        private string ThemeColorResource
-        {
-            get { return "ThemeDark"; }
-        }
-
-        private ResourceDictionary _skinColorResource;
-
         public void Load()
         {
-            var namespaceName = GetType().Namespace;
-
-            _skinColorResource = new ResourceDictionary
-            {
-                Source = new Uri("pack://application:,,,/" + namespaceName + ";component/Resources/" + ThemeColorResource + ".xaml", UriKind.Absolute)
-
-            };
-
-            _presentationManager.AddResourceDictionary(_skinColorResource);
         }
 
         public void Unload()
         {
-            if (_skinColorResource != null)
-            {
-                _presentationManager.AddResourceDictionary(_skinColorResource);
-            }
         }
 
         public string DefaultHomePageName

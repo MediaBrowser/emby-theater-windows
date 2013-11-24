@@ -32,13 +32,13 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsKeyboardFocused" Value="true">
-                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource ButtonBackgroundPressed}" />
+                            <Setter TargetName="Border" Property="Background" Value="{StaticResource ButtonBackgroundPressed}" />
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="true">
-                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource ButtonBackgroundPressed}" />
+                            <Setter TargetName="Border" Property="Background" Value="{StaticResource ButtonBackgroundPressed}" />
                         </Trigger>
                         <Trigger Property="IsPressed" Value="true">
-                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource ButtonBackgroundPressed}" />
+                            <Setter TargetName="Border" Property="Background" Value="{StaticResource ButtonBackgroundPressed}" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="false">
                             <Setter TargetName="Border" Property="Opacity" Value=".2" />
@@ -51,10 +51,10 @@
 
     <Style x:Key="BaseButtonStyle" TargetType="{x:Type ButtonBase}">
         <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-        <Setter Property="Background" Value="{DynamicResource ButtonBackground}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorder}"/>
+        <Setter Property="Background" Value="{StaticResource ButtonBackground}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource ButtonBorder}"/>
         <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="Foreground" Value="{DynamicResource ButtonText}"/>
+        <Setter Property="Foreground" Value="{StaticResource ButtonText}"/>
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Setter Property="Padding" Value="16,3,16,5"/>
@@ -74,23 +74,23 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsEnabled" Value="false">
-                            <Setter Property="Foreground" Value="{DynamicResource ButtonTextDisabled}"/>
+                            <Setter Property="Foreground" Value="{StaticResource ButtonTextDisabled}"/>
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" Value="{DynamicResource ButtonBackgroundHover}" />
-                            <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderHover}"/>
-                            <Setter Property="Foreground" Value="{DynamicResource ButtonTextHover}"/>
+                            <Setter Property="Background" Value="{StaticResource ButtonBackgroundHover}" />
+                            <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderHover}"/>
+                            <Setter Property="Foreground" Value="{StaticResource ButtonTextHover}"/>
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
-                            <Setter Property="Background" Value="{DynamicResource ButtonBackgroundPressed}" />
-                            <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderPressed}"/>
-                            <Setter Property="Foreground" Value="{DynamicResource ButtonTextPressed}"/>
+                            <Setter Property="Background" Value="{StaticResource ButtonBackgroundPressed}" />
+                            <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderPressed}"/>
+                            <Setter Property="Foreground" Value="{StaticResource ButtonTextPressed}"/>
                         </Trigger>
                         <Trigger Property="IsKeyboardFocused" Value="true">
-                            <Setter Property="Background" Value="{DynamicResource ButtonBackgroundPressed}" />
-                            <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderPressed}"/>
-                            <Setter Property="Foreground" Value="{DynamicResource ButtonTextPressed}"/>
-                            <Setter TargetName="Chrome" Property="BorderBrush" Value="{DynamicResource Accent}" />
+                            <Setter Property="Background" Value="{StaticResource ButtonBackgroundPressed}" />
+                            <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderPressed}"/>
+                            <Setter Property="Foreground" Value="{StaticResource ButtonTextPressed}"/>
+                            <Setter TargetName="Chrome" Property="BorderBrush" Value="{StaticResource Accent}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -103,7 +103,7 @@
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="BorderBrush" Value="Transparent"/>
         <Setter Property="BorderThickness" Value="0 0 0 2"/>
-        <Setter Property="Foreground" Value="{DynamicResource ButtonText}"/>
+        <Setter Property="Foreground" Value="{StaticResource ButtonText}"/>
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Setter Property="Padding" Value="0,3,0,0"/>
@@ -123,23 +123,23 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsEnabled" Value="false">
-                            <Setter Property="Foreground" Value="{DynamicResource ButtonTextDisabled}"/>
+                            <Setter Property="Foreground" Value="{StaticResource ButtonTextDisabled}"/>
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" Value="{DynamicResource ButtonBackgroundPressed}" />
-                            <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderPressed}"/>
-                            <Setter Property="Foreground" Value="{DynamicResource ButtonTextPressed}"/>
+                            <Setter Property="Background" Value="{StaticResource ButtonBackgroundPressed}" />
+                            <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderPressed}"/>
+                            <Setter Property="Foreground" Value="{StaticResource ButtonTextPressed}"/>
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
-                            <Setter Property="Background" Value="{DynamicResource ButtonBackgroundPressed}" />
-                            <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderPressed}"/>
-                            <Setter Property="Foreground" Value="{DynamicResource ButtonTextPressed}"/>
+                            <Setter Property="Background" Value="{StaticResource ButtonBackgroundPressed}" />
+                            <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderPressed}"/>
+                            <Setter Property="Foreground" Value="{StaticResource ButtonTextPressed}"/>
                         </Trigger>
                         <Trigger Property="IsKeyboardFocused" Value="true">
-                            <Setter Property="Background" Value="{DynamicResource ButtonBackgroundPressed}" />
-                            <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderPressed}"/>
-                            <Setter Property="Foreground" Value="{DynamicResource ButtonTextPressed}"/>
-                            <Setter TargetName="Chrome" Property="BorderBrush" Value="{DynamicResource Accent}" />
+                            <Setter Property="Background" Value="{StaticResource ButtonBackgroundPressed}" />
+                            <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderPressed}"/>
+                            <Setter Property="Foreground" Value="{StaticResource ButtonTextPressed}"/>
+                            <Setter TargetName="Chrome" Property="BorderBrush" Value="{StaticResource Accent}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -151,19 +151,19 @@
     <Style x:Key="{x:Type Button}"
            BasedOn="{StaticResource BaseButtonStyle}"
            TargetType="{x:Type Button}">
-        <Setter Property="FontSize" Value="{DynamicResource DefaultFontSize}"/>
-        <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}"/>
-        <Setter Property="FontWeight" Value="{DynamicResource DefaultFontWeight}"/>
-        <Setter Property="Foreground" Value="{DynamicResource DefaultForeground}"/>
+        <Setter Property="FontSize" Value="{StaticResource DefaultFontSize}"/>
+        <Setter Property="FontFamily" Value="{StaticResource DefaultFontFamily}"/>
+        <Setter Property="FontWeight" Value="{StaticResource DefaultFontWeight}"/>
+        <Setter Property="Foreground" Value="{StaticResource DefaultForeground}"/>
     </Style>
 
     <!--Default Button style. -->
     <Style x:Key="{x:Type controls:ExtendedButton}"
            BasedOn="{StaticResource BaseButtonStyle}"
            TargetType="{x:Type controls:ExtendedButton}">
-        <Setter Property="FontSize" Value="{DynamicResource DefaultFontSize}"/>
-        <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}"/>
-        <Setter Property="FontWeight" Value="{DynamicResource DefaultFontWeight}"/>
-        <Setter Property="Foreground" Value="{DynamicResource DefaultForeground}"/>
+        <Setter Property="FontSize" Value="{StaticResource DefaultFontSize}"/>
+        <Setter Property="FontFamily" Value="{StaticResource DefaultFontFamily}"/>
+        <Setter Property="FontWeight" Value="{StaticResource DefaultFontWeight}"/>
+        <Setter Property="Foreground" Value="{StaticResource DefaultForeground}"/>
     </Style>
 </ResourceDictionary>

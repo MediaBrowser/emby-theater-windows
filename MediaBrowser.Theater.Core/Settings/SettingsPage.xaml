@@ -25,15 +25,15 @@
                         <ColumnDefinition></ColumnDefinition>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Style="{DynamicResource Heading2TextBlockStyle}" Grid.Row="0" Grid.Column="0" Margin="0 20 0 0">System Info</TextBlock>
+                    <TextBlock Style="{StaticResource Heading2TextBlockStyle}" Grid.Row="0" Grid.Column="0" Margin="0 20 0 0">System Info</TextBlock>
 
                     <ContentControl x:Name="SystemInfoContent" Grid.Row="1" Grid.Column="0" Margin="0 25 100 0">
                     </ContentControl>
 
-                    <TextBlock Style="{DynamicResource Heading2TextBlockStyle}" Grid.Row="0" Grid.Column="1" Margin="25 20 0 0">System Settings</TextBlock>
+                    <TextBlock Style="{StaticResource Heading2TextBlockStyle}" Grid.Row="0" Grid.Column="1" Margin="25 20 0 0">System Settings</TextBlock>
 
                     <Grid Grid.Row="1" Grid.Column="1" Margin="0 10 0 0">
-                        <controls:ExtendedListBox x:Name="MenuList" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" Grid.Row="0" HorizontalAlignment="Center" Margin="-15" ItemTemplate="{DynamicResource SettingsPageTemplate}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" KeyboardNavigation.DirectionalNavigation="Continue">
+                        <controls:ExtendedListBox x:Name="MenuList" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{StaticResource ListBoxStyle}" Grid.Row="0" HorizontalAlignment="Center" Margin="-15" ItemTemplate="{StaticResource SettingsPageTemplate}" ItemContainerStyle="{StaticResource HighlightedBorderListBoxItemStyle}" KeyboardNavigation.DirectionalNavigation="Continue">
                             <controls:ExtendedListBox.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <WrapPanel Orientation="Vertical" HorizontalAlignment="Stretch" Margin="30" />
@@ -42,10 +42,10 @@
                         </controls:ExtendedListBox>
                     </Grid>
 
-                    <TextBlock x:Name="TxtPluginSettings" Style="{DynamicResource Heading2TextBlockStyle}" Grid.Row="0" Grid.Column="2" Margin="25 20 0 0">Plugin Settings</TextBlock>
+                    <TextBlock x:Name="TxtPluginSettings" Style="{StaticResource Heading2TextBlockStyle}" Grid.Row="0" Grid.Column="2" Margin="25 20 0 0">Plugin Settings</TextBlock>
 
                     <Grid x:Name="GridPluginSettings" Grid.Row="1" Grid.Column="2" Margin="0 10 0 0">
-                        <controls:ExtendedListBox x:Name="PluginMenuList" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" Grid.Row="0" HorizontalAlignment="Center" Margin="-15" ItemTemplate="{DynamicResource SettingsPageTemplate}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" KeyboardNavigation.DirectionalNavigation="Continue">
+                        <controls:ExtendedListBox x:Name="PluginMenuList" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{StaticResource ListBoxStyle}" Grid.Row="0" HorizontalAlignment="Center" Margin="-15" ItemTemplate="{StaticResource SettingsPageTemplate}" ItemContainerStyle="{StaticResource HighlightedBorderListBoxItemStyle}" KeyboardNavigation.DirectionalNavigation="Continue">
                             <controls:ExtendedListBox.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <WrapPanel Orientation="Vertical" HorizontalAlignment="Stretch" Margin="30" />

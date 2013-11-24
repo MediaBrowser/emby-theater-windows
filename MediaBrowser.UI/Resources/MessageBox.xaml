@@ -163,10 +163,10 @@
 
     <ControlTemplate x:Key="MessageBoxTemplate">
         <Grid>
-            <Grid Style="{DynamicResource ModalOverlayStyle}">
+            <Grid Style="{StaticResource ModalOverlayStyle}">
 
             </Grid>
-            <Grid Style="{DynamicResource ModalContentStyle}" RenderTransformOrigin="1,0">
+            <Grid Style="{StaticResource ModalContentStyle}" RenderTransformOrigin="1,0">
                 <Grid HorizontalAlignment="Center" MaxWidth="800" Margin="0 25">
 
                     <Grid.ColumnDefinitions>
@@ -198,7 +198,7 @@
 
                     </Grid>
 
-                    <TextBlock x:Name="Txt" Grid.Row="1" Grid.Column="1" Style="{DynamicResource TextBlockStyle}" Text="{Binding Text}" Margin="0 20 0 20"></TextBlock>
+                    <TextBlock x:Name="Txt" Grid.Row="1" Grid.Column="1" Style="{StaticResource TextBlockStyle}" Text="{Binding Text}" Margin="0 20 0 20"></TextBlock>
 
                     <StackPanel x:Name="PnlButtons" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal" Margin="0 20 0 30">
 

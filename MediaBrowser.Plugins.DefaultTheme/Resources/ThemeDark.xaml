@@ -14,10 +14,9 @@
     </Style>
 
     <Style TargetType="Grid" x:Key="WindowBackgroundContentDuringPlayback">
-        <Setter Property="Opacity" Value=".65"/>
         <Setter Property="Background">
             <Setter.Value>
-                <LinearGradientBrush SpreadMethod="Reflect" ColorInterpolationMode="SRgbLinearInterpolation" StartPoint="0,0" EndPoint="0,1" >
+                <LinearGradientBrush SpreadMethod="Reflect" ColorInterpolationMode="SRgbLinearInterpolation" StartPoint="0,0" EndPoint="0,1" Opacity=".65">
                     <GradientStop Color="#ff000000" Offset="0" />
                     <GradientStop Color="#ff333333" Offset=".5" />
                     <GradientStop Color="#ff000000" Offset="1" />
@@ -26,7 +25,23 @@
         </Setter>
     </Style>
 
-    <Brush x:Key="TextBackground">#96000000</Brush>
+    <Style TargetType="TextBlock" x:Key="MediaInfoTextBlock" BasedOn="{StaticResource SmallTextBlockStyle}">
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="FontSize" Value="25" />
+        <Setter Property="Foreground" Value="#000" />
+        <Setter Property="FontFamily" Value="pack://application:,,,/MediaBrowser.Plugins.DefaultTheme;component/Resources/#Gotham Medium" />
+    </Style>
+
+    <Style TargetType="TextBlock" x:Key="BoldHeaderTextBlock" BasedOn="{StaticResource Heading1TextBlockStyle}">
+        <Setter Property="Foreground" Value="#ccc" />
+        <Setter Property="FontSize" Value="60" />
+        <Setter Property="FontFamily" Value="Segoe UI" />
+        <Setter Property="FontWeight" Value="Bold" />
+    </Style>
+
+    <Brush x:Key="PanelBackground">#a6000000</Brush>
+    <Brush x:Key="TextBackground">#a6000000</Brush>
+    <Brush x:Key="TextForegroundOverBackground">White</Brush>
 
     <!--Default font for text. Themes should override these as needed-->
     <Brush x:Key="DefaultForeground">#ffffff</Brush>
@@ -63,16 +78,5 @@
             </Setter.Value>
         </Setter>
     </Style>
-
-    <LinearGradientBrush
-    x:Key="InfoPanelBackgroundOpacityMask"
-    StartPoint="0,0"
-    EndPoint="0,1">
-        <GradientStop Color="#FFFFFFFF" Offset="1"/>
-        <GradientStop Color="#ddFFFFFF" Offset="0.667"/>
-        <GradientStop Color="#bbFFFFFF" Offset="0.34"/>
-        <GradientStop Color="#00FFFFFF" Offset="0"/>
-    </LinearGradientBrush>
-    
     
 </ResourceDictionary>

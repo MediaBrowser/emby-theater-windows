@@ -22,7 +22,7 @@
     <Style TargetType="TextBlock" x:Key="WebdingsTextBlock">
         <Setter Property="FontFamily" Value="Webdings"/>
         <Setter Property="FontSize" Value="14"/>
-        <Setter Property="Foreground" Value="{DynamicResource DefaultForeground}"/>
+        <Setter Property="Foreground" Value="{StaticResource DefaultForeground}"/>
     </Style>
 
     <Style TargetType="Button" x:Key="MinimizeApplicationButton" BasedOn="{StaticResource WebdingsButton}">
@@ -30,7 +30,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate>
-                    <TextBlock Style="{DynamicResource WebdingsTextBlock}">0</TextBlock>
+                    <TextBlock Style="{StaticResource WebdingsTextBlock}">0</TextBlock>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -41,7 +41,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate>
-                    <TextBlock Style="{DynamicResource WebdingsTextBlock}">1</TextBlock>
+                    <TextBlock Style="{StaticResource WebdingsTextBlock}">1</TextBlock>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -57,7 +57,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate>
-                    <TextBlock Style="{DynamicResource WebdingsTextBlock}">2</TextBlock>
+                    <TextBlock Style="{StaticResource WebdingsTextBlock}">2</TextBlock>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -73,20 +73,20 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate>
-                    <TextBlock Style="{DynamicResource WebdingsTextBlock}">r</TextBlock>
+                    <TextBlock Style="{StaticResource WebdingsTextBlock}">r</TextBlock>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
 
     <ControlTemplate x:Key="WindowCommandsTemplate">
-        <StackPanel Style="{DynamicResource WindowCommandsPanel}">
-            <Button x:Name="MinimizeApplicationButton" Style="{DynamicResource MinimizeApplicationButton}" Command="{Binding MinimizeCommand}">
+        <StackPanel Style="{StaticResource WindowCommandsPanel}">
+            <Button x:Name="MinimizeApplicationButton" Style="{StaticResource MinimizeApplicationButton}" Command="{Binding MinimizeCommand}">
             </Button>
-            <Button x:Name="MaximizeApplicationButton" Style="{DynamicResource MaximizeApplicationButton}" Command="{Binding MaximizeCommand}">
+            <Button x:Name="MaximizeApplicationButton" Style="{StaticResource MaximizeApplicationButton}" Command="{Binding MaximizeCommand}">
             </Button>
-            <Button x:Name="UndoMaximizeApplicationButton" Style="{DynamicResource UndoMaximizeApplicationButton}" Command="{Binding UndoMaximizeCommand}"></Button>
-            <Button x:Name="CloseApplicationButton" Style="{DynamicResource CloseApplicationButton}" Command="{Binding CloseApplicationCommand}"></Button>
+            <Button x:Name="UndoMaximizeApplicationButton" Style="{StaticResource UndoMaximizeApplicationButton}" Command="{Binding UndoMaximizeCommand}"></Button>
+            <Button x:Name="CloseApplicationButton" Style="{StaticResource CloseApplicationButton}" Command="{Binding CloseApplicationCommand}"></Button>
         </StackPanel>
     </ControlTemplate>
 

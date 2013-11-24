@@ -14,8 +14,8 @@
         </controls:ItemRating>
 
         <StackPanel Orientation="Horizontal" Margin="0 0 35 0" Visibility="{Binding PlayersVisibility}">
-            <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding Players}" VerticalAlignment="Center"></TextBlock>
-            <TextBlock Style="{DynamicResource TextBlockStyle}" Text=" Player" VerticalAlignment="Center"></TextBlock>
+            <TextBlock Style="{StaticResource TextBlockStyle}" Text="{Binding Players}" VerticalAlignment="Center"></TextBlock>
+            <TextBlock Style="{StaticResource TextBlockStyle}" Text=" Player" VerticalAlignment="Center"></TextBlock>
         </StackPanel>
 
         <Border Margin="0 0 35 0">
@@ -36,7 +36,7 @@
                 </Style>
             </Border.Style>
 
-            <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding DateText, Converter={controls1:UpperCaseConverter}}" VerticalAlignment="Center"></TextBlock>
+            <TextBlock Style="{StaticResource TextBlockStyle}" Text="{Binding DateText, Converter={controls1:UpperCaseConverter}}" VerticalAlignment="Center"></TextBlock>
         </Border>
 
         <Border Margin="0 0 35 0">
@@ -54,7 +54,7 @@
                 </Style>
             </Border.Style>
 
-            <TextBlock Style="{DynamicResource MediaInfoTextBlock}" Text="{Binding OfficialRating, Converter={controls1:UpperCaseConverter}}" VerticalAlignment="Center"></TextBlock>
+            <TextBlock Style="{StaticResource MediaInfoTextBlock}" Text="{Binding OfficialRating, Converter={controls1:UpperCaseConverter}}" VerticalAlignment="Center"></TextBlock>
         </Border>
 
         <Border Margin="0 0 35 0">
@@ -72,12 +72,12 @@
                 </Style>
             </Border.Style>
 
-            <TextBlock Style="{DynamicResource MediaInfoTextBlock}" Text="{Binding RuntimeMinutesText, Converter={controls1:UpperCaseConverter}}" VerticalAlignment="Center"></TextBlock>
+            <TextBlock Style="{StaticResource MediaInfoTextBlock}" Text="{Binding RuntimeMinutesText, Converter={controls1:UpperCaseConverter}}" VerticalAlignment="Center"></TextBlock>
         </Border>
 
-        <Border Margin="0 0 35 0" Visibility="{Binding ResolutionVisibility}" Style="{DynamicResource MediaInfoTextBorder}">
+        <Border Margin="0 0 35 0" Visibility="{Binding ResolutionVisibility}" Style="{StaticResource MediaInfoTextBorder}">
 
-            <TextBlock Style="{DynamicResource MediaInfoTextBlock}" Text="{Binding Resolution, Converter={controls1:UpperCaseConverter}}" VerticalAlignment="Center"></TextBlock>
+            <TextBlock Style="{StaticResource MediaInfoTextBlock}" Text="{Binding Resolution, Converter={controls1:UpperCaseConverter}}" VerticalAlignment="Center"></TextBlock>
         </Border>
 
         <Border Margin="0 0 35 0">
@@ -95,7 +95,7 @@
                 </Style>
             </Border.Style>
 
-            <TextBlock Style="{DynamicResource MediaInfoTextBlock}" Text="{Binding ChannelLayout, Converter={controls1:UpperCaseConverter}}" VerticalAlignment="Center"></TextBlock>
+            <TextBlock Style="{StaticResource MediaInfoTextBlock}" Text="{Binding ChannelLayout, Converter={controls1:UpperCaseConverter}}" VerticalAlignment="Center"></TextBlock>
         </Border>
 
         <StackPanel Orientation="Horizontal" Margin="0 0 35 0">
@@ -113,7 +113,7 @@
                 </Style>
             </StackPanel.Style>
 
-            <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding AudioCodec}" VerticalAlignment="Center"></TextBlock>
+            <TextBlock Style="{StaticResource TextBlockStyle}" Text="{Binding AudioCodec}" VerticalAlignment="Center"></TextBlock>
         </StackPanel>
 
         <StackPanel Orientation="Horizontal" Margin="0 0 35 0" Visibility="{Binding CriticRatingVisibility}">
@@ -128,7 +128,7 @@
                         </Style.Triggers>
                     </Style>
                 </Grid.Style>
-                <Image Style="{DynamicResource RottenImage}"></Image>
+                <Image Style="{StaticResource RottenImage}"></Image>
             </Grid>
 
             <Grid Margin="0 0 5 0">
@@ -141,10 +141,10 @@
                         </Style.Triggers>
                     </Style>
                 </Grid.Style>
-                <Image Style="{DynamicResource FreshImage}"></Image>
+                <Image Style="{StaticResource FreshImage}"></Image>
             </Grid>
 
-            <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding CriticRating}" VerticalAlignment="Center"></TextBlock>
+            <TextBlock Style="{StaticResource TextBlockStyle}" Text="{Binding CriticRating}" VerticalAlignment="Center"></TextBlock>
         </StackPanel>
 
         <Grid x:Name="ProgressGrid">
@@ -160,7 +160,7 @@
                     </Style>
                 </StackPanel.Style>
 
-                <ProgressBar Minimum="0" Maximum="100" Value="{Binding PlayedPercentage, Mode=OneWay}" Margin="0 5 0 0" Width="120" Height="24" Style="{DynamicResource ResumeProgressBar}" VerticalAlignment="Center">
+                <ProgressBar Minimum="0" Maximum="100" Value="{Binding PlayedPercentage, Mode=OneWay}" Margin="0 5 0 0" Width="120" Height="24" Style="{StaticResource ResumeProgressBar}" VerticalAlignment="Center">
                 </ProgressBar>
             </StackPanel>
         </Grid>
@@ -182,7 +182,7 @@
                         </Style.Triggers>
                     </Style>
                 </Grid.Style>
-                <Image Style="{DynamicResource LikeImage}"></Image>
+                <Image Style="{StaticResource LikeImage}"></Image>
             </Grid>
         </Grid>
 
@@ -200,7 +200,7 @@
                         </Style.Triggers>
                     </Style>
                 </Grid.Style>
-                <Image Style="{DynamicResource DislikeImage}"></Image>
+                <Image Style="{StaticResource DislikeImage}"></Image>
             </Grid>
         </Grid>
 
@@ -218,11 +218,11 @@
                         </Style.Triggers>
                     </Style>
                 </Grid.Style>
-                <Image Style="{DynamicResource FavoriteImage}"></Image>
+                <Image Style="{StaticResource FavoriteImage}"></Image>
             </Grid>
         </Grid>
 
         <!--This textblock is just to make sure the panel always takes up the same amount of vertical space, so that content never moves due to height changes -->
-        <TextBlock Style="{DynamicResource TextBlockStyle}" Visibility="Hidden" Text="P"></TextBlock>
+        <TextBlock Style="{StaticResource TextBlockStyle}" Visibility="Hidden" Text="P"></TextBlock>
     </StackPanel>
 </UserControl>

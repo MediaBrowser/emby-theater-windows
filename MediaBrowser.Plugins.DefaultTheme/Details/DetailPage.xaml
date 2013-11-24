@@ -17,12 +17,12 @@
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" Name="TxtTagline" Style="{DynamicResource TextBlockStyle}" HorizontalAlignment="Center" Margin="400 0 400 10" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"></TextBlock>
-        <TextBlock Grid.Row="0" Name="TxtName" Style="{DynamicResource Heading1TextBlockStyle}" HorizontalAlignment="Center" Margin="300 10 300 10" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"></TextBlock>
+        <TextBlock Grid.Row="0" Name="TxtTagline" Style="{StaticResource TextBlockStyle}" HorizontalAlignment="Center" Margin="400 0 400 10" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"></TextBlock>
+        <TextBlock Grid.Row="0" Name="TxtName" Style="{StaticResource Heading1TextBlockStyle}" HorizontalAlignment="Center" Margin="300 10 300 10" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"></TextBlock>
 
         <controls:ExtendedScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" VerticalAlignment="Top" HorizontalAlignment="Stretch" CanContentScroll="True" Margin="20 40 20 0">
             <controls:ScrollingPanel CanHorizontallyScroll="True" CanVerticallyScroll="False">
-                <controls:ExtendedListBox x:Name="MenuList" ItemsSource="{Binding Sections}" ScrollViewer.CanContentScroll="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" HorizontalAlignment="Stretch" ItemContainerStyle="{DynamicResource DetailPageMenuListBoxItemStyle}">
+                <controls:ExtendedListBox x:Name="MenuList" ItemsSource="{Binding Sections}" ScrollViewer.CanContentScroll="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{StaticResource ListBoxStyle}" HorizontalAlignment="Stretch" ItemContainerStyle="{StaticResource DetailPageMenuListBoxItemStyle}">
                     <controls:ExtendedListBox.ItemsPanel>
                         <ItemsPanelTemplate>
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" />

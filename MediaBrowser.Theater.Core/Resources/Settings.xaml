@@ -16,7 +16,7 @@
             </Image>
 
             <Border Padding="5 5 5 10" Background="#a6000000" VerticalAlignment="Bottom" HorizontalAlignment="Stretch">
-                <TextBlock HorizontalAlignment="Center" Text="{Binding Name}" Style="{DynamicResource TextBlockStyle}" TextWrapping="NoWrap" Foreground="White"></TextBlock>
+                <TextBlock HorizontalAlignment="Center" Text="{Binding Name}" Style="{StaticResource TextBlockStyle}" TextWrapping="NoWrap" Foreground="White"></TextBlock>
             </Border>
         </Grid>
     </DataTemplate>

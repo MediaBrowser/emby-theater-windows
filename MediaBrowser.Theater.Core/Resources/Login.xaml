@@ -56,7 +56,7 @@
                 </Grid.Style>
 
                 <StackPanel Orientation="Vertical" Margin="10 5 0 10">
-                    <TextBlock x:Name="UserName" Foreground="White" Text="{Binding Username}" Style="{DynamicResource TextBlockStyle}"></TextBlock>
+                    <TextBlock x:Name="UserName" Foreground="White" Text="{Binding Username}" Style="{StaticResource TextBlockStyle}"></TextBlock>
                 </StackPanel>
             </Grid>
 

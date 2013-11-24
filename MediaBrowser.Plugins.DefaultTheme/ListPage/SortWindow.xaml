@@ -5,12 +5,12 @@
                                         Title="SortWindow" Height="300" Width="300"
         AllowsTransparency="True"
         Background="Transparent"
-        Style="{DynamicResource ModalWindow}">
+        Style="{StaticResource ModalWindow}">
     <Grid>
-        <Grid Style="{DynamicResource ModalOverlayStyle}">
+        <Grid Style="{StaticResource ModalOverlayStyle}">
 
         </Grid>
-        <Grid Style="{DynamicResource ModalContentStyle}" HorizontalAlignment="Right" VerticalAlignment="Stretch">
+        <Grid Style="{StaticResource ModalContentStyle}" HorizontalAlignment="Right" VerticalAlignment="Stretch">
 
             <Grid Margin="50 40 120 0">
                 <Grid.RowDefinitions>
@@ -19,26 +19,26 @@
                 </Grid.RowDefinitions>
 
                 <StackPanel Orientation="Vertical" Grid.Row="0" MinWidth="500">
-                    <TextBlock Style="{DynamicResource Heading2TextBlockStyle}">Sort By</TextBlock>
+                    <TextBlock Style="{StaticResource Heading2TextBlockStyle}">Sort By</TextBlock>
                     <StackPanel x:Name="PnlOptions" Orientation="Vertical"></StackPanel>
 
-                    <TextBlock Style="{DynamicResource TextBlockStyle}" Grid.Row="2" Grid.Column="0" Margin="0 30 0 0">Sort Order</TextBlock>
+                    <TextBlock Style="{StaticResource TextBlockStyle}" Grid.Row="2" Grid.Column="0" Margin="0 30 0 0">Sort Order</TextBlock>
                     <RadioButton x:Name="RadioAscending" GroupName="SortOrder" Margin="0 25 0 0">
-                        <TextBlock Style="{DynamicResource TextBlockStyle}">Ascending</TextBlock>
+                        <TextBlock Style="{StaticResource TextBlockStyle}">Ascending</TextBlock>
                     </RadioButton>
                     <RadioButton x:Name="RadioDescending" GroupName="SortOrder" Margin="0 20 0 0">
-                        <TextBlock Style="{DynamicResource TextBlockStyle}">Descending</TextBlock>
+                        <TextBlock Style="{StaticResource TextBlockStyle}">Descending</TextBlock>
                     </RadioButton>
 
                     <CheckBox x:Name="ChkRemember" Margin="0 30 0 0" IsChecked="{Binding RememberSorting}">
-                        <TextBlock Text="Remember sorting" Style="{DynamicResource TextBlockStyle}"></TextBlock>
+                        <TextBlock Text="Remember sorting" Style="{StaticResource TextBlockStyle}"></TextBlock>
                     </CheckBox>
                 </StackPanel>
 
-                <Button x:Name="btnClose" Style="{DynamicResource ViewMenuButton}" HorizontalAlignment="Left" Margin="0 50 0 0" Grid.Row="1">
+                <Button x:Name="btnClose" Style="{StaticResource ViewMenuButton}" HorizontalAlignment="Left" Margin="0 50 0 0" Grid.Row="1">
                     <StackPanel Orientation="Horizontal">
                         <Image Source="..\Resources\Images\ViewMenu\Close.png" Stretch="None" />
-                        <TextBlock Style="{DynamicResource TextBlockStyle}" VerticalAlignment="Center" Margin="10 0 0 0">Close</TextBlock>
+                        <TextBlock Style="{StaticResource TextBlockStyle}" VerticalAlignment="Center" Margin="10 0 0 0">Close</TextBlock>
                     </StackPanel>
                 </Button>
             </Grid>

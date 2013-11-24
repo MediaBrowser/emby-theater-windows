@@ -7,11 +7,11 @@
              d:DesignHeight="300" d:DesignWidth="300">
 
     <StackPanel Orientation="Horizontal">
-        <Image x:Name="ImgCommunityRating1" Style="{DynamicResource CommunityRatingImage}"></Image>
-        <Image x:Name="ImgCommunityRating2" Style="{DynamicResource CommunityRatingImage}"></Image>
-        <Image x:Name="ImgCommunityRating3" Style="{DynamicResource CommunityRatingImage}"></Image>
-        <Image x:Name="ImgCommunityRating4" Style="{DynamicResource CommunityRatingImage}"></Image>
-        <Image x:Name="ImgCommunityRating5" Style="{DynamicResource CommunityRatingImage}"></Image>
+        <Image x:Name="ImgCommunityRating1" Style="{StaticResource CommunityRatingImage}"></Image>
+        <Image x:Name="ImgCommunityRating2" Style="{StaticResource CommunityRatingImage}"></Image>
+        <Image x:Name="ImgCommunityRating3" Style="{StaticResource CommunityRatingImage}"></Image>
+        <Image x:Name="ImgCommunityRating4" Style="{StaticResource CommunityRatingImage}"></Image>
+        <Image x:Name="ImgCommunityRating5" Style="{StaticResource CommunityRatingImage}"></Image>
     </StackPanel>
 
 </UserControl>

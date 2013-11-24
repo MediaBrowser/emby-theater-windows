@@ -24,10 +24,10 @@
                     <RowDefinition Height="auto"></RowDefinition>
                 </Grid.RowDefinitions>
 
-                <TextBlock Grid.Row="0" Style="{DynamicResource TextBlockStyle}" Foreground="White" Text="{Binding Name}" Margin="15 10 0 0"></TextBlock>
-                <TextBlock Grid.Row="0" Style="{DynamicResource TextBlockStyle}" Foreground="White" Text="{Binding MediaType}" HorizontalAlignment="Right" Margin="0 10 15 0"></TextBlock>
+                <TextBlock Grid.Row="0" Style="{StaticResource TextBlockStyle}" Foreground="White" Text="{Binding Name}" Margin="15 10 0 0"></TextBlock>
+                <TextBlock Grid.Row="0" Style="{StaticResource TextBlockStyle}" Foreground="White" Text="{Binding MediaType}" HorizontalAlignment="Right" Margin="0 10 15 0"></TextBlock>
 
-                <TextBlock Grid.Row="1" Style="{DynamicResource SmallTextBlockStyle}" Foreground="White" Text="{Binding FileExtensions}" Margin="15 10 0 10" Visibility="{Binding FileExtensionsVisibility}"></TextBlock>
+                <TextBlock Grid.Row="1" Style="{StaticResource SmallTextBlockStyle}" Foreground="White" Text="{Binding FileExtensions}" Margin="15 10 0 10" Visibility="{Binding FileExtensionsVisibility}"></TextBlock>
 
             </Grid>
 
@@ -43,11 +43,11 @@
             <RowDefinition Height="auto"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <TextBlock Style="{DynamicResource Heading1TextBlockStyle}" Margin="0 30 0 30" Grid.Row="0">Custom Players</TextBlock>
+        <TextBlock Style="{StaticResource Heading1TextBlockStyle}" Margin="0 30 0 30" Grid.Row="0">Custom Players</TextBlock>
 
-        <TextBlock Style="{DynamicResource SmallTextBlockStyle}" Grid.Row="1">Configure custom media players to handle specific formats.</TextBlock>
+        <TextBlock Style="{StaticResource SmallTextBlockStyle}" Grid.Row="1">Configure custom media players to handle specific formats.</TextBlock>
 
-        <controls:ExtendedListBox Margin="-40 0 -40 -35" HorizontalAlignment="Stretch" Grid.Row="2" x:Name="LstItems" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{DynamicResource MediaPlayersListBoxItemTemplate}">
+        <controls:ExtendedListBox Margin="-40 0 -40 -35" HorizontalAlignment="Stretch" Grid.Row="2" x:Name="LstItems" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{StaticResource ListBoxStyle}" ItemContainerStyle="{StaticResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource MediaPlayersListBoxItemTemplate}">
             <controls:ExtendedListBox.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel Margin="40 35" Orientation="Vertical"></StackPanel>

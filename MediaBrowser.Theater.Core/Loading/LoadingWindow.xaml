@@ -5,7 +5,7 @@
                                    Title="LoadingWindow" Height="300" Width="300" Background="Transparent">
 
     <Grid>
-        <ContentControl Template="{DynamicResource LoadingTemplate}">
+        <ContentControl Template="{StaticResource LoadingTemplate}">
         </ContentControl>
 
         <Grid.LayoutTransform>

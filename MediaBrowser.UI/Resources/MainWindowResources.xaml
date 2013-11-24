@@ -5,10 +5,10 @@
 
     <!--Default Window style. -->
     <Style TargetType="Window" x:Key="MainWindow">
-        <Setter Property="FontSize" Value="{DynamicResource DefaultFontSize}"/>
-        <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}"/>
-        <Setter Property="FontWeight" Value="{DynamicResource DefaultFontWeight}"/>
-        <Setter Property="Foreground" Value="{DynamicResource DefaultForeground}"/>
+        <Setter Property="FontSize" Value="{StaticResource DefaultFontSize}"/>
+        <Setter Property="FontFamily" Value="{StaticResource DefaultFontFamily}"/>
+        <Setter Property="FontWeight" Value="{StaticResource DefaultFontWeight}"/>
+        <Setter Property="Foreground" Value="{StaticResource DefaultForeground}"/>
         <Setter Property="BorderBrush" Value="#000000"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Style.Triggers>

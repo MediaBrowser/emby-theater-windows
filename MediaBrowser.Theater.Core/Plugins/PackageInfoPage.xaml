@@ -16,7 +16,7 @@
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <TextBlock x:Name="TxtName" Style="{DynamicResource Heading1TextBlockStyle}" Margin="0 30 0 40" Grid.Row="0" HorizontalAlignment="Center"></TextBlock>
+        <TextBlock x:Name="TxtName" Style="{StaticResource Heading1TextBlockStyle}" Margin="0 30 0 40" Grid.Row="0" HorizontalAlignment="Center"></TextBlock>
 
         <Grid Grid.Row="1">
 
@@ -29,7 +29,7 @@
                 <StackPanel Orientation="Vertical">
 
                     <Image x:Name="PackageImage" Width="400" Height="225" Stretch="Uniform"></Image>
-                    <TextBlock x:Name="TxtDeveloper" Style="{DynamicResource TextBlockStyle}" Margin="5 15 0 0"></TextBlock>
+                    <TextBlock x:Name="TxtDeveloper" Style="{StaticResource TextBlockStyle}" Margin="5 15 0 0"></TextBlock>
                 </StackPanel>
             </Grid>
 
@@ -37,21 +37,21 @@
 
                 <StackPanel Orientation="Vertical">
 
-                    <TextBlock x:Name="TxtTagline" Style="{DynamicResource SmallTextBlockStyle}" Margin="0 0 0 30" Grid.Row="1"></TextBlock>
+                    <TextBlock x:Name="TxtTagline" Style="{StaticResource SmallTextBlockStyle}" Margin="0 0 0 30" Grid.Row="1"></TextBlock>
 
-                    <TextBlock x:Name="TxtDescription" Style="{DynamicResource SmallTextBlockStyle}"></TextBlock>
+                    <TextBlock x:Name="TxtDescription" Style="{StaticResource SmallTextBlockStyle}"></TextBlock>
 
-                    <TextBlock Style="{DynamicResource Heading2TextBlockStyle}" Margin="0 40 0 0">Select version to install</TextBlock>
+                    <TextBlock Style="{StaticResource Heading2TextBlockStyle}" Margin="0 40 0 0">Select version to install</TextBlock>
 
                     <controls:SelectList x:Name="SelectVersion" Margin="0 30 0 0"></controls:SelectList>
 
                     <StackPanel x:Name="PnlReleaseNotes" Orientation="Vertical">
-                        <TextBlock Style="{DynamicResource Heading2TextBlockStyle}" Margin="0 40 0 0">Release Notes</TextBlock>
-                        <TextBlock x:Name="TxtReleaseNotes" Style="{DynamicResource SmallTextBlockStyle}"></TextBlock>
+                        <TextBlock Style="{StaticResource Heading2TextBlockStyle}" Margin="0 40 0 0">Release Notes</TextBlock>
+                        <TextBlock x:Name="TxtReleaseNotes" Style="{StaticResource SmallTextBlockStyle}"></TextBlock>
                     </StackPanel>
 
                     <Button x:Name="BtnInstall" Margin="0 30 0 0">
-                        <TextBlock Style="{DynamicResource TextBlockStyle}">Install</TextBlock>
+                        <TextBlock Style="{StaticResource TextBlockStyle}">Install</TextBlock>
                     </Button>
                 </StackPanel>
             </Grid>

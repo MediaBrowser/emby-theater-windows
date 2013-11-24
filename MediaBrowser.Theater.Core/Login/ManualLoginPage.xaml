@@ -15,18 +15,18 @@
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <TextBlock Text="please sign in >" Grid.Row="0" HorizontalAlignment="Left" Style="{DynamicResource Heading2TextBlockStyle}" Margin="0 30 0 0"></TextBlock>
+        <TextBlock Text="please sign in >" Grid.Row="0" HorizontalAlignment="Left" Style="{StaticResource Heading2TextBlockStyle}" Margin="0 30 0 0"></TextBlock>
 
         <StackPanel Grid.Row="1" Orientation="Vertical" Margin="0 40 0 0">
             
-            <TextBlock Style="{DynamicResource TextBlockStyle}" Text="Username"></TextBlock>
+            <TextBlock Style="{StaticResource TextBlockStyle}" Text="Username"></TextBlock>
             <TextBox x:Name="TxtUsername"></TextBox>
 
-            <TextBlock Style="{DynamicResource TextBlockStyle}" Text="Password" Margin="0 40 0 0"></TextBlock>
+            <TextBlock Style="{StaticResource TextBlockStyle}" Text="Password" Margin="0 40 0 0"></TextBlock>
             <PasswordBox x:Name="TxtPassword"></PasswordBox>
 
             <Button x:Name="BtnSubmit" Margin="0 40 0 0" IsDefault="True">
-                <TextBlock Style="{DynamicResource TextBlockStyle}" Text="Sign In"></TextBlock>
+                <TextBlock Style="{StaticResource TextBlockStyle}" Text="Sign In"></TextBlock>
             </Button>
         </StackPanel>
     </Grid>

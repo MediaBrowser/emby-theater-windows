@@ -20,20 +20,6 @@
         </Setter>
     </Style>
 
-    <Style TargetType="TextBlock" x:Key="MediaInfoTextBlock" BasedOn="{StaticResource SmallTextBlockStyle}">
-        <Setter Property="VerticalAlignment" Value="Center" />
-        <Setter Property="FontSize" Value="25" />
-        <Setter Property="Foreground" Value="#000" />
-        <Setter Property="FontFamily" Value="pack://application:,,,/MediaBrowser.Plugins.DefaultTheme;component/Resources/#Gotham Medium" />
-    </Style>
-
-    <Style TargetType="TextBlock" x:Key="BoldHeaderTextBlock" BasedOn="{StaticResource Heading1TextBlockStyle}">
-        <Setter Property="Opacity" Value=".8" />
-        <Setter Property="FontSize" Value="60" />
-        <Setter Property="FontFamily" Value="Segoe UI" />
-        <Setter Property="FontWeight" Value="Bold" />
-    </Style>
-
     <Style TargetType="Image" x:Key="CommunityRatingImage">
         <Setter Property="Stretch" Value="Uniform"/>
         <Setter Property="Height" Value="30" />
@@ -66,12 +52,11 @@
     </Style>
 
     <Style TargetType="ProgressBar" x:Key="ResumeProgressBar">
-        <Setter Property="Foreground" Value="{DynamicResource MediaBrowserAccent}"/>
-        <Setter Property="Background" Value="Black"/>
+        <Setter Property="Foreground" Value="{StaticResource MediaBrowserAccent}"/>
+        <Setter Property="Background" Value="#a6000000"/>
         <Setter Property="BorderBrush" Value="#666666"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="Height" Value="20"/>
-        <Setter Property="Opacity" Value=".7"/>
     </Style>
 
     <ControlTemplate x:Key="FullscreenVideoOsdTemplate">
@@ -147,8 +132,8 @@
                             </Style>
                         </StackPanel.Style>
 
-                        <TextBlock Style="{DynamicResource TextBlockStyle}" Text="MEDIA"></TextBlock>
-                        <TextBlock Style="{DynamicResource TextBlockStyle}" Text="BROWSER" Foreground="{DynamicResource MediaBrowserAccent}"></TextBlock>
+                        <TextBlock Style="{StaticResource TextBlockStyle}" Text="MEDIA"></TextBlock>
+                        <TextBlock Style="{StaticResource TextBlockStyle}" Text="BROWSER" Foreground="{StaticResource MediaBrowserAccent}"></TextBlock>
                     </StackPanel>
 
                     <Image Source="{Binding LogoImage}" Margin="0 10 0 0" MaxHeight="70" MaxWidth="550" VerticalAlignment="Top" HorizontalAlignment="Left" Stretch="Uniform">
@@ -230,7 +215,7 @@
 
                             <Grid>
                                 <Grid Width="40" Height="40" />
-                                <Path Fill="{DynamicResource MediaBrowserAccent}" Data="F1M1350.51,1910.79C1339.79,1910.79,1330.8,1918.3,1328.49,1928.33L1319.8,1928.23 1331.56,1947.22 1343.76,1928.52 1335.7,1928.42C1337.8,1922.21 1343.61,1917.71 1350.51,1917.71 1359.17,1917.71 1366.22,1924.76 1366.22,1933.41 1366.22,1942.08 1359.17,1949.12 1350.51,1949.12 1347.31,1949.12 1344.34,1948.15 1341.85,1946.5L1338.07,1952.29C1341.64,1954.66 1345.92,1956.04 1350.51,1956.04 1362.99,1956.04 1373.14,1945.89 1373.14,1933.41 1373.14,1920.94 1362.99,1910.79 1350.51,1910.79z" Stretch="Uniform" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+                                <Path Fill="{StaticResource MediaBrowserAccent}" Data="F1M1350.51,1910.79C1339.79,1910.79,1330.8,1918.3,1328.49,1928.33L1319.8,1928.23 1331.56,1947.22 1343.76,1928.52 1335.7,1928.42C1337.8,1922.21 1343.61,1917.71 1350.51,1917.71 1359.17,1917.71 1366.22,1924.76 1366.22,1933.41 1366.22,1942.08 1359.17,1949.12 1350.51,1949.12 1347.31,1949.12 1344.34,1948.15 1341.85,1946.5L1338.07,1952.29C1341.64,1954.66 1345.92,1956.04 1350.51,1956.04 1362.99,1956.04 1373.14,1945.89 1373.14,1933.41 1373.14,1920.94 1362.99,1910.79 1350.51,1910.79z" Stretch="Uniform" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
                                 </Path>
                             </Grid>
                         </Button>
@@ -297,7 +282,7 @@
                             </Grid>
                         </Button>
 
-                        <Button Style="{DynamicResource ImageButton}" Margin="0 0 30 0" Visibility="Collapsed">
+                        <Button Style="{StaticResource ImageButton}" Margin="0 0 30 0" Visibility="Collapsed">
                             <Grid>
                                 <Grid Width="40" Height="40" />
                                 <Path Style="{DynamicResource IconPath}" Data="F1M54.8672,51.2266L42.1145,36.0703C44.2473,33.3333 45.6692,29.9946 46.0469,26.2942 47.1016,15.8333 39.4948,6.49219 29.0313,5.43213 18.5729,4.37231 9.2395,11.9868 8.17188,22.4453 7.10938,32.9036 14.7291,42.2446 25.1875,43.3098 28.6692,43.6563 32.0416,43.0469 35.0051,41.6797L47.9244,57.0547C49.5416,58.9634 52.401,59.2134 54.3125,57.6094 56.2266,55.9973 56.4766,53.1348 54.8672,51.2266 M15.9219,23.1614C16.5547,16.9399 22.1094,12.4087 28.3333,13.0391 34.5573,13.6719 39.0781,19.2266 38.4453,25.4426 37.8098,31.6692 32.2708,36.1953 26.0416,35.5703 19.8203,34.9399 15.2891,29.3828 15.9219,23.1614" Stretch="Uniform" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
@@ -305,7 +290,7 @@
                             </Grid>
                         </Button>
 
-                        <Button Margin="0 0 30 0" VerticalAlignment="Top" HorizontalAlignment="Left" Style="{DynamicResource ImageButton}" Command="{Binding HomeCommand}">
+                        <Button Margin="0 0 30 0" VerticalAlignment="Top" HorizontalAlignment="Left" Style="{StaticResource ImageButton}" Command="{Binding HomeCommand}">
 
                             <Grid>
                                 <Grid Width="40" Height="40" />
@@ -314,7 +299,7 @@
                             </Grid>
                         </Button>
 
-                        <Button Style="{DynamicResource ImageButton}" Margin="0 0 30 0" Command="{Binding SettingsCommand}">
+                        <Button Style="{StaticResource ImageButton}" Margin="0 0 30 0" Command="{Binding SettingsCommand}">
                             <Grid>
                                 <Grid Width="40" Height="40" />
                                 <Path Style="{DynamicResource IconPath}" Data="F1M-515.802,331.242C-515.789,329.857,-515.923,328.495,-516.128,327.172L-510.578,322.745C-512.008,317.424,-514.756,312.655,-518.482,308.812L-525.111,311.322C-527.209,309.586,-529.594,308.195,-532.179,307.198L-533.233,300.195C-535.788,299.515 -538.464,299.107 -541.237,299.086 -544.006,299.07 -546.686,299.44 -549.259,300.088L-550.396,307.078C-552.989,308.052,-555.398,309.403,-557.514,311.117L-564.117,308.526C-567.886,312.318,-570.696,317.047,-572.198,322.354L-566.702,326.846C-566.924,328.172 -567.071,329.531 -567.083,330.919 -567.093,332.318 -566.962,333.672 -566.752,335.005L-572.311,339.427C-570.872,344.742,-568.124,349.518,-564.398,353.354L-557.769,350.851C-555.674,352.581,-553.284,353.971,-550.698,354.976L-549.656,361.976C-547.092,362.659 -544.416,363.065 -541.647,363.086 -538.875,363.096 -536.198,362.729 -533.63,362.086L-532.482,355.088C-529.891,354.114,-527.484,352.763,-525.362,351.062L-518.771,353.651C-514.998,349.851,-512.192,345.12,-510.687,339.82L-516.182,335.333C-515.959,333.997,-515.814,332.643,-515.802,331.242z M-541.53,344.336C-548.84,344.292 -554.737,338.318 -554.689,331 -554.641,323.68 -548.673,317.784 -541.354,317.833 -534.035,317.88 -528.139,323.851 -528.187,331.172 -528.235,338.495 -534.205,344.385 -541.53,344.336z" Stretch="Uniform" Width="26" Height="26" RenderTransformOrigin="0.5,0.5">
@@ -369,9 +354,9 @@
                         </Button>
 
                         <!--Display Clock-->
-                        <TextBlock x:Name="CurrentTimeLeft"  Style="{DynamicResource TextBlockStyle}" Text="{Binding TimeLeft}">
+                        <TextBlock x:Name="CurrentTimeLeft"  Style="{StaticResource TextBlockStyle}" Text="{Binding TimeLeft}">
                         </TextBlock>
-                        <TextBlock x:Name="CurrentTimeRight" Style="{DynamicResource TextBlockStyle}" Text="{Binding TimeRight}" Foreground="{DynamicResource MediaBrowserAccent}">
+                        <TextBlock x:Name="CurrentTimeRight" Style="{StaticResource TextBlockStyle}" Text="{Binding TimeRight}" Foreground="{StaticResource MediaBrowserAccent}">
                         </TextBlock>
                     </StackPanel>
 
@@ -390,13 +375,13 @@
             <Image HorizontalAlignment="Center" Source="{Binding Image}" Stretch="{Binding ImageStretch}" Visibility="{Binding ImageVisibility}">
             </Image>
 
-            <Border Background="#a6000000" Padding="10 0" Visibility="{Binding DefaultImageVisibility}">
-                <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding DisplayName}" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="White"></TextBlock>
+            <Border Background="{DynamicResource PanelBackground}" Padding="10 0" Visibility="{Binding DefaultImageVisibility}">
+                <TextBlock Style="{StaticResource TextBlockStyle}" Text="{Binding DisplayName}" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{DynamicResource TextForegroundOverBackground}"></TextBlock>
             </Border>
 
             <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Orientation="Vertical" Background="{DynamicResource TextBackground}">
 
-                <TextBlock x:Name="TxtName" Foreground="White" Margin="10 5 10 0" TextWrapping="NoWrap" Text="{Binding DisplayName}" TextTrimming="CharacterEllipsis" MaxWidth="{Binding ImageWidth}" HorizontalAlignment="Left" Visibility="{Binding DisplayNameVisibility}" Style="{DynamicResource TextBlockStyle}">
+                <TextBlock x:Name="TxtName" Foreground="{DynamicResource TextForegroundOverBackground}" Margin="10 5 10 0" TextWrapping="NoWrap" Text="{Binding DisplayName}" TextTrimming="CharacterEllipsis" MaxWidth="{Binding ImageWidth}" HorizontalAlignment="Left" Visibility="{Binding DisplayNameVisibility}" Style="{StaticResource TextBlockStyle}">
                 </TextBlock>
 
                 <ProgressBar x:Name="PlaybackProgress"  Minimum="0" Maximum="100" Value="{Binding PlayedPercentage, Mode=OneWay}" Margin="10 10 10 5">
@@ -423,7 +408,7 @@
                     </ProgressBar.Style>
                 </ProgressBar>
 
-                <TextBlock x:Name="TxtDuration" Foreground="White" Margin="10 5 10 0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Text="{Binding DurationShortTimeString}">
+                <TextBlock x:Name="TxtDuration" Foreground="{DynamicResource TextForegroundOverBackground}" Margin="10 5 10 0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Text="{Binding DurationShortTimeString}">
                     <TextBlock.Style>
                         <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
                             <Setter Property="Visibility" Value="Collapsed"></Setter>
@@ -488,7 +473,7 @@
                 </Path>
             </Grid>
 
-            <TextBlock Foreground="White" Background="#c666C010" VerticalAlignment="Top" HorizontalAlignment="Right" Padding="10 2 10 5" Text="NEW">
+            <TextBlock Foreground="{DynamicResource TextForegroundOverBackground}" Background="#c666C010" VerticalAlignment="Top" HorizontalAlignment="Right" Padding="10 2 10 5" Text="NEW">
                 <TextBlock.Style>
                     <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
                         <Style.Triggers>
@@ -509,7 +494,7 @@
                 </TextBlock.Style>
             </TextBlock>
 
-            <TextBlock Background="#c666C010" VerticalAlignment="Top" HorizontalAlignment="Right" Foreground="White" Padding="10 2 10 5" Text="{Binding RecursiveUnplayedItemCount, StringFormat='{}{0} NEW'}">
+            <TextBlock Background="#c666C010" VerticalAlignment="Top" HorizontalAlignment="Right" Foreground="{DynamicResource TextForegroundOverBackground}" Padding="10 2 10 5" Text="{Binding RecursiveUnplayedItemCount, StringFormat='{}{0} NEW'}">
                 <TextBlock.Style>
                     <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SmallTextBlockStyle}">
                         <Style.Triggers>
@@ -527,7 +512,7 @@
                 </TextBlock.Style>
             </TextBlock>
 
-            <TextBlock Background="{DynamicResource SpecialIndicatorBackground}" VerticalAlignment="Top" HorizontalAlignment="Right" Foreground="White" Margin="10 5" Text="OFFLINE">
+            <TextBlock Background="{DynamicResource SpecialIndicatorBackground}" VerticalAlignment="Top" HorizontalAlignment="Right" Foreground="{DynamicResource TextForegroundOverBackground}" Margin="10 5" Text="OFFLINE">
                 <TextBlock.Style>
                     <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SmallTextBlockStyle}">
                         <Style.Triggers>
@@ -565,11 +550,11 @@
                     </Image>
                 </Grid>
 
-                <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding DisplayName}" Grid.Column="1" Margin="20 -5 90 0" MaxWidth="700" VerticalAlignment="Center" HorizontalAlignment="Left"></TextBlock>
+                <TextBlock Style="{StaticResource TextBlockStyle}" Text="{Binding DisplayName}" Grid.Column="1" Margin="20 -5 90 0" MaxWidth="700" VerticalAlignment="Center" HorizontalAlignment="Left"></TextBlock>
 
                 <StackPanel Grid.Column="2" Orientation="Horizontal">
 
-                    <TextBlock Background="{DynamicResource SpecialIndicatorBackground}" Foreground="White" Padding="10 5" Margin="10 0 0 0" Height="50" VerticalAlignment="Center" Text="OFFLINE">
+                    <TextBlock Background="{DynamicResource SpecialIndicatorBackground}" Foreground="{DynamicResource TextForegroundOverBackground}" Padding="10 5" Margin="10 0 0 0" Height="50" VerticalAlignment="Center" Text="OFFLINE">
                         <TextBlock.Style>
                             <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SmallTextBlockStyle}">
                                 <Style.Triggers>
@@ -581,7 +566,7 @@
                         </TextBlock.Style>
                     </TextBlock>
 
-                    <TextBlock Background="{DynamicResource SpecialIndicatorBackground}" Foreground="White" Padding="10 5" Margin="10 0 0 0" Height="50" VerticalAlignment="Center" Text="MISSING">
+                    <TextBlock Background="{DynamicResource SpecialIndicatorBackground}" Foreground="{DynamicResource TextForegroundOverBackground}" Padding="10 5" Margin="10 0 0 0" Height="50" VerticalAlignment="Center" Text="MISSING">
                         <TextBlock.Style>
                             <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SmallTextBlockStyle}">
                                 <Style.Triggers>
@@ -593,7 +578,7 @@
                         </TextBlock.Style>
                     </TextBlock>
 
-                    <TextBlock Background="{DynamicResource SpecialIndicatorBackground}" Foreground="White" Padding="10 5" Margin="10 0 0 0" Height="50" VerticalAlignment="Center" Text="UNAIRED">
+                    <TextBlock Background="{DynamicResource SpecialIndicatorBackground}" Foreground="{DynamicResource TextForegroundOverBackground}" Padding="10 5" Margin="10 0 0 0" Height="50" VerticalAlignment="Center" Text="UNAIRED">
                         <TextBlock.Style>
                             <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SmallTextBlockStyle}">
                                 <Style.Triggers>
@@ -646,7 +631,7 @@
                 </StackPanel>
             </Grid>
 
-            <Border Background="#666" Height="2" Margin="0 0 0 0" Opacity=".6"></Border>
+            <Border Background="#a6666666" Height="2" Margin="0 0 0 0"></Border>
         </StackPanel>
     </DataTemplate>
 
@@ -657,7 +642,7 @@
 
                     <StackPanel Margin="50 0" Orientation="Horizontal">
 
-                        <TextBlock Opacity=".3" x:Name="MenuText" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Text="{Binding DisplayName}" Style="{DynamicResource Heading1TextBlockStyle}"></TextBlock>
+                        <TextBlock Opacity=".3" x:Name="MenuText" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Text="{Binding DisplayName}" Style="{StaticResource Heading1TextBlockStyle}"></TextBlock>
                     </StackPanel>
 
                     <ControlTemplate.Triggers>

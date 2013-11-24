@@ -3,20 +3,20 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                                         xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
                           Title="UserProfileWindow" Height="300" Width="300"
-        Style="{DynamicResource ModalWindow}" Cursor="None">
+        Style="{StaticResource ModalWindow}" Cursor="None">
 
     <Grid x:Name="MainGrid">
-        <Grid Style="{DynamicResource ModalOverlayStyle}">
+        <Grid Style="{StaticResource ModalOverlayStyle}">
 
         </Grid>
-        <Grid Style="{DynamicResource ModalContentStyle}" HorizontalAlignment="Right" VerticalAlignment="Stretch" x:Name="ContentGrid">
+        <Grid Style="{StaticResource ModalContentStyle}" HorizontalAlignment="Right" VerticalAlignment="Stretch" x:Name="ContentGrid">
 
-            <Button x:Name="BtnClose" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="25 33 0 0" Style="{DynamicResource ImageButton}">
+            <Button x:Name="BtnClose" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="25 33 0 0" Style="{StaticResource ImageButton}">
                 <Grid>
                     <Grid Width="40" Height="40">
-                        <Path Style="{DynamicResource IconPath}" Data="M50.5,4.7500001C25.232973,4.75 4.75,25.232973 4.7500001,50.5 4.75,75.767029 25.232973,96.25 50.5,96.25 75.767029,96.25 96.25,75.767029 96.25,50.5 96.25,25.232973 75.767029,4.75 50.5,4.7500001z M50.5,0C78.390381,0 101,22.609621 101,50.5 101,78.390381 78.390381,101 50.5,101 22.609621,101 0,78.390381 0,50.5 0,22.609621 22.609621,0 50.5,0z" Stretch="Fill" Name="Stroke" Visibility="Visible" />
+                        <Path Style="{StaticResource IconPath}" Data="M50.5,4.7500001C25.232973,4.75 4.75,25.232973 4.7500001,50.5 4.75,75.767029 25.232973,96.25 50.5,96.25 75.767029,96.25 96.25,75.767029 96.25,50.5 96.25,25.232973 75.767029,4.75 50.5,4.7500001z M50.5,0C78.390381,0 101,22.609621 101,50.5 101,78.390381 78.390381,101 50.5,101 22.609621,101 0,78.390381 0,50.5 0,22.609621 22.609621,0 50.5,0z" Stretch="Fill" Name="Stroke" Visibility="Visible" />
                     </Grid>
-                    <Path Style="{DynamicResource IconPath}" Data="F1M-800.86,-1379.55L-781.99,-1360.68 -782.125,-1360.54 -792.356,-1360.54 -809.825,-1378.01 -815.075,-1383.26 -792.494,-1405.84 -781.99,-1405.84 -800.86,-1386.97 -751.074,-1386.97 -751.074,-1379.55 -800.86,-1379.55z" Stretch="Uniform" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+                    <Path Style="{StaticResource IconPath}" Data="F1M-800.86,-1379.55L-781.99,-1360.68 -782.125,-1360.54 -792.356,-1360.54 -809.825,-1378.01 -815.075,-1383.26 -792.494,-1405.84 -781.99,-1405.84 -800.86,-1386.97 -751.074,-1386.97 -751.074,-1379.55 -800.86,-1379.55z" Stretch="Uniform" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
                         <Path.RenderTransform>
                             <TransformGroup>
                                 <TransformGroup.Children>
@@ -45,7 +45,7 @@
                         </Grid.Style>
 
                         <Grid Width="54" Height="54" />
-                        <Path Style="{DynamicResource IconPath}" Data="M15.930851,36.710608C22.14356,36.647291 30.005098,41.570198 30.005098,41.570198 38.080673,46.45562 45.657448,38.281082 45.657448,38.281082 48.847534,35.288968 53.432121,42.865801 53.432121,42.865801 59.214702,51.040343 59.414001,64.000004 59.414001,64.000004L0,64.000004C2.092523,41.669198 12.360659,37.482978 12.360659,37.482978 13.423015,36.951675 14.64142,36.723749 15.930851,36.710608z M33.0965,0C42.015587,0 49.245998,7.8997269 49.245998,17.644449 49.245998,27.390621 42.015587,35.288998 33.0965,35.288999 24.177311,35.288998 16.947,27.390621 16.947,17.644449 16.947,7.8997269 24.177311,0 33.0965,0z" Stretch="Uniform" Width="54" Height="54" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+                        <Path Style="{StaticResource IconPath}" Data="M15.930851,36.710608C22.14356,36.647291 30.005098,41.570198 30.005098,41.570198 38.080673,46.45562 45.657448,38.281082 45.657448,38.281082 48.847534,35.288968 53.432121,42.865801 53.432121,42.865801 59.214702,51.040343 59.414001,64.000004 59.414001,64.000004L0,64.000004C2.092523,41.669198 12.360659,37.482978 12.360659,37.482978 13.423015,36.951675 14.64142,36.723749 15.930851,36.710608z M33.0965,0C42.015587,0 49.245998,7.8997269 49.245998,17.644449 49.245998,27.390621 42.015587,35.288998 33.0965,35.288999 24.177311,35.288998 16.947,27.390621 16.947,17.644449 16.947,7.8997269 24.177311,0 33.0965,0z" Stretch="Uniform" Width="54" Height="54" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
                             <Path.RenderTransform>
                                 <TransformGroup>
                                     <TransformGroup.Children>
@@ -69,7 +69,7 @@
                         </Image.Style>
                     </Image>
 
-                    <TextBlock Style="{DynamicResource Heading2TextBlockStyle}" Margin="20 0 0 0" Text="{Binding Username}"></TextBlock>
+                    <TextBlock Style="{StaticResource Heading2TextBlockStyle}" Margin="20 0 0 0" Text="{Binding Username}"></TextBlock>
                 </StackPanel>
 
                 <Button HorizontalAlignment="Left" Margin="0 30 0 0" Command="{Binding LogoutCommand}">
@@ -84,7 +84,7 @@
                                 </TransformGroup>
                             </Path.RenderTransform>
                         </Path>
-                        <TextBlock Style="{DynamicResource TextBlockStyle}" VerticalAlignment="Center" Margin="20 0 0 5">Sign out</TextBlock>
+                        <TextBlock Style="{StaticResource TextBlockStyle}" VerticalAlignment="Center" Margin="20 0 0 5">Sign out</TextBlock>
                     </StackPanel>
                 </Button>
 
@@ -100,7 +100,7 @@
                                 </TransformGroup>
                             </Path.RenderTransform>
                         </Path>
-                        <TextBlock Style="{DynamicResource TextBlockStyle}" VerticalAlignment="Center" Margin="20 0 0 5">Exit Media Browser</TextBlock>
+                        <TextBlock Style="{StaticResource TextBlockStyle}" VerticalAlignment="Center" Margin="20 0 0 5">Exit Media Browser</TextBlock>
                     </StackPanel>
                 </Button>
             </StackPanel>

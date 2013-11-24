@@ -10,7 +10,7 @@
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <controls:ExtendedListBox x:Name="MenuList" ItemsSource="{Binding Sections}" Command="{Binding TabCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" Grid.Row="0" HorizontalAlignment="Stretch" Margin="55 80 0 0" ItemContainerStyle="{StaticResource HomePageListBoxItemStyle}">
+        <controls:ExtendedListBox x:Name="MenuList" ItemsSource="{Binding Sections}" Command="{Binding TabCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{StaticResource ListBoxStyle}" Grid.Row="0" HorizontalAlignment="Stretch" Margin="55 80 0 0" ItemContainerStyle="{StaticResource HomePageListBoxItemStyle}">
             <controls:ExtendedListBox.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel Orientation="Horizontal" />
@@ -29,18 +29,14 @@
                                 <DataTrigger Binding="{Binding CurrentSection}" Value="movies">
                                     <Setter Property="Content">
                                         <Setter.Value>
-                                            <Grid>
-                                                <ContentControl Content="{Binding ContentViewModel}" ContentTemplate="{DynamicResource MoviesViewTemplate}"></ContentControl>
-                                            </Grid>
+                                            <ContentControl Content="{Binding ContentViewModel}" ContentTemplate="{StaticResource MoviesViewTemplate}"></ContentControl>
                                         </Setter.Value>
                                     </Setter>
                                 </DataTrigger>
                                 <DataTrigger Binding="{Binding CurrentSection}" Value="tv">
                                     <Setter Property="Content">
                                         <Setter.Value>
-                                            <Grid>
-                                                <ContentControl Content="{Binding ContentViewModel}" ContentTemplate="{DynamicResource TvViewTemplate}"></ContentControl>
-                                            </Grid>
+                                            <ContentControl Content="{Binding ContentViewModel}" ContentTemplate="{StaticResource TvViewTemplate}"></ContentControl>
                                         </Setter.Value>
                                     </Setter>
                                 </DataTrigger>
@@ -54,15 +50,13 @@
                                 <DataTrigger Binding="{Binding CurrentSection}" Value="apps">
                                     <Setter Property="Content">
                                         <Setter.Value>
-                                            <Grid>
-                                                <controls:ExtendedListBox Margin="-20 0" DataContext="{Binding ContentViewModel}" ItemsSource="{Binding Apps}" Command="{Binding LaunchCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource AppListBoxItemTemplate}">
-                                                    <controls:ExtendedListBox.ItemsPanel>
-                                                        <ItemsPanelTemplate>
-                                                            <UniformGrid Margin="20 20" Rows="2"></UniformGrid>
-                                                        </ItemsPanelTemplate>
-                                                    </controls:ExtendedListBox.ItemsPanel>
-                                                </controls:ExtendedListBox>
-                                            </Grid>
+                                            <controls:ExtendedListBox Margin="-20 0" DataContext="{Binding ContentViewModel}" ItemsSource="{Binding Apps}" Command="{Binding LaunchCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{StaticResource ListBoxStyle}" ItemContainerStyle="{StaticResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource AppListBoxItemTemplate}">
+                                                <controls:ExtendedListBox.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <UniformGrid Margin="20 20" Rows="2"></UniformGrid>
+                                                    </ItemsPanelTemplate>
+                                                </controls:ExtendedListBox.ItemsPanel>
+                                            </controls:ExtendedListBox>
                                         </Setter.Value>
                                     </Setter>
                                 </DataTrigger>
@@ -70,7 +64,7 @@
                                     <Setter Property="Content">
                                         <Setter.Value>
                                             <Grid>
-                                                <controls:ExtendedListBox Margin="-20 0" DataContext="{Binding ContentViewModel}" ItemsSource="{Binding ListCollectionView}" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource HomePageItemTemplate}">
+                                                <controls:ExtendedListBox Margin="-20 0" DataContext="{Binding ContentViewModel}" ItemsSource="{Binding ListCollectionView}" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{StaticResource ListBoxStyle}" ItemContainerStyle="{StaticResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource HomePageItemTemplate}">
                                                     <controls:ExtendedListBox.ItemsPanel>
                                                         <ItemsPanelTemplate>
                                                             <UniformGrid Margin="20 20" Rows="2"></UniformGrid>
@@ -84,18 +78,7 @@
                                 <DataTrigger Binding="{Binding CurrentSection}" Value="games">
                                     <Setter Property="Content">
                                         <Setter.Value>
-                                            <Grid>
-                                                <ContentControl Content="{Binding ContentViewModel}" ContentTemplate="{DynamicResource GamesViewTemplate}"></ContentControl>
-                                            </Grid>
-                                        </Setter.Value>
-                                    </Setter>
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding CurrentSection}" Value="favorites">
-                                    <Setter Property="Content">
-                                        <Setter.Value>
-                                            <Grid>
-                                                <ContentControl Content="{Binding ContentViewModel}" ContentTemplate="{DynamicResource FavoritesViewTemplate}"></ContentControl>
-                                            </Grid>
+                                            <ContentControl Content="{Binding ContentViewModel}" ContentTemplate="{StaticResource GamesViewTemplate}"></ContentControl>
                                         </Setter.Value>
                                     </Setter>
                                 </DataTrigger>

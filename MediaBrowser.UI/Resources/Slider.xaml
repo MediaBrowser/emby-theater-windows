@@ -14,7 +14,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type RepeatButton}">
-                    <Border Height="16" CornerRadius="0" Margin="0,0,-10,0" Background="{DynamicResource MediaBrowserAccent}" Opacity=".6">
+                    <Border Height="16" CornerRadius="0" Margin="0,0,-10,0" Background="{StaticResource MediaBrowserAccent}" Opacity=".6">
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
@@ -45,7 +45,7 @@
                 <ControlTemplate TargetType="{x:Type Thumb}">
                     <Rectangle  
       Name="Ellipse" 
-      Fill="{DynamicResource SliderThumbGradient}"
+      Fill="{StaticResource SliderThumbGradient}"
       Stroke="#404040"
       StrokeThickness="1" />
                     <ControlTemplate.Triggers>

@@ -9,7 +9,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                    <TextBlock Opacity=".4" x:Name="MenuText" Margin="50 0" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Text="{Binding DisplayName}" Style="{DynamicResource Heading1TextBlockStyle}"></TextBlock>
+                    <TextBlock Opacity=".4" x:Name="MenuText" Margin="50 0" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Text="{Binding DisplayName}" Style="{StaticResource Heading1TextBlockStyle}"></TextBlock>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsSelected" Value="true">
                             <Setter TargetName="MenuText" Property="Opacity" Value="1"/>
@@ -80,7 +80,7 @@
             <controls:ExtendedScrollViewer Grid.Row="0" Margin="0 0 0 0" VerticalAlignment="Stretch" HorizontalAlignment="Center" CanContentScroll="True" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" >
 
                 <controls:ScrollingPanel HorizontalAlignment="Stretch" CanHorizontallyScroll="True" CanVerticallyScroll="False">
-                    <controls:ExtendedListBox ItemsSource="{Binding ListCollectionView}" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{DynamicResource ListItemTemplate}">
+                    <controls:ExtendedListBox ItemsSource="{Binding ListCollectionView}" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{StaticResource ListBoxStyle}" ItemContainerStyle="{StaticResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{DynamicResource ListItemTemplate}">
                         <controls:ExtendedListBox.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <StackPanel Orientation="Horizontal" Margin="80 20"></StackPanel>
@@ -140,7 +140,7 @@
             <controls:ExtendedScrollViewer Grid.Row="0" VerticalAlignment="Stretch" HorizontalAlignment="Center" CanContentScroll="True" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" >
 
                 <controls:ScrollingPanel HorizontalAlignment="Stretch" CanHorizontallyScroll="True" CanVerticallyScroll="False">
-                    <controls:ExtendedListBox ItemsSource="{Binding ListCollectionView}" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{DynamicResource ListItemTemplate}">
+                    <controls:ExtendedListBox ItemsSource="{Binding ListCollectionView}" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{StaticResource ListBoxStyle}" ItemContainerStyle="{StaticResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{DynamicResource ListItemTemplate}">
                         <controls:ExtendedListBox.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <StackPanel Orientation="Horizontal" Margin="80 20"></StackPanel>
@@ -194,11 +194,11 @@
 
                     <details1:ItemImage DataContext="{Binding CurrentItem}" ImageType="EpisodeThumb" MaxHeight="320" Margin="0 25 0 20" HorizontalAlignment="Left"></details1:ItemImage>
 
-                    <TextBlock Style="{DynamicResource Heading2TextBlockStyle}" DataContext="{Binding CurrentItem}" Text="{Binding DisplayName}" Margin="0 0 0 0" MaxWidth="900"></TextBlock>
+                    <TextBlock Style="{StaticResource Heading2TextBlockStyle}" DataContext="{Binding CurrentItem}" Text="{Binding DisplayName}" Margin="0 0 0 0" MaxWidth="900"></TextBlock>
 
                     <Border Background="#999" Height="2" Margin="0 10 0 0"></Border>
 
-                    <TextBlock Style="{DynamicResource TextBlockStyle}" Margin="0 10 0 0" DataContext="{Binding CurrentItem}" Text="{Binding Overview}" MaxHeight="290" Width="900"></TextBlock>
+                    <TextBlock Style="{StaticResource TextBlockStyle}" Margin="0 10 0 0" DataContext="{Binding CurrentItem}" Text="{Binding Overview}" MaxHeight="290" Width="900"></TextBlock>
 
                     <details:ItemInfoFooter DataContext="{Binding CurrentItem}" ShowResumeProgress="False" Margin="0 30 0 0">
                     </details:ItemInfoFooter>
@@ -210,7 +210,7 @@
             <controls:ExtendedScrollViewer Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Right" CanContentScroll="True" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Hidden" >
 
                 <controls:ScrollingPanel HorizontalAlignment="Stretch" CanHorizontallyScroll="False" CanVerticallyScroll="True">
-                    <controls:ExtendedListBox ItemsSource="{Binding ListCollectionView}" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{DynamicResource ListPageListViewItemTemplate}">
+                    <controls:ExtendedListBox ItemsSource="{Binding ListCollectionView}" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{StaticResource ListBoxStyle}" ItemContainerStyle="{StaticResource HighlightedListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{DynamicResource ListPageListViewItemTemplate}">
                         <controls:ExtendedListBox.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <StackPanel Orientation="Vertical" Margin="50 20 30 20"></StackPanel>
@@ -227,7 +227,7 @@
 
             <StackPanel Orientation="Horizontal" Margin="20">
 
-                <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding Type}" Width="150"></TextBlock>
+                <TextBlock Style="{StaticResource TextBlockStyle}" Text="{Binding Type}" Width="150"></TextBlock>
 
                 <ItemsControl ItemsSource="{Binding Attributes}" Focusable="False" Margin="0 0 50 0">
                     <ItemsControl.ItemsPanel>
@@ -238,8 +238,8 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Style="{DynamicResource TextBlockStyle}" Foreground="{DynamicResource MediaBrowserAccent}" x:Name="Delimiter" Text=" • "/>
-                                <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding .}"/>
+                                <TextBlock Style="{StaticResource TextBlockStyle}" Foreground="{StaticResource MediaBrowserAccent}" x:Name="Delimiter" Text=" • "/>
+                                <TextBlock Style="{StaticResource TextBlockStyle}" Text="{Binding .}"/>
                             </StackPanel>
                             <DataTemplate.Triggers>
                                 <DataTrigger Binding="{Binding RelativeSource={RelativeSource PreviousData}}" Value="{x:Null}">
@@ -267,7 +267,7 @@
                 <Image Stretch="Uniform" VerticalAlignment="Top" HorizontalAlignment="Left" MaxWidth="550" MaxHeight="650" Source="{Binding Image}">
                 </Image>
 
-                <TextBlock Foreground="White" Background="#c666C010" VerticalAlignment="Top" HorizontalAlignment="Right" Padding="10 2 10 5" Text="NEW">
+                <TextBlock Foreground="{DynamicResource TextForegroundOverBackground}" Background="#c666C010" VerticalAlignment="Top" HorizontalAlignment="Right" Padding="10 2 10 5" Text="NEW">
                     <TextBlock.Style>
                         <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
                             <Style.Triggers>
@@ -294,7 +294,7 @@
                     </TextBlock.Style>
                 </TextBlock>
 
-                <TextBlock Background="#c666C010" VerticalAlignment="Top" HorizontalAlignment="Right" Foreground="White" Padding="10 2 10 5" Text="{Binding RecursiveUnplayedItemCount, StringFormat='{}{0} NEW'}">
+                <TextBlock Background="#c666C010" VerticalAlignment="Top" HorizontalAlignment="Right" Foreground="{DynamicResource TextForegroundOverBackground}" Padding="10 2 10 5" Text="{Binding RecursiveUnplayedItemCount, StringFormat='{}{0} NEW'}">
                     <TextBlock.Style>
                         <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SmallTextBlockStyle}">
                             <Style.Triggers>
@@ -312,7 +312,7 @@
                     </TextBlock.Style>
                 </TextBlock>
 
-                <TextBlock Background="{DynamicResource SpecialIndicatorBackground}" VerticalAlignment="Top" HorizontalAlignment="Right" Foreground="White" Padding="10 5" Text="OFFLINE">
+                <TextBlock Background="{DynamicResource SpecialIndicatorBackground}" VerticalAlignment="Top" HorizontalAlignment="Right" Foreground="{DynamicResource TextForegroundOverBackground}" Padding="10 5" Text="OFFLINE">
                     <TextBlock.Style>
                         <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SmallTextBlockStyle}">
                             <Style.Triggers>
@@ -324,7 +324,7 @@
                     </TextBlock.Style>
                 </TextBlock>
 
-                <TextBlock Background="{DynamicResource SpecialIndicatorBackground}" VerticalAlignment="Top" HorizontalAlignment="Right" Foreground="White" Padding="10 5" Text="MISSING">
+                <TextBlock Background="{DynamicResource SpecialIndicatorBackground}" VerticalAlignment="Top" HorizontalAlignment="Right" Foreground="{DynamicResource TextForegroundOverBackground}" Padding="10 5" Text="MISSING">
                     <TextBlock.Style>
                         <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SmallTextBlockStyle}">
                             <Style.Triggers>
@@ -336,7 +336,7 @@
                     </TextBlock.Style>
                 </TextBlock>
 
-                <TextBlock Background="{DynamicResource SpecialIndicatorBackground}" VerticalAlignment="Top" HorizontalAlignment="Right" Foreground="White" Padding="10 5" Text="UNAIRED">
+                <TextBlock Background="{DynamicResource SpecialIndicatorBackground}" VerticalAlignment="Top" HorizontalAlignment="Right" Foreground="{DynamicResource TextForegroundOverBackground}" Padding="10 5" Text="UNAIRED">
                     <TextBlock.Style>
                         <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SmallTextBlockStyle}">
                             <Style.Triggers>
@@ -376,7 +376,7 @@
                         </Button.Style>
 
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{DynamicResource TextBlockStyle}">Resume</TextBlock>
+                            <TextBlock Style="{StaticResource TextBlockStyle}">Resume</TextBlock>
 
                             <Grid x:Name="ProgressGrid" Margin="15 0 0 0">
                                 <StackPanel Orientation="Horizontal">
@@ -411,7 +411,7 @@
                             </Style>
                         </Button.Style>
 
-                        <TextBlock Style="{DynamicResource TextBlockStyle}">Play</TextBlock>
+                        <TextBlock Style="{StaticResource TextBlockStyle}">Play</TextBlock>
                     </Button>
 
                     <Button Margin="0 0 10 0" Command="{Binding PlayTrailerCommand}">
@@ -427,7 +427,7 @@
                             </Style>
                         </Button.Style>
 
-                        <TextBlock Style="{DynamicResource TextBlockStyle}">Trailer</TextBlock>
+                        <TextBlock Style="{StaticResource TextBlockStyle}">Trailer</TextBlock>
                     </Button>
 
                 </StackPanel>
@@ -582,8 +582,8 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Style="{DynamicResource TextBlockStyle}" Foreground="{DynamicResource MediaBrowserAccent}" x:Name="Delimiter" Text="  •  "/>
-                                <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding .}"/>
+                                <TextBlock Style="{StaticResource TextBlockStyle}" Foreground="{StaticResource MediaBrowserAccent}" x:Name="Delimiter" Text="  •  "/>
+                                <TextBlock Style="{StaticResource TextBlockStyle}" Text="{Binding .}"/>
                             </StackPanel>
                             <DataTemplate.Triggers>
                                 <DataTrigger Binding="{Binding RelativeSource={RelativeSource PreviousData}}" Value="{x:Null}">
@@ -607,15 +607,15 @@
                         </Style>
                     </StackPanel.Style>
 
-                    <TextBlock Text="{Binding SeriesAirTimeLabel, StringFormat='{}{0} '}" Style="{DynamicResource TextBlockStyle}">
+                    <TextBlock Text="{Binding SeriesAirTimeLabel, StringFormat='{}{0} '}" Style="{StaticResource TextBlockStyle}">
                     </TextBlock>
 
-                    <TextBlock Text="{Binding SeriesAirTimeText}" Style="{DynamicResource TextBlockStyle}">
+                    <TextBlock Text="{Binding SeriesAirTimeText}" Style="{StaticResource TextBlockStyle}">
                     </TextBlock>
 
                 </StackPanel>
 
-                <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding Overview}" Grid.Row="4" Margin="0 30 0 30" TextTrimming="CharacterEllipsis" MinWidth="900" MaxHeight="470"></TextBlock>
+                <TextBlock Style="{StaticResource TextBlockStyle}" Text="{Binding Overview}" Grid.Row="4" Margin="0 30 0 30" TextTrimming="CharacterEllipsis" MinWidth="900" MaxHeight="470"></TextBlock>
 
                 <StackPanel Grid.Row="5" Margin="0 20 0 0" Orientation="Horizontal">
 
@@ -661,7 +661,8 @@
     </DataTemplate>
 
     <DataTemplate x:Key="PersonInfoTemplate" DataType="{x:Type viewModels:ItemPersonViewModel}">
-        <Grid Background="#a6000000">
+
+        <Grid Background="{DynamicResource PanelBackground}">
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto"></ColumnDefinition>
@@ -698,22 +699,14 @@
                 <Grid Width="200" Height="324" />
 
                 <Path Style="{DynamicResource IconPath}" Data="M46.435009,38.400886C49.406406,38.514088,57.405701,44.571438,58.091999,63.541691L0.034687833,63.999996C0.034687862,63.999996 -1.5642508,39.770598 16.949333,38.62739 24.263227,37.485477 31.575024,44.798037 35.69162,44.111832 39.807415,43.428225 43.463013,38.286284 46.435009,38.400886z M33.176399,0C41.508446,0 48.263,7.6744537 48.263,17.1418 48.263,26.611844 41.508446,34.285 33.176399,34.285 24.845757,34.285 18.092001,26.611844 18.092001,17.1418 18.092001,7.6744537 24.845757,0 33.176399,0z" Stretch="Uniform" Width="136" Height="136" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
-                    <Path.RenderTransform>
-                        <TransformGroup>
-                            <TransformGroup.Children>
-                                <RotateTransform Angle="0" />
-                                <ScaleTransform ScaleX="1" ScaleY="1" />
-                            </TransformGroup.Children>
-                        </TransformGroup>
-                    </Path.RenderTransform>
                 </Path>
             </Grid>
 
             <StackPanel Orientation="Vertical" Grid.Column="1" Margin="10 50 20 20" MaxWidth="250">
 
-                <TextBlock Foreground="White" Style="{DynamicResource TextBlockStyle}" TextTrimming="CharacterEllipsis" TextWrapping="Wrap" Text="{Binding Name}"></TextBlock>
+                <TextBlock Style="{StaticResource TextBlockStyle}" TextTrimming="CharacterEllipsis" TextWrapping="Wrap" Text="{Binding Name}"></TextBlock>
 
-                <TextBlock x:Name="TxtRole" Foreground="White" Margin="0 20 0 0" TextTrimming="CharacterEllipsis" TextWrapping="Wrap" Text="{Binding Role, StringFormat='as {0}'}">
+                <TextBlock x:Name="TxtRole" Margin="0 20 0 0" TextTrimming="CharacterEllipsis" TextWrapping="Wrap" Text="{Binding Role, StringFormat='as {0}'}">
                     <TextBlock.Style>
                         <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
                             <Style.Triggers>
@@ -725,7 +718,7 @@
                     </TextBlock.Style>
                 </TextBlock>
 
-                <TextBlock Foreground="White" Margin="0 20 0 0" TextTrimming="CharacterEllipsis" TextWrapping="Wrap" Text="{Binding PersonType}">
+                <TextBlock Margin="0 20 0 0" TextTrimming="CharacterEllipsis" TextWrapping="Wrap" Text="{Binding PersonType}">
                     <TextBlock.Style>
                         <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
                             <Setter Property="Visibility" Value="Collapsed" />
@@ -759,14 +752,6 @@
                 </Grid.Style>
 
                 <Path Style="{DynamicResource IconPath}" Data="M1.8500002,39.924L1.8500002,40.276001 39.841,40.276001 39.841,39.924z M1.8500002,34.230999L1.8500002,34.584 39.841,34.584 39.841,34.230999z M1.8500002,28.540001L1.8500002,28.892 39.841,28.892 39.841,28.540001z M37.17688,15.361014L35.26218,18.858 39.2463,18.858 41.160999,15.361014z M26.960289,15.361L25.051514,18.858 29.042191,18.858 30.950966,15.361z M16.739975,15.361L14.831516,18.858 18.821537,18.858 20.729998,15.361z M6.5203348,15.361L4.6115814,18.858 8.6022168,18.858 10.510971,15.361z M3.2071796,11.557376C3.1205795,11.55483 3.0319551,11.564951 2.9436825,11.589129 2.4829136,11.718081 2.212462,12.194902 2.3426791,12.655729L2.3426791,12.656729C2.46288,13.118556 2.9436825,13.386456 3.4144688,13.259503 3.8752378,13.131551 4.1456891,12.652731 4.025488,12.191903L4.025488,12.190904C3.9196869,11.817294,3.5824443,11.568406,3.2071796,11.557376z M8.4505463,9.0880299L4.5999971,10.151048 7.6604515,13.299029 11.50099,12.238054z M18.299975,6.3690219L14.449993,7.4317656 17.509979,10.581008 21.349962,9.5182638z M28.149992,3.6520028L24.300011,4.7130027 27.349999,7.8630033 31.19998,6.8020015z M37.999447,0.93302757L34.150021,1.9940284 37.199566,5.1440277 41.048996,4.0830278z M40.468021,0L41.627998,4.1752639 4.4089723,14.448702 4.4089723,15.119 41.706001,15.119 41.706001,19.450001 41.514,19.450001 41.514,42.667 0.23000007,42.667 0.23000007,19.450001 0,19.450001 0,15.119 0.050019972,15.119 0.050019972,11.765008C0.05001996,11.544946,0.12847768,11.34345,0.25860289,11.186396L0.28664622,11.155655 0.27000001,11.095737 0.37976817,11.065437 0.38216636,11.063265C0.53962899,10.933719,0.74110407,10.856008,0.9598012,10.856008L1.1384982,10.856008z" Stretch="Uniform" Width="68" Height="68" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
-                    <Path.RenderTransform>
-                        <TransformGroup>
-                            <TransformGroup.Children>
-                                <RotateTransform Angle="0" />
-                                <ScaleTransform ScaleX="1" ScaleY="1" />
-                            </TransformGroup.Children>
-                        </TransformGroup>
-                    </Path.RenderTransform>
                 </Path>
             </Grid>
 
@@ -785,7 +770,7 @@
             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Background="{DynamicResource TextBackground}">
 
                 <StackPanel Orientation="Vertical" Margin="10 5 0 10">
-                    <TextBlock x:Name="TxtTime" Foreground="White" Style="{DynamicResource TextBlockStyle}" Text="{Binding TimeString}"></TextBlock>
+                    <TextBlock x:Name="TxtTime" Style="{StaticResource TextBlockStyle}" Text="{Binding TimeString}"></TextBlock>
                 </StackPanel>
             </Grid>
         </Grid>
@@ -840,9 +825,9 @@
                 </Image.Style>
             </Image>
 
-            <TextBlock Style="{DynamicResource SmallTextBlockStyle}" TextTrimming="CharacterEllipsis" Grid.Column="1" Grid.Row="0" Margin="15" Text="{Binding Caption, StringFormat='&quot;{0}&quot;'}"></TextBlock>
+            <TextBlock Style="{StaticResource SmallTextBlockStyle}" TextTrimming="CharacterEllipsis" Grid.Column="1" Grid.Row="0" Margin="15" Text="{Binding Caption, StringFormat='&quot;{0}&quot;'}"></TextBlock>
 
-            <TextBlock Style="{DynamicResource SmallTextBlockStyle}" Foreground="#cccccc" TextTrimming="CharacterEllipsis" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" Margin="15 5 15 15" HorizontalAlignment="Right" Text="{Binding CombinedSource}"></TextBlock>
+            <TextBlock Style="{StaticResource SmallTextBlockStyle}" Foreground="#cccccc" TextTrimming="CharacterEllipsis" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" Margin="15 5 15 15" HorizontalAlignment="Right" Text="{Binding CombinedSource}"></TextBlock>
 
         </Grid>
     </DataTemplate>
@@ -854,7 +839,7 @@
                 <Setter Property="Content">
                     <Setter.Value>
                         <Grid>
-                            <controls:ExtendedListBox DataContext="{Binding ContentViewModel}" ItemsSource="{Binding ListCollectionView}" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource PersonInfoTemplate}">
+                            <controls:ExtendedListBox DataContext="{Binding ContentViewModel}" ItemsSource="{Binding ListCollectionView}" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{StaticResource ListBoxStyle}" ItemContainerStyle="{StaticResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource PersonInfoTemplate}">
                                 <controls:ExtendedListBox.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <UniformGrid Rows="2" Margin="80 20"></UniformGrid>
@@ -870,7 +855,7 @@
                 <Setter Property="Content">
                     <Setter.Value>
                         <Grid>
-                            <controls:ExtendedListBox DataContext="{Binding ContentViewModel}" ItemsSource="{Binding ListCollectionView}" Command="{Binding PlayCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource ItemChaptersTemplate}">
+                            <controls:ExtendedListBox DataContext="{Binding ContentViewModel}" ItemsSource="{Binding ListCollectionView}" Command="{Binding PlayCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{StaticResource ListBoxStyle}" ItemContainerStyle="{StaticResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource ItemChaptersTemplate}">
                                 <controls:ExtendedListBox.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <UniformGrid Rows="3" Margin="80 20"></UniformGrid>
@@ -886,7 +871,7 @@
                 <Setter Property="Content">
                     <Setter.Value>
                         <Grid>
-                            <controls:ExtendedListBox DataContext="{Binding ContentViewModel}" ItemsSource="{Binding ListCollectionView}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource CriticReviewsTemplate}">
+                            <controls:ExtendedListBox DataContext="{Binding ContentViewModel}" ItemsSource="{Binding ListCollectionView}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{StaticResource ListBoxStyle}" ItemContainerStyle="{StaticResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource CriticReviewsTemplate}">
                                 <controls:ExtendedListBox.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <UniformGrid Rows="2" Margin="80 20"></UniformGrid>
@@ -901,7 +886,7 @@
                 <Setter Property="Content">
                     <Setter.Value>
                         <Grid>
-                            <controls:ExtendedListBox DataContext="{Binding ContentViewModel}" ItemsSource="{Binding ListCollectionView}" Command="{Binding OpenImageViewerCommand}" KeyboardNavigation.DirectionalNavigation="Continue" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource ItemGalleryTemplate}">
+                            <controls:ExtendedListBox DataContext="{Binding ContentViewModel}" ItemsSource="{Binding ListCollectionView}" Command="{Binding OpenImageViewerCommand}" KeyboardNavigation.DirectionalNavigation="Continue" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{StaticResource ListBoxStyle}" ItemContainerStyle="{StaticResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource ItemGalleryTemplate}">
                                 <controls:ExtendedListBox.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <UniformGrid Rows="3" Margin="80 20"></UniformGrid>
@@ -932,7 +917,7 @@
                 <Setter Property="Content">
                     <Setter.Value>
                         <Grid>
-                            <controls:ExtendedListBox DataContext="{Binding ContentViewModel}" ItemsSource="{Binding ListCollectionView}" Command="{Binding PlayCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{DynamicResource ListItemTemplate}">
+                            <controls:ExtendedListBox DataContext="{Binding ContentViewModel}" ItemsSource="{Binding ListCollectionView}" Command="{Binding PlayCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{StaticResource ListBoxStyle}" ItemContainerStyle="{StaticResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{DynamicResource ListItemTemplate}">
                                 <controls:ExtendedListBox.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <UniformGrid Rows="2" Margin="80 20 80 60"></UniformGrid>
@@ -972,7 +957,7 @@
                             <controls:ExtendedScrollViewer Grid.Row="0" VerticalAlignment="Stretch" HorizontalAlignment="Center" CanContentScroll="True" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled">
 
                                 <controls:ScrollingPanel HorizontalAlignment="Stretch" CanHorizontallyScroll="True" CanVerticallyScroll="False">
-                                    <controls:ExtendedListBox DataContext="{Binding ContentViewModel}" ItemsSource="{Binding ListCollectionView}" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{DynamicResource ListItemTemplate}">
+                                    <controls:ExtendedListBox DataContext="{Binding ContentViewModel}" ItemsSource="{Binding ListCollectionView}" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{StaticResource ListBoxStyle}" ItemContainerStyle="{StaticResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{DynamicResource ListItemTemplate}">
                                         <controls:ExtendedListBox.ItemsPanel>
                                             <ItemsPanelTemplate>
                                                 <StackPanel Orientation="Horizontal" Margin="80 20"></StackPanel>
@@ -999,7 +984,7 @@
                 <Setter Property="Content">
                     <Setter.Value>
                         <Grid>
-                            <controls:ExtendedListBox DataContext="{Binding ContentViewModel}" ItemsSource="{Binding ListCollectionView}" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{DynamicResource ListPageListViewItemTemplate}">
+                            <controls:ExtendedListBox DataContext="{Binding ContentViewModel}" ItemsSource="{Binding ListCollectionView}" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{StaticResource ListBoxStyle}" ItemContainerStyle="{StaticResource HighlightedListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{DynamicResource ListPageListViewItemTemplate}">
                                 <controls:ExtendedListBox.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <StackPanel Orientation="Vertical" Margin="80 20" MinWidth="1200"></StackPanel>
@@ -1014,7 +999,7 @@
                 <Setter Property="Content">
                     <Setter.Value>
                         <Grid>
-                            <controls:ExtendedListBox DataContext="{Binding ContentViewModel}" ItemsSource="{Binding ListCollectionView}" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{DynamicResource ListItemTemplate}">
+                            <controls:ExtendedListBox DataContext="{Binding ContentViewModel}" ItemsSource="{Binding ListCollectionView}" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{StaticResource ListBoxStyle}" ItemContainerStyle="{StaticResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{DynamicResource ListItemTemplate}">
                                 <controls:ExtendedListBox.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <UniformGrid Rows="2" Margin="80 20 80 60"></UniformGrid>
@@ -1103,7 +1088,7 @@
                 <Setter Property="Content">
                     <Setter.Value>
                         <Grid>
-                            <controls:ExtendedListBox VerticalAlignment="Top" DataContext="{Binding ContentViewModel}" ItemsSource="{Binding}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{DynamicResource MediaStreamTemplate}">
+                            <controls:ExtendedListBox VerticalAlignment="Top" DataContext="{Binding ContentViewModel}" ItemsSource="{Binding}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{StaticResource ListBoxStyle}" ItemContainerStyle="{StaticResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{DynamicResource MediaStreamTemplate}">
                                 <controls:ExtendedListBox.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <WrapPanel Orientation="Vertical" Margin="80 20"></WrapPanel>

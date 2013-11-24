@@ -100,12 +100,6 @@ namespace MediaBrowser.Theater.Implementations.Session
 
             EventHelper.FireEventIfNotNull(UserLoggedIn, this, EventArgs.Empty, _logger);
 
-            var userConfig = _config.GetUserTheaterConfiguration(CurrentUser.Id);
-
-            var theme = _themeManager.Themes.FirstOrDefault(i => string.Equals(i.Name, userConfig.Theme)) ?? _themeManager.DefaultTheme;
-
-            await _themeManager.LoadTheme(theme);
-
             await _navService.NavigateToHomePage();
 
             _navService.ClearHistory();

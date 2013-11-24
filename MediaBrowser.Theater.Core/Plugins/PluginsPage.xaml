@@ -15,7 +15,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                        <TextBlock Opacity=".5" x:Name="MenuText" Margin="45 0" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Text="{Binding DisplayName}" Style="{DynamicResource Heading2TextBlockStyle}"></TextBlock>
+                        <TextBlock Opacity=".5" x:Name="MenuText" Margin="45 0" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Text="{Binding DisplayName}" Style="{StaticResource Heading2TextBlockStyle}"></TextBlock>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsSelected" Value="true">
                                 <Setter TargetName="MenuText" Property="Opacity" Value="1"/>
@@ -62,8 +62,8 @@
                 <Grid VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Background="#a6000000" Grid.Row="1">
 
                     <StackPanel Orientation="Vertical">
-                        <TextBlock Margin="10 5 10 0" TextWrapping="NoWrap" Style="{DynamicResource TextBlockStyle}" Foreground="White" TextTrimming="CharacterEllipsis" Text="{Binding Name}"></TextBlock>
-                        <TextBlock Margin="10 5 10 10" TextWrapping="NoWrap" Style="{DynamicResource TextBlockStyle}" Foreground="White" TextTrimming="CharacterEllipsis" Text="{Binding Version}"></TextBlock>
+                        <TextBlock Margin="10 5 10 0" TextWrapping="NoWrap" Style="{StaticResource TextBlockStyle}" Foreground="White" TextTrimming="CharacterEllipsis" Text="{Binding Name}"></TextBlock>
+                        <TextBlock Margin="10 5 10 10" TextWrapping="NoWrap" Style="{StaticResource TextBlockStyle}" Foreground="White" TextTrimming="CharacterEllipsis" Text="{Binding Version}"></TextBlock>
                     </StackPanel>
                 </Grid>
             </Grid>
@@ -104,7 +104,7 @@
 
                 <Grid VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Background="#a6000000" Grid.Row="1">
 
-                    <TextBlock x:Name="TxtName" Margin="10 5 10 10" TextWrapping="NoWrap" Style="{DynamicResource TextBlockStyle}" Foreground="White" HorizontalAlignment="Center" TextTrimming="CharacterEllipsis" Text="{Binding Name}"></TextBlock>
+                    <TextBlock x:Name="TxtName" Margin="10 5 10 10" TextWrapping="NoWrap" Style="{StaticResource TextBlockStyle}" Foreground="White" HorizontalAlignment="Center" TextTrimming="CharacterEllipsis" Text="{Binding Name}"></TextBlock>
                 </Grid>
             </Grid>
         </DataTemplate>
@@ -116,7 +116,7 @@
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <controls:ExtendedListBox x:Name="MenuList" ItemsSource="{Binding Sections}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" Grid.Row="0" HorizontalAlignment="Center" Margin="20 35 20 0" ItemContainerStyle="{DynamicResource MenuListBoxItemStyle}">
+        <controls:ExtendedListBox x:Name="MenuList" ItemsSource="{Binding Sections}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{StaticResource ListBoxStyle}" Grid.Row="0" HorizontalAlignment="Center" Margin="20 35 20 0" ItemContainerStyle="{StaticResource MenuListBoxItemStyle}">
             <controls:ExtendedListBox.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" />
@@ -135,7 +135,7 @@
                                     <Setter Property="Content">
                                         <Setter.Value>
                                             <Grid>
-                                                <controls:ExtendedListBox DataContext="{Binding ContentViewModel}" ItemsSource="{Binding ListCollectionView}" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{DynamicResource PluginListBoxItemTemplate}">
+                                                <controls:ExtendedListBox DataContext="{Binding ContentViewModel}" ItemsSource="{Binding ListCollectionView}" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{StaticResource ListBoxStyle}" ItemContainerStyle="{StaticResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource PluginListBoxItemTemplate}">
                                                     <controls:ExtendedListBox.ItemsPanel>
                                                         <ItemsPanelTemplate>
                                                             <WrapPanel Margin="40 35" Orientation="Vertical"></WrapPanel>
@@ -179,9 +179,9 @@
                                                                     <RowDefinition Height="*"></RowDefinition>
                                                                 </Grid.RowDefinitions>
 
-                                                                <TextBlock Text="{Binding Name}" Grid.Row="0" Style="{DynamicResource TextBlockStyle}" Margin="20 0 0 0"></TextBlock>
+                                                                <TextBlock Text="{Binding Name}" Grid.Row="0" Style="{StaticResource TextBlockStyle}" Margin="20 0 0 0"></TextBlock>
 
-                                                                <controls:ExtendedListBox Margin="-30 -35" ItemsSource="{Binding Packages}" Command="{Binding NavigateCommand}" Grid.Row="1" KeyboardNavigation.DirectionalNavigation="Continue" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" ItemContainerStyle="{DynamicResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{DynamicResource PackageInfoViewModelItemTemplate}">
+                                                                <controls:ExtendedListBox Margin="-30 -35" ItemsSource="{Binding Packages}" Command="{Binding NavigateCommand}" Grid.Row="1" KeyboardNavigation.DirectionalNavigation="Continue" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{StaticResource ListBoxStyle}" ItemContainerStyle="{StaticResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource PackageInfoViewModelItemTemplate}">
                                                                     <controls:ExtendedListBox.ItemsPanel>
                                                                         <ItemsPanelTemplate>
                                                                             <WrapPanel Margin="40 35" Orientation="Vertical"></WrapPanel>

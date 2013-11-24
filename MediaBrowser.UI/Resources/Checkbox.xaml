@@ -6,9 +6,9 @@
 
     <Style x:Key="{x:Type CheckBox}" TargetType="{x:Type CheckBox}">
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-        <Setter Property="Background" Value="{DynamicResource ButtonBackground}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource CheckboxBorder}" />
-        <Setter Property="Foreground" Value="{DynamicResource CheckboxForeground}" />
+        <Setter Property="Background" Value="{StaticResource ButtonBackground}" />
+        <Setter Property="BorderBrush" Value="{StaticResource CheckboxBorder}" />
+        <Setter Property="Foreground" Value="{StaticResource CheckboxForeground}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="KeyboardNavigation.AcceptsReturn" Value="true"/>
 
@@ -23,25 +23,25 @@
                     </StackPanel>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="Foreground" Value="{DynamicResource ButtonTextDisabled}" />
+                            <Setter Property="Foreground" Value="{StaticResource ButtonTextDisabled}" />
                         </Trigger>
                         <Trigger Property="IsChecked" Value="True">
                             <Setter TargetName="CheckMark" Property="Visibility" Value="Visible" />
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="CheckBorder" Property="Background" Value="{DynamicResource ButtonBackgroundHover}" />
-                            <Setter TargetName="CheckBorder" Property="BorderBrush" Value="{DynamicResource ButtonBorderHover}" />
-                            <Setter TargetName="CheckMark" Property="Fill" Value="{DynamicResource ButtonTextHover}" />
+                            <Setter TargetName="CheckBorder" Property="Background" Value="{StaticResource ButtonBackgroundHover}" />
+                            <Setter TargetName="CheckBorder" Property="BorderBrush" Value="{StaticResource ButtonBorderHover}" />
+                            <Setter TargetName="CheckMark" Property="Fill" Value="{StaticResource ButtonTextHover}" />
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
-                            <Setter TargetName="CheckBorder" Property="Background" Value="{DynamicResource ButtonBackgroundPressed}" />
-                            <Setter TargetName="CheckBorder" Property="BorderBrush" Value="{DynamicResource ButtonBorderPressed}" />
-                            <Setter TargetName="CheckMark" Property="Fill" Value="{DynamicResource ButtonTextPressed}" />
+                            <Setter TargetName="CheckBorder" Property="Background" Value="{StaticResource ButtonBackgroundPressed}" />
+                            <Setter TargetName="CheckBorder" Property="BorderBrush" Value="{StaticResource ButtonBorderPressed}" />
+                            <Setter TargetName="CheckMark" Property="Fill" Value="{StaticResource ButtonTextPressed}" />
                         </Trigger>
                         <Trigger Property="IsKeyboardFocused" Value="true">
-                            <Setter TargetName="CheckBorder" Property="Background" Value="{DynamicResource ButtonBackgroundPressed}" />
-                            <Setter TargetName="CheckBorder" Property="BorderBrush" Value="{DynamicResource ButtonBorderPressed}" />
-                            <Setter TargetName="CheckMark" Property="Fill" Value="{DynamicResource ButtonTextPressed}" />
+                            <Setter TargetName="CheckBorder" Property="Background" Value="{StaticResource ButtonBackgroundPressed}" />
+                            <Setter TargetName="CheckBorder" Property="BorderBrush" Value="{StaticResource ButtonBorderPressed}" />
+                            <Setter TargetName="CheckMark" Property="Fill" Value="{StaticResource ButtonTextPressed}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

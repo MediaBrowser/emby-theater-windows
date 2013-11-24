@@ -33,7 +33,7 @@
 
             <controls:ExtendedScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" VerticalAlignment="Top" CanContentScroll="True">
                 <controls:ScrollingPanel CanHorizontallyScroll="True" CanVerticallyScroll="False">
-                    <controls:ExtendedListBox x:Name="IndexMenu" ItemsSource="{Binding IndexOptionsCollectionView}" ScrollViewer.CanContentScroll="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{DynamicResource ListBoxStyle}" HorizontalAlignment="Stretch" ItemContainerStyle="{DynamicResource IndexMenuListBoxItemStyle}">
+                    <controls:ExtendedListBox x:Name="IndexMenu" ItemsSource="{Binding IndexOptionsCollectionView}" ScrollViewer.CanContentScroll="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{StaticResource ListBoxStyle}" HorizontalAlignment="Stretch" ItemContainerStyle="{StaticResource IndexMenuListBoxItemStyle}">
                         <controls:ExtendedListBox.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <StackPanel Orientation="Horizontal" Margin="60 0 60 0" />
@@ -59,11 +59,11 @@
                 </Style>
             </StackPanel.Style>
 
-            <TextBlock DataContext="{Binding CurrentItem}" Style="{DynamicResource BoldHeaderTextBlock}" Text="{Binding DisplayName}" Margin="0 70 0 0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" HorizontalAlignment="Left"></TextBlock>
+            <TextBlock DataContext="{Binding CurrentItem}" Style="{StaticResource BoldHeaderTextBlock}" Text="{Binding DisplayName}" Margin="0 70 0 0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" HorizontalAlignment="Left"></TextBlock>
 
             <controls1:ItemInfoFooter Margin="0 20 0 0" VerticalContentAlignment="Center" KeyboardNavigation.IsTabStop="False" DataContext="{Binding CurrentItem}" VerticalAlignment="Top" HorizontalAlignment="Left"></controls1:ItemInfoFooter>
 
-            <TextBlock DataContext="{Binding CurrentItem}" Style="{DynamicResource TextBlockStyle}" Text="{Binding Overview}" Margin="0 20 0 0" MaxWidth="900" MaxHeight="220" TextTrimming="CharacterEllipsis" HorizontalAlignment="Left"></TextBlock>
+            <TextBlock DataContext="{Binding CurrentItem}" Style="{StaticResource TextBlockStyle}" Text="{Binding Overview}" Margin="0 20 0 0" MaxWidth="900" MaxHeight="220" TextTrimming="CharacterEllipsis" HorizontalAlignment="Left"></TextBlock>
         </StackPanel>
         
         <Grid Grid.Row="2">
@@ -140,7 +140,7 @@
                 </Grid.Style>
                 <StackPanel Orientation="Vertical">
 
-                    <TextBlock DataContext="{Binding CurrentItem}" Style="{DynamicResource BoldHeaderTextBlock}" Text="{Binding DisplayName, Converter={controls:UpperCaseConverter}}" Margin="25 35 25 0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" HorizontalAlignment="Center"></TextBlock>
+                    <TextBlock DataContext="{Binding CurrentItem}" Style="{StaticResource BoldHeaderTextBlock}" Text="{Binding DisplayName, Converter={controls:UpperCaseConverter}}" Margin="25 35 25 0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" HorizontalAlignment="Center"></TextBlock>
                 </StackPanel>
             </Grid>
 
@@ -187,7 +187,7 @@
                         <Image Name="ImgLogo" Stretch="Uniform" MaxWidth="600" VerticalAlignment="Center" HorizontalAlignment="Right"></Image>
                     </Grid>
                     
-                    <TextBlock x:Name="TxtLogoName" Style="{DynamicResource TextBlockStyle}" DataContext="{Binding CurrentItem}" Text="{Binding DisplayName}" VerticalAlignment="Center" Margin="0 0 40 0">
+                    <TextBlock x:Name="TxtLogoName" Style="{StaticResource TextBlockStyle}" DataContext="{Binding CurrentItem}" Text="{Binding DisplayName}" VerticalAlignment="Center" Margin="0 0 40 0">
                     </TextBlock>
 
                     <controls1:ItemInfoFooter VerticalContentAlignment="Center" KeyboardNavigation.IsTabStop="False" DataContext="{Binding CurrentItem}" VerticalAlignment="Center" HorizontalAlignment="Center"></controls1:ItemInfoFooter>
@@ -212,9 +212,9 @@
             </Grid.Style>
             
             <StackPanel Orientation="Horizontal">
-                <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding CurrentItemIndex}" VerticalAlignment="Center" Foreground="{DynamicResource MediaBrowserAccent}"></TextBlock>
-                <TextBlock Style="{DynamicResource TextBlockStyle}" Text=" | " VerticalAlignment="Top" Margin="0 -3 0 0"></TextBlock>
-                <TextBlock Style="{DynamicResource TextBlockStyle}" Text="{Binding ItemCount}" VerticalAlignment="Center"></TextBlock>
+                <TextBlock Style="{StaticResource TextBlockStyle}" Text="{Binding CurrentItemIndex}" VerticalAlignment="Center" Foreground="{StaticResource MediaBrowserAccent}"></TextBlock>
+                <TextBlock Style="{StaticResource TextBlockStyle}" Text=" | " VerticalAlignment="Top" Margin="0 -3 0 0"></TextBlock>
+                <TextBlock Style="{StaticResource TextBlockStyle}" Text="{Binding ItemCount}" VerticalAlignment="Center"></TextBlock>
             </StackPanel>
         </Grid>
     </Grid>

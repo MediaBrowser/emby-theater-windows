@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                                         xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
                           Title="ScreensaverWindow" Height="300" Width="300"
-        Style="{DynamicResource ModalWindow}">
+        Style="{StaticResource ModalWindow}">
     <Grid Background="Black" x:Name="MainGrid">
 
         <Grid.LayoutTransform>

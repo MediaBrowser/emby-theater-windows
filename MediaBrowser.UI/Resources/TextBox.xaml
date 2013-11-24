@@ -4,7 +4,7 @@
                     xmlns:behaviors="clr-namespace:MediaBrowser.Theater.Presentation.Behaviors;assembly=MediaBrowser.Theater.Presentation">
 
     <Color x:Key="AccentColor">#1ba1e2</Color>
-    <SolidColorBrush x:Key="Accent" Color="{DynamicResource AccentColor}" />
+    <SolidColorBrush x:Key="Accent" Color="{StaticResource AccentColor}" />
 
     <SolidColorBrush x:Key="InputBackground" Color="#262626" />
     <SolidColorBrush x:Key="InputBackgroundHover" Color="#3e3e42" />
@@ -15,19 +15,19 @@
     <SolidColorBrush x:Key="InputTextDisabled" Color="#717171" />
 
     <Style x:Key="{x:Type TextBoxBase}" TargetType="{x:Type TextBoxBase}" BasedOn="{x:Null}">
-        <Setter Property="FontSize" Value="{DynamicResource DefaultFontSize}"/>
-        <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}"/>
-        <Setter Property="FontWeight" Value="{DynamicResource DefaultFontWeight}"/>
-        <Setter Property="Foreground" Value="{DynamicResource InputText}"/>
-        <Setter Property="Background" Value="{DynamicResource InputBackground}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource InputBorder}"/>
+        <Setter Property="FontSize" Value="{StaticResource DefaultFontSize}"/>
+        <Setter Property="FontFamily" Value="{StaticResource DefaultFontFamily}"/>
+        <Setter Property="FontWeight" Value="{StaticResource DefaultFontWeight}"/>
+        <Setter Property="Foreground" Value="{StaticResource InputText}"/>
+        <Setter Property="Background" Value="{StaticResource InputBackground}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource InputBorder}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="Padding" Value="2,1,1,1"/>
         <Setter Property="AllowDrop" Value="true"/>
         <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
         <Setter Property="ScrollViewer.PanningMode" Value="VerticalFirst"/>
         <Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
-        <Setter Property="SelectionBrush" Value="{DynamicResource Accent}" />
+        <Setter Property="SelectionBrush" Value="{StaticResource Accent}" />
         <Setter Property="behaviors:SuppressBackKeyBehavior.SuppressBackKey" Value="true"></Setter>
         <Setter Property="Validation.ErrorTemplate">
             <Setter.Value>
@@ -91,13 +91,13 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsEnabled" Value="false">
-                            <Setter Property="Foreground" Value="{DynamicResource InputTextDisabled}"/>
+                            <Setter Property="Foreground" Value="{StaticResource InputTextDisabled}"/>
                         </Trigger>
                         <Trigger Property="IsReadOnly" Value="true">
-                            <Setter Property="Foreground" Value="{DynamicResource InputTextDisabled}"/>
+                            <Setter Property="Foreground" Value="{StaticResource InputTextDisabled}"/>
                         </Trigger>
                         <Trigger Property="IsFocused" Value="true">
-                            <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource Accent}" />
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource Accent}" />
                         </Trigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
@@ -105,9 +105,9 @@
                                 <Condition Property="IsEnabled" Value="True"/>
                                 <Condition Property="IsMouseOver" Value="True"/>
                             </MultiTrigger.Conditions>
-                            <Setter Property="Background" Value="{DynamicResource InputBackgroundHover}"/>
-                            <Setter Property="BorderBrush" Value="{DynamicResource InputBorderHover}"/>
-                            <Setter Property="Foreground" Value="{DynamicResource InputTextHover}"/>
+                            <Setter Property="Background" Value="{StaticResource InputBackgroundHover}"/>
+                            <Setter Property="BorderBrush" Value="{StaticResource InputBorderHover}"/>
+                            <Setter Property="Foreground" Value="{StaticResource InputTextHover}"/>
                         </MultiTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

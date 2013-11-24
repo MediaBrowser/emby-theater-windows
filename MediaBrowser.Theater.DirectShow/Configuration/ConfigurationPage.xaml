@@ -10,28 +10,28 @@
 
     <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Top">
 
-        <TextBlock Style="{DynamicResource Heading1TextBlockStyle}" Margin="0 30 0 0">Internal Player Settings</TextBlock>
+        <TextBlock Style="{StaticResource Heading1TextBlockStyle}" Margin="0 30 0 0">Internal Player Settings</TextBlock>
 
         <CheckBox x:Name="ChkEnableReclock" Margin="0 50 0 0" VerticalAlignment="Center">
-            <TextBlock Style="{DynamicResource TextBlockStyle}">Enable Reclock *</TextBlock>
+            <TextBlock Style="{StaticResource TextBlockStyle}">Enable Reclock *</TextBlock>
         </CheckBox>
 
         <CheckBox x:Name="ChkEnableMadvr" Margin="0 30 0 0" VerticalAlignment="Center">
-            <TextBlock Style="{DynamicResource TextBlockStyle}">Enable Madvr *</TextBlock>
+            <TextBlock Style="{StaticResource TextBlockStyle}">Enable Madvr *</TextBlock>
         </CheckBox>
 
         <CheckBox x:Name="ChkEnableXySubFilter" Margin="0 30 0 0" VerticalAlignment="Center">
-            <TextBlock Style="{DynamicResource TextBlockStyle}">Enable XySubFilter *</TextBlock>
+            <TextBlock Style="{StaticResource TextBlockStyle}">Enable XySubFilter *</TextBlock>
         </CheckBox>
         
-        <TextBlock Style="{DynamicResource Heading2TextBlockStyle}" Margin="0 60 0 0">* Separate installation required</TextBlock>
+        <TextBlock Style="{StaticResource Heading2TextBlockStyle}" Margin="0 60 0 0">* Separate installation required</TextBlock>
 
         <Button Margin="0 60 0 0" x:Name="BtnConfigureAudio">
-            <TextBlock Style="{DynamicResource TextBlockStyle}">Configure Audio</TextBlock>
+            <TextBlock Style="{StaticResource TextBlockStyle}">Configure Audio</TextBlock>
         </Button>
 
         <Button Margin="0 20 0 0" x:Name="BtnConfigureSubtitles">
-            <TextBlock Style="{DynamicResource TextBlockStyle}">Configure Subtitles</TextBlock>
+            <TextBlock Style="{StaticResource TextBlockStyle}">Configure Subtitles</TextBlock>
         </Button>
     </StackPanel>
 </pages:BasePage>

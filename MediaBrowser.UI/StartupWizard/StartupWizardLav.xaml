@@ -16,12 +16,12 @@
             <RowDefinition Height="auto"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <TextBlock Style="{DynamicResource Heading1TextBlockStyle}" Grid.Row="0">Install LAV Filters</TextBlock>
+        <TextBlock Style="{StaticResource Heading1TextBlockStyle}" Grid.Row="0">Install LAV Filters</TextBlock>
 
         <StackPanel Orientation="Vertical" Grid.Row="1" Margin="0 40 0 0">
-            <TextBlock Style="{DynamicResource TextBlockStyle}">LAV Filters is a required installation for optimal playback.</TextBlock>
+            <TextBlock Style="{StaticResource TextBlockStyle}">LAV Filters is a required installation for optimal playback.</TextBlock>
             <Button x:Name="BtnInstall" Margin="0 20 0 0">
-                <TextBlock Style="{DynamicResource TextBlockStyle}">Install Now</TextBlock>
+                <TextBlock Style="{StaticResource TextBlockStyle}">Install Now</TextBlock>
             </Button>
 
             <StackPanel x:Name="PanelInstalled" Orientation="Horizontal" Margin="0 40 0 0">
@@ -40,7 +40,7 @@
                         </Path.RenderTransform>
                     </Path>
                 </Grid>
-                <TextBlock Style="{DynamicResource TextBlockStyle}" Margin="10 0 0 0">Lav Filters is installed.</TextBlock>
+                <TextBlock Style="{StaticResource TextBlockStyle}" Margin="10 0 0 0">Lav Filters is installed.</TextBlock>
             </StackPanel>
             
             <ProgressBar x:Name="Progress" Maximum="100" Height="30" Background="#333333" Margin="0 20 0 0" Visibility="Collapsed"></ProgressBar>
@@ -48,10 +48,10 @@
 
         <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0 40 0 0" HorizontalAlignment="Right">
             <Button x:Name="BtnBack">
-                <TextBlock Style="{DynamicResource TextBlockStyle}">Back</TextBlock>
+                <TextBlock Style="{StaticResource TextBlockStyle}">Back</TextBlock>
             </Button>
             <Button x:Name="BtnNext" Margin="30 0 0 0">
-                <TextBlock Style="{DynamicResource TextBlockStyle}">Next</TextBlock>
+                <TextBlock Style="{StaticResource TextBlockStyle}">Next</TextBlock>
             </Button>
         </StackPanel>
 

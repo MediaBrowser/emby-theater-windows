@@ -11,39 +11,39 @@
 
     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Orientation="Vertical" Width="1450">
 
-        <TextBlock x:Name="TxtTitle" Style="{DynamicResource Heading1TextBlockStyle}" Margin="0 10 0 0"></TextBlock>
+        <TextBlock x:Name="TxtTitle" Style="{StaticResource Heading1TextBlockStyle}" Margin="0 10 0 0"></TextBlock>
 
         <StackPanel Orientation="Horizontal" Margin="0 30 0 0">
-            <TextBlock Style="{DynamicResource TextBlockStyle}" MinWidth="400">Media Type:</TextBlock>
+            <TextBlock Style="{StaticResource TextBlockStyle}" MinWidth="400">Media Type:</TextBlock>
             <controls:SelectList x:Name="SelectMediaType"></controls:SelectList>
         </StackPanel>
 
         <StackPanel Orientation="Horizontal" Margin="0 20 0 0">
-            <TextBlock Style="{DynamicResource TextBlockStyle}" MinWidth="400">Player:</TextBlock>
+            <TextBlock Style="{StaticResource TextBlockStyle}" MinWidth="400">Player:</TextBlock>
             <controls:SelectList x:Name="SelectPlayer"></controls:SelectList>
         </StackPanel>
 
         <StackPanel x:Name="PnlGameSystems" Orientation="Horizontal" Margin="0 20 0 0">
-            <TextBlock Style="{DynamicResource TextBlockStyle}" MinWidth="400">Game System:</TextBlock>
+            <TextBlock Style="{StaticResource TextBlockStyle}" MinWidth="400">Game System:</TextBlock>
             <controls:SelectList x:Name="SelectGameSystem"></controls:SelectList>
         </StackPanel>
         
         <StackPanel x:Name="PanelVideoTypes" Margin="0 20 0 0" Orientation="Horizontal">
 
-            <TextBlock Style="{DynamicResource TextBlockStyle}">Video types:</TextBlock>
+            <TextBlock Style="{StaticResource TextBlockStyle}">Video types:</TextBlock>
 
             <WrapPanel Orientation="Horizontal" Margin="220 0 0 0">
 
                 <CheckBox x:Name="ChkBluray">
-                    <TextBlock Style="{DynamicResource TextBlockStyle}">Blu-ray folders</TextBlock>
+                    <TextBlock Style="{StaticResource TextBlockStyle}">Blu-ray folders</TextBlock>
                 </CheckBox>
 
                 <CheckBox x:Name="ChkDvd" Margin="50 0 0 0">
-                    <TextBlock Style="{DynamicResource TextBlockStyle}">Dvd folders</TextBlock>
+                    <TextBlock Style="{StaticResource TextBlockStyle}">Dvd folders</TextBlock>
                 </CheckBox>
 
                 <CheckBox x:Name="ChkPlay3DVideo" Margin="50 0 0 0">
-                    <TextBlock Style="{DynamicResource TextBlockStyle}">3D</TextBlock>
+                    <TextBlock Style="{StaticResource TextBlockStyle}">3D</TextBlock>
                 </CheckBox>
             </WrapPanel>
 
@@ -51,14 +51,14 @@
 
         <StackPanel x:Name="PanelFileExtensions" Margin="0 20 0 0">
 
-            <TextBlock Style="{DynamicResource TextBlockStyle}">File Extensions:</TextBlock>
+            <TextBlock Style="{StaticResource TextBlockStyle}">File Extensions:</TextBlock>
 
             <UniformGrid x:Name="WrapPanelFileExtensions" Margin="0 10 0 0" Columns="9">
             </UniformGrid>
         </StackPanel>
 
         <StackPanel x:Name="PanelIsoSupport" Margin="0 20 0 0" Orientation="Horizontal">
-            <TextBlock Style="{DynamicResource TextBlockStyle}" MinWidth="200">Iso Support:</TextBlock>
+            <TextBlock Style="{StaticResource TextBlockStyle}" MinWidth="200">Iso Support:</TextBlock>
             <controls:SelectList x:Name="SelectIsoSupport" Margin="200 0 0 0"></controls:SelectList>
         </StackPanel>
 
@@ -71,7 +71,7 @@
                     <ColumnDefinition Width="*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Column="0" Style="{DynamicResource TextBlockStyle}" Width="400">Media player path:</TextBlock>
+                <TextBlock Grid.Column="0" Style="{StaticResource TextBlockStyle}" Width="400">Media player path:</TextBlock>
                 <TextBox x:Name="TxtPath" Grid.Column="1"></TextBox>
             </Grid>
             <Grid x:Name="PanelPlayerArgs" Margin="0 20 0 0">
@@ -86,17 +86,17 @@
                     <RowDefinition Height="auto"></RowDefinition>
                 </Grid.RowDefinitions>
 
-                <TextBlock Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Style="{DynamicResource TextBlockStyle}" Width="400">Command line arguments:</TextBlock>
+                <TextBlock Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Style="{StaticResource TextBlockStyle}" Width="400">Command line arguments:</TextBlock>
                 <TextBox x:Name="TxtArgs" Grid.Column="1" Grid.Row="0"></TextBox>
-                <TextBlock Grid.Column="1" Grid.Row="1" Style="{DynamicResource SmallTextBlockStyle}" Margin="5 0 0 0">The arguments should contain {PATH} to represent the path to the media.</TextBlock>
+                <TextBlock Grid.Column="1" Grid.Row="1" Style="{StaticResource SmallTextBlockStyle}" Margin="5 0 0 0">The arguments should contain {PATH} to represent the path to the media.</TextBlock>
             </Grid>
             <CheckBox x:Name="ChkClosePlayerOnStop" Margin="0 20 0 0">
-                <TextBlock Style="{DynamicResource TextBlockStyle}">Force close player on stop button</TextBlock>
+                <TextBlock Style="{StaticResource TextBlockStyle}">Force close player on stop button</TextBlock>
             </CheckBox>
         </StackPanel>
 
         <Button x:Name="BtnSubmit" Margin="0 30 0 0">
-            <TextBlock Style="{DynamicResource TextBlockStyle}">Submit</TextBlock>
+            <TextBlock Style="{StaticResource TextBlockStyle}">Submit</TextBlock>
         </Button>
     </StackPanel>
 </pages:BasePage>

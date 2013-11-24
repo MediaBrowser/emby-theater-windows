@@ -7,7 +7,7 @@
              d:DesignHeight="300" d:DesignWidth="300">
 
     <StackPanel>
-        <TextBlock x:Name="TxtVersion" Style="{DynamicResource TextBlockStyle}" HorizontalAlignment="Left"></TextBlock>
+        <TextBlock x:Name="TxtVersion" Style="{StaticResource TextBlockStyle}" HorizontalAlignment="Left"></TextBlock>
 
         <StackPanel x:Name="PanelUpToDate" Orientation="Horizontal" Margin="0 20 0 0" Visibility="Collapsed">
             <Grid>
@@ -25,22 +25,22 @@
                     </Path.RenderTransform>
                 </Path>
             </Grid>
-            <TextBlock Style="{DynamicResource TextBlockStyle}" Margin="10 0 0 0">Up to date.</TextBlock>
+            <TextBlock Style="{StaticResource TextBlockStyle}" Margin="10 0 0 0">Up to date.</TextBlock>
         </StackPanel>
 
         <StackPanel x:Name="InstallationsPanel" Orientation="Vertical" Margin="0 50 0 0">
 
-            <TextBlock Style="{DynamicResource Heading2TextBlockStyle}">Currently Installing...</TextBlock>
+            <TextBlock Style="{StaticResource Heading2TextBlockStyle}">Currently Installing...</TextBlock>
             
             <StackPanel x:Name="InProgressInstallationsPanel" Orientation="Vertical"></StackPanel>
         </StackPanel>
 
         <StackPanel x:Name="PanelRestart" Orientation="Vertical" Margin="0 50 0 0" Visibility="Collapsed">
 
-            <TextBlock Style="{DynamicResource Heading2TextBlockStyle}">Please restart to finish updating</TextBlock>
+            <TextBlock Style="{StaticResource Heading2TextBlockStyle}">Please restart to finish updating</TextBlock>
 
             <Button x:Name="BtnRestart" Margin="0 20 0 0">
-                <TextBlock Style="{DynamicResource TextBlockStyle}">Restart</TextBlock>
+                <TextBlock Style="{StaticResource TextBlockStyle}">Restart</TextBlock>
             </Button>
 
         </StackPanel>

@@ -3,45 +3,45 @@
 
     <!--Default TextBlock style. -->
     <Style TargetType="TextBlock">
-        <Setter Property="FontSize" Value="{DynamicResource DefaultFontSize}"/>
-        <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}"/>
-        <Setter Property="FontWeight" Value="{DynamicResource DefaultFontWeight}"/>
+        <Setter Property="FontSize" Value="{StaticResource DefaultFontSize}"/>
+        <Setter Property="FontFamily" Value="{StaticResource DefaultFontFamily}"/>
+        <Setter Property="FontWeight" Value="{StaticResource DefaultFontWeight}"/>
         <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
 
     <!--Default TextBlock style. -->
     <Style TargetType="TextBlock" x:Key="TextBlockStyle">
-        <Setter Property="FontSize" Value="{DynamicResource DefaultFontSize}"/>
-        <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}"/>
-        <Setter Property="FontWeight" Value="{DynamicResource DefaultFontWeight}"/>
-        <Setter Property="Foreground" Value="{DynamicResource DefaultForeground}"/>
+        <Setter Property="FontSize" Value="{StaticResource DefaultFontSize}"/>
+        <Setter Property="FontFamily" Value="{StaticResource DefaultFontFamily}"/>
+        <Setter Property="FontWeight" Value="{StaticResource DefaultFontWeight}"/>
+        <Setter Property="Foreground" Value="{StaticResource DefaultForeground}"/>
         <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
 
     <!--Default TextBlock style. -->
     <Style TargetType="TextBlock" x:Key="SmallTextBlockStyle">
-        <Setter Property="FontSize" Value="{DynamicResource SmallFontSize}"/>
-        <Setter Property="FontFamily" Value="{DynamicResource SmallFontFamily}"/>
-        <Setter Property="FontWeight" Value="{DynamicResource SmallFontWeight}"/>
-        <Setter Property="Foreground" Value="{DynamicResource SmallForeground}"/>
+        <Setter Property="FontSize" Value="{StaticResource SmallFontSize}"/>
+        <Setter Property="FontFamily" Value="{StaticResource SmallFontFamily}"/>
+        <Setter Property="FontWeight" Value="{StaticResource SmallFontWeight}"/>
+        <Setter Property="Foreground" Value="{StaticResource SmallForeground}"/>
         <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
 
     <!--Default TextBlock style. -->
     <Style TargetType="TextBlock" x:Key="Heading1TextBlockStyle">
-        <Setter Property="FontSize" Value="{DynamicResource Heading1FontSize}"/>
-        <Setter Property="FontFamily" Value="{DynamicResource Heading1FontFamily}"/>
-        <Setter Property="FontWeight" Value="{DynamicResource Heading1FontWeight}"/>
-        <Setter Property="Foreground" Value="{DynamicResource Heading1Foreground}"/>
+        <Setter Property="FontSize" Value="{StaticResource Heading1FontSize}"/>
+        <Setter Property="FontFamily" Value="{StaticResource Heading1FontFamily}"/>
+        <Setter Property="FontWeight" Value="{StaticResource Heading1FontWeight}"/>
+        <Setter Property="Foreground" Value="{StaticResource Heading1Foreground}"/>
         <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
 
     <!--Default TextBlock style. -->
     <Style TargetType="TextBlock" x:Key="Heading2TextBlockStyle">
-        <Setter Property="FontSize" Value="{DynamicResource Heading2FontSize}"/>
-        <Setter Property="FontFamily" Value="{DynamicResource Heading2FontFamily}"/>
-        <Setter Property="FontWeight" Value="{DynamicResource Heading2FontWeight}"/>
-        <Setter Property="Foreground" Value="{DynamicResource Heading2Foreground}"/>
+        <Setter Property="FontSize" Value="{StaticResource Heading2FontSize}"/>
+        <Setter Property="FontFamily" Value="{StaticResource Heading2FontFamily}"/>
+        <Setter Property="FontWeight" Value="{StaticResource Heading2FontWeight}"/>
+        <Setter Property="Foreground" Value="{StaticResource Heading2Foreground}"/>
         <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
 </ResourceDictionary>

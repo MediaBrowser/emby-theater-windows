@@ -1,4 +1,5 @@
-﻿using MediaBrowser.ApiInteraction;
+﻿using System.Windows.Interop;
+using MediaBrowser.ApiInteraction;
 using MediaBrowser.Common.Constants;
 using MediaBrowser.Common.Implementations.Logging;
 using MediaBrowser.Common.Implementations.Updates;
@@ -62,7 +63,7 @@ namespace MediaBrowser.UI
         /// Gets the hidden window.
         /// </summary>
         /// <value>The hidden window.</value>
-        internal HiddenWindow HiddenWindow { get; set; }
+        internal HiddenForm HiddenWindow { get; set; }
 
         /// <summary>
         /// The _app paths
@@ -173,34 +174,43 @@ namespace MediaBrowser.UI
                 }
             }
 
+            ApplicationWindow = win;
+
+            ApplicationWindow.Show();
+
+            HiddenWindow = new HiddenForm();
+            HiddenWindow.Show();
+
+            HiddenWindow.Activated += HiddenWindow_Activated;
+            HiddenWindow.VisibleChanged += HiddenWindow_VisibleChanged;
+
             win.LocationChanged += ApplicationWindow_LocationChanged;
             win.StateChanged += ApplicationWindow_LocationChanged;
             win.SizeChanged += ApplicationWindow_LocationChanged;
             win.Closing += win_Closing;
 
-            HiddenWindow.Activated += HiddenWindow_Activated;
-            HiddenWindow.IsVisibleChanged += HiddenWindow_IsVisibleChanged;
-
-            ApplicationWindow = win;
-
-            ApplicationWindow.Show();
-
-            ApplicationWindow.Owner = HiddenWindow;
+            SetOwner(HiddenWindow, ApplicationWindow);
 
             SyncHiddenWindowLocation();
 
             ApplicationWindow.Activate();
         }
 
-        void win_Closing(object sender, CancelEventArgs e)
-        {
-            HiddenWindow.Close();
-        }
-
-        void HiddenWindow_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        void HiddenWindow_VisibleChanged(object sender, EventArgs e)
         {
             _logger.Debug("HiddenWindow_IsVisibleChanged.");
             ApplicationWindow.Activate();
+        }
+
+        public static void SetOwner(System.Windows.Forms.Form ownerForm, Window window)
+        {
+            var helper = new WindowInteropHelper(window);
+            helper.Owner = ownerForm.Handle;
+        }
+
+        void win_Closing(object sender, CancelEventArgs e)
+        {
+            HiddenWindow.Close();
         }
 
         /// <summary>
@@ -218,13 +228,26 @@ namespace MediaBrowser.UI
         /// </summary>
         public void SyncHiddenWindowLocation()
         {
-            HiddenWindow.Width = ApplicationWindow.Width;
-            HiddenWindow.Height = ApplicationWindow.Height;
-            HiddenWindow.Top = ApplicationWindow.Top;
-            HiddenWindow.Left = ApplicationWindow.Left;
-            HiddenWindow.WindowState = ApplicationWindow.WindowState;
+            HiddenWindow.Width = Convert.ToInt32(ApplicationWindow.Width);
+            HiddenWindow.Height = Convert.ToInt32(ApplicationWindow.Height);
+            HiddenWindow.Top = Convert.ToInt32(ApplicationWindow.Top);
+            HiddenWindow.Left = Convert.ToInt32(ApplicationWindow.Left);
+
+            HiddenWindow.WindowState = GetWindowsFormState(ApplicationWindow.WindowState);
 
             ApplicationWindow.Activate();
+        }
+
+        private System.Windows.Forms.FormWindowState GetWindowsFormState(WindowState state)
+        {
+            switch (state)
+            {
+                case WindowState.Maximized:
+                    return System.Windows.Forms.FormWindowState.Maximized;
+                case WindowState.Minimized:
+                    return System.Windows.Forms.FormWindowState.Minimized;
+            }
+            return System.Windows.Forms.FormWindowState.Normal;
         }
 
         void HiddenWindow_Activated(object sender, EventArgs e)
@@ -250,9 +273,6 @@ namespace MediaBrowser.UI
 
                 // Load default theme
                 await _appHost.ThemeManager.LoadDefaultTheme();
-
-                HiddenWindow = new HiddenWindow(_logManager.GetLogger("HiddenWindow"));
-                HiddenWindow.Show();
 
                 _appHost.TheaterConfigurationManager.ConfigurationUpdated += TheaterConfigurationManager_ConfigurationUpdated;
 

@@ -186,11 +186,16 @@ namespace MediaBrowser.Theater.DirectShow
             {
                 _currentPlaybackDispatcher.Invoke(() =>
                 {
-                    _hiddenWindow.WindowsFormsHost.Child = _mediaPlayer = new DirectShowPlayer(_logger, _hiddenWindow, this)
+                    var player = new DirectShowPlayer(_logger, _hiddenWindow, this)
                     {
                         BackColor = Color.Black,
                         BorderStyle = BorderStyle.None
                     };
+
+                    _hiddenWindow.Form.Controls.Clear();
+                    _hiddenWindow.Form.Controls.Add(player);
+
+                    _mediaPlayer = player;
 
                     //HideCursor();
                 });
@@ -330,7 +335,7 @@ namespace MediaBrowser.Theater.DirectShow
                 _currentPlaybackDispatcher.Invoke(() =>
                 {
                     _mediaPlayer.Dispose();
-                    _hiddenWindow.WindowsFormsHost.Child = new Panel();
+                    _hiddenWindow.Form.Controls.Clear();
 
                 });
             }

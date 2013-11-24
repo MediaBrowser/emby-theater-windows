@@ -1,9 +1,7 @@
 ﻿using MediaBrowser.Theater.Interfaces.Presentation;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Forms.Integration;
-using System.Windows.Interop;
-using System.Windows.Media;
+using System;
+using System.Windows.Forms;
+using Size = System.Drawing.Size;
 
 namespace MediaBrowser.UI.Implementations
 {
@@ -16,22 +14,12 @@ namespace MediaBrowser.UI.Implementations
         /// Gets the windows forms host.
         /// </summary>
         /// <value>The windows forms host.</value>
-        public WindowsFormsHost WindowsFormsHost
+        public Form Form
         {
-            get { return App.Instance.HiddenWindow.WindowsFormsHost; }
+            get { return App.Instance.HiddenWindow; }
         }
 
-        public double ContentWidth
-        {
-            get { return App.Instance.HiddenWindow.MainGrid.ActualWidth; }
-        }
-
-        public double ContentHeight
-        {
-            get { return App.Instance.HiddenWindow.MainGrid.ActualHeight; }
-        }
-
-        public event SizeChangedEventHandler SizeChanged
+        public event EventHandler SizeChanged
         {
             add { App.Instance.HiddenWindow.SizeChanged += value; }
             remove
@@ -42,26 +30,21 @@ namespace MediaBrowser.UI.Implementations
 
         public Size ContentPixelSize
         {
-            get { return GetElementPixelSize(App.Instance.HiddenWindow.MainGrid); }
+            get { return new Size(App.Instance.HiddenWindow.Width, App.Instance.HiddenWindow.Height); }
         }
 
-        public Size GetElementPixelSize(Grid element)
-        {
-            Matrix transformToDevice;
-            using (var hwndSource = new HwndSource(new HwndSourceParameters()))
-                    transformToDevice = hwndSource.CompositionTarget.TransformToDevice;
+        //private Size GetElementPixelSize(Grid element)
+        //{
+        //    Matrix transformToDevice;
+        //    using (var hwndSource = new HwndSource(new HwndSourceParameters()))
+        //            transformToDevice = hwndSource.CompositionTarget.TransformToDevice;
 
-            var size = new Size(element.ActualWidth, element.ActualHeight);
+        //    var size = new Size(element.ActualWidth, element.ActualHeight);
 
-            //if (element.DesiredSize == new Size())
-            //    element.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+        //    //if (element.DesiredSize == new Size())
+        //    //    element.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
 
-            return (Size)transformToDevice.Transform((Vector)size);
-        }
-
-        public Window Window
-        {
-            get { return App.Instance.HiddenWindow; }
-        }
+        //    return (Size)transformToDevice.Transform((Vector)size);
+        //}
     }
 }

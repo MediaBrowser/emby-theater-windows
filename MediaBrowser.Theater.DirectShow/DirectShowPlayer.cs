@@ -75,7 +75,7 @@ namespace MediaBrowser.Theater.DirectShow
 
         private IntPtr VideoWindowHandle
         {
-            get { return Handle; }
+            get { return _hiddenWindow.Form.Handle; }
         }
 
         private PlayState _playstate;
@@ -730,8 +730,8 @@ namespace MediaBrowser.Theater.DirectShow
         {
             var hiddenWindowContentSize = _hiddenWindow.ContentPixelSize;
 
-            var screenWidth = Convert.ToInt32(Math.Round(hiddenWindowContentSize.Width));
-            var screenHeight = Convert.ToInt32(Math.Round(hiddenWindowContentSize.Height));
+            var screenWidth = hiddenWindowContentSize.Width;
+            var screenHeight = hiddenWindowContentSize.Height;
 
             _logger.Info("window content width: {0}, window height: {1}", screenWidth, screenHeight);
 
@@ -822,7 +822,7 @@ namespace MediaBrowser.Theater.DirectShow
             }
         }
 
-        void _hiddenWindow_SizeChanged(object sender, SizeChangedEventArgs e)
+        void _hiddenWindow_SizeChanged(object sender, EventArgs e)
         {
             SetVideoPositions();
         }

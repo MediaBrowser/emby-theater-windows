@@ -33,6 +33,19 @@ namespace MediaBrowser.UI.Implementations
             get { return new Size(App.Instance.HiddenWindow.Width, App.Instance.HiddenWindow.Height); }
         }
 
+        public Action OnWMGRAPHNOTIFY
+        {
+            get
+            {
+                return App.Instance.HiddenWindow.OnWMGRAPHNOTIFY;
+            }
+            set
+            {
+                App.Instance.HiddenWindow.OnWMGRAPHNOTIFY = value;
+            }
+        }
+
+
         //private Size GetElementPixelSize(Grid element)
         //{
         //    Matrix transformToDevice;

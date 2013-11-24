@@ -18,5 +18,7 @@ namespace MediaBrowser.Theater.Interfaces.Presentation
         Form Form { get; }
 
         Size ContentPixelSize { get; }
+
+        Action OnWMGRAPHNOTIFY { get; set; }
     }
 }

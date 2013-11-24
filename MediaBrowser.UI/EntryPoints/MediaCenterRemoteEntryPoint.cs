@@ -19,13 +19,15 @@ namespace MediaBrowser.UI.EntryPoints
         private readonly ILogger _logger;
         private readonly INavigationService _nav;
         private readonly IUserInputManager _userInput;
+        private readonly IHiddenWindow _hiddenWindow;
 
-        public MediaCenterRemoteEntryPoint(IPresentationManager presenation, IPlaybackManager playback, ILogManager logManager, INavigationService nav, IUserInputManager userInput)
+        public MediaCenterRemoteEntryPoint(IPresentationManager presenation, IPlaybackManager playback, ILogManager logManager, INavigationService nav, IUserInputManager userInput, IHiddenWindow hiddenWindow)
         {
             _presenation = presenation;
             _playback = playback;
             _nav = nav;
             _userInput = userInput;
+            _hiddenWindow = hiddenWindow;
 
             _logger = logManager.GetLogger(GetType().Name);
         }

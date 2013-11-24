@@ -29,10 +29,10 @@
                 <ColumnDefinition Width="auto"></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
-            <TextBlock Name="TxtName" Style="{DynamicResource TextBlockStyle}" Grid.Row="0" Grid.Column="0" Margin="0 0 0 0"></TextBlock>
+            <TextBlock Name="TxtName" Style="{StaticResource TextBlockStyle}" Grid.Row="0" Grid.Column="0" Margin="0 0 0 0"></TextBlock>
 
             <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="1" Margin="0 0 0 0" HorizontalAlignment="Right">
-                <Button Style="{DynamicResource ImageButton}" Command="{Binding ToggleDislikesCommand}" DataContext="{Binding NowPlayingItemViewModel}">
+                <Button Style="{StaticResource ImageButton}" Command="{Binding ToggleDislikesCommand}" DataContext="{Binding NowPlayingItemViewModel}">
                     <Grid>
                         <Grid Width="50" Height="50" />
                         <Path Data="F1M238.068,28.2585C238.068,28.2585 233.74,29.364 229.869,34.5221 228.307,36.7331 226.924,40.7838 225.908,44.3776 224.986,46.4049 225.264,47.3268 220.936,49.0768 218.174,50.6413 213.842,53.8658 211.908,59.0221 211.354,61.3268 212.139,66.4532 207.947,66.3925 203.572,66.3067 203.252,61.8796 202.971,58.8385 203.342,53.4049 207.576,48.1549 207.576,48.1549L211.264,42.1667C211.264,42.1667 209.893,42.2448 205.549,42.0027 202.108,41.8112 198.502,42.4381 193.67,40.9695 182.709,35.4421 192.014,31.5729 192.014,31.5729 186.025,27.2448 191.369,22.6393 191.369,22.6393 187.592,15.8229 193.756,14.4049 193.393,14.3483 192.193,14.1646 188.049,9.83463 195.143,6.0592 195.143,6.0592 202.881,2.64905 207.119,2.64905 209.881,2.19009 217.803,2.09641 223.791,4.58463 230.881,5.78186 232.256,5.00854 238.15,3.90308L238.068,28.2585z" Stretch="Uniform" Width="36" Height="36" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
@@ -60,7 +60,7 @@
                     </Grid>
                 </Button>
 
-                <Button Style="{DynamicResource ImageButton}" Margin="10 0 0 0" Command="{Binding ToggleLikesCommand}" DataContext="{Binding NowPlayingItemViewModel}">
+                <Button Style="{StaticResource ImageButton}" Margin="10 0 0 0" Command="{Binding ToggleLikesCommand}" DataContext="{Binding NowPlayingItemViewModel}">
                     <Grid>
                         <Grid Width="50" Height="50" />
                         <Path Data="F1M23.6804,40.528C23.6804,40.528 28.0085,39.4225 31.8777,34.2644 33.4441,32.0533 34.8249,28.0027 35.8387,24.4088 36.7605,22.3815 36.4839,21.4596 40.812,19.7096 43.5756,18.1452 47.9057,14.9205 49.8393,9.76236 50.392,7.45959 49.6101,2.33264 53.8016,2.39383 58.1765,2.47986 58.4988,6.90689 58.7748,9.94785 58.4057,15.3815 54.1693,20.6315 54.1693,20.6315L50.4852,26.6199C50.4852,26.6199 51.8563,26.5417 56.1968,26.7838 59.6415,26.9753 63.2456,26.3483 68.0789,27.817 79.0392,33.3444 69.7359,37.2136 69.7359,37.2136 75.7235,41.5417 70.3804,46.1472 70.3804,46.1472 74.1589,52.9636 67.9911,54.3815 68.3549,54.4381 69.5523,54.6217 73.6968,58.9519 66.6049,62.7272 66.6049,62.7272 58.8667,66.1373 54.6297,66.1373 51.866,66.5964 43.9448,66.6901 37.9579,64.2019 30.8647,63.0045 29.4929,63.778 23.5977,64.8835L23.6804,40.528z" Stretch="Uniform" Width="36" Height="36" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
@@ -88,7 +88,7 @@
                     </Grid>
                 </Button>
 
-                <Button Style="{DynamicResource ImageButton}" Margin="10 0 0 0" Command="{Binding ToggleIsFavoriteCommand}" DataContext="{Binding NowPlayingItemViewModel}">
+                <Button Style="{StaticResource ImageButton}" Margin="10 0 0 0" Command="{Binding ToggleIsFavoriteCommand}" DataContext="{Binding NowPlayingItemViewModel}">
                     <Grid>
                         <Grid Width="50" Height="50" />
                         <Path Data="F1M42.7161,9.77081C43.3776,9.77081 44.0781,9.80597 44.8307,9.88019 49.401,10.3242 54.6901,14.5117 55.3333,22.5352L55.3333,25.2031C54.7369,32.8802 48.9375,42.3496 32,54.2305 15.0598,42.3496 9.26563,32.8802 8.66663,25.2031L8.66663,22.5352C9.30981,14.5117 14.5963,10.3242 19.1692,9.88019 19.9192,9.80597 20.6223,9.77081 21.2813,9.77081 26.5625,9.77081 29.0989,12.0534 32,15.5104 34.901,12.0534 37.4323,9.77081 42.7161,9.77081" Stretch="Uniform" Width="36" Height="36" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
@@ -120,7 +120,7 @@
             <details:ItemInfoFooter ShowResumeProgress="False"  HorizontalAlignment="Left" VerticalAlignment="Bottom" DataContext="{Binding NowPlayingItemViewModel}" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="0 35 0 0" ShowUserRating="false">
             </details:ItemInfoFooter>
 
-            <TextBlock DataContext="{Binding NowPlayingItemViewModel}" Style="{DynamicResource TextBlockStyle}" Text="{Binding Overview}" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0 35 0 0"></TextBlock>
+            <TextBlock DataContext="{Binding NowPlayingItemViewModel}" Style="{StaticResource TextBlockStyle}" Text="{Binding Overview}" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0 35 0 0"></TextBlock>
         </Grid>
     </Grid>
 </UserControl>

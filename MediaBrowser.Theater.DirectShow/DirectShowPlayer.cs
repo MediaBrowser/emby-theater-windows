@@ -14,15 +14,15 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Windows;
 using System.Windows.Forms;
 
 namespace MediaBrowser.Theater.DirectShow
 {
-    public class DirectShowPlayer : Panel
+    public class DirectShowPlayer : IDisposable
     {
         private const int WM_APP = 0x8000;
         private const int WM_GRAPHNOTIFY = WM_APP + 1;
+        private const int WM_KEYDOWN = 0x0100;
 
         private readonly ILogger _logger;
         private readonly IHiddenWindow _hiddenWindow;
@@ -142,10 +142,14 @@ namespace MediaBrowser.Theater.DirectShow
 
             Initialize(item.PlayablePath, enableReclock, enableMadvr, enableXySubFilter, isDvd);
 
+            _hiddenWindow.OnWMGRAPHNOTIFY = HandleGraphEvent;
+
             var hr = _mediaControl.Run();
             DsError.ThrowExceptionForHR(hr);
 
             PlayState = PlayState.Playing;
+
+            _streams = GetStreams();
         }
 
         private void InitializeGraph()
@@ -699,32 +703,32 @@ namespace MediaBrowser.Theater.DirectShow
             }
         }
 
-        private readonly Bitmap _cursorBitmap = new Bitmap(1, 1);
-        private Cursor _blankCursor;
+        //private readonly Bitmap _cursorBitmap = new Bitmap(1, 1);
+        //private Cursor _blankCursor;
         private bool _cursorHidden;
 
-        public void ShowCursor()
-        {
-            Cursor = Cursors.Default;
+        //public void ShowCursor()
+        //{
+        //    Cursor = Cursors.Default;
 
-            if (_videoWindow != null)
-            {
-                _videoWindow.HideCursor(OABool.False);
-            }
-            _cursorHidden = false;
-        }
+        //    if (_videoWindow != null)
+        //    {
+        //        _videoWindow.HideCursor(OABool.False);
+        //    }
+        //    _cursorHidden = false;
+        //}
 
-        public void HideCursor()
-        {
-            _blankCursor = _blankCursor ?? (_blankCursor = CustomCursor.CreateCursor(_cursorBitmap, 1, 1));
-            Cursor = _blankCursor;
+        //public void HideCursor()
+        //{
+        //    _blankCursor = _blankCursor ?? (_blankCursor = CustomCursor.CreateCursor(_cursorBitmap, 1, 1));
+        //    Cursor = _blankCursor;
 
-            if (_videoWindow != null)
-            {
-                _videoWindow.HideCursor(OABool.True);
-            }
-            _cursorHidden = true;
-        }
+        //    if (_videoWindow != null)
+        //    {
+        //        _videoWindow.HideCursor(OABool.True);
+        //    }
+        //    _cursorHidden = true;
+        //}
 
         private void SetVideoPositions()
         {
@@ -883,16 +887,6 @@ namespace MediaBrowser.Theater.DirectShow
             _playerWrapper.OnPlaybackStopped(_item, endingPosition, reason, newTrackIndex);
         }
 
-        protected override void WndProc(ref Message m)
-        {
-            if (m.Msg == WM_GRAPHNOTIFY)
-            {
-                HandleGraphEvent();
-            }
-
-            base.WndProc(ref m);
-        }
-
         private void HandleGraphEvent()
         {
             // Make sure that we don't access the media event interface
@@ -926,6 +920,8 @@ namespace MediaBrowser.Theater.DirectShow
 
         private void DisposePlayer()
         {
+            _hiddenWindow.OnWMGRAPHNOTIFY = null;
+
             _logger.Debug("Disposing player");
 
             CloseInterfaces();
@@ -1318,6 +1314,10 @@ namespace MediaBrowser.Theater.DirectShow
             {
                 i.IsActive = i.Index == stream.Index;
             }
+        }
+
+        public void Dispose()
+        {
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using System.Runtime.InteropServices;
-using MediaBrowser.Common.Events;
+﻿using MediaBrowser.Common.Events;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
@@ -9,15 +8,12 @@ using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.UserInput;
+using MediaBrowser.Theater.Presentation.Playback;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Windows.Threading;
-using MediaBrowser.Theater.Presentation.Playback;
 
 namespace MediaBrowser.Theater.DirectShow
 {
@@ -33,8 +29,6 @@ namespace MediaBrowser.Theater.DirectShow
         private readonly IPlaybackManager _playbackManager;
         private readonly ITheaterConfigurationManager _config;
         private readonly IIsoManager _isoManager;
-
-        private readonly Task _taskResult = Task.FromResult(true);
 
         public event EventHandler<MediaChangeEventArgs> MediaChanged;
 
@@ -171,8 +165,6 @@ namespace MediaBrowser.Theater.DirectShow
             return new[] { MediaType.Video, MediaType.Audio }.Contains(mediaType, StringComparer.OrdinalIgnoreCase);
         }
 
-        private Dispatcher _currentPlaybackDispatcher;
-
         public async Task Play(PlayOptions options)
         {
             CurrentPlaylistIndex = 0;
@@ -180,22 +172,11 @@ namespace MediaBrowser.Theater.DirectShow
 
             _playlist = options.Items.ToList();
 
-            _currentPlaybackDispatcher = _presentation.Window.Dispatcher;
-
             try
             {
-                _currentPlaybackDispatcher.Invoke(() =>
+                InvokeOnPlayerThread(() =>
                 {
-                    var player = new DirectShowPlayer(_logger, _hiddenWindow, this)
-                    {
-                        BackColor = Color.Black,
-                        BorderStyle = BorderStyle.None
-                    };
-
-                    _hiddenWindow.Form.Controls.Clear();
-                    _hiddenWindow.Form.Controls.Add(player);
-
-                    _mediaPlayer = player;
+                    _mediaPlayer = new DirectShowPlayer(_logger, _hiddenWindow, this);
 
                     //HideCursor();
                 });
@@ -224,7 +205,7 @@ namespace MediaBrowser.Theater.DirectShow
 
             try
             {
-                _currentPlaybackDispatcher.Invoke(() => _mediaPlayer.Play(playableItem, EnableReclock(options), EnableMadvr(options), _config.Configuration.InternalPlayerConfiguration.EnableXySubFilter));
+                InvokeOnPlayerThread(() => _mediaPlayer.Play(playableItem, EnableReclock(options), EnableMadvr(options), _config.Configuration.InternalPlayerConfiguration.EnableXySubFilter));
             }
             catch
             {
@@ -237,7 +218,7 @@ namespace MediaBrowser.Theater.DirectShow
 
             if (startPositionTicks.HasValue && startPositionTicks.Value > 0)
             {
-                _currentPlaybackDispatcher.Invoke(() => _mediaPlayer.Seek(startPositionTicks.Value));
+                InvokeOnPlayerThread(() => _mediaPlayer.Seek(startPositionTicks.Value));
             }
 
             if (previousMedia != null)
@@ -332,12 +313,7 @@ namespace MediaBrowser.Theater.DirectShow
         {
             if (_mediaPlayer != null)
             {
-                _currentPlaybackDispatcher.Invoke(() =>
-                {
-                    _mediaPlayer.Dispose();
-                    _hiddenWindow.Form.Controls.Clear();
-
-                });
+                InvokeOnPlayerThread(() => _mediaPlayer.Dispose());
             }
         }
 
@@ -347,7 +323,7 @@ namespace MediaBrowser.Theater.DirectShow
             {
                 if (_mediaPlayer != null)
                 {
-                    _currentPlaybackDispatcher.Invoke(_mediaPlayer.Pause);
+                    InvokeOnPlayerThread(_mediaPlayer.Pause);
                 }
             }
         }
@@ -358,7 +334,7 @@ namespace MediaBrowser.Theater.DirectShow
             {
                 if (_mediaPlayer != null)
                 {
-                    _currentPlaybackDispatcher.Invoke(_mediaPlayer.Unpause);
+                    InvokeOnPlayerThread(_mediaPlayer.Unpause);
                 }
             }
         }
@@ -371,7 +347,7 @@ namespace MediaBrowser.Theater.DirectShow
             {
                 if (_mediaPlayer != null)
                 {
-                    _currentPlaybackDispatcher.Invoke(() => _mediaPlayer.Stop(TrackCompletionReason.Stop, null));
+                    InvokeOnPlayerThread(() => _mediaPlayer.Stop(TrackCompletionReason.Stop, null));
                 }
             }
         }
@@ -382,7 +358,7 @@ namespace MediaBrowser.Theater.DirectShow
             {
                 if (_mediaPlayer != null)
                 {
-                    _currentPlaybackDispatcher.Invoke(() => _mediaPlayer.Seek(positionTicks));
+                    InvokeOnPlayerThread(() => _mediaPlayer.Seek(positionTicks));
                 }
             }
         }
@@ -446,7 +422,7 @@ namespace MediaBrowser.Theater.DirectShow
         public void ChangeTrack(int newIndex)
         {
             _mediaPlayer.Stop(TrackCompletionReason.ChangeTrack, newIndex);
-            _currentPlaybackDispatcher.Invoke(() => _mediaPlayer.Stop(TrackCompletionReason.ChangeTrack, newIndex));
+            InvokeOnPlayerThread(() => _mediaPlayer.Stop(TrackCompletionReason.ChangeTrack, newIndex));
         }
 
         public IReadOnlyList<SelectableMediaStream> SelectableStreams
@@ -456,17 +432,29 @@ namespace MediaBrowser.Theater.DirectShow
 
         public void ChangeAudioStream(SelectableMediaStream track)
         {
-            _currentPlaybackDispatcher.Invoke(() => _mediaPlayer.SetAudioTrack(track));
+            InvokeOnPlayerThread(() => _mediaPlayer.SetAudioTrack(track));
         }
 
         public void ChangeSubtitleStream(SelectableMediaStream track)
         {
-            _currentPlaybackDispatcher.Invoke(() => _mediaPlayer.SetSubtitleTrack(track));
+            InvokeOnPlayerThread(() => _mediaPlayer.SetSubtitleTrack(track));
         }
 
         public void RemoveSubtitles()
         {
 
+        }
+
+        private void InvokeOnPlayerThread(Action action)
+        {
+            if (_hiddenWindow.Form.InvokeRequired)
+            {
+                _hiddenWindow.Form.Invoke(action);
+            }
+            else
+            {
+                action();
+            }
         }
     }
 

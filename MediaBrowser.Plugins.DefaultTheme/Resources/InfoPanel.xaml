@@ -5,7 +5,7 @@
 
 
     <DataTemplate x:Key="SelectableMediaStreamTemplate" DataType="{x:Type viewModels:SelectableMediaStream}">
-        <Grid Background="{StaticResource PanelBackground}" HorizontalAlignment="Left">
+        <Grid Background="{DynamicResource PanelBackground}" HorizontalAlignment="Left">
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto"></ColumnDefinition>
@@ -46,7 +46,7 @@
 
             <StackPanel Orientation="Vertical" Grid.Column="1" Margin="40 15 40 20" MaxWidth="350" VerticalAlignment="Center">
 
-                <TextBlock Foreground="{StaticResource TextForegroundOverBackground}" Style="{StaticResource TextBlockStyle}" TextTrimming="CharacterEllipsis" TextWrapping="Wrap" Text="{Binding Name}"></TextBlock>
+                <TextBlock Foreground="{DynamicResource TextForegroundOverBackground}" Style="{StaticResource TextBlockStyle}" TextTrimming="CharacterEllipsis" TextWrapping="Wrap" Text="{Binding Name}"></TextBlock>
             </StackPanel>
         </Grid>
     </DataTemplate>
@@ -59,12 +59,12 @@
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsSelected" Value="true">
                             <Setter TargetName="MenuText" Property="Opacity" Value="1"/>
-                            <Setter TargetName="MenuText" Property="Foreground" Value="{StaticResource SelectedMenuItemForeground}"></Setter>
+                            <Setter TargetName="MenuText" Property="Foreground" Value="{DynamicResource SelectedMenuItemForeground}"></Setter>
                         </Trigger>
                         <Trigger Property="IsKeyboardFocused" Value="true">
                             <Setter TargetName="MenuText" Property="Opacity" Value="1"/>
                             <Setter TargetName="MenuText" Property="TextBlock.TextDecorations" Value="Underline"/>
-                            <Setter TargetName="MenuText" Property="Foreground" Value="{StaticResource SelectedMenuItemForeground}"></Setter>
+                            <Setter TargetName="MenuText" Property="Foreground" Value="{DynamicResource SelectedMenuItemForeground}"></Setter>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

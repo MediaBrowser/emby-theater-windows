@@ -1,4 +1,5 @@
-﻿using System.Windows.Interop;
+﻿using System.Runtime.InteropServices;
+using System.Windows.Interop;
 using MediaBrowser.ApiInteraction;
 using MediaBrowser.Common.Constants;
 using MediaBrowser.Common.Implementations.Logging;
@@ -33,6 +34,7 @@ namespace MediaBrowser.UI
         /// </summary>
         /// <value>The logger.</value>
         private ILogger _logger;
+
         private readonly ILogManager _logManager;
 
         /// <summary>
@@ -98,14 +100,16 @@ namespace MediaBrowser.UI
                 // Update is there - execute update
                 try
                 {
-                    new ApplicationUpdater().UpdateApplication(MBApplication.MBTheater, appPaths, updateArchive, logManager.GetLogger("ApplicationUpdater"), string.Empty);
+                    new ApplicationUpdater().UpdateApplication(MBApplication.MBTheater, appPaths, updateArchive,
+                        logManager.GetLogger("ApplicationUpdater"), string.Empty);
 
                     // And just let the app exit so it can update
                     return;
                 }
                 catch (Exception e)
                 {
-                    MessageBox.Show(string.Format("Error attempting to update application.\n\n{0}\n\n{1}", e.GetType().Name, e.Message));
+                    MessageBox.Show(string.Format("Error attempting to update application.\n\n{0}\n\n{1}",
+                        e.GetType().Name, e.Message));
                 }
             }
 
@@ -125,12 +129,16 @@ namespace MediaBrowser.UI
             InitializeComponent();
         }
 
+        private Thread _hiddenWindowThread;
+
         /// <summary>
         /// Shows the application window.
         /// </summary>
         private void ShowApplicationWindow()
         {
-            var win = new MainWindow(_logger, _appHost.PlaybackManager, _appHost.ApiClient, _appHost.ImageManager, _appHost, _appHost.PresentationManager, _appHost.UserInputManager, _appHost.TheaterConfigurationManager, _appHost.NavigationService);
+            var win = new MainWindow(_logger, _appHost.PlaybackManager, _appHost.ApiClient, _appHost.ImageManager,
+                _appHost, _appHost.PresentationManager, _appHost.UserInputManager, _appHost.TheaterConfigurationManager,
+                _appHost.NavigationService);
 
             var config = _appHost.TheaterConfigurationManager.Configuration;
 
@@ -178,39 +186,70 @@ namespace MediaBrowser.UI
 
             ApplicationWindow.Show();
 
-            HiddenWindow = new HiddenForm();
-            HiddenWindow.Show();
-
-            HiddenWindow.Activated += HiddenWindow_Activated;
-            HiddenWindow.VisibleChanged += HiddenWindow_VisibleChanged;
-
             win.LocationChanged += ApplicationWindow_LocationChanged;
             win.StateChanged += ApplicationWindow_LocationChanged;
             win.SizeChanged += ApplicationWindow_LocationChanged;
             win.Closing += win_Closing;
 
-            SetOwner(HiddenWindow, ApplicationWindow);
+            StartHiddenWindowThread();
+        }
 
-            SyncHiddenWindowLocation();
+        private void StartHiddenWindowThread()
+        {
+            var width = Convert.ToInt32(ApplicationWindow.Width);
+            var height = Convert.ToInt32(ApplicationWindow.Height);
+            var top = Convert.ToInt32(ApplicationWindow.Top);
+            var left = Convert.ToInt32(ApplicationWindow.Left);
+
+            var state = GetWindowsFormState(ApplicationWindow.WindowState);
+
+            _hiddenWindowThread = new Thread(() => ShowHiddenWindow(width, height, top, left, state));
+            _hiddenWindowThread.SetApartmentState(ApartmentState.STA);
+            _hiddenWindowThread.IsBackground = true;
+            _hiddenWindowThread.Start();
 
             ApplicationWindow.Activate();
         }
 
-        void HiddenWindow_VisibleChanged(object sender, EventArgs e)
+        void HiddenWindow_Activated(object sender, EventArgs e)
         {
-            _logger.Debug("HiddenWindow_IsVisibleChanged.");
-            ApplicationWindow.Activate();
+            ApplicationWindow.Dispatcher.Invoke(() =>
+            {
+                ApplicationWindow.Activate();
+            });
+            HiddenWindow.Activated -= HiddenWindow_Activated;
         }
 
-        public static void SetOwner(System.Windows.Forms.Form ownerForm, Window window)
+        private void ShowHiddenWindow(int width, int height, int top, int left, System.Windows.Forms.FormWindowState windowState)
         {
-            var helper = new WindowInteropHelper(window);
-            helper.Owner = ownerForm.Handle;
+            HiddenWindow = new HiddenForm();
+            HiddenWindow.Load += HiddenWindow_Load;
+            HiddenWindow.Activated += HiddenWindow_Activated;
+            HiddenWindow.Show();
+
+            HiddenWindow.Width = width;
+            HiddenWindow.Height = height;
+            HiddenWindow.Top = top;
+            HiddenWindow.Left = left;
+
+            HiddenWindow.WindowState = windowState;
+
+            System.Windows.Threading.Dispatcher.Run();
+        }
+
+        void HiddenWindow_Load(object sender, EventArgs e)
+        {
+            // Hide this from ALT-TAB
+            var handle = HiddenWindow.Handle;
+            var exStyle = (int)GetWindowLong(handle, (int)GetWindowLongFields.GWL_EXSTYLE);
+
+            exStyle |= (int)ExtendedWindowStyles.WS_EX_TOOLWINDOW;
+            SetWindowLong(handle, (int)GetWindowLongFields.GWL_EXSTYLE, (IntPtr)exStyle);
         }
 
         void win_Closing(object sender, CancelEventArgs e)
         {
-            HiddenWindow.Close();
+            HiddenWindow.Invoke(new Action(() => HiddenWindow.Close()));
         }
 
         /// <summary>
@@ -221,6 +260,7 @@ namespace MediaBrowser.UI
         void ApplicationWindow_LocationChanged(object sender, EventArgs e)
         {
             SyncHiddenWindowLocation();
+            ApplicationWindow.Activate();
         }
 
         /// <summary>
@@ -228,14 +268,42 @@ namespace MediaBrowser.UI
         /// </summary>
         public void SyncHiddenWindowLocation()
         {
-            HiddenWindow.Width = Convert.ToInt32(ApplicationWindow.Width);
-            HiddenWindow.Height = Convert.ToInt32(ApplicationWindow.Height);
-            HiddenWindow.Top = Convert.ToInt32(ApplicationWindow.Top);
-            HiddenWindow.Left = Convert.ToInt32(ApplicationWindow.Left);
+            var width = Convert.ToInt32(ApplicationWindow.Width);
+            var height = Convert.ToInt32(ApplicationWindow.Height);
+            var top = Convert.ToInt32(ApplicationWindow.Top);
+            var left = Convert.ToInt32(ApplicationWindow.Left);
 
-            HiddenWindow.WindowState = GetWindowsFormState(ApplicationWindow.WindowState);
+            var state = GetWindowsFormState(ApplicationWindow.WindowState);
 
-            ApplicationWindow.Activate();
+            SetHiddenWindowProperties(width, height, top, left, state);
+
+            //ApplicationWindow.Activate();
+        }
+
+        private void SetHiddenWindowProperties(int width, int height, int top, int left, System.Windows.Forms.FormWindowState windowState)
+        {
+            if (HiddenWindow == null)
+            {
+                return;
+            }
+
+            var act = new Action(() =>
+            {
+                HiddenWindow.Width = width;
+                HiddenWindow.Height = height;
+                HiddenWindow.Top = top;
+                HiddenWindow.Left = left;
+                HiddenWindow.WindowState = windowState;
+            });
+
+            if (HiddenWindow.InvokeRequired)
+            {
+                HiddenWindow.Invoke(act);
+            }
+            else
+            {
+                act();
+            }
         }
 
         private System.Windows.Forms.FormWindowState GetWindowsFormState(WindowState state)
@@ -250,11 +318,68 @@ namespace MediaBrowser.UI
             return System.Windows.Forms.FormWindowState.Normal;
         }
 
-        void HiddenWindow_Activated(object sender, EventArgs e)
+        #region Window styles
+        [Flags]
+        public enum ExtendedWindowStyles
         {
-            _logger.Debug("Hidden window activated.");
-            ApplicationWindow.Activate();
+            // ...
+            WS_EX_TOOLWINDOW = 0x00000080,
+            // ...
         }
+
+        public enum GetWindowLongFields
+        {
+            // ...
+            GWL_EXSTYLE = (-20),
+            // ...
+        }
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr GetWindowLong(IntPtr hWnd, int nIndex);
+
+        public static IntPtr SetWindowLong(IntPtr hWnd, int nIndex, IntPtr dwNewLong)
+        {
+            int error = 0;
+            IntPtr result = IntPtr.Zero;
+            // Win32 SetWindowLong doesn't clear error on success
+            SetLastError(0);
+
+            if (IntPtr.Size == 4)
+            {
+                // use SetWindowLong
+                Int32 tempResult = IntSetWindowLong(hWnd, nIndex, IntPtrToInt32(dwNewLong));
+                error = Marshal.GetLastWin32Error();
+                result = new IntPtr(tempResult);
+            }
+            else
+            {
+                // use SetWindowLongPtr
+                result = IntSetWindowLongPtr(hWnd, nIndex, dwNewLong);
+                error = Marshal.GetLastWin32Error();
+            }
+
+            if ((result == IntPtr.Zero) && (error != 0))
+            {
+                throw new System.ComponentModel.Win32Exception(error);
+            }
+
+            return result;
+        }
+
+        [DllImport("user32.dll", EntryPoint = "SetWindowLongPtr", SetLastError = true)]
+        private static extern IntPtr IntSetWindowLongPtr(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
+
+        [DllImport("user32.dll", EntryPoint = "SetWindowLong", SetLastError = true)]
+        private static extern Int32 IntSetWindowLong(IntPtr hWnd, int nIndex, Int32 dwNewLong);
+
+        private static int IntPtrToInt32(IntPtr intPtr)
+        {
+            return unchecked((int)intPtr.ToInt64());
+        }
+
+        [DllImport("kernel32.dll", EntryPoint = "SetLastError")]
+        public static extern void SetLastError(int dwErrorCode);
+        #endregion
 
         /// <summary>
         /// Loads the kernel.

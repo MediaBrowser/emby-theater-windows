@@ -14,7 +14,7 @@
         MinWidth="720"
         MinHeight="480"
         Background="Transparent"
-        ShowInTaskbar="True">
+        ShowInTaskbar="False">
 
     <!--The window itself is a tabstop, and it can't be disabled. So this is a workaround.-->
     <Grid x:Name="MainGrid">

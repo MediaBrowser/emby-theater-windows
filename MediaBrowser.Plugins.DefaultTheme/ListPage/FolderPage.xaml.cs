@@ -129,6 +129,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
         {
             if (string.Equals(viewModel.ViewType, ListViewTypes.Thumbstrip))
             {
+                if (_parentItem.IsType("gamesystem"))
+                {
+                    //return new[] {ImageType.Primary};
+                }
                 return new[] { ImageType.Thumb, ImageType.Backdrop, ImageType.Primary };
             }
 

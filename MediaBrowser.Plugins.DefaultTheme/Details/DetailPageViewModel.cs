@@ -882,9 +882,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
         private Task<ItemsResult> GetSeriesEpisodes(ItemListViewModel viewModel)
         {
-            var item = ItemViewModel.Item;
-
-            var query = new ItemQuery
+            return _apiClient.GetEpisodesAsync(new EpisodeQuery
             {
                 UserId = _sessionManager.CurrentUser.Id,
                 Fields = new[]
@@ -894,16 +892,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                                  ItemFields.Overview,
                                  ItemFields.MediaStreams
                         },
-                ParentId = item.Id,
-                SortBy = new[] { ItemSortBy.SortName },
-
-                AiredDuringSeason = 1,
-
-                IncludeItemTypes = new[] { "Episode" },
-                Recursive = true
-            };
-
-            return _apiClient.GetItemsAsync(query);
+                SeasonNumber = 1,
+                SeriesId = ItemViewModel.Item.Id
+            });
         }
 
         private Task<ItemsResult> GetAlbumSongs(ItemListViewModel viewModel)

@@ -1,6 +1,4 @@
-﻿using System.Runtime.InteropServices;
-using System.Windows.Interop;
-using MediaBrowser.ApiInteraction;
+﻿using MediaBrowser.ApiInteraction;
 using MediaBrowser.Common.Constants;
 using MediaBrowser.Common.Implementations.Logging;
 using MediaBrowser.Common.Implementations.Updates;
@@ -11,11 +9,12 @@ using MediaBrowser.Theater.Interfaces.System;
 using MediaBrowser.UI.StartupWizard;
 using Microsoft.Win32;
 using System;
-using System.ComponentModel;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Interop;
 
 namespace MediaBrowser.UI
 {
@@ -184,14 +183,27 @@ namespace MediaBrowser.UI
 
             ApplicationWindow = win;
 
-            ApplicationWindow.Show();
-
-            win.LocationChanged += ApplicationWindow_LocationChanged;
-            win.StateChanged += ApplicationWindow_LocationChanged;
-            win.SizeChanged += ApplicationWindow_LocationChanged;
+            win.Loaded += win_Loaded;
+            win.LocationChanged += win_LocationChanged;
+            win.StateChanged += win_StateChanged;
+            win.SizeChanged += win_SizeChanged;
             win.Closing += win_Closing;
 
             StartHiddenWindowThread();
+        }
+
+        void win_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            InvokeOnHiddenWindow(() => HiddenWindow.Close());
+        }
+
+        async void win_Loaded(object sender, RoutedEventArgs e)
+        {
+            _appHost.StartEntryPoints();
+
+            await LoadInitialPresentation().ConfigureAwait(false);
+
+            ApplicationWindow.Loaded -= win_Loaded;
         }
 
         private void StartHiddenWindowThread()
@@ -207,24 +219,12 @@ namespace MediaBrowser.UI
             _hiddenWindowThread.SetApartmentState(ApartmentState.STA);
             _hiddenWindowThread.IsBackground = true;
             _hiddenWindowThread.Start();
-
-            ApplicationWindow.Activate();
-        }
-
-        void HiddenWindow_Activated(object sender, EventArgs e)
-        {
-            ApplicationWindow.Dispatcher.Invoke(() =>
-            {
-                ApplicationWindow.Activate();
-            });
-            HiddenWindow.Activated -= HiddenWindow_Activated;
         }
 
         private void ShowHiddenWindow(int width, int height, int top, int left, System.Windows.Forms.FormWindowState windowState)
         {
             HiddenWindow = new HiddenForm();
             HiddenWindow.Load += HiddenWindow_Load;
-            HiddenWindow.Activated += HiddenWindow_Activated;
             HiddenWindow.Show();
 
             HiddenWindow.Width = width;
@@ -240,69 +240,75 @@ namespace MediaBrowser.UI
         void HiddenWindow_Load(object sender, EventArgs e)
         {
             // Hide this from ALT-TAB
+            //var handle = HiddenWindow.Handle;
+            //var exStyle = (int)GetWindowLong(handle, (int)GetWindowLongFields.GWL_EXSTYLE);
+
+            //exStyle |= (int)ExtendedWindowStyles.WS_EX_TOOLWINDOW;
+            //SetWindowLong(handle, (int)GetWindowLongFields.GWL_EXSTYLE, (IntPtr)exStyle);
+
             var handle = HiddenWindow.Handle;
-            var exStyle = (int)GetWindowLong(handle, (int)GetWindowLongFields.GWL_EXSTYLE);
 
-            exStyle |= (int)ExtendedWindowStyles.WS_EX_TOOLWINDOW;
-            SetWindowLong(handle, (int)GetWindowLongFields.GWL_EXSTYLE, (IntPtr)exStyle);
+            ApplicationWindow.Dispatcher.InvokeAsync(() =>
+            {
+                new WindowInteropHelper(ApplicationWindow).Owner = handle;
+
+                ApplicationWindow.Show();
+            });
         }
 
-        void win_Closing(object sender, CancelEventArgs e)
+        void win_LocationChanged(object sender, EventArgs e)
         {
-            HiddenWindow.Invoke(new Action(() => HiddenWindow.Close()));
-        }
-
-        /// <summary>
-        /// Handles the LocationChanged event of the ApplicationWindow control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
-        void ApplicationWindow_LocationChanged(object sender, EventArgs e)
-        {
-            SyncHiddenWindowLocation();
-            ApplicationWindow.Activate();
-        }
-
-        /// <summary>
-        /// Syncs the hidden window location.
-        /// </summary>
-        public void SyncHiddenWindowLocation()
-        {
-            var width = Convert.ToInt32(ApplicationWindow.Width);
-            var height = Convert.ToInt32(ApplicationWindow.Height);
             var top = Convert.ToInt32(ApplicationWindow.Top);
             var left = Convert.ToInt32(ApplicationWindow.Left);
 
-            var state = GetWindowsFormState(ApplicationWindow.WindowState);
-
-            SetHiddenWindowProperties(width, height, top, left, state);
-
-            //ApplicationWindow.Activate();
+            InvokeOnHiddenWindow(() =>
+            {
+                HiddenWindow.Top = top;
+                HiddenWindow.Left = left;
+            });
         }
 
-        private void SetHiddenWindowProperties(int width, int height, int top, int left, System.Windows.Forms.FormWindowState windowState)
+        void win_StateChanged(object sender, EventArgs e)
         {
-            if (HiddenWindow == null)
-            {
-                return;
-            }
+            var state = GetWindowsFormState(ApplicationWindow.WindowState);
 
-            var act = new Action(() =>
+            ApplicationWindow.ShowInTaskbar = state == System.Windows.Forms.FormWindowState.Minimized;
+
+            InvokeOnHiddenWindow(() =>
+            {
+                if (state == System.Windows.Forms.FormWindowState.Minimized)
+                {
+                    HiddenWindow.Hide();
+                }
+                else
+                {
+                    HiddenWindow.Show();
+                    HiddenWindow.WindowState = state;
+                }
+            });
+        }
+
+        void win_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            var width = Convert.ToInt32(ApplicationWindow.Width);
+            var height = Convert.ToInt32(ApplicationWindow.Height);
+
+            InvokeOnHiddenWindow(() =>
             {
                 HiddenWindow.Width = width;
                 HiddenWindow.Height = height;
-                HiddenWindow.Top = top;
-                HiddenWindow.Left = left;
-                HiddenWindow.WindowState = windowState;
             });
+        }
 
+        private void InvokeOnHiddenWindow(Action action)
+        {
             if (HiddenWindow.InvokeRequired)
             {
-                HiddenWindow.Invoke(act);
+                HiddenWindow.Invoke(action);
             }
             else
             {
-                act();
+                action();
             }
         }
 
@@ -402,10 +408,6 @@ namespace MediaBrowser.UI
                 _appHost.TheaterConfigurationManager.ConfigurationUpdated += TheaterConfigurationManager_ConfigurationUpdated;
 
                 ShowApplicationWindow();
-
-                _appHost.StartEntryPoints();
-
-                await LoadInitialPresentation().ConfigureAwait(false);
             }
             catch (Exception ex)
             {

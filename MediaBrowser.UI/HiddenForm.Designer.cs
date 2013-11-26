@@ -44,7 +44,6 @@
             this.MinimizeBox = false;
             this.Name = "HiddenForm";
             this.ShowIcon = false;
-            this.ShowInTaskbar = false;
             this.Text = "Media Browser Theater";
             this.ResumeLayout(false);
 

@@ -431,7 +431,7 @@ namespace MediaBrowser.Theater.DirectShow
                     if (!madVrSucceded)
                     {
                         _mPEvr = (DirectShowLib.IBaseFilter)new EnhancedVideoRenderer();
-                        hr = m_graph.AddFilter(_mPEvr, "Enhanced Video Renderer");
+                        hr = m_graph.AddFilter(_mPEvr, "EVR");
                         DsError.ThrowExceptionForHR(hr);
 
                         InitializeEvr(_mPEvr, 1);
@@ -671,13 +671,6 @@ namespace MediaBrowser.Theater.DirectShow
             hr = pDisplay.SetVideoWindow(VideoWindowHandle);
             DsError.ThrowExceptionForHR(hr);
 
-            if (dwStreams > 1)
-            {
-                var pConfig = (IEVRFilterConfig)pEvr;
-                hr = pConfig.SetNumberOfStreams(dwStreams);
-                DsError.ThrowExceptionForHR(hr);
-            }
-
             // Return the IMFVideoDisplayControl pointer to the caller.
             _mPDisplay = pDisplay;
         }
@@ -691,16 +684,20 @@ namespace MediaBrowser.Theater.DirectShow
             {
                 _videoWindow.HideCursor(OABool.True);
             }
-            _videoWindow.put_Owner(VideoWindowHandle);
-            _videoWindow.put_WindowStyle(DirectShowLib.WindowStyle.Child | DirectShowLib.WindowStyle.Visible | DirectShowLib.WindowStyle.ClipSiblings);
-            _videoWindow.SetWindowForeground(OABool.True);
-
-            //_videoWindow.put_FullScreenMode(OABool.True);
 
             if (_madvr != null)
             {
+                _videoWindow.put_Owner(VideoWindowHandle);
+                _videoWindow.put_WindowStyle(DirectShowLib.WindowStyle.Child | DirectShowLib.WindowStyle.Visible | DirectShowLib.WindowStyle.ClipSiblings);
+                _videoWindow.SetWindowForeground(OABool.True);
+
+                _videoWindow.put_FullScreenMode(OABool.True);
+
                 SetExclusiveMode(false);
             }
+
+            //var hr = _videoWindow.put_MessageDrain(VideoWindowHandle);
+            //DsError.ThrowExceptionForHR(hr);
         }
 
         //private readonly Bitmap _cursorBitmap = new Bitmap(1, 1);

@@ -491,24 +491,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 Name = "FavoriteShows"
             });
 
-            if (ShowComedy(tvView))
-            {
-                tabs.Add(new TabItem
-                {
-                    DisplayName = GetComedyViewName(),
-                    Name = "Comedy",
-                });
-            }
-
-            if (ShouldShowRomanticSeries(tvView))
-            {
-                tabs.Add(new TabItem
-                {
-                    DisplayName = "Date Night",
-                    Name = "Romance",
-                });
-            }
-
             tabs.Add(new TabItem
             {
                 DisplayName = "Top Rated",

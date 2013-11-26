@@ -32,8 +32,8 @@ namespace MediaBrowser.Theater.Presentation.Controls
         void BaseWindow_Loaded(object sender, RoutedEventArgs e)
         {
             IsMouseIdle = true;
-            
-            _activityTimer = new Timer(TimerCallback, null, 100, 100);
+
+            _activityTimer = new Timer(TimerCallback, null, 250, 250);
         }
 
         /// <summary>
@@ -133,11 +133,6 @@ namespace MediaBrowser.Theater.Presentation.Controls
         {
             Dispatcher.InvokeAsync(() =>
             {
-                if (!IsActive)
-                {
-                    return;
-                }
-
                 WindowCommandsVisibility = Visibility.Collapsed;
                 Cursor = Cursors.None;
 

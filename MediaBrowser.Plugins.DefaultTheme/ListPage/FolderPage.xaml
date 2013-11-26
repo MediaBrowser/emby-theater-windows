@@ -59,11 +59,11 @@
                 </Style>
             </StackPanel.Style>
 
-            <TextBlock DataContext="{Binding CurrentItem}" Style="{StaticResource BoldHeaderTextBlock}" Text="{Binding DisplayName}" Margin="0 70 0 0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" HorizontalAlignment="Left"></TextBlock>
+            <TextBlock DataContext="{Binding CurrentItem}" Style="{StaticResource BoldHeaderTextBlock}" Text="{Binding DisplayName}" Margin="0 30 0 0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" HorizontalAlignment="Left"></TextBlock>
 
             <controls1:ItemInfoFooter Margin="0 20 0 0" VerticalContentAlignment="Center" KeyboardNavigation.IsTabStop="False" DataContext="{Binding CurrentItem}" VerticalAlignment="Top" HorizontalAlignment="Left"></controls1:ItemInfoFooter>
 
-            <TextBlock DataContext="{Binding CurrentItem}" Style="{StaticResource TextBlockStyle}" Text="{Binding Overview}" Margin="0 20 0 0" MaxWidth="900" MaxHeight="220" TextTrimming="CharacterEllipsis" HorizontalAlignment="Left"></TextBlock>
+            <TextBlock DataContext="{Binding CurrentItem}" Style="{StaticResource TextBlockStyle}" Text="{Binding Overview}" Margin="0 20 0 0" MaxWidth="900" MaxHeight="300" TextTrimming="CharacterEllipsis" HorizontalAlignment="Left"></TextBlock>
         </StackPanel>
         
         <Grid Grid.Row="2">

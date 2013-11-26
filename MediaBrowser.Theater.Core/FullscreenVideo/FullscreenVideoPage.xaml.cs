@@ -29,6 +29,7 @@ namespace MediaBrowser.Theater.Core.FullscreenVideo
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
         private readonly ILogger _logger;
+        private readonly IHiddenWindow _hiddenWindow;
 
         private Timer _activityTimer;
         private DateTime _lastMouseInput;
@@ -38,7 +39,7 @@ namespace MediaBrowser.Theater.Core.FullscreenVideo
 
         private TransportOsdViewModel _viewModel;
 
-        public FullscreenVideoPage(IUserInputManager userInputManager, IPlaybackManager playbackManager, INavigationService nav, IPresentationManager presentation, IApiClient apiClient, IImageManager imageManager, ILogger logger, IServerEvents serverEvents)
+        public FullscreenVideoPage(IUserInputManager userInputManager, IPlaybackManager playbackManager, INavigationService nav, IPresentationManager presentation, IApiClient apiClient, IImageManager imageManager, ILogger logger, IServerEvents serverEvents, IHiddenWindow hiddenWindow)
         {
             _userInputManager = userInputManager;
             _playbackManager = playbackManager;
@@ -48,6 +49,7 @@ namespace MediaBrowser.Theater.Core.FullscreenVideo
             _imageManager = imageManager;
             _logger = logger;
             _serverEvents = serverEvents;
+            _hiddenWindow = hiddenWindow;
 
             InitializeComponent();
 
@@ -217,7 +219,7 @@ namespace MediaBrowser.Theater.Core.FullscreenVideo
             _lastMouseInput = DateTime.Now;
             _activityTimer = new Timer(TimerCallback, null, 100, 100);
 
-            _userInputManager.MouseMove += _userInputManager_MouseMove;
+            _hiddenWindow.Form.MouseMove += _userInputManager_MouseMove;
             _presentation.SetGlobalThemeContentVisibility(false);
             _playbackManager.PlaybackCompleted += _playbackManager_PlaybackCompleted;
 
@@ -234,7 +236,7 @@ namespace MediaBrowser.Theater.Core.FullscreenVideo
 
             DisposeOsdTimer();
 
-            _userInputManager.MouseMove -= _userInputManager_MouseMove;
+            _hiddenWindow.Form.MouseMove -= _userInputManager_MouseMove;
             _presentation.SetGlobalThemeContentVisibility(true);
             _playbackManager.PlaybackCompleted -= _playbackManager_PlaybackCompleted;
 
@@ -254,8 +256,19 @@ namespace MediaBrowser.Theater.Core.FullscreenVideo
             }
         }
 
+        private System.Drawing.Point? _lastMouseMovePoint;
         void _userInputManager_MouseMove(object sender, MouseEventArgs e)
         {
+            if (!_lastMouseMovePoint.HasValue)
+            {
+                _lastMouseMovePoint = e.Location;
+                return;
+            }
+            if (_lastMouseMovePoint == e.Location)
+            {
+                return;
+            }
+            _lastMouseMovePoint = e.Location;
             _lastMouseInput = DateTime.Now;
         }
 

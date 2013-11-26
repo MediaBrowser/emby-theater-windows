@@ -205,7 +205,7 @@ namespace MediaBrowser.Theater.DirectShow
 
             try
             {
-                InvokeOnPlayerThread(() => _mediaPlayer.Play(playableItem, EnableReclock(options), EnableMadvr(options), _config.Configuration.InternalPlayerConfiguration.EnableXySubFilter));
+                InvokeOnPlayerThread(() => _mediaPlayer.Play(playableItem, EnableReclock(options), EnableMadvr(options), false, _config.Configuration.InternalPlayerConfiguration.EnableXySubFilter));
             }
             catch
             {

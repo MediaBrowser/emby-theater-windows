@@ -133,11 +133,11 @@ namespace MediaBrowser.UI
 
         void NavigationManager_Navigated(object sender, NavigationEventArgs e)
         {
-            UserInputManager.MouseMove -= _userInput_MouseMove;
-
+            App.Instance.HiddenWindow.MouseMove -= _userInput_MouseMove;
+            
             if (e.NewPage is IFullscreenVideoPage)
             {
-                UserInputManager.MouseMove += _userInput_MouseMove;
+                App.Instance.HiddenWindow.MouseMove += _userInput_MouseMove;
 
                 if (IsMouseIdle)
                 {
@@ -146,15 +146,26 @@ namespace MediaBrowser.UI
             }
         }
 
+        private System.Drawing.Point? _lastMouseMovePoint;
         void _userInput_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
         {
+            if (!_lastMouseMovePoint.HasValue)
+            {
+                _lastMouseMovePoint = e.Location;
+                return;
+            }
+            if (_lastMouseMovePoint == e.Location)
+            {
+                return;
+            }
+            _lastMouseMovePoint = e.Location;
             OnMouseMove();
         }
         
         protected override void OnClosing(CancelEventArgs e)
         {
             Navigated -= NavigationManager_Navigated;
-            UserInputManager.MouseMove -= _userInput_MouseMove;
+            App.Instance.HiddenWindow.MouseMove -= _userInput_MouseMove;
 
             if (RotatingBackdrops != null)
             {

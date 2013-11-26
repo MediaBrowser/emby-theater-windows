@@ -77,6 +77,7 @@ namespace MediaBrowser.UI.Implementations
         private readonly IServerEvents _serverEvents;
 
         private readonly IUserInputManager _userInputManager;
+        private readonly IHiddenWindow _hiddenWindow;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NavigationService" /> class.
@@ -85,7 +86,7 @@ namespace MediaBrowser.UI.Implementations
         /// <param name="playbackManagerFactory">The playback manager factory.</param>
         /// <param name="apiClient">The API client.</param>
         /// <param name="presentationManager">The presentation manager.</param>
-        public NavigationService(IThemeManager themeManager, Func<IPlaybackManager> playbackManagerFactory, IApiClient apiClient, IPresentationManager presentationManager, ITheaterConfigurationManager config, Func<ISessionManager> sessionFactory, IApplicationHost appHost, IInstallationManager installationManager, IImageManager imageManager, ILogger logger, IUserInputManager userInputManager, IServerEvents serverEvents)
+        public NavigationService(IThemeManager themeManager, Func<IPlaybackManager> playbackManagerFactory, IApiClient apiClient, IPresentationManager presentationManager, ITheaterConfigurationManager config, Func<ISessionManager> sessionFactory, IApplicationHost appHost, IInstallationManager installationManager, IImageManager imageManager, ILogger logger, IUserInputManager userInputManager, IServerEvents serverEvents, IHiddenWindow hiddenWindow)
         {
             _themeManager = themeManager;
             _playbackManagerFactory = playbackManagerFactory;
@@ -99,6 +100,7 @@ namespace MediaBrowser.UI.Implementations
             _logger = logger;
             _userInputManager = userInputManager;
             _serverEvents = serverEvents;
+            _hiddenWindow = hiddenWindow;
 
             presentationManager.WindowLoaded += presentationManager_WindowLoaded;
         }
@@ -192,7 +194,7 @@ namespace MediaBrowser.UI.Implementations
 
             App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(async () =>
             {
-                var page = new FullscreenVideoPage(_userInputManager, _playbackManagerFactory(), this, _presentationManager, _apiClient, _imageManager, _logger, _serverEvents);
+                var page = new FullscreenVideoPage(_userInputManager, _playbackManagerFactory(), this, _presentationManager, _apiClient, _imageManager, _logger, _serverEvents, _hiddenWindow);
 
                 new InternalPlayerPageBehavior(page).AdjustPresentationForPlayback();
 

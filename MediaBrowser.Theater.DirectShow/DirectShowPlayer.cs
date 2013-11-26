@@ -132,7 +132,7 @@ namespace MediaBrowser.Theater.DirectShow
             }
         }
 
-        public void Play(PlayableItem item, bool enableReclock, bool enableMadvr, bool enableXySubFilter)
+        public void Play(PlayableItem item, bool enableReclock, bool enableMadvr, bool enableMadvrExclusiveMode, bool enableXySubFilter)
         {
             _logger.Info("Playing {0}. Reclock: {1}, Madvr: {2}, xySubFilter: {3}", item.OriginalItem.Name, enableReclock, enableMadvr, enableXySubFilter);
 
@@ -140,7 +140,7 @@ namespace MediaBrowser.Theater.DirectShow
 
             var isDvd = (item.OriginalItem.VideoType ?? VideoType.VideoFile) == VideoType.Dvd || (item.OriginalItem.IsoType ?? IsoType.BluRay) == IsoType.Dvd && item.PlayablePath.IndexOf("http://", StringComparison.OrdinalIgnoreCase) == -1;
 
-            Initialize(item.PlayablePath, enableReclock, enableMadvr, enableXySubFilter, isDvd);
+            Initialize(item.PlayablePath, enableReclock, enableMadvr, enableMadvrExclusiveMode, enableXySubFilter, isDvd);
 
             _hiddenWindow.OnWMGRAPHNOTIFY = HandleGraphEvent;
 
@@ -174,7 +174,7 @@ namespace MediaBrowser.Theater.DirectShow
             DsError.ThrowExceptionForHR(hr);
         }
 
-        private void Initialize(string path, bool enableReclock, bool enableMadvr, bool enableXySubFilter, bool isDvd)
+        private void Initialize(string path, bool enableReclock, bool enableMadvr, bool enableMadvrExclusiveMode, bool enableXySubFilter, bool isDvd)
         {
             InitializeGraph();
 
@@ -190,7 +190,7 @@ namespace MediaBrowser.Theater.DirectShow
                 InitializeDvd(path);
 
                 // Try to render the streams.
-                RenderStreams(_dvdNav, enableReclock, enableMadvr, enableXySubFilter);
+                RenderStreams(_dvdNav, enableReclock, enableMadvr, enableMadvrExclusiveMode, enableXySubFilter);
             }
             else if (path.IndexOf("apple.com", StringComparison.OrdinalIgnoreCase) != -1)
             {
@@ -255,7 +255,7 @@ namespace MediaBrowser.Theater.DirectShow
                     DsError.ThrowExceptionForHR(hr);
                 }
                 // Try to render the streams.
-                RenderStreams(_sourceFilter, enableReclock, enableMadvr, enableXySubFilter);
+                RenderStreams(_sourceFilter, enableReclock, enableMadvr, enableMadvrExclusiveMode, enableXySubFilter);
             }
 
             // Get the seeking capabilities.
@@ -306,7 +306,7 @@ namespace MediaBrowser.Theater.DirectShow
             //int sY = dta.VideoAttributes.sourceResolutionY;
         }
 
-        private void RenderStreams(DirectShowLib.IBaseFilter pSource, bool enableReclock, bool enableMadvr, bool enableXySubFilter)
+        private void RenderStreams(DirectShowLib.IBaseFilter pSource, bool enableReclock, bool enableMadvr, bool enableMadvrExclusiveMode, bool enableXySubFilter)
         {
             int hr;
 
@@ -605,7 +605,7 @@ namespace MediaBrowser.Theater.DirectShow
 
             if (_item.IsVideo)
             {
-                SetVideoWindow();
+                SetVideoWindow(enableMadvrExclusiveMode);
             }
         }
 
@@ -675,7 +675,7 @@ namespace MediaBrowser.Theater.DirectShow
             _mPDisplay = pDisplay;
         }
 
-        private void SetVideoWindow()
+        private void SetVideoWindow(bool enableMadVrExclusiveMode)
         {
             SetVideoPositions();
             _hiddenWindow.SizeChanged += _hiddenWindow_SizeChanged;
@@ -689,15 +689,22 @@ namespace MediaBrowser.Theater.DirectShow
             {
                 _videoWindow.put_Owner(VideoWindowHandle);
                 _videoWindow.put_WindowStyle(DirectShowLib.WindowStyle.Child | DirectShowLib.WindowStyle.Visible | DirectShowLib.WindowStyle.ClipSiblings);
-                _videoWindow.SetWindowForeground(OABool.True);
 
-                _videoWindow.put_FullScreenMode(OABool.True);
+                int hr;
 
-                SetExclusiveMode(false);
+                if (enableMadVrExclusiveMode)
+                {
+                    _videoWindow.SetWindowForeground(OABool.True);
+
+                    hr = _videoWindow.put_FullScreenMode(OABool.True);
+                    DsError.ThrowExceptionForHR(hr);
+                }
+
+                hr = _videoWindow.put_MessageDrain(VideoWindowHandle);
+                DsError.ThrowExceptionForHR(hr);
+
+                SetExclusiveMode(enableMadVrExclusiveMode);
             }
-
-            //var hr = _videoWindow.put_MessageDrain(VideoWindowHandle);
-            //DsError.ThrowExceptionForHR(hr);
         }
 
         //private readonly Bitmap _cursorBitmap = new Bitmap(1, 1);

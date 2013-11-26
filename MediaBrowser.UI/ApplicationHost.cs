@@ -140,7 +140,9 @@ namespace MediaBrowser.UI
             UserInputManager = new UserInputManager();
             RegisterSingleInstance(UserInputManager);
 
-            NavigationService = new NavigationService(ThemeManager, () => PlaybackManager, ApiClient, PresentationManager, TheaterConfigurationManager, () => SessionManager, this, InstallationManager, ImageManager, Logger, UserInputManager, ApiWebSocket);
+            var hiddenWindow = new AppHiddenWIndow();
+
+            NavigationService = new NavigationService(ThemeManager, () => PlaybackManager, ApiClient, PresentationManager, TheaterConfigurationManager, () => SessionManager, this, InstallationManager, ImageManager, Logger, UserInputManager, ApiWebSocket, hiddenWindow);
             RegisterSingleInstance(NavigationService);
 
             PlaybackManager = new PlaybackManager(TheaterConfigurationManager, Logger, ApiClient, NavigationService, PresentationManager);
@@ -151,7 +153,7 @@ namespace MediaBrowser.UI
 
             RegisterSingleInstance(ApiClient);
 
-            RegisterSingleInstance<IHiddenWindow>(new AppHiddenWIndow());
+            RegisterSingleInstance<IHiddenWindow>(hiddenWindow);
 
             RegisterSingleInstance<IServerEvents>(ApiWebSocket);
         }

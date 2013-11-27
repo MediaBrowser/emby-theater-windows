@@ -141,6 +141,8 @@ namespace MediaBrowser.UI
 
             var config = _appHost.TheaterConfigurationManager.Configuration;
 
+            System.Windows.Forms.FormStartPosition? startPosition = null;
+
             // Restore window position/size
             if (config.WindowState.HasValue)
             {
@@ -157,6 +159,7 @@ namespace MediaBrowser.UI
                     if (config.WindowLeft.HasValue)
                     {
                         win.WindowStartupLocation = WindowStartupLocation.Manual;
+                        startPosition = System.Windows.Forms.FormStartPosition.Manual;
                         win.Left = left = Math.Max(config.WindowLeft.Value, 0);
                     }
 
@@ -164,6 +167,7 @@ namespace MediaBrowser.UI
                     if (config.WindowTop.HasValue)
                     {
                         win.WindowStartupLocation = WindowStartupLocation.Manual;
+                        startPosition = System.Windows.Forms.FormStartPosition.Manual;
                         win.Top = top = Math.Max(config.WindowTop.Value, 0);
                     }
 
@@ -189,12 +193,46 @@ namespace MediaBrowser.UI
             win.SizeChanged += win_SizeChanged;
             win.Closing += win_Closing;
 
-            StartHiddenWindowThread();
+            int? formWidth = null;
+            int? formHeight = null;
+            int? formLeft = null;
+            int? formTop = null;
+
+            try
+            {
+                formWidth = Convert.ToInt32(ApplicationWindow.Width);
+                formHeight = Convert.ToInt32(ApplicationWindow.Height);
+            }
+            catch (OverflowException)
+            {
+                formWidth = null;
+                formHeight = null;
+            }
+            try
+            {
+                formTop = Convert.ToInt32(ApplicationWindow.Top);
+                formLeft = Convert.ToInt32(ApplicationWindow.Left);
+            }
+            catch (OverflowException)
+            {
+                formLeft = null;
+                formTop = null;
+            }
+
+            var state = GetWindowsFormState(ApplicationWindow.WindowState);
+
+            _hiddenWindowThread = new Thread(() => ShowHiddenWindow(formWidth, formHeight, formTop, formLeft, startPosition, state));
+            _hiddenWindowThread.SetApartmentState(ApartmentState.STA);
+            _hiddenWindowThread.IsBackground = true;
+            _hiddenWindowThread.Start();
         }
 
         void win_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            InvokeOnHiddenWindow(() => HiddenWindow.Close());
+            if (HiddenWindow != null)
+            {
+                InvokeOnHiddenWindow(() => HiddenWindow.Close());
+            }
         }
 
         async void win_Loaded(object sender, RoutedEventArgs e)
@@ -206,33 +244,36 @@ namespace MediaBrowser.UI
             ApplicationWindow.Loaded -= win_Loaded;
         }
 
-        private void StartHiddenWindowThread()
-        {
-            var width = Convert.ToInt32(ApplicationWindow.Width);
-            var height = Convert.ToInt32(ApplicationWindow.Height);
-            var top = Convert.ToInt32(ApplicationWindow.Top);
-            var left = Convert.ToInt32(ApplicationWindow.Left);
-
-            var state = GetWindowsFormState(ApplicationWindow.WindowState);
-
-            _hiddenWindowThread = new Thread(() => ShowHiddenWindow(width, height, top, left, state));
-            _hiddenWindowThread.SetApartmentState(ApartmentState.STA);
-            _hiddenWindowThread.IsBackground = true;
-            _hiddenWindowThread.Start();
-        }
-
-        private void ShowHiddenWindow(int width, int height, int top, int left, System.Windows.Forms.FormWindowState windowState)
+        private void ShowHiddenWindow(int? width, int? height, int? top, int? left, System.Windows.Forms.FormStartPosition? startPosition, System.Windows.Forms.FormWindowState windowState)
         {
             HiddenWindow = new HiddenForm();
             HiddenWindow.Load += HiddenWindow_Load;
-            HiddenWindow.Show();
 
-            HiddenWindow.Width = width;
-            HiddenWindow.Height = height;
-            HiddenWindow.Top = top;
-            HiddenWindow.Left = left;
+            if (width.HasValue)
+            {
+                HiddenWindow.Width = width.Value;
+            }
+            if (height.HasValue)
+            {
+                HiddenWindow.Height = height.Value;
+            }
+            if (top.HasValue)
+            {
+                HiddenWindow.Top = top.Value;
+            }
+            if (left.HasValue)
+            {
+                HiddenWindow.Left = left.Value;
+            }
 
             HiddenWindow.WindowState = windowState;
+
+            if (startPosition.HasValue)
+            {
+                HiddenWindow.StartPosition = startPosition.Value;
+            }
+
+            HiddenWindow.Show();
 
             System.Windows.Threading.Dispatcher.Run();
         }
@@ -258,13 +299,18 @@ namespace MediaBrowser.UI
 
         void win_LocationChanged(object sender, EventArgs e)
         {
-            var top = Convert.ToInt32(ApplicationWindow.Top);
-            var left = Convert.ToInt32(ApplicationWindow.Left);
+            var top = ApplicationWindow.Top;
+            var left = ApplicationWindow.Left;
+
+            if (double.IsNaN(top) || double.IsNaN(left))
+            {
+                return;
+            }
 
             InvokeOnHiddenWindow(() =>
             {
-                HiddenWindow.Top = top;
-                HiddenWindow.Left = left;
+                HiddenWindow.Top = Convert.ToInt32(top);
+                HiddenWindow.Left = Convert.ToInt32(left);
             });
         }
 
@@ -290,13 +336,18 @@ namespace MediaBrowser.UI
 
         void win_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            var width = Convert.ToInt32(ApplicationWindow.Width);
-            var height = Convert.ToInt32(ApplicationWindow.Height);
+            var width = ApplicationWindow.Width;
+            var height = ApplicationWindow.Height;
+
+            if (double.IsNaN(width) || double.IsNaN(height))
+            {
+                return;
+            }
 
             InvokeOnHiddenWindow(() =>
             {
-                HiddenWindow.Width = width;
-                HiddenWindow.Height = height;
+                HiddenWindow.Width = Convert.ToInt32(width);
+                HiddenWindow.Height = Convert.ToInt32(height);
             });
         }
 
@@ -505,7 +556,7 @@ namespace MediaBrowser.UI
         {
             try
             {
-                return mediaFilters.IsLavFiltersInstalled() && mediaFilters.IsXyVsFilterInstalled();
+                return mediaFilters.IsLavSplitterInstalled() && mediaFilters.IsLavAudioInstalled() && mediaFilters.IsLavVideoInstalled() && mediaFilters.IsXyVsFilterInstalled();
             }
             catch
             {

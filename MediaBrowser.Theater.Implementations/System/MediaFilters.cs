@@ -99,10 +99,22 @@ namespace MediaBrowser.Theater.Implementations.System
             }
         }
 
-        public bool IsLavFiltersInstalled()
+        public bool IsLavSplitterInstalled()
+        {
+            // Returns true if 32-bit splitter are installed
+            return CanInstantiate<LAVSplitter>();
+        }
+
+        public bool IsLavAudioInstalled()
         {
             // Returns true if 32-bit splitter + audio + video are installed
-            return CanInstantiate<LAVAudio>() && CanInstantiate<LAVVideo>() && CanInstantiate<LAVSplitter>();
+            return CanInstantiate<LAVAudio>();
+        }
+
+        public bool IsLavVideoInstalled()
+        {
+            // Returns true if 32-bit splitter + audio + video are installed
+            return CanInstantiate<LAVVideo>();
         }
 
         public async Task InstallLavFilters(IProgress<double> progress, CancellationToken cancellationToken)

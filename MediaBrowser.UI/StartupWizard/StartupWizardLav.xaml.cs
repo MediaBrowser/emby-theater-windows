@@ -119,17 +119,33 @@ namespace MediaBrowser.UI.StartupWizard
         {
             try
             {
-                var isInstalled = _mediaFilters.IsLavFiltersInstalled();
+                var isLavSplitterInstalled = _mediaFilters.IsLavSplitterInstalled();
+                var isLavAudioInstalled = _mediaFilters.IsLavAudioInstalled();
+                var isLavVideoInstalled = _mediaFilters.IsLavVideoInstalled();
 
-                BtnNext.IsEnabled = isInstalled;
-                BtnInstall.Visibility = isInstalled ? Visibility.Collapsed : Visibility.Visible;
-                PanelInstalled.Visibility = isInstalled ? Visibility.Visible : Visibility.Collapsed;
+                BtnNext.IsEnabled = isLavSplitterInstalled && isLavAudioInstalled && isLavVideoInstalled;
+
+                BtnInstall.Visibility = BtnNext.IsEnabled ? Visibility.Collapsed : Visibility.Visible;
+
+                PanelSplitterInstalled.Visibility = isLavSplitterInstalled ? Visibility.Visible : Visibility.Collapsed;
+                PanelAudioInstalled.Visibility = isLavAudioInstalled ? Visibility.Visible : Visibility.Collapsed;
+                PanelVideoInstalled.Visibility = isLavVideoInstalled ? Visibility.Visible : Visibility.Collapsed;
+
+                PanelSplitterNotInstalled.Visibility = isLavSplitterInstalled ? Visibility.Collapsed : Visibility.Visible;
+                PanelAudioNotInstalled.Visibility = isLavAudioInstalled ? Visibility.Collapsed : Visibility.Visible;
+                PanelVideoNotInstalled.Visibility = isLavVideoInstalled ? Visibility.Collapsed : Visibility.Visible;
             }
             catch
             {
                 BtnNext.IsEnabled = false;
                 BtnInstall.Visibility = Visibility.Visible;
-                PanelInstalled.Visibility = Visibility.Collapsed;
+                PanelSplitterInstalled.Visibility = Visibility.Collapsed;
+                PanelAudioInstalled.Visibility = Visibility.Collapsed;
+                PanelVideoInstalled.Visibility = Visibility.Collapsed;
+
+                PanelSplitterNotInstalled.Visibility = Visibility.Visible;
+                PanelAudioNotInstalled.Visibility = Visibility.Visible;
+                PanelVideoNotInstalled.Visibility = Visibility.Visible;
             }
 
             if (BtnInstall.Visibility == Visibility.Visible)

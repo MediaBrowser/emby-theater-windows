@@ -135,6 +135,7 @@ namespace MediaBrowser.Theater.DirectShow
         public void Play(PlayableItem item, bool enableReclock, bool enableMadvr, bool enableMadvrExclusiveMode, bool enableXySubFilter)
         {
             _logger.Info("Playing {0}. Reclock: {1}, Madvr: {2}, xySubFilter: {3}", item.OriginalItem.Name, enableReclock, enableMadvr, enableXySubFilter);
+            _logger.Info("Playing Path {0}", item.PlayablePath);
 
             _item = item;
 
@@ -908,6 +909,8 @@ namespace MediaBrowser.Theater.DirectShow
                 {
                     // Free memory associated with callback, since we're not using it
                     var hr = _mediaEventEx.FreeEventParams(evCode, evParam1, evParam2);
+
+                    _logger.Debug("Received media event code {0}", evCode);
 
                     // If this is the end of the clip, close
                     if (evCode == EventCode.Complete)

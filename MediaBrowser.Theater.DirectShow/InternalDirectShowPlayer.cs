@@ -256,7 +256,8 @@ namespace MediaBrowser.Theater.DirectShow
             return new PlayableItem
             {
                 OriginalItem = item,
-                PlayablePath = PlayablePathBuilder.GetPlayablePath(item, mountedIso, _apiClient)
+                PlayablePath = PlayablePathBuilder.GetPlayablePath(item, mountedIso, _apiClient),
+                IsoMount = mountedIso
             };
         }
 

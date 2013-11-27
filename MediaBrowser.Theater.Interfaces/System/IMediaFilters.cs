@@ -27,8 +27,20 @@ namespace MediaBrowser.Theater.Interfaces.System
         /// Determines whether [is lav filters installed].
         /// </summary>
         /// <returns><c>true</c> if [is lav filters installed]; otherwise, <c>false</c>.</returns>
-        bool IsLavFiltersInstalled();
+        bool IsLavSplitterInstalled();
 
+        /// <summary>
+        /// Determines whether [is lav audio installed].
+        /// </summary>
+        /// <returns><c>true</c> if [is lav audio installed]; otherwise, <c>false</c>.</returns>
+        bool IsLavAudioInstalled();
+
+        /// <summary>
+        /// Determines whether [is lav video installed].
+        /// </summary>
+        /// <returns><c>true</c> if [is lav video installed]; otherwise, <c>false</c>.</returns>
+        bool IsLavVideoInstalled();
+        
         /// <summary>
         /// Installs the lav filters.
         /// </summary>

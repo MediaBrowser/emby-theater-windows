@@ -83,7 +83,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
 
             StopAllPlayback();
 
-            await Play(player, options, config);
+            await Task.Run(() => Play(player, options, config));
         }
 
         /// <summary>

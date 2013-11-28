@@ -9,7 +9,7 @@
     <System:Double x:Key="DefaultFontSize">30</System:Double>
 
     <!--Default font for small text. Themes should override these as needed-->
-    <FontFamily x:Key="SmallFontFamily">Segoe UI SemiLight, Lucida Sans Unicode, Verdana</FontFamily>
+    <FontFamily x:Key="SmallFontFamily">Segoe UI, Lucida Sans Unicode, Verdana</FontFamily>
     <FontWeight x:Key="SmallFontWeight">Normal</FontWeight>
     <Brush x:Key="SmallForeground">#000</Brush>
     <System:Double x:Key="SmallFontSize">25</System:Double>

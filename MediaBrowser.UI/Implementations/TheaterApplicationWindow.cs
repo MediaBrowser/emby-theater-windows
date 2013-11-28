@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Common.Events;
+﻿using System.Windows.Interop;
+using MediaBrowser.Common.Events;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
@@ -116,6 +117,8 @@ namespace MediaBrowser.UI.Implementations
         /// </summary>
         internal void OnWindowLoaded()
         {
+            WindowHandle = new WindowInteropHelper(App.Instance.ApplicationWindow).Handle;
+
             App.Instance.ApplicationWindow.PageContent.DataContext = _themeManager.CurrentTheme.CreatePageContentDataContext();
             EventHelper.FireEventIfNotNull(WindowLoaded, null, EventArgs.Empty, _logger);
         }
@@ -350,6 +353,12 @@ namespace MediaBrowser.UI.Implementations
             {
                 win.Close();
             }
+        }
+
+        public IntPtr WindowHandle
+        {
+            get;
+            private set;
         }
     }
 }

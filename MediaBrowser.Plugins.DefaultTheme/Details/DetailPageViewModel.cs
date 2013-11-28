@@ -224,7 +224,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             }
         }
 
-        private IEnumerable<TabItem> GetMenuList(BaseItemDto item, ItemReviewsResult reviewsResult)
+        private IEnumerable<TabItem> GetMenuList(BaseItemDto item, QueryResult<ItemReview> reviewsResult)
         {
             var views = new List<TabItem>
                 {
@@ -743,11 +743,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             return _apiClient.GetItemsAsync(query);
         }
 
-        private async Task<ItemReviewsResult> GetCriticReviews(BaseItemDto item)
+        private async Task<QueryResult<ItemReview>> GetCriticReviews(BaseItemDto item)
         {
             if (item.IsPerson || item.IsStudio || item.IsArtist || item.IsGameGenre || item.IsMusicGenre || item.IsGenre)
             {
-                return new ItemReviewsResult();
+                return new QueryResult<ItemReview>();
             }
 
             try
@@ -757,7 +757,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             catch
             {
                 // Logged at lower levels
-                return new ItemReviewsResult();
+                return new QueryResult<ItemReview>();
             }
         }
 

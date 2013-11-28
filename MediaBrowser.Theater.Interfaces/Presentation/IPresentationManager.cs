@@ -39,6 +39,8 @@ namespace MediaBrowser.Theater.Interfaces.Presentation
         /// </summary>
         event EventHandler<EventArgs> WindowLoaded;
 
+        IntPtr WindowHandle { get; }
+
         /// <summary>
         /// Gets the window.
         /// </summary>

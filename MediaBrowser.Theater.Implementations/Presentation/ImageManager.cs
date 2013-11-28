@@ -85,13 +85,18 @@ namespace MediaBrowser.Theater.Implementations.Presentation
             return bitmap;
         }
 
+        public async Task<BitmapImage> GetRemoteBitmapAsync(string url, CancellationToken cancellationToken)
+        {
+            return await Task.Run(() => GetRemoteBitmapAsyncInternal(url, cancellationToken), cancellationToken);
+        }
+
         /// <summary>
         /// Gets the remote bitmap async.
         /// </summary>
         /// <param name="url">The URL.</param>
         /// <returns>Task{BitmapImage}.</returns>
-        /// <exception cref="System.ArgumentNullException">url</exception>
-        public async Task<BitmapImage> GetRemoteBitmapAsync(string url, CancellationToken cancellationToken)
+        /// <exception cref="ArgumentNullException">url</exception>
+        private async Task<BitmapImage> GetRemoteBitmapAsyncInternal(string url, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(url))
             {
@@ -152,7 +157,7 @@ namespace MediaBrowser.Theater.Implementations.Presentation
                     semaphore.Release();
                 }
 
-            }).ConfigureAwait(false);
+            }, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>

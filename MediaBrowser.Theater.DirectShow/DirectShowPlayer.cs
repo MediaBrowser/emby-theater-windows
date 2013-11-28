@@ -10,11 +10,9 @@ using MediaFoundation.EVR;
 using MediaFoundation.Misc;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Windows.Forms;
 
 namespace MediaBrowser.Theater.DirectShow
 {
@@ -66,11 +64,15 @@ namespace MediaBrowser.Theater.DirectShow
 
         private PlayableItem _item;
 
-        public DirectShowPlayer(ILogger logger, IHiddenWindow hiddenWindow, InternalDirectShowPlayer playerWrapper)
+        private readonly IntPtr _applicationWindowHandle;
+        private bool _isInExclusiveMode;
+
+        public DirectShowPlayer(ILogger logger, IHiddenWindow hiddenWindow, InternalDirectShowPlayer playerWrapper, IntPtr applicationWindowHandle)
         {
             _logger = logger;
             _hiddenWindow = hiddenWindow;
             _playerWrapper = playerWrapper;
+            _applicationWindowHandle = applicationWindowHandle;
         }
 
         private IntPtr VideoWindowHandle
@@ -138,6 +140,7 @@ namespace MediaBrowser.Theater.DirectShow
             _logger.Info("Playing Path {0}", item.PlayablePath);
 
             _item = item;
+            _isInExclusiveMode = false;
 
             var isDvd = (item.OriginalItem.VideoType ?? VideoType.VideoFile) == VideoType.Dvd || (item.OriginalItem.IsoType ?? IsoType.BluRay) == IsoType.Dvd && item.PlayablePath.IndexOf("http://", StringComparison.OrdinalIgnoreCase) == -1;
 
@@ -678,8 +681,14 @@ namespace MediaBrowser.Theater.DirectShow
 
         private void SetVideoWindow(bool enableMadVrExclusiveMode)
         {
-            SetVideoPositions();
-            _hiddenWindow.SizeChanged += _hiddenWindow_SizeChanged;
+            _isInExclusiveMode = _madvr != null && enableMadVrExclusiveMode;
+
+            if (!_isInExclusiveMode)
+            {
+                SetVideoPositions();
+
+                _hiddenWindow.SizeChanged += _hiddenWindow_SizeChanged;
+            }
 
             if (_cursorHidden)
             {
@@ -688,7 +697,8 @@ namespace MediaBrowser.Theater.DirectShow
 
             if (_madvr != null)
             {
-                _videoWindow.put_Owner(VideoWindowHandle);
+                var ownerHandle = enableMadVrExclusiveMode ? _applicationWindowHandle : VideoWindowHandle;
+                _videoWindow.put_Owner(ownerHandle);
                 _videoWindow.put_WindowStyle(DirectShowLib.WindowStyle.Child | DirectShowLib.WindowStyle.Visible | DirectShowLib.WindowStyle.ClipSiblings);
 
                 int hr;
@@ -701,8 +711,11 @@ namespace MediaBrowser.Theater.DirectShow
                     DsError.ThrowExceptionForHR(hr);
                 }
 
-                hr = _videoWindow.put_MessageDrain(VideoWindowHandle);
-                DsError.ThrowExceptionForHR(hr);
+                if (!enableMadVrExclusiveMode)
+                {
+                    hr = _videoWindow.put_MessageDrain(VideoWindowHandle);
+                    DsError.ThrowExceptionForHR(hr);
+                }
 
                 SetExclusiveMode(enableMadVrExclusiveMode);
             }
@@ -807,7 +820,11 @@ namespace MediaBrowser.Theater.DirectShow
 
                 _basicVideo.SetDestinationPosition(leftMargin, 0, iAdjustedWidth, screenHeight);
             }
-            _videoWindow.SetWindowPosition(0, 0, screenWidth, screenHeight);
+
+            if (!_isInExclusiveMode)
+            {
+                _videoWindow.SetWindowPosition(0, 0, screenWidth, screenHeight);
+            }
         }
 
         public void SetExclusiveMode(bool enable)

@@ -103,61 +103,57 @@ namespace MediaBrowser.Theater.Implementations.Presentation
                 throw new ArgumentNullException("url");
             }
 
-            return await Task.Run(async () =>
-            {
-                var cachePath = _remoteImageCache.GetResourcePath(url.GetMD5().ToString());
+            var cachePath = _remoteImageCache.GetResourcePath(url.GetMD5().ToString());
 
-                try
+            try
+            {
+                return GetCachedBitmapImage(cachePath);
+            }
+            catch (IOException)
+            {
+                // Cache file doesn't exist or is currently being written to.
+            }
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var semaphore = GetImageFileLock(cachePath);
+            await semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
+
+            // Look in the cache again
+            try
+            {
+                var img = GetCachedBitmapImage(cachePath);
+                semaphore.Release();
+                return img;
+            }
+            catch (IOException)
+            {
+                // Cache file doesn't exist or is currently being written to.
+            }
+
+            try
+            {
+                using (var httpStream = await _apiClient.GetImageStreamAsync(url, cancellationToken).ConfigureAwait(false))
                 {
+                    var parentPath = Path.GetDirectoryName(cachePath);
+
+                    if (!Directory.Exists(parentPath))
+                    {
+                        Directory.CreateDirectory(parentPath);
+                    }
+
+                    using (var fileStream = new FileStream(cachePath, FileMode.Create, FileAccess.Write, FileShare.Read, StreamDefaults.DefaultFileStreamBufferSize, true))
+                    {
+                        await httpStream.CopyToAsync(fileStream).ConfigureAwait(false);
+                    }
+
                     return GetCachedBitmapImage(cachePath);
                 }
-                catch (IOException)
-                {
-                    // Cache file doesn't exist or is currently being written to.
-                }
-
-                cancellationToken.ThrowIfCancellationRequested();
-
-                var semaphore = GetImageFileLock(cachePath);
-                await semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
-
-                // Look in the cache again
-                try
-                {
-                    var img = GetCachedBitmapImage(cachePath);
-                    semaphore.Release();
-                    return img;
-                }
-                catch (IOException)
-                {
-                    // Cache file doesn't exist or is currently being written to.
-                }
-
-                try
-                {
-                    using (var httpStream = await _apiClient.GetImageStreamAsync(url, cancellationToken).ConfigureAwait(false))
-                    {
-                        var parentPath = Path.GetDirectoryName(cachePath);
-
-                        if (!Directory.Exists(parentPath))
-                        {
-                            Directory.CreateDirectory(parentPath);
-                        }
-
-                        using (var fileStream = new FileStream(cachePath, FileMode.Create, FileAccess.Write, FileShare.Read, StreamDefaults.DefaultFileStreamBufferSize, true))
-                        {
-                            await httpStream.CopyToAsync(fileStream).ConfigureAwait(false);
-                        }
-
-                        return GetCachedBitmapImage(cachePath);
-                    }
-                }
-                finally
-                {
-                    semaphore.Release();
-                }
-
-            }, cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                semaphore.Release();
+            }
         }
 
         /// <summary>

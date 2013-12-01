@@ -324,12 +324,18 @@ namespace MediaBrowser.UI
             {
                 if (state == System.Windows.Forms.FormWindowState.Minimized)
                 {
-                    HiddenWindow.Hide();
+                    if (HiddenWindow.Visible)
+                    {
+                        HiddenWindow.Hide();
+                    }
                 }
                 else
                 {
-                    HiddenWindow.Show();
-                    HiddenWindow.WindowState = state;
+                    if (!HiddenWindow.Visible)
+                    {
+                        HiddenWindow.Show();
+                        HiddenWindow.WindowState = state;
+                    }
                 }
             });
         }

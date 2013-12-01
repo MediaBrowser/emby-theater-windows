@@ -1,5 +1,4 @@
-﻿using System.Windows;
-using MediaBrowser.Model.ApiClient;
+﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
@@ -13,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Home
 {
@@ -163,8 +163,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 var vm = new ItemListViewModel(GetMediaCollectionsAsync, _presentationManager, _imageManager, _apiClient, _nav, _playbackManager, _logger, _serverEvents)
                 {
-                    ImageDisplayWidth = 528,
-                    ImageDisplayHeightGenerator = v => 297,
+                    ImageDisplayWidth = 480,
+                    ImageDisplayHeightGenerator = v => 270,
                     DisplayNameGenerator = GetDisplayName,
 
                     OnItemCreated = v =>

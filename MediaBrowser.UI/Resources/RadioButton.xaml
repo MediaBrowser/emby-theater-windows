@@ -2,7 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <SolidColorBrush x:Key="RadioButtonForeground" Color="#ffffff" />
-    <SolidColorBrush x:Key="RadioButtonBorder" Color="#555555" />
+    <SolidColorBrush x:Key="RadioButtonBorder" Color="#444444" />
 
     <Style x:Key="{x:Type RadioButton}" TargetType="{x:Type RadioButton}">
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />

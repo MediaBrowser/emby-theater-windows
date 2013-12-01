@@ -210,23 +210,6 @@ namespace MediaBrowser.Theater.DirectShow
                     DsError.ThrowExceptionForHR(hr);
                 }
             }
-            else if (path.IndexOf("http://", StringComparison.OrdinalIgnoreCase) != -1)
-            {
-                //shoutcast will need "shoutcast source filter" WITH useragent set to the right value!!!!
-                //{68F540E9-766F-44D2-AB07-E26CC6D27A79}
-                //alternatevely use dc-bass source
-
-                //make sure to test youtube handeling
-                _sourceFilter = Activator.CreateInstance(Type.GetTypeFromCLSID(new Guid("{E436EBB6-524F-11CE-9F53-0020AF0BA770}"))) as DirectShowLib.IBaseFilter;
-                hr = m_graph.AddFilter(_sourceFilter, "File Source (URL)");
-                DsError.ThrowExceptionForHR(hr);
-
-                if (hr == 0 && _sourceFilter != null)
-                {
-                    hr = ((IFileSourceFilter)_sourceFilter).Load(path, null);
-                    DsError.ThrowExceptionForHR(hr);
-                }
-            }
             else
             {
                 //prefer LAV Spliter Source
@@ -617,14 +600,14 @@ namespace MediaBrowser.Theater.DirectShow
         {
             int hr = 0;
             int j = -1;
-            List<Guid> mt = new List<Guid>();
+            var mt = new List<Guid>();
 
             IEnumMediaTypes emtDvr;
             pin.EnumMediaTypes(out emtDvr);
 
             while (j != 0)
             {
-                DirectShowLib.AMMediaType[] amtDvr = new DirectShowLib.AMMediaType[1];
+                var amtDvr = new DirectShowLib.AMMediaType[1];
                 IntPtr d = Marshal.AllocCoTaskMem(4);
                 try
                 {

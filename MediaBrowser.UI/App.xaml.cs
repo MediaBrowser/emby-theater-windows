@@ -320,6 +320,11 @@ namespace MediaBrowser.UI
 
             ApplicationWindow.ShowInTaskbar = state == System.Windows.Forms.FormWindowState.Minimized;
 
+            var width = ApplicationWindow.Width;
+            var height = ApplicationWindow.Height;
+            var top = ApplicationWindow.Top;
+            var left = ApplicationWindow.Left;
+   
             InvokeOnHiddenWindow(() =>
             {
                 if (state == System.Windows.Forms.FormWindowState.Minimized)
@@ -331,11 +336,20 @@ namespace MediaBrowser.UI
                 }
                 else
                 {
-                    if (!HiddenWindow.Visible)
-                    {
-                        HiddenWindow.Show();
-                        HiddenWindow.WindowState = state;
-                    }
+                    HiddenWindow.Show();
+                    HiddenWindow.WindowState = state;
+                }
+
+                if (!double.IsNaN(width) && !double.IsNaN(height))
+                {
+                    HiddenWindow.Width = Convert.ToInt32(width);
+                    HiddenWindow.Height = Convert.ToInt32(height);
+                }
+
+                if (!double.IsNaN(top) && !double.IsNaN(left))
+                {
+                    HiddenWindow.Top = Convert.ToInt32(top);
+                    HiddenWindow.Left = Convert.ToInt32(left);
                 }
             });
         }

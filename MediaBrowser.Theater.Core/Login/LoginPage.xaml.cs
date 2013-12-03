@@ -1,5 +1,6 @@
 ﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Theater.Interfaces;
+using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
@@ -21,14 +22,16 @@ namespace MediaBrowser.Theater.Core.Login
         protected INavigationService NavigationManager { get; private set; }
         protected ISessionManager SessionManager { get; private set; }
         protected IPresentationManager PresentationManager { get; private set; }
+        protected ITheaterConfigurationManager ConfigurationManager { get; private set; }
 
-        public LoginPage(IApiClient apiClient, IImageManager imageManager, INavigationService navigationManager, ISessionManager sessionManager, IPresentationManager presentationManager)
+        public LoginPage(IApiClient apiClient, IImageManager imageManager, INavigationService navigationManager, ISessionManager sessionManager, IPresentationManager presentationManager, ITheaterConfigurationManager configManager)
         {
             PresentationManager = presentationManager;
             SessionManager = sessionManager;
             NavigationManager = navigationManager;
             ImageManager = imageManager;
             ApiClient = apiClient;
+            ConfigurationManager = configManager;
 
             InitializeComponent();
         }
@@ -67,6 +70,13 @@ namespace MediaBrowser.Theater.Core.Login
             try
             {
                 await SessionManager.Login(user.Name, string.Empty);
+
+                //If login sucessful and auto login checkbox is ticked then save the auto-login config
+                if (ChkAutoLogin.IsChecked == true)
+                {
+                    ConfigurationManager.Configuration.AutoLoginConfiguration.UserName = user.Name;
+                    ConfigurationManager.SaveConfiguration();
+                }
             }
             catch (Exception ex)
             {

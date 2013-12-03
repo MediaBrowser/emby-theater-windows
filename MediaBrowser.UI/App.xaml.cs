@@ -549,6 +549,8 @@ namespace MediaBrowser.UI
                 return;
             }
 
+            //TODO: AUTO_LOGIN Check if auto-login configuration exists
+
             await _appHost.NavigationService.NavigateToLoginPage();
         }
 

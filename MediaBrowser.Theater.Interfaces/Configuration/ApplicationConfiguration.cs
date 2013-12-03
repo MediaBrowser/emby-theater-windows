@@ -21,6 +21,12 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
         public int ServerApiPort { get; set; }
 
         /// <summary>
+        /// Gets or sets the auto-login user details.
+        /// </summary>
+        /// <value>The auto-login details.</value>
+        public AutoLoginConfiguration AutoLoginConfiguration { get; set; }
+
+        /// <summary>
         /// Gets or sets the player configurations.
         /// </summary>
         /// <value>The player configurations.</value>
@@ -72,6 +78,7 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
         {
             ServerHostName = "localhost";
             ServerApiPort = 8096;
+            AutoLoginConfiguration = new AutoLoginConfiguration();
 
             EnableBackdrops = true;
             MediaPlayers = new PlayerConfiguration[] { };

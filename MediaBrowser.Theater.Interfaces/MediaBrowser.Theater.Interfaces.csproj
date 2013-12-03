@@ -57,6 +57,7 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configuration\AutoLoginConfiguration.cs" />
     <Compile Include="Configuration\InternalPlayerConfiguration.cs" />
     <Compile Include="Configuration\ITheaterConfigurationManager.cs" />
     <Compile Include="Configuration\PlayerConfiguration.cs" />

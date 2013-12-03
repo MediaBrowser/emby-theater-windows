@@ -74,6 +74,23 @@ namespace MediaBrowser.Theater.Implementations.Session
 
         public async Task Login(string username, string password)
         {
+            //Compute hash then pass to main login routine
+            using (var provider = SHA1.Create())
+            {
+                var hash = provider.ComputeHash(Encoding.UTF8.GetBytes(password ?? string.Empty));
+
+                await InternalLogin(username, hash);
+            }
+        }
+
+        public async Task Login(string username, byte[] hash)
+        {
+            //Pass straight to main login routine
+            await InternalLogin(username, hash);
+        }
+
+        protected async Task InternalLogin(string username, byte[] hash)
+        {
             var systemInfo = await _apiClient.GetSystemInfoAsync();
 
             if (Version.Parse(systemInfo.Version) < RequiredServerVersion)
@@ -81,21 +98,16 @@ namespace MediaBrowser.Theater.Implementations.Session
                 throw new ApplicationException(string.Format("Media Browser Server is out of date. Please upgrade to {0} or greater.", RequiredServerVersion));
             }
 
-            using (var provider = SHA1.Create())
+            try
             {
-                var hash = provider.ComputeHash(Encoding.UTF8.GetBytes(password ?? string.Empty));
+                var result = await _apiClient.AuthenticateUserAsync(username, hash);
 
-                try
-                {
-                    var result = await _apiClient.AuthenticateUserAsync(username, hash);
-
-                    CurrentUser = result.User;
-                    _apiClient.CurrentUserId = CurrentUser.Id;
-                }
-                catch (HttpException)
-                {
-                    throw new UnauthorizedAccessException("Invalid username or password. Please try again.");
-                }
+                CurrentUser = result.User;
+                _apiClient.CurrentUserId = CurrentUser.Id;
+            }
+            catch (HttpException)
+            {
+                throw new UnauthorizedAccessException("Invalid username or password. Please try again.");
             }
 
             EventHelper.FireEventIfNotNull(UserLoggedIn, this, EventArgs.Empty, _logger);

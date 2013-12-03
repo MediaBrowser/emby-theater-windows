@@ -63,7 +63,7 @@ namespace MediaBrowser.Theater.Core.Login
 
             if (user.HasPassword)
             {
-                await NavigationManager.Navigate(new ManualLoginPage(user.Name, SessionManager, PresentationManager));
+                await NavigationManager.Navigate(new ManualLoginPage(user.Name, ChkAutoLogin.IsChecked, SessionManager, PresentationManager, ConfigurationManager));
                 return;
             }
 

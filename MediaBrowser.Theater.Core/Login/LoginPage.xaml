@@ -16,6 +16,7 @@
             <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
         </Grid.RowDefinitions>
 
         <StackPanel Margin="300 70 0 0" Grid.Row="0" HorizontalAlignment="Left" Orientation="Horizontal">
@@ -36,9 +37,13 @@
         </controls:ExtendedScrollViewer>
 
         <Grid Grid.Row="2">
-
             <TextBlock Style="{StaticResource Heading1TextBlockStyle}" HorizontalAlignment="Center" Margin="50 0 50 0" Text="{Binding Username}" DataContext="{Binding CurrentItem}" FontFamily="Segoe UI" FontSize="100"></TextBlock>
-
+        </Grid>
+        
+        <Grid Grid.Row="3">
+            <CheckBox x:Name="ChkAutoLogin" HorizontalAlignment="Center" Margin="0 50 0 0">
+                <TextBlock Style="{StaticResource TextBlockStyle}">Remember me</TextBlock>
+            </CheckBox>
         </Grid>
     </Grid>
 </pages:BasePage>

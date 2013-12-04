@@ -562,15 +562,14 @@ namespace MediaBrowser.UI
             {
                 if (_config.AutoLoginConfiguration.UserName != null && _config.AutoLoginConfiguration.UserPasswordHash != null)
                 {
-                    //Retrive hash bytes and attempt login
-                    byte[] hash = Convert.FromBase64String(_config.AutoLoginConfiguration.UserPasswordHash);
-                    await _appHost.SessionManager.Login(_config.AutoLoginConfiguration.UserName, hash);
+                    //Attempt password login
+                    await _appHost.SessionManager.LoginWithHash(_config.AutoLoginConfiguration.UserName, _config.AutoLoginConfiguration.UserPasswordHash, true);
                     return;
                 }
                 else if (_config.AutoLoginConfiguration.UserName != null)
                 {
                     //Attempt passwordless login
-                    await _appHost.SessionManager.Login(_config.AutoLoginConfiguration.UserName, string.Empty);
+                    await _appHost.SessionManager.Login(_config.AutoLoginConfiguration.UserName, string.Empty, true);
                     return;
                 }
             }

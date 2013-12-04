@@ -16,14 +16,12 @@ namespace MediaBrowser.Theater.Core.Login
     public partial class ManualLoginPage : BasePage, ILoginPage
     {
         protected ISessionManager SessionManager { get; private set; }
-        protected IPresentationManager PresentationManager { get; private set; }
-        protected ITheaterConfigurationManager ConfigurationManager { get; private set; }
+        protected IPresentationManager PresentationManager { get; private set; }      
 
-        public ManualLoginPage(string initialUsername, bool? isAutoLoginChecked, ISessionManager sessionManager, IPresentationManager presentationManager, ITheaterConfigurationManager configManager)
+        public ManualLoginPage(string initialUsername, bool? isAutoLoginChecked, ISessionManager sessionManager, IPresentationManager presentationManager)
         {
             PresentationManager = presentationManager;
             SessionManager = sessionManager;
-            ConfigurationManager = configManager;
             InitializeComponent();
 
             TxtUsername.Text = initialUsername;
@@ -55,15 +53,8 @@ namespace MediaBrowser.Theater.Core.Login
             try
             {
                 string password = TxtPassword.Password;
-                await SessionManager.Login(TxtUsername.Text, password);
-
-                //If login sucessful and auto login checkbox is ticked then save the auto-login config
-                if (ChkAutoLogin.IsChecked == true)
-                {
-                    ConfigurationManager.Configuration.AutoLoginConfiguration.UserName = TxtUsername.Text;
-                    ConfigurationManager.Configuration.AutoLoginConfiguration.UserPasswordHash = Convert.ToBase64String(SessionManager.ComputeHash(password));
-                    ConfigurationManager.SaveConfiguration();
-                }
+                bool isRememberCredentials = (bool)ChkAutoLogin.IsChecked;
+                await SessionManager.Login(TxtUsername.Text, password, isRememberCredentials);
             }
             catch (Exception ex)
             {

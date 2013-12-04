@@ -76,20 +76,50 @@ namespace MediaBrowser.Theater.Implementations.Session
             }
         }
 
-        public async Task Login(string username, string password)
+        public async Task Login(string username, string password, bool rememberCredentials)
         {
+            //Check just in case
+            if (password == null) { password = string.Empty; }
+
             //Compute hash then pass to main login routine
             var hash = ComputeHash(password);
             await InternalLogin(username, hash);
+
+            //Save details if we need to 
+            if (rememberCredentials)
+            {
+                _config.Configuration.AutoLoginConfiguration.UserName = username;
+                if(String.IsNullOrEmpty(password)) { _config.Configuration.AutoLoginConfiguration.UserPasswordHash = null;}
+                else {_config.Configuration.AutoLoginConfiguration.UserPasswordHash = Convert.ToBase64String(hash); }
+                _config.SaveConfiguration();
+            }
+            else
+            {
+                _config.Configuration.AutoLoginConfiguration = new AutoLoginConfiguration();
+                _config.SaveConfiguration();
+            }
         }
 
-        public async Task Login(string username, byte[] hash)
+        public async Task LoginWithHash(string username, string passwordHash, bool rememberCredentials)
         {
-            //Pass straight to main login routine
+            byte[] hash = Convert.FromBase64String(passwordHash);
             await InternalLogin(username, hash);
+
+            //Save details if we need to 
+            if (rememberCredentials)
+            {
+                _config.Configuration.AutoLoginConfiguration.UserName = username;
+                _config.Configuration.AutoLoginConfiguration.UserPasswordHash = passwordHash;
+                _config.SaveConfiguration();
+            }
+            else
+            {
+                _config.Configuration.AutoLoginConfiguration = new AutoLoginConfiguration();
+                _config.SaveConfiguration();
+            }
         }
 
-        public byte[] ComputeHash(string data)
+        protected byte[] ComputeHash(string data)
         {
             using (var provider = SHA1.Create())
             {

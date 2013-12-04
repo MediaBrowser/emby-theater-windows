@@ -63,21 +63,13 @@ namespace MediaBrowser.Theater.Core.Login
 
             if (user.HasPassword)
             {
-                await NavigationManager.Navigate(new ManualLoginPage(user.Name, ChkAutoLogin.IsChecked, SessionManager, PresentationManager, ConfigurationManager));
+                await NavigationManager.Navigate(new ManualLoginPage(user.Name, ChkAutoLogin.IsChecked, SessionManager, PresentationManager));
                 return;
             }
 
             try
             {
-                await SessionManager.Login(user.Name, string.Empty);
-
-                //If login sucessful and auto login checkbox is ticked then save the auto-login config
-                if (ChkAutoLogin.IsChecked == true)
-                {
-                    ConfigurationManager.Configuration.AutoLoginConfiguration.UserName = user.Name;
-                    ConfigurationManager.Configuration.AutoLoginConfiguration.UserPasswordHash = null;
-                    ConfigurationManager.SaveConfiguration();
-                }
+                await SessionManager.Login(user.Name, string.Empty, (bool)ChkAutoLogin.IsChecked);
             }
             catch (Exception ex)
             {

@@ -1,4 +1,5 @@
-﻿using DirectShowLib;
+﻿using System.Drawing;
+using DirectShowLib;
 using DirectShowLib.Dvd;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
@@ -13,6 +14,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Windows.Forms;
 
 namespace MediaBrowser.Theater.DirectShow
 {
@@ -142,7 +144,8 @@ namespace MediaBrowser.Theater.DirectShow
             _item = item;
             _isInExclusiveMode = false;
 
-            var isDvd = (item.OriginalItem.VideoType ?? VideoType.VideoFile) == VideoType.Dvd || (item.OriginalItem.IsoType ?? IsoType.BluRay) == IsoType.Dvd && item.PlayablePath.IndexOf("http://", StringComparison.OrdinalIgnoreCase) == -1;
+            var isDvd = ((item.OriginalItem.VideoType ?? VideoType.VideoFile) == VideoType.Dvd || (item.OriginalItem.IsoType ?? IsoType.BluRay) == IsoType.Dvd) && 
+                item.PlayablePath.IndexOf("http://", StringComparison.OrdinalIgnoreCase) == -1;
 
             Initialize(item.PlayablePath, enableReclock, enableMadvr, enableMadvrExclusiveMode, enableXySubFilter, isDvd);
 
@@ -195,20 +198,6 @@ namespace MediaBrowser.Theater.DirectShow
 
                 // Try to render the streams.
                 RenderStreams(_dvdNav, enableReclock, enableMadvr, enableMadvrExclusiveMode, enableXySubFilter);
-            }
-            else if (path.IndexOf("apple.com", StringComparison.OrdinalIgnoreCase) != -1)
-            {
-                /*var mySourceFilter*/
-                //reference will be leaked
-                _sourceFilter = Activator.CreateInstance(Type.GetTypeFromCLSID(new Guid("{E436EBB6-524F-11CE-9F53-0020AF0BA770}"))) as DirectShowLib.IBaseFilter;
-                hr = m_graph.AddFilter(_sourceFilter, "File Source (URL)");
-                DsError.ThrowExceptionForHR(hr);
-
-                if (hr == 0 && _sourceFilter != null)
-                {
-                    hr = ((IFileSourceFilter)_sourceFilter).Load(path, null);
-                    DsError.ThrowExceptionForHR(hr);
-                }
             }
             else
             {
@@ -666,10 +655,8 @@ namespace MediaBrowser.Theater.DirectShow
         {
             _isInExclusiveMode = _madvr != null && enableMadVrExclusiveMode;
 
-            if (!_isInExclusiveMode)
+            if (!enableMadVrExclusiveMode)
             {
-                SetVideoPositions();
-
                 _hiddenWindow.SizeChanged += _hiddenWindow_SizeChanged;
             }
 
@@ -681,26 +668,130 @@ namespace MediaBrowser.Theater.DirectShow
             if (_madvr != null)
             {
                 var ownerHandle = enableMadVrExclusiveMode ? _applicationWindowHandle : VideoWindowHandle;
-                _videoWindow.put_Owner(ownerHandle);
-                _videoWindow.put_WindowStyle(DirectShowLib.WindowStyle.Child | DirectShowLib.WindowStyle.Visible | DirectShowLib.WindowStyle.ClipSiblings);
 
-                int hr;
+                _videoWindow.put_Owner(ownerHandle);
+                _videoWindow.put_WindowStyle(WindowStyle.Child | WindowStyle.ClipSiblings);
+                _videoWindow.put_WindowStyleEx(WindowStyleEx.ToolWindow);
+
+                _videoWindow.put_Visible(OABool.True);
+                _videoWindow.put_AutoShow(OABool.True);
+                _videoWindow.put_WindowState(WindowState.Show);
+
+                var hr = _videoWindow.SetWindowForeground(OABool.True);
+                DsError.ThrowExceptionForHR(hr);
 
                 if (enableMadVrExclusiveMode)
                 {
-                    _videoWindow.SetWindowForeground(OABool.True);
-
-                    hr = _videoWindow.put_FullScreenMode(OABool.True);
-                    DsError.ThrowExceptionForHR(hr);
+                    //_videoWindow.put_FullScreenMode(OABool.True);
                 }
 
-                if (!enableMadVrExclusiveMode)
+                else
                 {
                     hr = _videoWindow.put_MessageDrain(VideoWindowHandle);
                     DsError.ThrowExceptionForHR(hr);
                 }
+            }
 
+            SetAspectRatio();
+
+            if (_madvr != null)
+            {
                 SetExclusiveMode(enableMadVrExclusiveMode);
+            }
+        }
+
+        void _hiddenWindow_SizeChanged(object sender, EventArgs e)
+        {
+            SetAspectRatio(null);
+        }
+
+        private void SetAspectRatio(Size? ratio = null, bool setVideoWindow = true)
+        {
+            int screenWidth;
+            int screenHeight;
+
+            if (_isInExclusiveMode)
+            {
+                var size = Screen.FromControl(_hiddenWindow.Form).Bounds;
+
+                screenWidth = size.Width;
+                screenHeight = size.Height;
+            }
+            else
+            {
+                var hiddenWindowContentSize = _hiddenWindow.ContentPixelSize;
+
+                screenWidth = hiddenWindowContentSize.Width;
+                screenHeight = hiddenWindowContentSize.Height;
+            }
+
+            // Set the display position to the entire window.
+            if (_mPDisplay != null)
+            {
+                var rc = new MFRect(0, 0, screenWidth, screenHeight);
+                _mPDisplay.SetVideoPosition(null, rc);
+            }
+
+            // Get Aspect Ratio
+            int aspectX;
+            int aspectY;
+
+            if (ratio.HasValue)
+            {
+                aspectX = ratio.Value.Width;
+                aspectY = ratio.Value.Height;
+            }
+            else
+            {
+                var basicVideo2 = (IBasicVideo2)m_graph;
+                basicVideo2.GetPreferredAspectRatio(out aspectX, out aspectY);
+
+                var sourceHeight = 0;
+                var sourceWidth = 0;
+
+                _basicVideo.GetVideoSize(out sourceWidth, out sourceHeight);
+
+                if (aspectX == 0 || aspectY == 0 || sourceWidth > 0 || sourceHeight > 0)
+                {
+                    aspectX = sourceWidth;
+                    aspectY = sourceHeight;
+                }
+            }
+
+            // Adjust Video Size
+            var iAdjustedHeight = 0;
+
+            if (aspectX > 0 && aspectY > 0)
+            {
+                double adjustedHeight = aspectY * screenWidth;
+                adjustedHeight /= aspectX;
+
+                iAdjustedHeight = Convert.ToInt32(Math.Round(adjustedHeight));
+            }
+
+            if (screenHeight > iAdjustedHeight && iAdjustedHeight > 0)
+            {
+                double totalMargin = (screenHeight - iAdjustedHeight);
+                var topMargin = Convert.ToInt32(Math.Round(totalMargin / 2));
+
+                _basicVideo.SetDestinationPosition(0, topMargin, screenWidth, iAdjustedHeight);
+            }
+            else if (iAdjustedHeight > 0)
+            {
+                double adjustedWidth = aspectX * screenHeight;
+                adjustedWidth /= aspectY;
+
+                var iAdjustedWidth = Convert.ToInt32(Math.Round(adjustedWidth));
+
+                double totalMargin = (screenWidth - iAdjustedWidth);
+                var leftMargin = Convert.ToInt32(Math.Round(totalMargin / 2));
+
+                _basicVideo.SetDestinationPosition(leftMargin, 0, iAdjustedWidth, screenHeight);
+            }
+
+            if (setVideoWindow)
+            {
+                _videoWindow.SetWindowPosition(0, 0, screenWidth, screenHeight);
             }
         }
 
@@ -731,109 +822,16 @@ namespace MediaBrowser.Theater.DirectShow
         //    _cursorHidden = true;
         //}
 
-        private void SetVideoPositions()
-        {
-            var hiddenWindowContentSize = _hiddenWindow.ContentPixelSize;
-
-            var screenWidth = hiddenWindowContentSize.Width;
-            var screenHeight = hiddenWindowContentSize.Height;
-
-            _logger.Info("window content width: {0}, window height: {1}", screenWidth, screenHeight);
-
-            // Set the display position to the entire window.
-            var rc = new MFRect(0, 0, screenWidth, screenHeight);
-
-            if (_mPDisplay != null)
-                _mPDisplay.SetVideoPosition(null, rc);
-            //_mPDisplay.SetFullscreen(true);
-
-            // Get Aspect Ratio
-            int aspectX;
-            int aspectY;
-
-            decimal heightAsPercentOfWidth = 0;
-
-            var basicVideo2 = (IBasicVideo2)m_graph;
-            basicVideo2.GetPreferredAspectRatio(out aspectX, out aspectY);
-
-            var sourceHeight = 0;
-            var sourceWidth = 0;
-
-            _basicVideo.GetVideoSize(out sourceWidth, out sourceHeight);
-
-            if (aspectX == 0 || aspectY == 0 || sourceWidth > 0 || sourceHeight > 0)
-            {
-                aspectX = sourceWidth;
-                aspectY = sourceHeight;
-            }
-
-            if (aspectX > 0 && aspectY > 0)
-            {
-                heightAsPercentOfWidth = decimal.Divide(aspectY, aspectX);
-            }
-
-            // Adjust Video Size
-            var iAdjustedHeight = 0;
-
-            if (aspectX > 0 && aspectY > 0)
-            {
-                var adjustedHeight = Convert.ToDouble(heightAsPercentOfWidth * screenWidth);
-                iAdjustedHeight = Convert.ToInt32(Math.Round(adjustedHeight));
-            }
-
-            //SET MADVR WINDOW TO FULL SCREEN AND SET POSITION
-            if (screenHeight >= iAdjustedHeight && iAdjustedHeight > 0)
-            {
-                double totalMargin = (screenHeight - iAdjustedHeight);
-                var topMargin = Convert.ToInt32(Math.Round(totalMargin / 2));
-
-                _basicVideo.SetDestinationPosition(0, topMargin, screenWidth, iAdjustedHeight);
-            }
-            else if (screenHeight < iAdjustedHeight && iAdjustedHeight > 0)
-            {
-                var adjustedWidth = Convert.ToDouble(screenHeight / heightAsPercentOfWidth);
-
-                var iAdjustedWidth = Convert.ToInt32(Math.Round(adjustedWidth));
-
-                if (iAdjustedWidth == 1919)
-                    iAdjustedWidth = 1920;
-
-                double totalMargin = (screenWidth - iAdjustedWidth);
-                var leftMargin = Convert.ToInt32(Math.Round(totalMargin / 2));
-
-                _basicVideo.SetDestinationPosition(leftMargin, 0, iAdjustedWidth, screenHeight);
-            }
-
-            if (!_isInExclusiveMode)
-            {
-                _videoWindow.SetWindowPosition(0, 0, screenWidth, screenHeight);
-            }
-        }
-
         public void SetExclusiveMode(bool enable)
         {
             try
             {
-                var inExclusiveMode = MadvrInterface.InExclusiveMode(_madvr);
-
-                if (inExclusiveMode && !enable)
-                {
-                    MadvrInterface.EnableExclusiveMode(false, _madvr);
-                }
-                else if (!inExclusiveMode && enable)
-                {
-                    MadvrInterface.EnableExclusiveMode(true, _madvr);
-                }
+                MadvrInterface.EnableExclusiveMode(true, _madvr);
             }
             catch (Exception ex)
             {
                 _logger.ErrorException("Error changing exclusive mode", ex);
             }
-        }
-
-        void _hiddenWindow_SizeChanged(object sender, EventArgs e)
-        {
-            SetVideoPositions();
         }
 
         public void Pause()
@@ -917,6 +915,15 @@ namespace MediaBrowser.Theater.DirectShow
                     {
                         Stop(TrackCompletionReason.Ended, null);
                     }
+                    else if (evCode == EventCode.VideoSizeChanged)
+                    {
+                        var param1Val = evParam1.ToInt32();
+                        var x = param1Val & 0xffff;
+                        var y = param1Val >> 16;
+                        var ratio = new Size(x, y);
+
+                        SetAspectRatio(ratio, false);
+                    }
                 }
             }
             catch
@@ -943,8 +950,6 @@ namespace MediaBrowser.Theater.DirectShow
 
         private void CloseInterfaces()
         {
-            _hiddenWindow.SizeChanged -= _hiddenWindow_SizeChanged;
-
             int hr;
 
             if (_defaultAudioRenderer != null)

@@ -17,7 +17,7 @@ namespace MediaBrowser.Theater.Implementations.System
 
         // Used for prerequisite detection only. These were copied from the imports used in the direct show solution
         [ComImport]
-        [Guid("171252A0-8820-4AFE-9DF8-5C92B2D66B04")]
+        [Guid("B98D13E7-55DB-4385-A33D-09FD1BA26338")]
         internal class LAVSplitter
         {
         }

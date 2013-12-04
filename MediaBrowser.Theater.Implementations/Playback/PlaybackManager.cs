@@ -74,7 +74,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
             }
 
             PlayerConfiguration config;
-            var player = GetPlayer(options.Items, out config);
+            var player = GetPlayer(options.Items, options.EnableCustomPlayers, out config);
 
             if (player == null)
             {
@@ -218,21 +218,25 @@ namespace MediaBrowser.Theater.Implementations.Playback
         /// Gets the player.
         /// </summary>
         /// <param name="items">The items.</param>
+        /// <param name="enableCustomPlayers">if set to <c>true</c> [enable custom players].</param>
         /// <param name="configuration">The configuration.</param>
         /// <returns>IMediaPlayer.</returns>
-        private IMediaPlayer GetPlayer(IEnumerable<BaseItemDto> items, out PlayerConfiguration configuration)
+        private IMediaPlayer GetPlayer(IEnumerable<BaseItemDto> items, bool enableCustomPlayers, out PlayerConfiguration configuration)
         {
-            var configuredPlayer = _configurationManager.Configuration.MediaPlayers
-                .FirstOrDefault(p => IsConfiguredToPlay(p, items));
-
-            if (configuredPlayer != null)
+            if (enableCustomPlayers)
             {
-                var player = MediaPlayers.FirstOrDefault(i => string.Equals(i.Name, configuredPlayer.PlayerName, StringComparison.OrdinalIgnoreCase));
+                var configuredPlayer = _configurationManager.Configuration.MediaPlayers
+                    .FirstOrDefault(p => IsConfiguredToPlay(p, items));
 
-                if (player != null)
+                if (configuredPlayer != null)
                 {
-                    configuration = configuredPlayer;
-                    return player;
+                    var player = MediaPlayers.FirstOrDefault(i => string.Equals(i.Name, configuredPlayer.PlayerName, StringComparison.OrdinalIgnoreCase));
+
+                    if (player != null)
+                    {
+                        configuration = configuredPlayer;
+                        return player;
+                    }
                 }
             }
 
@@ -519,7 +523,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
             }
 
             PlayerConfiguration config;
-            var player = GetPlayer(new[] { item }, out config);
+            var player = GetPlayer(new[] { item }, true, out config);
 
             return player != null;
         }

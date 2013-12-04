@@ -202,7 +202,10 @@ namespace MediaBrowser.Theater.DirectShow
 
             try
             {
-                InvokeOnPlayerThread(() => _mediaPlayer.Play(playableItem, EnableReclock(options), EnableMadvr(options), false, _config.Configuration.InternalPlayerConfiguration.EnableXySubFilter));
+                var enableMadVr = EnableMadvr(options);
+                var enableReclock = EnableReclock(options);
+
+                InvokeOnPlayerThread(() => _mediaPlayer.Play(playableItem, enableReclock, enableMadVr, false, _config.Configuration.InternalPlayerConfiguration.EnableXySubFilter));
             }
             catch
             {
@@ -304,6 +307,11 @@ namespace MediaBrowser.Theater.DirectShow
                 return false;
             }
 
+            if (!options.GoFullScreen)
+            {
+                return false;
+            }
+            
             return true;
         }
 

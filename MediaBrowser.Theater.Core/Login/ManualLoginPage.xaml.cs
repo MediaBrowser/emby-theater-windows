@@ -1,8 +1,11 @@
-﻿using MediaBrowser.Theater.Interfaces.Presentation;
+﻿using MediaBrowser.Theater.Interfaces.Configuration;
+using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Presentation.Pages;
 using System;
+using System.Security.Cryptography;
+using System.Text;
 using System.Windows;
 
 namespace MediaBrowser.Theater.Core.Login
@@ -13,15 +16,16 @@ namespace MediaBrowser.Theater.Core.Login
     public partial class ManualLoginPage : BasePage, ILoginPage
     {
         protected ISessionManager SessionManager { get; private set; }
-        protected IPresentationManager PresentationManager { get; private set; }
+        protected IPresentationManager PresentationManager { get; private set; }      
 
-        public ManualLoginPage(string initialUsername, ISessionManager sessionManager, IPresentationManager presentationManager)
+        public ManualLoginPage(string initialUsername, bool? isAutoLoginChecked, ISessionManager sessionManager, IPresentationManager presentationManager)
         {
             PresentationManager = presentationManager;
             SessionManager = sessionManager;
             InitializeComponent();
 
             TxtUsername.Text = initialUsername;
+            ChkAutoLogin.IsChecked = isAutoLoginChecked;
 
             Loaded += LoginPage_Loaded;
             BtnSubmit.Click += BtnSubmit_Click;
@@ -48,7 +52,9 @@ namespace MediaBrowser.Theater.Core.Login
         {
             try
             {
-                await SessionManager.Login(TxtUsername.Text, TxtPassword.Password);
+                string password = TxtPassword.Password;
+                bool isRememberCredentials = (bool)ChkAutoLogin.IsChecked;
+                await SessionManager.Login(TxtUsername.Text, password, isRememberCredentials);
             }
             catch (Exception ex)
             {

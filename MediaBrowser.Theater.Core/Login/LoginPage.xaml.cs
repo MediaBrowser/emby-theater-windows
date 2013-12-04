@@ -1,5 +1,6 @@
 ﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Theater.Interfaces;
+using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
@@ -21,14 +22,16 @@ namespace MediaBrowser.Theater.Core.Login
         protected INavigationService NavigationManager { get; private set; }
         protected ISessionManager SessionManager { get; private set; }
         protected IPresentationManager PresentationManager { get; private set; }
+        protected ITheaterConfigurationManager ConfigurationManager { get; private set; }
 
-        public LoginPage(IApiClient apiClient, IImageManager imageManager, INavigationService navigationManager, ISessionManager sessionManager, IPresentationManager presentationManager)
+        public LoginPage(IApiClient apiClient, IImageManager imageManager, INavigationService navigationManager, ISessionManager sessionManager, IPresentationManager presentationManager, ITheaterConfigurationManager configManager)
         {
             PresentationManager = presentationManager;
             SessionManager = sessionManager;
             NavigationManager = navigationManager;
             ImageManager = imageManager;
             ApiClient = apiClient;
+            ConfigurationManager = configManager;
 
             InitializeComponent();
         }
@@ -60,13 +63,13 @@ namespace MediaBrowser.Theater.Core.Login
 
             if (user.HasPassword)
             {
-                await NavigationManager.Navigate(new ManualLoginPage(user.Name, SessionManager, PresentationManager));
+                await NavigationManager.Navigate(new ManualLoginPage(user.Name, ChkAutoLogin.IsChecked, SessionManager, PresentationManager));
                 return;
             }
 
             try
             {
-                await SessionManager.Login(user.Name, string.Empty);
+                await SessionManager.Login(user.Name, string.Empty, (bool)ChkAutoLogin.IsChecked);
             }
             catch (Exception ex)
             {

@@ -25,6 +25,10 @@
             <TextBlock Style="{StaticResource TextBlockStyle}" Text="Password" Margin="0 40 0 0"></TextBlock>
             <PasswordBox x:Name="TxtPassword"></PasswordBox>
 
+            <CheckBox x:Name="ChkAutoLogin" Margin="0 40 0 0">
+                <TextBlock Style="{StaticResource TextBlockStyle}">Remember me</TextBlock>
+            </CheckBox>
+
             <Button x:Name="BtnSubmit" Margin="0 40 0 0" IsDefault="True">
                 <TextBlock Style="{StaticResource TextBlockStyle}" Text="Sign In"></TextBlock>
             </Button>

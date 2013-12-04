@@ -5,6 +5,7 @@ using MediaBrowser.Common.Implementations.Updates;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.System;
 using MediaBrowser.Theater.Implementations.Configuration;
+using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.System;
 using MediaBrowser.UI.StartupWizard;
 using Microsoft.Win32;
@@ -320,36 +321,16 @@ namespace MediaBrowser.UI
 
             ApplicationWindow.ShowInTaskbar = state == System.Windows.Forms.FormWindowState.Minimized;
 
-            var width = ApplicationWindow.Width;
-            var height = ApplicationWindow.Height;
-            var top = ApplicationWindow.Top;
-            var left = ApplicationWindow.Left;
-   
             InvokeOnHiddenWindow(() =>
             {
                 if (state == System.Windows.Forms.FormWindowState.Minimized)
                 {
-                    if (HiddenWindow.Visible)
-                    {
-                        HiddenWindow.Hide();
-                    }
+                    HiddenWindow.Hide();
                 }
                 else
                 {
                     HiddenWindow.Show();
                     HiddenWindow.WindowState = state;
-                }
-
-                if (!double.IsNaN(width) && !double.IsNaN(height))
-                {
-                    HiddenWindow.Width = Convert.ToInt32(width);
-                    HiddenWindow.Height = Convert.ToInt32(height);
-                }
-
-                if (!double.IsNaN(top) && !double.IsNaN(left))
-                {
-                    HiddenWindow.Top = Convert.ToInt32(top);
-                    HiddenWindow.Left = Convert.ToInt32(left);
                 }
             });
         }
@@ -567,6 +548,46 @@ namespace MediaBrowser.UI
                 // Show connection wizard
                 await Dispatcher.InvokeAsync(async () => await _appHost.NavigationService.Navigate(new StartupWizardPage(_appHost.NavigationService, _appHost.TheaterConfigurationManager, _appHost.ApiClient, _appHost.PresentationManager, _logger, mediaFilters)));
                 return;
+            }
+
+            //Do final login
+            await Dispatcher.InvokeAsync(async () => await Login());
+        }
+
+        private async Task Login()
+        {
+            //Check for auto-login credientials
+            var _config = _appHost.TheaterConfigurationManager.Configuration;
+            try
+            {
+                if (_config.AutoLoginConfiguration.UserName != null && _config.AutoLoginConfiguration.UserPasswordHash != null)
+                {
+                    //Attempt password login
+                    await _appHost.SessionManager.LoginWithHash(_config.AutoLoginConfiguration.UserName, _config.AutoLoginConfiguration.UserPasswordHash, true);
+                    return;
+                }
+                else if (_config.AutoLoginConfiguration.UserName != null)
+                {
+                    //Attempt passwordless login
+                    await _appHost.SessionManager.Login(_config.AutoLoginConfiguration.UserName, string.Empty, true);
+                    return;
+                }
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                //Login failed, redirect to login page and clear the auto-login
+                _logger.ErrorException("Auto-login failed", ex, _config.AutoLoginConfiguration.UserName);
+
+                _config.AutoLoginConfiguration = new AutoLoginConfiguration();
+                _appHost.TheaterConfigurationManager.SaveConfiguration();
+            }
+            catch (FormatException ex)
+            {
+                //Login failed, redirect to login page and clear the auto-login
+                _logger.ErrorException("Auto-login password hash corrupt", ex);
+
+                _config.AutoLoginConfiguration = new AutoLoginConfiguration();
+                _appHost.TheaterConfigurationManager.SaveConfiguration();
             }
 
             await _appHost.NavigationService.NavigateToLoginPage();

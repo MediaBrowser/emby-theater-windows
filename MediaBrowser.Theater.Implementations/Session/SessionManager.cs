@@ -75,18 +75,23 @@ namespace MediaBrowser.Theater.Implementations.Session
         public async Task Login(string username, string password)
         {
             //Compute hash then pass to main login routine
-            using (var provider = SHA1.Create())
-            {
-                var hash = provider.ComputeHash(Encoding.UTF8.GetBytes(password ?? string.Empty));
-
-                await InternalLogin(username, hash);
-            }
+            var hash = ComputeHash(password);
+            await InternalLogin(username, hash);
         }
 
         public async Task Login(string username, byte[] hash)
         {
             //Pass straight to main login routine
             await InternalLogin(username, hash);
+        }
+
+        public byte[] ComputeHash(string data)
+        {
+            using (var provider = SHA1.Create())
+            {
+                var hash = provider.ComputeHash(Encoding.UTF8.GetBytes(data ?? string.Empty));
+                return hash;
+            }
         }
 
         protected async Task InternalLogin(string username, byte[] hash)

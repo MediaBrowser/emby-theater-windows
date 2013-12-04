@@ -75,6 +75,7 @@ namespace MediaBrowser.Theater.Core.Login
                 if (ChkAutoLogin.IsChecked == true)
                 {
                     ConfigurationManager.Configuration.AutoLoginConfiguration.UserName = user.Name;
+                    ConfigurationManager.Configuration.AutoLoginConfiguration.UserPasswordHash = null;
                     ConfigurationManager.SaveConfiguration();
                 }
             }

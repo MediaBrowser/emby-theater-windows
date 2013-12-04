@@ -54,13 +54,14 @@ namespace MediaBrowser.Theater.Core.Login
         {
             try
             {
-                await SessionManager.Login(TxtUsername.Text, TxtPassword.Password);
+                string password = TxtPassword.Password;
+                await SessionManager.Login(TxtUsername.Text, password);
 
                 //If login sucessful and auto login checkbox is ticked then save the auto-login config
                 if (ChkAutoLogin.IsChecked == true)
                 {
                     ConfigurationManager.Configuration.AutoLoginConfiguration.UserName = TxtUsername.Text;
-                    ConfigurationManager.Configuration.AutoLoginConfiguration.UserPasswordHash = Convert.ToBase64String(SessionManager.ComputeHash(""));
+                    ConfigurationManager.Configuration.AutoLoginConfiguration.UserPasswordHash = Convert.ToBase64String(SessionManager.ComputeHash(password));
                     ConfigurationManager.SaveConfiguration();
                 }
             }

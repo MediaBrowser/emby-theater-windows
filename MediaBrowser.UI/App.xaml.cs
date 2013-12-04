@@ -5,6 +5,7 @@ using MediaBrowser.Common.Implementations.Updates;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.System;
 using MediaBrowser.Theater.Implementations.Configuration;
+using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.System;
 using MediaBrowser.UI.StartupWizard;
 using Microsoft.Win32;
@@ -549,7 +550,46 @@ namespace MediaBrowser.UI
                 return;
             }
 
-            //TODO: AUTO_LOGIN Check if auto-login configuration exists
+            //Do final login
+            await Dispatcher.InvokeAsync(async () => await Login());
+        }
+
+        private async Task Login()
+        {
+            //Check for auto-login credientials
+            var _config = _appHost.TheaterConfigurationManager.Configuration;
+            try
+            {
+                if (_config.AutoLoginConfiguration.UserName != null && _config.AutoLoginConfiguration.UserPasswordHash != null)
+                {
+                    //Retrive hash bytes and attempt login
+                    byte[] hash = Convert.FromBase64String(_config.AutoLoginConfiguration.UserPasswordHash);
+                    await _appHost.SessionManager.Login(_config.AutoLoginConfiguration.UserName, hash);
+                    return;
+                }
+                else if (_config.AutoLoginConfiguration.UserName != null)
+                {
+                    //Attempt passwordless login
+                    await _appHost.SessionManager.Login(_config.AutoLoginConfiguration.UserName, string.Empty);
+                    return;
+                }
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                //Login failed, redirect to login page and clear the auto-login
+                _logger.ErrorException("Auto-login failed", ex, _config.AutoLoginConfiguration.UserName);
+
+                _config.AutoLoginConfiguration = new AutoLoginConfiguration();
+                _appHost.TheaterConfigurationManager.SaveConfiguration();
+            }
+            catch (FormatException ex)
+            {
+                //Login failed, redirect to login page and clear the auto-login
+                _logger.ErrorException("Auto-login password hash corrupt", ex);
+
+                _config.AutoLoginConfiguration = new AutoLoginConfiguration();
+                _appHost.TheaterConfigurationManager.SaveConfiguration();
+            }
 
             await _appHost.NavigationService.NavigateToLoginPage();
         }

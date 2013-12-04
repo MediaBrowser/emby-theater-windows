@@ -56,6 +56,10 @@ namespace MediaBrowser.Theater.Implementations.Session
                 EventHelper.FireEventIfNotNull(UserLoggedOut, this, EventArgs.Empty, _logger);
             }
 
+            //Clear auto login info
+            _config.Configuration.AutoLoginConfiguration = new AutoLoginConfiguration();
+            _config.SaveConfiguration();
+
             await _navService.NavigateToLoginPage();
 
             _navService.ClearHistory();
@@ -110,7 +114,7 @@ namespace MediaBrowser.Theater.Implementations.Session
                 CurrentUser = result.User;
                 _apiClient.CurrentUserId = CurrentUser.Id;
             }
-            catch (HttpException)
+            catch (HttpException ex)
             {
                 throw new UnauthorizedAccessException("Invalid username or password. Please try again.");
             }

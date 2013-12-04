@@ -174,11 +174,9 @@ namespace MediaBrowser.UI.Implementations
 
             App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(async () =>
             {
-                //TODO: AUTO_LOGIN check this
                 await Navigate(new ManualLoginPage(string.Empty, false, _sessionFactory(), _presentationManager, _config));
 
                 task.TrySetResult(true);
-
             });
 
             return task.Task;

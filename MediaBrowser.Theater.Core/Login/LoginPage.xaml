@@ -19,17 +19,17 @@
             <RowDefinition Height="auto"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <StackPanel Margin="300 70 0 0" Grid.Row="0" HorizontalAlignment="Left" Orientation="Horizontal">
+        <StackPanel Margin="0 70 0 0" Grid.Row="0" HorizontalAlignment="Center" Orientation="Horizontal">
             <TextBlock Text="Please Sign " Style="{StaticResource Heading1TextBlockStyle}"></TextBlock>
             <TextBlock Text="In" Style="{StaticResource Heading1TextBlockStyle}" Foreground="{StaticResource MediaBrowserAccent}"></TextBlock>
         </StackPanel>
 
-        <controls:ExtendedScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" VerticalAlignment="Top" HorizontalAlignment="Center" CanContentScroll="True">
+        <controls:ExtendedScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" VerticalAlignment="Top" CanContentScroll="True">
             <controls:ScrollingPanel CanHorizontallyScroll="True" CanVerticallyScroll="False">
-                <controls:ExtendedListBox HorizontalAlignment="Stretch" x:Name="LstUsers" ScrollViewer.VerticalScrollBarVisibility="Disabled" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding ListCollectionView}" Style="{StaticResource ListBoxStyle}" ItemContainerStyle="{StaticResource HighlightedBorderListBoxItemStyle}">
+                <controls:ExtendedListBox HorizontalAlignment="Stretch" x:Name="LstUsers" ScrollViewer.VerticalScrollBarVisibility="Disabled" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.CanContentScroll="False" ItemsSource="{Binding ListCollectionView}" Style="{StaticResource ListBoxStyle}" ItemContainerStyle="{StaticResource HighlightedBorderListBoxItemStyle}">
                     <controls:ExtendedListBox.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <StackPanel Orientation="Horizontal" Margin="100 80" HorizontalAlignment="Center" />
+                            <StackPanel Orientation="Horizontal" Margin="100 80" HorizontalAlignment="Center"/>
                         </ItemsPanelTemplate>
                     </controls:ExtendedListBox.ItemsPanel>
                 </controls:ExtendedListBox>

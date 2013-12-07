@@ -79,6 +79,7 @@
     <Compile Include="CustomCursor.cs" />
     <Compile Include="DirectShowPlayer.cs" />
     <Compile Include="Configuration\ConfigurationPageFactory.cs" />
+    <Compile Include="Enums.cs" />
     <Compile Include="Imports.cs" />
     <Compile Include="InternalDirectShowPlayer.cs" />
     <Compile Include="MadvrInterface.cs" />

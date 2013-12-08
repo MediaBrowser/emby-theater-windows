@@ -626,15 +626,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             {
                 return GetItemByNameItemListViewModel("Episode", 480, 270, ViewType.Tv);
             }
-            if (string.Equals(section, "media info"))
-            {
-                var list = new RangeObservableCollection<MediaStreamViewModel>();
-
-                var view = new ListCollectionView(list);
-
-                list.AddRange(_itemViewModel.MediaStreams.Select(i => new MediaStreamViewModel { MediaStream = i, OwnerItem = _itemViewModel.Item }));
-                return view;
-            }
 
             return _itemViewModel;
         }

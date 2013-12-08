@@ -1,4 +1,5 @@
-﻿using MediaBrowser.ApiInteraction;
+﻿using System.Diagnostics;
+using MediaBrowser.ApiInteraction;
 using MediaBrowser.Common.Constants;
 using MediaBrowser.Common.Implementations.Logging;
 using MediaBrowser.Common.Implementations.Updates;
@@ -88,8 +89,10 @@ namespace MediaBrowser.UI
                 return;
             }
 
+            var appPath = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
+            
             // Look for the existence of an update archive
-            var appPaths = new ApplicationPaths();
+            var appPaths = new ApplicationPaths(appPath);
             var logManager = new NlogManager(appPaths.LogDirectoryPath, "theater");
             logManager.ReloadLogger(LogSeverity.Debug);
 

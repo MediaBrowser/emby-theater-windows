@@ -11,13 +11,13 @@ namespace MediaBrowser.Theater.Implementations.Configuration
         /// <summary>
         /// Initializes a new instance of the <see cref="ApplicationPaths" /> class.
         /// </summary>
-        public ApplicationPaths()
-            : base(true)
+        public ApplicationPaths(string applicationPath)
+            : base(true, applicationPath)
         {
         }
 #else
-        public ApplicationPaths()
-            : base(false)
+        public ApplicationPaths(string applicationPath)
+            : base(false, applicationPath)
         {
         }
 #endif

@@ -28,6 +28,24 @@ namespace MediaBrowser.UI.Implementations
             }
         }
 
+        public event KeyEventHandler KeyDown
+        {
+            add { App.Instance.HiddenWindow.KeyDown += value; }
+            remove
+            {
+                App.Instance.HiddenWindow.KeyDown -= value;
+            }
+        }
+
+        public event MouseEventHandler MouseClick
+        {
+            add { App.Instance.HiddenWindow.MouseClick += value; }
+            remove
+            {
+                App.Instance.HiddenWindow.MouseClick -= value;
+            }
+        }
+
         public Size ContentPixelSize
         {
             get { return new Size(App.Instance.HiddenWindow.Width, App.Instance.HiddenWindow.Height); }
@@ -45,6 +63,17 @@ namespace MediaBrowser.UI.Implementations
             }
         }
 
+        public Action OnDVDEVENT
+        {
+            get
+            {
+                return App.Instance.HiddenWindow.OnDVDEVENT;
+            }
+            set
+            {
+                App.Instance.HiddenWindow.OnDVDEVENT = value;
+            }
+        }
 
         //private Size GetElementPixelSize(Grid element)
         //{

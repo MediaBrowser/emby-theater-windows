@@ -10,6 +10,8 @@ namespace MediaBrowser.Theater.Interfaces.Presentation
     public interface IHiddenWindow
     {
         event EventHandler SizeChanged;
+        event KeyEventHandler KeyDown;
+        event MouseEventHandler MouseClick;
 
         /// <summary>
         /// Gets the windows forms host.
@@ -20,5 +22,6 @@ namespace MediaBrowser.Theater.Interfaces.Presentation
         Size ContentPixelSize { get; }
 
         Action OnWMGRAPHNOTIFY { get; set; }
+        Action OnDVDEVENT { get; set; }
     }
 }

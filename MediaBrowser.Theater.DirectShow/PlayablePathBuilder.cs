@@ -19,8 +19,9 @@ namespace MediaBrowser.Theater.DirectShow
         /// <param name="item">The item.</param>
         /// <param name="isoMount">The iso mount.</param>
         /// <param name="apiClient">The API client.</param>
+        /// <param name="startTimeTicks">The start time ticks.</param>
         /// <returns>System.String.</returns>
-        public static string GetPlayablePath(BaseItemDto item, IIsoMount isoMount, IApiClient apiClient)
+        public static string GetPlayablePath(BaseItemDto item, IIsoMount isoMount, IApiClient apiClient, long? startTimeTicks)
         {
             // Check the mounted path first
             if (isoMount != null)
@@ -36,13 +37,13 @@ namespace MediaBrowser.Theater.DirectShow
             // Stream remote items through the api
             if (item.LocationType == LocationType.Remote)
             {
-                return GetStreamedPath(item, apiClient);
+                return GetStreamedPath(item, apiClient, startTimeTicks);
             }
 
             // Stream if we can't access the file system
             if (!File.Exists(item.Path) && !Directory.Exists(item.Path))
             {
-                return GetStreamedPath(item, apiClient);
+                return GetStreamedPath(item, apiClient, startTimeTicks);
             }
 
             if (item.VideoType.HasValue && item.VideoType.Value == VideoType.BluRay)
@@ -53,36 +54,53 @@ namespace MediaBrowser.Theater.DirectShow
             return item.Path;
         }
 
-        private static string GetStreamedPath(BaseItemDto item, IApiClient apiClient)
+        private static string GetStreamedPath(BaseItemDto item, IApiClient apiClient, long? startTimeTicks)
         {
-            //if (item.LocationType == LocationType.Remote)
-            //{
-            //    return item.Path;
-            //}
-
-            if (item.VideoType.HasValue)
-            {
-                if (item.VideoType.Value != VideoType.VideoFile)
-                {
-                    return apiClient.GetVideoStreamUrl(new VideoStreamOptions
-                    {
-                        ItemId = item.Id,
-                        OutputFileExtension = "mp4",
-                        VideoCodec = VideoCodecs.H264,
-                        AudioCodec = AudioCodecs.Aac
-                    });
-                }
-            }
-
             var extension = item.LocationType == LocationType.Remote ? null : Path.GetExtension(item.Path);
 
             if (item.IsAudio)
             {
-                return apiClient.GetAudioStreamUrl(new VideoStreamOptions
+                if (item.LocationType == LocationType.Remote)
+                {
+                    return apiClient.GetAudioStreamUrl(new StreamOptions
+                    {
+                        ItemId = item.Id,
+                        OutputFileExtension = ".aac",
+                        AudioCodec = AudioCodecs.Aac,
+                        StartTimeTicks = startTimeTicks
+                    });
+                }
+
+                return apiClient.GetAudioStreamUrl(new StreamOptions
                 {
                     Static = true,
                     ItemId = item.Id,
-                    OutputFileExtension = extension
+                    OutputFileExtension = extension,
+                    AudioCodec = AudioCodecs.Copy,
+                    StartTimeTicks = startTimeTicks
+                });
+            }
+
+            if (item.LocationType == LocationType.Remote)
+            {
+                return apiClient.GetVideoStreamUrl(new VideoStreamOptions
+                {
+                    ItemId = item.Id,
+                    OutputFileExtension = "ts",
+                    VideoCodec = VideoCodecs.H264,
+                    AudioCodec = AudioCodecs.Aac
+                });
+            }
+
+            // Folder rips
+            if (item.VideoType.HasValue && item.VideoType.Value != VideoType.VideoFile)
+            {
+                return apiClient.GetVideoStreamUrl(new VideoStreamOptions
+                {
+                    ItemId = item.Id,
+                    OutputFileExtension = "ts",
+                    VideoCodec = VideoCodecs.H264,
+                    AudioCodec = AudioCodecs.Aac
                 });
             }
 

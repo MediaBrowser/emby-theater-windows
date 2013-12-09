@@ -114,23 +114,6 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
-        private bool _isImageLoading = true;
-        public bool IsImageLoading
-        {
-            get { return _isImageLoading; }
-
-            set
-            {
-                var changed = _isImageLoading != value;
-                _isImageLoading = value;
-
-                if (changed)
-                {
-                    OnPropertyChanged("IsImageLoading");
-                }
-            }
-        }
-
         private CancellationTokenSource _imageCancellationTokenSource;
 
         private BitmapImage _image;
@@ -202,19 +185,16 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                     DisposeCancellationTokenSource();
 
                     HasImage = true;
-                    IsImageLoading = false;
                 }
                 catch
                 {
                     // Logged at lower levels
                     HasImage = false;
-                    IsImageLoading = false;
                 }
             }
             else
             {
                 HasImage = false;
-                IsImageLoading = false;
             }
 
         }

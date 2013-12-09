@@ -31,6 +31,24 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             ApiClient = apiClient;
         }
 
+        private ItemViewModel _currentItem;
+        public ItemViewModel CurrentItem
+        {
+            get { return _currentItem; }
+
+            set
+            {
+                var changed = _currentItem != value;
+
+                _currentItem = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("CurrentItem");
+                }
+            }
+        }
+        
         protected async Task<BaseItemDto> GetRootFolder()
         {
             if (_rootFolder == null)

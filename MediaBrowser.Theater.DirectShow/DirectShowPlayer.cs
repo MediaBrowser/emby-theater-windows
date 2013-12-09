@@ -1,4 +1,5 @@
-﻿using DirectShowLib;
+﻿using System.Drawing;
+using DirectShowLib;
 using DirectShowLib.Dvd;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
@@ -13,6 +14,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Windows.Forms;
+//using DirectShowLib.Utils;
+using System.Diagnostics;
 
 namespace MediaBrowser.Theater.DirectShow
 {
@@ -21,51 +25,53 @@ namespace MediaBrowser.Theater.DirectShow
         private const int WM_APP = 0x8000;
         private const int WM_GRAPHNOTIFY = WM_APP + 1;
         private const int WM_KEYDOWN = 0x0100;
+        private const int WM_DVD_EVENT = 0x00008002;
 
         private readonly ILogger _logger;
         private readonly IHiddenWindow _hiddenWindow;
         private readonly InternalDirectShowPlayer _playerWrapper;
 
-        private DirectShowLib.IGraphBuilder m_graph;
+        private DirectShowLib.IGraphBuilder m_graph = null;
 
-        private DirectShowLib.IMediaControl _mediaControl;
-        private DirectShowLib.IMediaEventEx _mediaEventEx;
-        private DirectShowLib.IVideoWindow _videoWindow;
-        private DirectShowLib.IBasicAudio _basicAudio;
-        private DirectShowLib.IBasicVideo _basicVideo;
-        private DirectShowLib.IMediaSeeking _mediaSeeking;
-        private DirectShowLib.IMediaPosition _mediaPosition;
-        private DirectShowLib.IBaseFilter _sourceFilter;
-        private DirectShowLib.IFilterGraph2 _filterGraph;
-        //private DirectShowLib.IBaseFilter _pSource;
+        private DirectShowLib.IMediaControl _mediaControl = null;
+        private DirectShowLib.IMediaEventEx _mediaEventEx = null;
+        private DirectShowLib.IVideoWindow _videoWindow = null;
+        private DirectShowLib.IBasicAudio _basicAudio = null;
+        private DirectShowLib.IBasicVideo _basicVideo = null;
+        private DirectShowLib.IMediaSeeking _mediaSeeking = null;
+        private DirectShowLib.IMediaPosition _mediaPosition = null;
+        private DirectShowLib.IBaseFilter _sourceFilter = null;
+        private DirectShowLib.IFilterGraph2 _filterGraph = null;
+        DsROTEntry m_dsRot = null;
 
-        private XYVSFilter _xyVsFilter;
-        private XySubFilter _xySubFilter;
+        private XYVSFilter _xyVsFilter = null;
+        private XySubFilter _xySubFilter = null;
 
-        private LAVAudio _lavaudio;
-        private LAVVideo _lavvideo;
+        private LAVAudio _lavaudio = null;
+        private LAVVideo _lavvideo = null;
 
         // EVR filter
-        private DirectShowLib.IBaseFilter _mPEvr;
-        private IMFVideoDisplayControl _mPDisplay;
+        private DirectShowLib.IBaseFilter _mPEvr = null;
+        private IMFVideoDisplayControl _mPDisplay = null;
 
-        private DefaultAudioRenderer _defaultAudioRenderer;
-        private ReclockAudioRenderer _reclockAudioRenderer;
+        private DefaultAudioRenderer _defaultAudioRenderer = null;
+        private ReclockAudioRenderer _reclockAudioRenderer = null;
 
         // Caps bits for IMediaSeeking
         private AMSeekingSeekingCapabilities _mSeekCaps;
 
         // Dvd
-        private DirectShowLib.IBaseFilter _dvdNav;
-        private IDvdControl2 _mDvdControl;
-        private IDvdInfo2 _mDvdInfo;
+        //private DirectShowLib.IBaseFilter _dvdNav = null;
+        private IDvdControl2 _mDvdControl = null;
+        //private IDvdInfo2 _mDvdInfo = null;
 
-        private MadVR _madvr;
+        private MadVR _madvr = null;
 
-        private PlayableItem _item;
+        private PlayableItem _item = null;
 
         private readonly IntPtr _applicationWindowHandle;
         private bool _isInExclusiveMode;
+        private DvdMenuMode _dvdMenuMode = DvdMenuMode.No;
 
         public DirectShowPlayer(ILogger logger, IHiddenWindow hiddenWindow, InternalDirectShowPlayer playerWrapper, IntPtr applicationWindowHandle)
         {
@@ -113,19 +119,22 @@ namespace MediaBrowser.Theater.DirectShow
         {
             get
             {
-                if (_mDvdInfo != null && PlayState != PlayState.Idle)
+                //for some reason we're loosing our reference to the original IDvdInfo2
+                IDvdInfo2 dvdInfo = _sourceFilter as IDvdInfo2;
+                if (dvdInfo != null && PlayState != PlayState.Idle)
                 {
                     var totaltime = new DvdHMSFTimeCode();
                     DvdTimeCodeFlags ulTimeCodeFlags;
-                    _mDvdInfo.GetTotalTitleTime(totaltime, out ulTimeCodeFlags);
+                    dvdInfo.GetTotalTitleTime(totaltime, out ulTimeCodeFlags);
 
                     return new TimeSpan(totaltime.bHours, totaltime.bMinutes, totaltime.bSeconds).Ticks;
-                }
+                } 
+
                 if (_mediaSeeking != null && PlayState != PlayState.Idle)
                 {
                     long pos;
 
-                    var hr = _mediaSeeking.GetDuration(out pos);
+                    int hr = _mediaSeeking.GetDuration(out pos);
 
                     return pos;
                 }
@@ -142,11 +151,13 @@ namespace MediaBrowser.Theater.DirectShow
             _item = item;
             _isInExclusiveMode = false;
 
-            var isDvd = (item.OriginalItem.VideoType ?? VideoType.VideoFile) == VideoType.Dvd || (item.OriginalItem.IsoType ?? IsoType.BluRay) == IsoType.Dvd && item.PlayablePath.IndexOf("http://", StringComparison.OrdinalIgnoreCase) == -1;
+            var isDvd = ((item.OriginalItem.VideoType ?? VideoType.VideoFile) == VideoType.Dvd || (item.OriginalItem.IsoType ?? IsoType.BluRay) == IsoType.Dvd) && 
+                item.PlayablePath.IndexOf("http://", StringComparison.OrdinalIgnoreCase) == -1;
 
             Initialize(item.PlayablePath, enableReclock, enableMadvr, enableMadvrExclusiveMode, enableXySubFilter, isDvd);
 
             _hiddenWindow.OnWMGRAPHNOTIFY = HandleGraphEvent;
+            _hiddenWindow.OnDVDEVENT = HandleDvdEvent;
 
             var hr = _mediaControl.Run();
             DsError.ThrowExceptionForHR(hr);
@@ -156,8 +167,9 @@ namespace MediaBrowser.Theater.DirectShow
             _streams = GetStreams();
         }
 
-        private void InitializeGraph()
+        private void InitializeGraph(bool isDvd)
         {
+            int hr = 0;
             m_graph = (DirectShowLib.IGraphBuilder)new FilterGraphNoThread();
 
             // QueryInterface for DirectShow interfaces
@@ -174,13 +186,18 @@ namespace MediaBrowser.Theater.DirectShow
             _basicAudio = m_graph as DirectShowLib.IBasicAudio;
 
             // Set up event notification.
-            var hr = _mediaEventEx.SetNotifyWindow(VideoWindowHandle, WM_GRAPHNOTIFY, IntPtr.Zero);
+            if(isDvd)
+                hr = _mediaEventEx.SetNotifyWindow(VideoWindowHandle, WM_DVD_EVENT, IntPtr.Zero);
+            else
+                hr = _mediaEventEx.SetNotifyWindow(VideoWindowHandle, WM_GRAPHNOTIFY, IntPtr.Zero);
             DsError.ThrowExceptionForHR(hr);
+
+            m_dsRot = new DsROTEntry(m_graph as IFilterGraph);
         }
 
         private void Initialize(string path, bool enableReclock, bool enableMadvr, bool enableMadvrExclusiveMode, bool enableXySubFilter, bool isDvd)
         {
-            InitializeGraph();
+            InitializeGraph(isDvd);
 
             int hr = 0;
 
@@ -189,43 +206,12 @@ namespace MediaBrowser.Theater.DirectShow
                 _logger.Debug("Initializing dvd player to play {0}", path);
 
                 /* Create a new DVD Navigator. */
-                _dvdNav = (DirectShowLib.IBaseFilter)new DVDNavigator();
+                _sourceFilter = (DirectShowLib.IBaseFilter)new DVDNavigator();
 
                 InitializeDvd(path);
 
                 // Try to render the streams.
-                RenderStreams(_dvdNav, enableReclock, enableMadvr, enableMadvrExclusiveMode, enableXySubFilter);
-            }
-            else if (path.IndexOf("apple.com", StringComparison.OrdinalIgnoreCase) != -1)
-            {
-                /*var mySourceFilter*/
-                //reference will be leaked
-                _sourceFilter = Activator.CreateInstance(Type.GetTypeFromCLSID(new Guid("{E436EBB6-524F-11CE-9F53-0020AF0BA770}"))) as DirectShowLib.IBaseFilter;
-                hr = m_graph.AddFilter(_sourceFilter, "File Source (URL)");
-                DsError.ThrowExceptionForHR(hr);
-
-                if (hr == 0 && _sourceFilter != null)
-                {
-                    hr = ((IFileSourceFilter)_sourceFilter).Load(path, null);
-                    DsError.ThrowExceptionForHR(hr);
-                }
-            }
-            else if (path.IndexOf("http://", StringComparison.OrdinalIgnoreCase) != -1)
-            {
-                //shoutcast will need "shoutcast source filter" WITH useragent set to the right value!!!!
-                //{68F540E9-766F-44D2-AB07-E26CC6D27A79}
-                //alternatevely use dc-bass source
-
-                //make sure to test youtube handeling
-                _sourceFilter = Activator.CreateInstance(Type.GetTypeFromCLSID(new Guid("{E436EBB6-524F-11CE-9F53-0020AF0BA770}"))) as DirectShowLib.IBaseFilter;
-                hr = m_graph.AddFilter(_sourceFilter, "File Source (URL)");
-                DsError.ThrowExceptionForHR(hr);
-
-                if (hr == 0 && _sourceFilter != null)
-                {
-                    hr = ((IFileSourceFilter)_sourceFilter).Load(path, null);
-                    DsError.ThrowExceptionForHR(hr);
-                }
+                RenderStreams(_sourceFilter, enableReclock, enableMadvr, enableMadvrExclusiveMode, false); //we don't need XySubFilter for DVD 
             }
             else
             {
@@ -269,14 +255,14 @@ namespace MediaBrowser.Theater.DirectShow
 
         private void InitializeDvd(string path)
         {
+            int hr = m_graph.AddFilter(_sourceFilter, "DVD Navigator");
+            DsError.ThrowExceptionForHR(hr);
+
             /* The DVDControl2 interface lets us control DVD features */
-            _mDvdControl = _dvdNav as IDvdControl2;
+            _mDvdControl = _sourceFilter as IDvdControl2;
 
             if (_mDvdControl == null)
                 throw new Exception("Could not QueryInterface the IDvdControl2 interface");
-
-            /* QueryInterface the DVDInfo2 */
-            _mDvdInfo = _dvdNav as IDvdInfo2;
 
             var videoTsPath = Path.Combine(path, "video_ts");
             if (Directory.Exists(videoTsPath))
@@ -285,7 +271,7 @@ namespace MediaBrowser.Theater.DirectShow
             }
 
             /* If a Dvd directory has been set then use it, if not, let DShow find the Dvd */
-            var hr = _mDvdControl.SetDVDDirectory(path);
+            hr = _mDvdControl.SetDVDDirectory(path);
             DsError.ThrowExceptionForHR(hr);
 
             /* This gives us the DVD time in Hours-Minutes-Seconds-Frame time format, and other options */
@@ -295,8 +281,8 @@ namespace MediaBrowser.Theater.DirectShow
             /* If the graph stops, resume at the same point */
             _mDvdControl.SetOption(DvdOptionFlag.ResetOnStop, false);
 
-            hr = m_graph.AddFilter(_dvdNav, "DVD Navigator");
-            DsError.ThrowExceptionForHR(hr);
+            /* QueryInterface the DVDInfo2 */
+            //dvdInfo = _sourceFilter as IDvdInfo2;
 
             //int uTitle = 1;
             //dma = new DvdMenuAttributes();
@@ -442,7 +428,7 @@ namespace MediaBrowser.Theater.DirectShow
                     }
 
                     // Fallback to xyVsFilter
-                    if (!xySubFilterSucceeded)
+                    if (!xySubFilterSucceeded && enableXySubFilter)
                     {
                         try
                         {
@@ -617,14 +603,14 @@ namespace MediaBrowser.Theater.DirectShow
         {
             int hr = 0;
             int j = -1;
-            List<Guid> mt = new List<Guid>();
+            var mt = new List<Guid>();
 
             IEnumMediaTypes emtDvr;
             pin.EnumMediaTypes(out emtDvr);
 
             while (j != 0)
             {
-                DirectShowLib.AMMediaType[] amtDvr = new DirectShowLib.AMMediaType[1];
+                var amtDvr = new DirectShowLib.AMMediaType[1];
                 IntPtr d = Marshal.AllocCoTaskMem(4);
                 try
                 {
@@ -683,11 +669,11 @@ namespace MediaBrowser.Theater.DirectShow
         {
             _isInExclusiveMode = _madvr != null && enableMadVrExclusiveMode;
 
-            if (!_isInExclusiveMode)
+            if (!enableMadVrExclusiveMode)
             {
-                SetVideoPositions();
-
                 _hiddenWindow.SizeChanged += _hiddenWindow_SizeChanged;
+                _hiddenWindow.MouseClick += HiddenForm_MouseClick;
+                _hiddenWindow.KeyDown += HiddenForm_KeyDown;
             }
 
             if (_cursorHidden)
@@ -698,26 +684,194 @@ namespace MediaBrowser.Theater.DirectShow
             if (_madvr != null)
             {
                 var ownerHandle = enableMadVrExclusiveMode ? _applicationWindowHandle : VideoWindowHandle;
-                _videoWindow.put_Owner(ownerHandle);
-                _videoWindow.put_WindowStyle(DirectShowLib.WindowStyle.Child | DirectShowLib.WindowStyle.Visible | DirectShowLib.WindowStyle.ClipSiblings);
 
-                int hr;
+                _videoWindow.put_Owner(ownerHandle);
+                _videoWindow.put_WindowStyle(WindowStyle.Child | WindowStyle.ClipSiblings);
+                _videoWindow.put_WindowStyleEx(WindowStyleEx.ToolWindow);
+
+                _videoWindow.put_Visible(OABool.True);
+                _videoWindow.put_AutoShow(OABool.True);
+                _videoWindow.put_WindowState(WindowState.Show);
+
+                var hr = _videoWindow.SetWindowForeground(OABool.True);
+                DsError.ThrowExceptionForHR(hr);
 
                 if (enableMadVrExclusiveMode)
                 {
-                    _videoWindow.SetWindowForeground(OABool.True);
-
-                    hr = _videoWindow.put_FullScreenMode(OABool.True);
-                    DsError.ThrowExceptionForHR(hr);
+                    //_videoWindow.put_FullScreenMode(OABool.True);
                 }
 
-                if (!enableMadVrExclusiveMode)
+                else
                 {
                     hr = _videoWindow.put_MessageDrain(VideoWindowHandle);
                     DsError.ThrowExceptionForHR(hr);
                 }
+            }
 
+            SetAspectRatio();
+
+            if (_madvr != null)
+            {
                 SetExclusiveMode(enableMadVrExclusiveMode);
+            }
+        }
+
+        void _hiddenWindow_SizeChanged(object sender, EventArgs e)
+        {
+            SetAspectRatio(null);
+        }
+
+        void HiddenForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            Debug.Print(string.Format("KeyPress: {0}", e));
+            switch (e.KeyCode)
+            {
+                case Keys.Return:
+                    if ((_dvdMenuMode == DvdMenuMode.Buttons) && (_mDvdControl != null))
+                    {
+                        _mDvdControl.ActivateButton();
+                        e.SuppressKeyPress = true;
+                    }
+                    else if ((_dvdMenuMode == DvdMenuMode.Still) && (_mDvdControl != null))
+                    {
+                        _mDvdControl.StillOff();
+                        e.SuppressKeyPress = true;
+                    }
+                    break;
+                case Keys.Left:
+                    if (_mDvdControl != null)
+                    {
+                        if (_dvdMenuMode == DvdMenuMode.Buttons)
+                            _mDvdControl.SelectRelativeButton(DvdRelativeButton.Left);
+                        e.SuppressKeyPress = true;
+                    }
+                    break;
+                case Keys.Right:
+                    if (_mDvdControl != null)
+                    {
+                        if (_dvdMenuMode == DvdMenuMode.Buttons)
+                            _mDvdControl.SelectRelativeButton(DvdRelativeButton.Right);
+                        e.SuppressKeyPress = true;
+                    }
+                    break;
+                case Keys.Up:
+                    if ((_dvdMenuMode == DvdMenuMode.Buttons) && (_mDvdControl != null))
+                    {
+                        _mDvdControl.SelectRelativeButton(DvdRelativeButton.Upper);
+                        e.SuppressKeyPress = true;
+                    }
+                    break;
+                case Keys.Down:
+                    if ((_dvdMenuMode == DvdMenuMode.Buttons) && (_mDvdControl != null))
+                    {
+                        _mDvdControl.SelectRelativeButton(DvdRelativeButton.Lower);
+                        e.SuppressKeyPress = true;
+                    }
+                    break;
+            }
+        }
+
+        void HiddenForm_MouseClick(object sender, MouseEventArgs e)
+        {
+            Debug.Print(string.Format("Mouse Click: {0}", e));
+
+            if ((_dvdMenuMode == DvdMenuMode.Buttons) && (_mDvdControl != null))
+            {
+                Point pt = new Point();
+                pt.X = e.X;
+                pt.Y = e.Y;
+                _mDvdControl.SelectAtPosition(pt);
+                //_mDvdControl.ActivateButton();
+            }
+        }
+
+        private void SetAspectRatio(Size? ratio = null, bool setVideoWindow = true)
+        {
+            int screenWidth;
+            int screenHeight;
+
+            if (_isInExclusiveMode)
+            {
+                var size = Screen.FromControl(_hiddenWindow.Form).Bounds;
+
+                screenWidth = size.Width;
+                screenHeight = size.Height;
+            }
+            else
+            {
+                var hiddenWindowContentSize = _hiddenWindow.ContentPixelSize;
+
+                screenWidth = hiddenWindowContentSize.Width;
+                screenHeight = hiddenWindowContentSize.Height;
+            }
+
+            // Set the display position to the entire window.
+            if (_mPDisplay != null)
+            {
+                var rc = new MFRect(0, 0, screenWidth, screenHeight);
+                _mPDisplay.SetVideoPosition(null, rc);
+            }
+
+            // Get Aspect Ratio
+            int aspectX;
+            int aspectY;
+
+            if (ratio.HasValue)
+            {
+                aspectX = ratio.Value.Width;
+                aspectY = ratio.Value.Height;
+            }
+            else
+            {
+                var basicVideo2 = (IBasicVideo2)m_graph;
+                basicVideo2.GetPreferredAspectRatio(out aspectX, out aspectY);
+
+                var sourceHeight = 0;
+                var sourceWidth = 0;
+
+                _basicVideo.GetVideoSize(out sourceWidth, out sourceHeight);
+
+                if (aspectX == 0 || aspectY == 0 || sourceWidth > 0 || sourceHeight > 0)
+                {
+                    aspectX = sourceWidth;
+                    aspectY = sourceHeight;
+                }
+            }
+
+            // Adjust Video Size
+            var iAdjustedHeight = 0;
+
+            if (aspectX > 0 && aspectY > 0)
+            {
+                double adjustedHeight = aspectY * screenWidth;
+                adjustedHeight /= aspectX;
+
+                iAdjustedHeight = Convert.ToInt32(Math.Round(adjustedHeight));
+            }
+
+            if (screenHeight > iAdjustedHeight && iAdjustedHeight > 0)
+            {
+                double totalMargin = (screenHeight - iAdjustedHeight);
+                var topMargin = Convert.ToInt32(Math.Round(totalMargin / 2));
+
+                _basicVideo.SetDestinationPosition(0, topMargin, screenWidth, iAdjustedHeight);
+            }
+            else if (iAdjustedHeight > 0)
+            {
+                double adjustedWidth = aspectX * screenHeight;
+                adjustedWidth /= aspectY;
+
+                var iAdjustedWidth = Convert.ToInt32(Math.Round(adjustedWidth));
+
+                double totalMargin = (screenWidth - iAdjustedWidth);
+                var leftMargin = Convert.ToInt32(Math.Round(totalMargin / 2));
+
+                _basicVideo.SetDestinationPosition(leftMargin, 0, iAdjustedWidth, screenHeight);
+            }
+
+            if (setVideoWindow)
+            {
+                _videoWindow.SetWindowPosition(0, 0, screenWidth, screenHeight);
             }
         }
 
@@ -748,109 +902,16 @@ namespace MediaBrowser.Theater.DirectShow
         //    _cursorHidden = true;
         //}
 
-        private void SetVideoPositions()
-        {
-            var hiddenWindowContentSize = _hiddenWindow.ContentPixelSize;
-
-            var screenWidth = hiddenWindowContentSize.Width;
-            var screenHeight = hiddenWindowContentSize.Height;
-
-            _logger.Info("window content width: {0}, window height: {1}", screenWidth, screenHeight);
-
-            // Set the display position to the entire window.
-            var rc = new MFRect(0, 0, screenWidth, screenHeight);
-
-            if (_mPDisplay != null)
-                _mPDisplay.SetVideoPosition(null, rc);
-            //_mPDisplay.SetFullscreen(true);
-
-            // Get Aspect Ratio
-            int aspectX;
-            int aspectY;
-
-            decimal heightAsPercentOfWidth = 0;
-
-            var basicVideo2 = (IBasicVideo2)m_graph;
-            basicVideo2.GetPreferredAspectRatio(out aspectX, out aspectY);
-
-            var sourceHeight = 0;
-            var sourceWidth = 0;
-
-            _basicVideo.GetVideoSize(out sourceWidth, out sourceHeight);
-
-            if (aspectX == 0 || aspectY == 0 || sourceWidth > 0 || sourceHeight > 0)
-            {
-                aspectX = sourceWidth;
-                aspectY = sourceHeight;
-            }
-
-            if (aspectX > 0 && aspectY > 0)
-            {
-                heightAsPercentOfWidth = decimal.Divide(aspectY, aspectX);
-            }
-
-            // Adjust Video Size
-            var iAdjustedHeight = 0;
-
-            if (aspectX > 0 && aspectY > 0)
-            {
-                var adjustedHeight = Convert.ToDouble(heightAsPercentOfWidth * screenWidth);
-                iAdjustedHeight = Convert.ToInt32(Math.Round(adjustedHeight));
-            }
-
-            //SET MADVR WINDOW TO FULL SCREEN AND SET POSITION
-            if (screenHeight >= iAdjustedHeight && iAdjustedHeight > 0)
-            {
-                double totalMargin = (screenHeight - iAdjustedHeight);
-                var topMargin = Convert.ToInt32(Math.Round(totalMargin / 2));
-
-                _basicVideo.SetDestinationPosition(0, topMargin, screenWidth, iAdjustedHeight);
-            }
-            else if (screenHeight < iAdjustedHeight && iAdjustedHeight > 0)
-            {
-                var adjustedWidth = Convert.ToDouble(screenHeight / heightAsPercentOfWidth);
-
-                var iAdjustedWidth = Convert.ToInt32(Math.Round(adjustedWidth));
-
-                if (iAdjustedWidth == 1919)
-                    iAdjustedWidth = 1920;
-
-                double totalMargin = (screenWidth - iAdjustedWidth);
-                var leftMargin = Convert.ToInt32(Math.Round(totalMargin / 2));
-
-                _basicVideo.SetDestinationPosition(leftMargin, 0, iAdjustedWidth, screenHeight);
-            }
-
-            if (!_isInExclusiveMode)
-            {
-                _videoWindow.SetWindowPosition(0, 0, screenWidth, screenHeight);
-            }
-        }
-
         public void SetExclusiveMode(bool enable)
         {
             try
             {
-                var inExclusiveMode = MadvrInterface.InExclusiveMode(_madvr);
-
-                if (inExclusiveMode && !enable)
-                {
-                    MadvrInterface.EnableExclusiveMode(false, _madvr);
-                }
-                else if (!inExclusiveMode && enable)
-                {
-                    MadvrInterface.EnableExclusiveMode(true, _madvr);
-                }
+                MadvrInterface.EnableExclusiveMode(true, _madvr);
             }
             catch (Exception ex)
             {
                 _logger.ErrorException("Error changing exclusive mode", ex);
             }
-        }
-
-        void _hiddenWindow_SizeChanged(object sender, EventArgs e)
-        {
-            SetVideoPositions();
         }
 
         public void Pause()
@@ -909,6 +970,87 @@ namespace MediaBrowser.Theater.DirectShow
             _playerWrapper.OnPlaybackStopped(_item, endingPosition, reason, newTrackIndex);
         }
 
+        private void HandleDvdEvent()
+        {
+            int hr = 0;
+            // Make sure that we don't access the media event interface
+            // after it has already been released.
+            if (_mediaEventEx == null)
+                return;
+
+            try
+            {
+                EventCode evCode;
+                IntPtr evParam1, evParam2;
+
+                // Process all queued events
+                while (_mediaEventEx.GetEvent(out evCode, out evParam1, out evParam2, 0) == 0)
+                {
+                    _logger.Debug("Received media event code {0}", evCode);
+
+                    switch (evCode)
+                    {
+                        case EventCode.DvdCurrentHmsfTime:
+                            byte[] ati = BitConverter.GetBytes(evParam1.ToInt32());
+                            var currnTime = new DvdHMSFTimeCode();                    
+                            currnTime.bHours = ati[0];
+                            currnTime.bMinutes = ati[1];
+                            currnTime.bSeconds = ati[2];
+                            currnTime.bFrames = ati[3];
+                            //UpdateMainTitle();
+                            break;
+                        case EventCode.DvdChapterStart:
+                            //currnChapter = evParam1.ToInt32();
+                            //UpdateMainTitle();
+                            break;
+                        case EventCode.DvdTitleChange:
+                            //currnTitle = evParam1.ToInt32();
+                            //UpdateMainTitle();
+                            break;
+                        case EventCode.DvdDomainChange:
+                            //currnDomain = (DvdDomain)evParam1;
+                            //UpdateMainTitle();
+                            break;
+                        case EventCode.DvdCmdStart:
+                            break;
+                        case EventCode.DvdCmdEnd:
+                            //OnCmdComplete(evParam1, evParam2);
+                            break;
+                        case EventCode.DvdStillOn:
+                            if (evParam1 == IntPtr.Zero)
+                                _dvdMenuMode = DvdMenuMode.Buttons;
+                            else
+                                _dvdMenuMode = DvdMenuMode.Still;
+                            break;
+                        case EventCode.DvdStillOff:
+                            if (_dvdMenuMode == DvdMenuMode.Still)
+                                _dvdMenuMode = DvdMenuMode.No;
+                            break;
+                        case EventCode.DvdButtonChange:
+                            if (evParam1.ToInt32() <= 0)
+                                _dvdMenuMode = DvdMenuMode.No;
+                            else
+                                _dvdMenuMode = DvdMenuMode.Buttons;
+                            break;
+                        case EventCode.DvdNoFpPgc:
+                            IDvdCmd icmd;
+
+                            if (_mDvdControl != null)
+                                hr = _mDvdControl.PlayTitle(1, DvdCmdFlags.None, out icmd);
+                            break;
+                    }
+
+                    // Free memory associated with callback, since we're not using it
+                    hr = _mediaEventEx.FreeEventParams(evCode, evParam1, evParam2);
+
+                }
+            }
+            catch
+            {
+
+            }
+        }
+
         private void HandleGraphEvent()
         {
             // Make sure that we don't access the media event interface
@@ -934,6 +1076,15 @@ namespace MediaBrowser.Theater.DirectShow
                     {
                         Stop(TrackCompletionReason.Ended, null);
                     }
+                    else if (evCode == EventCode.VideoSizeChanged)
+                    {
+                        var param1Val = evParam1.ToInt32();
+                        var x = param1Val & 0xffff;
+                        var y = param1Val >> 16;
+                        var ratio = new Size(x, y);
+
+                        SetAspectRatio(ratio, false);
+                    }
                 }
             }
             catch
@@ -945,6 +1096,7 @@ namespace MediaBrowser.Theater.DirectShow
         private void DisposePlayer()
         {
             _hiddenWindow.OnWMGRAPHNOTIFY = null;
+            _hiddenWindow.OnDVDEVENT = null;
 
             _logger.Debug("Disposing player");
 
@@ -960,8 +1112,6 @@ namespace MediaBrowser.Theater.DirectShow
 
         private void CloseInterfaces()
         {
-            _hiddenWindow.SizeChanged -= _hiddenWindow_SizeChanged;
-
             int hr;
 
             if (_defaultAudioRenderer != null)
@@ -1035,16 +1185,16 @@ namespace MediaBrowser.Theater.DirectShow
                 _mediaEventEx = null;
             }
 
-            if (_dvdNav != null)
+            //if (_dvdNav != null)
+            //{
+            //    Marshal.ReleaseComObject(_dvdNav);
+            //    _dvdNav = null;
+            //}
+            /* //this will double release the source filter
+            if (dvdInfo != null)
             {
-                Marshal.ReleaseComObject(_dvdNav);
-                _dvdNav = null;
-            }
-
-            if (_mDvdInfo != null)
-            {
-                Marshal.ReleaseComObject(_mDvdInfo);
-                _mDvdInfo = null;
+                Marshal.ReleaseComObject(dvdInfo);
+                dvdInfo = null;
             }
 
             if (_mDvdControl != null)
@@ -1052,7 +1202,7 @@ namespace MediaBrowser.Theater.DirectShow
                 Marshal.ReleaseComObject(_mDvdControl);
                 _mDvdControl = null;
             }
-
+            */
             if (_mPDisplay != null)
             {
                 Marshal.ReleaseComObject(_mPDisplay);
@@ -1124,6 +1274,10 @@ namespace MediaBrowser.Theater.DirectShow
                 Marshal.ReleaseComObject(_videoWindow);
                 _videoWindow = null;
             }
+
+            if (m_dsRot != null)
+                m_dsRot.Dispose();
+            m_dsRot = null;
 
             _mSeekCaps = 0;
 

@@ -35,9 +35,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Cache;
-using System.Net.Http;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -183,7 +180,7 @@ namespace MediaBrowser.UI
         {
             var logger = LogManager.GetLogger("ApiClient");
 
-            var apiClient = new ApiClient(logger, TheaterConfigurationManager.Configuration.ServerHostName, TheaterConfigurationManager.Configuration.ServerApiPort, "Media Browser Theater", Environment.MachineName, Environment.MachineName, ApplicationVersion.ToString())
+            var apiClient = new ApiClient(new HttpWebRequestClient(logger), logger, TheaterConfigurationManager.Configuration.ServerHostName, TheaterConfigurationManager.Configuration.ServerApiPort, "Media Browser Theater", Environment.MachineName, Environment.MachineName, ApplicationVersion.ToString())
             {
                 JsonSerializer = JsonSerializer,
                 ImageQuality = TheaterConfigurationManager.Configuration.DownloadCompressedImages
@@ -286,18 +283,6 @@ namespace MediaBrowser.UI
         protected override IConfigurationManager GetConfigurationManager()
         {
             return new ConfigurationManager(ApplicationPaths, LogManager, XmlSerializer);
-        }
-
-        protected override HttpClient CreateHttpClient(bool enableHttpCompression)
-        {
-            return new HttpClient(new WebRequestHandler
-            {
-                CachePolicy = new RequestCachePolicy(RequestCacheLevel.Revalidate),
-                AutomaticDecompression = enableHttpCompression ? DecompressionMethods.Deflate : DecompressionMethods.None
-            })
-            {
-                Timeout = TimeSpan.FromSeconds(20)
-            };
         }
 
         /// <summary>

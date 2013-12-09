@@ -45,6 +45,18 @@ namespace MediaBrowser.Theater.Presentation.Controls
             }
         }
 
+        public bool ClearSelectionOnLostFocus { get; set; }
+
+        protected override void OnLostKeyboardFocus(KeyboardFocusChangedEventArgs e)
+        {
+            base.OnLostKeyboardFocus(e);
+
+            if (ClearSelectionOnLostFocus)
+            {
+                SelectedIndex = -1;
+            }
+        }
+
         /// <summary>
         /// The mouse down object
         /// </summary>

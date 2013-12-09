@@ -18,6 +18,12 @@ namespace MediaBrowser.Theater.Interfaces.Playback
         public List<BaseItemDto> Items { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether [enable custom players].
+        /// </summary>
+        /// <value><c>true</c> if [enable custom players]; otherwise, <c>false</c>.</value>
+        public bool EnableCustomPlayers { get; set; }
+
+        /// <summary>
         /// If true, the PlayableItems will be shuffled before playback
         /// </summary>
         /// <value><c>true</c> if shuffle; otherwise, <c>false</c>.</value>
@@ -93,6 +99,7 @@ namespace MediaBrowser.Theater.Interfaces.Playback
         {
             GoFullScreen = true;
             Items = items.ToList();
+            EnableCustomPlayers = true;
         }
     }
 }

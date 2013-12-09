@@ -198,11 +198,14 @@ namespace MediaBrowser.Theater.DirectShow
 
             var options = CurrentPlayOptions;
 
-            var playableItem = await GetPlayableItem(options.Items[index], CancellationToken.None);
+            var playableItem = await GetPlayableItem(options.Items[index], startPositionTicks, CancellationToken.None);
 
             try
             {
-                InvokeOnPlayerThread(() => _mediaPlayer.Play(playableItem, EnableReclock(options), EnableMadvr(options), false, _config.Configuration.InternalPlayerConfiguration.EnableXySubFilter));
+                var enableMadVr = EnableMadvr(options);
+                var enableReclock = EnableReclock(options);
+
+                InvokeOnPlayerThread(() => _mediaPlayer.Play(playableItem, enableReclock, enableMadVr, false, _config.Configuration.InternalPlayerConfiguration.EnableXySubFilter));
             }
             catch
             {
@@ -234,7 +237,7 @@ namespace MediaBrowser.Theater.DirectShow
             }
         }
 
-        private async Task<PlayableItem> GetPlayableItem(BaseItemDto item, CancellationToken cancellationToken)
+        private async Task<PlayableItem> GetPlayableItem(BaseItemDto item, long? startTimeTicks, CancellationToken cancellationToken)
         {
             IIsoMount mountedIso = null;
 
@@ -253,7 +256,7 @@ namespace MediaBrowser.Theater.DirectShow
             return new PlayableItem
             {
                 OriginalItem = item,
-                PlayablePath = PlayablePathBuilder.GetPlayablePath(item, mountedIso, _apiClient),
+                PlayablePath = PlayablePathBuilder.GetPlayablePath(item, mountedIso, _apiClient, startTimeTicks),
                 IsoMount = mountedIso
             };
         }
@@ -304,6 +307,11 @@ namespace MediaBrowser.Theater.DirectShow
                 return false;
             }
 
+            if (!options.GoFullScreen)
+            {
+                return false;
+            }
+            
             return true;
         }
 

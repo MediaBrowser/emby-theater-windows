@@ -8,7 +8,7 @@ namespace MediaBrowser.Theater.DirectShow
     {
     }
 
-    [ComImport, Guid("171252A0-8820-4AFE-9DF8-5C92B2D66B04")]
+    [ComImport, Guid("B98D13E7-55DB-4385-A33D-09FD1BA26338")]
     internal class LAVSplitter
     {
     }

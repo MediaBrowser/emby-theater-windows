@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -14,6 +15,7 @@ namespace MediaBrowser.UI
     {
         private const int WM_APP = 0x8000;
         private const int WM_GRAPHNOTIFY = WM_APP + 1;
+        private const int WM_DVD_EVENT = 0x00008002;
         
         public HiddenForm()
         {
@@ -21,15 +23,24 @@ namespace MediaBrowser.UI
         }
 
         public Action OnWMGRAPHNOTIFY { get; set; }
+        public Action OnDVDEVENT { get; set; }
 
         protected override void WndProc(ref Message m)
         {
-            if (m.Msg == WM_GRAPHNOTIFY)
+            switch (m.Msg)
             {
-                if (OnWMGRAPHNOTIFY != null)
-                {
-                    OnWMGRAPHNOTIFY();
-                }
+                case WM_GRAPHNOTIFY:
+                    if (OnWMGRAPHNOTIFY != null)
+                    {
+                        OnWMGRAPHNOTIFY();
+                    }
+                    break;
+                case WM_DVD_EVENT:
+                    if (OnDVDEVENT != null)
+                    {
+                        OnDVDEVENT();
+                    }
+                    break;
             }
             
             base.WndProc(ref m);

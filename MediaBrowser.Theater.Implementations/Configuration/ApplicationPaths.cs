@@ -12,7 +12,7 @@ namespace MediaBrowser.Theater.Implementations.Configuration
         /// Initializes a new instance of the <see cref="ApplicationPaths" /> class.
         /// </summary>
         public ApplicationPaths()
-            : base(true)
+            : base(true, @"D:\Data\Documents\GitHub\MediaBrowser.Theater\ProgramData")
         {
         }
 #else

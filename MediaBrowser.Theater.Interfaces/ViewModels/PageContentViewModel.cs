@@ -222,7 +222,7 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
         }
 
         private MasterCommandsViewModel _masterCommands;
-        public MasterCommandsViewModel MasterCommands
+        public virtual MasterCommandsViewModel MasterCommands
         {
             get { return _masterCommands; }
             set

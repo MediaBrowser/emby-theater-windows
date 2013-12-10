@@ -83,6 +83,7 @@
       <DependentUpon>ItemRating.xaml</DependentUpon>
     </Compile>
     <Compile Include="DefaultThemePageContentViewModel.cs" />
+    <Compile Include="DefaultThemePageMasterCommandsViewModel.cs" />
     <Compile Include="Details\DetailPageViewModel.cs" />
     <Compile Include="Details\ItemImage.xaml.cs">
       <DependentUpon>ItemImage.xaml</DependentUpon>

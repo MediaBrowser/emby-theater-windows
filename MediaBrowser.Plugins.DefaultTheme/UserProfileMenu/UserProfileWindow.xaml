@@ -8,7 +8,7 @@
         <Storyboard x:Key="ClosingModalStoryboard">
             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ContentGrid"  Storyboard.TargetProperty="Width">
                 <SplineDoubleKeyFrame KeyTime="0:0:0" Value="480"/>
-                <EasingDoubleKeyFrame Value="0" KeyTime="00:00:01">
+                <EasingDoubleKeyFrame Value="0" KeyTime="00:00:0.5">
                     <EasingDoubleKeyFrame.EasingFunction>
                         <QuinticEase EasingMode="EaseInOut"/>
                     </EasingDoubleKeyFrame.EasingFunction>

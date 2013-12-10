@@ -1,15 +1,43 @@
 ﻿<controls:BaseModalWindow x:Class="MediaBrowser.Plugins.DefaultTheme.UserProfileMenu.UserProfileWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                                        xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
-                          Title="UserProfileWindow" Height="300" Width="300"
+        xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
+         Title="UserProfileWindow" Height="300" Width="300"
         Style="{StaticResource ModalWindow}" Cursor="None">
-
+    <Window.Resources>
+        <Storyboard x:Key="ClosingModalStoryboard">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ContentGrid"  Storyboard.TargetProperty="Width">
+                <SplineDoubleKeyFrame KeyTime="0:0:0" Value="480"/>
+                <EasingDoubleKeyFrame Value="0" KeyTime="00:00:01">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <QuinticEase EasingMode="EaseInOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+    </Window.Resources>
     <Grid x:Name="MainGrid">
         <Grid Style="{StaticResource ModalOverlayStyle}">
 
         </Grid>
-        <Grid Style="{StaticResource ModalContentStyle}" HorizontalAlignment="Right" VerticalAlignment="Stretch" x:Name="ContentGrid">
+        <Grid x:Name="ContentGrid" Style="{StaticResource ModalContentStyle}" HorizontalAlignment="Right" VerticalAlignment="Stretch">
+            <!-- Animation -->
+            <Grid.Triggers>
+                <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="Width">
+                                <SplineDoubleKeyFrame KeyTime="0:0:0" Value="0"/>
+                                <EasingDoubleKeyFrame Value="480" KeyTime="00:00:01">
+                                    <EasingDoubleKeyFrame.EasingFunction>
+                                        <QuinticEase EasingMode="EaseInOut"/>
+                                    </EasingDoubleKeyFrame.EasingFunction>
+                                </EasingDoubleKeyFrame>
+                            </DoubleAnimationUsingKeyFrames>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Grid.Triggers>
 
             <Button x:Name="BtnClose" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="25 33 0 0" Style="{StaticResource ImageButton}">
                 <Grid>

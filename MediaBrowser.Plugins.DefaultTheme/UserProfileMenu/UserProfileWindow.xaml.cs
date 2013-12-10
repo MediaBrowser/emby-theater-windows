@@ -1,7 +1,6 @@
-﻿using MediaBrowser.Common;
+﻿using System.Windows.Media.Animation;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Plugins.DefaultTheme.Models;
-using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Presentation.Controls;
@@ -40,6 +39,18 @@ namespace MediaBrowser.Plugins.DefaultTheme.UserProfileMenu
             MainGrid.DataContext = this;
         }
 
+        protected override void CloseModal()
+        {
+            var closeModalStoryboard = (Storyboard) FindResource("ClosingModalStoryboard");
+            closeModalStoryboard.Completed += closeModalStoryboard_Completed;
+            closeModalStoryboard.Begin();
+        }
+
+        void closeModalStoryboard_Completed(object sender, EventArgs e)
+        {
+            base.CloseModal();
+        }
+
         void BtnClose_Click(object sender, RoutedEventArgs e)
         {
             CloseModal();
@@ -66,6 +77,5 @@ namespace MediaBrowser.Plugins.DefaultTheme.UserProfileMenu
         {
             CloseModal();
         }
-
     }
 }

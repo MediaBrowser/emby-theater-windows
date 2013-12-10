@@ -1,7 +1,6 @@
 ﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
-using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Reflection;
 using MediaBrowser.Theater.Interfaces.Session;
@@ -20,23 +19,11 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
     [TypeDescriptionProvider(typeof(HyperTypeDescriptionProvider))]
     public class UserDtoViewModel : BaseViewModel, IDisposable
     {
-        /// <summary>
-        /// Gets the API client.
-        /// </summary>
-        /// <value>The API client.</value>
-        private readonly IApiClient _apiClient;
-
-        /// <summary>
-        /// Gets the image manager.
-        /// </summary>
-        /// <value>The image manager.</value>
-        private readonly IImageManager _imageManager;
-
-        private readonly ISessionManager _session;
-        private readonly INavigationService _navigation;
+        protected readonly IApiClient ApiClient;
+        protected readonly IImageManager ImageManager;
+        protected readonly ISessionManager Session;
 
         public ICommand LogoutCommand { get; private set; }
-        public ICommand GoHomeCommand { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserDtoViewModel" /> class.
@@ -44,31 +31,23 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         /// <param name="apiClient">The API client.</param>
         /// <param name="imageManager">The image manager.</param>
         /// <param name="session">The session.</param>
-        public UserDtoViewModel(IApiClient apiClient, IImageManager imageManager, ISessionManager session, INavigationService navigation)
+        public UserDtoViewModel(IApiClient apiClient, IImageManager imageManager, ISessionManager session)
         {
-            _apiClient = apiClient;
-            _imageManager = imageManager;
-            _session = session;
-            _navigation = navigation;
+            ApiClient = apiClient;
+            ImageManager = imageManager;
+            Session = session;
 
-            LogoutCommand = new RelayCommand(Logout);
-
-            GoHomeCommand = new RelayCommand(GoHome);
+            LogoutCommand = new RelayCommand(i => Logout());
         }
 
-        private async void Logout(object commandParameter)
+        protected virtual async void Logout()
         {
-            if (_session.CurrentUser == null || !string.Equals(User.Id, _session.CurrentUser.Id))
+            if (Session.CurrentUser == null || !string.Equals(User.Id, Session.CurrentUser.Id))
             {
                 throw new InvalidOperationException("The user is not logged in.");
             }
 
-            await _session.Logout();
-        }
-
-        private async void GoHome(object commandParameter)
-        {
-            await _navigation.NavigateToHomePage();
+            await Session.Logout();
         }
 
         public string Username
@@ -76,14 +55,8 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             get { return _item == null ? null : _item.Name; }
         }
 
-        /// <summary>
-        /// The _item
-        /// </summary>
         private UserDto _item;
-        /// <summary>
-        /// Gets or sets the user.
-        /// </summary>
-        /// <value>The user.</value>
+
         public UserDto User
         {
             get { return _item; }
@@ -102,7 +75,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
-        private CancellationTokenSource _imageCancellationTokenSource = null;
+        private CancellationTokenSource _imageCancellationTokenSource;
 
         private BitmapImage _image;
         public BitmapImage Image
@@ -198,7 +171,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                         ImageType = ImageType.Primary
                     };
 
-                    Image = await _imageManager.GetRemoteBitmapAsync(_apiClient.GetUserImageUrl(User, options), _imageCancellationTokenSource.Token);
+                    Image = await ImageManager.GetRemoteBitmapAsync(ApiClient.GetUserImageUrl(User, options), _imageCancellationTokenSource.Token);
 
                     HasImage = true;
                 }

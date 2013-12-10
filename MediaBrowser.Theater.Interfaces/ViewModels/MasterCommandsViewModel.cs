@@ -36,6 +36,7 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
         public ICommand GoBackCommand { get; private set; }
         public ICommand RestartServerCommand { get; private set; }
         public ICommand RestartApplicationCommand { get; private set; }
+        public ICommand ShutdownApplicationCommand { get;  private set; }
 
         private bool _showRestartServerNotification;
         public bool ShowRestartServerNotification
@@ -71,6 +72,8 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
             }
         }
 
+        public event EventHandler<EventArgs> PageNavigated;
+
         public MasterCommandsViewModel(INavigationService navigationService, ISessionManager sessionManager, IPresentationManager presentationManager, IApiClient apiClient, ILogger logger, IApplicationHost appHost, IServerEvents serverEvents)
         {
             Dispatcher = Dispatcher.CurrentDispatcher;
@@ -91,10 +94,11 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
 
             HomeCommand = new RelayCommand(i => GoHome());
             FullscreenVideoCommand = new RelayCommand(i => NavigationService.NavigateToInternalPlayerPage());
-            SettingsCommand = new RelayCommand(i => NavigationService.NavigateToSettingsPage());
+            SettingsCommand = new RelayCommand(i => GoSettings());
             GoBackCommand = new RelayCommand(i => GoBack());
             RestartServerCommand = new RelayCommand(i => RestartServer());
             RestartApplicationCommand = new RelayCommand(i => RestartApplication());
+            ShutdownApplicationCommand = new RelayCommand(i => ShutdownApplication());
 
             RefreshRestartServerNotification();
         }
@@ -127,16 +131,24 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
         /// <summary>
         /// Navigates to the home page
         /// </summary>
-        protected virtual void GoHome()
+        protected async virtual void GoHome()
         {
             if (SessionManager.CurrentUser != null)
             {
-                NavigationService.NavigateToHomePage();
+                await NavigationService.NavigateToHomePage();
             }
             else
             {
-                NavigationService.NavigateToLoginPage();
+                await NavigationService.NavigateToLoginPage();
             }
+
+            if (PageNavigated != null) { PageNavigated(this, new EventArgs());}
+        }
+
+        protected async virtual void GoSettings()
+        {
+            await NavigationService.NavigateToSettingsPage();
+            if (PageNavigated != null) { PageNavigated(this, new EventArgs());}
         }
 
         /// <summary>
@@ -155,6 +167,18 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
             win.Focus();
 
             win.MoveFocus(new TraversalRequest(FocusNavigationDirection.First));
+        }
+
+        private async void ShutdownApplication()
+        {
+            try
+            {
+                await AppHost.Shutdown();
+            }
+            catch (Exception ex)
+            {
+                PresentationManager.ShowDefaultErrorMessage();
+            }
         }
 
         /// <summary>

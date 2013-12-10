@@ -47,6 +47,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         {
             RefreshHomeButton(NavigationService.CurrentPage);
             ShowBackButton = true;
+            ShowSettingsButton = true;
         }
 
         void SessionManager_UserLoggedIn(object sender, EventArgs e)
@@ -54,6 +55,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
             UpdateUserImage();
             RefreshHomeButton(NavigationService.CurrentPage);
             UpdateUserConfiguredValues();
+            ShowSettingsButton = false;
         }
 
         private void UpdateUserConfiguredValues()
@@ -188,6 +190,24 @@ namespace MediaBrowser.Plugins.DefaultTheme
                 if (changed)
                 {
                     OnPropertyChanged("ShowLogoImage");
+                }
+            }
+        }
+
+        private bool _showSettingsButton;
+        public bool ShowSettingsButton
+        {
+            get { return _showSettingsButton; }
+
+            set
+            {
+                var changed = _showSettingsButton != value;
+
+                _showSettingsButton = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("ShowSettingsButton");
                 }
             }
         }

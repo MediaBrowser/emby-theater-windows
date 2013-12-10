@@ -111,6 +111,7 @@
     <Compile Include="ListPage\ViewWindow.xaml.cs">
       <DependentUpon>ViewWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Models\DefaultThemeUserDtoViewModel.cs" />
     <Compile Include="Osd\FullscreenVideoTransportOsd.xaml.cs">
       <DependentUpon>FullscreenVideoTransportOsd.xaml</DependentUpon>
     </Compile>

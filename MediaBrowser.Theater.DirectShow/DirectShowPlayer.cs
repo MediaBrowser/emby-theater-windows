@@ -32,6 +32,7 @@ namespace MediaBrowser.Theater.DirectShow
         private readonly InternalDirectShowPlayer _playerWrapper;
 
         private DirectShowLib.IGraphBuilder m_graph = null;
+        private DirectShowLib.FilterGraphNoThread m_filterGraph = null;
 
         private DirectShowLib.IMediaControl _mediaControl = null;
         private DirectShowLib.IMediaEventEx _mediaEventEx = null;
@@ -170,7 +171,8 @@ namespace MediaBrowser.Theater.DirectShow
         private void InitializeGraph(bool isDvd)
         {
             int hr = 0;
-            m_graph = (DirectShowLib.IGraphBuilder)new FilterGraphNoThread();
+            m_filterGraph = new FilterGraphNoThread();
+            m_graph = (m_filterGraph as DirectShowLib.IGraphBuilder);
 
             // QueryInterface for DirectShow interfaces
             _mediaControl = (DirectShowLib.IMediaControl)m_graph;
@@ -1106,7 +1108,7 @@ namespace MediaBrowser.Theater.DirectShow
         private void CleanUpInterface(object o)
         {
             if (o != null)
-                Marshal.ReleaseComObject(o);
+                while(Marshal.ReleaseComObject(o) > 0);
             o = null;
         }
 
@@ -1118,56 +1120,49 @@ namespace MediaBrowser.Theater.DirectShow
             {
                 m_graph.RemoveFilter(_defaultAudioRenderer as DirectShowLib.IBaseFilter);
 
-                Marshal.ReleaseComObject(_defaultAudioRenderer);
-                _defaultAudioRenderer = null;
+                CleanUpInterface(_defaultAudioRenderer);
             }
 
             if (_reclockAudioRenderer != null)
             {
                 m_graph.RemoveFilter(_reclockAudioRenderer as DirectShowLib.IBaseFilter);
 
-                Marshal.ReleaseComObject(_reclockAudioRenderer);
-                _reclockAudioRenderer = null;
+                CleanUpInterface(_reclockAudioRenderer);
             }
 
             if (_lavaudio != null)
             {
                 m_graph.RemoveFilter(_lavaudio as DirectShowLib.IBaseFilter);
 
-                Marshal.ReleaseComObject(_lavaudio);
-                _lavaudio = null;
+                CleanUpInterface(_lavaudio);
             }
 
             if (_xyVsFilter != null)
             {
                 m_graph.RemoveFilter(_xyVsFilter as DirectShowLib.IBaseFilter);
 
-                Marshal.ReleaseComObject(_xyVsFilter);
-                _xyVsFilter = null;
+                CleanUpInterface(_xyVsFilter);
             }
 
             if (_xySubFilter != null)
             {
                 m_graph.RemoveFilter(_xySubFilter as DirectShowLib.IBaseFilter);
 
-                Marshal.ReleaseComObject(_xySubFilter);
-                _xySubFilter = null;
+                CleanUpInterface(_xySubFilter);
             }
 
             if (_lavvideo != null)
             {
                 m_graph.RemoveFilter(_lavvideo as DirectShowLib.IBaseFilter);
 
-                Marshal.ReleaseComObject(_lavvideo);
-                _lavvideo = null;
+                CleanUpInterface(_lavvideo);
             }
 
             if (_madvr != null)
             {
                 m_graph.RemoveFilter(_madvr as DirectShowLib.IBaseFilter);
 
-                Marshal.ReleaseComObject(_madvr);
-                _madvr = null;
+                CleanUpInterface(_madvr);
             }
 
             if (_videoWindow != null)
@@ -1181,8 +1176,8 @@ namespace MediaBrowser.Theater.DirectShow
             if (_mediaEventEx != null)
             {
                 hr = _mediaEventEx.SetNotifyWindow(IntPtr.Zero, 0, IntPtr.Zero);
-                Marshal.ReleaseComObject(_mediaEventEx);
-                _mediaEventEx = null;
+                //Marshal.ReleaseComObject(_mediaEventEx);
+                //_mediaEventEx = null;
             }
 
             //if (_dvdNav != null)
@@ -1199,81 +1194,26 @@ namespace MediaBrowser.Theater.DirectShow
 
             if (_mDvdControl != null)
             {
-                Marshal.ReleaseComObject(_mDvdControl);
-                _mDvdControl = null;
+                Marshal.ReleaseComObject(_mDvdControl);                
             }
             */
-            if (_mPDisplay != null)
-            {
-                Marshal.ReleaseComObject(_mPDisplay);
-                _mPDisplay = null;
-            }
+            _mDvdControl = null;
 
-            if (_filterGraph != null)
-            {
-                Marshal.ReleaseComObject(_filterGraph);
-                _filterGraph = null;
-            }
+            CleanUpInterface(_mPDisplay);
+            CleanUpInterface(_sourceFilter);            
+            CleanUpInterface(_mPEvr);
+            CleanUpInterface(m_filterGraph);
 
-            if (_mPEvr != null)
-            {
-                Marshal.ReleaseComObject(_mPEvr);
-                _mPEvr = null;
-            }
-
-            if (_mediaEventEx != null)
-            {
-                Marshal.ReleaseComObject(_mediaEventEx);
-                _mediaEventEx = null;
-            }
-
-            if (_mediaSeeking != null)
-            {
-                Marshal.ReleaseComObject(_mediaSeeking);
-                _mediaSeeking = null;
-            }
-
-            if (_mediaPosition != null)
-            {
-                Marshal.ReleaseComObject(_mediaPosition);
-                _mediaPosition = null;
-            }
-
-            if (_mediaControl != null)
-            {
-                Marshal.ReleaseComObject(_mediaControl);
-                _mediaControl = null;
-            }
-
-            if (_basicAudio != null)
-            {
-                Marshal.ReleaseComObject(_basicAudio);
-                _basicAudio = null;
-            }
-
-            if (_basicVideo != null)
-            {
-                Marshal.ReleaseComObject(_basicVideo);
-                _basicVideo = null;
-            }
-
-            if (_sourceFilter != null)
-            {
-                Marshal.ReleaseComObject(_sourceFilter);
-                _sourceFilter = null;
-            }
-
-            if (m_graph != null)
-            {
-                Marshal.ReleaseComObject(m_graph);
-                m_graph = null;
-            }
-
-            if (_videoWindow != null)
-            {
-                Marshal.ReleaseComObject(_videoWindow);
-                _videoWindow = null;
-            }
+            m_filterGraph = null;
+            _mediaEventEx = null;
+            _mediaSeeking = null;
+            _mediaPosition = null;
+            _mediaControl = null;
+            _basicAudio = null;
+            _basicVideo = null;
+            m_graph = null;
+            _videoWindow = null;
+            _filterGraph = null;
 
             if (m_dsRot != null)
                 m_dsRot.Dispose();

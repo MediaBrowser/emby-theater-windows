@@ -560,28 +560,28 @@ namespace MediaBrowser.UI
         private async Task Login()
         {
             //Check for auto-login credientials
-            var _config = _appHost.TheaterConfigurationManager.Configuration;
+            var config = _appHost.TheaterConfigurationManager.Configuration;
             try
             {
-                if (_config.AutoLoginConfiguration.UserName != null && _config.AutoLoginConfiguration.UserPasswordHash != null)
+                if (config.AutoLoginConfiguration.UserName != null && config.AutoLoginConfiguration.UserPasswordHash != null)
                 {
                     //Attempt password login
-                    await _appHost.SessionManager.LoginWithHash(_config.AutoLoginConfiguration.UserName, _config.AutoLoginConfiguration.UserPasswordHash, true);
+                    await _appHost.SessionManager.LoginWithHash(config.AutoLoginConfiguration.UserName, config.AutoLoginConfiguration.UserPasswordHash, true);
                     return;
                 }
-                else if (_config.AutoLoginConfiguration.UserName != null)
+                else if (config.AutoLoginConfiguration.UserName != null)
                 {
                     //Attempt passwordless login
-                    await _appHost.SessionManager.Login(_config.AutoLoginConfiguration.UserName, string.Empty, true);
+                    await _appHost.SessionManager.Login(config.AutoLoginConfiguration.UserName, string.Empty, true);
                     return;
                 }
             }
             catch (UnauthorizedAccessException ex)
             {
                 //Login failed, redirect to login page and clear the auto-login
-                _logger.ErrorException("Auto-login failed", ex, _config.AutoLoginConfiguration.UserName);
+                _logger.ErrorException("Auto-login failed", ex, config.AutoLoginConfiguration.UserName);
 
-                _config.AutoLoginConfiguration = new AutoLoginConfiguration();
+                config.AutoLoginConfiguration = new AutoLoginConfiguration();
                 _appHost.TheaterConfigurationManager.SaveConfiguration();
             }
             catch (FormatException ex)
@@ -589,7 +589,7 @@ namespace MediaBrowser.UI
                 //Login failed, redirect to login page and clear the auto-login
                 _logger.ErrorException("Auto-login password hash corrupt", ex);
 
-                _config.AutoLoginConfiguration = new AutoLoginConfiguration();
+                config.AutoLoginConfiguration = new AutoLoginConfiguration();
                 _appHost.TheaterConfigurationManager.SaveConfiguration();
             }
 

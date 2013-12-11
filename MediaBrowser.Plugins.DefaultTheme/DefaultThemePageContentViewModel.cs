@@ -23,23 +23,17 @@ namespace MediaBrowser.Plugins.DefaultTheme
         private readonly IImageManager _imageManager;
         private readonly ITheaterConfigurationManager _config;
 
-        public ICommand UserCommand { get; private set; }
-        public ICommand DisplayPreferencesCommand { get; private set; }
-        public ICommand SortOptionsCommand { get; private set; }
-
         public DefaultThemePageContentViewModel(INavigationService navigationService, ISessionManager sessionManager, IApiClient apiClient, IImageManager imageManager, IPresentationManager presentation, IPlaybackManager playbackManager, ILogger logger, IApplicationHost appHost, IServerEvents serverEvents, ITheaterConfigurationManager config)
             : base(navigationService, sessionManager, playbackManager, logger, appHost, apiClient, presentation, serverEvents)
         {
             _imageManager = imageManager;
             _config = config;
 
+            MasterCommands = new DefaultThemePageMasterCommandsViewModel(navigationService, sessionManager, presentation, apiClient, logger, appHost, serverEvents, imageManager);
+
             NavigationService.Navigated += NavigationService_Navigated;
             SessionManager.UserLoggedIn += SessionManager_UserLoggedIn;
             SessionManager.UserLoggedOut += SessionManager_UserLoggedOut;
-            UserCommand = new RelayCommand(i => ShowUserMenu());
-
-            DisplayPreferencesCommand = new RelayCommand(i => ShowDisplayPreferences());
-            SortOptionsCommand = new RelayCommand(i => ShowSortMenu());
 
             _config.UserConfigurationUpdated += _config_UserConfigurationUpdated;
         }
@@ -53,6 +47,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         {
             RefreshHomeButton(NavigationService.CurrentPage);
             ShowBackButton = true;
+            ShowSettingsButton = true;
         }
 
         void SessionManager_UserLoggedIn(object sender, EventArgs e)
@@ -60,6 +55,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
             UpdateUserImage();
             RefreshHomeButton(NavigationService.CurrentPage);
             UpdateUserConfiguredValues();
+            ShowSettingsButton = false;
         }
 
         private void UpdateUserConfiguredValues()
@@ -198,6 +194,24 @@ namespace MediaBrowser.Plugins.DefaultTheme
             }
         }
 
+        private bool _showSettingsButton;
+        public bool ShowSettingsButton
+        {
+            get { return _showSettingsButton; }
+
+            set
+            {
+                var changed = _showSettingsButton != value;
+
+                _showSettingsButton = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("ShowSettingsButton");
+                }
+            }
+        }
+
         private BitmapImage _logoImage;
         public BitmapImage LogoImage
         {
@@ -279,34 +293,23 @@ namespace MediaBrowser.Plugins.DefaultTheme
             }
         }
 
+        private DefaultThemePageMasterCommandsViewModel _masterCommands;
+        public new DefaultThemePageMasterCommandsViewModel MasterCommands
+        {
+            get { return _masterCommands; }
+            set
+            {
+                if (_masterCommands != value)
+                {
+                    _masterCommands = value;
+                    OnPropertyChanged("MasterCommands");
+                }
+            }
+        }
+
         private void RefreshHomeButton(Page currentPage)
         {
             ShowHomeButton = SessionManager.CurrentUser != null && !(currentPage is IHomePage) && !(currentPage is ILoginPage);
-        }
-
-        private void ShowUserMenu()
-        {
-            new UserProfileWindow(SessionManager, _imageManager, ApiClient, NavigationService, AppHost, PresentationManager).ShowModal(PresentationManager.Window);
-        }
-
-        private void ShowDisplayPreferences()
-        {
-            var page = NavigationService.CurrentPage as IHasDisplayPreferences;
-
-            if (page != null)
-            {
-                page.ShowDisplayPreferencesMenu();
-            }
-        }
-
-        private void ShowSortMenu()
-        {
-            var page = NavigationService.CurrentPage as IHasDisplayPreferences;
-
-            if (page != null)
-            {
-                page.ShowSortMenu();
-            }
         }
 
         public async void SetPageTitle(BaseItemDto item)

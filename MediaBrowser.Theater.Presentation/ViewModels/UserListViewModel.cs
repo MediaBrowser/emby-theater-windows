@@ -104,7 +104,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
                 _listItems.Clear();
 
-                _listItems.AddRange(users.Select(i => new UserDtoViewModel(ApiClient, ImageManager, SessionManager, _navigation) { User = i }));
+                _listItems.AddRange(users.Select(i => new UserDtoViewModel(ApiClient, ImageManager, SessionManager) { User = i }));
 
                 if (selectedIndex.HasValue)
                 {

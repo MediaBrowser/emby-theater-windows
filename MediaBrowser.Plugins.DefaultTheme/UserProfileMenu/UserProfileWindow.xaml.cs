@@ -1,10 +1,9 @@
-﻿using MediaBrowser.Common;
+﻿using System.Windows.Media.Animation;
 using MediaBrowser.Model.ApiClient;
-using MediaBrowser.Theater.Interfaces.Navigation;
+using MediaBrowser.Plugins.DefaultTheme.Models;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Presentation.Controls;
-using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
 using System.Windows;
 using System.Windows.Input;
@@ -17,25 +16,21 @@ namespace MediaBrowser.Plugins.DefaultTheme.UserProfileMenu
     public partial class UserProfileWindow : BaseModalWindow
     {
         private readonly ISessionManager _session;
-        private readonly IApplicationHost _appHost;
-        private readonly IPresentationManager _presentation;
 
-        public UserProfileWindow(ISessionManager session, IImageManager imageManager, IApiClient apiClient, INavigationService navigation, IApplicationHost appHost, IPresentationManager presentation)
+        public UserProfileWindow(DefaultThemePageMasterCommandsViewModel masterCommands, ISessionManager session, IImageManager imageManager, IApiClient apiClient)
             : base()
         {
             _session = session;
-            _appHost = appHost;
-            _presentation = presentation;
 
             InitializeComponent();
 
             Loaded += UserProfileWindow_Loaded;
             Unloaded += UserProfileWindow_Unloaded;
+            masterCommands.PageNavigated += masterCommands_SettingsPageNavigated;
 
             BtnClose.Click += BtnClose_Click;
-            BtnCloseApplication.Click += BtnCloseApplication_Click;
 
-            ContentGrid.DataContext = new UserDtoViewModel(apiClient, imageManager, session, navigation)
+            ContentGrid.DataContext = new DefaultThemeUserDtoViewModel(masterCommands, apiClient, imageManager, session)
             {
                 User = session.CurrentUser,
                 ImageHeight = 54
@@ -44,16 +39,16 @@ namespace MediaBrowser.Plugins.DefaultTheme.UserProfileMenu
             MainGrid.DataContext = this;
         }
 
-        async void BtnCloseApplication_Click(object sender, RoutedEventArgs e)
+        protected override void CloseModal()
         {
-            try
-            {
-                await _appHost.Shutdown();
-            }
-            catch (Exception ex)
-            {
-                _presentation.ShowDefaultErrorMessage();
-            }
+            var closeModalStoryboard = (Storyboard) FindResource("ClosingModalStoryboard");
+            closeModalStoryboard.Completed += closeModalStoryboard_Completed;
+            closeModalStoryboard.Begin();
+        }
+
+        void closeModalStoryboard_Completed(object sender, EventArgs e)
+        {
+            base.CloseModal();
         }
 
         void BtnClose_Click(object sender, RoutedEventArgs e)
@@ -74,6 +69,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.UserProfileMenu
         }
 
         void _session_UserLoggedOut(object sender, EventArgs e)
+        {
+            CloseModal();
+        }
+
+        void masterCommands_SettingsPageNavigated(object sender, EventArgs e)
         {
             CloseModal();
         }

@@ -3,8 +3,7 @@
 
     <!--Modal background style. -->
     <Style TargetType="Grid" x:Key="ModalOverlayStyle">
-        <Setter Property="Background" Value="Gray"/>
-        <Setter Property="Opacity" Value=".4"/>
+        <Setter Property="Background" Value="#36000000"/>
     </Style>
 
     <!--Modal Window style. -->

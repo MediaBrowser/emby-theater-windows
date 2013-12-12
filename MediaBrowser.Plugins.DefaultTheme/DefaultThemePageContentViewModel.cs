@@ -47,7 +47,6 @@ namespace MediaBrowser.Plugins.DefaultTheme
         {
             RefreshHomeButton(NavigationService.CurrentPage);
             ShowBackButton = true;
-            ShowSettingsButton = true;
         }
 
         void SessionManager_UserLoggedIn(object sender, EventArgs e)
@@ -55,7 +54,6 @@ namespace MediaBrowser.Plugins.DefaultTheme
             UpdateUserImage();
             RefreshHomeButton(NavigationService.CurrentPage);
             UpdateUserConfiguredValues();
-            ShowSettingsButton = false;
         }
 
         private void UpdateUserConfiguredValues()
@@ -106,6 +104,17 @@ namespace MediaBrowser.Plugins.DefaultTheme
             {
                 IsOnPageWithDisplayPreferences = true;
                 IsOnPageWithSortOptions = hasDisplayPreferences.HasSortOptions;
+            }
+
+            var isLoginPage = e.NewPage as ILoginPage;
+
+            if (isLoginPage == null)
+            {
+                ShowSettingsButton = false;
+            }
+            else
+            {
+                ShowSettingsButton = true;
             }
 
             RefreshHomeButton(e.NewPage as Page);

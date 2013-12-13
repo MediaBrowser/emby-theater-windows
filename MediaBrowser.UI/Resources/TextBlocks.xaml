@@ -7,6 +7,7 @@
         <Setter Property="FontFamily" Value="{StaticResource DefaultFontFamily}"/>
         <Setter Property="FontWeight" Value="{StaticResource DefaultFontWeight}"/>
         <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
     </Style>
 
     <!--Default TextBlock style. -->
@@ -16,6 +17,17 @@
         <Setter Property="FontWeight" Value="{StaticResource DefaultFontWeight}"/>
         <Setter Property="Foreground" Value="{StaticResource DefaultForeground}"/>
         <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+    </Style>
+
+    <Style TargetType="TextBlock" x:Key="ParagraphTextBlockStyle">
+        <Setter Property="FontSize" Value="{StaticResource DefaultFontSize}"/>
+        <Setter Property="FontFamily" Value="{StaticResource DefaultFontFamily}"/>
+        <Setter Property="FontWeight" Value="{StaticResource DefaultFontWeight}"/>
+        <Setter Property="Foreground" Value="{StaticResource DefaultForeground}"/>
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="LineHeight" Value="44" />
     </Style>
 
     <!--Default TextBlock style. -->
@@ -25,6 +37,7 @@
         <Setter Property="FontWeight" Value="{StaticResource SmallFontWeight}"/>
         <Setter Property="Foreground" Value="{StaticResource SmallForeground}"/>
         <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
     </Style>
 
     <!--Default TextBlock style. -->
@@ -34,6 +47,7 @@
         <Setter Property="FontWeight" Value="{StaticResource Heading1FontWeight}"/>
         <Setter Property="Foreground" Value="{StaticResource Heading1Foreground}"/>
         <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
     </Style>
 
     <!--Default TextBlock style. -->
@@ -43,5 +57,6 @@
         <Setter Property="FontWeight" Value="{StaticResource Heading2FontWeight}"/>
         <Setter Property="Foreground" Value="{StaticResource Heading2Foreground}"/>
         <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
     </Style>
 </ResourceDictionary>

@@ -360,6 +360,16 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
+    <Resource Include="Resources\fonts\ProximaNova-Light.ttf" />
+    <Resource Include="Resources\fonts\ClearSans-Thin.ttf" />
+    <Resource Include="Resources\fonts\ClearSans-Light.ttf" />
+    <Resource Include="Resources\fonts\ClearSans-Regular.ttf" />
+    <Resource Include="Resources\fonts\OpenSans-Light.ttf" />
+    <Resource Include="Resources\fonts\OpenSans-Semibold.ttf" />
+    <Resource Include="Resources\fonts\SourceSansPro-ExtraLight.ttf" />
+    <Resource Include="Resources\fonts\SourceSansPro-Light.ttf" />
+    <Resource Include="Resources\fonts\SourceSansPro-Regular.ttf" />
+    <Resource Include="Resources\fonts\SourceSansPro-Semibold.ttf" />
     <Resource Include="Resources\fonts\OpenSans-Regular.ttf" />
     <Resource Include="Resources\fonts\ProximaNova-Regular.ttf" />
     <Resource Include="Resources\fonts\ProximaNova-Semibold.ttf" />

@@ -9,7 +9,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                    <TextBlock Opacity=".4" x:Name="MenuText" Margin="50 0" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Text="{Binding DisplayName}" Style="{StaticResource Heading1TextBlockStyle}"></TextBlock>
+                    <TextBlock Opacity=".25" x:Name="MenuText" Margin="40 0" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Text="{Binding DisplayName}" Style="{StaticResource Heading1TextBlockStyle}"></TextBlock>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsSelected" Value="true">
                             <Setter TargetName="MenuText" Property="Opacity" Value="1"/>
@@ -115,7 +115,7 @@
 
                 <TextBlock Grid.Row="2" DataContext="{Binding CurrentItem}" HorizontalAlignment="Center" Text="{Binding Overview}" VerticalAlignment="Top" Margin="0 35 0 0" MaxWidth="1600">
                     <TextBlock.Style>
-                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
+                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource ParagraphTextBlockStyle}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding Overview}" Value="{x:Null}">
                                     <Setter Property="Visibility" Value="Collapsed" />
@@ -615,7 +615,7 @@
 
                 </StackPanel>
 
-                <TextBlock Style="{StaticResource TextBlockStyle}" Text="{Binding Overview}" Grid.Row="4" Margin="0 30 0 30" TextTrimming="CharacterEllipsis" MinWidth="900" MaxHeight="470"></TextBlock>
+                <TextBlock Style="{StaticResource ParagraphTextBlockStyle}" Text="{Binding Overview}" Grid.Row="4" Margin="0 30 0 30" TextTrimming="CharacterEllipsis" MinWidth="900" MaxHeight="470"></TextBlock>
 
                 <StackPanel Grid.Row="5" Margin="0 20 0 0" Orientation="Horizontal">
 

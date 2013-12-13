@@ -89,7 +89,7 @@ namespace MediaBrowser.UI
                 return;
             }
 
-            var appPath = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
+            var appPath = Process.GetCurrentProcess().MainModule.FileName;
             
             // Look for the existence of an update archive
             var appPaths = new ApplicationPaths(appPath);

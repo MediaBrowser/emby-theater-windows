@@ -90,7 +90,7 @@ namespace MediaBrowser.UI
             }
 
             var appPath = Process.GetCurrentProcess().MainModule.FileName;
-            
+
             // Look for the existence of an update archive
             var appPaths = new ApplicationPaths(appPath);
             var logManager = new NlogManager(appPaths.LogDirectoryPath, "theater");
@@ -453,7 +453,7 @@ namespace MediaBrowser.UI
 
                 _logger = _appHost.LogManager.GetLogger("App");
 
-                await _appHost.Init();
+                await _appHost.Init(new Progress<double>());
 
                 LoadListBoxItemResourceFile();
 

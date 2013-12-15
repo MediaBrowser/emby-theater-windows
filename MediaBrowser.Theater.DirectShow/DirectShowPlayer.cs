@@ -129,7 +129,7 @@ namespace MediaBrowser.Theater.DirectShow
                     dvdInfo.GetTotalTitleTime(totaltime, out ulTimeCodeFlags);
 
                     return new TimeSpan(totaltime.bHours, totaltime.bMinutes, totaltime.bSeconds).Ticks;
-                } 
+                }
 
                 if (_mediaSeeking != null && PlayState != PlayState.Idle)
                 {
@@ -152,7 +152,7 @@ namespace MediaBrowser.Theater.DirectShow
             _item = item;
             _isInExclusiveMode = false;
 
-            var isDvd = ((item.OriginalItem.VideoType ?? VideoType.VideoFile) == VideoType.Dvd || (item.OriginalItem.IsoType ?? IsoType.BluRay) == IsoType.Dvd) && 
+            var isDvd = ((item.OriginalItem.VideoType ?? VideoType.VideoFile) == VideoType.Dvd || (item.OriginalItem.IsoType ?? IsoType.BluRay) == IsoType.Dvd) &&
                 item.PlayablePath.IndexOf("http://", StringComparison.OrdinalIgnoreCase) == -1;
 
             Initialize(item.PlayablePath, enableReclock, enableMadvr, enableMadvrExclusiveMode, enableXySubFilter, isDvd);
@@ -188,7 +188,7 @@ namespace MediaBrowser.Theater.DirectShow
             _basicAudio = m_graph as DirectShowLib.IBasicAudio;
 
             // Set up event notification.
-            if(isDvd)
+            if (isDvd)
                 hr = _mediaEventEx.SetNotifyWindow(VideoWindowHandle, WM_DVD_EVENT, IntPtr.Zero);
             else
                 hr = _mediaEventEx.SetNotifyWindow(VideoWindowHandle, WM_GRAPHNOTIFY, IntPtr.Zero);
@@ -994,7 +994,7 @@ namespace MediaBrowser.Theater.DirectShow
                     {
                         case EventCode.DvdCurrentHmsfTime:
                             byte[] ati = BitConverter.GetBytes(evParam1.ToInt32());
-                            var currnTime = new DvdHMSFTimeCode();                    
+                            var currnTime = new DvdHMSFTimeCode();
                             currnTime.bHours = ati[0];
                             currnTime.bMinutes = ati[1];
                             currnTime.bSeconds = ati[2];
@@ -1108,7 +1108,7 @@ namespace MediaBrowser.Theater.DirectShow
         private void CleanUpInterface(object o)
         {
             if (o != null)
-                while(Marshal.ReleaseComObject(o) > 0);
+                while (Marshal.ReleaseComObject(o) > 0) ;
             o = null;
         }
 
@@ -1200,7 +1200,7 @@ namespace MediaBrowser.Theater.DirectShow
             _mDvdControl = null;
 
             CleanUpInterface(_mPDisplay);
-            CleanUpInterface(_sourceFilter);            
+            CleanUpInterface(_sourceFilter);
             CleanUpInterface(_mPEvr);
             CleanUpInterface(m_filterGraph);
 

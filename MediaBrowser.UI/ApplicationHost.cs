@@ -73,9 +73,9 @@ namespace MediaBrowser.UI
             get { return (ConfigurationManager)ConfigurationManager; }
         }
 
-        public override async Task Init()
+        public override async Task Init(IProgress<double> progress)
         {
-            await base.Init().ConfigureAwait(false);
+            await base.Init(progress).ConfigureAwait(false);
 
             // For now until the ui has it's own startup wizard
             if (IsFirstRun)
@@ -112,11 +112,11 @@ namespace MediaBrowser.UI
         /// <summary>
         /// Registers resources that classes will depend on
         /// </summary>
-        protected override async Task RegisterResources()
+        protected override async Task RegisterResources(IProgress<double> progress)
         {
             ReloadApiClient();
 
-            await base.RegisterResources().ConfigureAwait(false);
+            await base.RegisterResources(progress).ConfigureAwait(false);
 
             MediaFilters = new MediaFilters(HttpClient, Logger);
             RegisterSingleInstance(MediaFilters);

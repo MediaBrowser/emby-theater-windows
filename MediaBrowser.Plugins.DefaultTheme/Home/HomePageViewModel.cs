@@ -56,7 +56,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                     UserId = _sessionManager.CurrentUser.Id
                 });
 
-                if (itemCounts.MovieCount > 0 || itemCounts.TrailerCount > 0)
+                if (itemCounts.MovieCount > 0)
                 {
                     views.Add(new TabItem
                     {

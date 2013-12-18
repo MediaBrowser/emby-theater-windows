@@ -9,6 +9,7 @@
         <ResourceDictionary Source="VolumeOsd.xaml" />
         <ResourceDictionary Source="TransportOsd.xaml" />
         <ResourceDictionary Source="InfoPanel.xaml" />
-        <ResourceDictionary Source="DisplayPreferences.xaml" />
+        <ResourceDictionary Source="DisplayPreferences.xaml"/>
+        <ResourceDictionary Source="ModalCommon.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

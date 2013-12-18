@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
 using MediaBrowser.Model.ApiClient;
@@ -72,6 +73,23 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
             }
         }
 
+        private bool _homeEnabled;
+        public bool HomeEnabled
+        {
+            get { return _homeEnabled; }
+
+            set
+            {
+                var changed = _homeEnabled != value;
+
+                _homeEnabled = value;
+                if (changed)
+                {
+                    OnPropertyChanged("HomeEnabled");
+                }
+            }
+        }
+
         public event EventHandler<EventArgs> PageNavigated;
 
         public MasterCommandsViewModel(INavigationService navigationService, ISessionManager sessionManager, IPresentationManager presentationManager, IApiClient apiClient, ILogger logger, IApplicationHost appHost, IServerEvents serverEvents)
@@ -91,6 +109,9 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
             ServerEvents.ServerShuttingDown += ServerEvents_ServerShuttingDown;
             ServerEvents.Connected += ServerEvents_Connected;
             AppHost.HasPendingRestartChanged += AppHostHasPendingRestartChanged;
+            SessionManager.UserLoggedIn += SessionManager_UserLoggedIn;
+            SessionManager.UserLoggedOut += SessionManager_UserLoggedOut;
+            NavigationService.Navigated += NavigationService_Navigated;
 
             HomeCommand = new RelayCommand(i => GoHome());
             FullscreenVideoCommand = new RelayCommand(i => NavigationService.NavigateToInternalPlayerPage());
@@ -121,11 +142,16 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
 
         protected virtual void Dispose(bool dispose)
         {
-            ServerEvents.Connected -= ServerEvents_Connected;
-            ServerEvents.RestartRequired -= ServerEvents_RestartRequired;
-            ServerEvents.ServerRestarting -= ServerEvents_ServerRestarting;
-            ServerEvents.ServerShuttingDown -= ServerEvents_ServerShuttingDown;
-            AppHost.HasPendingRestartChanged -= AppHostHasPendingRestartChanged;
+            if (dispose)
+            {
+                ServerEvents.Connected -= ServerEvents_Connected;
+                ServerEvents.RestartRequired -= ServerEvents_RestartRequired;
+                ServerEvents.ServerRestarting -= ServerEvents_ServerRestarting;
+                ServerEvents.ServerShuttingDown -= ServerEvents_ServerShuttingDown;
+                AppHost.HasPendingRestartChanged -= AppHostHasPendingRestartChanged;
+                SessionManager.UserLoggedIn -= SessionManager_UserLoggedIn;
+                SessionManager.UserLoggedOut -= SessionManager_UserLoggedOut;
+            }
         }
 
         /// <summary>
@@ -167,6 +193,11 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
             win.Focus();
 
             win.MoveFocus(new TraversalRequest(FocusNavigationDirection.First));
+        }
+
+        protected void RefreshHomeButton(Page currentPage)
+        {
+            HomeEnabled = SessionManager.CurrentUser != null && !(currentPage is IHomePage) && !(currentPage is ILoginPage);
         }
 
         private async void ShutdownApplication()
@@ -294,7 +325,7 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
             }
         }
 
-        async void ServerEvents_Connected(object sender, EventArgs e)
+        private async void ServerEvents_Connected(object sender, EventArgs e)
         {
             try
             {
@@ -309,27 +340,42 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
             }
         }
 
-        void ServerEvents_ServerShuttingDown(object sender, EventArgs e)
+        private void ServerEvents_ServerShuttingDown(object sender, EventArgs e)
         {
             _serverHasPendingRestart = false;
             RefreshRestartServerNotification();
         }
 
-        void ServerEvents_ServerRestarting(object sender, EventArgs e)
+        private void ServerEvents_ServerRestarting(object sender, EventArgs e)
         {
             _serverHasPendingRestart = false;
             RefreshRestartServerNotification();
         }
 
-        void ServerEvents_RestartRequired(object sender, EventArgs e)
+        private void ServerEvents_RestartRequired(object sender, EventArgs e)
         {
             _serverHasPendingRestart = true;
             RefreshRestartServerNotification();
         }
 
-        void AppHostHasPendingRestartChanged(object sender, EventArgs e)
+        private void AppHostHasPendingRestartChanged(object sender, EventArgs e)
         {
             RefreshRestartApplicationNotification();
+        }
+
+        protected virtual void SessionManager_UserLoggedIn(object sender, EventArgs e)
+        {
+            RefreshHomeButton(NavigationService.CurrentPage);
+        }
+
+        protected virtual void SessionManager_UserLoggedOut(object sender, EventArgs e)
+        {
+            RefreshHomeButton(NavigationService.CurrentPage);
+        }
+
+        protected virtual void NavigationService_Navigated(object sender, NavigationEventArgs e)
+        {
+            RefreshHomeButton(e.NewPage as Page);
         }
     }
 }

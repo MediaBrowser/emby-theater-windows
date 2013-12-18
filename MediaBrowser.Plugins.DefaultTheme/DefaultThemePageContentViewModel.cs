@@ -45,14 +45,12 @@ namespace MediaBrowser.Plugins.DefaultTheme
 
         void SessionManager_UserLoggedOut(object sender, EventArgs e)
         {
-            RefreshHomeButton(NavigationService.CurrentPage);
             ShowBackButton = true;
         }
 
         void SessionManager_UserLoggedIn(object sender, EventArgs e)
         {
             UpdateUserImage();
-            RefreshHomeButton(NavigationService.CurrentPage);
             UpdateUserConfiguredValues();
         }
 
@@ -116,8 +114,6 @@ namespace MediaBrowser.Plugins.DefaultTheme
             {
                 ShowSettingsButton = true;
             }
-
-            RefreshHomeButton(e.NewPage as Page);
         }
 
         private BitmapImage _userImage;
@@ -164,23 +160,6 @@ namespace MediaBrowser.Plugins.DefaultTheme
                 if (changed)
                 {
                     OnPropertyChanged("ShowBackButton");
-                }
-            }
-        }
-
-        private bool _showHomeButton;
-        public bool ShowHomeButton
-        {
-            get { return _showHomeButton; }
-
-            set
-            {
-                var changed = _showHomeButton != value;
-
-                _showHomeButton = value;
-                if (changed)
-                {
-                    OnPropertyChanged("ShowHomeButton");
                 }
             }
         }
@@ -314,11 +293,6 @@ namespace MediaBrowser.Plugins.DefaultTheme
                     OnPropertyChanged("MasterCommands");
                 }
             }
-        }
-
-        private void RefreshHomeButton(Page currentPage)
-        {
-            ShowHomeButton = SessionManager.CurrentUser != null && !(currentPage is IHomePage) && !(currentPage is ILoginPage);
         }
 
         public async void SetPageTitle(BaseItemDto item)

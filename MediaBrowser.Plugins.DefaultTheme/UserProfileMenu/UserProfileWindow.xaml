@@ -39,25 +39,7 @@
                 </EventTrigger>
             </Grid.Triggers>
 
-            <!--<Button x:Name="BtnClose" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="320 35 0 0" Style="{StaticResource ImageButton}">
-                <Grid>
-                    <Grid Width="40" Height="40">
-                        <Path Data="M50.5,4.7500001C25.232973,4.75 4.75,25.232973 4.7500001,50.5 4.75,75.767029 25.232973,96.25 50.5,96.25 75.767029,96.25 96.25,75.767029 96.25,50.5 96.25,25.232973 75.767029,4.75 50.5,4.7500001z M50.5,0C78.390381,0 101,22.609621 101,50.5 101,78.390381 78.390381,101 50.5,101 22.609621,101 0,78.390381 0,50.5 0,22.609621 22.609621,0 50.5,0z" Stretch="Fill" Fill="#FFFFFFFF" Name="Stroke" Visibility="Visible" />
-                    </Grid>
-                    <Path Width="15" Height="15" Style="{StaticResource IconPath}" Data="F1M54.0573,47.8776L38.1771,31.9974 54.0547,16.1198C55.7604,14.4141 55.7604,11.6511 54.0573,9.94531 52.3516,8.23962 49.5859,8.23962 47.8802,9.94531L32.0026,25.8229 16.1224,9.94531C14.4167,8.23962 11.6511,8.23962 9.94794,9.94531 8.24219,11.6511 8.24219,14.4141 9.94794,16.1198L25.8255,32 9.94794,47.8776C8.24219,49.5834 8.24219,52.3477 9.94794,54.0534 11.6511,55.7572 14.4167,55.7585 16.1224,54.0534L32.0026,38.1745 47.8802,54.0534C49.5859,55.7585 52.3516,55.7572 54.0573,54.0534 55.7604,52.3477 55.763,49.5834 54.0573,47.8776z" Stretch="Uniform" Fill="#FFFFFFFF" RenderTransformOrigin="0.5,0.5">
-                        <Path.RenderTransform>
-                            <TransformGroup>
-                                <TransformGroup.Children>
-                                    <RotateTransform Angle="0" />
-                                    <ScaleTransform ScaleX="1" ScaleY="1" />
-                                </TransformGroup.Children>
-                            </TransformGroup>
-                        </Path.RenderTransform>
-                    </Path>
-                </Grid>
-            </Button>-->
-
-            <Button x:Name="BtnClose" Style="{StaticResource ModalCloseButton}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="40" Height="40" Margin="320 35 0 0" />
+            <Button x:Name="BtnClose" Style="{StaticResource ModalCloseButton}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="40" Height="40" Margin="320 35 0 0" TabIndex="99"/>
 
             <StackPanel Margin="0 30 0 0" Orientation="Vertical" MinWidth="350">
 
@@ -102,25 +84,25 @@
                     <TextBlock Style="{StaticResource Heading2TextBlockStyle}" Margin="20 0 0 0" Text="{Binding Username}"></TextBlock>
                 </StackPanel>
 
-                <Button Style="{StaticResource ModalListButton}"  Margin="0 50 0 0" Command="{Binding MasterCommands.HomeCommand}">
+                <Button Style="{StaticResource ModalListButton}"  Margin="0 50 0 0" TabIndex="1" Command="{Binding MasterCommands.HomeCommand}" IsEnabled="{Binding MasterCommands.HomeEnabled}">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Margin="10 10 0 10" Style="{StaticResource ModalTextBlockStyle}" VerticalAlignment="Center">Home</TextBlock>
                     </StackPanel>
                 </Button>
 
-                <Button Style="{StaticResource ModalListButton}"  Margin="0 10 0 0">
+                <Button Style="{StaticResource ModalListButton}"  Margin="0 10 0 0" TabIndex="2" IsEnabled="{Binding MasterCommands.DisplayPreferencesEnabled}">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Margin="10 10 0 10" Style="{StaticResource ModalTextBlockStyle}" VerticalAlignment="Center">Select View</TextBlock>
                     </StackPanel>
                 </Button>
 
-                <Button Style="{StaticResource ModalListButton}"  Margin="0 10 0 0">
+                <Button Style="{StaticResource ModalListButton}"  Margin="0 10 0 0" TabIndex="3" IsEnabled="{Binding MasterCommands.SortEnabled}">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Margin="10 10 0 10" Style="{StaticResource ModalTextBlockStyle}" VerticalAlignment="Center">Sort By</TextBlock>
                     </StackPanel>
                 </Button>
 
-                <Button Style="{StaticResource ModalListButton}"  Margin="0 10 0 0" Command="{Binding MasterCommands.SettingsCommand}">
+                <Button Style="{StaticResource ModalListButton}"  Margin="0 10 0 0" TabIndex="4" Command="{Binding MasterCommands.SettingsCommand}">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Margin="10 10 0 10" Style="{StaticResource ModalTextBlockStyle}" VerticalAlignment="Center">Settings</TextBlock>
                     </StackPanel>
@@ -128,13 +110,13 @@
 
                 <Rectangle Style="{StaticResource ModalListSeparator}" Width="300" Margin="25 30 0 20"></Rectangle>
 
-                <Button Style="{StaticResource ModalListButton}"  Margin="0 10 0 0" Command="{Binding LogoutCommand}">
+                <Button Style="{StaticResource ModalListButton}"  Margin="0 10 0 0" TabIndex="5" Command="{Binding LogoutCommand}">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Margin="10 10 0 10" Style="{StaticResource ModalTextBlockStyle}" VerticalAlignment="Center">Logout</TextBlock>
                     </StackPanel>
                 </Button>
 
-                <Button Style="{StaticResource ModalListButton}"  Margin="0 10 0 0" Command="{Binding MasterCommands.ShutdownApplicationCommand}">
+                <Button Style="{StaticResource ModalListButton}"  Margin="0 10 0 0" TabIndex="6" Command="{Binding MasterCommands.ShutdownApplicationCommand}">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Margin="10 10 0 10" Style="{StaticResource ModalTextBlockStyle}" VerticalAlignment="Center">Exit Media Browser</TextBlock>
                     </StackPanel>
@@ -142,19 +124,19 @@
 
                 <Rectangle Style="{StaticResource ModalListSeparator}" Width="300" Margin="25 30 0 20"></Rectangle>
 
-                <Button Style="{StaticResource ModalListButton}"  Margin="0 10 0 0">
+                <Button Style="{StaticResource ModalListButton}"  Margin="0 10 0 0" TabIndex="7" IsEnabled="{Binding MasterCommands.PowerOptionsEnabled}">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Margin="10 10 0 10" Style="{StaticResource ModalTextBlockStyle}" VerticalAlignment="Center">Sleep</TextBlock>
                     </StackPanel>
                 </Button>
 
-                <Button Style="{StaticResource ModalListButton}"  Margin="0 10 0 0">
+                <Button Style="{StaticResource ModalListButton}"  Margin="0 10 0 0" TabIndex="8" IsEnabled="{Binding MasterCommands.PowerOptionsEnabled}">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Margin="10 10 0 10" Style="{StaticResource ModalTextBlockStyle}" VerticalAlignment="Center">Restart</TextBlock>
                     </StackPanel>
                 </Button>
 
-                <Button Style="{StaticResource ModalListButton}"  Margin="0 10 0 0">
+                <Button Style="{StaticResource ModalListButton}"  Margin="0 10 0 0" TabIndex="9" IsEnabled="{Binding MasterCommands.PowerOptionsEnabled}">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Margin="10 10 0 10" Style="{StaticResource ModalTextBlockStyle}" VerticalAlignment="Center">Shutdown</TextBlock>
                     </StackPanel>

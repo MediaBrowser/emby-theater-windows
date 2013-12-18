@@ -20,6 +20,57 @@ namespace MediaBrowser.Plugins.DefaultTheme
         public ICommand SortOptionsCommand { get; private set; }
         public ICommand LogoutCommand { get; private set; }
 
+        private bool _displayPreferencesEnabled;
+        public bool DisplayPreferencesEnabled
+        {
+            get { return _displayPreferencesEnabled; }
+
+            set
+            {
+                var changed = _displayPreferencesEnabled != value;
+
+                _displayPreferencesEnabled = value;
+                if (changed)
+                {
+                    OnPropertyChanged("DisplayPreferencesEnabled");
+                }
+            }
+        }
+
+        private bool _sortEnabled;
+        public bool SortEnabled
+        {
+            get { return _sortEnabled; }
+
+            set
+            {
+                var changed = _sortEnabled != value;
+
+                _sortEnabled = value;
+                if (changed)
+                {
+                    OnPropertyChanged("SortEnabled");
+                }
+            }
+        }
+
+        private bool _powerOptionsEnabled;
+        public bool PowerOptionsEnabled
+        {
+            get { return _powerOptionsEnabled; }
+
+            set
+            {
+                var changed = _powerOptionsEnabled != value;
+
+                _powerOptionsEnabled = value;
+                if (changed)
+                {
+                    OnPropertyChanged("PowerOptionsEnabled");
+                }
+            }
+        }
+
         public DefaultThemePageMasterCommandsViewModel(INavigationService navigationService, ISessionManager sessionManager, IPresentationManager presentationManager, IApiClient apiClient, ILogger logger, IApplicationHost appHost, IServerEvents serverEvents, IImageManager imageManager) 
             : base(navigationService, sessionManager, presentationManager, apiClient, logger, appHost, serverEvents)
         {
@@ -28,7 +79,9 @@ namespace MediaBrowser.Plugins.DefaultTheme
             UserCommand = new RelayCommand(i => ShowUserMenu());
             DisplayPreferencesCommand = new RelayCommand(i => ShowDisplayPreferences());
             SortOptionsCommand = new RelayCommand(i => ShowSortMenu());
-           LogoutCommand = new RelayCommand(i => Logout());
+            LogoutCommand = new RelayCommand(i => Logout());
+
+            PowerOptionsEnabled = true;
         }
 
         protected virtual void ShowUserMenu()
@@ -64,6 +117,16 @@ namespace MediaBrowser.Plugins.DefaultTheme
             }
 
             await SessionManager.Logout();
+        }
+
+        protected override void Dispose(bool dispose)
+        {
+            if (dispose)
+            {
+                
+            }
+
+            base.Dispose(dispose);
         }
     }
 }

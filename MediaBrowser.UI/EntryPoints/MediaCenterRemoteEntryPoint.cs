@@ -156,6 +156,28 @@ namespace MediaBrowser.UI.EntryPoints
         public const int APPCOMMAND_MEDIA_CHANNEL_UP = 51;
         public const int APPCOMMAND_MEDIA_CHANNEL_DOWN = 52;
 
+        public const int APPCOMMAND_CUSTOM = 200;
+        public const int APPCOMMAND_INFO = APPCOMMAND_CUSTOM + 6;
+
+        // Future Commands:
+//APPCOMMAND_OPENRECORDED (APPCOMMAND_CUSTOM + 1)
+//APPCOMMAND_LIVETV (APPCOMMAND_CUSTOM + 2)
+//APPCOMMAND_MENU (APPCOMMAND_CUSTOM + 3)
+//APPCOMMAND_GUIDEMENU (APPCOMMAND_CUSTOM + 4)
+//APPCOMMAND_CHANNELS (APPCOMMAND_CUSTOM + 5)
+//APPCOMMAND_INFO (APPCOMMAND_CUSTOM + 6)
+//APPCOMMAND_PROCAMP (APPCOMMAND_CUSTOM + 7)
+//APPCOMMAND_TIMESHIFT (APPCOMMAND_CUSTOM + 8)
+//APPCOMMAND_CC (APPCOMMAND_CUSTOM + 9)
+//APPCOMMAND_EPG (APPCOMMAND_CUSTOM + 10)
+//APPCOMMAND_CHANNEL_LAST (APPCOMMAND_CUSTOM + 11)
+
+//APPCOMMAND_ASP_STRETCH (APPCOMMAND_CUSTOM + 20)
+//APPCOMMAND_ASP_4X3 (APPCOMMAND_CUSTOM + 21)
+//APPCOMMAND_ASP_16X9 (APPCOMMAND_CUSTOM + 22)
+//APPCOMMAND_ASP_AUTO (APPCOMMAND_CUSTOM + 23)
+//APPCOMMAND_ASP_TOGGLE (APPCOMMAND_CUSTOM + 24)
+
         /// <summary>
         /// Responds to multimedia keys
         /// </summary>
@@ -163,6 +185,9 @@ namespace MediaBrowser.UI.EntryPoints
         {
             switch (cmd)
             {
+                case APPCOMMAND_INFO:
+                    ExecuteCommand(Info);
+                    return true;
                 case APPCOMMAND_BROWSER_HOME:
                     ExecuteCommand(Home);
                     return true;
@@ -611,6 +636,18 @@ namespace MediaBrowser.UI.EntryPoints
             {
                 activePlayer.GoToNextChapter();
 
+                ShowFullscreenVideoOsd();
+            }
+        }
+
+        private void Info()
+        {
+            var activePlayer = _playback.MediaPlayers
+              .OfType<IInternalMediaPlayer>()
+              .FirstOrDefault(i => i.PlayState != PlayState.Idle);
+
+            if (activePlayer != null)
+            {
                 ShowFullscreenVideoOsd();
             }
         }

@@ -282,7 +282,8 @@
                             </Grid>
                         </Button>
 
-                        <Button Style="{StaticResource ImageButton}" Margin="0 0 30 0" Visibility="Collapsed">
+                        <!--Search icon (for future use)-->
+                        <Button Style="{StaticResource ImageButton}" Margin="0 6 30 0" Visibility="Collapsed">
                             <Grid>
                                 <Grid Width="40" Height="40" />
                                 <Path Style="{DynamicResource IconPath}" Data="F1M54.8672,51.2266L42.1145,36.0703C44.2473,33.3333 45.6692,29.9946 46.0469,26.2942 47.1016,15.8333 39.4948,6.49219 29.0313,5.43213 18.5729,4.37231 9.2395,11.9868 8.17188,22.4453 7.10938,32.9036 14.7291,42.2446 25.1875,43.3098 28.6692,43.6563 32.0416,43.0469 35.0051,41.6797L47.9244,57.0547C49.5416,58.9634 52.401,59.2134 54.3125,57.6094 56.2266,55.9973 56.4766,53.1348 54.8672,51.2266 M15.9219,23.1614C16.5547,16.9399 22.1094,12.4087 28.3333,13.0391 34.5573,13.6719 39.0781,19.2266 38.4453,25.4426 37.8098,31.6692 32.2708,36.1953 26.0416,35.5703 19.8203,34.9399 15.2891,29.3828 15.9219,23.1614" Stretch="Uniform" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
@@ -325,7 +326,7 @@
                         </Button>
 
                         <!--Display CurrentUser-->
-                        <Button x:Name="CurrentUserButton" Margin="0 6 30 0" Width="70" Height="30" Command="{Binding MasterCommands.UserCommand}">
+                        <Button x:Name="CurrentUserButton" Margin="0 0 30 0" Width="70" Height="30" Command="{Binding MasterCommands.UserCommand}">
                             <Button.Style>
                                 <Style TargetType="Button" BasedOn="{StaticResource ImageButton}">
                                     <Setter Property="Template">

@@ -325,10 +325,65 @@
                         </Button>
 
                         <!--Display CurrentUser-->
-                        <Button x:Name="CurrentUserButton" Margin="0 0 30 0" Command="{Binding MasterCommands.UserCommand}">
-
+                        <Button x:Name="CurrentUserButton" Margin="0 6 30 0" Width="70" Height="30" Command="{Binding MasterCommands.UserCommand}">
                             <Button.Style>
-                                <Style TargetType="{x:Type Button}" BasedOn="{StaticResource ImageButton}">
+                                <Style TargetType="Button" BasedOn="{StaticResource ImageButton}">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="{x:Type Button}">
+                                                <Border>
+                                                    <Grid x:Name="mainBackground">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="0.5*"></ColumnDefinition>
+                                                            <ColumnDefinition Width="0.5*"></ColumnDefinition>
+                                                        </Grid.ColumnDefinitions>
+                                                        <Border Grid.Column="0">
+                                                            <Grid>
+                                                                <Image x:Name="currentUserImage" Stretch="Uniform" Source="{Binding UserImage}" HorizontalAlignment="Left"/>
+                                                                <Grid x:Name="defaultUserImageGrid">
+                                                                    <Grid/>
+                                                                    <Path Style="{DynamicResource IconPath}" Data="M15.930851,36.710608C22.14356,36.647291 30.005098,41.570198 30.005098,41.570198 38.080673,46.45562 45.657448,38.281082 45.657448,38.281082 48.847534,35.288968 53.432121,42.865801 53.432121,42.865801 59.214702,51.040343 59.414001,64.000004 59.414001,64.000004L0,64.000004C2.092523,41.669198 12.360659,37.482978 12.360659,37.482978 13.423015,36.951675 14.64142,36.723749 15.930851,36.710608z M33.0965,0C42.015587,0 49.245998,7.8997269 49.245998,17.644449 49.245998,27.390621 42.015587,35.288998 33.0965,35.288999 24.177311,35.288998 16.947,27.390621 16.947,17.644449 16.947,7.8997269 24.177311,0 33.0965,0z" Stretch="Uniform" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+                                                                    </Path>
+                                                                </Grid>
+                                                            </Grid>
+                                                        </Border>
+                                                        <Border Grid.Column="1">
+                                                            <Grid>
+                                                                <Grid />
+                                                                <Path x:Name="menuIcon" Style="{DynamicResource IconPath}" Data="M25.379999,0L30.405999,0 30.405999,30.406 25.379999,30.406z M12.69,0L17.716,0 17.716,30.406 12.69,30.406z M0,0L5.0259995,0 5.0259995,30.406 0,30.406z" Stretch="Uniform" Fill="{DynamicResource ModalButtonText}" Width="18" Height="18" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+                                                                    <Path.RenderTransform>
+                                                                        <TransformGroup>
+                                                                            <TransformGroup.Children>
+                                                                                <RotateTransform Angle="90" />
+                                                                                <ScaleTransform ScaleX="1" ScaleY="1" />
+                                                                            </TransformGroup.Children>
+                                                                        </TransformGroup>
+                                                                    </Path.RenderTransform>
+                                                                </Path>
+                                                            </Grid>
+                                                        </Border>
+                                                    </Grid>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="true">
+                                                        <Setter TargetName="mainBackground" Property="Background" Value="{StaticResource ButtonBackgroundPressed}" />
+                                                    </Trigger>
+                                                    <Trigger Property="IsKeyboardFocused" Value="true">
+                                                        <Setter TargetName="menuIcon" Property="Fill" Value="{StaticResource MediaBrowserAccent}" />
+                                                    </Trigger>
+                                                    <Trigger Property="IsPressed" Value="true">
+                                                        <Setter TargetName="menuIcon" Property="Fill" Value="{StaticResource MediaBrowserAccent}" />
+                                                    </Trigger>
+                                                    <DataTrigger Binding="{Binding ShowDefaultUserImage}" Value="False">
+                                                        <Setter TargetName="defaultUserImageGrid" Property="Visibility" Value="Collapsed"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding ShowDefaultUserImage}" Value="True">
+                                                        <Setter TargetName="currentUserImage" Property="Visibility" Value="Collapsed"/>
+                                                    </DataTrigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding IsLoggedIn}" Value="False">
                                             <Setter Property="Visibility" Value="Collapsed" />
@@ -336,54 +391,6 @@
                                     </Style.Triggers>
                                 </Style>
                             </Button.Style>
-
-                            <Grid>
-                                <Grid Width="70" Height="40">
-                                <Grid Width="40" HorizontalAlignment="Left">
-                                <Image Margin="4" x:Name="CurrentUserImage" Stretch="Uniform" Source="{Binding UserImage}">
-                                    <Image.Style>
-                                        <Style TargetType="{x:Type Image}">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding ShowDefaultUserImage}" Value="True">
-                                                    <Setter Property="Visibility" Value="Collapsed" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Image.Style>
-                                </Image>
-
-                                <Grid>
-
-                                    <Grid.Style>
-                                        <Style TargetType="{x:Type Grid}">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding ShowDefaultUserImage}" Value="False">
-                                                    <Setter Property="Visibility" Value="Collapsed" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Grid.Style>
-
-                                    <Grid Name="backgroundGrid"/>
-                                    <Path Style="{DynamicResource IconPath}" Data="M15.930851,36.710608C22.14356,36.647291 30.005098,41.570198 30.005098,41.570198 38.080673,46.45562 45.657448,38.281082 45.657448,38.281082 48.847534,35.288968 53.432121,42.865801 53.432121,42.865801 59.214702,51.040343 59.414001,64.000004 59.414001,64.000004L0,64.000004C2.092523,41.669198 12.360659,37.482978 12.360659,37.482978 13.423015,36.951675 14.64142,36.723749 15.930851,36.710608z M33.0965,0C42.015587,0 49.245998,7.8997269 49.245998,17.644449 49.245998,27.390621 42.015587,35.288998 33.0965,35.288999 24.177311,35.288998 16.947,27.390621 16.947,17.644449 16.947,7.8997269 24.177311,0 33.0965,0z" Stretch="Uniform" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
-                                    </Path>
-                                </Grid>
-                                </Grid>
-                                    <Grid Width="30" HorizontalAlignment="Right" Background="#161616" Opacity=".97">
-                                        <Grid />
-                                        <Path Style="{DynamicResource IconPath}" Data="M25.379999,0L30.405999,0 30.405999,30.406 25.379999,30.406z M12.69,0L17.716,0 17.716,30.406 12.69,30.406z M0,0L5.0259995,0 5.0259995,30.406 0,30.406z" Stretch="Uniform" Fill="{StaticResource MediaBrowserAccent}" Width="18" Height="18" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
-                                            <Path.RenderTransform>
-                                                <TransformGroup>
-                                                    <TransformGroup.Children>
-                                                        <RotateTransform Angle="90" />
-                                                        <ScaleTransform ScaleX="1" ScaleY="1" />
-                                                    </TransformGroup.Children>
-                                                </TransformGroup>
-                                            </Path.RenderTransform>
-                                        </Path>
-                                    </Grid>
-                                </Grid>
-                            </Grid>
                         </Button>
 
                         <!--Display Clock-->

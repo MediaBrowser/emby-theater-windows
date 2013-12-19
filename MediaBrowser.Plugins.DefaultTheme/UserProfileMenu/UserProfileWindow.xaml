@@ -7,7 +7,7 @@
     <Window.Resources>
         <Storyboard x:Key="ClosingModalStoryboard">
             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ContentGrid"  Storyboard.TargetProperty="Width">
-                <SplineDoubleKeyFrame KeyTime="0:0:0" Value="480"/>
+                <SplineDoubleKeyFrame KeyTime="0:0:0" Value="380"/>
                 <EasingDoubleKeyFrame Value="0" KeyTime="00:00:0.5">
                     <EasingDoubleKeyFrame.EasingFunction>
                         <QuinticEase EasingMode="EaseInOut"/>
@@ -20,7 +20,7 @@
         <Grid Style="{StaticResource ModalOverlayStyle}">
 
         </Grid>
-        <Grid x:Name="ContentGrid" Style="{StaticResource ModalContentStyle}" HorizontalAlignment="Right" VerticalAlignment="Stretch">
+        <Grid x:Name="ContentGrid" Style="{StaticResource DefaultThemeModalContentStyle}" HorizontalAlignment="Right" VerticalAlignment="Stretch">
             <!-- Animation -->
             <Grid.Triggers>
                 <EventTrigger RoutedEvent="FrameworkElement.Loaded">
@@ -28,7 +28,7 @@
                         <Storyboard>
                             <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="Width">
                                 <SplineDoubleKeyFrame KeyTime="0:0:0" Value="0"/>
-                                <EasingDoubleKeyFrame Value="480" KeyTime="00:00:01">
+                                <EasingDoubleKeyFrame Value="380" KeyTime="00:00:01">
                                     <EasingDoubleKeyFrame.EasingFunction>
                                         <QuinticEase EasingMode="EaseInOut"/>
                                     </EasingDoubleKeyFrame.EasingFunction>
@@ -39,27 +39,11 @@
                 </EventTrigger>
             </Grid.Triggers>
 
-            <Button x:Name="BtnClose" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="25 33 0 0" Style="{StaticResource ImageButton}">
-                <Grid>
-                    <Grid Width="40" Height="40">
-                        <Path Style="{StaticResource IconPath}" Data="M50.5,4.7500001C25.232973,4.75 4.75,25.232973 4.7500001,50.5 4.75,75.767029 25.232973,96.25 50.5,96.25 75.767029,96.25 96.25,75.767029 96.25,50.5 96.25,25.232973 75.767029,4.75 50.5,4.7500001z M50.5,0C78.390381,0 101,22.609621 101,50.5 101,78.390381 78.390381,101 50.5,101 22.609621,101 0,78.390381 0,50.5 0,22.609621 22.609621,0 50.5,0z" Stretch="Fill" Name="Stroke" Visibility="Visible" />
-                    </Grid>
-                    <Path Style="{StaticResource IconPath}" Data="F1M-800.86,-1379.55L-781.99,-1360.68 -782.125,-1360.54 -792.356,-1360.54 -809.825,-1378.01 -815.075,-1383.26 -792.494,-1405.84 -781.99,-1405.84 -800.86,-1386.97 -751.074,-1386.97 -751.074,-1379.55 -800.86,-1379.55z" Stretch="Uniform" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
-                        <Path.RenderTransform>
-                            <TransformGroup>
-                                <TransformGroup.Children>
-                                    <RotateTransform Angle="0" />
-                                    <ScaleTransform ScaleX="1" ScaleY="1" />
-                                </TransformGroup.Children>
-                            </TransformGroup>
-                        </Path.RenderTransform>
-                    </Path>
-                </Grid>
-            </Button>
+            <Button x:Name="BtnClose" Style="{StaticResource ModalCloseButton}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="40" Height="40" Margin="320 35 0 0" TabIndex="99"/>
 
-            <StackPanel Margin="85 30 50 0" Orientation="Vertical" MinWidth="350">
+            <StackPanel Margin="0 30 0 0" Orientation="Vertical" MinWidth="350">
 
-                <StackPanel Orientation="Horizontal">
+                <StackPanel Orientation="Horizontal" Margin="20 0 0 0">
 
                     <Grid>
                         <Grid.Style>
@@ -100,67 +84,61 @@
                     <TextBlock Style="{StaticResource Heading2TextBlockStyle}" Margin="20 0 0 0" Text="{Binding Username}"></TextBlock>
                 </StackPanel>
 
-                <Button HorizontalAlignment="Left" Margin="0 30 0 0" Command="{Binding MasterCommands.HomeCommand}">
+                <Button Style="{StaticResource ModalListButton}"  Margin="0 50 0 0" TabIndex="1" Command="{Binding MasterCommands.HomeCommand}" IsEnabled="{Binding MasterCommands.HomeEnabled}">
                     <StackPanel Orientation="Horizontal">
-                        <Path Data="M31.427649,15.523999L53.103002,34.871683 53.103002,59.723391C53.088601,60.666094 52.466603,61.263796 51.961408,61.544996 51.426911,61.845797 50.850717,61.972101 50.232221,61.976L38.688001,61.976C38.2909,61.976 37.902205,61.821096 37.619008,61.544996 37.340407,61.272898 37.179908,60.890093 37.179908,60.502092L37.179908,48.548944 25.677389,48.548944 25.677389,60.502092C25.677389,60.890093 25.514991,61.272898 25.235993,61.544996 24.953094,61.821096 24.564398,61.976 24.1673,61.976L12.622781,61.976C12.008585,61.972101 11.428489,61.845797 10.895992,61.544996 10.390396,61.263796 9.7670005,60.666094 9.752,59.723391L9.752,34.871683z M31.430007,0C32.412786,0,33.395349,0.34765434,34.172341,1.0429621L61.536054,25.469772C63.191937,26.947757 63.306836,29.45413 61.791253,31.072613 60.273667,32.685896 57.703996,32.796495 56.048413,31.31991L31.427569,9.3424339 6.8067472,31.31991C6.0245249,32.015303 5.0434551,32.358999 4.0678854,32.358999 2.9643769,32.358999 1.8680081,31.925505 1.0659571,31.072613L1.0623569,31.066113C-0.44769764,29.45413,-0.33539391,26.945057,1.3191938,25.469772L28.686399,1.0429621C29.46424,0.34765434,30.44723,0,31.430007,0z" Stretch="Uniform" Fill="#FFFFFFFF" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
-                            <Path.RenderTransform>
-                                <TransformGroup>
-                                    <TransformGroup.Children>
-                                        <RotateTransform Angle="0" />
-                                        <ScaleTransform ScaleX="1" ScaleY="1" />
-                                    </TransformGroup.Children>
-                                </TransformGroup>
-                            </Path.RenderTransform>
-                        </Path>
-                        <TextBlock Style="{StaticResource TextBlockStyle}" VerticalAlignment="Center" Margin="20 0 0 5">Home</TextBlock>
+                        <TextBlock Margin="10 10 0 10" Style="{StaticResource ModalTextBlockStyle}" VerticalAlignment="Center">Home</TextBlock>
                     </StackPanel>
                 </Button>
 
-                <Button HorizontalAlignment="Left" Margin="0 30 0 0" Command="{Binding MasterCommands.SettingsCommand}">
+                <Button Style="{StaticResource ModalListButton}"  Margin="0 10 0 0" TabIndex="2" IsEnabled="{Binding MasterCommands.DisplayPreferencesEnabled}">
                     <StackPanel Orientation="Horizontal">
-                        <Path Data="F1M-515.802,331.242C-515.789,329.857,-515.923,328.495,-516.128,327.172L-510.578,322.745C-512.008,317.424,-514.756,312.655,-518.482,308.812L-525.111,311.322C-527.209,309.586,-529.594,308.195,-532.179,307.198L-533.233,300.195C-535.788,299.515 -538.464,299.107 -541.237,299.086 -544.006,299.07 -546.686,299.44 -549.259,300.088L-550.396,307.078C-552.989,308.052,-555.398,309.403,-557.514,311.117L-564.117,308.526C-567.886,312.318,-570.696,317.047,-572.198,322.354L-566.702,326.846C-566.924,328.172 -567.071,329.531 -567.083,330.919 -567.093,332.318 -566.962,333.672 -566.752,335.005L-572.311,339.427C-570.872,344.742,-568.124,349.518,-564.398,353.354L-557.769,350.851C-555.674,352.581,-553.284,353.971,-550.698,354.976L-549.656,361.976C-547.092,362.659 -544.416,363.065 -541.647,363.086 -538.875,363.096 -536.198,362.729 -533.63,362.086L-532.482,355.088C-529.891,354.114,-527.484,352.763,-525.362,351.062L-518.771,353.651C-514.998,349.851,-512.192,345.12,-510.687,339.82L-516.182,335.333C-515.959,333.997,-515.814,332.643,-515.802,331.242z M-541.53,344.336C-548.84,344.292 -554.737,338.318 -554.689,331 -554.641,323.68 -548.673,317.784 -541.354,317.833 -534.035,317.88 -528.139,323.851 -528.187,331.172 -528.235,338.495 -534.205,344.385 -541.53,344.336z" Stretch="Uniform" Fill="#FFFFFFFF" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
-                            <Path.RenderTransform>
-                                <TransformGroup>
-                                    <TransformGroup.Children>
-                                        <RotateTransform Angle="0" />
-                                        <ScaleTransform ScaleX="1" ScaleY="1" />
-                                    </TransformGroup.Children>
-                                </TransformGroup>
-                            </Path.RenderTransform>
-                        </Path>
-                        <TextBlock Style="{StaticResource TextBlockStyle}" VerticalAlignment="Center" Margin="20 0 0 5">Settings</TextBlock>
+                        <TextBlock Margin="10 10 0 10" Style="{StaticResource ModalTextBlockStyle}" VerticalAlignment="Center">Select View</TextBlock>
                     </StackPanel>
                 </Button>
 
-                <Button HorizontalAlignment="Left" Margin="0 30 0 0" Command="{Binding LogoutCommand}">
+                <Button Style="{StaticResource ModalListButton}"  Margin="0 10 0 0" TabIndex="3" IsEnabled="{Binding MasterCommands.SortEnabled}">
                     <StackPanel Orientation="Horizontal">
-                        <Path Data="M34.201,35.752792L36.154999,37.072937 36.154999,61.028999 26.27,61.028999 26.27,58.465 34.201,58.465z M18.94405,30.222998C17.962244,30.222998 17.167,31.018967 17.167,32.00045 17.167,32.982033 17.962244,33.778 18.94405,33.778 19.925556,33.778 20.721001,32.982033 20.721001,32.00045 20.721001,31.018967 19.925556,30.222998 18.94405,30.222998z M44.257435,25.653L44.257435,29.183289 51.842999,29.183289 51.842999,35.705292 44.257435,35.705292 44.257435,39.237999 34.201,32.444984z M26.27,3.8619995L36.154999,3.8619995 36.154999,27.81745 34.201,29.137484 34.201,6.2989998 26.27,6.2989998z M24.27,0L24.27,64 0,60 0,4.0000029z" Stretch="Uniform" Fill="#FFFFFFFF" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
-                            <Path.RenderTransform>
-                                <TransformGroup>
-                                    <TransformGroup.Children>
-                                        <RotateTransform Angle="0" />
-                                        <ScaleTransform ScaleX="1" ScaleY="1" />
-                                    </TransformGroup.Children>
-                                </TransformGroup>
-                            </Path.RenderTransform>
-                        </Path>
-                        <TextBlock Style="{StaticResource TextBlockStyle}" VerticalAlignment="Center" Margin="20 0 0 5">Sign out</TextBlock>
+                        <TextBlock Margin="10 10 0 10" Style="{StaticResource ModalTextBlockStyle}" VerticalAlignment="Center">Sort By</TextBlock>
                     </StackPanel>
                 </Button>
 
-                <Button HorizontalAlignment="Left" Margin="0 30 0 0" Command="{Binding MasterCommands.ShutdownApplicationCommand}">
+                <Button Style="{StaticResource ModalListButton}"  Margin="0 10 0 0" TabIndex="4" Command="{Binding MasterCommands.SettingsCommand}">
                     <StackPanel Orientation="Horizontal">
-                        <Path Data="M34.201,35.752792L36.154999,37.072937 36.154999,61.028999 26.27,61.028999 26.27,58.465 34.201,58.465z M18.94405,30.222998C17.962244,30.222998 17.167,31.018967 17.167,32.00045 17.167,32.982033 17.962244,33.778 18.94405,33.778 19.925556,33.778 20.721001,32.982033 20.721001,32.00045 20.721001,31.018967 19.925556,30.222998 18.94405,30.222998z M44.257435,25.653L44.257435,29.183289 51.842999,29.183289 51.842999,35.705292 44.257435,35.705292 44.257435,39.237999 34.201,32.444984z M26.27,3.8619995L36.154999,3.8619995 36.154999,27.81745 34.201,29.137484 34.201,6.2989998 26.27,6.2989998z M24.27,0L24.27,64 0,60 0,4.0000029z" Stretch="Uniform" Fill="#FFFFFFFF" Width="26" Height="26" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
-                            <Path.RenderTransform>
-                                <TransformGroup>
-                                    <TransformGroup.Children>
-                                        <RotateTransform Angle="0" />
-                                        <ScaleTransform ScaleX="1" ScaleY="1" />
-                                    </TransformGroup.Children>
-                                </TransformGroup>
-                            </Path.RenderTransform>
-                        </Path>
-                        <TextBlock Style="{StaticResource TextBlockStyle}" VerticalAlignment="Center" Margin="20 0 0 5">Exit Media Browser</TextBlock>
+                        <TextBlock Margin="10 10 0 10" Style="{StaticResource ModalTextBlockStyle}" VerticalAlignment="Center">Settings</TextBlock>
+                    </StackPanel>
+                </Button>
+
+                <Rectangle Style="{StaticResource ModalListSeparator}" Width="300" Margin="25 30 0 20"></Rectangle>
+
+                <Button Style="{StaticResource ModalListButton}"  Margin="0 10 0 0" TabIndex="5" Command="{Binding LogoutCommand}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Margin="10 10 0 10" Style="{StaticResource ModalTextBlockStyle}" VerticalAlignment="Center">Logout</TextBlock>
+                    </StackPanel>
+                </Button>
+
+                <Button Style="{StaticResource ModalListButton}"  Margin="0 10 0 0" TabIndex="6" Command="{Binding MasterCommands.ShutdownApplicationCommand}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Margin="10 10 0 10" Style="{StaticResource ModalTextBlockStyle}" VerticalAlignment="Center">Exit Media Browser</TextBlock>
+                    </StackPanel>
+                </Button>
+
+                <Rectangle Style="{StaticResource ModalListSeparator}" Width="300" Margin="25 30 0 20"></Rectangle>
+
+                <Button Style="{StaticResource ModalListButton}"  Margin="0 10 0 0" TabIndex="7" IsEnabled="{Binding MasterCommands.PowerOptionsEnabled}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Margin="10 10 0 10" Style="{StaticResource ModalTextBlockStyle}" VerticalAlignment="Center">Sleep</TextBlock>
+                    </StackPanel>
+                </Button>
+
+                <Button Style="{StaticResource ModalListButton}"  Margin="0 10 0 0" TabIndex="8" IsEnabled="{Binding MasterCommands.PowerOptionsEnabled}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Margin="10 10 0 10" Style="{StaticResource ModalTextBlockStyle}" VerticalAlignment="Center">Restart</TextBlock>
+                    </StackPanel>
+                </Button>
+
+                <Button Style="{StaticResource ModalListButton}"  Margin="0 10 0 0" TabIndex="9" IsEnabled="{Binding MasterCommands.PowerOptionsEnabled}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Margin="10 10 0 10" Style="{StaticResource ModalTextBlockStyle}" VerticalAlignment="Center">Shutdown</TextBlock>
                     </StackPanel>
                 </Button>
             </StackPanel>

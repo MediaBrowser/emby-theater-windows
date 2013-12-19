@@ -132,7 +132,8 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
 
         public void StartRotating(int invervalMs = 6000)
         {
-            if (CurrentIndex == -1)
+            //Only set index if we have images
+            if (_images.Count > 0 && CurrentIndex == -1)
             {
                 CurrentIndex = 0;
             }

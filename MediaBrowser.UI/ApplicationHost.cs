@@ -20,6 +20,7 @@ using MediaBrowser.Theater.Implementations.Session;
 using MediaBrowser.Theater.Implementations.System;
 using MediaBrowser.Theater.Implementations.Theming;
 using MediaBrowser.Theater.Implementations.UserInput;
+using MediaBrowser.Theater.Interfaces;
 using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
@@ -44,7 +45,7 @@ namespace MediaBrowser.UI
     /// <summary>
     /// Class CompositionRoot
     /// </summary>
-    internal class ApplicationHost : BaseApplicationHost<ApplicationPaths>
+    internal class ApplicationHost : BaseApplicationHost<ApplicationPaths>, ITheaterApplicationHost
     {
         public ApplicationHost(ApplicationPaths applicationPaths, ILogManager logManager)
             : base(applicationPaths, logManager)
@@ -117,6 +118,8 @@ namespace MediaBrowser.UI
             ReloadApiClient();
 
             await base.RegisterResources(progress).ConfigureAwait(false);
+
+            RegisterSingleInstance<ITheaterApplicationHost>(this);
 
             MediaFilters = new MediaFilters(HttpClient, Logger);
             RegisterSingleInstance(MediaFilters);
@@ -334,6 +337,21 @@ namespace MediaBrowser.UI
                 // Remove our shortcut from the startup folder for this user
                 File.Delete(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), Path.GetFileName(shortcutPath) ?? "MediaBrowserTheaterStartup.lnk"));
             }
+        }
+
+        public void ShutdownSystem()
+        {
+            PlaybackManager.StopAllPlayback();
+        }
+
+        public void RebootSystem()
+        {
+            PlaybackManager.StopAllPlayback();
+        }
+
+        public void SetSystemToSleep()
+        {
+            PlaybackManager.StopAllPlayback();
         }
     }
 }

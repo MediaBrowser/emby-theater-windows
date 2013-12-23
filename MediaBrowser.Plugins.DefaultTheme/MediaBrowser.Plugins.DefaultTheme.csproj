@@ -146,6 +146,9 @@
     </Compile>
     <Compile Include="Properties\SharedVersion.cs" />
     <Compile Include="DefaultTheme.cs" />
+    <Compile Include="SystemOptionsMenu\SystemOptionsWindow.xaml.cs">
+      <DependentUpon>SystemOptionsWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserProfileMenu\UserProfileWindow.xaml.cs">
       <DependentUpon>UserProfileWindow.xaml</DependentUpon>
     </Compile>
@@ -263,6 +266,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Resources\PathResources.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Resources\ThemeDark.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -276,6 +283,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Resources\VolumeOsd.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SystemOptionsMenu\SystemOptionsWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

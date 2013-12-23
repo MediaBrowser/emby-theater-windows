@@ -8,6 +8,7 @@ using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.ViewModels;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Session;
+using MediaBrowser.Plugins.DefaultTheme.SystemOptionsMenu;
 
 namespace MediaBrowser.Plugins.DefaultTheme
 {
@@ -19,6 +20,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         public ICommand DisplayPreferencesCommand { get; private set; }
         public ICommand SortOptionsCommand { get; private set; }
         public ICommand LogoutCommand { get; private set; }
+        public ICommand TestPowerCommand { get; private set; }
 
         private bool _displayPreferencesEnabled;
         public bool DisplayPreferencesEnabled
@@ -80,6 +82,9 @@ namespace MediaBrowser.Plugins.DefaultTheme
             DisplayPreferencesCommand = new RelayCommand(i => ShowDisplayPreferences());
             SortOptionsCommand = new RelayCommand(i => ShowSortMenu());
             LogoutCommand = new RelayCommand(i => Logout());
+            TestPowerCommand = new RelayCommand(i=> ShowTestPower());
+
+            PowerOptionsEnabled = true;
         }
 
         protected virtual void ShowUserMenu()
@@ -115,6 +120,11 @@ namespace MediaBrowser.Plugins.DefaultTheme
             }
 
             await SessionManager.Logout();
+        }
+
+        private void ShowTestPower()
+        {
+            new SystemOptionsWindow().ShowModal(PresentationManager.Window);
         }
 
         protected override void Dispose(bool dispose)

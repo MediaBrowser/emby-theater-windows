@@ -16,6 +16,11 @@
         <Setter Property="HorizontalAlignment" Value="Left"/>
     </Style>
 
+    <Style TargetType="Rectangle" x:Key="ModalVerticalListSeparator">
+        <Setter Property="Width" Value="2"/>
+        <Setter Property="Fill" Value="{StaticResource ModalButtonTextDisabled}"/>
+    </Style>
+
     <Style TargetType="TextBlock" x:Key="ModalTextBlockStyle">
         <Setter Property="FontSize" Value="{StaticResource DefaultFontSize}"/>
         <Setter Property="FontFamily" Value="{StaticResource DefaultFontFamily}"/>
@@ -99,6 +104,32 @@
                         </Trigger>
                         <Trigger Property="IsPressed" Value="true">
                             <Setter TargetName="highlightElipse" Property="Fill" Value="{StaticResource MediaBrowserAccent}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="Button" x:Key="ModalImageButton" BasedOn="{StaticResource ImageButton}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Border x:Name="Border" Background="{TemplateBinding Background}">
+                        <ContentPresenter x:Name="contentPresenter" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="true">
+                            <Setter TargetName="Border" Property="Background" Value="{StaticResource ButtonBackgroundPressed}" />
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocused" Value="true">
+                            <Setter TargetName="Border" Property="Background" Value="{StaticResource MediaBrowserAccent}" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="true">
+                            <Setter TargetName="Border" Property="Background" Value="{StaticResource MediaBrowserAccent}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="false">
+                            <Setter TargetName="Border" Property="Opacity" Value=".2" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

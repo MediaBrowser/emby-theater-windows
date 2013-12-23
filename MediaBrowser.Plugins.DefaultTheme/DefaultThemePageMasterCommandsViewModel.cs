@@ -80,8 +80,6 @@ namespace MediaBrowser.Plugins.DefaultTheme
             DisplayPreferencesCommand = new RelayCommand(i => ShowDisplayPreferences());
             SortOptionsCommand = new RelayCommand(i => ShowSortMenu());
             LogoutCommand = new RelayCommand(i => Logout());
-
-            PowerOptionsEnabled = true;
         }
 
         protected virtual void ShowUserMenu()

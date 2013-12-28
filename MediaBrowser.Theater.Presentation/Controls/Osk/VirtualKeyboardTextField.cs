@@ -8,59 +8,23 @@ using Key = System.Windows.Input.Key;
 
 namespace MediaBrowser.Theater.Presentation.Controls.Osk
 {
-    /// <summary>
-    /// Follow steps 1a or 1b and then 2 to use this custom control in a XAML file.
-    ///
-    /// Step 1a) Using this custom control in a XAML file that exists in the current project.
-    /// Add this XmlNamespace attribute to the root element of the markup file where it is 
-    /// to be used:
-    ///
-    ///     xmlns:MyNamespace="clr-namespace:OnScreenKeyboard.Controls"
-    ///
-    ///
-    /// Step 1b) Using this custom control in a XAML file that exists in a different project.
-    /// Add this XmlNamespace attribute to the root element of the markup file where it is 
-    /// to be used:
-    ///
-    ///     xmlns:MyNamespace="clr-namespace:OnScreenKeyboard.Controls;assembly=OnScreenKeyboard.Controls"
-    ///
-    /// You will also need to add a project reference from the project where the XAML file lives
-    /// to this project and Rebuild to avoid compilation errors:
-    ///
-    ///     Right click on the target project in the Solution Explorer and
-    ///     "Add Reference"->"Projects"->[Browse to and select this project]
-    ///
-    ///
-    /// Step 2)
-    /// Go ahead and use your control in the XAML file.
-    ///
-    ///     <MyNamespace:VirtualKeyboardWindow/>
-    ///
-    /// </summary>
-    [TemplatePart(Name = "PART_TextBox", Type = typeof(TextBox))]
-    [TemplatePart(Name = "PART_Keyboard", Type = typeof(VirtualKeyboard))]
-    [TemplatePart(Name = "PART_HideTransition", Type=typeof(Storyboard))]
+    [TemplatePart(Name = "PART_TextBox", Type = typeof (TextBox))]
+    [TemplatePart(Name = "PART_Keyboard", Type = typeof (VirtualKeyboard))]
+    [TemplatePart(Name = "PART_HideTransition", Type = typeof (Storyboard))]
     public class VirtualKeyboardTextField : Control
     {
-        private MinimalTextBox _textBox;
-        private VirtualKeyboard _keyboard;
-        private Storyboard _hideTransition;
-        private KeySet _defaultKeySet;
-        
-        public string Title
-        {
-            get { return (string)GetValue(TitleProperty); }
-            set { SetValue(TitleProperty, value); }
-        }
-
         // Using a DependencyProperty as the backing store for Title.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty TitleProperty =
-            DependencyProperty.Register("Title", typeof(string), typeof(VirtualKeyboardTextField), new PropertyMetadata(""));
+            DependencyProperty.Register("Title", typeof (string), typeof (VirtualKeyboardTextField), new PropertyMetadata(""));
 
-        
+        private KeySet _defaultKeySet;
+        private VirtualKeyboard _keyboard;
+        private MinimalTextBox _textBox;
+
+
         static VirtualKeyboardTextField()
         {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(VirtualKeyboardTextField), new FrameworkPropertyMetadata(typeof(VirtualKeyboardTextField)));
+            DefaultStyleKeyProperty.OverrideMetadata(typeof (VirtualKeyboardTextField), new FrameworkPropertyMetadata(typeof (VirtualKeyboardTextField)));
         }
 
         public VirtualKeyboardTextField()
@@ -72,46 +36,10 @@ namespace MediaBrowser.Theater.Presentation.Controls.Osk
             };
         }
 
-        public event Action Accepted;
-
-        public virtual void Accept()
+        public string Title
         {
-            Action sendEvent = () =>
-            {
-                Action handler = Accepted;
-                if (handler != null) handler();
-            };
-
-            if (HideTransition != null)
-            {
-                var transition = HideTransition.Clone();
-
-                transition.Completed += (s, e) => sendEvent();
-                transition.Begin(this, Template);
-            }
-            else
-                sendEvent();
-        }
-
-        public event Action Cancelled;
-
-        public virtual void Cancel()
-        {
-            Action sendEvent = () =>
-            {
-                Action handler = Cancelled;
-                if (handler != null) handler();
-            };
-
-            if (HideTransition != null)
-            {
-                var transition = HideTransition.Clone();
-
-                transition.Completed += (s, e) => sendEvent();
-                transition.Begin(this, Template);
-            }
-            else
-                sendEvent();
+            get { return (string) GetValue(TitleProperty); }
+            set { SetValue(TitleProperty, value); }
         }
 
         public KeySet DefaultKeySet
@@ -138,11 +66,11 @@ namespace MediaBrowser.Theater.Presentation.Controls.Osk
 
         private VirtualKeyboard Keyboard
         {
-            get { return _keyboard;  }
+            get { return _keyboard; }
             set
             {
                 UnbindKeyboardEvents();
-                
+
                 _keyboard = value;
                 if (_keyboard != null && _keyboard.KeySet == null)
                     _keyboard.KeySet = DefaultKeySet;
@@ -151,10 +79,80 @@ namespace MediaBrowser.Theater.Presentation.Controls.Osk
             }
         }
 
-        private Storyboard HideTransition
+        private Storyboard HideTransition { get; set; }
+
+        public string Text
         {
-            get { return _hideTransition; }
-            set { _hideTransition = value; }
+            get
+            {
+                if (TextBox != null)
+                    return TextBox.Text;
+
+                return null;
+            }
+            set
+            {
+                if (TextBox != null)
+                    TextBox.Text = value;
+            }
+        }
+
+        public int CaretIndex
+        {
+            get
+            {
+                if (TextBox != null)
+                    return TextBox.VirtualCaretIndex;
+
+                return 0;
+            }
+            set
+            {
+                if (TextBox != null)
+                    TextBox.VirtualCaretIndex = value;
+            }
+        }
+
+        public event Action Accepted;
+
+        public virtual void Accept()
+        {
+            Action sendEvent = () =>
+            {
+                Action handler = Accepted;
+                if (handler != null) handler();
+            };
+
+            if (HideTransition != null)
+            {
+                Storyboard transition = HideTransition.Clone();
+
+                transition.Completed += (s, e) => sendEvent();
+                transition.Begin(this, Template);
+            }
+            else
+                sendEvent();
+        }
+
+        public event Action Cancelled;
+
+        public virtual void Cancel()
+        {
+            Action sendEvent = () =>
+            {
+                Action handler = Cancelled;
+                if (handler != null) handler();
+            };
+
+            if (HideTransition != null)
+            {
+                Storyboard transition = HideTransition.Clone();
+
+                transition.Completed += (s, e) => sendEvent();
+                transition.Begin(this, Template);
+            }
+            else
+                sendEvent();
         }
 
         private void BindKeyboardEvents()
@@ -216,7 +214,7 @@ namespace MediaBrowser.Theater.Presentation.Controls.Osk
 
             base.OnApplyTemplate();
         }
-        
+
         protected override void OnPreviewKeyDown(KeyEventArgs e)
         {
             if (TextBox != null && !TextBox.IsFocused && !IsVirtualKeyboardControlKey(e.Key))
@@ -249,38 +247,6 @@ namespace MediaBrowser.Theater.Presentation.Controls.Osk
             }
 
             base.OnPreviewKeyDown(e);
-        }
-        
-        public string Text
-        {
-            get
-            {
-                if (TextBox != null)
-                    return TextBox.Text;
-
-                return null;
-            }
-            set
-            {
-                if (TextBox != null)
-                    TextBox.Text = value;
-            }
-        }
-
-        public int CaretIndex
-        {
-            get
-            {
-                if (TextBox != null)
-                    return TextBox.VirtualCaretIndex;
-
-                return 0;
-            }
-            set
-            {
-                if (TextBox != null)
-                    TextBox.VirtualCaretIndex = value;
-            }
         }
 
         private bool IsUpDownKey(Key key)

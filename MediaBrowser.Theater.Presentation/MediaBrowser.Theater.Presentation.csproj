@@ -74,6 +74,32 @@
     <Compile Include="Controls\ExtendedScrollViewer.cs" />
     <Compile Include="Controls\ItemsControlExtensions.cs" />
     <Compile Include="Controls\ListFocuser.cs" />
+    <Compile Include="Controls\Osk\EmptyStringVisibilityConverter.cs" />
+    <Compile Include="Controls\Osk\Layout\AcceptAction.cs" />
+    <Compile Include="Controls\Osk\Layout\BackspaceAction.cs" />
+    <Compile Include="Controls\Osk\Layout\CancelAction.cs" />
+    <Compile Include="Controls\Osk\Layout\CharacterAction.cs" />
+    <Compile Include="Controls\Osk\Layout\EndAction.cs" />
+    <Compile Include="Controls\Osk\Layout\HomeAction.cs" />
+    <Compile Include="Controls\Osk\Layout\KeySet.cs" />
+    <Compile Include="Controls\Osk\Layout\KeySetGroup.cs" />
+    <Compile Include="Controls\Osk\Layout\KeySets\EnglishKeySet.cs" />
+    <Compile Include="Controls\Osk\Layout\LeftAction.cs" />
+    <Compile Include="Controls\Osk\Layout\RightAction.cs" />
+    <Compile Include="Controls\Osk\Layout\ShiftAction.cs" />
+    <Compile Include="Controls\Osk\MinimalTextBox.cs" />
+    <Compile Include="Controls\Osk\MultiplyNumberConverter.cs" />
+    <Compile Include="Controls\Osk\RowMarginConverter.cs" />
+    <Compile Include="Controls\Osk\TextField.cs" />
+    <Compile Include="Controls\Osk\VirtualKey.cs" />
+    <Compile Include="Controls\Osk\VirtualKeyAction.cs" />
+    <Compile Include="Controls\Osk\VirtualKeyboard.cs" />
+    <Compile Include="Controls\Osk\VirtualKeyboardModalWindow.xaml.cs">
+      <DependentUpon>VirtualKeyboardModalWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Osk\VirtualKeyboardTextField.cs" />
+    <Compile Include="Controls\Osk\VirtualKeySet.cs" />
+    <Compile Include="Controls\Osk\VirtualKeySetRow.cs" />
     <Compile Include="Controls\PageContainer.xaml.cs">
       <DependentUpon>PageContainer.xaml</DependentUpon>
     </Compile>
@@ -151,6 +177,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Controls\Osk\VirtualKeyboardModalWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Controls\PageContainer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -164,6 +194,7 @@
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <PropertyGroup>

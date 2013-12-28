@@ -9,6 +9,7 @@ using System;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Windows;
 using System.Windows.Threading;
 
 namespace MediaBrowser.UI.EntryPoints
@@ -129,13 +130,23 @@ namespace MediaBrowser.UI.EntryPoints
 
         private void ShowScreensaver()
         {
-            StopTimer();
+            _presentationManager.Window.Dispatcher.Invoke(() =>
+            {
+                // Don't show screen saver if minimized
+                if (_presentationManager.Window.WindowState == WindowState.Minimized)
+                {
+                    _lastInputTime = DateTime.Now;
+                    return;
+                }
 
-            _logger.Debug("Displaying screen saver");
+                StopTimer();
 
-            _presentationManager.Window.Dispatcher.Invoke(() => new ScreensaverWindow(_session, _apiClient, _imageManager).ShowModal(_presentationManager.Window));
+                _logger.Debug("Displaying screen saver");
 
-            StartTimer();
+                new ScreensaverWindow(_session, _apiClient, _imageManager).ShowModal(_presentationManager.Window);
+
+                StartTimer();
+            });
         }
 
         private void StartTimer()

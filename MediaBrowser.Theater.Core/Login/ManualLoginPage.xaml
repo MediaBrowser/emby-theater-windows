@@ -4,7 +4,8 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                                  xmlns:pages="clr-namespace:MediaBrowser.Theater.Presentation.Pages;assembly=MediaBrowser.Theater.Presentation"
-                mc:Ignorable="d" 
+                                 xmlns:osk="clr-namespace:MediaBrowser.Theater.Presentation.Controls.Osk;assembly=MediaBrowser.Theater.Presentation"
+                                 mc:Ignorable="d" 
       d:DesignHeight="300" d:DesignWidth="300"
 	Title="ManualLoginPage">
 
@@ -20,7 +21,7 @@
         <StackPanel Grid.Row="1" Orientation="Vertical" Margin="0 40 0 0">
             
             <TextBlock Style="{StaticResource TextBlockStyle}" Text="Username"></TextBlock>
-            <TextBox x:Name="TxtUsername"></TextBox>
+            <osk:TextField x:Name="TxtUsername" Title="Username"></osk:TextField>
 
             <TextBlock Style="{StaticResource TextBlockStyle}" Text="Password" Margin="0 40 0 0"></TextBlock>
             <PasswordBox x:Name="TxtPassword"></PasswordBox>

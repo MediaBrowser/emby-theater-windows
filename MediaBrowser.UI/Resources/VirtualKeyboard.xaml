@@ -1,0 +1,379 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:osk="clr-namespace:MediaBrowser.Theater.Presentation.Controls.Osk;assembly=MediaBrowser.Theater.Presentation"
+                    xmlns:behaviors="clr-namespace:MediaBrowser.Theater.Presentation.Behaviors;assembly=MediaBrowser.Theater.Presentation">
+    
+    <Style TargetType="{x:Type TextBlock}" x:Key="VirtualKeyboardTextBlock" BasedOn="{StaticResource SmallTextBlockStyle}">
+        <Setter Property="FontSize" Value="12" />
+    </Style>
+
+    <Style TargetType="{x:Type osk:VirtualKeyboard}">
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type osk:VirtualKeyboard}">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                        <Grid>
+                            <ContentPresenter x:Name="PART_Content" />
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type osk:VirtualKeySet}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type osk:VirtualKeySet}">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                        <ItemsControl x:Name="PART_Rows">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Vertical" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type osk:VirtualKeySetRow}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type osk:VirtualKeySetRow}">
+                    <ControlTemplate.Resources>
+                        <osk:RowMarginConverter x:Key="MarginConverter" KeyWidth="50" />
+                    </ControlTemplate.Resources>
+
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                        <ItemsControl x:Name="PART_Keys">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal"
+                                                Margin="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type osk:VirtualKeySetRow}}, Path=HorizontalOffset, Converter={StaticResource MarginConverter}}" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type osk:VirtualKey}">
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type osk:VirtualKey}">
+                    <ControlTemplate.Resources>
+                        <osk:MultiplyNumberConverter x:Key="WidthScaler" Multiplier="50" />
+                    </ControlTemplate.Resources>
+
+                    <Border MinHeight="40"
+                            MinWidth="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type osk:VirtualKey}}, Path=KeyWidthScale, Converter={StaticResource WidthScaler}}">
+                        <Grid x:Name="Grid"
+                              Background="#33FFFFFF"
+                              Margin="2">
+                            <ContentPresenter x:Name="PART_PrimaryAction" />
+                        </Grid>
+                    </Border>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsFocused" Value="True">
+                            <Setter Property="Background" Value="#55FFFFFF" TargetName="Grid" />
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="#55FFFFFF" TargetName="Grid" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter Property="Background" Value="#88FFFFFF" TargetName="Grid" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type osk:VirtualKeyAction}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type osk:VirtualKeyAction}">
+                    <Grid>
+                        <ContentPresenter x:Name="PART_Visual" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <ContentPresenter.Resources>
+                                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource VirtualKeyboardTextBlock}" />
+                            </ContentPresenter.Resources>
+                        </ContentPresenter>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type osk:MinimalTextBox}">
+        <Setter Property="CaretBrush" Value="White" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type osk:MinimalTextBox}">
+                    <Grid>
+                        <ScrollViewer x:Name="PART_ContentHost" Margin="-2,0,0,0">
+                            <ScrollViewer.Resources>
+                                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource VirtualKeyboardTextBlock}" />
+                            </ScrollViewer.Resources>
+                        </ScrollViewer>
+                        <Border x:Name="PART_Caret" SnapsToDevicePixels="True" Width="1"
+                                Background="{TemplateBinding Foreground}" VerticalAlignment="Stretch"
+                                HorizontalAlignment="Left" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type osk:VirtualKeyboardTextField}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type osk:VirtualKeyboardTextField}">
+                    <ControlTemplate.Resources>
+                        <osk:EmptyStringVisibilityConverter x:Key="StringToVisibility" />
+
+                        <Storyboard x:Key="PART_ShowTransition">
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Background"
+                                                           Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)">
+                                <EasingDoubleKeyFrame Value="0" KeyTime="00:00:0.2">
+                                    <EasingDoubleKeyFrame.EasingFunction>
+                                        <CubicEase EasingMode="EaseOut" />
+                                    </EasingDoubleKeyFrame.EasingFunction>
+                                </EasingDoubleKeyFrame>
+                            </DoubleAnimationUsingKeyFrames>
+
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="TextArea"
+                                                           Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+                                                           BeginTime="00:00:0.1">
+                                <EasingDoubleKeyFrame Value="0" KeyTime="00:00:0.3">
+                                    <EasingDoubleKeyFrame.EasingFunction>
+                                        <CubicEase EasingMode="EaseOut" />
+                                    </EasingDoubleKeyFrame.EasingFunction>
+                                </EasingDoubleKeyFrame>
+                            </DoubleAnimationUsingKeyFrames>
+
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PART_Keyboard"
+                                                           Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+                                                           BeginTime="00:00:0.2">
+                                <EasingDoubleKeyFrame Value="0" KeyTime="00:00:0.4">
+                                    <EasingDoubleKeyFrame.EasingFunction>
+                                        <CubicEase EasingMode="EaseOut" />
+                                    </EasingDoubleKeyFrame.EasingFunction>
+                                </EasingDoubleKeyFrame>
+                            </DoubleAnimationUsingKeyFrames>
+                        </Storyboard>
+
+                        <Storyboard x:Key="PART_HideTransition">
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Background"
+                                                           Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+                                                           BeginTime="00:00:0.2">
+                                <EasingDoubleKeyFrame Value="300" KeyTime="00:00:0.2">
+                                    <EasingDoubleKeyFrame.EasingFunction>
+                                        <CubicEase EasingMode="EaseOut" />
+                                    </EasingDoubleKeyFrame.EasingFunction>
+                                </EasingDoubleKeyFrame>
+                            </DoubleAnimationUsingKeyFrames>
+
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="TextArea"
+                                                           Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+                                                           BeginTime="00:00:0.1">
+                                <EasingDoubleKeyFrame Value="300" KeyTime="00:00:0.3">
+                                    <EasingDoubleKeyFrame.EasingFunction>
+                                        <CubicEase EasingMode="EaseOut" />
+                                    </EasingDoubleKeyFrame.EasingFunction>
+                                </EasingDoubleKeyFrame>
+                            </DoubleAnimationUsingKeyFrames>
+
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PART_Keyboard"
+                                                           Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)">
+                                <EasingDoubleKeyFrame Value="300" KeyTime="00:00:0.4">
+                                    <EasingDoubleKeyFrame.EasingFunction>
+                                        <CubicEase EasingMode="EaseOut" />
+                                    </EasingDoubleKeyFrame.EasingFunction>
+                                </EasingDoubleKeyFrame>
+                            </DoubleAnimationUsingKeyFrames>
+                        </Storyboard>
+                    </ControlTemplate.Resources>
+
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                        <Grid>
+                            <Border x:Name="Background" Background="#FF1F1F1F">
+                                <Border.RenderTransform>
+                                    <TranslateTransform Y="{Binding ActualHeight, ElementName=Background}" />
+                                </Border.RenderTransform>
+                            </Border>
+                            <Grid Margin="20,10,20,20" HorizontalAlignment="Center" VerticalAlignment="Bottom">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+
+                                <Grid x:Name="TextArea"
+                                      Grid.Row="0" Margin="0,0,0,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Grid.RenderTransform>
+                                        <TranslateTransform Y="{Binding ActualHeight, ElementName=Background}" />
+                                    </Grid.RenderTransform>
+
+                                    <Grid.Resources>
+                                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource VirtualKeyboardTextBlock}" />
+                                    </Grid.Resources>
+
+                                    <TextBlock Grid.Column="0" Margin="0,0,10,0"
+                                               Text="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type osk:VirtualKeyboardTextField}}, Path=Title}"
+                                               Visibility="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type osk:VirtualKeyboardTextField}}, Path=Title, Converter={StaticResource StringToVisibility}}"
+                                               Foreground="{StaticResource MediaBrowserAccent}" />
+
+                                    <osk:MinimalTextBox x:Name="PART_TextBox" Grid.Column="1" VerticalAlignment="Top" />
+                                </Grid>
+
+                                <osk:VirtualKeyboard x:Name="PART_Keyboard" Grid.Row="1">
+                                    <osk:VirtualKeyboard.RenderTransform>
+                                        <TranslateTransform Y="{Binding ActualHeight, ElementName=Background}" />
+                                    </osk:VirtualKeyboard.RenderTransform>
+                                </osk:VirtualKeyboard>
+                            </Grid>
+                        </Grid>
+                    </Border>
+
+                    <ControlTemplate.Triggers>
+                        <EventTrigger RoutedEvent="Loaded">
+                            <BeginStoryboard Storyboard="{StaticResource PART_ShowTransition}" />
+                        </EventTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Color x:Key="AccentColor">#1ba1e2</Color>
+    <SolidColorBrush x:Key="Accent" Color="{StaticResource AccentColor}" />
+
+    <SolidColorBrush x:Key="InputBackground" Color="#262626" />
+    <SolidColorBrush x:Key="InputBackgroundHover" Color="#3e3e42" />
+    <SolidColorBrush x:Key="InputBorder" Color="#444444" />
+    <SolidColorBrush x:Key="InputBorderHover" Color="#3e3e42" />
+    <SolidColorBrush x:Key="InputText" Color="#ffffff" />
+    <SolidColorBrush x:Key="InputTextHover" Color="#ffffff" />
+    <SolidColorBrush x:Key="InputTextDisabled" Color="#717171" />
+
+    <Style TargetType="{x:Type osk:TextField}" BasedOn="{x:Null}">
+        <Setter Property="FontSize" Value="{StaticResource DefaultFontSize}" />
+        <Setter Property="FontFamily" Value="{StaticResource DefaultFontFamily}" />
+        <Setter Property="FontWeight" Value="{StaticResource DefaultFontWeight}" />
+        <Setter Property="Foreground" Value="{StaticResource InputText}" />
+        <Setter Property="Background" Value="{StaticResource InputBackground}" />
+        <Setter Property="BorderBrush" Value="{StaticResource InputBorder}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="2,1,1,1" />
+        <Setter Property="AllowDrop" Value="true" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="ScrollViewer.PanningMode" Value="VerticalFirst" />
+        <Setter Property="Stylus.IsFlicksEnabled" Value="False" />
+        <Setter Property="behaviors:SuppressBackKeyBehavior.SuppressBackKey" Value="true" />
+        <Setter Property="Validation.ErrorTemplate">
+            <Setter.Value>
+                <ControlTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <Border BorderThickness="1" BorderBrush="#FFdc000c" VerticalAlignment="Top">
+                            <Grid>
+                                <AdornedElementPlaceholder x:Name="adorner" Margin="-1" />
+                            </Grid>
+                        </Border>
+                        <Border x:Name="errorBorder" Background="#FFdc000c" Margin="8,0,0,0"
+                                Opacity="0" CornerRadius="0"
+                                IsHitTestVisible="False"
+                                MinHeight="24">
+                            <TextBlock
+                                Text="{Binding ElementName=adorner, Path=AdornedElement.(Validation.Errors)[0].ErrorContent}"
+                                Foreground="White" Margin="8,2,8,3" TextWrapping="Wrap" VerticalAlignment="Center" />
+                        </Border>
+                    </StackPanel>
+                    <ControlTemplate.Triggers>
+                        <DataTrigger Value="True">
+                            <DataTrigger.Binding>
+                                <Binding ElementName="adorner" Path="AdornedElement.IsKeyboardFocused" />
+                            </DataTrigger.Binding>
+                            <DataTrigger.EnterActions>
+                                <BeginStoryboard x:Name="fadeInStoryboard">
+                                    <Storyboard>
+                                        <DoubleAnimation Duration="00:00:00.15"
+                                                         Storyboard.TargetName="errorBorder"
+                                                         Storyboard.TargetProperty="Opacity"
+                                                         To="1" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.EnterActions>
+                            <DataTrigger.ExitActions>
+                                <StopStoryboard BeginStoryboardName="fadeInStoryboard" />
+                                <BeginStoryboard x:Name="fadeOutStoryBoard">
+                                    <Storyboard>
+                                        <DoubleAnimation Duration="00:00:00"
+                                                         Storyboard.TargetName="errorBorder"
+                                                         Storyboard.TargetProperty="Opacity"
+                                                         To="0" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.ExitActions>
+                        </DataTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type osk:TextField}">
+                    <Border x:Name="Bd"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            Background="{TemplateBinding Background}"
+                            Padding="{TemplateBinding Padding}"
+                            SnapsToDevicePixels="true">
+                        <TextBlock
+                            Margin="2,0,2,0"
+                            Text="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type osk:TextField}}, Path=Text}" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsEnabled" Value="false">
+                            <Setter Property="Foreground" Value="{StaticResource InputTextDisabled}" />
+                        </Trigger>
+                        <Trigger Property="IsFocused" Value="true">
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource Accent}" />
+                        </Trigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsEnabled" Value="True" />
+                                <Condition Property="IsMouseOver" Value="True" />
+                            </MultiTrigger.Conditions>
+                            <Setter Property="Background" Value="{StaticResource InputBackgroundHover}" />
+                            <Setter Property="BorderBrush" Value="{StaticResource InputBorderHover}" />
+                            <Setter Property="Foreground" Value="{StaticResource InputTextHover}" />
+                        </MultiTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

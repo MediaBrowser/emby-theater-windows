@@ -24,7 +24,7 @@
             <osk:TextField x:Name="TxtUsername" Title="Username"></osk:TextField>
 
             <TextBlock Style="{StaticResource TextBlockStyle}" Text="Password" Margin="0 40 0 0"></TextBlock>
-            <PasswordBox x:Name="TxtPassword"></PasswordBox>
+            <osk:TextField x:Name="TxtPassword" Title="Password" IsMasked="True"/>
 
             <CheckBox x:Name="ChkAutoLogin" Margin="0 40 0 0">
                 <TextBlock Style="{StaticResource TextBlockStyle}">Remember me</TextBlock>

@@ -2,14 +2,13 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:osk="clr-namespace:MediaBrowser.Theater.Presentation.Controls.Osk;assembly=MediaBrowser.Theater.Presentation"
                     xmlns:behaviors="clr-namespace:MediaBrowser.Theater.Presentation.Behaviors;assembly=MediaBrowser.Theater.Presentation">
-
-    <Style TargetType="{x:Type TextBlock}" x:Key="VirtualKeyboardTextBlock"
-           BasedOn="{StaticResource SmallTextBlockStyle}">
+    
+    <Style TargetType="{x:Type TextBlock}" x:Key="VirtualKeyboardTextBlock" BasedOn="{StaticResource SmallTextBlockStyle}">
         <Setter Property="FontSize" Value="24" />
     </Style>
 
     <Style TargetType="{x:Type osk:VirtualKeyboard}">
-                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type osk:VirtualKeyboard}">
@@ -20,12 +19,6 @@
                             <ContentPresenter x:Name="PART_Content" />
                         </Grid>
                     </Border>
-
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="Opacity" Value="0.1" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -77,60 +70,21 @@
     </Style>
 
     <Style TargetType="{x:Type osk:VirtualKey}">
+        <Setter Property="Foreground" Value="White" />
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type osk:VirtualKey}">
-                    <Grid>
-                        <ContentPresenter x:Name="PART_PrimaryAction" />
-                        <Popup x:Name="PART_AlternativesPopup" Placement="Right" StaysOpen="False" AllowsTransparency="True" />
-                    </Grid>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <Style TargetType="{x:Type osk:AlternateKeySelection}">
-        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type osk:AlternateKeySelection}">
-                    <ItemsControl x:Name="PART_Keys" Background="#FF1F1F1F" MinHeight="60" MinWidth="80">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <StackPanel Orientation="Horizontal"
-                                            FlowDirection="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type osk:AlternateKeySelection}}, Path=FlowDirection}" />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                    </ItemsControl>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <Style TargetType="{x:Type osk:VirtualKeyAction}">
-        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-        <Setter Property="Foreground" Value="White" />
-        <Setter Property="FlowDirection" Value="LeftToRight"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type osk:VirtualKeyAction}">
                     <ControlTemplate.Resources>
                         <osk:MultiplyNumberConverter x:Key="WidthScaler" Multiplier="80" />
                     </ControlTemplate.Resources>
 
                     <Border MinHeight="60"
-                            MinWidth="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type osk:VirtualKeyAction}}, Path=KeyWidth, Converter={StaticResource WidthScaler}}">
+                            MinWidth="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type osk:VirtualKey}}, Path=KeyWidthScale, Converter={StaticResource WidthScaler}}">
                         <Grid x:Name="Grid"
                               Background="#33FFFFFF"
                               Margin="2">
-                            <ContentPresenter x:Name="PART_Visual" HorizontalAlignment="Center"
-                                              VerticalAlignment="Center">
-                                <ContentPresenter.Resources>
-                                    <Style TargetType="{x:Type TextBlock}"
-                                           BasedOn="{StaticResource VirtualKeyboardTextBlock}" />
-                                </ContentPresenter.Resources>
-                            </ContentPresenter>
+                            <ContentPresenter x:Name="PART_PrimaryAction" />
                         </Grid>
                     </Border>
 
@@ -150,28 +104,33 @@
         </Setter>
     </Style>
 
+    <Style TargetType="{x:Type osk:VirtualKeyAction}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type osk:VirtualKeyAction}">
+                    <Grid>
+                        <ContentPresenter x:Name="PART_Visual" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <ContentPresenter.Resources>
+                                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource VirtualKeyboardTextBlock}" />
+                            </ContentPresenter.Resources>
+                        </ContentPresenter>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style TargetType="{x:Type osk:MinimalTextBox}">
         <Setter Property="CaretBrush" Value="White" />
-                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-        <Setter Property="FontSize" Value="24" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="FontSize" Value="24"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type osk:MinimalTextBox}">
-                    <ControlTemplate.Resources>
-                        <osk:RecipricalConverter x:Key="Invert" />
-                    </ControlTemplate.Resources>
-
                     <Grid>
-                        <Grid.LayoutTransform>
-                            <ScaleTransform
-                                ScaleX="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type osk:VirtualKeyboardModalWindow}}, Path=ContentScale, Converter={StaticResource Invert}}"
-                                ScaleY="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type osk:VirtualKeyboardModalWindow}}, Path=ContentScale, Converter={StaticResource Invert}}" />
-                        </Grid.LayoutTransform>
                         <ScrollViewer x:Name="PART_ContentHost" Margin="-2,0,0,0" />
-                        <Border x:Name="PART_Caret" SnapsToDevicePixels="True"
-                                Width="1"
-                                Background="{TemplateBinding Foreground}"
-                                VerticalAlignment="Stretch"
+                        <Border x:Name="PART_Caret" SnapsToDevicePixels="True" Width="1"
+                                Background="{TemplateBinding Foreground}" VerticalAlignment="Stretch"
                                 HorizontalAlignment="Left" />
                     </Grid>
                 </ControlTemplate>
@@ -180,13 +139,11 @@
     </Style>
 
     <Style TargetType="{x:Type osk:VirtualKeyboardTextField}">
-        <Setter Property="Background" Value="Transparent" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type osk:VirtualKeyboardTextField}">
                     <ControlTemplate.Resources>
                         <osk:EmptyStringVisibilityConverter x:Key="StringToVisibility" />
-                        <osk:FontScaleConverter x:Key="InverseFontScale" DesiredFontSize="24" />
 
                         <Storyboard x:Key="PART_ShowTransition">
                             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Background"

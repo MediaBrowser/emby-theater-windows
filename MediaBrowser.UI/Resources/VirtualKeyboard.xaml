@@ -4,7 +4,7 @@
                     xmlns:behaviors="clr-namespace:MediaBrowser.Theater.Presentation.Behaviors;assembly=MediaBrowser.Theater.Presentation">
     
     <Style TargetType="{x:Type TextBlock}" x:Key="VirtualKeyboardTextBlock" BasedOn="{StaticResource SmallTextBlockStyle}">
-        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontSize" Value="24" />
     </Style>
 
     <Style TargetType="{x:Type osk:VirtualKeyboard}">
@@ -49,7 +49,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type osk:VirtualKeySetRow}">
                     <ControlTemplate.Resources>
-                        <osk:RowMarginConverter x:Key="MarginConverter" KeyWidth="50" />
+                        <osk:RowMarginConverter x:Key="MarginConverter" KeyWidth="80" />
                     </ControlTemplate.Resources>
 
                     <Border Background="{TemplateBinding Background}"
@@ -76,10 +76,10 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type osk:VirtualKey}">
                     <ControlTemplate.Resources>
-                        <osk:MultiplyNumberConverter x:Key="WidthScaler" Multiplier="50" />
+                        <osk:MultiplyNumberConverter x:Key="WidthScaler" Multiplier="80" />
                     </ControlTemplate.Resources>
 
-                    <Border MinHeight="40"
+                    <Border MinHeight="60"
                             MinWidth="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type osk:VirtualKey}}, Path=KeyWidthScale, Converter={StaticResource WidthScaler}}">
                         <Grid x:Name="Grid"
                               Background="#33FFFFFF"
@@ -123,15 +123,12 @@
     <Style TargetType="{x:Type osk:MinimalTextBox}">
         <Setter Property="CaretBrush" Value="White" />
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="FontSize" Value="24"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type osk:MinimalTextBox}">
                     <Grid>
-                        <ScrollViewer x:Name="PART_ContentHost" Margin="-2,0,0,0">
-                            <ScrollViewer.Resources>
-                                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource VirtualKeyboardTextBlock}" />
-                            </ScrollViewer.Resources>
-                        </ScrollViewer>
+                        <ScrollViewer x:Name="PART_ContentHost" Margin="-2,0,0,0" />
                         <Border x:Name="PART_Caret" SnapsToDevicePixels="True" Width="1"
                                 Background="{TemplateBinding Foreground}" VerticalAlignment="Stretch"
                                 HorizontalAlignment="Left" />

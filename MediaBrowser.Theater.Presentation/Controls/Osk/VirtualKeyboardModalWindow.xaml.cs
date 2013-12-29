@@ -30,6 +30,8 @@ namespace MediaBrowser.Theater.Presentation.Controls.Osk
 
         public VirtualKeyboardModalWindow(string title = null, string initialText = null)
         {
+            DataContext = this;
+
             InitializeComponent();
 
             EmptySpace.MouseDown += (s, a) => Keyboard.Cancel();

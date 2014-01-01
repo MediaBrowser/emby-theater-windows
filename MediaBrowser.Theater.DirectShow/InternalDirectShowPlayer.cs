@@ -319,7 +319,10 @@ namespace MediaBrowser.Theater.DirectShow
         {
             if (_mediaPlayer != null)
             {
-                InvokeOnPlayerThread(() => _mediaPlayer.Dispose());
+                InvokeOnPlayerThread(() => {
+                    _mediaPlayer.Dispose();
+                    _mediaPlayer = null; //force the object to get cleaned up
+                });
             }
         }
 

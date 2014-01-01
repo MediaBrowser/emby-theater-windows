@@ -73,6 +73,7 @@ namespace MediaBrowser.Theater.DirectShow
         private readonly IntPtr _applicationWindowHandle;
         private bool _isInExclusiveMode;
         private DvdMenuMode _dvdMenuMode = DvdMenuMode.No;
+        private bool _removeHandlers = false;
 
         public DirectShowPlayer(ILogger logger, IHiddenWindow hiddenWindow, InternalDirectShowPlayer playerWrapper, IntPtr applicationWindowHandle)
         {
@@ -676,6 +677,7 @@ namespace MediaBrowser.Theater.DirectShow
                 _hiddenWindow.SizeChanged += _hiddenWindow_SizeChanged;
                 _hiddenWindow.MouseClick += HiddenForm_MouseClick;
                 _hiddenWindow.KeyDown += HiddenForm_KeyDown;
+                _removeHandlers = true;
             }
 
             if (_cursorHidden)
@@ -791,6 +793,9 @@ namespace MediaBrowser.Theater.DirectShow
         {
             int screenWidth;
             int screenHeight;
+
+            if (m_graph == null)
+                return;
 
             if (_isInExclusiveMode)
             {
@@ -1100,6 +1105,14 @@ namespace MediaBrowser.Theater.DirectShow
             _hiddenWindow.OnWMGRAPHNOTIFY = null;
             _hiddenWindow.OnDVDEVENT = null;
 
+            if (_removeHandlers)
+            {
+                _hiddenWindow.SizeChanged -= _hiddenWindow_SizeChanged;
+                _hiddenWindow.MouseClick -= HiddenForm_MouseClick;
+                _hiddenWindow.KeyDown -= HiddenForm_KeyDown;
+                _removeHandlers = false;
+            }
+
             _logger.Debug("Disposing player");
 
             CloseInterfaces();
@@ -1121,6 +1134,7 @@ namespace MediaBrowser.Theater.DirectShow
                 m_graph.RemoveFilter(_defaultAudioRenderer as DirectShowLib.IBaseFilter);
 
                 CleanUpInterface(_defaultAudioRenderer);
+                _defaultAudioRenderer = null;
             }
 
             if (_reclockAudioRenderer != null)
@@ -1128,6 +1142,7 @@ namespace MediaBrowser.Theater.DirectShow
                 m_graph.RemoveFilter(_reclockAudioRenderer as DirectShowLib.IBaseFilter);
 
                 CleanUpInterface(_reclockAudioRenderer);
+                _reclockAudioRenderer = null;
             }
 
             if (_lavaudio != null)
@@ -1135,6 +1150,7 @@ namespace MediaBrowser.Theater.DirectShow
                 m_graph.RemoveFilter(_lavaudio as DirectShowLib.IBaseFilter);
 
                 CleanUpInterface(_lavaudio);
+                _lavaudio = null;
             }
 
             if (_xyVsFilter != null)
@@ -1142,6 +1158,7 @@ namespace MediaBrowser.Theater.DirectShow
                 m_graph.RemoveFilter(_xyVsFilter as DirectShowLib.IBaseFilter);
 
                 CleanUpInterface(_xyVsFilter);
+                _xyVsFilter = null;
             }
 
             if (_xySubFilter != null)
@@ -1149,6 +1166,7 @@ namespace MediaBrowser.Theater.DirectShow
                 m_graph.RemoveFilter(_xySubFilter as DirectShowLib.IBaseFilter);
 
                 CleanUpInterface(_xySubFilter);
+                _xySubFilter = null;
             }
 
             if (_lavvideo != null)
@@ -1156,6 +1174,7 @@ namespace MediaBrowser.Theater.DirectShow
                 m_graph.RemoveFilter(_lavvideo as DirectShowLib.IBaseFilter);
 
                 CleanUpInterface(_lavvideo);
+                _lavvideo = null;
             }
 
             if (_madvr != null)
@@ -1163,6 +1182,7 @@ namespace MediaBrowser.Theater.DirectShow
                 m_graph.RemoveFilter(_madvr as DirectShowLib.IBaseFilter);
 
                 CleanUpInterface(_madvr);
+                _madvr = null;
             }
 
             if (_videoWindow != null)
@@ -1200,9 +1220,13 @@ namespace MediaBrowser.Theater.DirectShow
             _mDvdControl = null;
 
             CleanUpInterface(_mPDisplay);
+            _mPDisplay = null;
             CleanUpInterface(_sourceFilter);
+            _sourceFilter = null;
             CleanUpInterface(_mPEvr);
+            _mPEvr = null;
             CleanUpInterface(m_filterGraph);
+            m_filterGraph = null;
 
             m_filterGraph = null;
             _mediaEventEx = null;

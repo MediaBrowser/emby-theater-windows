@@ -74,6 +74,7 @@
     <Compile Include="Controls\ExtendedScrollViewer.cs" />
     <Compile Include="Controls\ItemsControlExtensions.cs" />
     <Compile Include="Controls\ListFocuser.cs" />
+    <Compile Include="Controls\Osk\AlternateKeySelection.cs" />
     <Compile Include="Controls\Osk\EmptyStringVisibilityConverter.cs" />
     <Compile Include="Controls\Osk\Layout\AcceptAction.cs" />
     <Compile Include="Controls\Osk\Layout\BackspaceAction.cs" />
@@ -90,6 +91,7 @@
     <Compile Include="Controls\Osk\MinimalTextBox.cs" />
     <Compile Include="Controls\Osk\MultiplyNumberConverter.cs" />
     <Compile Include="Controls\Osk\RowMarginConverter.cs" />
+    <Compile Include="Controls\Osk\ScaleConverters.cs" />
     <Compile Include="Controls\Osk\TextField.cs" />
     <Compile Include="Controls\Osk\VirtualKey.cs" />
     <Compile Include="Controls\Osk\VirtualKeyAction.cs" />

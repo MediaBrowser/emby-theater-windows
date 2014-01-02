@@ -217,7 +217,7 @@ namespace MediaBrowser.Theater.Presentation.Controls.Osk
 
         protected override void OnPreviewKeyDown(KeyEventArgs e)
         {
-            if (TextBox != null && !TextBox.IsFocused && !IsVirtualKeyboardControlKey(e.Key))
+            if (TextBox != null && !TextBox.IsFocused && !IsVirtualKeyboardControlKey(e.Key) && (Keyboard == null || Keyboard.IsEnabled))
             {
                 TextBox.Focus();
                 TextBox.RaiseEvent(e);
@@ -244,6 +244,11 @@ namespace MediaBrowser.Theater.Presentation.Controls.Osk
                     Cancel();
                     e.Handled = false;
                 }
+
+                if (e.Key == Key.BrowserBack)
+                {
+                    Cancel();
+                }
             }
 
             base.OnPreviewKeyDown(e);
@@ -264,6 +269,9 @@ namespace MediaBrowser.Theater.Presentation.Controls.Osk
                 case Key.Down:
                 case Key.Enter:
                 case Key.Escape:
+                case Key.Multiply:
+                case Key.D8:
+                case Key.LeftShift:
                     return true;
                 default:
                     return false;

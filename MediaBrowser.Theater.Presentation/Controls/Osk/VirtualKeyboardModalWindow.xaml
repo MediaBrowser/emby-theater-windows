@@ -13,5 +13,9 @@
 
         <osk:VirtualKeyboardTextField x:Name="Keyboard" HorizontalAlignment="Stretch"
                                            VerticalAlignment="Bottom" Foreground="White" />
+
+        <Grid.LayoutTransform>
+            <ScaleTransform ScaleX="{Binding Path=ContentScale}" ScaleY="{Binding Path=ContentScale}" CenterX="0" CenterY="0" />
+        </Grid.LayoutTransform>
     </Grid>
 </controls1:BaseModalWindow>

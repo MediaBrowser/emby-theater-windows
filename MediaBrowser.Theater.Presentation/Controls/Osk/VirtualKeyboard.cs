@@ -47,7 +47,7 @@ namespace MediaBrowser.Theater.Presentation.Controls.Osk
 
         private ContentPresenter _contentPresenter;
         private bool _isCapsLock;
-        private Control[][] _keyGrid;
+        private VirtualKey[][] _keyGrid;
         private int _selectedColumn;
         private int _selectedRow;
         private VirtualKeySet _virtualKeySet;
@@ -81,7 +81,7 @@ namespace MediaBrowser.Theater.Presentation.Controls.Osk
 
         public bool IsKeyFocused
         {
-            get { return _keyGrid != null && _keyGrid.Any(row => row.Any(key => key.IsFocused)); }
+            get { return _keyGrid != null && _keyGrid.Any(row => row.Any(key => key.PrimaryAction.IsFocused)); }
         }
 
         private VirtualKeySet VirtualKeySet
@@ -240,28 +240,31 @@ namespace MediaBrowser.Theater.Presentation.Controls.Osk
 
         protected override void OnKeyDown(KeyEventArgs e)
         {
-            if (e.Key == Key.Left)
+            if (IsEnabled)
             {
-                MoveSelectionLeft();
-                e.Handled = true;
-            }
+                if (e.Key == Key.Left)
+                {
+                    MoveSelectionLeft();
+                    e.Handled = true;
+                }
 
-            if (e.Key == Key.Right)
-            {
-                MoveSelectionRight();
-                e.Handled = true;
-            }
+                if (e.Key == Key.Right)
+                {
+                    MoveSelectionRight();
+                    e.Handled = true;
+                }
 
-            if (e.Key == Key.Up)
-            {
-                MoveSelectionUp();
-                e.Handled = true;
-            }
+                if (e.Key == Key.Up)
+                {
+                    MoveSelectionUp();
+                    e.Handled = true;
+                }
 
-            if (e.Key == Key.Down)
-            {
-                MoveSelectionDown();
-                e.Handled = true;
+                if (e.Key == Key.Down)
+                {
+                    MoveSelectionDown();
+                    e.Handled = true;
+                }
             }
 
             base.OnKeyDown(e);
@@ -271,28 +274,28 @@ namespace MediaBrowser.Theater.Presentation.Controls.Osk
         {
             if (_virtualKeySet == null)
             {
-                _keyGrid = new Control[0][];
+                _keyGrid = new VirtualKey[0][];
                 return;
             }
 
             List<VirtualKeySetRow> rows = _virtualKeySet.Rows.ToList();
 
-            _keyGrid = new Control[rows.Count][];
+            _keyGrid = new VirtualKey[rows.Count][];
             for (int i = 0; i < rows.Count; i++)
             {
                 VirtualKeySetRow row = rows[i];
                 List<VirtualKey> keys = row.Keys.ToList();
 
-                var width = (int) Math.Ceiling(row.HorizontalOffset + keys.Select(k => k.KeyWidthScale).Sum());
+                var width = (int) Math.Ceiling(row.HorizontalOffset + keys.Select(k => k.KeyWidth).Sum());
 
-                _keyGrid[i] = new Control[width];
+                _keyGrid[i] = new VirtualKey[width];
 
                 double position = row.HorizontalOffset;
                 int index = 0;
                 for (int k = 0; k < keys.Count; k++)
                 {
                     VirtualKey key = keys[k];
-                    position += key.KeyWidthScale;
+                    position += key.KeyWidth;
                     while (index < position - 0.5)
                     {
                         _keyGrid[i][index] = key;

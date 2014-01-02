@@ -18,13 +18,13 @@
                     new Key('y'),
                     new Key('u'),
                     new Key('i'),
-                    new Key('o'),
+                    new Key('o', 'ó'),
                     new Key('p'),
                     new Key(new BackspaceAction()) {Width = 2}
                 },
                 new KeySetRow(0.25)
                 {
-                    new Key('a'),
+                    new Key('a', 'á'),
                     new Key('s'),
                     new Key('d'),
                     new Key('f'),

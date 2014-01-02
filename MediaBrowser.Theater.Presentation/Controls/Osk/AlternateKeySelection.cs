@@ -65,7 +65,7 @@ namespace MediaBrowser.Theater.Presentation.Controls.Osk
                 e.Handled = true;
             }
 
-            if (e.Key == Key.Escape || e.Key == Key.BrowserBack)
+            if (e.Key == Key.Escape)
             {
                 Close();
                 e.Handled = true;

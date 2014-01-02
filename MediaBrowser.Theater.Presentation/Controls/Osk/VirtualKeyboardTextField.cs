@@ -244,11 +244,6 @@ namespace MediaBrowser.Theater.Presentation.Controls.Osk
                     Cancel();
                     e.Handled = false;
                 }
-
-                if (e.Key == Key.BrowserBack)
-                {
-                    Cancel();
-                }
             }
 
             base.OnPreviewKeyDown(e);

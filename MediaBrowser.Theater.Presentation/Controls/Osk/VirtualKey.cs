@@ -145,7 +145,7 @@ namespace MediaBrowser.Theater.Presentation.Controls.Osk
 
         protected override void OnKeyDown(KeyEventArgs e)
         {
-            if (e.Key == System.Windows.Input.Key.Multiply || e.Key == System.Windows.Input.Key.D8)
+            if (e.Key == System.Windows.Input.Key.Multiply)
             {
                 ToggleAlternativesPopup();
                 e.Handled = true;

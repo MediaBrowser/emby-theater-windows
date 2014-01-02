@@ -22,7 +22,7 @@ namespace MediaBrowser.Theater.Presentation.Controls.Osk
         public VirtualKeySetRow(VirtualKeyboard keyboard, KeySet keySet, KeySetRow row)
         {
             _row = row;
-            Keys = row.Select(key => new VirtualKey(keyboard, keySet, key)).ToArray();
+            Keys = row.Select(key => new VirtualKey(keyboard, keySet, row, key)).ToArray();
         }
 
         public double HorizontalOffset

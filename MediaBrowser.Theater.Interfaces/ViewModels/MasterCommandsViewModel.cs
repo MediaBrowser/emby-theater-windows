@@ -38,6 +38,9 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
         public ICommand RestartServerCommand { get; private set; }
         public ICommand RestartApplicationCommand { get; private set; }
         public ICommand ShutdownApplicationCommand { get;  private set; }
+        public ICommand ShutdownSystemCommand { get; private set; }
+        public ICommand RestartSystemCommand { get; private set; }
+        public ICommand SleepSystemCommand { get; private set; }
 
         private bool _showRestartServerNotification;
         public bool ShowRestartServerNotification
@@ -92,7 +95,7 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
 
         public event EventHandler<EventArgs> PageNavigated;
 
-        public MasterCommandsViewModel(INavigationService navigationService, ISessionManager sessionManager, IPresentationManager presentationManager, IApiClient apiClient, ILogger logger, IApplicationHost appHost, IServerEvents serverEvents)
+        public MasterCommandsViewModel(INavigationService navigationService, ISessionManager sessionManager, IPresentationManager presentationManager, IApiClient apiClient, ILogger logger, ITheaterApplicationHost appHost, IServerEvents serverEvents)
         {
             Dispatcher = Dispatcher.CurrentDispatcher;
 
@@ -120,6 +123,9 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
             RestartServerCommand = new RelayCommand(i => RestartServer());
             RestartApplicationCommand = new RelayCommand(i => RestartApplication());
             ShutdownApplicationCommand = new RelayCommand(i => ShutdownApplication());
+            ShutdownSystemCommand = new RelayCommand(i => appHost.ShutdownSystem());
+            RestartSystemCommand = new RelayCommand(i => appHost.RebootSystem());
+            SleepSystemCommand = new RelayCommand(i => appHost.SetSystemToSleep());
 
             RefreshRestartServerNotification();
         }

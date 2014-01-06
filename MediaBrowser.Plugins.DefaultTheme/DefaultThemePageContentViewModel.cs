@@ -4,6 +4,7 @@ using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Plugins.DefaultTheme.UserProfileMenu;
+using MediaBrowser.Theater.Interfaces;
 using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
@@ -23,7 +24,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
         private readonly IImageManager _imageManager;
         private readonly ITheaterConfigurationManager _config;
 
-        public DefaultThemePageContentViewModel(INavigationService navigationService, ISessionManager sessionManager, IApiClient apiClient, IImageManager imageManager, IPresentationManager presentation, IPlaybackManager playbackManager, ILogger logger, IApplicationHost appHost, IServerEvents serverEvents, ITheaterConfigurationManager config)
+        public DefaultThemePageContentViewModel(INavigationService navigationService, ISessionManager sessionManager, IApiClient apiClient, IImageManager imageManager, IPresentationManager presentation, IPlaybackManager playbackManager, ILogger logger, ITheaterApplicationHost appHost, IServerEvents serverEvents, ITheaterConfigurationManager config)
             : base(navigationService, sessionManager, playbackManager, logger, appHost, apiClient, presentation, serverEvents)
         {
             _imageManager = imageManager;

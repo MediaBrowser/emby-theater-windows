@@ -4,6 +4,7 @@ using MediaBrowser.Common;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Plugins.DefaultTheme.UserProfileMenu;
+using MediaBrowser.Theater.Interfaces;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.ViewModels;
 using MediaBrowser.Theater.Interfaces.Navigation;
@@ -71,7 +72,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
             }
         }
 
-        public DefaultThemePageMasterCommandsViewModel(INavigationService navigationService, ISessionManager sessionManager, IPresentationManager presentationManager, IApiClient apiClient, ILogger logger, IApplicationHost appHost, IServerEvents serverEvents, IImageManager imageManager) 
+        public DefaultThemePageMasterCommandsViewModel(INavigationService navigationService, ISessionManager sessionManager, IPresentationManager presentationManager, IApiClient apiClient, ILogger logger, ITheaterApplicationHost appHost, IServerEvents serverEvents, IImageManager imageManager) 
             : base(navigationService, sessionManager, presentationManager, apiClient, logger, appHost, serverEvents)
         {
             ImageManager = imageManager;

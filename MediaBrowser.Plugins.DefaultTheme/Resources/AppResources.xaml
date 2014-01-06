@@ -370,10 +370,12 @@
                                                         <Setter TargetName="mainBackground" Property="Background" Value="{StaticResource ButtonBackgroundPressed}" />
                                                     </Trigger>
                                                     <Trigger Property="IsKeyboardFocused" Value="true">
-                                                        <Setter TargetName="menuIcon" Property="Fill" Value="{StaticResource MediaBrowserAccent}" />
+                                                        <Setter TargetName="mainBackground" Property="Background" Value="{StaticResource MediaBrowserAccent}" />
+                                                        <Setter TargetName="menuIcon" Property="Fill" Value="White" />
                                                     </Trigger>
                                                     <Trigger Property="IsPressed" Value="true">
-                                                        <Setter TargetName="menuIcon" Property="Fill" Value="{StaticResource MediaBrowserAccent}" />
+                                                        <Setter TargetName="mainBackground" Property="Background" Value="{StaticResource MediaBrowserAccent}" />
+                                                        <Setter TargetName="menuIcon" Property="Fill" Value="White" />
                                                     </Trigger>
                                                     <DataTrigger Binding="{Binding ShowDefaultUserImage}" Value="False">
                                                         <Setter TargetName="defaultUserImageGrid" Property="Visibility" Value="Collapsed"/>

@@ -29,7 +29,7 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
         private readonly Timer _clockTimer;
         private readonly Dispatcher _dispatcher;
 
-        public PageContentViewModel(INavigationService navigationService, ISessionManager sessionManager, IPlaybackManager playbackManager, ILogger logger, IApplicationHost appHost, IApiClient apiClient, IPresentationManager presentationManager, IServerEvents serverEvents)
+        public PageContentViewModel(INavigationService navigationService, ISessionManager sessionManager, IPlaybackManager playbackManager, ILogger logger, ITheaterApplicationHost appHost, IApiClient apiClient, IPresentationManager presentationManager, IServerEvents serverEvents)
         {
             NavigationService = navigationService;
             SessionManager = sessionManager;

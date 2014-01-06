@@ -351,7 +351,7 @@
                                                         <Border Grid.Column="1">
                                                             <Grid>
                                                                 <Grid />
-                                                                <Path x:Name="menuIcon" Style="{DynamicResource IconPath}" Data="M25.379999,0L30.405999,0 30.405999,30.406 25.379999,30.406z M12.69,0L17.716,0 17.716,30.406 12.69,30.406z M0,0L5.0259995,0 5.0259995,30.406 0,30.406z" Stretch="Uniform" Fill="{DynamicResource ModalButtonText}" Width="18" Height="18" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+                                                                <Path x:Name="menuIcon" Style="{DynamicResource IconPath}" Data="M25.379999,0L30.405999,0 30.405999,30.406 25.379999,30.406z M12.69,0L17.716,0 17.716,30.406 12.69,30.406z M0,0L5.0259995,0 5.0259995,30.406 0,30.406z" Stretch="Uniform" Fill="#ffffff" Width="18" Height="18" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
                                                                     <Path.RenderTransform>
                                                                         <TransformGroup>
                                                                             <TransformGroup.Children>

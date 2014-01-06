@@ -1,4 +1,6 @@
-﻿using MediaBrowser.ApiInteraction;
+﻿using System.Diagnostics;
+using System.Windows.Forms;
+using MediaBrowser.ApiInteraction;
 using MediaBrowser.ApiInteraction.WebSocket;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Constants;
@@ -359,16 +361,19 @@ namespace MediaBrowser.UI
         public void ShutdownSystem()
         {
             PlaybackManager.StopAllPlayback();
+            Process.Start("shutdown", "/s /t 0");
         }
 
         public void RebootSystem()
         {
             PlaybackManager.StopAllPlayback();
+            Process.Start("shutdown", "/r /t 0");
         }
 
         public void SetSystemToSleep()
         {
             PlaybackManager.StopAllPlayback();
+            Application.SetSuspendState(PowerState.Suspend, false, false);
         }
     }
 }

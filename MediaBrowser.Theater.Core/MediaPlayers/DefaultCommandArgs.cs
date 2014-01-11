@@ -27,11 +27,6 @@ namespace MediaBrowser.Theater.Core.MediaPlayers
             }
             
             // GAMES
-            if (string.Equals(filename, "mupen64.exe", StringComparison.OrdinalIgnoreCase))
-            {
-                return "-g {PATH} -nogui";
-            }
-
             if (string.Equals(filename, "1964.exe", StringComparison.OrdinalIgnoreCase))
             {
                 return "-f -g {PATH}";
@@ -42,20 +37,30 @@ namespace MediaBrowser.Theater.Core.MediaPlayers
                 return "--exec={PATH}";
             }
 
+            if (string.Equals(filename, "epsxe.exe", StringComparison.OrdinalIgnoreCase))
+            {
+                return "-nogui -loadbin {PATH}";
+            }
+
             if (string.Equals(filename, "fusion.exe", StringComparison.OrdinalIgnoreCase))
             {
                 return "-fullscreen {PATH}";
             }
 
-            if (string.Equals(filename, "epsxe.exe", StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(filename, "mupen64.exe", StringComparison.OrdinalIgnoreCase))
             {
-                return "-nogui -loadbin {PATH}";
+                return "-g {PATH} -nogui";
             }
 
             // They add the release version to the filename ie: pcsx2-r5350.exe
             if (filename.ToLowerInvariant().Contains("pcsx2"))
             {
                 return "--nogui --fullscreen {PATH}";
+            }
+
+            if (string.Equals(filename, "zsnesw.exe", StringComparison.OrdinalIgnoreCase))
+            {
+                return "-m {PATH}";
             }
 
             return "{PATH}";

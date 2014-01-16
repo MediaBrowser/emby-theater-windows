@@ -82,6 +82,7 @@
     <Compile Include="Enums.cs" />
     <Compile Include="Imports.cs" />
     <Compile Include="InternalDirectShowPlayer.cs" />
+    <Compile Include="LavInterfaces.cs" />
     <Compile Include="MadvrInterface.cs" />
     <Compile Include="PlayablePathBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">

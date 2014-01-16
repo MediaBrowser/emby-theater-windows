@@ -17,6 +17,7 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 //using DirectShowLib.Utils;
 using System.Diagnostics;
+using MediaBrowser.Theater.Interfaces.Configuration;
 
 namespace MediaBrowser.Theater.DirectShow
 {
@@ -74,6 +75,8 @@ namespace MediaBrowser.Theater.DirectShow
         private bool _isInExclusiveMode;
         private DvdMenuMode _dvdMenuMode = DvdMenuMode.No;
         private bool _removeHandlers = false;
+        private VideoConfiguration _videoConfig;
+        private AudioConfiguration _audioConfig;
 
         public DirectShowPlayer(ILogger logger, IHiddenWindow hiddenWindow, InternalDirectShowPlayer playerWrapper, IntPtr applicationWindowHandle)
         {
@@ -145,13 +148,16 @@ namespace MediaBrowser.Theater.DirectShow
             }
         }
 
-        public void Play(PlayableItem item, bool enableReclock, bool enableMadvr, bool enableMadvrExclusiveMode, bool enableXySubFilter)
+        public void Play(PlayableItem item, bool enableReclock, bool enableMadvr, bool enableMadvrExclusiveMode, bool enableXySubFilter, VideoConfiguration videoConfig, AudioConfiguration audioConfig)
         {
             _logger.Info("Playing {0}. Reclock: {1}, Madvr: {2}, xySubFilter: {3}", item.OriginalItem.Name, enableReclock, enableMadvr, enableXySubFilter);
             _logger.Info("Playing Path {0}", item.PlayablePath);
 
             _item = item;
             _isInExclusiveMode = false;
+
+            _videoConfig = videoConfig;
+            _audioConfig = audioConfig;
 
             var isDvd = ((item.OriginalItem.VideoType ?? VideoType.VideoFile) == VideoType.Dvd || (item.OriginalItem.IsoType ?? IsoType.BluRay) == IsoType.Dvd) &&
                 item.PlayablePath.IndexOf("http://", StringComparison.OrdinalIgnoreCase) == -1;
@@ -351,6 +357,40 @@ namespace MediaBrowser.Theater.DirectShow
                     {
                         hr = m_graph.AddFilter(vlavvideo, "LAV Video Decoder");
                         DsError.ThrowExceptionForHR(hr);
+
+                        ILAVVideoSettings vsett = vlavvideo as ILAVVideoSettings;
+                        if (vsett != null)
+                        {
+                            //we only want to set it for MB
+                            hr = vsett.SetRuntimeConfig(true);
+                            DsError.ThrowExceptionForHR(hr);
+
+                            LAVHWAccel testme = vsett.GetHWAccel();
+                            if (testme != (LAVHWAccel)_videoConfig.HwaMode)
+                            {
+                                hr = vsett.SetHWAccel((LAVHWAccel)_videoConfig.HwaMode);
+                                DsError.ThrowExceptionForHR(hr);
+                            }
+
+                            //enable all the HW codecs but mpeg4
+                            //todo migrate this to VideoConfiguration
+                            string[] hwaCodecs = Enum.GetNames(typeof(LAVVideoHWCodec));
+                            foreach (string hwaCodec in hwaCodecs)
+                            {
+                                LAVVideoHWCodec codec = (LAVVideoHWCodec)Enum.Parse(typeof(LAVVideoHWCodec), hwaCodec);
+                                if (hwaCodec != "MPEG4" && hwaCodec != "NB" && !vsett.GetHWAccelCodec(codec))
+                                {
+                                    hr = vsett.SetHWAccelCodec(codec, true);
+                                    DsError.ThrowExceptionForHR(hr);
+                                }
+                            }
+                            
+                            if (!vsett.GetDVDVideoSupport())
+                            {
+                                hr = vsett.SetDVDVideoSupport(true);
+                                DsError.ThrowExceptionForHR(hr);
+                            }
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -366,6 +406,22 @@ namespace MediaBrowser.Theater.DirectShow
                     {
                         hr = m_graph.AddFilter(vlavaudio, "LAV Audio Decoder");
                         DsError.ThrowExceptionForHR(hr);
+
+                        ILAVAudioSettings asett = vlavaudio as ILAVAudioSettings;
+                        if (asett != null)
+                        {
+                            //we only want to set it for MB
+                            hr = asett.SetRuntimeConfig(true);
+                            DsError.ThrowExceptionForHR(hr);
+
+                            //enable/disable bitstreaming
+                            for (int i = 0; i < (int)LAVBitstreamCodec.NB; i++)
+                            {
+                                LAVBitstreamCodec codec = (LAVBitstreamCodec)i + 1;
+                                hr = asett.SetBitstreamConfig(codec, _audioConfig.EnableAudioBitstreaming);
+                                DsError.ThrowExceptionForHR(hr);
+                            }
+                        }
                     }
                 }
                 catch (Exception ex)

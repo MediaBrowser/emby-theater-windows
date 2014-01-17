@@ -1,6 +1,8 @@
-﻿using MediaBrowser.Theater.Interfaces.Configuration;
+﻿using System.Collections.Generic;
+using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.System;
+using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.Pages;
 using System;
 using System.Windows;
@@ -11,7 +13,7 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
     /// Interaction logic for ConfigurationPage.xaml
     /// </summary>
     public partial class ConfigurationPage : BasePage
-    { 
+    {
         private readonly ITheaterConfigurationManager _config;
         private readonly IMediaFilters _mediaFilters;
         private readonly IPresentationManager _presentation;
@@ -33,6 +35,14 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
 
             BtnConfigureAudio.Click += BtnConfigureAudio_Click;
             BtnConfigureSubtitles.Click += BtnConfigureSubtitles_Click;
+
+            SelectHwaMode.Options = new List<SelectListItem>
+            {
+                 new SelectListItem{ Text = "Auto", Value="-1"},
+                 new SelectListItem{ Text = "Disabled", Value="0"},
+                 new SelectListItem{ Text = "QuickSync", Value="2"},
+                 new SelectListItem{ Text = "DXVA2CopyBack", Value="3"}
+            };
         }
 
         void BtnConfigureSubtitles_Click(object sender, RoutedEventArgs e)
@@ -41,7 +51,7 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
             {
                 _mediaFilters.LaunchLavSplitterConfiguration();
             }
-            catch 
+            catch
             {
                 _presentation.ShowDefaultErrorMessage();
             }
@@ -66,6 +76,9 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
             ChkEnableReclock.IsChecked = config.EnableReclock;
             ChkEnableMadvr.IsChecked = config.EnableMadvr;
             ChkEnableXySubFilter.IsChecked = config.EnableXySubFilter;
+            chkEnableAudioBitstreaming.IsChecked = config.AudioConfig.EnableAudioBitstreaming;
+
+            SelectHwaMode.SelectedValue = config.VideoConfig.HwaMode.ToString();
         }
 
         void GeneralSettingsPage_Unloaded(object sender, RoutedEventArgs e)
@@ -75,7 +88,11 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
             config.EnableReclock = ChkEnableReclock.IsChecked ?? false;
             config.EnableMadvr = ChkEnableMadvr.IsChecked ?? false;
             config.EnableXySubFilter = ChkEnableXySubFilter.IsChecked ?? false;
-            
+
+            config.AudioConfig.EnableAudioBitstreaming = chkEnableAudioBitstreaming.IsChecked ?? false;
+
+            config.VideoConfig.HwaMode = int.Parse(SelectHwaMode.SelectedValue);
+
             _config.SaveConfiguration();
         }
     }

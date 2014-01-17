@@ -366,10 +366,12 @@ namespace MediaBrowser.Theater.DirectShow
                             hr = vsett.SetRuntimeConfig(true);
                             DsError.ThrowExceptionForHR(hr);
 
+                            var configuredMode = VideoConfigurationUtils.GetHwaMode(_videoConfig);
+
                             LAVHWAccel testme = vsett.GetHWAccel();
-                            if (testme != (LAVHWAccel)_videoConfig.HwaMode)
+                            if (testme != (LAVHWAccel)configuredMode)
                             {
-                                hr = vsett.SetHWAccel((LAVHWAccel)_videoConfig.HwaMode);
+                                hr = vsett.SetHWAccel((LAVHWAccel)configuredMode);
                                 DsError.ThrowExceptionForHR(hr);
                             }
 

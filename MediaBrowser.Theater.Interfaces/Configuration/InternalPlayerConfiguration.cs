@@ -1,5 +1,4 @@
 ﻿
-using System.Management;
 namespace MediaBrowser.Theater.Interfaces.Configuration
 {
     /// <summary>
@@ -40,53 +39,17 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
     //add configuration values here as necessary
     public class VideoConfiguration
     {
-        //we only need to do this once per run
-        private static string _gpuModel = string.Empty;
-        public static string GpuModel
-        {
-            get
-            {
-                if (string.IsNullOrWhiteSpace(_gpuModel))
-                {
-                    //this may not work for multi-GPU systems
-                    using (ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM Win32_DisplayConfiguration"))
-                    {
-                        foreach (ManagementObject mo in searcher.Get())
-                        {
-                            foreach (PropertyData property in mo.Properties)
-                            {
-                                if (property.Name == "Description")
-                                {
-                                    _gpuModel = property.Value.ToString();
-                                    break;
-                                }
-                            }
-                            mo.Dispose();
-                        }
-                    }
-                }
-                return _gpuModel;
-            }
-        }
-
         /// <summary>
         /// Gets or sets a value indicating overridden video HWA mode.
         /// </summary>
         /// <value><c>> -1</c> if user has overridden; otherwise, <c>-1</c>.</value>
         private int _hwaMode = -1;
+
         public int HwaMode
         {
             get
             {
-                if (_hwaMode > -1)
-                    return _hwaMode;
-                else
-                {
-                    if (GpuModel.IndexOf("Intel") > -1)
-                        return 2; //LAVHWAccel.QuickSync;
-                    else
-                        return 3; // LAVHWAccel.DXVA2CopyBack;
-                }
+                return _hwaMode;
             }
             set
             {
@@ -103,6 +66,5 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
         /// </summary>
         /// <value><c>true</c> if [enable audio bitstreaming]; otherwise, <c>false</c>.</value>
         public bool EnableAudioBitstreaming { get; set; }
-
     }
 }

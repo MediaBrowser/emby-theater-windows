@@ -56,6 +56,40 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
                 _hwaMode = value;
             }
         }
+
+        /// <summary>
+        /// Gets or sets a value enabling madVR smooth motion.
+        /// </summary>
+        /// <value><c>true</c> to enable; otherwise, <c>false</c>.</value>
+        private bool _useMadVrSmoothMotion = true;
+        public bool UseMadVrSmoothMotion
+        {
+            get
+            {
+                return _useMadVrSmoothMotion;
+            }
+            set
+            {
+                _useMadVrSmoothMotion = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets madVR smooth motion mode.
+        /// </summary>
+        /// <value><c>avoidJudder</c>, <c>almostAlways</c> or <c>always</c>.</value>
+        private string _madVrSmoothMotionMode = "avoidJudder";
+        public string MadVrSmoothMotionMode
+        {
+            get
+            {
+                return _madVrSmoothMotionMode;
+            }
+            set
+            {
+                _madVrSmoothMotionMode = value;
+            }
+        }
     }
 
     //add configuration values here as necessary

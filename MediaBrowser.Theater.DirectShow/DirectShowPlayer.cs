@@ -18,6 +18,7 @@ using System.Windows.Forms;
 //using DirectShowLib.Utils;
 using System.Diagnostics;
 using MediaBrowser.Theater.Interfaces.Configuration;
+using System.Text;
 
 namespace MediaBrowser.Theater.DirectShow
 {
@@ -447,9 +448,28 @@ namespace MediaBrowser.Theater.DirectShow
                             {
                                 hr = m_graph.AddFilter(vmadvr, "MadVR Video Renderer");
                                 DsError.ThrowExceptionForHR(hr);
-                            }
 
-                            madVrSucceded = true;
+                                try
+                                {
+                                    MadVRSettings msett = new MadVRSettings(_madvr);
+
+                                    bool smoothMotion = msett.GetBool("smoothMotionEnabled");
+
+                                    if (smoothMotion != _videoConfig.UseMadVrSmoothMotion)
+                                        msett.SetBool("smoothMotionEnabled", _videoConfig.UseMadVrSmoothMotion);
+
+                                    if (string.Compare(msett.GetString("smoothMotionMode"), _videoConfig.MadVrSmoothMotionMode, true) != 0)
+                                    {
+                                        bool success = msett.SetString("smoothMotionMode", _videoConfig.MadVrSmoothMotionMode);
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    _logger.ErrorException("Error configuring madVR", ex);
+                                }
+
+                                madVrSucceded = true;
+                            }
                         }
                         catch (Exception ex)
                         {

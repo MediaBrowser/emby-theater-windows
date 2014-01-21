@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.ApiClient;
+﻿using System.Threading;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
@@ -44,6 +45,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         protected override async Task<IEnumerable<TabItem>> GetSections()
         {
+            var programs = await _apiClient.GetLiveTvProgramsAsync(new Model.LiveTv.ProgramQuery
+            {
+                 UserId = _sessionManager.CurrentUser.Id,
+                  MaxStartDate = DateTime.UtcNow.AddDays(1)
+            }, CancellationToken.None);
+
             var views = new List<TabItem>
                 {
                     //_sessionManager.CurrentUser.Name.ToLower()

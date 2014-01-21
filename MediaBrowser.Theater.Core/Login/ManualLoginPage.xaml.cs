@@ -52,7 +52,7 @@ namespace MediaBrowser.Theater.Core.Login
         {
             try
             {
-                string password = TxtPassword.Password;
+                string password = TxtPassword.Text;
                 bool isRememberCredentials = (bool)ChkAutoLogin.IsChecked;
                 await SessionManager.Login(TxtUsername.Text, password, isRememberCredentials);
             }

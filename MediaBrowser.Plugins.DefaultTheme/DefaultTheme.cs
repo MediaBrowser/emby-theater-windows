@@ -7,6 +7,7 @@ using MediaBrowser.Model.Querying;
 using MediaBrowser.Plugins.DefaultTheme.Details;
 using MediaBrowser.Plugins.DefaultTheme.Home;
 using MediaBrowser.Plugins.DefaultTheme.ListPage;
+using MediaBrowser.Theater.Interfaces;
 using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
@@ -57,12 +58,12 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// </summary>
         private readonly ILogger _logger;
         private readonly IServerEvents _serverEvents;
-        private readonly IApplicationHost _appHost;
+        private readonly ITheaterApplicationHost _appHost;
         private readonly ITheaterConfigurationManager _config;
 
         public static DefaultTheme Current;
 
-        public DefaultTheme(IPlaybackManager playbackManager, IImageManager imageManager, IApiClient apiClient, INavigationService navService, ISessionManager sessionManager, IPresentationManager presentationManager, ILogManager logManager, IServerEvents serverEvents, IApplicationHost appHost, ITheaterConfigurationManager config)
+        public DefaultTheme(IPlaybackManager playbackManager, IImageManager imageManager, IApiClient apiClient, INavigationService navService, ISessionManager sessionManager, IPresentationManager presentationManager, ILogManager logManager, IServerEvents serverEvents, ITheaterApplicationHost appHost, ITheaterConfigurationManager config)
         {
             Current = this;
 

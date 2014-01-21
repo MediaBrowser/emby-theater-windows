@@ -3,6 +3,7 @@ using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Text;
 
 namespace MediaBrowser.Theater.DirectShow
 {
@@ -193,25 +194,40 @@ namespace MediaBrowser.Theater.DirectShow
         // returns the revision number of the settings record
         // the revision number is increased by 1 every time a setting changes
         [PreserveSig]
-        int SettingsGetRevision(long revision);
+        bool SettingsGetRevision(ref long revision);
 
         // export the whole settings record to a binary data buffer
         // the buffer is allocated by mvrSettings_Export by using LocalAlloc
         // it's the caller's responsibility to free the buffer again by using LocalFree
         [PreserveSig]
-        int SettingsExport([Out] out object[] buf, int size);
+        bool SettingsExport([Out] out IntPtr buf, int size);
 
         // import the settings from a binary data buffer
         [PreserveSig]
-        int SettingsImport(object buf, int size);
+        bool SettingsImport(IntPtr buf, int size);
 
         // modify a specific value
         [PreserveSig]
-        int SettingsSetString(string path, string value);
+        bool SettingsSetString(
+            [MarshalAs(UnmanagedType.LPWStr), In] 
+            string path,
+            [MarshalAs(UnmanagedType.LPWStr), In] 
+            string value
+            );
+
         [PreserveSig]
-        int SettingsSetInteger(string path, int value);
+        bool SettingsSetInteger(
+            [MarshalAs(UnmanagedType.LPWStr), In] 
+            string path, 
+            int value
+            );
+
         [PreserveSig]
-        int SettingsSetBoolean(string path, int value);
+        bool SettingsSetBoolean(
+            [MarshalAs(UnmanagedType.LPWStr), In] 
+            string path, 
+            bool value
+            );
 
         // The buffer for mvrSettings_GetString must be provided by the caller and
         // bufLenInChars set to the buffer's length (please note: 1 char -> 2 bytes).
@@ -219,10 +235,131 @@ namespace MediaBrowser.Theater.DirectShow
         // ERROR_MORE_DATA. On return, bufLenInChars is set to the required buffer size.
         // The buffer for mvrSettings_GetBinary is allocated by mvrSettings_GetBinary.
         // The caller is responsible for freeing it by using LocalAlloc().
-        int SettingsGetString(string path, [Out] out string value, int bufLenInChars);
-        int SettingsGetInteger(string path, [Out] out int value);
-        int SettingsGetBoolean(string path, [Out] out IntPtr value);
-        int SettingsGetBinary(string path, object[] value, int bufLenInBytes);
+        [PreserveSig]
+        bool SettingsGetString(
+            [MarshalAs(UnmanagedType.LPWStr), In]
+            string path, 
+            [MarshalAs(UnmanagedType.LPWStr), Out] StringBuilder value, 
+            ref int bufLenInChars);
+        [PreserveSig]
+        bool SettingsGetInteger(
+            [MarshalAs(UnmanagedType.LPWStr), In] 
+            string path, 
+            ref int value
+            );
+        [PreserveSig]
+        bool SettingsGetBoolean(
+            [MarshalAs(UnmanagedType.LPWStr), In] 
+            string path, 
+            ref bool value);
+        [PreserveSig]
+        bool SettingsGetBinary(
+            [MarshalAs(UnmanagedType.LPWStr), In]
+            string path, 
+            object[] value, 
+            int bufLenInBytes
+            );
+    }
+
+    public class MadVRSettings
+    {
+        IMadVRSettings _madVR = null;
+
+        public bool IsValid
+        {
+            get
+            {
+                if (_madVR == null)
+                    return false;
+                else
+                    return true;
+            }
+        }
+
+        public MadVRSettings(MadVR madVR)
+        {
+            _madVR = madVR as IMadVRSettings;
+        }
+
+        public bool SetString(string setting, string value)
+        {
+            if (IsValid)
+            {
+                return _madVR.SettingsSetString(setting, value);
+            }
+
+            return false;
+        }
+
+        public string GetString(string setting)
+        {
+            string retVal = string.Empty;
+
+            if (IsValid)
+            {
+                int sbLen = 100;
+                StringBuilder smMode = new StringBuilder(sbLen);
+
+                bool success = _madVR.SettingsGetString(setting, smMode, ref sbLen);
+                if (sbLen > smMode.Capacity)
+                {
+                    smMode = new StringBuilder(sbLen);
+                    success = _madVR.SettingsGetString(setting, smMode, ref sbLen);
+                }
+                if (success)
+                    retVal = smMode.ToString();
+            }
+
+            return retVal;
+        }
+
+        public bool SetBool(string setting, bool value)
+        {
+            bool retVal = false;
+
+            if (IsValid)
+            {
+                retVal = _madVR.SettingsSetBoolean(setting, value);
+            }
+
+            return retVal;
+        }
+
+        public bool GetBool(string setting)
+        {
+            bool retVal = false;
+
+            if (IsValid)
+            {
+                bool success = _madVR.SettingsGetBoolean(setting, ref retVal);
+            }
+
+            return retVal;
+        }
+
+        public bool SetInt(string setting, int value)
+        {
+            bool retVal = false;
+
+            if (IsValid)
+            {
+                retVal = _madVR.SettingsSetInteger(setting, value);
+            }
+
+            return retVal;
+        }
+
+        public int GetInt(string setting)
+        {
+            int retVal = -1;
+
+            if (IsValid)
+            {
+                bool success = _madVR.SettingsGetInteger(setting, ref retVal);
+            }
+
+            return retVal;
+        }
     }
 
     public class MadvrInterface
@@ -345,6 +482,8 @@ namespace MediaBrowser.Theater.DirectShow
             var osdServices = (IMadVROsdServices)madvr;
             osdServices.OsdRedrawFrame();
         }
+
+
 
         //public static void ClearMadVrBitmap(string name, MeediOS.Media.MadVR madvr)
         //{

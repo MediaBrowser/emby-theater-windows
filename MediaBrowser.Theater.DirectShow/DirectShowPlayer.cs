@@ -17,6 +17,8 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 //using DirectShowLib.Utils;
 using System.Diagnostics;
+using MediaBrowser.Theater.Interfaces.Configuration;
+using System.Text;
 
 namespace MediaBrowser.Theater.DirectShow
 {
@@ -73,6 +75,9 @@ namespace MediaBrowser.Theater.DirectShow
         private readonly IntPtr _applicationWindowHandle;
         private bool _isInExclusiveMode;
         private DvdMenuMode _dvdMenuMode = DvdMenuMode.No;
+        private bool _removeHandlers = false;
+        private VideoConfiguration _videoConfig;
+        private AudioConfiguration _audioConfig;
 
         public DirectShowPlayer(ILogger logger, IHiddenWindow hiddenWindow, InternalDirectShowPlayer playerWrapper, IntPtr applicationWindowHandle)
         {
@@ -144,13 +149,16 @@ namespace MediaBrowser.Theater.DirectShow
             }
         }
 
-        public void Play(PlayableItem item, bool enableReclock, bool enableMadvr, bool enableMadvrExclusiveMode, bool enableXySubFilter)
+        public void Play(PlayableItem item, bool enableReclock, bool enableMadvr, bool enableMadvrExclusiveMode, bool enableXySubFilter, VideoConfiguration videoConfig, AudioConfiguration audioConfig)
         {
             _logger.Info("Playing {0}. Reclock: {1}, Madvr: {2}, xySubFilter: {3}", item.OriginalItem.Name, enableReclock, enableMadvr, enableXySubFilter);
             _logger.Info("Playing Path {0}", item.PlayablePath);
 
             _item = item;
             _isInExclusiveMode = false;
+
+            _videoConfig = videoConfig;
+            _audioConfig = audioConfig;
 
             var isDvd = ((item.OriginalItem.VideoType ?? VideoType.VideoFile) == VideoType.Dvd || (item.OriginalItem.IsoType ?? IsoType.BluRay) == IsoType.Dvd) &&
                 item.PlayablePath.IndexOf("http://", StringComparison.OrdinalIgnoreCase) == -1;
@@ -350,6 +358,42 @@ namespace MediaBrowser.Theater.DirectShow
                     {
                         hr = m_graph.AddFilter(vlavvideo, "LAV Video Decoder");
                         DsError.ThrowExceptionForHR(hr);
+
+                        ILAVVideoSettings vsett = vlavvideo as ILAVVideoSettings;
+                        if (vsett != null)
+                        {
+                            //we only want to set it for MB
+                            hr = vsett.SetRuntimeConfig(true);
+                            DsError.ThrowExceptionForHR(hr);
+
+                            var configuredMode = VideoConfigurationUtils.GetHwaMode(_videoConfig);
+
+                            LAVHWAccel testme = vsett.GetHWAccel();
+                            if (testme != (LAVHWAccel)configuredMode)
+                            {
+                                hr = vsett.SetHWAccel((LAVHWAccel)configuredMode);
+                                DsError.ThrowExceptionForHR(hr);
+                            }
+
+                            //enable all the HW codecs but mpeg4
+                            //todo migrate this to VideoConfiguration
+                            string[] hwaCodecs = Enum.GetNames(typeof(LAVVideoHWCodec));
+                            foreach (string hwaCodec in hwaCodecs)
+                            {
+                                LAVVideoHWCodec codec = (LAVVideoHWCodec)Enum.Parse(typeof(LAVVideoHWCodec), hwaCodec);
+                                if (hwaCodec != "MPEG4" && hwaCodec != "NB" && !vsett.GetHWAccelCodec(codec))
+                                {
+                                    hr = vsett.SetHWAccelCodec(codec, true);
+                                    DsError.ThrowExceptionForHR(hr);
+                                }
+                            }
+                            
+                            if (!vsett.GetDVDVideoSupport())
+                            {
+                                hr = vsett.SetDVDVideoSupport(true);
+                                DsError.ThrowExceptionForHR(hr);
+                            }
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -365,6 +409,22 @@ namespace MediaBrowser.Theater.DirectShow
                     {
                         hr = m_graph.AddFilter(vlavaudio, "LAV Audio Decoder");
                         DsError.ThrowExceptionForHR(hr);
+
+                        ILAVAudioSettings asett = vlavaudio as ILAVAudioSettings;
+                        if (asett != null)
+                        {
+                            //we only want to set it for MB
+                            hr = asett.SetRuntimeConfig(true);
+                            DsError.ThrowExceptionForHR(hr);
+
+                            //enable/disable bitstreaming
+                            for (int i = 0; i < (int)LAVBitstreamCodec.NB; i++)
+                            {
+                                LAVBitstreamCodec codec = (LAVBitstreamCodec)i + 1;
+                                hr = asett.SetBitstreamConfig(codec, _audioConfig.EnableAudioBitstreaming);
+                                DsError.ThrowExceptionForHR(hr);
+                            }
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -388,9 +448,28 @@ namespace MediaBrowser.Theater.DirectShow
                             {
                                 hr = m_graph.AddFilter(vmadvr, "MadVR Video Renderer");
                                 DsError.ThrowExceptionForHR(hr);
-                            }
 
-                            madVrSucceded = true;
+                                try
+                                {
+                                    MadVRSettings msett = new MadVRSettings(_madvr);
+
+                                    bool smoothMotion = msett.GetBool("smoothMotionEnabled");
+
+                                    if (smoothMotion != _videoConfig.UseMadVrSmoothMotion)
+                                        msett.SetBool("smoothMotionEnabled", _videoConfig.UseMadVrSmoothMotion);
+
+                                    if (string.Compare(msett.GetString("smoothMotionMode"), _videoConfig.MadVrSmoothMotionMode, true) != 0)
+                                    {
+                                        bool success = msett.SetString("smoothMotionMode", _videoConfig.MadVrSmoothMotionMode);
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    _logger.ErrorException("Error configuring madVR", ex);
+                                }
+
+                                madVrSucceded = true;
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -676,6 +755,7 @@ namespace MediaBrowser.Theater.DirectShow
                 _hiddenWindow.SizeChanged += _hiddenWindow_SizeChanged;
                 _hiddenWindow.MouseClick += HiddenForm_MouseClick;
                 _hiddenWindow.KeyDown += HiddenForm_KeyDown;
+                _removeHandlers = true;
             }
 
             if (_cursorHidden)
@@ -791,6 +871,9 @@ namespace MediaBrowser.Theater.DirectShow
         {
             int screenWidth;
             int screenHeight;
+
+            if (m_graph == null)
+                return;
 
             if (_isInExclusiveMode)
             {
@@ -1100,6 +1183,14 @@ namespace MediaBrowser.Theater.DirectShow
             _hiddenWindow.OnWMGRAPHNOTIFY = null;
             _hiddenWindow.OnDVDEVENT = null;
 
+            if (_removeHandlers)
+            {
+                _hiddenWindow.SizeChanged -= _hiddenWindow_SizeChanged;
+                _hiddenWindow.MouseClick -= HiddenForm_MouseClick;
+                _hiddenWindow.KeyDown -= HiddenForm_KeyDown;
+                _removeHandlers = false;
+            }
+
             _logger.Debug("Disposing player");
 
             CloseInterfaces();
@@ -1121,6 +1212,7 @@ namespace MediaBrowser.Theater.DirectShow
                 m_graph.RemoveFilter(_defaultAudioRenderer as DirectShowLib.IBaseFilter);
 
                 CleanUpInterface(_defaultAudioRenderer);
+                _defaultAudioRenderer = null;
             }
 
             if (_reclockAudioRenderer != null)
@@ -1128,6 +1220,7 @@ namespace MediaBrowser.Theater.DirectShow
                 m_graph.RemoveFilter(_reclockAudioRenderer as DirectShowLib.IBaseFilter);
 
                 CleanUpInterface(_reclockAudioRenderer);
+                _reclockAudioRenderer = null;
             }
 
             if (_lavaudio != null)
@@ -1135,6 +1228,7 @@ namespace MediaBrowser.Theater.DirectShow
                 m_graph.RemoveFilter(_lavaudio as DirectShowLib.IBaseFilter);
 
                 CleanUpInterface(_lavaudio);
+                _lavaudio = null;
             }
 
             if (_xyVsFilter != null)
@@ -1142,6 +1236,7 @@ namespace MediaBrowser.Theater.DirectShow
                 m_graph.RemoveFilter(_xyVsFilter as DirectShowLib.IBaseFilter);
 
                 CleanUpInterface(_xyVsFilter);
+                _xyVsFilter = null;
             }
 
             if (_xySubFilter != null)
@@ -1149,6 +1244,7 @@ namespace MediaBrowser.Theater.DirectShow
                 m_graph.RemoveFilter(_xySubFilter as DirectShowLib.IBaseFilter);
 
                 CleanUpInterface(_xySubFilter);
+                _xySubFilter = null;
             }
 
             if (_lavvideo != null)
@@ -1156,6 +1252,7 @@ namespace MediaBrowser.Theater.DirectShow
                 m_graph.RemoveFilter(_lavvideo as DirectShowLib.IBaseFilter);
 
                 CleanUpInterface(_lavvideo);
+                _lavvideo = null;
             }
 
             if (_madvr != null)
@@ -1163,6 +1260,7 @@ namespace MediaBrowser.Theater.DirectShow
                 m_graph.RemoveFilter(_madvr as DirectShowLib.IBaseFilter);
 
                 CleanUpInterface(_madvr);
+                _madvr = null;
             }
 
             if (_videoWindow != null)
@@ -1200,9 +1298,13 @@ namespace MediaBrowser.Theater.DirectShow
             _mDvdControl = null;
 
             CleanUpInterface(_mPDisplay);
+            _mPDisplay = null;
             CleanUpInterface(_sourceFilter);
+            _sourceFilter = null;
             CleanUpInterface(_mPEvr);
+            _mPEvr = null;
             CleanUpInterface(m_filterGraph);
+            m_filterGraph = null;
 
             m_filterGraph = null;
             _mediaEventEx = null;

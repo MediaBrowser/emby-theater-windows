@@ -28,7 +28,7 @@
                         <Storyboard>
                             <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="Width">
                                 <SplineDoubleKeyFrame KeyTime="0:0:0" Value="0"/>
-                                <EasingDoubleKeyFrame Value="380" KeyTime="00:00:01">
+                                <EasingDoubleKeyFrame Value="380" KeyTime="00:00:0.5">
                                     <EasingDoubleKeyFrame.EasingFunction>
                                         <QuinticEase EasingMode="EaseInOut"/>
                                     </EasingDoubleKeyFrame.EasingFunction>
@@ -124,19 +124,19 @@
 
                 <Rectangle Style="{StaticResource ModalListSeparator}" Width="300" Margin="25 30 0 20"></Rectangle>
 
-                <Button Style="{StaticResource ModalListButton}"  Margin="0 10 0 0" TabIndex="7" IsEnabled="{Binding MasterCommands.PowerOptionsEnabled}">
+                <Button Style="{StaticResource ModalListButton}"  Margin="0 10 0 0" TabIndex="7" Command="{Binding MasterCommands.SleepSystemCommand}" IsEnabled="{Binding MasterCommands.PowerOptionsEnabled}">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Margin="10 10 0 10" Style="{StaticResource ModalTextBlockStyle}" VerticalAlignment="Center">Sleep</TextBlock>
                     </StackPanel>
                 </Button>
 
-                <Button Style="{StaticResource ModalListButton}"  Margin="0 10 0 0" TabIndex="8" IsEnabled="{Binding MasterCommands.PowerOptionsEnabled}">
+                <Button Style="{StaticResource ModalListButton}"  Margin="0 10 0 0" TabIndex="8" Command="{Binding MasterCommands.RestartSystemCommand}" IsEnabled="{Binding MasterCommands.PowerOptionsEnabled}">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Margin="10 10 0 10" Style="{StaticResource ModalTextBlockStyle}" VerticalAlignment="Center">Restart</TextBlock>
                     </StackPanel>
                 </Button>
 
-                <Button Style="{StaticResource ModalListButton}"  Margin="0 10 0 0" TabIndex="9" IsEnabled="{Binding MasterCommands.PowerOptionsEnabled}" Command="{Binding MasterCommands.TestPowerCommand}">
+                <Button Style="{StaticResource ModalListButton}"  Margin="0 10 0 0" TabIndex="9" Command="{Binding MasterCommands.ShutdownSystemCommand}" IsEnabled="{Binding MasterCommands.PowerOptionsEnabled}">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Margin="10 10 0 10" Style="{StaticResource ModalTextBlockStyle}" VerticalAlignment="Center">Shutdown</TextBlock>
                     </StackPanel>

@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Management;
 
 namespace MediaBrowser.Theater.DirectShow
 {
@@ -205,7 +206,7 @@ namespace MediaBrowser.Theater.DirectShow
                 var enableMadVr = EnableMadvr(options);
                 var enableReclock = EnableReclock(options);
 
-                InvokeOnPlayerThread(() => _mediaPlayer.Play(playableItem, enableReclock, enableMadVr, false, _config.Configuration.InternalPlayerConfiguration.EnableXySubFilter));
+                InvokeOnPlayerThread(() => _mediaPlayer.Play(playableItem, enableReclock, enableMadVr, false, _config.Configuration.InternalPlayerConfiguration.EnableXySubFilter, _config.Configuration.InternalPlayerConfiguration.VideoConfig, _config.Configuration.InternalPlayerConfiguration.AudioConfig));
             }
             catch
             {
@@ -319,7 +320,10 @@ namespace MediaBrowser.Theater.DirectShow
         {
             if (_mediaPlayer != null)
             {
-                InvokeOnPlayerThread(() => _mediaPlayer.Dispose());
+                InvokeOnPlayerThread(() => {
+                    _mediaPlayer.Dispose();
+                    _mediaPlayer = null; //force the object to get cleaned up
+                });
             }
         }
 

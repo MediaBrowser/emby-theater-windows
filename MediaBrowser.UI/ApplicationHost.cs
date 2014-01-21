@@ -1,4 +1,6 @@
-﻿using MediaBrowser.ApiInteraction;
+﻿using System.Diagnostics;
+using System.Windows.Forms;
+using MediaBrowser.ApiInteraction;
 using MediaBrowser.ApiInteraction.WebSocket;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Constants;
@@ -233,9 +235,7 @@ namespace MediaBrowser.UI
         {
             // Gets all plugin assemblies by first reading all bytes of the .dll and calling Assembly.Load against that
             // This will prevent the .dll file from getting locked, and allow us to replace it when needed
-            foreach (var pluginAssembly in Directory
-                .EnumerateFiles(ApplicationPaths.PluginsPath, "*.dll", SearchOption.TopDirectoryOnly)
-                .Select(LoadAssembly).Where(a => a != null))
+            foreach (var pluginAssembly in GetPluginAssemblies())
             {
                 yield return pluginAssembly;
             }
@@ -265,6 +265,25 @@ namespace MediaBrowser.UI
 
             // Default theme assembly
             yield return typeof(DefaultTheme).Assembly;
+        }
+
+        /// <summary>
+        /// Gets the plugin assemblies.
+        /// </summary>
+        /// <returns>IEnumerable{Assembly}.</returns>
+        private IEnumerable<Assembly> GetPluginAssemblies()
+        {
+            try
+            {
+                return Directory.EnumerateFiles(ApplicationPaths.PluginsPath, "*.dll", SearchOption.TopDirectoryOnly)
+                    .Select(LoadAssembly)
+                    .Where(a => a != null)
+                    .ToList();
+            }
+            catch (DirectoryNotFoundException)
+            {
+                return new List<Assembly>();
+            }
         }
 
         public override Task Shutdown()
@@ -342,16 +361,19 @@ namespace MediaBrowser.UI
         public void ShutdownSystem()
         {
             PlaybackManager.StopAllPlayback();
+            Process.Start("shutdown", "/s /t 0");
         }
 
         public void RebootSystem()
         {
             PlaybackManager.StopAllPlayback();
+            Process.Start("shutdown", "/r /t 0");
         }
 
         public void SetSystemToSleep()
         {
             PlaybackManager.StopAllPlayback();
+            Application.SetSuspendState(PowerState.Suspend, false, false);
         }
     }
 }

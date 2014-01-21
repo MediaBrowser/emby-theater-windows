@@ -4,9 +4,7 @@
         xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
         Title="SystemOptionsWindow" Style="{StaticResource ModalWindow}" Cursor="None">
     <Grid>
-        <Grid Style="{StaticResource ModalOverlayStyle}">
-
-        </Grid>
+        <Grid Style="{StaticResource ModalOverlayStyle}"/>
         <Grid x:Name="ContentGrid" Style="{StaticResource DefaultThemeModalContentStyle}" HorizontalAlignment="Center" VerticalAlignment="Center" Background="Transparent">
             <StackPanel Orientation="Horizontal">
                 <Button Style="{StaticResource ModalImageButton}" Content="{StaticResource LogoutPath}" TabIndex="1" Width="100" Height="100" Margin="20 20 20 20" Padding="10,10,10,10"/>

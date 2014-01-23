@@ -418,13 +418,32 @@ namespace MediaBrowser.Theater.DirectShow
                             DsError.ThrowExceptionForHR(hr);
 
                             //enable/disable bitstreaming
+                            if((_audioConfig.AudioBitstreaming & BitstreamChoice.SPDIF) == BitstreamChoice.SPDIF)
+                            {
+                                hr = asett.SetBitstreamConfig(LAVBitstreamCodec.AC3, true);
+                                DsError.ThrowExceptionForHR(hr);
+
+                                hr = asett.SetBitstreamConfig(LAVBitstreamCodec.DTS, true);
+                                DsError.ThrowExceptionForHR(hr);
+                            }
+                            if((_audioConfig.AudioBitstreaming & BitstreamChoice.HDMI) == BitstreamChoice.HDMI)
+                            {
+
+                                hr = asett.SetBitstreamConfig(LAVBitstreamCodec.EAC3, true);
+                                DsError.ThrowExceptionForHR(hr);
+
+                                hr = asett.SetBitstreamConfig(LAVBitstreamCodec.TRUEHD, true);
+                                DsError.ThrowExceptionForHR(hr);
+
+                                hr = asett.SetBitstreamConfig(LAVBitstreamCodec.DTSHD, true);
+                                DsError.ThrowExceptionForHR(hr);
+                            }
+
                             for (int i = 0; i < (int)LAVBitstreamCodec.NB; i++)
                             {
                                 LAVBitstreamCodec codec = (LAVBitstreamCodec)i;
-                                hr = asett.SetBitstreamConfig(codec, _audioConfig.EnableAudioBitstreaming);
-                                DsError.ThrowExceptionForHR(hr);
-
                                 bool isEnabled = asett.GetBitstreamConfig(codec);
+                                _logger.Log(LogSeverity.Debug, "{0} bitstreaming: {1}", codec, isEnabled);
                             }
                         }
                     }

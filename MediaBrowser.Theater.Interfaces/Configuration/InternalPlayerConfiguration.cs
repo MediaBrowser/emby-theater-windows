@@ -129,6 +129,13 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
         }
     }
 
+    public enum BitstreamChoice
+    {
+        None = 0,
+        SPDIF = 1,
+        HDMI = 3
+    }
+
     //add configuration values here as necessary
     public class AudioConfiguration
     {
@@ -136,7 +143,7 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
         /// Gets or sets a value indicating whether [enable audio bitstreaming].
         /// </summary>
         /// <value><c>true</c> if [enable audio bitstreaming]; otherwise, <c>false</c>.</value>
-        public bool EnableAudioBitstreaming { get; set; }
+        public BitstreamChoice AudioBitstreaming { get; set; }
 
     }
 }

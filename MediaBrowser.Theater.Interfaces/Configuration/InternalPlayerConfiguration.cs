@@ -144,5 +144,6 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
         /// </summary>
         /// <value><c>true</c> if [enable audio bitstreaming]; otherwise, <c>false</c>.</value>
         public BitstreamChoice AudioBitstreaming { get; set; }
+
     }
 }

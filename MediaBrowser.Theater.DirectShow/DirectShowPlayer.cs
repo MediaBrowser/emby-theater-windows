@@ -420,9 +420,11 @@ namespace MediaBrowser.Theater.DirectShow
                             //enable/disable bitstreaming
                             for (int i = 0; i < (int)LAVBitstreamCodec.NB; i++)
                             {
-                                LAVBitstreamCodec codec = (LAVBitstreamCodec)i + 1;
+                                LAVBitstreamCodec codec = (LAVBitstreamCodec)i;
                                 hr = asett.SetBitstreamConfig(codec, _audioConfig.EnableAudioBitstreaming);
                                 DsError.ThrowExceptionForHR(hr);
+
+                                bool isEnabled = asett.GetBitstreamConfig(codec);
                             }
                         }
                     }

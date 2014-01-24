@@ -1,5 +1,5 @@
-﻿
-using System.Management;
+﻿using System.Management;
+
 namespace MediaBrowser.Theater.Interfaces.Configuration
 {
     /// <summary>

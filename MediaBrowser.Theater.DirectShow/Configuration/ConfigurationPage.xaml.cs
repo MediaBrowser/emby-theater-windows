@@ -43,6 +43,14 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
                  new SelectListItem{ Text = "QuickSync", Value="2"},
                  new SelectListItem{ Text = "DXVA2CopyBack", Value="3"}
             };
+
+            SelectudioBitstreamingMode.Options = new List<SelectListItem>();
+
+            foreach (string bsOption in Enum.GetNames(typeof(BitstreamChoice)))
+            {
+                SelectudioBitstreamingMode.Options.Add(new SelectListItem { Text = bsOption, Value = bsOption });
+            }
+
         }
 
         void BtnConfigureSubtitles_Click(object sender, RoutedEventArgs e)
@@ -76,8 +84,7 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
             ChkEnableReclock.IsChecked = config.EnableReclock;
             ChkEnableMadvr.IsChecked = config.EnableMadvr;
             ChkEnableXySubFilter.IsChecked = config.EnableXySubFilter;
-            chkEnableAudioBitstreaming.IsChecked = config.AudioConfig.EnableAudioBitstreaming;
-
+            SelectudioBitstreamingMode.SelectedValue = config.AudioConfig.AudioBitstreaming.ToString();
             SelectHwaMode.SelectedValue = config.VideoConfig.HwaMode.ToString();
         }
 
@@ -89,7 +96,7 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
             config.EnableMadvr = ChkEnableMadvr.IsChecked ?? false;
             config.EnableXySubFilter = ChkEnableXySubFilter.IsChecked ?? false;
 
-            config.AudioConfig.EnableAudioBitstreaming = chkEnableAudioBitstreaming.IsChecked ?? false;
+            config.AudioConfig.AudioBitstreaming = (BitstreamChoice)Enum.Parse(typeof(BitstreamChoice), SelectudioBitstreamingMode.SelectedValue);
 
             config.VideoConfig.HwaMode = int.Parse(SelectHwaMode.SelectedValue);
 

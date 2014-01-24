@@ -18,9 +18,10 @@
             <controls:SelectList x:Name="SelectHwaMode" Margin="40 0 0 0"></controls:SelectList>
         </StackPanel>
         
-        <CheckBox x:Name="chkEnableAudioBitstreaming" Margin="0 30 0 0" VerticalAlignment="Center">
-            <TextBlock Style="{StaticResource TextBlockStyle}">Enable Audio Bitstreaming</TextBlock>
-        </CheckBox>
+        <StackPanel Orientation="Horizontal" Margin="0 10 0 0">
+            <TextBlock Style="{StaticResource TextBlockStyle}" Margin="0 0 0 0">Audio Bitstreaming Mode:</TextBlock>
+            <controls:SelectList x:Name="SelectudioBitstreamingMode" Margin="85 0 0 0"></controls:SelectList>
+        </StackPanel>
 
         <CheckBox x:Name="ChkEnableReclock" Margin="0 30 0 0" VerticalAlignment="Center">
             <TextBlock Style="{StaticResource TextBlockStyle}">Enable Reclock *</TextBlock>

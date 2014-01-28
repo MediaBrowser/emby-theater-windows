@@ -1,4 +1,5 @@
-﻿using System.Management;
+﻿using System.Collections.Generic;
+using System.Management;
 
 namespace MediaBrowser.Theater.Interfaces.Configuration
 {
@@ -126,6 +127,25 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
             {
                 _madVrSmoothMotionMode = value;
             }
+        }
+
+        /// <summary>
+        /// Gets or sets video codecs that will be HWA. 
+        /// </summary>
+        public List<string> HwaEnabledCodecs { get; set; }
+
+        public VideoConfiguration()
+        {
+            //reading through nevcariel's comments it appears that HWA DVD playback can have stability issues
+            //and since most any PC should be able to manage it, we're not going to turn it on by default
+            //also skip MPEG4 since most GPUs can't HWA and it's buggy
+            //the full list of codecs can be had from DirectShowPlayer.GetLAVVideoHwaCodecs for UI config building
+            HwaEnabledCodecs = new List<string>();
+            HwaEnabledCodecs.Add("H264");
+            HwaEnabledCodecs.Add("VC1");
+            HwaEnabledCodecs.Add("MPEG2");
+            //HwaEnabledCodecs.Add("MPEG2DVD");
+            //HwaEnabledCodecs.Add("MPEG4");
         }
     }
 

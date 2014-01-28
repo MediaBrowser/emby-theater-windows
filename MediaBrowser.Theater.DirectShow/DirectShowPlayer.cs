@@ -79,6 +79,12 @@ namespace MediaBrowser.Theater.DirectShow
         private VideoConfiguration _videoConfig;
         private AudioConfiguration _audioConfig;
 
+        //TODO: this should be in the video configuration class, but what's the best way to migrate the interfaces there?
+        public static string[] GetLAVVideoHwaCodecs()
+        {
+            return Enum.GetNames(typeof(LAVVideoHWCodec));
+        }
+
         public DirectShowPlayer(ILogger logger, IHiddenWindow hiddenWindow, InternalDirectShowPlayer playerWrapper, IntPtr applicationWindowHandle)
         {
             _logger = logger;
@@ -375,21 +381,32 @@ namespace MediaBrowser.Theater.DirectShow
                                 DsError.ThrowExceptionForHR(hr);
                             }
 
-                            //enable all the HW codecs but mpeg4
-                            //todo migrate this to VideoConfiguration
-                            string[] hwaCodecs = Enum.GetNames(typeof(LAVVideoHWCodec));
+                            string[] hwaCodecs = DirectShowPlayer.GetLAVVideoHwaCodecs();
                             foreach (string hwaCodec in hwaCodecs)
                             {
                                 LAVVideoHWCodec codec = (LAVVideoHWCodec)Enum.Parse(typeof(LAVVideoHWCodec), hwaCodec);
-                                if (hwaCodec != "MPEG4" && hwaCodec != "NB" && !vsett.GetHWAccelCodec(codec))
+                                bool hwaIsEnabled = vsett.GetHWAccelCodec(codec);
+
+                                if (_videoConfig.HwaEnabledCodecs.Contains(hwaCodec))
                                 {
-                                    hr = vsett.SetHWAccelCodec(codec, true);
+                                    if (!hwaIsEnabled)
+                                    {
+                                        _logger.Debug("Enable HWA support for: {0}", hwaCodec);                                    
+                                        hr = vsett.SetHWAccelCodec(codec, true);
+                                        DsError.ThrowExceptionForHR(hr);
+                                    }
+                                }
+                                else if (hwaIsEnabled)
+                                {
+                                    _logger.Debug("Disable HWA support for: {0}", hwaCodec);
+                                    hr = vsett.SetHWAccelCodec(codec, false);
                                     DsError.ThrowExceptionForHR(hr);
                                 }
                             }
                             
                             if (!vsett.GetDVDVideoSupport())
                             {
+                                _logger.Debug("Enable DVD support.");
                                 hr = vsett.SetDVDVideoSupport(true);
                                 DsError.ThrowExceptionForHR(hr);
                             }

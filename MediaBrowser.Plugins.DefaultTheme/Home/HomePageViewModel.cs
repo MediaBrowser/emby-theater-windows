@@ -45,19 +45,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         protected override async Task<IEnumerable<TabItem>> GetSections()
         {
-            try
-            {
-                var programs = await _apiClient.GetLiveTvProgramsAsync(new Model.LiveTv.ProgramQuery
-                {
-                    UserId = _sessionManager.CurrentUser.Id,
-                    MaxStartDate = DateTime.UtcNow.AddDays(1)
-                }, CancellationToken.None);
-            }
-            catch (Exception ex)
-            {
-                _logger.ErrorException("Error getting live tv programs async", ex);
-            }
-
             var views = new List<TabItem>
                 {
                     //_sessionManager.CurrentUser.Name.ToLower()

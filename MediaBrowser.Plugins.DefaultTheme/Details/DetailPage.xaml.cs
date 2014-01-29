@@ -12,7 +12,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
     /// <summary>
     /// Interaction logic for DetailPage.xaml
     /// </summary>
-    public partial class DetailPage : BasePage, ISupportsItemThemeMedia, ISupportsItemBackdrops, IItemPage
+    public partial class DetailPage : BasePage, ISupportsItemThemeMedia, ISupportsItemBackdrops, IItemPage, ISupportSearch
     {
         private readonly ItemViewModel _itemViewModel;
         private readonly IPresentationManager _presentation;

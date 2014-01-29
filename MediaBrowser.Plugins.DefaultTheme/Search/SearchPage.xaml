@@ -1,0 +1,99 @@
+﻿<pages:BasePage x:Class="MediaBrowser.Plugins.DefaultTheme.Search.SearchPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                xmlns:pages="clr-namespace:MediaBrowser.Theater.Presentation.Pages;assembly=MediaBrowser.Theater.Presentation"
+                xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
+                xmlns:controls1="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Controls"
+                xmlns:listPage="clr-namespace:MediaBrowser.Plugins.DefaultTheme.ListPage"
+                mc:Ignorable="d" 
+      d:DesignHeight="300" d:DesignWidth="300"
+	Title="SearchPage"
+    >
+
+
+    <Grid Name="SearchGrid" >
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Margin="0 20 0 0" HorizontalAlignment="Center" KeyboardNavigation.TabIndex="1" >
+            <controls:ExtendedListBox x:Name="AlphabetMenu"  DataContext="{Binding AlphaInputViewModel}" ItemsSource="{Binding IndexOptionsCollectionView}" IsTabStop="true" Command="{Binding ClickCommand}" KeyboardNavigation.DirectionalNavigation="Continue" ScrollViewer.CanContentScroll="False"  Style="{StaticResource ListBoxStyle}" ItemContainerStyle="{StaticResource AlphabetMenuListBoxItemStyle}">
+                <controls:ExtendedListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" Margin="10 0 10 0" />
+                    </ItemsPanelTemplate>
+                </controls:ExtendedListBox.ItemsPanel>
+            </controls:ExtendedListBox>
+        </Grid>
+
+        <Grid Grid.Row="1" Margin="0 0 0 0" VerticalAlignment="Center">
+
+             <Grid.RowDefinitions>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            
+            <TextBox Grid.Row="0" Grid.Column="0" x:Name="SearchTextBlock"  Width="400" HorizontalAlignment="Left"  Margin="150 0 0 0"  Background="Transparent" BorderThickness="0" Text="{Binding CurrentSearch}" IsReadOnly="True" IsTabStop="False" Style="{StaticResource SearchTextBoxStyle}" />
+            <TextBlock Grid.Row="0" Grid.Column="1"  Padding="150 0 0 0" Text="PEOPLE" VerticalAlignment="Bottom" Visibility="{Binding MatchedPeopleVisibility}" Style="{StaticResource Heading2TextBlockStyle}" />
+            
+
+            <Grid Grid.Row="1" Grid.Column="0"   Width="1070"  Height="610"  Margin="150 0 0 0" Visibility="{Binding MatchedItemsVisibility}" >
+
+
+                <controls:ExtendedListBox Name="MatchedItemsListBox" Margin="-5" DataContext="{Binding MatchedItemsViewModel}" ItemsSource="{Binding ListCollectionView}" KeyboardNavigation.DirectionalNavigation="Continue" Command="{Binding NavigateCommand}"   Style="{StaticResource ListBoxStyle}" ItemContainerStyle="{StaticResource HighlightedBorderListBoxItemStyle}" ItemTemplate="{StaticResource HomePageItemTemplate}" >
+                    <controls:ExtendedListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Margin="5" ItemWidth="{Binding ItemContainerWidth}" ItemHeight="{Binding ItemContainerHeight}" Orientation="Horizontal" ></WrapPanel>
+                        </ItemsPanelTemplate>
+                    </controls:ExtendedListBox.ItemsPanel>
+                </controls:ExtendedListBox>
+            </Grid>
+
+            <Grid Grid.Row="1" Grid.Column="1"   Height="610"  Margin="150 0 70 0" Visibility="{Binding MatchedPeopleVisibility}">
+
+                <controls:ExtendedListBox Name="MatchedPeopleListBox" Margin="-5" DataContext="{Binding MatchedPeopleViewModel}" ItemsSource="{Binding ListCollectionView}" KeyboardNavigation.DirectionalNavigation="Continue" Command="{Binding NavigateCommand}" Style="{StaticResource ListBoxStyle}" ItemContainerStyle="{StaticResource HighlightedBorderListBoxItemStyle}"  ItemTemplate="{StaticResource ListViewPeopleTemplate}" ScrollViewer.CanContentScroll="False" >
+                    <controls:ExtendedListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Margin="5"  Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></StackPanel>
+                        </ItemsPanelTemplate>
+                    </controls:ExtendedListBox.ItemsPanel>
+                </controls:ExtendedListBox>
+            </Grid>
+
+            <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="150 40 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" >
+
+                <StackPanel Orientation="Horizontal">
+                    <StackPanel.Style>
+                        <Style TargetType="{x:Type StackPanel}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding CurrentItem}" Value="{x:Null}">
+                                    <Setter Property="Visibility" Value="Hidden" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+
+                   
+                    <Image Name="ImgLogo" Stretch="Uniform" Height="60"  MaxWidth="600" VerticalAlignment="Center" HorizontalAlignment="Right"></Image>
+
+                    <TextBlock x:Name="TxtLogoName"  Margin="0 0 40 0" VerticalAlignment="Center" DataContext="{Binding CurrentItem}" Text="{Binding DisplayName}" Style="{StaticResource TextBlockStyle}"   />
+
+                    <controls1:ItemInfoFooter VerticalContentAlignment="Center" IsTabStop="False" DataContext="{Binding CurrentItem}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+
+                </StackPanel>
+            </Grid>
+        </Grid>
+        
+    </Grid>
+</pages:BasePage>

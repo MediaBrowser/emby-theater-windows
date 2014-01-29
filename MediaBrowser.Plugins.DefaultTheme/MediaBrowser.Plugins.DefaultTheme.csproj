@@ -100,6 +100,7 @@
     <Compile Include="Home\IHasActivePresentation.cs" />
     <Compile Include="Home\MoviesViewModel.cs" />
     <Compile Include="Home\TvViewModel.cs" />
+    <Compile Include="ISupportSearch.cs" />
     <Compile Include="IHasDisplayPreferences.cs" />
     <Compile Include="ListPage\ListPageConfig.cs" />
     <Compile Include="ListPage\ListViewTypes.cs" />
@@ -144,6 +145,11 @@
     </Compile>
     <Compile Include="Properties\SharedVersion.cs" />
     <Compile Include="DefaultTheme.cs" />
+    <Compile Include="Search\AlphaInputViewModel.cs" />
+    <Compile Include="Search\SearchPage.xaml.cs">
+      <DependentUpon>SearchPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Search\SearchViewModel.cs" />
     <Compile Include="UserProfileMenu\UserProfileWindow.xaml.cs">
       <DependentUpon>UserProfileWindow.xaml</DependentUpon>
     </Compile>
@@ -276,6 +282,10 @@
     <Page Include="Resources\VolumeOsd.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Search\SearchPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="UserProfileMenu\UserProfileWindow.xaml">
       <SubType>Designer</SubType>

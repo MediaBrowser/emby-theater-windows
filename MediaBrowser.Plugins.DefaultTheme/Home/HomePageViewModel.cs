@@ -1,5 +1,4 @@
-﻿using System.Threading;
-using MediaBrowser.Model.ApiClient;
+﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;

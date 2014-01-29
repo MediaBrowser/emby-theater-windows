@@ -7,6 +7,7 @@ using MediaBrowser.Model.Querying;
 using MediaBrowser.Plugins.DefaultTheme.Details;
 using MediaBrowser.Plugins.DefaultTheme.Home;
 using MediaBrowser.Plugins.DefaultTheme.ListPage;
+using MediaBrowser.Plugins.DefaultTheme.Search;
 using MediaBrowser.Theater.Interfaces;
 using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Navigation;
@@ -14,6 +15,7 @@ using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.Theming;
+using MediaBrowser.Theater.Interfaces.UserInput;
 using MediaBrowser.Theater.Interfaces.ViewModels;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
@@ -92,6 +94,11 @@ namespace MediaBrowser.Plugins.DefaultTheme
                 Source = new Uri("pack://application:,,,/" + namespaceName + ";component/Resources/" + i + ".xaml", UriKind.Absolute)
 
             });
+        }
+
+        public Page GetSearchPage(BaseItemDto item)
+        {
+            return new SearchPage(item, _apiClient, _sessionManager, _imageManager, _presentationManager, _navService, _playbackManager, _logger, _serverEvents);
         }
 
         /// <summary>

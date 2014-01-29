@@ -14,6 +14,11 @@ namespace MediaBrowser.Theater.Interfaces.Theming
     public interface ITheme
     {
         /// <summary>
+        /// Gets the Search page.
+        /// </summary>
+        Page GetSearchPage(BaseItemDto item);
+
+        /// <summary>
         /// Gets the item page.
         /// </summary>
         /// <param name="item">The item.</param>

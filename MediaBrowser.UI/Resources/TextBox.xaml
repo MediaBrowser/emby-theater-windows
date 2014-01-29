@@ -118,4 +118,13 @@
     <Style BasedOn="{StaticResource {x:Type TextBoxBase}}" TargetType="{x:Type TextBox}">
     </Style>
 
+    <!--Default TextBox style. -->
+    <Style TargetType="TextBox" x:Key="SearchTextBoxStyle">
+        <Setter Property="FontSize" Value="{StaticResource Heading2FontSize}"/>
+        <Setter Property="FontFamily" Value="{StaticResource Heading2FontFamily}"/>
+        <Setter Property="FontWeight" Value="{StaticResource Heading2FontWeight}"/>
+        <Setter Property="Foreground" Value="{StaticResource Heading2Foreground}"/>
+        <Setter Property="TextWrapping" Value="NoWrap" />
+    </Style>
+    
 </ResourceDictionary>

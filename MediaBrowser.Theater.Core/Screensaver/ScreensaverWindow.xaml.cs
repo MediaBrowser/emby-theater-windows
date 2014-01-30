@@ -7,6 +7,7 @@ using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.ViewModels;
 using MediaBrowser.Theater.Presentation.Controls;
+using Microsoft.Win32;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
@@ -33,6 +34,24 @@ namespace MediaBrowser.Theater.Core.Screensaver
             DataContext = this;
 
             LoadScreensaver();
+
+            Loaded += ScreensaverWindow_Loaded;
+            Unloaded += ScreensaverWindow_Unloaded;
+        }
+
+        void ScreensaverWindow_Unloaded(object sender, RoutedEventArgs e)
+        {
+            SystemEvents.PowerModeChanged -= SystemEvents_PowerModeChanged;
+        }
+
+        void ScreensaverWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            SystemEvents.PowerModeChanged += SystemEvents_PowerModeChanged;
+        }
+
+        void SystemEvents_PowerModeChanged(object sender, PowerModeChangedEventArgs e)
+        {
+            CloseModal();
         }
 
         protected override void OnKeyDown(KeyEventArgs e)

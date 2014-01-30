@@ -44,9 +44,9 @@
             </Grid.ColumnDefinitions>
 
             
-            <TextBox Grid.Row="0" Grid.Column="0" x:Name="SearchTextBlock" HorizontalAlignment="Left"  Margin="205 0 0 0"  Background="Transparent" BorderThickness="0" Text="{Binding CurrentSearch}" IsReadOnly="True" IsTabStop="False" Style="{StaticResource SearchTextBoxStyle}" />
+            <TextBox Grid.Row="0" Grid.Column="0" x:Name="SearchTextBlock" HorizontalAlignment="Left"  Margin="255 0 0 0"  Background="Transparent" BorderThickness="0" Text="{Binding CurrentSearch}" IsReadOnly="True" IsTabStop="False" Style="{StaticResource SearchTextBoxStyle}" />
 
-            <Grid Grid.Row="1" Grid.Column="0" Margin="200 10 0 0" MinWidth="1150" Visibility="{Binding MatchedItemsVisibility}" >
+            <Grid Grid.Row="1" Grid.Column="0" Margin="250 10 0 0" MinWidth="1150" Visibility="{Binding MatchedItemsVisibility}" >
 
 
                 <controls:ExtendedListBox Name="MatchedItemsListBox" Margin="-5" DataContext="{Binding MatchedItemsViewModel}" ItemsSource="{Binding ListCollectionView}" KeyboardNavigation.DirectionalNavigation="Continue" Command="{Binding NavigateCommand}"   Style="{StaticResource ListBoxStyle}" ItemContainerStyle="{StaticResource HighlightedBorderListBoxItemStyle}" ItemTemplate="{StaticResource HomePageItemTemplate}" >
@@ -58,7 +58,7 @@
                 </controls:ExtendedListBox>
             </Grid>
 
-            <Grid Grid.Row="1" Grid.Column="1" Margin="60 10 70 0" Visibility="{Binding MatchedPeopleVisibility}">
+            <Grid Grid.Row="1" Grid.Column="1" Margin="70 10 70 0" Visibility="{Binding MatchedPeopleVisibility}">
 
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto"></RowDefinition>
@@ -76,7 +76,7 @@
                 </controls:ExtendedListBox>
             </Grid>
 
-            <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="200 40 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" >
+            <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="250 40 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" >
 
                 <StackPanel Orientation="Horizontal">
                     <StackPanel.Style>

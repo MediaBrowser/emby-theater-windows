@@ -211,6 +211,9 @@ namespace MediaBrowser.Theater.DirectShow
             _videoConfig = videoConfig;
             _audioConfig = audioConfig;
 
+            _videoConfig.SetDefaults();
+            _audioConfig.SetDefaults();
+
             var isDvd = ((item.OriginalItem.VideoType ?? VideoType.VideoFile) == VideoType.Dvd || (item.OriginalItem.IsoType ?? IsoType.BluRay) == IsoType.Dvd) &&
                 item.PlayablePath.IndexOf("http://", StringComparison.OrdinalIgnoreCase) == -1;
 

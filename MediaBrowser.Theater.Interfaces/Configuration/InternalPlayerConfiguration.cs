@@ -34,9 +34,7 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
         {
             //set defaults if necessary
             VideoConfig = new VideoConfiguration();
-            VideoConfig.SetDefaults();
             AudioConfig = new AudioConfiguration();
-            AudioConfig.SetDefaults();
         }
     }
 
@@ -87,8 +85,8 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
         /// Gets or sets a value enabling madVR smooth motion.
         /// </summary>
         /// <value><c>true</c> to enable; otherwise, <c>false</c>.</value>
-        public bool UseMadVrSmoothMotion {get; set;}
-        
+        public bool UseMadVrSmoothMotion { get; set; }
+
         /// <summary>
         /// Gets or sets madVR smooth motion mode.
         /// </summary>
@@ -113,71 +111,82 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
             UseMadVrSmoothMotion = true;
             MadVrSmoothMotionMode = "avoidJudder";
 
-            if (GpuModel.IndexOf("Intel") > -1)
-            {
-                HwaResolution = 7; // SD + HD + UHD
-                HwaMode = 2; //LAVHWAccel.QuickSync;
-            }
-            else
-            {
-                HwaResolution = 3; // SD + HD; 
-                HwaMode = 3; // LAVHWAccel.DXVA2CopyBack;
-            }
+            HwaResolution = -1;
+            HwaMode = -1;
         }
 
         public void SetDefaults()
         {
+            if (HwaMode < 0 || HwaResolution < 0)
+            {
+                if (GpuModel.IndexOf("Intel") > -1)
+                {
+                    HwaResolution = 7; // SD + HD + UHD
+                    HwaMode = 2; //LAVHWAccel.QuickSync;
+                }
+                else
+                {
+                    HwaResolution = 3; // SD + HD; 
+                    HwaMode = 3; // LAVHWAccel.DXVA2CopyBack;
+                }
+            }
             //reading through nevcariel's comments it appears that HWA DVD playback can have stability issues
             //and since most any PC should be able to manage it, we're not going to turn it on by default
             //also skip MPEG4 since most GPUs can't HWA and it's buggy
             //the full list of codecs can be had from DirectShowPlayer.GetLAVVideoHwaCodecs for UI config building
-            HwaEnabledCodecs.Add("H264");
-            HwaEnabledCodecs.Add("VC1");
-            HwaEnabledCodecs.Add("MPEG2");
-            //HwaEnabledCodecs.Add("MPEG2DVD");
-            //HwaEnabledCodecs.Add("MPEG4");
+            if (HwaEnabledCodecs.Count == 0)
+            {
+                HwaEnabledCodecs.Add("H264");
+                HwaEnabledCodecs.Add("VC1");
+                HwaEnabledCodecs.Add("MPEG2");
+                //HwaEnabledCodecs.Add("MPEG2DVD");
+                //HwaEnabledCodecs.Add("MPEG4");
+            }
 
-            EnabledCodecs.Add("H264");
-            EnabledCodecs.Add("VC1");
-            EnabledCodecs.Add("MPEG1");
-            EnabledCodecs.Add("MPEG2");
-            EnabledCodecs.Add("MPEG4");
-            EnabledCodecs.Add("MSMPEG4");
-            EnabledCodecs.Add("VP8");
-            EnabledCodecs.Add("WMV3");
-            EnabledCodecs.Add("WMV12");
-            EnabledCodecs.Add("MJPEG");
-            EnabledCodecs.Add("Theora");
-            EnabledCodecs.Add("FLV1");
-            EnabledCodecs.Add("VP6");
-            EnabledCodecs.Add("SVQ");
-            EnabledCodecs.Add("H261");
-            EnabledCodecs.Add("H263");
-            EnabledCodecs.Add("Indeo");
-            EnabledCodecs.Add("TSCC");
-            EnabledCodecs.Add("Fraps");
-            EnabledCodecs.Add("HuffYUV");
-            EnabledCodecs.Add("QTRle");
-            EnabledCodecs.Add("DV");
-            EnabledCodecs.Add("Bink");
-            EnabledCodecs.Add("Smacker");
-            EnabledCodecs.Add("RV34");
-            EnabledCodecs.Add("Lagarith");
-            EnabledCodecs.Add("Camstudio");
-            EnabledCodecs.Add("ZLIB");
-            EnabledCodecs.Add("QTRpza");
-            EnabledCodecs.Add("PNG");
-            EnabledCodecs.Add("ProRes");
-            EnabledCodecs.Add("UtVideo");
-            EnabledCodecs.Add("Dirac");
-            EnabledCodecs.Add("DNxHD");
-            EnabledCodecs.Add("MSVideo1");
-            EnabledCodecs.Add("EightBPS");
-            EnabledCodecs.Add("LOCO");
-            EnabledCodecs.Add("ZMBV");
-            EnabledCodecs.Add("VCR1");
-            EnabledCodecs.Add("Snow");
-            EnabledCodecs.Add("FFV1");
+            if (EnabledCodecs.Count == 0)
+            {
+                EnabledCodecs.Add("H264");
+                EnabledCodecs.Add("VC1");
+                EnabledCodecs.Add("MPEG1");
+                EnabledCodecs.Add("MPEG2");
+                EnabledCodecs.Add("MPEG4");
+                EnabledCodecs.Add("MSMPEG4");
+                EnabledCodecs.Add("VP8");
+                EnabledCodecs.Add("WMV3");
+                EnabledCodecs.Add("WMV12");
+                EnabledCodecs.Add("MJPEG");
+                EnabledCodecs.Add("Theora");
+                EnabledCodecs.Add("FLV1");
+                EnabledCodecs.Add("VP6");
+                EnabledCodecs.Add("SVQ");
+                EnabledCodecs.Add("H261");
+                EnabledCodecs.Add("H263");
+                EnabledCodecs.Add("Indeo");
+                EnabledCodecs.Add("TSCC");
+                EnabledCodecs.Add("Fraps");
+                EnabledCodecs.Add("HuffYUV");
+                EnabledCodecs.Add("QTRle");
+                EnabledCodecs.Add("DV");
+                EnabledCodecs.Add("Bink");
+                EnabledCodecs.Add("Smacker");
+                EnabledCodecs.Add("RV34");
+                EnabledCodecs.Add("Lagarith");
+                EnabledCodecs.Add("Camstudio");
+                EnabledCodecs.Add("ZLIB");
+                EnabledCodecs.Add("QTRpza");
+                EnabledCodecs.Add("PNG");
+                EnabledCodecs.Add("ProRes");
+                EnabledCodecs.Add("UtVideo");
+                EnabledCodecs.Add("Dirac");
+                EnabledCodecs.Add("DNxHD");
+                EnabledCodecs.Add("MSVideo1");
+                EnabledCodecs.Add("EightBPS");
+                EnabledCodecs.Add("LOCO");
+                EnabledCodecs.Add("ZMBV");
+                EnabledCodecs.Add("VCR1");
+                EnabledCodecs.Add("Snow");
+                EnabledCodecs.Add("FFV1");
+            }
         }
     }
 
@@ -240,28 +249,31 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
 
         public void SetDefaults()
         {
-            EnabledCodecs.Add("AAC");
-            EnabledCodecs.Add("AC3");
-            EnabledCodecs.Add("EAC3");
-            EnabledCodecs.Add("DTS");
-            EnabledCodecs.Add("MP2");
-            EnabledCodecs.Add("MP3");
-            EnabledCodecs.Add("TRUEHD");
-            EnabledCodecs.Add("FLAC");
-            EnabledCodecs.Add("VORBIS");
-            EnabledCodecs.Add("LPCM");
-            EnabledCodecs.Add("PCM");
-            EnabledCodecs.Add("WAVPACK");
-            EnabledCodecs.Add("TTA");
-            EnabledCodecs.Add("Cook");
-            EnabledCodecs.Add("RealAudio");
-            EnabledCodecs.Add("ALAC");
-            EnabledCodecs.Add("Opus");
-            EnabledCodecs.Add("AMR");
-            EnabledCodecs.Add("Nellymoser");
-            EnabledCodecs.Add("MSPCM");
-            EnabledCodecs.Add("Truespeech");
-            EnabledCodecs.Add("TAK");
+            if (EnabledCodecs.Count == 0)
+            {
+                EnabledCodecs.Add("AAC");
+                EnabledCodecs.Add("AC3");
+                EnabledCodecs.Add("EAC3");
+                EnabledCodecs.Add("DTS");
+                EnabledCodecs.Add("MP2");
+                EnabledCodecs.Add("MP3");
+                EnabledCodecs.Add("TRUEHD");
+                EnabledCodecs.Add("FLAC");
+                EnabledCodecs.Add("VORBIS");
+                EnabledCodecs.Add("LPCM");
+                EnabledCodecs.Add("PCM");
+                EnabledCodecs.Add("WAVPACK");
+                EnabledCodecs.Add("TTA");
+                EnabledCodecs.Add("Cook");
+                EnabledCodecs.Add("RealAudio");
+                EnabledCodecs.Add("ALAC");
+                EnabledCodecs.Add("Opus");
+                EnabledCodecs.Add("AMR");
+                EnabledCodecs.Add("Nellymoser");
+                EnabledCodecs.Add("MSPCM");
+                EnabledCodecs.Add("Truespeech");
+                EnabledCodecs.Add("TAK");
+            }
         }
     }
 }

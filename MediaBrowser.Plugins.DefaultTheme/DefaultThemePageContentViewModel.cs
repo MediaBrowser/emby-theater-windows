@@ -115,6 +115,8 @@ namespace MediaBrowser.Plugins.DefaultTheme
             {
                 ShowSettingsButton = true;
             }
+
+            ShowSearchButton = (e.NewPage as ISupportSearch) != null;
         }
 
         private BitmapImage _userImage;
@@ -197,6 +199,24 @@ namespace MediaBrowser.Plugins.DefaultTheme
                 if (changed)
                 {
                     OnPropertyChanged("ShowSettingsButton");
+                }
+            }
+        }
+
+        private bool _showSearchButton = true;
+        public bool ShowSearchButton
+        {
+            get { return _showSearchButton; }
+
+            set
+            {
+                var changed = _showSearchButton != value;
+
+                _showSearchButton = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("ShowSearchButton");
                 }
             }
         }

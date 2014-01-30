@@ -69,7 +69,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             EnableServerImageEnhancers = true;
 
             _indexOptionsCollectionView = new ListCollectionView(_indexOptions);
-            _indexOptionsCollectionView.CurrentChanged += _indexOptionsCollectionView_CurrentChanged;
+            _indexOptionsCollectionView.CurrentChanged += IndexOptionsCollectionView_CurrentChanged;
 
             NavigateCommand = new RelayCommand(Navigate);
             PlayCommand = new RelayCommand(Play);
@@ -426,7 +426,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         public Action<ItemViewModel> OnItemCreated { get; set; }
 
-        private async Task ReloadItems(bool isInitialLoad)
+        public async Task ReloadItems(bool isInitialLoad)
         {
             if (HasIndexOptions && CurrentIndexOption == null)
             {
@@ -678,7 +678,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         private readonly object _indexSyncLock = new object();
         private object _lastIndexValue;
 
-        void _indexOptionsCollectionView_CurrentChanged(object sender, EventArgs e)
+        protected void IndexOptionsCollectionView_CurrentChanged(object sender, EventArgs e)
         {
             if (!HasIndexOptions)
             {
@@ -712,7 +712,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
-        private void OnIndexSelectionChange(object state)
+        public void OnIndexSelectionChange(object state)
         {
             _dispatcher.InvokeAsync(UpdateCurrentIndex);
         }
@@ -722,13 +722,6 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             CurrentIndexOption = IndexOptionsCollectionView.CurrentItem as TabItem;
 
             ReloadItems(false);
-
-            Task.Run(() =>
-            {
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
-                GC.Collect();
-            });
         }
 
         public void Dispose()

@@ -375,5 +375,10 @@ namespace MediaBrowser.UI
             PlaybackManager.StopAllPlayback();
             Application.SetSuspendState(PowerState.Suspend, false, false);
         }
+
+        public override string Name
+        {
+            get { return "Media Browser Theater"; }
+        }
     }
 }

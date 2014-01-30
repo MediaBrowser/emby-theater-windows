@@ -22,7 +22,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Search
 {
     public class SearchViewModel : BaseViewModel, IDisposable
     {
-   
+
         private readonly IPresentationManager _presentationManager;
         private readonly IImageManager _imageManager;
         private readonly IApiClient _apiClient;
@@ -31,7 +31,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Search
         private readonly IPlaybackManager _playbackManager;
         private readonly ILogger _logger;
         private readonly IServerEvents _serverEvents;
-   
+
         private readonly ImageType[] _preferredImageTypes = new[] { ImageType.Backdrop, ImageType.Primary, ImageType.Thumb };
         private readonly ItemsResult _emptyItemsResult = new ItemsResult { TotalRecordCount = 0, Items = new BaseItemDto[0] };
         private ItemsResult _searchedItemsResult = new ItemsResult { TotalRecordCount = 0, Items = new BaseItemDto[0] };
@@ -45,7 +45,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Search
 
         public SearchViewModel(IPresentationManager presentationManager, IImageManager imageManager, IApiClient apiClient, ISessionManager sessionManager, INavigationService navService, IPlaybackManager playbackManager, ILogger logger, IServerEvents serverEvents)
         {
-           
+
             _presentationManager = presentationManager;
             _imageManager = imageManager;
             _apiClient = apiClient;
@@ -60,35 +60,35 @@ namespace MediaBrowser.Plugins.DefaultTheme.Search
             LoadMatchedPeopleViewModel();
 
             AlphaInputViewModel = new AlphaInputViewModel(UpdateSearchText, presentationManager, _imageManager, _apiClient, _navService, _playbackManager, _logger, _serverEvents);
-          
+
         }
 
         // 3x3 grid 1080 wide, ItemDisplayWidth = TileWidth, ItemContainerWidth = ItemDisplayWidth + 20, ditto for height
         private const double TileWidth = 384;
         private const double TileHeight = TileWidth * 9 / 16;
-     
+
         private void LoadMatchedItemsViewModel()
         {
             MatchedItemsViewModel = new ItemListViewModel(s => Task.FromResult(_searchedItemsResult), _presentationManager, _imageManager, _apiClient, _navService, _playbackManager, _logger, _serverEvents)
             {
-               ImageDisplayWidth = TileWidth,
-               ImageDisplayHeightGenerator = vm => TileHeight,
-               DisplayNameGenerator = GetDisplayName,
-               PreferredImageTypesGenerator = vm => new[] { ImageType.Thumb, ImageType.Backdrop, ImageType.Primary }, //   vm => _preferredImageTypes,
-               ScrollDirection = ScrollDirection.Horizontal,
-               EnableBackdropsForCurrentItem = false,
-               ShowSidebar = false,
-               AutoSelectFirstItem = false,
-               ShowLoadingAnimation = true,
-               IsVirtualizationRequired= false,
+                ImageDisplayWidth = TileWidth,
+                ImageDisplayHeightGenerator = vm => TileHeight,
+                DisplayNameGenerator = GetDisplayName,
+                PreferredImageTypesGenerator = vm => new[] { ImageType.Thumb, ImageType.Backdrop, ImageType.Primary }, //   vm => _preferredImageTypes,
+                ScrollDirection = ScrollDirection.Horizontal,
+                EnableBackdropsForCurrentItem = false,
+                ShowSidebar = false,
+                AutoSelectFirstItem = false,
+                ShowLoadingAnimation = true,
+                IsVirtualizationRequired = false,
 
-               OnItemCreated = vm =>
-               {
-                   vm.DisplayNameVisibility = vm.Item.HasThumb || vm.Item.ParentThumbImageTag.HasValue ||
-                                              vm.Item.SeriesThumbImageTag.HasValue
-                       ? Visibility.Collapsed
-                       : Visibility.Visible;
-               }
+                OnItemCreated = vm =>
+                {
+                    vm.DisplayNameVisibility = vm.Item.HasThumb || vm.Item.ParentThumbImageTag.HasValue ||
+                                               vm.Item.SeriesThumbImageTag.HasValue
+                        ? Visibility.Collapsed
+                        : Visibility.Visible;
+                }
             };
 
             MatchedItemsViewModel.ItemContainerWidth = TileWidth + 5;
@@ -101,7 +101,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Search
             MatchedPeopleViewModel = new ItemListViewModel(s => Task.FromResult(_searchedPeopleItemsResult), _presentationManager, _imageManager, _apiClient, _navService, _playbackManager, _logger, _serverEvents)
             {
                 ImageDisplayWidth = (TileWidth + 20) / 4,
-                ImageDisplayHeightGenerator = vm =>89,
+                ImageDisplayHeightGenerator = vm => 89,
                 DisplayNameGenerator = GetDisplayName,
                 PreferredImageTypesGenerator = vm => new[] { ImageType.Primary, ImageType.Thumb },
                 ScrollDirection = ScrollDirection.Horizontal,
@@ -109,18 +109,28 @@ namespace MediaBrowser.Plugins.DefaultTheme.Search
                 AutoSelectFirstItem = false,
                 ShowLoadingAnimation = false,
                 IsVirtualizationRequired = false,
-              
+
             };
 
             MatchedPeopleViewModel.ItemContainerWidth = MatchedPeopleViewModel.ImageDisplayWidth + 5;
             MatchedPeopleViewModel.ItemContainerHeight = MatchedPeopleViewModel.DefaultImageDisplayHeight + 5;
             OnPropertyChanged("MatchedPeopleViewModel");
         }
-        
+
         private async Task<Boolean> GeSearchItemsAsync()
         {
-            SearchHintResult searchHintResult = await _apiClient.GetSearchHintsAsync(new SearchQuery { UserId = _apiClient.CurrentUserId, SearchTerm = CurrentSearch, IncludePeople = false, IncludeStudios = false, Limit = 9 });
-           
+            SearchHintResult searchHintResult = await _apiClient.GetSearchHintsAsync(new SearchQuery
+            {
+                UserId = _apiClient.CurrentUserId,
+                SearchTerm = CurrentSearch,
+                IncludePeople = false,
+                IncludeStudios = false,
+                Limit = 9,
+                IncludeGenres = false,
+                IncludeArtists = false,
+                IncludeMedia = true
+            });
+
             var ids = (searchHintResult.TotalRecordCount > 0) ? searchHintResult.SearchHints.Select(s => s.ItemId).ToArray() : null;
             if (ids != null && ids.Length > 0)
             {
@@ -143,7 +153,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Search
 
         private async Task<Boolean> GeSearchPeopleAsync()
         {
-            SearchHintResult searchHintResult = await _apiClient.GetSearchHintsAsync(new SearchQuery {UserId = _apiClient.CurrentUserId, SearchTerm = CurrentSearch, IncludePeople = true, IncludeArtists = false, IncludeGenres = false, IncludeMedia = false, IncludeStudios = false, Limit = 9});
+            SearchHintResult searchHintResult = await _apiClient.GetSearchHintsAsync(new SearchQuery { UserId = _apiClient.CurrentUserId, SearchTerm = CurrentSearch, IncludePeople = true, IncludeArtists = false, IncludeGenres = false, IncludeMedia = false, IncludeStudios = false, Limit = 9 });
 
             var ids = (searchHintResult.TotalRecordCount > 0) ? searchHintResult.SearchHints.Select(s => s.ItemId).ToArray() : null;
             if (ids != null && ids.Length > 0)
@@ -167,11 +177,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Search
 
         private async void UpdateSearch()
         {
-           MatchedPeopleVisibility = String.IsNullOrEmpty(CurrentSearch) ? Visibility.Hidden : Visibility.Visible;
-           MatchedItemsVisibility = String.IsNullOrEmpty(CurrentSearch) ? Visibility.Hidden : Visibility.Visible;
+            MatchedPeopleVisibility = String.IsNullOrEmpty(CurrentSearch) ? Visibility.Hidden : Visibility.Visible;
+            MatchedItemsVisibility = String.IsNullOrEmpty(CurrentSearch) ? Visibility.Hidden : Visibility.Visible;
 
 
-           if (!String.IsNullOrEmpty(CurrentSearch))
+            if (!String.IsNullOrEmpty(CurrentSearch))
             {
                 var searchTasks = new Task[2];
 
@@ -186,14 +196,14 @@ namespace MediaBrowser.Plugins.DefaultTheme.Search
                 _searchedPeopleItemsResult = _emptyItemsResult;
             }
 
-           await MatchedItemsViewModel.ReloadItems(true); 
-           await MatchedPeopleViewModel.ReloadItems(true);
+            await MatchedItemsViewModel.ReloadItems(true);
+            await MatchedPeopleViewModel.ReloadItems(true);
         }
 
         // Add a new char to current search, causes searc to fire
-        private  Task<Boolean> UpdateSearchText(AlphaInputViewModel viewModel)
+        private Task<Boolean> UpdateSearchText(AlphaInputViewModel viewModel)
         {
-           var currentSearch = CurrentSearch;
+            var currentSearch = CurrentSearch;
 
             var indexOption = viewModel.CurrentIndexOption == null ? string.Empty : viewModel.CurrentIndexOption.Name;
 
@@ -211,7 +221,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Search
             return Task.FromResult(true);
         }
 
-     
+
         private Visibility _matchedItemsVisibility = Visibility.Hidden;
         public Visibility MatchedItemsVisibility
         {
@@ -254,34 +264,35 @@ namespace MediaBrowser.Plugins.DefaultTheme.Search
             _dispatcher.InvokeAsync(UpdateSearch);
         }
 
-        
+
         private readonly object _searchSyncLock = new object();
 
         private string _currentSearch;
         public string CurrentSearch
         {
-            get { return _currentSearch;  }
+            get { return _currentSearch; }
 
-            set {
+            set
+            {
                 var changed = _currentSearch != value;
 
                 _currentSearch = value;
 
                 if (changed)
                 {
-                      lock (_searchSyncLock)
-                      {
-                          // effectivly wait for 500 MS for another key stroke before we fire off a search - nagal algorithm
-                            if (_updateSearchTimer == null)
-                            {
-                                _updateSearchTimer = new Timer(UpdateSearchInvokeAsync, null, 500, Timeout.Infinite);
-                            }
-                            else
-                            {
-                                _updateSearchTimer.Change(500, Timeout.Infinite);
-                            }
-                      }
-                     OnPropertyChanged("CurrentSearch");
+                    lock (_searchSyncLock)
+                    {
+                        // effectivly wait for 500 MS for another key stroke before we fire off a search - nagal algorithm
+                        if (_updateSearchTimer == null)
+                        {
+                            _updateSearchTimer = new Timer(UpdateSearchInvokeAsync, null, 500, Timeout.Infinite);
+                        }
+                        else
+                        {
+                            _updateSearchTimer.Change(500, Timeout.Infinite);
+                        }
+                    }
+                    OnPropertyChanged("CurrentSearch");
                 }
             }
         }
@@ -322,7 +333,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Search
             return name;
         }
 
-      
+
         public void Dispose()
         {
             lock (_searchSyncLock)

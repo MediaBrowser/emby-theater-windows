@@ -159,8 +159,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Search
 
         private async void UpdateSearch()
         {
+       
            MatchedPeopleVisibility = String.IsNullOrEmpty(CurrentSearch) ? Visibility.Hidden : Visibility.Visible;
            MatchedItemsVisibility = String.IsNullOrEmpty(CurrentSearch) ? Visibility.Hidden : Visibility.Visible;
+           if (EmptyResultsTextBlockVisibility == Visibility.Visible)
+               EmptyResultsTextBlockVisibility = Visibility.Collapsed; // once we have hidden it, we dont want to see it again
 
 
            if (!String.IsNullOrEmpty(CurrentSearch))
@@ -241,6 +244,23 @@ namespace MediaBrowser.Plugins.DefaultTheme.Search
             }
         }
 
+        private Visibility _emptyResultsTextBlockVisibility = Visibility.Visible;
+        public Visibility EmptyResultsTextBlockVisibility
+        {
+            get { return _emptyResultsTextBlockVisibility; }
+
+            set
+            {
+                var changed = _emptyResultsTextBlockVisibility != value;
+
+                _emptyResultsTextBlockVisibility = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("EmptyResultsTextBlockVisibility");
+                }
+            }
+        }
 
         private void UpdateSearchInvokeAsync(object state)
         {

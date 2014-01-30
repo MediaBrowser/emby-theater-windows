@@ -25,7 +25,7 @@
             </Setter.Value>
         </Setter>
     </Style>
-
+    
     <!--Defines the styles for ListBoxItems. Themes should override this if they choose. -->
     <Style x:Key="HighlightedBorderListBoxItemStyle" TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource BaseListBoxItemStyle}">
 
@@ -57,7 +57,7 @@
         </Setter>
     </Style>
 
-    <!--Provides styling for a button that matches list box items. Themes should override this if they choose. -->
+   <!--Provides styling for a button that matches list box items. Themes should override this if they choose. -->
     <!--Or, they may find it easier to just override SelectedItemHighlightColor to change the glow color. -->
     <Style x:Key="BaseItemButtonStyle" TargetType="{x:Type Button}">
         <Setter Property="SnapsToDevicePixels" Value="true"/>

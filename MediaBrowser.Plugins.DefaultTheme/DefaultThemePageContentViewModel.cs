@@ -404,16 +404,19 @@ namespace MediaBrowser.Plugins.DefaultTheme
         {
             var now = DateTime;
 
-            TimeLeft = now.ToString("h:mm");
+            var nowString = now.ToShortTimeString();
 
-            if (CultureInfo.CurrentCulture.Name.Equals("en-US", StringComparison.OrdinalIgnoreCase))
+            if (nowString.IndexOf("am", StringComparison.OrdinalIgnoreCase) != -1 ||
+                nowString.IndexOf("pm", StringComparison.OrdinalIgnoreCase) != -1)
             {
+                TimeLeft = now.ToString("h:mm");
                 var time = now.ToString("t");
                 var values = time.Split(' ');
                 TimeRight = values[values.Length - 1].ToLower();
             }
             else
             {
+                TimeLeft = now.ToShortTimeString();
                 TimeRight = string.Empty;
             }
         }

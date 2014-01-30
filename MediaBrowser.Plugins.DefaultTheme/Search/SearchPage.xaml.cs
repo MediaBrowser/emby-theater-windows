@@ -36,7 +36,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Search
     {
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
-        private readonly IPresentationManager _presentationManager;
         private readonly ILogger _logger;
         
         private readonly BaseItemDto _parentItem;
@@ -45,7 +44,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Search
         public SearchPage(BaseItemDto parent, IApiClient apiClient, ISessionManager sessionManager, IImageManager imageManager, IPresentationManager presentation, INavigationService navigationManager, IPlaybackManager playbackManager, ILogger logger, IServerEvents serverEvents)
         {
             _logger = logger;
-            _presentationManager = presentation;
             _imageManager = imageManager;
             _apiClient = apiClient;
             _parentItem = parent;
@@ -54,7 +52,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Search
 
             this.Loaded += SearchPage_Loaded;
             
-            _searchViewModel = new SearchViewModel(_presentationManager, _imageManager, _apiClient, sessionManager, navigationManager, playbackManager, _logger, serverEvents);
+            _searchViewModel = new SearchViewModel(presentation, _imageManager, _apiClient, sessionManager, navigationManager, playbackManager, _logger, serverEvents);
 
             _searchViewModel.MatchedItemsViewModel.PropertyChanged += PropertyChanged;
             _searchViewModel.MatchedPeopleViewModel.PropertyChanged += PropertyChanged;

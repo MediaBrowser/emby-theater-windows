@@ -64,7 +64,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Search
         }
 
         // 3x3 grid 1080 wide, ItemDisplayWidth = TileWidth, ItemContainerWidth = ItemDisplayWidth + 20, ditto for height
-        private const double TileWidth = 351;
+        private const double TileWidth = 384;
         private const double TileHeight = TileWidth * 9 / 16;
      
         private void LoadMatchedItemsViewModel()
@@ -74,13 +74,21 @@ namespace MediaBrowser.Plugins.DefaultTheme.Search
                ImageDisplayWidth = TileWidth,
                ImageDisplayHeightGenerator = vm => TileHeight,
                DisplayNameGenerator = GetDisplayName,
-               PreferredImageTypesGenerator = vm => new[] { ImageType.Thumb, ImageType.Primary }, //   vm => _preferredImageTypes,
+               PreferredImageTypesGenerator = vm => new[] { ImageType.Thumb, ImageType.Backdrop, ImageType.Primary }, //   vm => _preferredImageTypes,
                ScrollDirection = ScrollDirection.Horizontal,
                EnableBackdropsForCurrentItem = false,
                ShowSidebar = false,
                AutoSelectFirstItem = false,
                ShowLoadingAnimation = true,
                IsVirtualizationRequired= false,
+
+               OnItemCreated = vm =>
+               {
+                   vm.DisplayNameVisibility = vm.Item.HasThumb || vm.Item.ParentThumbImageTag.HasValue ||
+                                              vm.Item.SeriesThumbImageTag.HasValue
+                       ? Visibility.Collapsed
+                       : Visibility.Visible;
+               }
             };
 
             MatchedItemsViewModel.ItemContainerWidth = TileWidth + 5;
@@ -167,11 +175,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.Search
             {
                 var searchTasks = new Task[2];
 
-               
                 searchTasks[0] = Task.Run(() => GeSearchItemsAsync());
                 searchTasks[1] = Task.Run(() => GeSearchPeopleAsync());
-               
-                Task.WaitAll(searchTasks); 
+
+                await Task.WhenAll(searchTasks);
             }
             else
             {

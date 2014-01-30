@@ -59,6 +59,15 @@
         <Setter Property="Height" Value="20"/>
     </Style>
 
+    <!--Default TextBox style. -->
+    <Style TargetType="TextBox" x:Key="SearchTextBoxStyle">
+        <Setter Property="FontSize" Value="{StaticResource Heading1FontSize}"/>
+        <Setter Property="FontFamily" Value="{StaticResource Heading1FontFamily}"/>
+        <Setter Property="FontWeight" Value="{StaticResource Heading1FontWeight}"/>
+        <Setter Property="Foreground" Value="{StaticResource Heading1Foreground}"/>
+        <Setter Property="TextWrapping" Value="NoWrap" />
+    </Style>
+
     <ControlTemplate x:Key="FullscreenVideoOsdTemplate">
         <osd:FullscreenVideoTransportOsd DataContext="{Binding}"></osd:FullscreenVideoTransportOsd>
     </ControlTemplate>

@@ -13,7 +13,7 @@
     >
 
 
-    <Grid Name="SearchGrid" >
+    <Grid Name="SearchGrid">
 
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"></RowDefinition>
@@ -30,39 +30,44 @@
             </controls:ExtendedListBox>
         </Grid>
 
-        <Grid Grid.Row="1" Margin="0 0 0 0" VerticalAlignment="Center">
+        <Grid Grid.Row="1" Margin="0 20 0 0" VerticalAlignment="Top">
 
              <Grid.RowDefinitions>
-                <RowDefinition Height="*"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
             </Grid.RowDefinitions>
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
-                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
             
-            <TextBox Grid.Row="0" Grid.Column="0" x:Name="SearchTextBlock"  Width="400" HorizontalAlignment="Left"  Margin="150 0 0 0"  Background="Transparent" BorderThickness="0" Text="{Binding CurrentSearch}" IsReadOnly="True" IsTabStop="False" Style="{StaticResource SearchTextBoxStyle}" />
-            <TextBlock Grid.Row="0" Grid.Column="1"  Padding="150 0 0 0" Text="PEOPLE" VerticalAlignment="Bottom" Visibility="{Binding MatchedPeopleVisibility}" Style="{StaticResource Heading2TextBlockStyle}" />
-            
+            <TextBox Grid.Row="0" Grid.Column="0" x:Name="SearchTextBlock" HorizontalAlignment="Left"  Margin="205 0 0 0"  Background="Transparent" BorderThickness="0" Text="{Binding CurrentSearch}" IsReadOnly="True" IsTabStop="False" Style="{StaticResource SearchTextBoxStyle}" />
 
-            <Grid Grid.Row="1" Grid.Column="0"   Width="1070"  Height="610"  Margin="150 0 0 0" Visibility="{Binding MatchedItemsVisibility}" >
+            <Grid Grid.Row="1" Grid.Column="0" Margin="200 10 0 0" MinWidth="1150" Visibility="{Binding MatchedItemsVisibility}" >
 
 
                 <controls:ExtendedListBox Name="MatchedItemsListBox" Margin="-5" DataContext="{Binding MatchedItemsViewModel}" ItemsSource="{Binding ListCollectionView}" KeyboardNavigation.DirectionalNavigation="Continue" Command="{Binding NavigateCommand}"   Style="{StaticResource ListBoxStyle}" ItemContainerStyle="{StaticResource HighlightedBorderListBoxItemStyle}" ItemTemplate="{StaticResource HomePageItemTemplate}" >
                     <controls:ExtendedListBox.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <WrapPanel Margin="5" ItemWidth="{Binding ItemContainerWidth}" ItemHeight="{Binding ItemContainerHeight}" Orientation="Horizontal" ></WrapPanel>
+                            <WrapPanel Margin="5" ItemWidth="{Binding ItemContainerWidth}" ItemHeight="{Binding ItemContainerHeight}" Orientation="Vertical" ></WrapPanel>
                         </ItemsPanelTemplate>
                     </controls:ExtendedListBox.ItemsPanel>
                 </controls:ExtendedListBox>
             </Grid>
 
-            <Grid Grid.Row="1" Grid.Column="1"   Height="610"  Margin="150 0 70 0" Visibility="{Binding MatchedPeopleVisibility}">
+            <Grid Grid.Row="1" Grid.Column="1" Margin="60 10 70 0" Visibility="{Binding MatchedPeopleVisibility}">
 
-                <controls:ExtendedListBox Name="MatchedPeopleListBox" Margin="-5" DataContext="{Binding MatchedPeopleViewModel}" ItemsSource="{Binding ListCollectionView}" KeyboardNavigation.DirectionalNavigation="Continue" Command="{Binding NavigateCommand}" Style="{StaticResource ListBoxStyle}" ItemContainerStyle="{StaticResource HighlightedBorderListBoxItemStyle}"  ItemTemplate="{StaticResource ListViewPeopleTemplate}" ScrollViewer.CanContentScroll="False" >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Text="People" Margin="5 0 0 0" VerticalAlignment="Bottom" Visibility="{Binding MatchedPeopleVisibility}" Style="{StaticResource Heading2TextBlockStyle}" />
+                
+                <controls:ExtendedListBox Grid.Row="1" Name="MatchedPeopleListBox" Foreground="#ddd" Margin="-5" DataContext="{Binding MatchedPeopleViewModel}" ItemsSource="{Binding ListCollectionView}" KeyboardNavigation.DirectionalNavigation="Continue" Command="{Binding NavigateCommand}" Style="{StaticResource ListBoxStyle}" ItemContainerStyle="{StaticResource HighlightedBorderListBoxItemStyle}"  ItemTemplate="{StaticResource ListViewPeopleTemplate}" ScrollViewer.CanContentScroll="False" >
                     <controls:ExtendedListBox.ItemsPanel>
                         <ItemsPanelTemplate>
                             <StackPanel Margin="5"  Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></StackPanel>
@@ -71,7 +76,7 @@
                 </controls:ExtendedListBox>
             </Grid>
 
-            <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="150 40 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" >
+            <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="200 40 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" >
 
                 <StackPanel Orientation="Horizontal">
                     <StackPanel.Style>

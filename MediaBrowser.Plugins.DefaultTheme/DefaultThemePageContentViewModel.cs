@@ -96,13 +96,13 @@ namespace MediaBrowser.Plugins.DefaultTheme
 
             if (hasDisplayPreferences == null)
             {
-                IsOnPageWithDisplayPreferences = false;
-                IsOnPageWithSortOptions = false;
+                MasterCommands.DisplayPreferencesEnabled = false;
+                MasterCommands.SortEnabled = false;
             }
             else
             {
-                IsOnPageWithDisplayPreferences = true;
-                IsOnPageWithSortOptions = hasDisplayPreferences.HasSortOptions;
+                MasterCommands.DisplayPreferencesEnabled = true;
+                MasterCommands.SortEnabled = hasDisplayPreferences.HasSortOptions;
             }
 
             var isLoginPage = e.NewPage as ILoginPage;
@@ -231,40 +231,6 @@ namespace MediaBrowser.Plugins.DefaultTheme
                 _logoImage = value;
 
                 OnPropertyChanged("LogoImage");
-            }
-        }
-
-        private bool _isOnPageWithDisplayPreferences;
-        public bool IsOnPageWithDisplayPreferences
-        {
-            get { return _isOnPageWithDisplayPreferences; }
-
-            set
-            {
-                var changed = _isOnPageWithDisplayPreferences != value;
-
-                _isOnPageWithDisplayPreferences = value;
-                if (changed)
-                {
-                    OnPropertyChanged("IsOnPageWithDisplayPreferences");
-                }
-            }
-        }
-
-        private bool _isOnPageWithSortOptions;
-        public bool IsOnPageWithSortOptions
-        {
-            get { return _isOnPageWithSortOptions; }
-
-            set
-            {
-                var changed = _isOnPageWithSortOptions != value;
-
-                _isOnPageWithSortOptions = value;
-                if (changed)
-                {
-                    OnPropertyChanged("IsOnPageWithSortOptions");
-                }
             }
         }
 

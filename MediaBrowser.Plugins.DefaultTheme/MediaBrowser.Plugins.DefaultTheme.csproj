@@ -38,13 +38,13 @@
     <RunPostBuildEvent>Always</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MediaBrowser.Common, Version=3.0.5132.25922, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.Common, Version=3.0.5142.22121, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.3.0.306\lib\net45\MediaBrowser.Common.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.310\lib\net45\MediaBrowser.Common.dll</HintPath>
     </Reference>
-    <Reference Include="MediaBrowser.Model, Version=3.0.5132.25922, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.Model, Version=3.0.5142.22120, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.3.0.306\lib\net45\MediaBrowser.Model.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.310\lib\net45\MediaBrowser.Model.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Expression.Effects, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -102,6 +102,7 @@
     <Compile Include="Home\IHasActivePresentation.cs" />
     <Compile Include="Home\MoviesViewModel.cs" />
     <Compile Include="Home\TvViewModel.cs" />
+    <Compile Include="ISupportSearch.cs" />
     <Compile Include="IHasDisplayPreferences.cs" />
     <Compile Include="ListPage\ListPageConfig.cs" />
     <Compile Include="ListPage\ListViewTypes.cs" />
@@ -149,6 +150,11 @@
     <Compile Include="SystemOptionsMenu\SystemOptionsWindow.xaml.cs">
       <DependentUpon>SystemOptionsWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Search\AlphaInputViewModel.cs" />
+    <Compile Include="Search\SearchPage.xaml.cs">
+      <DependentUpon>SearchPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Search\SearchViewModel.cs" />
     <Compile Include="UserProfileMenu\UserProfileWindow.xaml.cs">
       <DependentUpon>UserProfileWindow.xaml</DependentUpon>
     </Compile>
@@ -289,6 +295,9 @@
     <Page Include="SystemOptionsMenu\SystemOptionsWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    <Page Include="Search\SearchPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="UserProfileMenu\UserProfileWindow.xaml">
       <SubType>Designer</SubType>

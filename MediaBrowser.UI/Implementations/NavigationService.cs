@@ -316,6 +316,13 @@ namespace MediaBrowser.UI.Implementations
             await App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(async () => await Navigate(_themeManager.CurrentTheme.GetPersonPage(item, context, mediaItemId)));
         }
 
+        public async Task NavigateToSearchPage()
+        {
+            var item = await _apiClient.GetRootFolderAsync(_apiClient.CurrentUserId);
+
+            await App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(async () => await Navigate(_themeManager.CurrentTheme.GetSearchPage(item)));
+        }
+
         /// <summary>
         /// Navigates the back.
         /// </summary>

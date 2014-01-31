@@ -77,7 +77,7 @@
     </Style>
 
     <Style TargetType="{x:Type osk:VirtualKey}">
-        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type osk:VirtualKey}">
@@ -111,7 +111,6 @@
     <Style TargetType="{x:Type osk:VirtualKeyAction}">
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="Foreground" Value="White" />
-        <Setter Property="FlowDirection" Value="LeftToRight"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type osk:VirtualKeyAction}">

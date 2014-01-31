@@ -21,7 +21,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
     /// <summary>
     /// Interaction logic for FolderPage.xaml
     /// </summary>
-    public partial class FolderPage : BasePage, ISupportsItemThemeMedia, ISupportsBackdrops, IItemPage, IHasDisplayPreferences
+    public partial class FolderPage : BasePage, ISupportsItemThemeMedia, ISupportsBackdrops, IItemPage, IHasDisplayPreferences, ISupportSearch
     {
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;

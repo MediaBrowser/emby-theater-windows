@@ -65,6 +65,11 @@ namespace MediaBrowser.Theater.Interfaces.Navigation
         Task NavigateToPerson(string name, ViewType context = ViewType.Folders, string mediaItemId = null);
 
         /// <summary>
+        /// Navigates to the search page
+        /// </summary>
+        Task NavigateToSearchPage();
+
+        /// <summary>
         /// Navigates the back.
         /// </summary>
         Task NavigateBack();

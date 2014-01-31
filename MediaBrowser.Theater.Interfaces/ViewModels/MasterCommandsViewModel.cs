@@ -32,6 +32,7 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
         protected readonly Dispatcher Dispatcher;
 
         public ICommand HomeCommand { get; private set; }
+        public ICommand SearchCommand { get; private set; }
         public ICommand FullscreenVideoCommand { get; private set; }
         public ICommand SettingsCommand { get; private set; }
         public ICommand GoBackCommand { get; private set; }
@@ -117,6 +118,7 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
             NavigationService.Navigated += NavigationService_Navigated;
 
             HomeCommand = new RelayCommand(i => GoHome());
+            SearchCommand = new RelayCommand(i => GoSearch());
             FullscreenVideoCommand = new RelayCommand(i => NavigationService.NavigateToInternalPlayerPage());
             SettingsCommand = new RelayCommand(i => GoSettings());
             GoBackCommand = new RelayCommand(i => GoBack());
@@ -175,6 +177,12 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
             }
 
             if (PageNavigated != null) { PageNavigated(this, new EventArgs());}
+        }
+
+        protected async virtual void GoSearch()
+        {
+            await NavigationService.NavigateToSearchPage();
+            if (PageNavigated != null) { PageNavigated(this, new EventArgs()); }
         }
 
         protected async virtual void GoSettings()

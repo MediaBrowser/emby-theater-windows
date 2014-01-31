@@ -117,5 +117,5 @@
 
     <Style BasedOn="{StaticResource {x:Type TextBoxBase}}" TargetType="{x:Type TextBox}">
     </Style>
-
+    
 </ResourceDictionary>

@@ -792,7 +792,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 Fields = new[]
                         {
                                  ItemFields.PrimaryImageAspectRatio,
-                                 ItemFields.DateCreated
+                                 ItemFields.DateCreated,
+                                 ItemFields.Overview,
+                                 ItemFields.MediaStreams
                         },
                 Id = item.Id
             };

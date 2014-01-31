@@ -54,7 +54,7 @@
 
         <TextBlock Style="{StaticResource ParagraphTextBlockStyle}" Grid.Row="4" Margin="0 10 0 0" Text="{Binding Overview}" MaxHeight="270"></TextBlock>
 
-        <controls:ItemInfoFooter DataContext="{Binding}" ShowResumeProgress="False" Margin="0 40 0 0" Grid.Row="5">
+        <controls:ItemInfoFooter DataContext="{Binding}" ShowResumeProgress="False" Margin="0 40 0 0" Grid.Row="5" ShowOverview="False" ShowName="False">
             <controls:ItemInfoFooter.Style>
                 <Style TargetType="{x:Type controls:ItemInfoFooter}">
                     <Style.Triggers>

@@ -109,14 +109,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Search
                 if (ListBoxHasFocus(MatchedItemsListBox))
                 {
                     _searchViewModel.CurrentItem = _searchViewModel.MatchedItemsViewModel.CurrentItem;
-                    if (_searchViewModel.CurrentItem != null)
-                        UpdateLogo(_searchViewModel.CurrentItem.Item);
                 }
                 else
                 {
                     _searchViewModel.MatchedItemsViewModel.CurrentItem = null;
                     _searchViewModel.CurrentItem = null;
-                    UpdateLogo(null);
                 }
              }
         }
@@ -142,97 +139,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Search
         public BaseItemDto PageItem
         {
             get { return _parentItem; }
-        }
-
-        private void UpdateLogo(BaseItemDto item)
-        {
-            var isStripView = true;
-
-            if (isStripView && item != null && (item.HasArtImage || item.ParentArtImageTag.HasValue))
-            {
-                SetLogo(_apiClient.GetArtImageUrl(item, new ImageOptions{ImageType = ImageType.Art}));
-                ImgLogo.MaxHeight = 120;
-                ImgLogo.Margin = new Thickness(0, 0, 40, 0);
-                TxtLogoName.Visibility = Visibility.Collapsed;
-            }
-            else if (isStripView && item != null && (item.HasLogo || item.ParentLogoImageTag.HasValue))
-            {
-                SetLogo(_apiClient.GetLogoImageUrl(item, new ImageOptions {ImageType = ImageType.Logo, CropWhitespace = false }));
-                ImgLogo.MaxHeight = 120;
-                ImgLogo.Margin = new Thickness(0, 0, 40, 0);
-
-                TxtLogoName.Visibility = Visibility.Collapsed;
-            }
-            else if (item != null && (item.HasLogo))
-            {
-                SetLogo(_apiClient.GetImageUrl(item, new ImageOptions { ImageType = ImageType.Logo, CropWhitespace = false }));
-                ImgLogo.MaxHeight = 80;
-                ImgLogo.Margin = new Thickness(0, 0, 40, 0);
-
-                TxtLogoName.Visibility = Visibility.Collapsed;
-            }
-            else if (item != null && (item.HasArtImage || item.ParentArtImageTag.HasValue))
-            {
-                SetLogo(_apiClient.GetArtImageUrl(item, new ImageOptions {ImageType = ImageType.Art}));
-                ImgLogo.MaxHeight = 80;
-                ImgLogo.Margin = new Thickness(0, 0, 40, 0);
-                TxtLogoName.Visibility = Visibility.Collapsed;
-            }
-            else
-            {
-                // Just hide it so that it still takes up the same amount of space
-                ImgLogo.Visibility = Visibility.Hidden;
-                ImgLogo.Margin = new Thickness(0, 0, 0, 0);
-                ImgLogo.Source = null;
-             
-                TxtLogoName.Visibility = item == null ?  Visibility.Collapsed : Visibility.Visible;
-               
-            }
-      }
-                   
-       
-        private CancellationTokenSource _logoCancellationTokenSource;
-
-        private async void SetLogo(string url)
-        {
-            if (_logoCancellationTokenSource != null)
-            {
-                _logoCancellationTokenSource.Cancel();
-                _logoCancellationTokenSource.Dispose();
-            }
-
-            _logoCancellationTokenSource = new CancellationTokenSource();
-
-            try
-            {
-                var token = _logoCancellationTokenSource.Token;
-
-                var img = await _imageManager.GetRemoteBitmapAsync(url, token);
-
-                token.ThrowIfCancellationRequested();
-
-                ImgLogo.Source = img;
-
-                ImgLogo.Visibility = Visibility.Visible;
-                TxtLogoName.Visibility = Visibility.Collapsed;
-            }
-            catch (OperationCanceledException)
-            {
-                _logger.Debug("Image download cancelled: {0}", url);
-            }
-            catch (Exception)
-            {
-                // Just hide it so that it still takes up the same amount of space
-                ImgLogo.Visibility = Visibility.Hidden;
-                TxtLogoName.Visibility = Visibility.Visible;
-            }
-        }
-
-        ~SearchPage()
-        {
-              //  var win = this.GetWindow();
-              //  if (win != null)
-              //        win.PreviewKeyDown -= SearchPage_OnPreviewKeyDown;
         }
 
     }

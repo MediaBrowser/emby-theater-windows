@@ -117,7 +117,7 @@
                 </Button>
             </StackPanel>
 
-            <details:ItemInfoFooter ShowResumeProgress="False"  HorizontalAlignment="Left" VerticalAlignment="Bottom" DataContext="{Binding NowPlayingItemViewModel}" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="0 35 0 0" ShowUserRating="false">
+            <details:ItemInfoFooter ShowResumeProgress="False" ShowOverview="False"  HorizontalAlignment="Left" VerticalAlignment="Bottom" DataContext="{Binding NowPlayingItemViewModel}" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="0 35 0 0" ShowUserRating="false">
             </details:ItemInfoFooter>
 
             <TextBlock DataContext="{Binding NowPlayingItemViewModel}" Style="{StaticResource ParagraphTextBlockStyle}" Text="{Binding Overview}" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0 35 0 0"></TextBlock>

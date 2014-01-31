@@ -59,11 +59,8 @@
                 </Style>
             </StackPanel.Style>
 
-            <TextBlock DataContext="{Binding CurrentItem}" Style="{StaticResource BoldHeaderTextBlock}" Text="{Binding DisplayName}" Margin="0 30 0 0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" HorizontalAlignment="Left"></TextBlock>
+            <controls1:ItemInfoFooter Margin="0 30 0 0" VerticalContentAlignment="Center" KeyboardNavigation.IsTabStop="False" DataContext="{Binding CurrentItem}" VerticalAlignment="Top" HorizontalAlignment="Left"></controls1:ItemInfoFooter>
 
-            <controls1:ItemInfoFooter Margin="0 20 0 0" VerticalContentAlignment="Center" KeyboardNavigation.IsTabStop="False" DataContext="{Binding CurrentItem}" VerticalAlignment="Top" HorizontalAlignment="Left"></controls1:ItemInfoFooter>
-
-            <TextBlock DataContext="{Binding CurrentItem}" Style="{StaticResource ParagraphTextBlockStyle}" Text="{Binding Overview}" Margin="0 20 0 0" MaxWidth="900" MaxHeight="300" TextTrimming="CharacterEllipsis" HorizontalAlignment="Left"></TextBlock>
         </StackPanel>
         
         <Grid Grid.Row="2">
@@ -84,7 +81,6 @@
 
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
             </Grid.RowDefinitions>
 
@@ -122,29 +118,7 @@
                 </ContentControl.Style>
             </ContentControl>
             
-            <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" >
-                <Grid.Style>
-                    <Style TargetType="{x:Type Grid}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding ViewType}" Value="Poster">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding ViewType}" Value="List">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding ViewType}" Value="Thumbstrip">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Grid.Style>
-                <StackPanel Orientation="Vertical">
-
-                    <TextBlock DataContext="{Binding CurrentItem}" Style="{StaticResource BoldHeaderTextBlock}" Text="{Binding DisplayName, Converter={controls:UpperCaseConverter}}" Margin="25 35 25 0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" HorizontalAlignment="Center"></TextBlock>
-                </StackPanel>
-            </Grid>
-
-            <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0 40 0 0">
+            <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0 40 0 0">
 
                 <Grid.Style>
                     <Style TargetType="{x:Type Grid}">
@@ -187,9 +161,6 @@
                         <Image Name="ImgLogo" Stretch="Uniform" MaxWidth="600" VerticalAlignment="Center" HorizontalAlignment="Right"></Image>
                     </Grid>
                     
-                    <TextBlock x:Name="TxtLogoName" Style="{StaticResource TextBlockStyle}" DataContext="{Binding CurrentItem}" Text="{Binding DisplayName}" VerticalAlignment="Center" Margin="0 0 40 0">
-                    </TextBlock>
-
                     <controls1:ItemInfoFooter VerticalContentAlignment="Center" KeyboardNavigation.IsTabStop="False" DataContext="{Binding CurrentItem}" VerticalAlignment="Center" HorizontalAlignment="Center"></controls1:ItemInfoFooter>
 
                 </StackPanel>

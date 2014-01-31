@@ -337,61 +337,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             SpotlightViewModel.StopRotating();
         }
 
-        public bool ShouldShowRomanticSeries(TvView view)
-        {
-            var now = DateTime.Now;
-
-            if (now.DayOfWeek == DayOfWeek.Friday)
-            {
-                return view.RomanceItems.Count > 0 && now.Hour >= 15;
-            }
-            if (now.DayOfWeek == DayOfWeek.Saturday)
-            {
-                return view.RomanceItems.Count > 0 && (now.Hour < 3 || now.Hour >= 15);
-            }
-            if (now.DayOfWeek == DayOfWeek.Sunday)
-            {
-                return view.RomanceItems.Count > 0 && now.Hour < 3;
-            }
-            return false;
-        }
-
-        private string GetComedyViewName()
-        {
-            var now = DateTime.Now;
-
-            if (now.DayOfWeek == DayOfWeek.Thursday)
-            {
-                return "Comedy Night";
-            }
-            if (now.DayOfWeek == DayOfWeek.Sunday)
-            {
-                return "Sunday Funnies";
-            }
-
-            return "Comedy";
-        }
-
-        private bool ShowComedy(TvView view)
-        {
-            if (view.ComedyItems.Count == 0)
-            {
-                return false;
-            }
-
-            var now = DateTime.Now;
-
-            if (now.DayOfWeek == DayOfWeek.Thursday)
-            {
-                return now.Hour >= 12;
-            }
-            if (now.DayOfWeek == DayOfWeek.Sunday)
-            {
-                return now.Hour >= 6;
-            }
-            return false;
-        }
-
         private async Task NavigateToGenresInternal()
         {
             var item = await GetRootFolder();
@@ -553,20 +498,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             else if (string.Equals(indexOption, "FavoriteShows"))
             {
                 query.Filters = new[] { ItemFilter.IsFavorite };
-
-                query.SortBy = new[] { ItemSortBy.SortName };
-                query.SortOrder = SortOrder.Ascending;
-            }
-            else if (string.Equals(indexOption, "Comedy"))
-            {
-                query.Genres = new[] { ApiClientExtensions.ComedyGenre };
-
-                query.SortBy = new[] { ItemSortBy.SortName };
-                query.SortOrder = SortOrder.Ascending;
-            }
-            else if (string.Equals(indexOption, "Romance"))
-            {
-                query.Genres = new[] { ApiClientExtensions.RomanceGenre };
 
                 query.SortBy = new[] { ItemSortBy.SortName };
                 query.SortOrder = SortOrder.Ascending;

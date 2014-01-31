@@ -90,10 +90,6 @@
                     </StackPanel.Style>
 
                    
-                    <Image Name="ImgLogo" Stretch="Uniform" Height="60"  MaxWidth="600" VerticalAlignment="Center" HorizontalAlignment="Right"></Image>
-
-                    <TextBlock x:Name="TxtLogoName"  Margin="0 0 40 0" VerticalAlignment="Center" DataContext="{Binding CurrentItem}" Text="{Binding DisplayName}" Style="{StaticResource TextBlockStyle}"   />
-
                     <controls1:ItemInfoFooter VerticalContentAlignment="Center" IsTabStop="False" DataContext="{Binding CurrentItem}" VerticalAlignment="Center" HorizontalAlignment="Center" />
 
                 </StackPanel>

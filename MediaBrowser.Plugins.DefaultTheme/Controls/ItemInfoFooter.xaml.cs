@@ -13,6 +13,18 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
             set { ProgressGrid.Visibility = value ? Visibility.Visible : Visibility.Collapsed; }
         }
 
+        public bool ShowOverview
+        {
+            get { return OverviewGrid.Visibility == Visibility.Visible; }
+            set { OverviewGrid.Visibility = value ? Visibility.Visible : Visibility.Collapsed; }
+        }
+
+        public bool ShowName
+        {
+            get { return NameGrid.Visibility == Visibility.Visible; }
+            set { NameGrid.Visibility = value ? Visibility.Visible : Visibility.Collapsed; }
+        }
+
         public bool ShowUserRating
         {
             get { return UserLikeGrid.Visibility == Visibility.Visible; }

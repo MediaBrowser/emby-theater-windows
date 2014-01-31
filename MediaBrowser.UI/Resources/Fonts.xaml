@@ -25,7 +25,7 @@
 
     <!--Default font for h2 headers. Themes should override these as needed-->
     <!--<FontFamily x:Key="Heading2FontFamily">Segoe UI Light, Lucida Sans Unicode, Verdana</FontFamily>-->
-    <FontFamily x:Key="Heading2FontFamily">pack://application:,,,/Resources/fonts/#Source Sans Pro Light</FontFamily>
+    <FontFamily x:Key="Heading2FontFamily">Segoe UI SemiLight</FontFamily>
     <System:Double x:Key="Heading2FontSize">38</System:Double>
     <FontWeight x:Key="Heading2FontWeight">Normal</FontWeight>
     <Brush x:Key="Heading2Foreground">#000</Brush>

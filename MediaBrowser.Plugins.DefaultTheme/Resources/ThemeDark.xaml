@@ -6,7 +6,7 @@
             <Setter.Value>
                 <LinearGradientBrush SpreadMethod="Reflect" ColorInterpolationMode="SRgbLinearInterpolation" StartPoint="0,0" EndPoint="0,1" >
                     <GradientStop Color="#ff000000" Offset="0" />
-                    <GradientStop Color="#ff202020" Offset=".5" />
+                    <GradientStop Color="#ff181818" Offset=".5" />
                     <GradientStop Color="#ff000000" Offset="1" />
                 </LinearGradientBrush>
             </Setter.Value>
@@ -18,7 +18,7 @@
             <Setter.Value>
                 <LinearGradientBrush SpreadMethod="Reflect" ColorInterpolationMode="SRgbLinearInterpolation" StartPoint="0,0" EndPoint="0,1" Opacity=".65">
                     <GradientStop Color="#ff000000" Offset="0" />
-                    <GradientStop Color="#ff202020" Offset=".5" />
+                    <GradientStop Color="#ff181818" Offset=".5" />
                     <GradientStop Color="#ff000000" Offset="1" />
                 </LinearGradientBrush>
             </Setter.Value>
@@ -27,9 +27,9 @@
 
     <Style TargetType="TextBlock" x:Key="MediaInfoTextBlock" BasedOn="{StaticResource SmallTextBlockStyle}">
         <Setter Property="VerticalAlignment" Value="Center" />
-        <Setter Property="FontSize" Value="25" />
-        <Setter Property="Foreground" Value="#000" />
-        <Setter Property="FontFamily" Value="pack://application:,,,/MediaBrowser.Plugins.DefaultTheme;component/Resources/#Gotham Medium" />
+        <Setter Property="FontSize" Value="22" />
+        <Setter Property="Foreground" Value="#eee" />
+        <Setter Property="FontFamily" Value="pack://application:,,,/MediaBrowser.Plugins.DefaultTheme;component/Resources/#Gotham Book" />
     </Style>
 
     <Style TargetType="TextBlock" x:Key="BoldHeaderTextBlock" BasedOn="{StaticResource Heading1TextBlockStyle}">

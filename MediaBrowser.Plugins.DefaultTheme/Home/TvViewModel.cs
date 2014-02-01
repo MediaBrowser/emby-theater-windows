@@ -79,14 +79,14 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 GalleryHeight = TileHeight,
                 GalleryWidth = lowerSpotlightWidth,
-                CustomCommandAction = () => NavigateWithLoading(() => NavigateToAllShowsInternal("AllShows"))
+                CustomCommandAction = () => NavigateWithLoading(NavigateToAllShows)
             };
 
             UpcomingViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {
                 GalleryHeight = TileHeight,
                 GalleryWidth = lowerSpotlightWidth,
-                CustomCommandAction = () => NavigateWithLoading(() => NavigateToAllShowsInternal("Upcoming"))
+                CustomCommandAction = () => NavigateWithLoading(NavigateToAllShows)
             };
 
             LoadViewModels();
@@ -387,74 +387,17 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             AllShowsViewModel.AddImages(images);
         }
 
-        public Task NavigateToAllShows()
-        {
-            return NavigateToAllShowsInternal("AllShows");
-        }
-
-        private async Task NavigateToAllShowsInternal(string indexValue)
+        public async Task NavigateToAllShows()
         {
             var item = await GetRootFolder();
 
             var displayPreferences = await PresentationManager.GetDisplayPreferences("Shows", CancellationToken.None);
 
-            var tvView = _tvView ?? await ApiClient.GetTvView(_sessionManager.CurrentUser.Id, CancellationToken.None);
-
-            var tabs = new List<TabItem>();
-
-            tabs.Add(new TabItem
-            {
-                DisplayName = "All Shows",
-                Name = "AllShows"
-            });
-
-            if (tvView.SeriesIdsInProgress.Count > 0)
-            {
-                tabs.Add(new TabItem
-                {
-                    DisplayName = "In Progress",
-                    Name = "ShowsInProgress",
-                    TabType = string.Join(",", tvView.SeriesIdsInProgress.ToArray())
-                });
-            }
-
-            //tabs.Add(new TabItem
-            //{
-            //    DisplayName = "Latest",
-            //    Name = "Latest"
-            //});
-
-            //tabs.Add(new TabItem
-            //{
-            //    DisplayName = "Next Up",
-            //    Name = "NextUp"
-            //});
-
-            tabs.Add(new TabItem
-            {
-                DisplayName = "Favorites",
-                Name = "FavoriteShows"
-            });
-
-            tabs.Add(new TabItem
-            {
-                DisplayName = "Top Rated",
-                Name = "TopRated",
-            });
-
-            tabs.Add(new TabItem
-            {
-                DisplayName = "Upcoming",
-                Name = "Upcoming",
-            });
-
             var options = new ListPageConfig
             {
-                PageTitle = " ",
+                PageTitle = "TV",
                 CustomItemQuery = GetAllShows,
-                SortOptions = GetSeriesSortOptions(),
-                IndexOptions = tabs,
-                IndexValue = indexValue
+                SortOptions = GetSeriesSortOptions()
             };
 
             SetDefaults(options);
@@ -485,44 +428,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
                 Recursive = true
             };
-
-            var indexOption = viewModel.CurrentIndexOption == null ? string.Empty : viewModel.CurrentIndexOption.Name;
-
-            if (string.Equals(indexOption, "TopRated"))
-            {
-                query.MinCommunityRating = ApiClientExtensions.TopTvCommunityRating;
-
-                query.SortBy = new[] { ItemSortBy.SortName };
-                query.SortOrder = SortOrder.Ascending;
-            }
-            else if (string.Equals(indexOption, "FavoriteShows"))
-            {
-                query.Filters = new[] { ItemFilter.IsFavorite };
-
-                query.SortBy = new[] { ItemSortBy.SortName };
-                query.SortOrder = SortOrder.Ascending;
-            }
-            else if (string.Equals(indexOption, "ShowsInProgress"))
-            {
-                query.Ids = viewModel.CurrentIndexOption.TabType.Split(',');
-
-                query.SortBy = new[] { ItemSortBy.SortName };
-                query.SortOrder = SortOrder.Ascending;
-            }
-            else if (indexOption.StartsWith("Genre:"))
-            {
-                query.Genres = new[] { indexOption.Split(':').Last() };
-
-                query.SortBy = new[] { ItemSortBy.SortName };
-                query.SortOrder = SortOrder.Ascending;
-            }
-            else if (indexOption.StartsWith("Studio:"))
-            {
-                query.Studios = new[] { indexOption.Split(':').Last() };
-
-                query.SortBy = new[] { ItemSortBy.SortName };
-                query.SortOrder = SortOrder.Ascending;
-            }
 
             return ApiClient.GetItemsAsync(query);
         }

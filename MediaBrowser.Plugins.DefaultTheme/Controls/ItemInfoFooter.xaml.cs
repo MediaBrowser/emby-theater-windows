@@ -19,6 +19,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Controls
             set { OverviewGrid.Visibility = value ? Visibility.Visible : Visibility.Collapsed; }
         }
 
+        public double OverviewHeight
+        {
+            get { return TxtOverview.Height; }
+            set { TxtOverview.Height = value; }
+        }
+
         public bool ShowName
         {
             get { return NameGrid.Visibility == Visibility.Visible; }

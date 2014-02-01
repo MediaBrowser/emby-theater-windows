@@ -216,6 +216,18 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                 _viewModel.ItemContainerHeight = GetItemContainerHeight(_viewModel);
             }
 
+            if (string.Equals(e.PropertyName, "ViewType") )
+            {
+                if (string.Equals(_viewModel.ViewType, ListViewTypes.PosterStrip, StringComparison.OrdinalIgnoreCase))
+                {
+                    PosterFooter.OverviewHeight = 200;
+                }
+                else
+                {
+                    PosterFooter.OverviewHeight = 80;
+                }
+            }
+
             if (string.Equals(e.PropertyName, "CurrentItem"))
             {
                 var currentViewModel = _viewModel.CurrentItem;
@@ -306,25 +318,23 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                     {
                         ImageType = ImageType.Art
                     }));
-                    ImgLogo.MaxHeight = 120;
+                    ImgLogo.MaxHeight = 160;
                     ImgLogo.Margin = new Thickness(0, 0, 40, 0);
                 }
                 else if (isStripView && item != null && (item.HasLogo || item.ParentLogoImageTag.HasValue))
                 {
                     SetLogo(_apiClient.GetLogoImageUrl(item, new ImageOptions
                     {
-                        ImageType = ImageType.Logo,
-                        CropWhitespace = false
+                        ImageType = ImageType.Logo
                     }));
-                    ImgLogo.MaxHeight = 120;
+                    ImgLogo.MaxHeight = 160;
                     ImgLogo.Margin = new Thickness(0, 0, 40, 0);
                 }
                 else if (item != null && (item.HasLogo))
                 {
                     SetLogo(_apiClient.GetImageUrl(item, new ImageOptions
                     {
-                        ImageType = ImageType.Logo,
-                        CropWhitespace = false
+                        ImageType = ImageType.Logo
                     }));
                     ImgLogo.MaxHeight = 80;
                     ImgLogo.Margin = new Thickness(0, 0, 40, 0);

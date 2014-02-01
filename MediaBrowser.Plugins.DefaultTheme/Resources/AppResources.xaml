@@ -731,7 +731,7 @@
     <DataTemplate x:Key="ListViewPeopleTemplate" DataType="{x:Type viewModels:ItemViewModel}">
         <StackPanel Orientation="Vertical">
            
-                <TextBlock  Grid.Column="0" Style="{StaticResource TextBlockStyle}" Foreground="#ccc" Text="{Binding DisplayName}" Margin="0 10 10 0" MaxWidth="700" VerticalAlignment="Center" HorizontalAlignment="Left" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" />
+                <TextBlock Style="{StaticResource TextBlockStyle}" Foreground="#ccc" Text="{Binding DisplayName}" Margin="0 10 10 0" MaxWidth="700" VerticalAlignment="Center" HorizontalAlignment="Left" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" />
          
         </StackPanel>
     </DataTemplate>

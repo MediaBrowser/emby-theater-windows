@@ -44,7 +44,7 @@
             </controls:ExtendedScrollViewer>
         </Grid>
 
-        <StackPanel Grid.Row="1" Margin="105 25 0 0" Height="380" Orientation="Vertical">
+        <StackPanel Grid.Row="1" Margin="85 70 0 0" Orientation="Vertical" VerticalAlignment="Bottom">
 
             <StackPanel.Style>
                 <Style TargetType="{x:Type StackPanel}">
@@ -59,7 +59,7 @@
                 </Style>
             </StackPanel.Style>
 
-            <controls1:ItemInfoFooter Margin="0 30 0 0" VerticalContentAlignment="Center" KeyboardNavigation.IsTabStop="False" DataContext="{Binding CurrentItem}" VerticalAlignment="Top" HorizontalAlignment="Left"></controls1:ItemInfoFooter>
+            <controls1:ItemInfoFooter Margin="0 30 0 0" VerticalContentAlignment="Center" KeyboardNavigation.IsTabStop="False" DataContext="{Binding CurrentItem}" VerticalAlignment="Top" HorizontalAlignment="Left" OverviewHeight="350"></controls1:ItemInfoFooter>
 
         </StackPanel>
         
@@ -145,11 +145,11 @@
                         </Style>
                     </StackPanel.Style>
 
-                    <Grid>
+                    <Grid Width="300">
 
                         <Grid.Style>
                             <Style TargetType="{x:Type Grid}">
-                                <Setter Property="Height" Value="120" />
+                                <Setter Property="Height" Value="160" />
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding ViewType}" Value="Poster">
                                         <Setter Property="Height" Value="80" />
@@ -158,10 +158,11 @@
                             </Style>
                         </Grid.Style>
 
-                        <Image Name="ImgLogo" Stretch="Uniform" MaxWidth="600" VerticalAlignment="Center" HorizontalAlignment="Right"></Image>
+                        <Image Name="ImgLogo" Stretch="Uniform" MaxWidth="600" VerticalAlignment="Top" HorizontalAlignment="Right"></Image>
                     </Grid>
                     
-                    <controls1:ItemInfoFooter VerticalContentAlignment="Center" KeyboardNavigation.IsTabStop="False" DataContext="{Binding CurrentItem}" VerticalAlignment="Center" HorizontalAlignment="Center"></controls1:ItemInfoFooter>
+                    <controls1:ItemInfoFooter x:Name="PosterFooter" VerticalContentAlignment="Center" KeyboardNavigation.IsTabStop="False" DataContext="{Binding CurrentItem}" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    </controls1:ItemInfoFooter>
 
                 </StackPanel>
             </Grid>

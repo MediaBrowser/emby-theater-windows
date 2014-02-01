@@ -9,10 +9,11 @@
              d:DesignHeight="300" d:DesignWidth="300">
 
     <StackPanel Orientation="Vertical">
+
         <StackPanel Orientation="Horizontal">
 
             <Grid x:Name="NameGrid">
-                <TextBlock Style="{StaticResource Heading2TextBlockStyle}" Margin="0 -8 20 0" Text="{Binding DisplayName}" VerticalAlignment="Center"></TextBlock>
+                <TextBlock Style="{StaticResource Heading2TextBlockStyle}" Margin="0 -8 20 0" MaxWidth="800" TextWrapping="NoWrap" Text="{Binding DisplayName}" VerticalAlignment="Center"></TextBlock>
             </Grid>
 
             <controls:ItemRating DataContext="{Binding}" Margin="0 0 20 0" Visibility="{Binding CommunityRatingVisibility}">
@@ -236,18 +237,7 @@
             <TextBlock Style="{StaticResource SmallTextBlockStyle}" Visibility="Hidden" Text="P"></TextBlock>
         </StackPanel>
         <Grid x:Name="OverviewGrid">
-            <StackPanel Orientation="Vertical">
-                <StackPanel.Style>
-                    <Style TargetType="{x:Type StackPanel}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding Overview}" Value="{x:Null}">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </StackPanel.Style>
-                <TextBlock Style="{StaticResource SmallTextBlockStyle}" Margin="0 5 0 0" Text="{Binding Overview}" Foreground="#ccc" FontSize="24" Height="80" TextTrimming="CharacterEllipsis" MaxWidth="1200" HorizontalAlignment="Left" TextWrapping="WrapWithOverflow"></TextBlock>
-            </StackPanel>
+            <TextBlock x:Name="TxtOverview" Style="{StaticResource SmallTextBlockStyle}" Margin="0 5 0 0" Text="{Binding Overview}" Foreground="#ddd" FontSize="24" Height="80" TextTrimming="CharacterEllipsis" Width="1200" HorizontalAlignment="Left" TextWrapping="WrapWithOverflow"></TextBlock>
         </Grid>
     </StackPanel>
 </UserControl>

@@ -14,7 +14,7 @@
                 <ControlTemplate TargetType="{x:Type RadioButton}">
                     <StackPanel x:Name="LayoutRoot" Orientation="Horizontal" Margin="{TemplateBinding Padding}">
                         <Border x:Name="CheckBorder" Width="40" Height="40" Margin="0,1,4,0" Background="{StaticResource ButtonBackground}" BorderBrush="{StaticResource RadioButtonBorder}" BorderThickness="1">
-                            <Rectangle x:Name="CheckMark" Width="20" Height="20" Margin="4" Fill="{TemplateBinding Foreground}" Visibility="Collapsed"/>
+                            <Rectangle x:Name="CheckMark" Width="20" Height="20" Margin="4" Fill="{StaticResource MediaBrowserAccent}" Visibility="Collapsed"/>
                         </Border>
                         <ContentPresenter Margin="10 0 0 0" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Center"/>
                     </StackPanel>

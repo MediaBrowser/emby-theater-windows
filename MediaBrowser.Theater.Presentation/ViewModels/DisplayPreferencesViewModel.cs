@@ -98,7 +98,17 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         public bool RememberSorting
         {
-            get { return DisplayPreferences.RememberSorting; }
+            get
+            {
+                if (DisplayPreferences != null)
+                {
+                    return DisplayPreferences.RememberSorting;
+                }
+                else
+                {
+                    return false;
+                }
+            }
             set
             {
                 var changed = DisplayPreferences.RememberSorting != value;

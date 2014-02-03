@@ -2,7 +2,9 @@
 using System.Windows.Input;
 using MediaBrowser.Common;
 using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
+using MediaBrowser.Plugins.DefaultTheme.ListPage;
 using MediaBrowser.Plugins.DefaultTheme.UserProfileMenu;
 using MediaBrowser.Theater.Interfaces;
 using MediaBrowser.Theater.Interfaces.Presentation;
@@ -18,8 +20,6 @@ namespace MediaBrowser.Plugins.DefaultTheme
         protected readonly IImageManager ImageManager;
 
         public ICommand UserCommand { get; private set; }
-        public ICommand DisplayPreferencesCommand { get; private set; }
-        public ICommand SortOptionsCommand { get; private set; }
         public ICommand LogoutCommand { get; private set; }
         public ICommand TestPowerCommand { get; private set; }
 
@@ -80,8 +80,6 @@ namespace MediaBrowser.Plugins.DefaultTheme
             ImageManager = imageManager;
 
             UserCommand = new RelayCommand(i => ShowUserMenu());
-            DisplayPreferencesCommand = new RelayCommand(i => ShowDisplayPreferences());
-            SortOptionsCommand = new RelayCommand(i => ShowSortMenu());
             LogoutCommand = new RelayCommand(i => Logout());
             TestPowerCommand = new RelayCommand(i=> ShowTestPower());
 
@@ -90,27 +88,16 @@ namespace MediaBrowser.Plugins.DefaultTheme
 
         protected virtual void ShowUserMenu()
         {
-            new UserProfileWindow(this, SessionManager, ImageManager, ApiClient).ShowModal(PresentationManager.Window);
-        }
-
-        protected virtual void ShowDisplayPreferences()
-        {
             var page = NavigationService.CurrentPage as IHasDisplayPreferences;
-
+            DisplayPreferences displayPreferences = null;
+            ListPageConfig options = null;
             if (page != null)
             {
-                page.ShowDisplayPreferencesMenu();
+                displayPreferences = page.GetDisplayPreferences();
+                options = page.GetListPageConfig();
             }
-        }
 
-        protected virtual void ShowSortMenu()
-        {
-            var page = NavigationService.CurrentPage as IHasDisplayPreferences;
-
-            if (page != null)
-            {
-                page.ShowSortMenu();
-            }
+            new UserProfileWindow(this, SessionManager, PresentationManager, ImageManager, ApiClient, displayPreferences, options).ShowModal(PresentationManager.Window);
         }
 
         protected async void Logout()

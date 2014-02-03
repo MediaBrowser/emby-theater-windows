@@ -5,9 +5,11 @@
     <SolidColorBrush x:Key="ModalButtonText" Color="#BBBBBB" />
     <SolidColorBrush x:Key="ModalButtonTextPressed" Color="#ffffff" />
     <SolidColorBrush x:Key="ModalButtonTextDisabled" Color="#333333" />
+    <SolidColorBrush x:Key="ModalBackgroundBrush" Color="#0b0b0b"></SolidColorBrush>
+    <SolidColorBrush x:Key="ModalBackgroundBrushPopout" Color="#171717"></SolidColorBrush>
 
     <Style TargetType="Grid" x:Key="DefaultThemeModalContentStyle" BasedOn="{StaticResource ModalContentStyle}">
-        <Setter Property="Background" Value="#0b0b0b"/>
+        <Setter Property="Background" Value="{StaticResource ModalBackgroundBrush}"/>
     </Style>
 
     <Style TargetType="Rectangle" x:Key="ModalListSeparator">
@@ -64,6 +66,62 @@
                         <Trigger Property="IsKeyboardFocused" Value="true">
                             <Setter Property="Background" Value="{StaticResource MediaBrowserAccent}" />
                             <Setter Property="Foreground" Value="{StaticResource ModalButtonTextPressed}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="Button" x:Key="ModalPopoutListButton" BasedOn="{StaticResource BaseButtonStyle}">
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{StaticResource ModalButtonText}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border Name="Chrome"
+                                        Background="{TemplateBinding Background}"
+                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                        SnapsToDevicePixels="true">
+                        <Grid>
+                            <Path Name="Triangle" Width="40" HorizontalAlignment="Left" Stretch="Fill" Fill="{TemplateBinding Background}" Opacity="0" Data="F1 M 319.344,237.333L 287.328,218.849L 287.328,255.818L 319.344,237.333 Z ">
+                                <Path.RenderTransform>
+                                    <TransformGroup>
+                                        <TransformGroup.Children>
+                                            <ScaleTransform ScaleX="-1" ScaleY="1" />
+                                        </TransformGroup.Children>
+                                    </TransformGroup>
+                                </Path.RenderTransform>
+                            </Path>
+                            <ContentPresenter Name="Presenter" Margin="{TemplateBinding Padding}"
+                                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                            RecognizesAccessKey="True"
+                                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsEnabled" Value="false">
+                            <Setter Property="Foreground" Value="{StaticResource ModalButtonTextDisabled}"/>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="{StaticResource ButtonBackgroundPressed}" />
+                            <Setter Property="Foreground" Value="{StaticResource ButtonTextPressed}"/>
+                            <Setter TargetName="Triangle" Property="Opacity" Value="1"></Setter>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter Property="Background" Value="{StaticResource MediaBrowserAccent}" />
+                            <Setter Property="Foreground" Value="{StaticResource ModalButtonTextPressed}"/>
+                            <Setter TargetName="Triangle" Property="Opacity" Value="1"></Setter>
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocused" Value="true">
+                            <Setter Property="Background" Value="{StaticResource MediaBrowserAccent}" />
+                            <Setter Property="Foreground" Value="{StaticResource ModalButtonTextPressed}"/>
+                            <Setter TargetName="Triangle" Property="Opacity" Value="1"></Setter>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

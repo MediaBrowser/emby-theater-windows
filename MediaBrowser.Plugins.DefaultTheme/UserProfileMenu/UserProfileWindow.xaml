@@ -20,6 +20,10 @@
         <Grid Style="{StaticResource ModalOverlayStyle}">
 
         </Grid>
+        
+        <Grid x:Name="ViewGrid" Style="{StaticResource DefaultThemeModalContentStyle}"  Margin="-380,0,380,0" Background="{StaticResource ModalBackgroundBrushPopout}" Opacity="0.93" HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="380">
+        </Grid>
+        
         <Grid x:Name="ContentGrid" Style="{StaticResource DefaultThemeModalContentStyle}" HorizontalAlignment="Right" VerticalAlignment="Stretch">
             <!-- Animation -->
             <Grid.Triggers>
@@ -39,9 +43,16 @@
                 </EventTrigger>
             </Grid.Triggers>
 
+            <!--<Border BorderBrush="#0b0b0b" BorderThickness="5,0,0,0" Margin="0,0,0,0" Opacity="0.9">
+                <Border.Effect>
+                    <DropShadowEffect Direction="180" BlurRadius="10" ShadowDepth="0" Color="#0b0b0b"/>
+                </Border.Effect>
+            </Border>-->
+
             <Button x:Name="BtnClose" Style="{StaticResource ModalCloseButton}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="40" Height="40" Margin="320 35 0 0" TabIndex="99"/>
 
-            <StackPanel Margin="0 30 0 0" Orientation="Vertical" MinWidth="350">
+            <Grid Margin="0 30 0 0" MinWidth="350">
+                <StackPanel Orientation="Vertical">
 
                 <StackPanel Orientation="Horizontal" Margin="20 0 0 0">
 
@@ -90,13 +101,13 @@
                     </StackPanel>
                 </Button>
 
-                <Button Style="{StaticResource ModalListButton}"  Margin="0 10 0 0" TabIndex="2" IsEnabled="{Binding MasterCommands.DisplayPreferencesEnabled}" Command="{Binding MasterCommands.DisplayPreferencesCommand}">
+                <Button Style="{StaticResource ModalPopoutListButton}"  Margin="0 10 0 0" TabIndex="2" IsEnabled="{Binding MasterCommands.DisplayPreferencesEnabled}" Command="{Binding MasterCommands.DisplayPreferencesCommand}">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Margin="10 10 0 10" Style="{StaticResource ModalTextBlockStyle}" VerticalAlignment="Center">Select View</TextBlock>
                     </StackPanel>
                 </Button>
 
-                <Button Style="{StaticResource ModalListButton}"  Margin="0 10 0 0" TabIndex="3" IsEnabled="{Binding MasterCommands.SortEnabled}" Command="{Binding MasterCommands.SortCommand}">
+                <Button Style="{StaticResource ModalPopoutListButton}"  Margin="0 10 0 0" TabIndex="3" IsEnabled="{Binding MasterCommands.SortEnabled}" Command="{Binding MasterCommands.SortOptionsCommand}">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Margin="10 10 0 10" Style="{StaticResource ModalTextBlockStyle}" VerticalAlignment="Center">Sort By</TextBlock>
                     </StackPanel>
@@ -142,6 +153,7 @@
                     </StackPanel>
                 </Button>
             </StackPanel>
+            </Grid>
         </Grid>
 
         <Grid.LayoutTransform>

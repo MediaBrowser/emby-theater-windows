@@ -64,7 +64,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Search
         }
 
         // 3x3 grid 1080 wide, ItemDisplayWidth = TileWidth, ItemContainerWidth = ItemDisplayWidth + 20, ditto for height
-        private const double TileWidth = 384;
+        private const double TileWidth = 368;
         private const double TileHeight = TileWidth * 9 / 16;
 
         private void LoadMatchedItemsViewModel()

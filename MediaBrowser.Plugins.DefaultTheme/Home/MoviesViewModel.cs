@@ -425,24 +425,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 Name = "NewReleases",
             });
 
-            if (ShowComedy(view))
-            {
-                tabs.Add(new TabItem
-                {
-                    DisplayName = GetComedyViewName(),
-                    Name = "Comedy",
-                });
-            }
-
-            if (ShouldShowRomance(view))
-            {
-                tabs.Add(new TabItem
-                {
-                    DisplayName = "Date Night",
-                    Name = "Romance",
-                });
-            }
-
             tabs.Add(new TabItem
             {
                 DisplayName = "Trailers",
@@ -600,27 +582,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 query.SortBy = new[] { ItemSortBy.SortName };
                 query.SortOrder = SortOrder.Ascending;
             }
-            else if (string.Equals(indexOption, "Comedy"))
-            {
-                query.Genres = new[] { ApiClientExtensions.ComedyGenre };
-
-                query.SortBy = new[] { ItemSortBy.SortName };
-                query.SortOrder = SortOrder.Ascending;
-            }
-            else if (string.Equals(indexOption, "Romance"))
-            {
-                query.Genres = new[] { ApiClientExtensions.RomanceGenre };
-
-                query.SortBy = new[] { ItemSortBy.SortName };
-                query.SortOrder = SortOrder.Ascending;
-            }
-            //else if (string.Equals(indexOption, "ShowsInProgress"))
-            //{
-            //    query.Ids = viewModel.CurrentIndexOption.TabType.Split(',');
-
-            //    query.SortBy = new[] { ItemSortBy.SortName };
-            //    query.SortOrder = SortOrder.Ascending;
-            //}
             else if (indexOption.StartsWith("Genre:"))
             {
                 query.Genres = new[] { indexOption.Split(':').Last() };
@@ -637,61 +598,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             }
 
             return ApiClient.GetItemsAsync(query);
-        }
-
-        public bool ShouldShowRomance(MoviesView view)
-        {
-            var now = DateTime.Now;
-
-            if (now.DayOfWeek == DayOfWeek.Friday)
-            {
-                return view.RomanceItems.Count > 0 && now.Hour >= 15;
-            }
-            if (now.DayOfWeek == DayOfWeek.Saturday)
-            {
-                return view.RomanceItems.Count > 0 && (now.Hour < 3 || now.Hour >= 15);
-            }
-            if (now.DayOfWeek == DayOfWeek.Sunday)
-            {
-                return view.RomanceItems.Count > 0 && now.Hour < 3;
-            }
-            return false;
-        }
-
-        private string GetComedyViewName()
-        {
-            var now = DateTime.Now;
-
-            if (now.DayOfWeek == DayOfWeek.Thursday)
-            {
-                return "Comedy Night";
-            }
-            if (now.DayOfWeek == DayOfWeek.Sunday)
-            {
-                return "Sunday Funnies";
-            }
-
-            return "Comedy";
-        }
-
-        private bool ShowComedy(MoviesView view)
-        {
-            if (view.ComedyItems.Count == 0)
-            {
-                return false;
-            }
-
-            var now = DateTime.Now;
-
-            if (now.DayOfWeek == DayOfWeek.Thursday)
-            {
-                return now.Hour >= 12;
-            }
-            if (now.DayOfWeek == DayOfWeek.Sunday)
-            {
-                return now.Hour >= 6;
-            }
-            return false;
         }
 
         private Task<ItemsResult> GetMoviesByGenre(ItemListViewModel viewModel, DisplayPreferences displayPreferences)

@@ -216,6 +216,18 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                 _viewModel.ItemContainerHeight = GetItemContainerHeight(_viewModel);
             }
 
+            if (string.Equals(e.PropertyName, "ViewType") )
+            {
+                if (string.Equals(_viewModel.ViewType, ListViewTypes.PosterStrip, StringComparison.OrdinalIgnoreCase))
+                {
+                    PosterFooter.OverviewHeight = 200;
+                }
+                else
+                {
+                    PosterFooter.OverviewHeight = 80;
+                }
+            }
+
             if (string.Equals(e.PropertyName, "CurrentItem"))
             {
                 var currentViewModel = _viewModel.CurrentItem;
@@ -306,34 +318,26 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                     {
                         ImageType = ImageType.Art
                     }));
-                    ImgLogo.MaxHeight = 120;
+                    ImgLogo.MaxHeight = 160;
                     ImgLogo.Margin = new Thickness(0, 0, 40, 0);
-
-                    TxtLogoName.Visibility = Visibility.Collapsed;
                 }
                 else if (isStripView && item != null && (item.HasLogo || item.ParentLogoImageTag.HasValue))
                 {
                     SetLogo(_apiClient.GetLogoImageUrl(item, new ImageOptions
                     {
-                        ImageType = ImageType.Logo,
-                        CropWhitespace = false
+                        ImageType = ImageType.Logo
                     }));
-                    ImgLogo.MaxHeight = 120;
+                    ImgLogo.MaxHeight = 160;
                     ImgLogo.Margin = new Thickness(0, 0, 40, 0);
-
-                    TxtLogoName.Visibility = Visibility.Collapsed;
                 }
                 else if (item != null && (item.HasLogo))
                 {
                     SetLogo(_apiClient.GetImageUrl(item, new ImageOptions
                     {
-                        ImageType = ImageType.Logo,
-                        CropWhitespace = false
+                        ImageType = ImageType.Logo
                     }));
                     ImgLogo.MaxHeight = 80;
                     ImgLogo.Margin = new Thickness(0, 0, 40, 0);
-
-                    TxtLogoName.Visibility = Visibility.Collapsed;
                 }
                 else if (item != null && (item.HasArtImage || item.ParentArtImageTag.HasValue))
                 {
@@ -343,8 +347,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                     }));
                     ImgLogo.MaxHeight = 80;
                     ImgLogo.Margin = new Thickness(0, 0, 40, 0);
-
-                    TxtLogoName.Visibility = Visibility.Collapsed;
                 }
                 else
                 {
@@ -352,15 +354,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                     ImgLogo.Visibility = Visibility.Hidden;
                     ImgLogo.Margin = new Thickness(0, 0, 0, 0);
                     ImgLogo.Source = null;
-
-                    if (isStripView)
-                    {
-                        TxtLogoName.Visibility = Visibility.Collapsed;
-                    }
-                    else
-                    {
-                        TxtLogoName.Visibility = Visibility.Visible;
-                    }
                 }
             }
         }
@@ -388,7 +381,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                 ImgLogo.Source = img;
 
                 ImgLogo.Visibility = Visibility.Visible;
-                TxtLogoName.Visibility = Visibility.Collapsed;
             }
             catch (OperationCanceledException)
             {
@@ -398,7 +390,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
             {
                 // Just hide it so that it still takes up the same amount of space
                 ImgLogo.Visibility = Visibility.Hidden;
-                TxtLogoName.Visibility = Visibility.Visible;
             }
         }
 

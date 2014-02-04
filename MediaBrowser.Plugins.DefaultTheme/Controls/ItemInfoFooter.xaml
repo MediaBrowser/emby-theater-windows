@@ -8,221 +8,236 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
 
-    <StackPanel Orientation="Horizontal">
+    <StackPanel Orientation="Vertical">
 
-        <controls:ItemRating DataContext="{Binding}" Margin="0 0 35 0" Visibility="{Binding CommunityRatingVisibility}">
-        </controls:ItemRating>
+        <StackPanel Orientation="Horizontal">
 
-        <StackPanel Orientation="Horizontal" Margin="0 0 35 0" Visibility="{Binding PlayersVisibility}">
-            <TextBlock Style="{StaticResource TextBlockStyle}" Text="{Binding Players}" VerticalAlignment="Center"></TextBlock>
-            <TextBlock Style="{StaticResource TextBlockStyle}" Text=" Player" VerticalAlignment="Center"></TextBlock>
-        </StackPanel>
-
-        <Border Margin="0 0 35 0">
-
-            <Border.Style>
-                <Style TargetType="{x:Type Border}">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding DateText}" Value="{x:Null}">
-                            <Setter Property="Visibility" Value="Collapsed" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding ItemType}" Value="Artist">
-                            <Setter Property="Visibility" Value="Collapsed" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding ItemType}" Value="MusicArtist">
-                            <Setter Property="Visibility" Value="Collapsed" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Border.Style>
-
-            <TextBlock Style="{StaticResource TextBlockStyle}" Text="{Binding DateText, Converter={controls1:UpperCaseConverter}}" VerticalAlignment="Center"></TextBlock>
-        </Border>
-
-        <Border Margin="0 0 35 0">
-
-            <Border.Style>
-                <Style TargetType="{x:Type Border}" BasedOn="{StaticResource MediaInfoTextBorder}">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding OfficialRating}" Value="{x:Null}">
-                            <Setter Property="Visibility" Value="Collapsed" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding ItemType}" Value="Episode">
-                            <Setter Property="Visibility" Value="Collapsed" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Border.Style>
-
-            <TextBlock Style="{StaticResource MediaInfoTextBlock}" Text="{Binding OfficialRating, Converter={controls1:UpperCaseConverter}}" VerticalAlignment="Center"></TextBlock>
-        </Border>
-
-        <Border Margin="0 0 35 0">
-
-            <Border.Style>
-                <Style TargetType="{x:Type Border}" BasedOn="{StaticResource MediaInfoTextBorder}">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding RuntimeMinutesText}" Value="{x:Null}">
-                            <Setter Property="Visibility" Value="Collapsed" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding IsFolder}" Value="true">
-                            <Setter Property="Visibility" Value="Collapsed" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Border.Style>
-
-            <TextBlock Style="{StaticResource MediaInfoTextBlock}" Text="{Binding RuntimeMinutesText, Converter={controls1:UpperCaseConverter}}" VerticalAlignment="Center"></TextBlock>
-        </Border>
-
-        <Border Margin="0 0 35 0" Visibility="{Binding ResolutionVisibility}" Style="{StaticResource MediaInfoTextBorder}">
-
-            <TextBlock Style="{StaticResource MediaInfoTextBlock}" Text="{Binding Resolution, Converter={controls1:UpperCaseConverter}}" VerticalAlignment="Center"></TextBlock>
-        </Border>
-
-        <Border Margin="0 0 35 0">
-
-            <Border.Style>
-                <Style TargetType="{x:Type Border}" BasedOn="{StaticResource MediaInfoTextBorder}">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding ChannelLayout}" Value="{x:Null}">
-                            <Setter Property="Visibility" Value="Collapsed" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding MediaType}" Value="Audio">
-                            <Setter Property="Visibility" Value="Collapsed" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Border.Style>
-
-            <TextBlock Style="{StaticResource MediaInfoTextBlock}" Text="{Binding ChannelLayout, Converter={controls1:UpperCaseConverter}}" VerticalAlignment="Center"></TextBlock>
-        </Border>
-
-        <StackPanel Orientation="Horizontal" Margin="0 0 35 0">
-
-            <StackPanel.Style>
-                <Style TargetType="{x:Type StackPanel}">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding AudioCodec}" Value="{x:Null}">
-                            <Setter Property="Visibility" Value="Collapsed" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding MediaType}" Value="Video">
-                            <Setter Property="Visibility" Value="Collapsed" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </StackPanel.Style>
-
-            <TextBlock Style="{StaticResource TextBlockStyle}" Text="{Binding AudioCodec}" VerticalAlignment="Center"></TextBlock>
-        </StackPanel>
-
-        <StackPanel Orientation="Horizontal" Margin="0 0 35 0" Visibility="{Binding CriticRatingVisibility}">
-
-            <Grid Margin="0 0 5 0">
-                <Grid.Style>
-                    <Style TargetType="{x:Type Grid}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding HasNegativeCriticRating}" Value="False">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Grid.Style>
-                <Image Style="{StaticResource RottenImage}"></Image>
+            <Grid x:Name="NameGrid">
+                <TextBlock Style="{StaticResource Heading2TextBlockStyle}" Margin="0 -8 20 0" MaxWidth="800" TextWrapping="NoWrap" Text="{Binding DisplayName}" VerticalAlignment="Center"></TextBlock>
             </Grid>
 
-            <Grid Margin="0 0 5 0">
-                <Grid.Style>
-                    <Style TargetType="{x:Type Grid}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding HasPositiveCriticRating}" Value="False">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Grid.Style>
-                <Image Style="{StaticResource FreshImage}"></Image>
+            <controls:ItemRating DataContext="{Binding}" Margin="0 0 20 0" Visibility="{Binding CommunityRatingVisibility}">
+            </controls:ItemRating>
+
+            <Grid x:Name="UserLikeGrid">
+                <Grid Margin="0 0 20 0">
+                    <Grid.Style>
+                        <Style TargetType="{x:Type Grid}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding }" Value="{x:Null}">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsLiked}" Value="False">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsFavorite}" Value="True">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
+                    <Image Style="{StaticResource LikeImage}"></Image>
+                </Grid>
             </Grid>
 
-            <TextBlock Style="{StaticResource TextBlockStyle}" Text="{Binding CriticRating}" VerticalAlignment="Center"></TextBlock>
-        </StackPanel>
+            <Grid x:Name="UserDislikeGrid">
+                <Grid Margin="0 0 20 0">
+                    <Grid.Style>
+                        <Style TargetType="{x:Type Grid}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding }" Value="{x:Null}">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsDisliked}" Value="False">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
+                    <Image Style="{StaticResource DislikeImage}"></Image>
+                </Grid>
+            </Grid>
 
-        <Grid x:Name="ProgressGrid">
-            <StackPanel Orientation="Horizontal" Margin="0 0 35 0" Visibility="Collapsed">
+            <Grid x:Name="UserFavoriteGrid">
+                <Grid Margin="0 0 20 0">
+                    <Grid.Style>
+                        <Style TargetType="{x:Type Grid}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding }" Value="{x:Null}">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsFavorite}" Value="False">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
+                    <Image Style="{StaticResource FavoriteImage}"></Image>
+                </Grid>
+            </Grid>
 
-                <StackPanel.Style>
-                    <Style TargetType="{x:Type StackPanel}">
+            <Border Margin="0 0 20 0" Visibility="{Binding PlayersVisibility}">
+
+                <Border.Style>
+                    <Style TargetType="{x:Type Border}" BasedOn="{StaticResource MediaInfoTextBorder}">
+                    </Style>
+                </Border.Style>
+
+                <TextBlock Style="{StaticResource MediaInfoTextBlock}" Text="{Binding Players, Converter={controls1:UpperCaseConverter}, StringFormat='{}{0} PLAYER'}" VerticalAlignment="Center"></TextBlock>
+            </Border>
+
+            <Border Margin="0 0 20 0">
+
+                <Border.Style>
+                    <Style TargetType="{x:Type Border}" BasedOn="{StaticResource MediaInfoTextBorder}">
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding IsInProgress}" Value="False">
+                            <DataTrigger Binding="{Binding DateText}" Value="{x:Null}">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding ItemType}" Value="Artist">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding ItemType}" Value="MusicArtist">
                                 <Setter Property="Visibility" Value="Collapsed" />
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
-                </StackPanel.Style>
+                </Border.Style>
 
-                <ProgressBar Minimum="0" Maximum="100" Value="{Binding PlayedPercentage, Mode=OneWay}" Margin="0 5 0 0" Width="120" Height="24" Style="{StaticResource ResumeProgressBar}" VerticalAlignment="Center">
-                </ProgressBar>
+                <TextBlock Style="{StaticResource MediaInfoTextBlock}" Text="{Binding DateText, Converter={controls1:UpperCaseConverter}}" VerticalAlignment="Center"></TextBlock>
+            </Border>
+
+            <Border Margin="0 0 20 0">
+
+                <Border.Style>
+                    <Style TargetType="{x:Type Border}" BasedOn="{StaticResource MediaInfoTextBorder}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding OfficialRating}" Value="{x:Null}">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding ItemType}" Value="Episode">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+
+                <TextBlock Style="{StaticResource MediaInfoTextBlock}" Text="{Binding OfficialRating, Converter={controls1:UpperCaseConverter}}" VerticalAlignment="Center"></TextBlock>
+            </Border>
+
+            <Border Margin="0 0 20 0">
+
+                <Border.Style>
+                    <Style TargetType="{x:Type Border}" BasedOn="{StaticResource MediaInfoTextBorder}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding RuntimeMinutesText}" Value="{x:Null}">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsFolder}" Value="true">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+
+                <TextBlock Style="{StaticResource MediaInfoTextBlock}" Text="{Binding RuntimeMinutesText, Converter={controls1:UpperCaseConverter}}" VerticalAlignment="Center"></TextBlock>
+            </Border>
+
+            <Border Margin="0 0 20 0" Visibility="{Binding ResolutionVisibility}" Style="{StaticResource MediaInfoTextBorder}">
+
+                <TextBlock Style="{StaticResource MediaInfoTextBlock}" Text="{Binding Resolution, Converter={controls1:UpperCaseConverter}}" VerticalAlignment="Center"></TextBlock>
+            </Border>
+
+            <Border Margin="0 0 20 0">
+
+                <Border.Style>
+                    <Style TargetType="{x:Type Border}" BasedOn="{StaticResource MediaInfoTextBorder}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ChannelLayout}" Value="{x:Null}">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding MediaType}" Value="Audio">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+
+                <TextBlock Style="{StaticResource MediaInfoTextBlock}" Text="{Binding ChannelLayout, Converter={controls1:UpperCaseConverter}}" VerticalAlignment="Center"></TextBlock>
+            </Border>
+
+            <Border Margin="0 0 20 0">
+
+                <Border.Style>
+                    <Style TargetType="{x:Type Border}" BasedOn="{StaticResource MediaInfoTextBorder}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding AudioCodec}" Value="{x:Null}">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding MediaType}" Value="Video">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+
+                <TextBlock Style="{StaticResource MediaInfoTextBlock}" Text="{Binding AudioCodec, Converter={controls1:UpperCaseConverter}}" VerticalAlignment="Center"></TextBlock>
+            </Border>
+
+            <StackPanel Orientation="Horizontal" Margin="0 0 20 0" Visibility="{Binding CriticRatingVisibility}">
+
+                <Grid Margin="0 0 5 0">
+                    <Grid.Style>
+                        <Style TargetType="{x:Type Grid}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HasNegativeCriticRating}" Value="False">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
+                    <Image Style="{StaticResource RottenImage}"></Image>
+                </Grid>
+
+                <Grid Margin="0 0 5 0">
+                    <Grid.Style>
+                        <Style TargetType="{x:Type Grid}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HasPositiveCriticRating}" Value="False">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
+                    <Image Style="{StaticResource FreshImage}"></Image>
+                </Grid>
+
+                <TextBlock Style="{StaticResource SmallTextBlockStyle}" Text="{Binding CriticRating}" VerticalAlignment="Center"></TextBlock>
             </StackPanel>
-        </Grid>
 
-        <Grid x:Name="UserLikeGrid">
-            <Grid Margin="0 0 35 0">
-                <Grid.Style>
-                    <Style TargetType="{x:Type Grid}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding }" Value="{x:Null}">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding IsLiked}" Value="False">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding IsFavorite}" Value="True">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Grid.Style>
-                <Image Style="{StaticResource LikeImage}"></Image>
+            <Grid x:Name="ProgressGrid">
+                <StackPanel Orientation="Horizontal" Margin="0 0 20 0" Visibility="Collapsed">
+
+                    <StackPanel.Style>
+                        <Style TargetType="{x:Type StackPanel}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsInProgress}" Value="False">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+
+                    <ProgressBar Minimum="0" Maximum="100" Value="{Binding PlayedPercentage, Mode=OneWay}" Margin="0 5 0 0" Width="120" Height="24" Style="{StaticResource ResumeProgressBar}" VerticalAlignment="Center">
+                    </ProgressBar>
+                </StackPanel>
             </Grid>
-        </Grid>
 
-        <Grid x:Name="UserDislikeGrid">
-            <Grid Margin="0 0 35 0">
-                <Grid.Style>
-                    <Style TargetType="{x:Type Grid}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding }" Value="{x:Null}">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding IsDisliked}" Value="False">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Grid.Style>
-                <Image Style="{StaticResource DislikeImage}"></Image>
-            </Grid>
+            <!--This textblock is just to make sure the panel always takes up the same amount of vertical space, so that content never moves due to height changes -->
+            <TextBlock Style="{StaticResource SmallTextBlockStyle}" Visibility="Hidden" Text="P"></TextBlock>
+        </StackPanel>
+        <Grid x:Name="OverviewGrid">
+            <TextBlock x:Name="TxtOverview" Style="{StaticResource SmallTextBlockStyle}" Margin="0 5 0 0" Text="{Binding Overview}" Foreground="#ddd" FontSize="24" Height="80" TextTrimming="CharacterEllipsis" Width="1200" HorizontalAlignment="Left" TextWrapping="WrapWithOverflow"></TextBlock>
         </Grid>
-
-        <Grid x:Name="UserFavoriteGrid">
-            <Grid Margin="0 0 35 0">
-                <Grid.Style>
-                    <Style TargetType="{x:Type Grid}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding }" Value="{x:Null}">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding IsFavorite}" Value="False">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Grid.Style>
-                <Image Style="{StaticResource FavoriteImage}"></Image>
-            </Grid>
-        </Grid>
-
-        <!--This textblock is just to make sure the panel always takes up the same amount of vertical space, so that content never moves due to height changes -->
-        <TextBlock Style="{StaticResource TextBlockStyle}" Visibility="Hidden" Text="P"></TextBlock>
     </StackPanel>
 </UserControl>

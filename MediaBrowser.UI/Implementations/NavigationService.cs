@@ -228,6 +228,9 @@ namespace MediaBrowser.UI.Implementations
                 var rootItem = await _apiClient.GetRootFolderAsync(userId);
 
                 await Navigate(homePage.GetHomePage(rootItem));
+
+                //Clear history on home page navigate so that backspace on home page can lead to system options
+                ClearHistory();
             }
             finally
             {
@@ -339,6 +342,11 @@ namespace MediaBrowser.UI.Implementations
         public Task NavigateForward()
         {
             return App.Instance.ApplicationWindow.NavigateForward();
+        }
+
+        public void NavigateToBackModal()
+        {
+            _themeManager.CurrentTheme.CallBackModal();
         }
 
         /// <summary>

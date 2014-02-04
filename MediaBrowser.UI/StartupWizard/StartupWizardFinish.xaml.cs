@@ -30,7 +30,7 @@ namespace MediaBrowser.UI.StartupWizard
             BtnBack.Click += BtnBack_Click;
         }
 
-        protected override void FocusOnFirstLoad()
+        public override void FocusOnFirstLoad()
         {
             BtnFinish.Focus();
         }

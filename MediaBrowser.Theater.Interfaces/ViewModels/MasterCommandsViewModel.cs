@@ -214,6 +214,14 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
             HomeEnabled = SessionManager.CurrentUser != null && !(currentPage is IHomePage) && !(currentPage is ILoginPage);
         }
 
+        protected virtual void OnPageNavigated(object sender, EventArgs e)
+        {
+            if (PageNavigated != null)
+            {
+                PageNavigated(sender, e);
+            }
+        }
+
         private async void ShutdownApplication()
         {
             try
@@ -339,6 +347,21 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
             }
         }
 
+        protected virtual void SessionManager_UserLoggedIn(object sender, EventArgs e)
+        {
+            RefreshHomeButton(NavigationService.CurrentPage);
+        }
+
+        protected virtual void SessionManager_UserLoggedOut(object sender, EventArgs e)
+        {
+            RefreshHomeButton(NavigationService.CurrentPage);
+        }
+
+        protected virtual void NavigationService_Navigated(object sender, NavigationEventArgs e)
+        {
+            RefreshHomeButton(e.NewPage as Page);
+        }
+
         private async void ServerEvents_Connected(object sender, EventArgs e)
         {
             try
@@ -375,21 +398,6 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
         private void AppHostHasPendingRestartChanged(object sender, EventArgs e)
         {
             RefreshRestartApplicationNotification();
-        }
-
-        protected virtual void SessionManager_UserLoggedIn(object sender, EventArgs e)
-        {
-            RefreshHomeButton(NavigationService.CurrentPage);
-        }
-
-        protected virtual void SessionManager_UserLoggedOut(object sender, EventArgs e)
-        {
-            RefreshHomeButton(NavigationService.CurrentPage);
-        }
-
-        protected virtual void NavigationService_Navigated(object sender, NavigationEventArgs e)
-        {
-            RefreshHomeButton(e.NewPage as Page);
         }
     }
 }

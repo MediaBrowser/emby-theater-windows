@@ -393,31 +393,19 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
             }
         }
 
-        public void ShowDisplayPreferencesMenu()
+        public DisplayPreferences GetDisplayPreferences()
         {
-            var viewModel = new DisplayPreferencesViewModel(_viewModel.DisplayPreferences, _presentationManager);
+            return _viewModel.DisplayPreferences;
+        }
 
-            var menu = new ViewWindow(viewModel, _options);
-
-            menu.ShowModal(this.GetWindow());
-
-            viewModel.Save();
+        public ListPageConfig GetListPageConfig()
+        {
+            return _options;
         }
 
         public bool HasSortOptions
         {
             get { return _options.SortOptions.Any(); }
-        }
-
-        public void ShowSortMenu()
-        {
-            var viewModel = new DisplayPreferencesViewModel(_viewModel.DisplayPreferences, _presentationManager);
-
-            var menu = new SortWindow(viewModel, _options.SortOptions);
-
-            menu.ShowModal(this.GetWindow());
-
-            viewModel.Save();
         }
     }
 }

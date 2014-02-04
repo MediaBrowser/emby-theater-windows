@@ -77,5 +77,10 @@ namespace MediaBrowser.Theater.Interfaces.Theming
         /// </summary>
         /// <returns>PageContentViewModel.</returns>
         PageContentViewModel CreatePageContentDataContext();
+
+        /// <summary>
+        /// Calls the back modal from the home page
+        /// </summary>
+        void CallBackModal();
     }
 }

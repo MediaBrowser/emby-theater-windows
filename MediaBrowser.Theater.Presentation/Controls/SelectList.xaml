@@ -9,7 +9,7 @@
     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
         <TextBlock Style="{StaticResource TextBlockStyle}" x:Name="TxtValue" MinWidth="250"></TextBlock>
         <Button Height="40" Width="40" Padding="0" Margin="10 0 0 0" x:Name="BtnNextOption">
-            <Path Data="M19.833,0L32.501,0 32.501,19.833999 52.334,19.833999 52.334,32.500999 32.501,32.500999 32.501,52.333 19.833,52.333 19.833,32.500999 0,32.500999 0,19.833999 19.833,19.833999z" Stretch="Uniform" Fill="{StaticResource DefaultForeground}" Width="22" Height="22" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+            <Path Data="M19.833,0L32.501,0 32.501,19.833999 52.334,19.833999 52.334,32.500999 32.501,32.500999 32.501,52.333 19.833,52.333 19.833,32.500999 0,32.500999 0,19.833999 19.833,19.833999z" Stretch="Uniform" Fill="{StaticResource MediaBrowserAccent}" Width="22" Height="22" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
                 <Path.RenderTransform>
                     <TransformGroup>
                         <TransformGroup.Children>
@@ -21,7 +21,7 @@
             </Path>
         </Button>
         <Button Height="40" Width="40" Padding="0" Margin="10 0 0 0" x:Name="BtnPreviousOption">
-            <Path Data="M0,0L53.333,0 53.333,8.888 0,8.888z" Stretch="Uniform" Fill="{StaticResource DefaultForeground}" Width="22" Height="22" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+            <Path Data="M0,0L53.333,0 53.333,8.888 0,8.888z" Stretch="Uniform" Fill="{StaticResource MediaBrowserAccent}" Width="22" Height="22" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
                 <Path.RenderTransform>
                     <TransformGroup>
                         <TransformGroup.Children>

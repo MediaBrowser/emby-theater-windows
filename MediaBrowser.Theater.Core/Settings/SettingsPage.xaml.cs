@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Common;
+﻿using System.Windows.Input;
+using MediaBrowser.Common;
 using MediaBrowser.Common.Updates;
 using MediaBrowser.Theater.Interfaces;
 using MediaBrowser.Theater.Interfaces.Navigation;
@@ -116,9 +117,17 @@ namespace MediaBrowser.Theater.Core.Settings
             return orderedPage == null ? 10 : orderedPage.Order;
         }
 
-        protected override void FocusOnFirstLoad()
+        public override void FocusOnFirstLoad()
         {
             // Focus the first settings tile 
+            var view = (ListCollectionView) MenuList.ItemsSource;
+            view.MoveCurrentToFirst();
+
+            var listBoxItem = (ListBoxItem) MenuList
+                .ItemContainerGenerator
+                .ContainerFromItem(MenuList.SelectedItem);
+
+            listBoxItem.Focus();
         }
     }
 }

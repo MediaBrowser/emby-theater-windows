@@ -17,7 +17,7 @@
                 <ControlTemplate TargetType="{x:Type CheckBox}">
                     <StackPanel x:Name="LayoutRoot" Orientation="Horizontal" Margin="{TemplateBinding Padding}">
                         <Border x:Name="CheckBorder" Width="40" Height="40" Margin="0,1,4,0" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
-                            <Path x:Name="CheckMark" Width="25" Height="25" Margin="2" Visibility="Collapsed" Stretch="Fill" Fill="{TemplateBinding Foreground}" Data="F1 M 15,21L 22,28L 32.9999,14.0001L 35.9999,17.0001L 22,34L 12.0001,24L 15,21 Z "/>
+                            <Path x:Name="CheckMark" Width="25" Height="25" Margin="2" Visibility="Collapsed" Stretch="Fill" Fill="{StaticResource MediaBrowserAccent}" Data="F1 M 15,21L 22,28L 32.9999,14.0001L 35.9999,17.0001L 22,34L 12.0001,24L 15,21 Z "/>
                         </Border>
                         <ContentPresenter Margin="10 0 0 0" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Center"/>
                     </StackPanel>

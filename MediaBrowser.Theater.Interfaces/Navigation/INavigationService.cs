@@ -87,6 +87,12 @@ namespace MediaBrowser.Theater.Interfaces.Navigation
         Task NavigateToImageViewer(ImageViewerViewModel viewModel);
 
         /// <summary>
+        /// Navigates to the modal behind the home page
+        /// </summary>
+        /// <returns></returns>
+        void NavigateToBackModal();
+
+        /// <summary>
         /// Clears the history.
         /// </summary>
         void ClearHistory();

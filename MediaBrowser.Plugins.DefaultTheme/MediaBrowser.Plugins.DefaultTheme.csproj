@@ -106,12 +106,6 @@
     <Compile Include="IHasDisplayPreferences.cs" />
     <Compile Include="ListPage\ListPageConfig.cs" />
     <Compile Include="ListPage\ListViewTypes.cs" />
-    <Compile Include="ListPage\SortWindow.xaml.cs">
-      <DependentUpon>SortWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ListPage\ViewWindow.xaml.cs">
-      <DependentUpon>ViewWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Models\DefaultThemeUserDtoViewModel.cs" />
     <Compile Include="Osd\FullscreenVideoTransportOsd.xaml.cs">
       <DependentUpon>FullscreenVideoTransportOsd.xaml</DependentUpon>
@@ -147,11 +141,15 @@
     </Compile>
     <Compile Include="Properties\SharedVersion.cs" />
     <Compile Include="DefaultTheme.cs" />
+    <Compile Include="SystemOptionsMenu\SystemOptionsWindow.xaml.cs">
+      <DependentUpon>SystemOptionsWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Search\AlphaInputViewModel.cs" />
     <Compile Include="Search\SearchPage.xaml.cs">
       <DependentUpon>SearchPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Search\SearchViewModel.cs" />
+    <Compile Include="UserProfileMenu\PopoutListButton.cs" />
     <Compile Include="UserProfileMenu\UserProfileWindow.xaml.cs">
       <DependentUpon>UserProfileWindow.xaml</DependentUpon>
     </Compile>
@@ -197,14 +195,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Home\HomePage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ListPage\SortWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ListPage\ViewWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -269,6 +259,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Resources\PathResources.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Resources\ThemeDark.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -284,6 +278,9 @@
     <Page Include="Resources\VolumeOsd.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SystemOptionsMenu\SystemOptionsWindow.xaml">
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Search\SearchPage.xaml">
       <Generator>MSBuild:Compile</Generator>

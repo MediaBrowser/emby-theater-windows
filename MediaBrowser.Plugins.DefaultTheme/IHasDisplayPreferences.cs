@@ -1,4 +1,7 @@
 ﻿
+using MediaBrowser.Model.Entities;
+using MediaBrowser.Plugins.DefaultTheme.ListPage;
+
 namespace MediaBrowser.Plugins.DefaultTheme
 {
     /// <summary>
@@ -7,11 +10,12 @@ namespace MediaBrowser.Plugins.DefaultTheme
     public interface IHasDisplayPreferences
     {
         /// <summary>
-        /// Shows the display preferences menu.
+        /// Retrieves the current display preferences for the instance
         /// </summary>
-        void ShowDisplayPreferencesMenu();
+        /// <returns></returns>
+        DisplayPreferences GetDisplayPreferences();
 
-        void ShowSortMenu();
+        ListPageConfig GetListPageConfig();
 
         /// <summary>
         /// Gets a value indicating whether this instance has sort options.

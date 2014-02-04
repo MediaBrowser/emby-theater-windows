@@ -76,6 +76,12 @@
     </None>
     <AppDesigner Include="Properties\" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MediaBrowser.Theater.Api\MediaBrowser.Theater.Api.csproj">
+      <Project>{76a1834d-1be3-4361-bac2-711cdd74eb3f}</Project>
+      <Name>MediaBrowser.Theater.Api</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

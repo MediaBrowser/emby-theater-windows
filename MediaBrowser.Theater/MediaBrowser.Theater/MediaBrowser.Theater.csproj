@@ -41,6 +41,16 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MediaBrowser.Theater.Api\MediaBrowser.Theater.Api.csproj">
+      <Project>{76a1834d-1be3-4361-bac2-711cdd74eb3f}</Project>
+      <Name>MediaBrowser.Theater.Api</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MediaBrowser.Theater.DefaultTheme\MediaBrowser.Theater.DefaultTheme.csproj">
+      <Project>{1b096484-b8cc-49d8-ad88-06b5ffb8f888}</Project>
+      <Name>MediaBrowser.Theater.DefaultTheme</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

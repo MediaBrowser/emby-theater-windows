@@ -92,6 +92,7 @@
       <DependentUpon>ItemLogo.xaml</DependentUpon>
     </Compile>
     <Compile Include="Home\Api.cs" />
+    <Compile Include="Home\AppResourcesResourceDictionary.xaml.cs" />
     <Compile Include="Home\BaseHomePageSectionViewModel.cs" />
     <Compile Include="Home\GamesViewModel.cs" />
     <Compile Include="Home\HomePageInfo.cs" />

@@ -12,6 +12,7 @@ using MediaBrowser.Theater.Interfaces.ViewModels;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Plugins.DefaultTheme.SystemOptionsMenu;
+using MediaBrowser.Theater.Presentation.Pages;
 
 namespace MediaBrowser.Plugins.DefaultTheme
 {
@@ -97,8 +98,13 @@ namespace MediaBrowser.Plugins.DefaultTheme
                 options = page.GetListPageConfig();
             }
 
-            new UserProfileWindow(this, SessionManager, PresentationManager, ImageManager, ApiClient, displayPreferences, options).ShowModal(PresentationManager.Window);
+            var userProfileWindow = new UserProfileWindow(this, SessionManager, PresentationManager, ImageManager,
+                ApiClient, displayPreferences, options);
+            userProfileWindow.Closed += userProfileWindow_Closed;
+
+            userProfileWindow.ShowModal(PresentationManager.Window);
         }
+
 
         protected async void Logout()
         {
@@ -123,6 +129,17 @@ namespace MediaBrowser.Plugins.DefaultTheme
             }
 
             base.Dispose(dispose);
+        }
+
+        //Try and re-focus off the top bar when the side bar has closed
+        void userProfileWindow_Closed(object sender, EventArgs e)
+        {
+            BasePage currentPage = NavigationService.CurrentPage as BasePage;
+
+            if (currentPage != null)
+            {
+                currentPage.FocusOnFirstLoad();
+            }
         }
     }
 }

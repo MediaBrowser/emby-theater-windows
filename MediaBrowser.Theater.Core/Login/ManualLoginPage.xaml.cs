@@ -36,7 +36,7 @@ namespace MediaBrowser.Theater.Core.Login
             PresentationManager.SetDefaultPageTitle();
         }
 
-        protected override void FocusOnFirstLoad()
+        public override void FocusOnFirstLoad()
         {
             if (!string.IsNullOrEmpty(TxtUsername.Text))
             {

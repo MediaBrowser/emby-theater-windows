@@ -38,7 +38,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.UserProfileMenu
 
             Loaded += UserProfileWindow_Loaded;
             Unloaded += UserProfileWindow_Unloaded;
-            masterCommands.PageNavigated += masterCommands_SettingsPageNavigated;
+            masterCommands.PageNavigated += masterCommands_PageNavigated;
             BtnClose.Click += BtnClose_Click;
 
             //Display preferences
@@ -243,7 +243,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.UserProfileMenu
             CloseModal();
         }
 
-        void masterCommands_SettingsPageNavigated(object sender, EventArgs e)
+        void masterCommands_PageNavigated(object sender, EventArgs e)
         {
             CloseModal();
         }

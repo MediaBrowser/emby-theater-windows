@@ -63,7 +63,7 @@ namespace MediaBrowser.Theater.Presentation.Pages
         /// <summary>
         /// Focuses the on first load.
         /// </summary>
-        protected virtual void FocusOnFirstLoad()
+        public virtual void FocusOnFirstLoad()
         {
             MoveFocus(new TraversalRequest(FocusNavigationDirection.First));
         }

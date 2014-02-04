@@ -1,0 +1,1 @@
+Contains the implementations for the Media Browser Theater internal API.

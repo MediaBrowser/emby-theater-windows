@@ -2,6 +2,7 @@
 using MediaBrowser.Common.Events;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Logging;
+using MediaBrowser.Plugins.DefaultTheme.Home;
 using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
@@ -272,6 +273,17 @@ namespace MediaBrowser.UI
 
                     }, _logger);
                 }
+                else
+                {
+                    //Check for home page and call system options modal
+                    var homePage = CurrentPage as IHomePage;
+
+                    if (homePage != null)
+                    {
+                        NavigationManager.NavigateToBackModal();
+                    }
+                }
+
                 task.TrySetResult(true);
             });
 

@@ -398,5 +398,10 @@ namespace MediaBrowser.Plugins.DefaultTheme
 
             base.Dispose(dispose);
         }
+
+        public void CallBackModal()
+        {
+            MasterCommands.ShowSystemOptions();
+        }
     }
 }

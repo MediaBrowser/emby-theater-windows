@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Input;
+using System.Xml.Serialization;
 using MediaBrowser.Common;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Entities;
@@ -22,7 +23,6 @@ namespace MediaBrowser.Plugins.DefaultTheme
 
         public ICommand UserCommand { get; private set; }
         public ICommand LogoutCommand { get; private set; }
-        public ICommand TestPowerCommand { get; private set; }
 
         private bool _displayPreferencesEnabled;
         public bool DisplayPreferencesEnabled
@@ -82,9 +82,16 @@ namespace MediaBrowser.Plugins.DefaultTheme
 
             UserCommand = new RelayCommand(i => ShowUserMenu());
             LogoutCommand = new RelayCommand(i => Logout());
-            TestPowerCommand = new RelayCommand(i=> ShowTestPower());
 
             PowerOptionsEnabled = true;
+        }
+
+        public virtual void ShowSystemOptions()
+        {     
+            var systemOptionsWindow = new SystemOptionsWindow(this);
+            systemOptionsWindow.Closed += systemOptionsWindow_Closed;
+
+            systemOptionsWindow.ShowModal(PresentationManager.Window);
         }
 
         protected virtual void ShowUserMenu()
@@ -114,11 +121,8 @@ namespace MediaBrowser.Plugins.DefaultTheme
             }
 
             await SessionManager.Logout();
-        }
 
-        private void ShowTestPower()
-        {
-            new SystemOptionsWindow().ShowModal(PresentationManager.Window);
+            OnPageNavigated(this, new EventArgs());
         }
 
         protected override void Dispose(bool dispose)
@@ -132,7 +136,17 @@ namespace MediaBrowser.Plugins.DefaultTheme
         }
 
         //Try and re-focus off the top bar when the side bar has closed
-        void userProfileWindow_Closed(object sender, EventArgs e)
+        private void userProfileWindow_Closed(object sender, EventArgs e)
+        {
+            BasePage currentPage = NavigationService.CurrentPage as BasePage;
+
+            if (currentPage != null)
+            {
+                currentPage.FocusOnFirstLoad();
+            }
+        }
+
+        private void systemOptionsWindow_Closed(object sender, EventArgs e)
         {
             BasePage currentPage = NavigationService.CurrentPage as BasePage;
 

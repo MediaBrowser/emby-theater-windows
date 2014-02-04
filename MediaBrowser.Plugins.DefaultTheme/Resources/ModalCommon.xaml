@@ -8,6 +8,7 @@
     <SolidColorBrush x:Key="ModalButtonTextDisabled" Color="#333333" />
     <SolidColorBrush x:Key="ModalBackgroundBrush" Color="#0b0b0b"></SolidColorBrush>
     <SolidColorBrush x:Key="ModalBackgroundBrushPopout" Color="#171717"></SolidColorBrush>
+    <SolidColorBrush x:Key="SystemOptionsBackgroundBrush" Color="#171717"></SolidColorBrush>
 
     <Style TargetType="Grid" x:Key="DefaultThemeModalContentStyle" BasedOn="{StaticResource ModalContentStyle}">
         <Setter Property="Background" Value="{StaticResource ModalBackgroundBrush}"/>

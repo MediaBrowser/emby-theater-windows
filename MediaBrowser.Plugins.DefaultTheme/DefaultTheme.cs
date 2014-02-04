@@ -264,5 +264,10 @@ namespace MediaBrowser.Plugins.DefaultTheme
 
             return PageContentDataContext;
         }
+
+        public void CallBackModal()
+        {
+            PageContentDataContext.CallBackModal();
+        }
     }
 }

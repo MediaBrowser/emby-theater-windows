@@ -4,16 +4,48 @@
         xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
         Title="SystemOptionsWindow" Style="{StaticResource ModalWindow}" Cursor="None">
     <Grid>
-        <Grid Style="{StaticResource ModalOverlayStyle}"/>
-        <Grid x:Name="ContentGrid" Style="{StaticResource DefaultThemeModalContentStyle}" HorizontalAlignment="Center" VerticalAlignment="Center" Background="Transparent">
+        <Grid Opacity="0" Background="{StaticResource SystemOptionsBackgroundBrush}">
+            <Grid.Triggers>
+                <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity">
+                                <SplineDoubleKeyFrame KeyTime="0:0:0" Value="0"/>
+                                <EasingDoubleKeyFrame Value="0.8" KeyTime="00:00:0.5">
+                                    <EasingDoubleKeyFrame.EasingFunction>
+                                        <QuinticEase EasingMode="EaseInOut"/>
+                                    </EasingDoubleKeyFrame.EasingFunction>
+                                </EasingDoubleKeyFrame>
+                            </DoubleAnimationUsingKeyFrames>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Grid.Triggers>
+        </Grid>
+        <Grid x:Name="ContentGrid" Style="{StaticResource DefaultThemeModalContentStyle}" HorizontalAlignment="Center" VerticalAlignment="Center" Background="Transparent" Opacity="0">
+            <Grid.Triggers>
+                <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity">
+                                <SplineDoubleKeyFrame KeyTime="0:0:0" Value="0"/>
+                                <SplineDoubleKeyFrame KeyTime="00:00:0.6" Value="0"/>
+                                <SplineDoubleKeyFrame KeyTime="00:00:0.7" Value="1"/>
+                            </DoubleAnimationUsingKeyFrames>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Grid.Triggers>
+            
             <StackPanel Orientation="Horizontal">
-                <Button Style="{StaticResource ModalImageButton}" Content="{StaticResource LogoutPath}" TabIndex="1" Width="100" Height="100" Margin="20 20 20 20" Padding="10,10,10,10"/>
-                <Button Style="{StaticResource ModalImageButton}" Content="{StaticResource ShutdownApplicationPath}"  TabIndex="2" Width="100" Height="100" Margin="0 20 20 20" Padding="10,10,10,10"/>
-                <Rectangle Style="{StaticResource ModalVerticalListSeparator}" Height="120" Margin="20 20 20 20"></Rectangle>
-                <Button Style="{StaticResource ModalImageButton}" Content="{StaticResource ShutdownPath}"  TabIndex="3" Width="100" Height="100"  Margin="0 20 20 20" Padding="10,10,10,10"/>
-                <Button Style="{StaticResource ModalImageButton}" Content="{StaticResource SleepPath}"  TabIndex="4" Width="100" Height="100"  Margin="0 20 20 20" Padding="10,10,10,10"/>
-                <Button Style="{StaticResource ModalImageButton}" Content="{StaticResource RestartPath}"  TabIndex="5" Width="100" Height="100"  Margin="0 20 20 20" Padding="10,10,10,10"/>
+                <Button Style="{StaticResource ModalImageButton}" Content="{StaticResource LogoutPath}" Tag="Logout" TabIndex="1" Width="80" Height="80" Margin="20 20 20 20" Padding="10,10,10,10" Command="{Binding LogoutCommand}"/>
+                <Button Style="{StaticResource ModalImageButton}" Content="{StaticResource ShutdownApplicationPath}" Tag="Exit"  TabIndex="2" Width="80" Height="80" Margin="0 20 20 20" Padding="10,10,10,10" Command="{Binding ShutdownApplicationCommand}"/>
+                <Rectangle Style="{StaticResource ModalVerticalListSeparator}" Height="120" Margin="20 20 20 20" Fill="White"></Rectangle>
+                <Button Style="{StaticResource ModalImageButton}" Content="{StaticResource SleepPath}"  Tag="Sleep" TabIndex="3" Width="80" Height="80"  Margin="0 20 20 20" Padding="10,10,10,10" Command="{Binding SleepSystemCommand}"/>
+                <Button Style="{StaticResource ModalImageButton}" Content="{StaticResource RestartPath}" Tag="Restart"  TabIndex="4" Width="80" Height="80"  Margin="0 20 20 20" Padding="10,10,10,10" Command="{Binding RestartSystemCommand}"/>
+                <Button Style="{StaticResource ModalImageButton}" Content="{StaticResource ShutdownPath}" Tag="Shutdown"  TabIndex="5" Width="80" Height="80"  Margin="0 20 20 20" Padding="10,10,10,10" Command="{Binding ShutdownSystemCommand}"/>
             </StackPanel>
+            <TextBlock Style="{StaticResource Heading1TextBlockStyle}" Margin="0,240,0,0" HorizontalAlignment="Center" VerticalAlignment="Bottom" Text="{Binding Path=(FocusManager.FocusedElement).(Button.Tag), RelativeSource={RelativeSource AncestorType={x:Type Window}}}"/>
         </Grid>
         <Grid.LayoutTransform>
             <ScaleTransform ScaleX="{Binding Path=ContentScale}" ScaleY="{Binding Path=ContentScale}" CenterX="0" CenterY="0" />

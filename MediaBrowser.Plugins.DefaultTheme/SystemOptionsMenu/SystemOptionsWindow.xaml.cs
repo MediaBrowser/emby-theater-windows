@@ -6,21 +6,22 @@ namespace MediaBrowser.Plugins.DefaultTheme.SystemOptionsMenu
 {
     public partial class SystemOptionsWindow : BaseModalWindow
     {
-        public SystemOptionsWindow()
+        public SystemOptionsWindow(DefaultThemePageMasterCommandsViewModel masterCommands)
         {
             InitializeComponent();
-
             Loaded += SystemOptionsWindow_Loaded;
+            masterCommands.PageNavigated += masterCommands_PageNavigated;
+            DataContext = masterCommands;
         }
 
-        protected override void CloseModal()
-        {
-            base.CloseModal();
-        }
-
-        void SystemOptionsWindow_Loaded(object sender, System.Windows.RoutedEventArgs e)
+        private void SystemOptionsWindow_Loaded(object sender, System.Windows.RoutedEventArgs e)
         {
             MoveFocus(new TraversalRequest(FocusNavigationDirection.First));
+        }
+
+        private void masterCommands_PageNavigated(object sender, System.EventArgs e)
+        {
+            CloseModal();
         }
     }
 }

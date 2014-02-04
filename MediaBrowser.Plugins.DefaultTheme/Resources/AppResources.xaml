@@ -98,7 +98,7 @@
                         </Style>
                     </StackPanel.Style>
 
-                    <Button Margin="0 8 20 0" Command="{Binding MasterCommands.GoBackCommand}" VerticalAlignment="Top" KeyboardNavigation.DirectionalNavigation="None" KeyboardNavigation.IsTabStop="False">
+                    <Button Margin="0 8 20 0" Command="{Binding MasterCommands.GoBackCommand}" VerticalAlignment="Top" KeyboardNavigation.DirectionalNavigation="Continue" KeyboardNavigation.IsTabStop="False">
 
                         <Button.Style>
                             <Style TargetType="{x:Type Button}" BasedOn="{StaticResource ImageButton}">

@@ -1,6 +1,5 @@
 ﻿namespace MediaBrowser.Theater.Api.Theming.Navigation
 {
-
     #region Interfaces
 
     /// <summary>

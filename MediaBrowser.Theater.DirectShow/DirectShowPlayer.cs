@@ -460,7 +460,7 @@ namespace MediaBrowser.Theater.DirectShow
                                 {
                                     if (!hwaIsEnabled)
                                     {
-                                        _logger.Debug("Enable HWA support for: {0}", hwaCodec);                                    
+                                        _logger.Debug("Enable HWA support for: {0}", hwaCodec);
                                         hr = vsett.SetHWAccelCodec(codec, true);
                                         DsError.ThrowExceptionForHR(hr);
                                     }
@@ -472,7 +472,7 @@ namespace MediaBrowser.Theater.DirectShow
                                     DsError.ThrowExceptionForHR(hr);
                                 }
                             }
-                            
+
                             if (!vsett.GetDVDVideoSupport())
                             {
                                 _logger.Debug("Enable DVD support.");
@@ -487,6 +487,9 @@ namespace MediaBrowser.Theater.DirectShow
                                 hr = vsett.SetHWAccelResolutionFlags(_videoConfig.HwaResolution);
                                 DsError.ThrowExceptionForHR(hr);
                             }
+
+                            hr = vsett.SetTrayIcon(_videoConfig.ShowTrayIcon);
+                            DsError.ThrowExceptionForHR(hr);
                         }
                     }
                 }
@@ -501,12 +504,16 @@ namespace MediaBrowser.Theater.DirectShow
                     var vlavaudio = _lavaudio as DirectShowLib.IBaseFilter;
                     if (vlavaudio != null)
                     {
+                        _logger.Debug("Add LAVAudio to the graph.");
+
                         hr = m_graph.AddFilter(vlavaudio, "LAV Audio Decoder");
                         DsError.ThrowExceptionForHR(hr);
 
                         ILAVAudioSettings asett = vlavaudio as ILAVAudioSettings;
                         if (asett != null)
                         {
+                            _logger.Debug("Enable LAVAudio Runtime Config");
+
                             //we only want to set it for MB
                             hr = asett.SetRuntimeConfig(true);
                             DsError.ThrowExceptionForHR(hr);
@@ -534,8 +541,10 @@ namespace MediaBrowser.Theater.DirectShow
                             }
 
                             //enable/disable bitstreaming
-                            if((_audioConfig.AudioBitstreaming & BitstreamChoice.SPDIF) == BitstreamChoice.SPDIF)
+                            if ((_audioConfig.AudioBitstreaming & BitstreamChoice.SPDIF) == BitstreamChoice.SPDIF)
                             {
+                                _logger.Debug("Enable LAVAudio S/PDIF bitstreaming");
+
                                 hr = asett.SetBitstreamConfig(LAVBitstreamCodec.AC3, true);
                                 DsError.ThrowExceptionForHR(hr);
 
@@ -543,8 +552,9 @@ namespace MediaBrowser.Theater.DirectShow
                                 DsError.ThrowExceptionForHR(hr);
                             }
 
-                            if((_audioConfig.AudioBitstreaming & BitstreamChoice.HDMI) == BitstreamChoice.HDMI)
+                            if ((_audioConfig.AudioBitstreaming & BitstreamChoice.HDMI) == BitstreamChoice.HDMI)
                             {
+                                _logger.Debug("Enable LAVAudio HDMI bitstreaming");
 
                                 hr = asett.SetBitstreamConfig(LAVBitstreamCodec.EAC3, true);
                                 DsError.ThrowExceptionForHR(hr);
@@ -554,50 +564,67 @@ namespace MediaBrowser.Theater.DirectShow
 
                                 hr = asett.SetBitstreamConfig(LAVBitstreamCodec.DTSHD, true);
                                 DsError.ThrowExceptionForHR(hr);
+
                             }
 
                             if (_audioConfig.Delay > 0)
                             {
+                                _logger.Debug("Set LAVAudio audio delay: {0}", _audioConfig.Delay);
+
                                 hr = asett.SetAudioDelay(true, _audioConfig.Delay);
                                 DsError.ThrowExceptionForHR(hr);
                             }
 
+                            _logger.Debug("Set LAVAudio auto AV Sync: {0}", _audioConfig.EnableAutoSync);
                             hr = asett.SetAutoAVSync(_audioConfig.EnableAutoSync);
                             DsError.ThrowExceptionForHR(hr);
 
+                            _logger.Debug("Set LAVAudio Expand61: {0}", _audioConfig.Expand61);
                             hr = asett.SetExpand61(_audioConfig.Expand61);
                             DsError.ThrowExceptionForHR(hr);
 
+                            _logger.Debug("Set LAVAudio ExpandMono: {0}", _audioConfig.ExpandMono);
                             hr = asett.SetExpandMono(_audioConfig.ExpandMono);
                             DsError.ThrowExceptionForHR(hr);
 
+                            _logger.Debug("Set LAVAudio ConvertToStandardLayout: {0}", _audioConfig.ConvertToStandardLayout);
                             hr = asett.SetOutputStandardLayout(_audioConfig.ConvertToStandardLayout);
                             DsError.ThrowExceptionForHR(hr);
 
+                            _logger.Debug("Set LAVAudio audio EnableDRC: {0}", _audioConfig.EnableDRC);
                             hr = asett.SetDRC(_audioConfig.EnableDRC, _audioConfig.DRCLevel);
                             DsError.ThrowExceptionForHR(hr);
-                            
+
+                            _logger.Debug("Set LAVAudio audio ShowTrayIcon: {0}", _audioConfig.ShowTrayIcon);
+                            hr = asett.SetTrayIcon(_audioConfig.ShowTrayIcon);
+                            DsError.ThrowExceptionForHR(hr);
+
                             bool mixingEnabled = asett.GetMixingEnabled();
                             if (mixingEnabled != _audioConfig.EnablePCMMixing)
                             {
+                                _logger.Debug("Set LAVAudio EnablePCMMixing: {0}", _audioConfig.EnablePCMMixing);
                                 hr = asett.SetMixingEnabled(!mixingEnabled);
                                 DsError.ThrowExceptionForHR(hr);
                             }
 
                             if (_audioConfig.EnablePCMMixing)
                             {
+                                _logger.Debug("Set LAVAudio MixingSetting: {0}", _audioConfig.MixingSetting);
                                 LAVAudioMixingFlag amf = (LAVAudioMixingFlag)_audioConfig.MixingSetting;
                                 hr = asett.SetMixingFlags(amf);
                                 DsError.ThrowExceptionForHR(hr);
 
+                                _logger.Debug("Set LAVAudio MixingEncoding: {0}", _audioConfig.MixingEncoding);
                                 LAVAudioMixingMode amm = (LAVAudioMixingMode)Enum.Parse(typeof(LAVAudioMixingMode), _audioConfig.MixingEncoding);
                                 hr = asett.SetMixingMode(amm);
                                 DsError.ThrowExceptionForHR(hr);
 
+                                _logger.Debug("Set LAVAudio MixingLayout: {0}", _audioConfig.MixingLayout);
                                 LAVAudioMixingLayout aml = (LAVAudioMixingLayout)Enum.Parse(typeof(LAVAudioMixingLayout), _audioConfig.MixingLayout);
                                 hr = asett.SetMixingLayout(aml);
                                 DsError.ThrowExceptionForHR(hr);
 
+                                _logger.Debug("Set LAVAudio LfeMixingLevel: {0} CenterMixingLevel: {1} SurroundMixingLevel: {2}", _audioConfig.LfeMixingLevel, _audioConfig.CenterMixingLevel, _audioConfig.SurroundMixingLevel);
                                 int lfe, center, surround;
                                 //convert to the # that LAV Audio expects
                                 lfe = (int)(_audioConfig.LfeMixingLevel * 10000.01);

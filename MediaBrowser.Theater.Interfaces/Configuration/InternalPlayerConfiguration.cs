@@ -103,6 +103,8 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
         /// </summary>
         public List<string> EnabledCodecs { get; set; }
 
+        public bool ShowTrayIcon { get; set; }
+
         public VideoConfiguration()
         {
             HwaEnabledCodecs = new List<string>();
@@ -216,11 +218,12 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
         public int DRCLevel { get; set; }
         public bool EnablePCMMixing { get; set; }
         public string MixingEncoding { get; set; }
-        public string MixingLayout{ get; set; }
+        public string MixingLayout { get; set; }
         public int MixingSetting { get; set; }
         public double LfeMixingLevel { get; set; }
         public double CenterMixingLevel { get; set; }
         public double SurroundMixingLevel { get; set; }
+        public bool ShowTrayIcon { get; set; }
 
         /// <summary>
         /// Gets or sets audio codecs that will be enabled. 
@@ -229,8 +232,8 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
 
         public AudioConfiguration()
         {
-            EnabledCodecs = new List<string>(); 
-            
+            EnabledCodecs = new List<string>();
+
             Delay = 0;
             MixingEncoding = "None";
             MixingLayout = "Stereo";

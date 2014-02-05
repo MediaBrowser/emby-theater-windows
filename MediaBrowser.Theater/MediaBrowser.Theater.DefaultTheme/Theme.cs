@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using MediaBrowser.Theater.Api.Theming;
 
 namespace MediaBrowser.Theater.DefaultTheme
@@ -10,11 +6,30 @@ namespace MediaBrowser.Theater.DefaultTheme
     public class Theme
         : ITheme
     {
-        public string Name { get; private set; }
+        private readonly App _application;
+        private readonly TaskCompletionSource<object> _running;
 
-        public void Start()
+        public Theme()
         {
-            throw new NotImplementedException();
+            _running = new TaskCompletionSource<object>();
+            _application = new App();
+        }
+
+        public string Name
+        {
+            get { return "Default Theme"; }
+        }
+
+        public void Run()
+        {
+            _application.Run();
+            _running.SetResult(null);
+        }
+
+        public Task Shutdown()
+        {
+            _application.Shutdown();
+            return _running.Task;
         }
     }
 }

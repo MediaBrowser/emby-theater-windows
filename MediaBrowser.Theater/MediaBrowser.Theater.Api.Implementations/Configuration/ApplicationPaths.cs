@@ -1,8 +1,9 @@
-﻿using MediaBrowser.Common.Implementations;
+﻿using System.IO;
+using MediaBrowser.Common.Implementations;
 
 namespace MediaBrowser.Theater.Api.Configuration
 {
-    public class ApplicationPaths : BaseApplicationPaths
+    public class ApplicationPaths : BaseApplicationPaths, ITheaterApplicationPaths
     {
 #if DEBUG
         /// <summary>
@@ -16,5 +17,10 @@ namespace MediaBrowser.Theater.Api.Configuration
         {
         }
 #endif
+
+        public string ThemesPath
+        {
+            get { return Path.Combine(ProgramDataPath, "themes"); }
+        }
     }
 }

@@ -5,6 +5,11 @@ namespace MediaBrowser.Theater.Api.Theming.Navigation
     // Application wide paths that all themes are expected to implement
 
     /// <summary>
+    ///     The path to the user login page.
+    /// </summary>
+    public class LoginPath : NavigationPath { }
+
+    /// <summary>
     ///     The path to the home page.
     /// </summary>
     public class HomePath : NavigationPath { }

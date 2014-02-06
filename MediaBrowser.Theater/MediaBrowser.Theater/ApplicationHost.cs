@@ -47,8 +47,6 @@ namespace MediaBrowser.Theater
 
         internal ApiWebSocket ApiWebSocket { get; set; }
 
-        public IThemeManager ThemeManager { get; private set; }
-
         public ITheme Theme { get; private set; }
 
         public ConfigurationManager TheaterConfigurationManager
@@ -58,8 +56,6 @@ namespace MediaBrowser.Theater
         
         public override async Task Init(IProgress<double> progress)
         {
-            ThemeManager = new ThemeManager(Logger);
-
             await base.Init(progress).ConfigureAwait(false);
 
             // For now until the ui has it's own startup wizard
@@ -88,7 +84,6 @@ namespace MediaBrowser.Theater
 
             await base.RegisterResources(progress).ConfigureAwait(false);
             
-            RegisterSingleInstance(ThemeManager);
             RegisterSingleInstance(ApplicationPaths);
             RegisterSingleInstance(ApiClient);
             RegisterSingleInstance<IServerEvents>(ApiWebSocket);
@@ -102,7 +97,12 @@ namespace MediaBrowser.Theater
 
             base.FindParts();
         }
-        
+
+        public void RunUserInterface()
+        {
+            Theme.Run();
+        }
+
         protected override INetworkManager CreateNetworkManager()
         {
             return new NetworkManager();
@@ -176,10 +176,7 @@ namespace MediaBrowser.Theater
 
             // Common implementations
             yield return typeof(TaskManager).Assembly;
-
-            // Current theme
-            yield return ThemeManager.LoadSelectedTheme();
-
+            
             // Include composable parts in the running assembly
             yield return GetType().Assembly;
         }
@@ -203,9 +200,9 @@ namespace MediaBrowser.Theater
             }
         }
 
-        public override Task Shutdown()
+        public override async Task Shutdown()
         {
-            throw new NotImplementedException();
+            await Theme.Shutdown().ConfigureAwait(false);
         }
 
         protected override void OnConfigurationUpdated(object sender, EventArgs e)

@@ -67,7 +67,21 @@ namespace MediaBrowser.Theater
 
         private static void LaunchApplication(ApplicationPaths appPaths, NlogManager logManager)
         {
-            throw new NotImplementedException();
+            ILogger logger = logManager.GetLogger("App");
+
+            try {
+                var appHost = new ApplicationHost(appPaths, logManager);
+
+                appHost.Init(new Progress<double>()).Wait();
+                appHost.RunUserInterface();
+            } catch (Exception ex) {
+                logger.ErrorException("Error launching application", ex);
+
+                MessageBox.Show("There was an error launching Media Browser Theater: " + ex.Message);
+
+                // Shutdown the app with an error code
+                Environment.Exit(1);
+            }
         }
     }
 }

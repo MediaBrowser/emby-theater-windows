@@ -92,10 +92,22 @@ namespace MediaBrowser.Theater
         protected override void FindParts()
         {
             // retrieve theme and assign it as a singleton
-            Theme = GetExports<ITheme>().First();
+            Theme = FindTheme();
             RegisterSingleInstance(Theme);
 
             base.FindParts();
+        }
+
+        private ITheme FindTheme()
+        {
+            var themes = GetExports<ITheme>();
+            var activeTheme = themes.FirstOrDefault(t => t.Id == TheaterConfigurationManager.Configuration.ActiveThemeGuid);
+
+            if (activeTheme == null) {
+                throw new InvalidOperationException("No theme loaded");
+            }
+
+            return activeTheme;
         }
 
         public void RunUserInterface()
@@ -176,6 +188,9 @@ namespace MediaBrowser.Theater
 
             // Common implementations
             yield return typeof(TaskManager).Assembly;
+
+            // Default theme
+            yield return typeof(Theme).Assembly;
             
             // Include composable parts in the running assembly
             yield return GetType().Assembly;
@@ -187,6 +202,8 @@ namespace MediaBrowser.Theater
         /// <returns>IEnumerable{Assembly}.</returns>
         private IEnumerable<Assembly> GetPluginAssemblies()
         {
+            //todo only load the active external theme assembly
+
             try
             {
                 return Directory.EnumerateFiles(ApplicationPaths.PluginsPath, "*.dll", SearchOption.TopDirectoryOnly)

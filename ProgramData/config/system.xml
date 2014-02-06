@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<ApplicationConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <EnableDebugLevelLogging>false</EnableDebugLevelLogging>
+  <EnableAutoUpdate>true</EnableAutoUpdate>
+  <SystemUpdateLevel>Release</SystemUpdateLevel>
+  <LogFileRetentionDays>3</LogFileRetentionDays>
+  <RunAtStartup>false</RunAtStartup>
+  <IsStartupWizardCompleted>false</IsStartupWizardCompleted>
+  <ServerApiPort>0</ServerApiPort>
+  <DownloadCompressedImages>false</DownloadCompressedImages>
+  <ActiveThemeGuid>00000000-0000-0000-0000-000000000000</ActiveThemeGuid>
+</ApplicationConfiguration>

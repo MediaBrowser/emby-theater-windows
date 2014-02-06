@@ -1,5 +1,4 @@
-﻿using System.IO;
-using MediaBrowser.Common.Implementations;
+﻿using MediaBrowser.Common.Implementations;
 
 namespace MediaBrowser.Theater.Api.Configuration
 {
@@ -17,10 +16,5 @@ namespace MediaBrowser.Theater.Api.Configuration
         {
         }
 #endif
-
-        public string ThemesPath
-        {
-            get { return Path.Combine(ProgramDataPath, "themes"); }
-        }
     }
 }

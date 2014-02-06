@@ -77,10 +77,14 @@ namespace MediaBrowser.Theater
             } catch (Exception ex) {
                 logger.ErrorException("Error launching application", ex);
 
+#if DEBUG
+                throw;
+#else
                 MessageBox.Show("There was an error launching Media Browser Theater: " + ex.Message);
-
+                
                 // Shutdown the app with an error code
                 Environment.Exit(1);
+#endif
             }
         }
     }

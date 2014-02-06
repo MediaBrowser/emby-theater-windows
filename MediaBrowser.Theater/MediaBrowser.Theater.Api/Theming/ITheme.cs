@@ -1,14 +1,10 @@
 ﻿using System.Threading.Tasks;
+using MediaBrowser.Common.Plugins;
 
 namespace MediaBrowser.Theater.Api.Theming
 {
-    public interface ITheme
+    public interface ITheme : IPlugin
     {
-        /// <summary>
-        ///     Gets the name of the theme.
-        /// </summary>
-        string Name { get; }
-
         /// <summary>
         ///     Starts the theme. The theme is expected to present its GUI.
         /// </summary>

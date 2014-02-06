@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.Configuration;
+﻿using System;
+using MediaBrowser.Model.Configuration;
 
 namespace MediaBrowser.Theater.Api.Configuration
 {
@@ -26,5 +27,7 @@ namespace MediaBrowser.Theater.Api.Configuration
         public AutoLoginConfiguration AutoLoginConfiguration { get; set; }
 
         public bool DownloadCompressedImages { get; set; }
+
+        public Guid ActiveThemeGuid { get; set; }
     }
 }

@@ -29,5 +29,13 @@ namespace MediaBrowser.Theater.Api.Configuration
         public bool DownloadCompressedImages { get; set; }
 
         public Guid ActiveThemeGuid { get; set; }
+
+        public ApplicationConfiguration()
+        {
+            // default sever and theme settings
+            ServerHostName = "127.0.0.1";
+            ServerApiPort = 8096;
+            ActiveThemeGuid = new Guid("C501C937-3BC9-471A-A538-20FAA9B7CE51");
+        }
     }
 }

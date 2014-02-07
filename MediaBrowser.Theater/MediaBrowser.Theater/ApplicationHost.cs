@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,6 +17,7 @@ using MediaBrowser.Common.Constants;
 using MediaBrowser.Common.Implementations;
 using MediaBrowser.Common.Implementations.ScheduledTasks;
 using MediaBrowser.Common.Net;
+using MediaBrowser.Common.Plugins;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.System;
@@ -25,6 +27,7 @@ using MediaBrowser.Theater.Api.Theming;
 using MediaBrowser.Theater.Api.Theming.Navigation;
 using MediaBrowser.Theater.DefaultTheme;
 using MediaBrowser.Theater.Networking;
+using SimpleInjector;
 using IConfigurationManager = MediaBrowser.Common.Configuration.IConfigurationManager;
 
 namespace MediaBrowser.Theater
@@ -87,27 +90,44 @@ namespace MediaBrowser.Theater
             RegisterSingleInstance(ApplicationPaths);
             RegisterSingleInstance(ApiClient);
             RegisterSingleInstance<IServerEvents>(ApiWebSocket);
+
+            Container.RegisterSingle(typeof (ITheme), FindTheme());
         }
 
         protected override void FindParts()
         {
-            // retrieve theme and assign it as a singleton
-            Theme = FindTheme();
-            RegisterSingleInstance(Theme);
-
-            base.FindParts();
+            Theme = Resolve<ITheme>();
+            Plugins = LoadPlugins();
         }
 
-        private ITheme FindTheme()
+        private Type FindTheme()
         {
-            var themes = GetExports<ITheme>();
-            var activeTheme = themes.FirstOrDefault(t => t.Id == TheaterConfigurationManager.Configuration.ActiveThemeGuid);
+            var themeTypes = GetExportTypes<ITheme>();
 
-            if (activeTheme == null) {
+            var activeThemeType = themeTypes.FirstOrDefault(t => GetGuid(t) == TheaterConfigurationManager.Configuration.ActiveThemeGuid);
+
+            if (activeThemeType == null) {
                 throw new InvalidOperationException("No theme loaded");
             }
 
-            return activeTheme;
+            return activeThemeType;
+        }
+
+        private IEnumerable<IPlugin> LoadPlugins()
+        {
+            var nonThemePlugins = GetExportTypes<IPlugin>().Where(t => !typeof (ITheme).IsAssignableFrom(t))
+                                                           .Select(CreateInstanceSafe)
+                                                           .Where(i => i != null)
+                                                           .Cast<IPlugin>()
+                                                           .ToList();
+
+            return new List<IPlugin>(nonThemePlugins) { Theme };
+        }
+
+        private Guid GetGuid(Type type)
+        {
+            var attribute = (GuidAttribute)type.Assembly.GetCustomAttributes(typeof(GuidAttribute), true)[0];
+            return new Guid(attribute.Value);
         }
 
         public void RunUserInterface()

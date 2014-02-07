@@ -3,6 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="MainWindow" Height="300" Width="300">
     <Grid>
-        
+        <TextBlock Text="Hello World"/>
     </Grid>
 </Window>

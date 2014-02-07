@@ -13,6 +13,7 @@ namespace MediaBrowser.Theater
 {
     public static class Program
     {
+        [STAThread]
         public static void Main(string[] args)
         {
             Mutex singleInstanceMutex = null;

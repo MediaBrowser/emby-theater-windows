@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using System.Windows;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Plugins;
 using MediaBrowser.Model.Serialization;
@@ -10,13 +11,12 @@ namespace MediaBrowser.Theater.DefaultTheme
     public class Theme
         : BasePlugin<PluginConfiguration>, ITheme
     {
-        private readonly App _application;
+        private App _application;
         private readonly TaskCompletionSource<object> _running;
 
         public Theme(IApplicationPaths applicationPaths, IXmlSerializer xmlSerializer) : base(applicationPaths, xmlSerializer)
         {
             _running = new TaskCompletionSource<object>();
-            _application = new App();
         }
 
         public override string Name
@@ -26,7 +26,9 @@ namespace MediaBrowser.Theater.DefaultTheme
 
         public void Run()
         {
-            _application.Run();
+            _application = new App();
+            
+            _application.Run(new MainWindow());
             _running.SetResult(null);
         }
 

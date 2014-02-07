@@ -60,6 +60,7 @@
     <Compile Include="Theming\Navigation\INavigationService.cs" />
     <Compile Include="Theming\Navigation\NavigationPaths.cs" />
     <Compile Include="Theming\ViewModels\BaseViewModel.cs" />
+    <Compile Include="Theming\ViewModels\RelayCommand.cs" />
     <Compile Include="Theming\ViewModels\UIDispatchExtensions.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
@@ -8,6 +9,8 @@ using MediaBrowser.Common.Implementations.Logging;
 using MediaBrowser.Common.Implementations.Updates;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Api.Configuration;
+using MediaBrowser.Theater.StartupWizard;
+using MediaBrowser.Theater.StartupWizard.ViewModels;
 
 namespace MediaBrowser.Theater
 {
@@ -66,27 +69,37 @@ namespace MediaBrowser.Theater
             return false;
         }
 
-        private static void LaunchApplication(ApplicationPaths appPaths, NlogManager logManager)
+        private static async void LaunchApplication(ApplicationPaths appPaths, NlogManager logManager)
         {
+#if !DEBUG
             ILogger logger = logManager.GetLogger("App");
-
             try {
-                var appHost = new ApplicationHost(appPaths, logManager);
+#endif
+            var appHost = new ApplicationHost(appPaths, logManager);
 
                 appHost.Init(new Progress<double>()).Wait();
-                appHost.RunUserInterface();
+
+                if (!appHost.IsFirstRun) {
+                    var completed = appHost.RunStartupWizard();
+
+                    if (completed) {
+                        await appHost.Restart();
+                    } else {
+                        await appHost.Shutdown();
+                    }
+                } else {
+                    appHost.RunUserInterface();
+                }
+#if !DEBUG
             } catch (Exception ex) {
                 logger.ErrorException("Error launching application", ex);
 
-#if DEBUG
-                throw;
-#else
                 MessageBox.Show("There was an error launching Media Browser Theater: " + ex.Message);
                 
                 // Shutdown the app with an error code
                 Environment.Exit(1);
-#endif
             }
+#endif
         }
     }
 }

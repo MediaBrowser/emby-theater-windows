@@ -27,6 +27,8 @@ using MediaBrowser.Theater.Api.Theming;
 using MediaBrowser.Theater.Api.Theming.Navigation;
 using MediaBrowser.Theater.DefaultTheme;
 using MediaBrowser.Theater.Networking;
+using MediaBrowser.Theater.StartupWizard;
+using MediaBrowser.Theater.StartupWizard.ViewModels;
 using SimpleInjector;
 using IConfigurationManager = MediaBrowser.Common.Configuration.IConfigurationManager;
 
@@ -330,6 +332,21 @@ namespace MediaBrowser.Theater
         public override bool IsRunningAsService
         {
             get { return false; }
+        }
+
+        public bool RunStartupWizard()
+        {
+            var app = new StartupWizardApp();
+            var window = new StartupWizardWindow { 
+                DataContext = new WizardViewModel(new List<IWizardPage> {
+                    Resolve<IntroductionViewModel>(),
+                    Resolve<ServerDetailsViewModel>(),
+                    Resolve<PrerequisitesViewModel>(),
+                })
+            };
+            
+            app.Run(window);
+            return false;
         }
     }
 }

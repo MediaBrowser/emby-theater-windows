@@ -34,7 +34,10 @@ namespace MediaBrowser.Theater.DefaultTheme
 
         public Task Shutdown()
         {
-            _application.Shutdown();
+            if (_application != null) {
+                _application.Shutdown();
+            }
+
             return _running.Task;
         }
     }

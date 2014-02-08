@@ -1,0 +1,15 @@
+﻿<UserControl x:Class="MediaBrowser.Theater.StartupWizard.Views.IntroductionView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="500" d:DesignWidth="600">
+    <StackPanel>
+        <TextBlock TextWrapping="Wrap" FontWeight="Bold" FontSize="16">Welcome to Media Browser Theater</TextBlock>
+        <TextBlock TextWrapping="Wrap" Margin="0 4 0 0">This wizard will help you get connected to your Media Browser Server so that you can enjoy your media.</TextBlock>
+        <TextBlock TextWrapping="Wrap">If you do not have Media Browser Server installed on a computer within your network, please visit mediabrowser3.com for installation instructions.</TextBlock>
+
+        <TextBlock Margin="0 4 0 0">Click next to proceed.</TextBlock>
+    </StackPanel>
+</UserControl>

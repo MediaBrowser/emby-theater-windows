@@ -11,9 +11,20 @@ namespace MediaBrowser.Theater.StartupWizard.ViewModels
 {
     public interface IWizardPage : INotifyPropertyChanged
     {
-        bool CanMoveNext { get; }
+        bool HasErrors { get; }
         bool HasCustomNextPage { get; }
         IWizardPage Next();
+        Task<bool> Validate();
+    }
+
+    public abstract class BaseWizardPage : BaseValidatingViewModel, IWizardPage
+    {
+        public virtual bool HasCustomNextPage { get { return false; } }
+        
+        public virtual IWizardPage Next()
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public enum NextActionType
@@ -100,6 +111,7 @@ namespace MediaBrowser.Theater.StartupWizard.ViewModels
 
                 if (_currentPage != null) {
                     _currentPage.PropertyChanged += CurrentPagePropertyChanged;
+                    _currentPage.Validate();
                 }
 
                 OnPropertyChanged();
@@ -144,8 +156,12 @@ namespace MediaBrowser.Theater.StartupWizard.ViewModels
             CancelCommand = new RelayCommand(arg => Cancel());
         }
 
-        private void MoveNext()
+        private async void MoveNext()
         {
+            if (!await CurrentPage.Validate()) {
+                return;
+            }
+
             var run = _runs[_currentRun];
 
             if (run.IsFinished) {

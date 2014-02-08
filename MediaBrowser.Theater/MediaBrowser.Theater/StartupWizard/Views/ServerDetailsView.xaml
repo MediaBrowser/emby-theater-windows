@@ -1,0 +1,43 @@
+﻿<UserControl x:Class="MediaBrowser.Theater.StartupWizard.Views.ServerDetailsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel>
+            <TextBlock TextWrapping="Wrap" FontWeight="Bold" FontSize="16">Media Browser Server Details</TextBlock>
+            <TextBlock TextWrapping="Wrap" Margin="0 4 0 0">Please confirm the location of your server.</TextBlock>
+
+            <StackPanel Orientation="Vertical" Margin="0 14 0 0">
+                <TextBlock>Host name or IP address:</TextBlock>
+                <TextBox
+                    Text="{Binding HostName, ValidatesOnNotifyDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
+                    Validation.ErrorTemplate="{StaticResource SilverlightErrorTemplate}" Width="150"
+                    HorizontalAlignment="Left" />
+            </StackPanel>
+
+            <StackPanel Orientation="Vertical" Margin="0 4 0 0">
+                <TextBlock>Port number:</TextBlock>
+                <TextBox Text="{Binding Port, ValidatesOnNotifyDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
+                         Validation.ErrorTemplate="{StaticResource SilverlightErrorTemplate}" Width="150"
+                         HorizontalAlignment="Left" />
+            </StackPanel>
+        </StackPanel>
+
+        <Border Grid.Row="1" Background="#FF2419"  Visibility="{Binding FailedToFindServer, Converter={StaticResource BooleanToVisibility}}">
+            <StackPanel Margin="4">
+                <TextBlock TextWrapping="Wrap" Foreground="White">Could not connect to the media browser server. Please ensure the server is installed and available.</TextBlock>
+                <TextBlock>
+                    <Hyperlink NavigateUri="http://www.mediabrowser3.com/server/">Download Media Browser Server</Hyperlink>
+                </TextBlock>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

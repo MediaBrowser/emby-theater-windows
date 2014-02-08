@@ -6,7 +6,7 @@
   <LogFileRetentionDays>3</LogFileRetentionDays>
   <RunAtStartup>false</RunAtStartup>
   <IsStartupWizardCompleted>true</IsStartupWizardCompleted>
-  <ServerHostName>127.0.0.1</ServerHostName>
+  <ServerHostName>minoshiro</ServerHostName>
   <ServerApiPort>8096</ServerApiPort>
   <DownloadCompressedImages>false</DownloadCompressedImages>
   <ActiveThemeGuid>c501c937-3bc9-471a-a538-20faa9b7ce51</ActiveThemeGuid>

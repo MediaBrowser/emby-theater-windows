@@ -92,6 +92,7 @@ namespace MediaBrowser.Theater
             RegisterSingleInstance(ApplicationPaths);
             RegisterSingleInstance(ApiClient);
             RegisterSingleInstance<IServerEvents>(ApiWebSocket);
+            RegisterSingleInstance<ITheaterConfigurationManager>(TheaterConfigurationManager);
 
             Container.RegisterSingle(typeof (ITheme), FindTheme());
         }

@@ -13,16 +13,23 @@
     
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Background="#363636">
+            <Image Source="/MediaBrowser.Theater;component/Resources/Images/mb-logo-txt-white-master-theater.png" RenderOptions.BitmapScalingMode="HighQuality" Height="30" HorizontalAlignment="Left" Margin="6"/>
+        </Grid>
         
-        <ContentPresenter Grid.Row="0" Content="{Binding CurrentPage}"/>
-        
-        <StackPanel HorizontalAlignment="Right" Grid.Row="1" Orientation="Horizontal">
-            <Button Content="Previous" MinWidth="60" Margin="0,0,4,0" Visibility="{Binding IsPreviousAvailable, Converter={StaticResource BooleanToVisibility}}" Command="{Binding PreviousCommand}"/>
-            <Button Content="{Binding NextAction}" MinWidth="60" Margin="0,0,4,0" Command="{Binding NextCommand}"/>
-            <Button Content="Cancel" MinWidth="60" Command="{Binding CancelCommand}"/>
-        </StackPanel>
+        <ContentPresenter Grid.Row="1" Content="{Binding CurrentPage}" Margin="10,4,10,4"/>
+
+        <Border Grid.Row="2" Background="#363636">
+            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Margin="6">
+                <Button Content="Previous" MinWidth="60" Margin="0,0,4,0" Visibility="{Binding IsPreviousAvailable, Converter={StaticResource BooleanToVisibility}}" Command="{Binding PreviousCommand}"/>
+                <Button Content="{Binding NextAction}" MinWidth="60" Margin="0,0,20,0" Command="{Binding NextCommand}" IsEnabled="{Binding CurrentPage.HasErrors, Converter={StaticResource BooleanInverter}}"/>
+                <Button Content="Cancel" MinWidth="60" Command="{Binding CancelCommand}"/>
+            </StackPanel>
+        </Border>
     </Grid>
 </UserControl>

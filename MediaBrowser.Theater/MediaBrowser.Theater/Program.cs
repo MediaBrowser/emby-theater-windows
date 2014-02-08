@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using MediaBrowser.Common.Constants;
 using MediaBrowser.Common.Implementations.Logging;
@@ -20,6 +21,7 @@ namespace MediaBrowser.Theater
         public static void Main(string[] args)
         {
             Mutex singleInstanceMutex = null;
+            bool restartOnExit = false;
 
             try {
                 bool createdNew;
@@ -37,7 +39,7 @@ namespace MediaBrowser.Theater
 
                 bool updateInstalling = InstallUpdatePackage(appPaths, logManager);
                 if (!updateInstalling) {
-                    LaunchApplication(appPaths, logManager);
+                    restartOnExit = LaunchApplication(appPaths, logManager).Result;
                 }
             } finally {
                 if (singleInstanceMutex != null) {
@@ -45,6 +47,10 @@ namespace MediaBrowser.Theater
                     singleInstanceMutex.Close();
                     singleInstanceMutex.Dispose();
                 }
+            }
+
+            if (restartOnExit) {
+                System.Windows.Forms.Application.Restart();
             }
         }
 
@@ -69,17 +75,16 @@ namespace MediaBrowser.Theater
             return false;
         }
 
-        private static async void LaunchApplication(ApplicationPaths appPaths, NlogManager logManager)
+        private static async Task<bool> LaunchApplication(ApplicationPaths appPaths, NlogManager logManager)
         {
 #if !DEBUG
             ILogger logger = logManager.GetLogger("App");
             try {
 #endif
-            var appHost = new ApplicationHost(appPaths, logManager);
-
+            using (var appHost = new ApplicationHost(appPaths, logManager)) {
                 appHost.Init(new Progress<double>()).Wait();
 
-                if (!appHost.IsFirstRun) {
+                if (!appHost.TheaterConfigurationManager.Configuration.IsStartupWizardCompleted) {
                     var completed = appHost.RunStartupWizard();
 
                     if (completed) {
@@ -93,6 +98,9 @@ namespace MediaBrowser.Theater
                 } else {
                     appHost.RunUserInterface();
                 }
+
+                return appHost.RestartOnExit;
+            }
 #if !DEBUG
             } catch (Exception ex) {
                 logger.ErrorException("Error launching application", ex);
@@ -101,6 +109,7 @@ namespace MediaBrowser.Theater
                 
                 // Shutdown the app with an error code
                 Environment.Exit(1);
+                return false;
             }
 #endif
         }

@@ -38,7 +38,7 @@ namespace MediaBrowser.Theater
     /// <summary>
     /// Class CompositionRoot
     /// </summary>
-    internal class ApplicationHost : BaseApplicationHost<ApplicationPaths>
+    internal class ApplicationHost : BaseApplicationHost<ApplicationPaths>, IDisposable
     {
         public ApplicationHost(ApplicationPaths applicationPaths, ILogManager logManager)
             : base(applicationPaths, logManager)
@@ -49,6 +49,7 @@ namespace MediaBrowser.Theater
         internal ApiWebSocket ApiWebSocket { get; set; }
         public ITheme Theme { get; private set; }
         public IMediaFilters MediaFilters { get; private set; }
+        public bool RestartOnExit { get; private set; }
 
         public ConfigurationManager TheaterConfigurationManager
         {
@@ -58,14 +59,6 @@ namespace MediaBrowser.Theater
         public override async Task Init(IProgress<double> progress)
         {
             await base.Init(progress).ConfigureAwait(false);
-
-            // For now until the ui has it's own startup wizard
-            if (IsFirstRun)
-            {
-                ConfigurationManager.CommonConfiguration.IsStartupWizardCompleted = true;
-                ConfigurationManager.SaveConfiguration();
-            }
-
             await RunStartupTasks().ConfigureAwait(false);
 
             Logger.Info("Core startup complete");
@@ -169,11 +162,10 @@ namespace MediaBrowser.Theater
             apiClient.WebSocketConnection = ApiWebSocket;
         }
 
-        public override Task Restart()
+        public override async Task Restart()
         {
-            
-
-            throw new NotImplementedException();
+            await Shutdown();
+            RestartOnExit = true;
         }
 
         /// <summary>
@@ -244,6 +236,10 @@ namespace MediaBrowser.Theater
         public override async Task Shutdown()
         {
             await Theme.Shutdown().ConfigureAwait(false);
+
+            if (System.Windows.Application.Current != null) {
+                System.Windows.Application.Current.Shutdown();
+            }
         }
 
         protected override void OnConfigurationUpdated(object sender, EventArgs e)
@@ -339,16 +335,25 @@ namespace MediaBrowser.Theater
         public bool RunStartupWizard()
         {
             var app = new StartupWizardApp();
+
+            var wizard = new WizardViewModel(new List<IWizardPage> {
+                Resolve<IntroductionViewModel>(),
+                Resolve<ServerDetailsViewModel>(),
+                Resolve<PrerequisitesViewModel>(),
+            });
+
+            bool completed = false;
+            wizard.Completed += status => {
+                completed = status == WizardCompletionStatus.Finished;
+                app.Shutdown();
+            };
+            
             var window = new StartupWizardWindow { 
-                DataContext = new WizardViewModel(new List<IWizardPage> {
-                    Resolve<IntroductionViewModel>(),
-                    Resolve<ServerDetailsViewModel>(),
-                    Resolve<PrerequisitesViewModel>(),
-                })
+                DataContext = wizard
             };
             
             app.Run(window);
-            return false;
+            return completed;
         }
     }
 }

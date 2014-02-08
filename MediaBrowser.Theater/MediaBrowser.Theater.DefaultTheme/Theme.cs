@@ -36,6 +36,8 @@ namespace MediaBrowser.Theater.DefaultTheme
         {
             if (_application != null) {
                 _application.Shutdown();
+            } else {
+                _running.SetResult(null);
             }
 
             return _running.Task;

@@ -106,6 +106,24 @@ namespace MediaBrowser.Theater.Resources.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to @SetupWizard_CancelConfirmMessage.
+        /// </summary>
+        public static string SetupWizard_CancelConfirmMessage {
+            get {
+                return ResourceManager.GetString("SetupWizard_CancelConfirmMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @SetupWizard_CancelConfirmTitle.
+        /// </summary>
+        public static string SetupWizard_CancelConfirmTitle {
+            get {
+                return ResourceManager.GetString("SetupWizard_CancelConfirmTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to @SetupWizard_Introduction_Content.
         /// </summary>
         public static string SetupWizard_Introduction_Content {

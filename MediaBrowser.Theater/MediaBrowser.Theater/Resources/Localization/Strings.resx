@@ -137,6 +137,12 @@
     <value>@SetupWizard_CancelButton</value>
     <comment>Cancel wizard button text</comment>
   </data>
+  <data name="SetupWizard_CancelConfirmMessage" xml:space="preserve">
+    <value>@SetupWizard_CancelConfirmMessage</value>
+  </data>
+  <data name="SetupWizard_CancelConfirmTitle" xml:space="preserve">
+    <value>@SetupWizard_CancelConfirmTitle</value>
+  </data>
   <data name="SetupWizard_Introduction_Content" xml:space="preserve">
     <value>@SetupWizard_Introduction_Content</value>
     <comment>Setup wizard introduction text</comment>

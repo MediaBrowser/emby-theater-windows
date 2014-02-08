@@ -132,6 +132,12 @@
   <data name="SetupWizard_CancelButton" xml:space="preserve">
     <value>Cancel</value>
   </data>
+  <data name="SetupWizard_CancelConfirmMessage" xml:space="preserve">
+    <value>Are you sure you wish to quit setup? You will not be able to use Media Browser Theater until setup is complete.</value>
+  </data>
+  <data name="SetupWizard_CancelConfirmTitle" xml:space="preserve">
+    <value>Quit Setup Wizard</value>
+  </data>
   <data name="SetupWizard_Introduction_Content" xml:space="preserve">
     <value>This wizard will help you get connected to your Media Browser Server so that you can enjoy your media.
 

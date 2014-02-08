@@ -5,6 +5,10 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:viewModels="clr-namespace:MediaBrowser.Theater.StartupWizard.ViewModels"
              xmlns:views="clr-namespace:MediaBrowser.Theater.StartupWizard.Views"
+             xmlns:lex="http://wpflocalizeextension.codeplex.com"
+             lex:LocalizeDictionary.DesignCulture="en"
+             lex:ResxLocalizationProvider.DefaultAssembly="MediaBrowser.Theater"
+             lex:ResxLocalizationProvider.DefaultDictionary="Strings"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModels:ServerDetailsViewModel}"
              d:DesignHeight="300" d:DesignWidth="300">
@@ -15,11 +19,11 @@
         </Grid.RowDefinitions>
 
         <StackPanel>
-            <TextBlock TextWrapping="Wrap" FontWeight="Bold" FontSize="16">Media Browser Server Details</TextBlock>
-            <TextBlock TextWrapping="Wrap" Margin="0 4 0 0">Please confirm the location of your server.</TextBlock>
+            <TextBlock TextWrapping="Wrap" FontWeight="Bold" FontSize="16" Text="{lex:Loc SetupWizard_ServerDetails_Title}"/>
+            <TextBlock TextWrapping="Wrap" Margin="0 4 0 0" Text="{lex:Loc SetupWizard_ServerDetails_Content}"/>
 
             <StackPanel Orientation="Vertical" Margin="0 14 0 0">
-                <TextBlock>Host name or IP address:</TextBlock>
+                <TextBlock Text="{lex:Loc SetupWizard_ServerDetails_HostNameLabel}"/>
                 <TextBox
                     Text="{Binding HostName, ValidatesOnNotifyDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
                     Validation.ErrorTemplate="{StaticResource SilverlightErrorTemplate}" Width="150"
@@ -27,7 +31,7 @@
             </StackPanel>
 
             <StackPanel Orientation="Vertical" Margin="0 4 0 0">
-                <TextBlock>Port number:</TextBlock>
+                <TextBlock Text="{lex:Loc SetupWizard_ServerDetails_PortLabel}"/>
                 <TextBox Text="{Binding Port, ValidatesOnNotifyDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
                          Validation.ErrorTemplate="{StaticResource SilverlightErrorTemplate}" Width="150"
                          HorizontalAlignment="Left" />
@@ -37,7 +41,7 @@
         <Border Grid.Row="1" Background="#FF2419"
                 Visibility="{Binding FailedToFindServer, Converter={StaticResource BooleanToVisibility}}">
             <StackPanel Margin="4">
-                <TextBlock TextWrapping="Wrap" Foreground="White">Could not connect to the media browser server. Please ensure the server is installed and available.</TextBlock>
+                <TextBlock TextWrapping="Wrap" Foreground="White" Text="{lex:Loc SetupWizard_ServerDetails_ConnectionFailedError}"/>
                 <TextBlock>
                     <Hyperlink NavigateUri="http://www.mediabrowser3.com/server/"
                                views:HyperlinkExtensions.IsExternal="True">
@@ -51,7 +55,7 @@
                                 <Setter Property="TextBlock.TextDecorations" Value="{x:Null}"/>
                             </Style>
                         </Hyperlink.Style>
-                        Download Media Browser Server
+                        <TextBlock Text="{lex:Loc SetupWizard_ServerDetails_ServerDownloadLinkText}"/>
                     </Hyperlink>
                 </TextBlock>
             </StackPanel>

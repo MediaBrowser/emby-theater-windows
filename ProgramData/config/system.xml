@@ -5,7 +5,7 @@
   <SystemUpdateLevel>Release</SystemUpdateLevel>
   <LogFileRetentionDays>3</LogFileRetentionDays>
   <RunAtStartup>false</RunAtStartup>
-  <IsStartupWizardCompleted>true</IsStartupWizardCompleted>
+  <IsStartupWizardCompleted>false</IsStartupWizardCompleted>
   <ServerHostName>minoshiro</ServerHostName>
   <ServerApiPort>8096</ServerApiPort>
   <DownloadCompressedImages>false</DownloadCompressedImages>

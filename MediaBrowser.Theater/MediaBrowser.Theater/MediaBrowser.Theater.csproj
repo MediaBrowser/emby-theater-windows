@@ -83,6 +83,12 @@
       <HintPath>..\packages\WebSocket4Net.0.8\lib\net40\WebSocket4Net.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
+    <Reference Include="WPFLocalizeExtension">
+      <HintPath>..\packages\WpfLocalizeExtension.2.2.0\lib\net35\WPFLocalizeExtension.dll</HintPath>
+    </Reference>
+    <Reference Include="XAMLMarkupExtensions">
+      <HintPath>..\packages\XAMLMarkupExtensions.1.1.6.3\lib\net40\XAMLMarkupExtensions.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApplicationHost.cs" />
@@ -91,6 +97,11 @@
     <Compile Include="Networking\NetworkShares.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resources\Localization\Strings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Strings.resx</DependentUpon>
+    </Compile>
     <Compile Include="StartupWizard\BooleanOrConverter.cs" />
     <Compile Include="StartupWizard\StartupWizardApp.xaml.cs">
       <DependentUpon>StartupWizardApp.xaml</DependentUpon>
@@ -138,7 +149,13 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Localization\Strings.en.resx" />
+    <EmbeddedResource Include="Resources\Localization\Strings.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
   <ItemGroup>
     <Page Include="StartupWizard\StartupWizardApp.xaml">
       <SubType>Designer</SubType>

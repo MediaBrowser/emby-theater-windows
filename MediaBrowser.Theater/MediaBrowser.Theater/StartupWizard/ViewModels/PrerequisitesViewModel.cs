@@ -236,12 +236,13 @@ namespace MediaBrowser.Theater.StartupWizard.ViewModels
     public class MadVrPrerequisite
         : Prerequisite
     {
-       public MadVrPrerequisite(IMediaFilters mediaFilters)
+        public MadVrPrerequisite(IMediaFilters mediaFilters)
         {
             Name = "MadVR";
             IsOptional = true;
             IsInstalled = mediaFilters.IsMadVrInstalled();
             RequiresManualInstallation = true;
+            DownloadUrl = "http://forum.doom9.org/showthread.php?t=146228";
         }
 
         public override async Task Install(IProgress<double> progress, CancellationToken cancellationToken)

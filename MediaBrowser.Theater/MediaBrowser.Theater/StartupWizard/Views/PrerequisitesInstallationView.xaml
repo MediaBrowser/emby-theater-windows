@@ -5,6 +5,10 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:viewModels="clr-namespace:MediaBrowser.Theater.StartupWizard.ViewModels"
              xmlns:views="clr-namespace:MediaBrowser.Theater.StartupWizard.Views"
+             xmlns:lex="http://wpflocalizeextension.codeplex.com"
+             lex:LocalizeDictionary.DesignCulture="en"
+             lex:ResxLocalizationProvider.DefaultAssembly="MediaBrowser.Theater"
+             lex:ResxLocalizationProvider.DefaultDictionary="Strings"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
@@ -14,7 +18,7 @@
         </Grid.RowDefinitions>
 
         <StackPanel>
-            <TextBlock TextWrapping="Wrap" FontWeight="Bold" FontSize="16">Installing Prerequisites</TextBlock>
+            <TextBlock TextWrapping="Wrap" FontWeight="Bold" FontSize="16" Text="{lex:Loc SetupWizard_PrerequisitesInstallation_Title}"/>
         </StackPanel>
 
         <ListView Grid.Row="1" ItemsSource="{Binding Prerequisites}" Margin="0,14,0,0" HorizontalContentAlignment="Stretch">
@@ -29,11 +33,11 @@
                         <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
 
                         <Grid Grid.Column="1" Visibility="{Binding IsInstalled, Converter={StaticResource BooleanToVisibility}}">
-                            <TextBlock Foreground="#27a436">Installed</TextBlock>
+                            <TextBlock Foreground="#27a436" Text="{lex:Loc SetupWizard_PrerequisitesInstallation_Installed}"/>
                         </Grid>
 
                         <Grid Grid.Column="1" Visibility="{Binding InstallationFailed, Converter={StaticResource BooleanToVisibility}}">
-                            <TextBlock Foreground="#FF2419">Installation Failed</TextBlock>
+                            <TextBlock Foreground="#FF2419" Text="{lex:Loc SetupWizard_PrerequisitesInstallation_Failed}"/>
                         </Grid>
 
                         <Grid Grid.Column="1" Visibility="{Binding IsInstalling, Converter={StaticResource BooleanToVisibility}}">
@@ -42,7 +46,9 @@
 
                         <Grid Grid.Column="1" Visibility="{Binding RequiresManualInstallation, Converter={StaticResource BooleanToVisibility}}">
                             <TextBlock Foreground="#FF2419">
-                                <Hyperlink NavigateUri="{Binding DownloadUrl}" views:HyperlinkExtensions.IsExternal="True">Requires Manual Installation</Hyperlink>
+                                <Hyperlink NavigateUri="{Binding DownloadUrl}" views:HyperlinkExtensions.IsExternal="True">
+                                    <TextBlock Text="{lex:Loc SetupWizard_PrerequisitesInstallation_ManualRequired}"/>
+                                </Hyperlink>
                             </TextBlock>
                         </Grid>
                     </Grid>

@@ -4,13 +4,13 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:viewModels="clr-namespace:MediaBrowser.Theater.StartupWizard.ViewModels"
+             xmlns:lex="http://wpflocalizeextension.codeplex.com"
+             lex:LocalizeDictionary.DesignCulture="en"
+             lex:ResxLocalizationProvider.DefaultAssembly="MediaBrowser.Theater"
+             lex:ResxLocalizationProvider.DefaultDictionary="Strings"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModels:WizardViewModel}"
              d:DesignHeight="300" d:DesignWidth="400">
-    <UserControl.Resources>
-        <BooleanToVisibilityConverter x:Key="BooleanToVisibility"/>
-    </UserControl.Resources>
-    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
@@ -26,9 +26,10 @@
 
         <Border Grid.Row="2" Background="#363636">
             <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Margin="6">
-                <Button Content="Previous" MinWidth="60" Margin="0,0,4,0" Visibility="{Binding IsPreviousAvailable, Converter={StaticResource BooleanToVisibility}}" Command="{Binding PreviousCommand}"/>
-                <Button Content="{Binding NextAction}" MinWidth="60" Margin="0,0,20,0" Command="{Binding NextCommand}" IsEnabled="{Binding CurrentPage.HasErrors, Converter={StaticResource BooleanInverter}}"/>
-                <Button Content="Cancel" MinWidth="60" Command="{Binding CancelCommand}"/>
+                <Button Content="{lex:Loc SetupWizard_PreviousButton}" MinWidth="60" Margin="0,0,4,0" Visibility="{Binding IsPreviousAvailable, Converter={StaticResource BooleanToVisibility}}" Command="{Binding PreviousCommand}"/>
+                <lex:LocProxy Source="{Binding NextAction}" x:Name="NextButtonText" PrependType="True" Separator="_"/>
+                <Button Content="{Binding Result, ElementName=NextButtonText}" MinWidth="60" Margin="0,0,20,0" Command="{Binding NextCommand}" IsEnabled="{Binding CurrentPage.HasErrors, Converter={StaticResource BooleanInverter}}"/>
+                <Button Content="{lex:Loc SetupWizard_CancelButton}" MinWidth="60" Command="{Binding CancelCommand}"/>
             </StackPanel>
         </Border>
     </Grid>

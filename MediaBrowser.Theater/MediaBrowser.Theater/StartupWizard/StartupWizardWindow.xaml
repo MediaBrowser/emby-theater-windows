@@ -4,9 +4,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:viewModels="clr-namespace:MediaBrowser.Theater.StartupWizard.ViewModels"
-        Title="Startup"
+        xmlns:lex="http://wpflocalizeextension.codeplex.com"
+        lex:LocalizeDictionary.DesignCulture="en"
+        lex:ResxLocalizationProvider.DefaultAssembly="MediaBrowser.Theater"
+        lex:ResxLocalizationProvider.DefaultDictionary="Strings"
+        Title="{lex:Loc StartupWizard_Title}"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance viewModels:WizardViewModel}"
+        Icon="/MediaBrowser.Theater;component/Resources/Images/Icon.ico"
         Width="600" Height="400">
     <Grid>
         <ContentPresenter Content="{Binding}"/>

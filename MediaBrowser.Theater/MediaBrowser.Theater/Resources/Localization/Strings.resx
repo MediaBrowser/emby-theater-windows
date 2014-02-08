@@ -139,9 +139,11 @@
   </data>
   <data name="SetupWizard_CancelConfirmMessage" xml:space="preserve">
     <value>@SetupWizard_CancelConfirmMessage</value>
+    <comment>Cancel setup wizard confirmation message</comment>
   </data>
   <data name="SetupWizard_CancelConfirmTitle" xml:space="preserve">
     <value>@SetupWizard_CancelConfirmTitle</value>
+    <comment>Cancel setip wizard confirmation title</comment>
   </data>
   <data name="SetupWizard_Introduction_Content" xml:space="preserve">
     <value>@SetupWizard_Introduction_Content</value>
@@ -153,15 +155,19 @@
   </data>
   <data name="SetupWizard_PrerequisitesInstallation_Failed" xml:space="preserve">
     <value>@SetupWizard_PrerequisitesInstallation_Failed</value>
+    <comment>Setup wizard prerequisite install failed status</comment>
   </data>
   <data name="SetupWizard_PrerequisitesInstallation_Installed" xml:space="preserve">
     <value>@SetupWizard_PrerequisitesInstallation_Installed</value>
+    <comment>Setup wizard prerequisite installed status</comment>
   </data>
   <data name="SetupWizard_PrerequisitesInstallation_ManualRequired" xml:space="preserve">
     <value>@SetupWizard_PrerequisitesInstallation_ManualRequired</value>
+    <comment>Setup wizard prerequisite manual install required status</comment>
   </data>
   <data name="SetupWizard_PrerequisitesInstallation_Title" xml:space="preserve">
     <value>@SetupWizard_PrerequisitesInstallation_Title</value>
+    <comment>Setup wizard prerequisites installation title</comment>
   </data>
   <data name="SetupWizard_Prerequisites_AlreadyInstalled" xml:space="preserve">
     <value>@SetupWizard_Prerequisites_AlreadyInstalled</value>
@@ -206,5 +212,9 @@
   <data name="SetupWizard_ServerDetails_Title" xml:space="preserve">
     <value>@SetupWizard_ServerDetails_Title</value>
     <comment>Setup wizard server details page title</comment>
+  </data>
+  <data name="StartupWizard_Title" xml:space="preserve">
+    <value>@StartupWizard_Title</value>
+    <comment>Setup wizard window title</comment>
   </data>
 </root>

@@ -275,5 +275,14 @@ namespace MediaBrowser.Theater.Resources.Localization {
                 return ResourceManager.GetString("SetupWizard_ServerDetails_Title", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @StartupWizard_Title.
+        /// </summary>
+        public static string StartupWizard_Title {
+            get {
+                return ResourceManager.GetString("StartupWizard_Title", resourceCulture);
+            }
+        }
     }
 }

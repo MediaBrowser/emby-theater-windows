@@ -68,6 +68,7 @@
     <Compile Include="Configuration\ApplicationPaths.cs" />
     <Compile Include="Configuration\ConfigurationManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="System\MediaFilters.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

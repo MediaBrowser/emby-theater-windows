@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using MediaBrowser.Theater.Api.Theming.ViewModels;
 
@@ -193,7 +194,12 @@ namespace MediaBrowser.Theater.StartupWizard.ViewModels
 
         private void Cancel()
         {
-            OnCompleted(WizardCompletionStatus.Canceled);
+            var result = MessageBox.Show("Are you sure you wish to quit setup? You will not be able to use Media Browser Theater until setup is complete.", "Quit Setup Wizard", MessageBoxButton.YesNo);
+
+            if (result == MessageBoxResult.Yes) {
+                OnCompleted(WizardCompletionStatus.Canceled);
+                Application.Current.Shutdown();
+            }
         }
     }
 }

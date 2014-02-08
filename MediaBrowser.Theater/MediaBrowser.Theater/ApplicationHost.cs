@@ -23,6 +23,7 @@ using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.System;
 using MediaBrowser.Model.Updates;
 using MediaBrowser.Theater.Api.Configuration;
+using MediaBrowser.Theater.Api.System;
 using MediaBrowser.Theater.Api.Theming;
 using MediaBrowser.Theater.Api.Theming.Navigation;
 using MediaBrowser.Theater.DefaultTheme;
@@ -44,15 +45,10 @@ namespace MediaBrowser.Theater
         {
         }
 
-        /// <summary>
-        /// Gets the API client.
-        /// </summary>
-        /// <value>The API client.</value>
         public IApiClient ApiClient { get; private set; }
-
         internal ApiWebSocket ApiWebSocket { get; set; }
-
         public ITheme Theme { get; private set; }
+        public IMediaFilters MediaFilters { get; private set; }
 
         public ConfigurationManager TheaterConfigurationManager
         {
@@ -88,7 +84,10 @@ namespace MediaBrowser.Theater
             ReloadApiClient();
 
             await base.RegisterResources(progress).ConfigureAwait(false);
-            
+
+            MediaFilters = new MediaFilters(HttpClient, Logger);
+
+            RegisterSingleInstance(MediaFilters);
             RegisterSingleInstance(ApplicationPaths);
             RegisterSingleInstance(ApiClient);
             RegisterSingleInstance<IServerEvents>(ApiWebSocket);
@@ -172,6 +171,8 @@ namespace MediaBrowser.Theater
 
         public override Task Restart()
         {
+            
+
             throw new NotImplementedException();
         }
 

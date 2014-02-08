@@ -3,7 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:viewModels="clr-namespace:MediaBrowser.Theater.StartupWizard.ViewModels"
+             xmlns:views="clr-namespace:MediaBrowser.Theater.StartupWizard.Views"
              mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance viewModels:ServerDetailsViewModel}"
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
         <Grid.RowDefinitions>
@@ -31,11 +34,25 @@
             </StackPanel>
         </StackPanel>
 
-        <Border Grid.Row="1" Background="#FF2419"  Visibility="{Binding FailedToFindServer, Converter={StaticResource BooleanToVisibility}}">
+        <Border Grid.Row="1" Background="#FF2419"
+                Visibility="{Binding FailedToFindServer, Converter={StaticResource BooleanToVisibility}}">
             <StackPanel Margin="4">
                 <TextBlock TextWrapping="Wrap" Foreground="White">Could not connect to the media browser server. Please ensure the server is installed and available.</TextBlock>
                 <TextBlock>
-                    <Hyperlink NavigateUri="http://www.mediabrowser3.com/server/">Download Media Browser Server</Hyperlink>
+                    <Hyperlink NavigateUri="http://www.mediabrowser3.com/server/"
+                               views:HyperlinkExtensions.IsExternal="True">
+                        <Hyperlink.Style>
+                            <Style TargetType="{x:Type Hyperlink}">
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Foreground" Value="DarkSlateBlue" />
+                                    </Trigger>
+                                </Style.Triggers>
+                                <Setter Property="TextBlock.TextDecorations" Value="{x:Null}"/>
+                            </Style>
+                        </Hyperlink.Style>
+                        Download Media Browser Server
+                    </Hyperlink>
                 </TextBlock>
             </StackPanel>
         </Border>

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
-using System.Windows.Forms;
+using System.Windows;
 using MediaBrowser.Common.Constants;
 using MediaBrowser.Common.Implementations.Logging;
 using MediaBrowser.Common.Implementations.Updates;
@@ -83,6 +83,9 @@ namespace MediaBrowser.Theater
                     var completed = appHost.RunStartupWizard();
 
                     if (completed) {
+                        appHost.TheaterConfigurationManager.Configuration.IsStartupWizardCompleted = true;
+                        appHost.TheaterConfigurationManager.SaveConfiguration();
+
                         await appHost.Restart();
                     } else {
                         await appHost.Shutdown();

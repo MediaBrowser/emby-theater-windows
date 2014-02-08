@@ -26,7 +26,7 @@ namespace MediaBrowser.Theater.Api.Theming.ViewModels
             return errorsForName;
         }
 
-        public bool HasErrors
+        public virtual bool HasErrors
         {
             get { return _errors.Any(kv => kv.Value != null && kv.Value.Count > 0); }
         }

@@ -17,6 +17,14 @@
             <views:ServerDetailsView/>
         </DataTemplate>
         
+        <DataTemplate DataType="{x:Type viewModels:PrerequisitesViewModel}">
+            <views:PrerequisitesView/>
+        </DataTemplate>
+        
+        <DataTemplate DataType="{x:Type viewModels:PrerequisitesInstallationViewModel}">
+            <views:PrerequisitesInstallationView/>
+        </DataTemplate>
+        
         <startupWizard:BooleanOrConverter x:Key="BooleanOrConverter"/>
         <startupWizard:BooleanInverter x:Key="BooleanInverter"/>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibility"/>

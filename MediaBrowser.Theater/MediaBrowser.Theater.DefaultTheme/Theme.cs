@@ -1,21 +1,23 @@
 ﻿using System.Threading.Tasks;
-using System.Windows;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Plugins;
 using MediaBrowser.Model.Serialization;
 using MediaBrowser.Theater.Api.Theming;
 using MediaBrowser.Theater.DefaultTheme.Configuration;
+using MediaBrowser.Theater.DefaultTheme.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme
 {
     public class Theme
         : BasePlugin<PluginConfiguration>, ITheme
     {
-        private App _application;
+        private readonly RootViewModel _rootViewModel;
         private readonly TaskCompletionSource<object> _running;
+        private App _application;
 
-        public Theme(IApplicationPaths applicationPaths, IXmlSerializer xmlSerializer) : base(applicationPaths, xmlSerializer)
+        public Theme(IApplicationPaths applicationPaths, IXmlSerializer xmlSerializer, RootViewModel rootViewModel) : base(applicationPaths, xmlSerializer)
         {
+            _rootViewModel = rootViewModel;
             _running = new TaskCompletionSource<object>();
         }
 
@@ -27,8 +29,8 @@ namespace MediaBrowser.Theater.DefaultTheme
         public void Run()
         {
             _application = new App();
-            
-            _application.Run(new MainWindow());
+
+            _application.Run(new MainWindow { DataContext = _rootViewModel });
             _running.SetResult(null);
         }
 

@@ -102,7 +102,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Strings.resx</DependentUpon>
     </Compile>
-    <Compile Include="StartupWizard\BooleanOrConverter.cs" />
     <Compile Include="StartupWizard\StartupWizardApp.xaml.cs">
       <DependentUpon>StartupWizardApp.xaml</DependentUpon>
     </Compile>

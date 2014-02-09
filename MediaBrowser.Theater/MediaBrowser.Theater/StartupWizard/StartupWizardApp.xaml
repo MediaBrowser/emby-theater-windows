@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:viewModels="clr-namespace:MediaBrowser.Theater.StartupWizard.ViewModels"
              xmlns:views="clr-namespace:MediaBrowser.Theater.StartupWizard.Views"
-             xmlns:startupWizard="clr-namespace:MediaBrowser.Theater.StartupWizard">
+             xmlns:converters="clr-namespace:MediaBrowser.Theater.Presentation.Converters;assembly=MediaBrowser.Theater.Presentation">
     <Application.Resources>
         <DataTemplate DataType="{x:Type viewModels:WizardViewModel}">
             <views:WizardView/>
@@ -25,8 +25,8 @@
             <views:PrerequisitesInstallationView/>
         </DataTemplate>
         
-        <startupWizard:BooleanOrConverter x:Key="BooleanOrConverter"/>
-        <startupWizard:BooleanInverter x:Key="BooleanInverter"/>
+        <converters:BooleanOrConverter x:Key="BooleanOrConverter"/>
+        <converters:BooleanInverter x:Key="BooleanInverter"/>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibility"/>
 
         <ControlTemplate x:Key="SilverlightErrorTemplate">

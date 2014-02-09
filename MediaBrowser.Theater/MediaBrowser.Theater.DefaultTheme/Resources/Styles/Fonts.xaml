@@ -28,6 +28,4 @@
     <system:Double x:Key="Heading2FontSize">38</system:Double>
     <FontWeight x:Key="Heading2FontWeight">Normal</FontWeight>
     <Brush x:Key="Heading2Foreground">#000</Brush>
-
-    <Brush x:Key="MediaBrowserAccent">#52B54B</Brush>
 </ResourceDictionary>

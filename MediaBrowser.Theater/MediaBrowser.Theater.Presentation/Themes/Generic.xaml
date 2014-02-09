@@ -1,10 +1,10 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="clr-namespace:MediaBrowser.Theater.Presentation">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="/MediaBrowser.Theater.Presentation;component/Resources/DefaultControlTemplates/WindowCommands.xaml"/>
+        <ResourceDictionary Source="/MediaBrowser.Theater.Presentation;component/Resources/DefaultControlTemplates/DragBar.xaml"/>
     </ResourceDictionary.MergedDictionaries>
     
 </ResourceDictionary>

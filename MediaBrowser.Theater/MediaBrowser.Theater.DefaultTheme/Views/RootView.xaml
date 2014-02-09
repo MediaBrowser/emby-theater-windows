@@ -7,6 +7,12 @@
              mc:Ignorable="d" 
              d:DesignHeight="480" d:DesignWidth="720">
     <Grid Background="White">
-        <controls:WindowCommands ShowButtons="{Binding IsMouseIdle, Converter={StaticResource BooleanInverter}, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type controls:BaseWindow}}}"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        
+        <controls:DragBar Grid.Row="0"/>
+        <controls:WindowCommands Grid.Row="0" ShowButtons="{Binding IsMouseIdle, Converter={StaticResource BooleanInverter}, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type controls:BaseWindow}}}" HorizontalAlignment="Right"/>
     </Grid>
 </UserControl>

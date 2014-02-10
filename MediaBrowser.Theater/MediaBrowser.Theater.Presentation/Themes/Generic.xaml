@@ -5,6 +5,7 @@
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="/MediaBrowser.Theater.Presentation;component/Resources/DefaultControlTemplates/WindowCommands.xaml"/>
         <ResourceDictionary Source="/MediaBrowser.Theater.Presentation;component/Resources/DefaultControlTemplates/DragBar.xaml"/>
+        <ResourceDictionary Source="/MediaBrowser.Theater.Presentation;component/Resources/DefaultControlTemplates/ExtendedContentControl.xaml"/>
     </ResourceDictionary.MergedDictionaries>
     
 </ResourceDictionary>

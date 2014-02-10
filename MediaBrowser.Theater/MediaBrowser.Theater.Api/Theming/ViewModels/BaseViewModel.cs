@@ -6,11 +6,22 @@ using MediaBrowser.Theater.Api.Annotations;
 
 namespace MediaBrowser.Theater.Api.Theming.ViewModels
 {
+    public interface IRequiresInitialization
+    {
+        bool IsInitialized { get; }
+        Task Initialize();
+    }
+
+    public interface IHasActivityStatus
+    {
+        bool IsActive { get; set; }
+    }
+
     /// <summary>
     ///     The base class for view models.
     /// </summary>
     public abstract class BaseViewModel
-        : INotifyPropertyChanged
+        : INotifyPropertyChanged, IRequiresInitialization, IHasActivityStatus
     {
         private static readonly Task Completed = Task.FromResult<object>(null);
 

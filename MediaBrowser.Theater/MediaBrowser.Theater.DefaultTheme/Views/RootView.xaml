@@ -18,6 +18,6 @@
         <controls:DragBar Grid.Row="0"/>
         <controls:WindowCommands Grid.Row="0" ShowButtons="{Binding IsMouseIdle, Converter={StaticResource BooleanInverter}, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type controls:BaseWindow}}}" HorizontalAlignment="Right"/>
         
-        <ContentPresenter Grid.Row="1" Content="{Binding ActivePage}"/>
+        <controls:ExtendedContentControl Grid.Row="1" Content="{Binding ActivePage}"/>
     </Grid>
 </UserControl>

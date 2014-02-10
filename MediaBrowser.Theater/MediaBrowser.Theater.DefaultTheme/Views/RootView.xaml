@@ -6,9 +6,10 @@
              xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
              xmlns:viewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.ViewModels"
              mc:Ignorable="d" 
+             Foreground="{StaticResource ForegroundBrush}"
              d:DataContext="{d:DesignInstance viewModels:RootViewModel}"
              d:DesignHeight="480" d:DesignWidth="720">
-    <Grid Background="White">
+    <Grid Background="{StaticResource BackgroundBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>

@@ -5,7 +5,8 @@
         <Setter Property="FontSize" Value="{StaticResource DefaultFontSize}"/>
         <Setter Property="FontFamily" Value="{StaticResource DefaultFontFamily}"/>
         <Setter Property="FontWeight" Value="{StaticResource DefaultFontWeight}"/>
-        <Setter Property="Foreground" Value="{StaticResource DefaultForeground}"/>
+        <Setter Property="Foreground" Value="{StaticResource DefaultFontForeground}"/>
+        <Setter Property="Background" Value="Transparent"/>
         <Setter Property="BorderBrush" Value="#000000"/>
         <Setter Property="BorderThickness" Value="0"/>
 

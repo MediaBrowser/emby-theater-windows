@@ -1,4 +1,6 @@
 ﻿using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Media;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Plugins;
 using MediaBrowser.Model.Serialization;
@@ -15,7 +17,7 @@ namespace MediaBrowser.Theater.DefaultTheme
         private readonly RootViewModel _rootViewModel;
         private readonly TaskCompletionSource<object> _running;
         private App _application;
-
+        
         public Theme(IApplicationPaths applicationPaths, IXmlSerializer xmlSerializer, PresentationManager presentationManager, RootViewModel rootViewModel) : base(applicationPaths, xmlSerializer)
         {
             _rootViewModel = rootViewModel;
@@ -34,7 +36,8 @@ namespace MediaBrowser.Theater.DefaultTheme
         public void Run()
         {
             _application = new App();
-
+            ApplyPalette(_application);
+            
             _application.Run(new MainWindow { DataContext = _rootViewModel });
             _running.SetResult(null);
         }
@@ -48,6 +51,13 @@ namespace MediaBrowser.Theater.DefaultTheme
             }
 
             return _running.Task;
+        }
+        
+        private void ApplyPalette(Application app)
+        {
+            app.Resources["AccentColor"] = Configuration.Palette.Accent;
+            app.Resources["ForegroundColor"] = Configuration.Palette.Style == ThemeStyle.Light ? ColorPalette.LightForeground : ColorPalette.DarkForeground;
+            app.Resources["BackgroundColor"] = Configuration.Palette.Style == ThemeStyle.Light ? ColorPalette.LightBackground : ColorPalette.DarkBackground;
         }
     }
 }

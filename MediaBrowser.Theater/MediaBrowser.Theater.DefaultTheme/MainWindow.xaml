@@ -5,6 +5,7 @@
                      xmlns:defaultTheme="clr-namespace:MediaBrowser.Theater.DefaultTheme"
                      Style="{StaticResource MainWindow}"
                      Title="MainWindow"
+                     Icon="/MediaBrowser.Theater.DefaultTheme;component/Resources/Images/Icon.ico"
                      Background="Transparent"
                      MinWidth="720"
                      MinHeight="480"

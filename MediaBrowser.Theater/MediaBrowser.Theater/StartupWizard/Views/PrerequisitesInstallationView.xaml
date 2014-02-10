@@ -24,7 +24,7 @@
         <ListView Grid.Row="1" ItemsSource="{Binding Prerequisites}" Margin="0,14,0,0" HorizontalContentAlignment="Stretch">
             <ListView.ItemTemplate>
                 <DataTemplate DataType="{x:Type viewModels:PrerequisiteInstallationViewModel}">
-                    <Grid HorizontalAlignment="Stretch" Height="24">
+                    <Grid HorizontalAlignment="Stretch" MinHeight="24">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="200"/>
@@ -36,9 +36,14 @@
                             <TextBlock Foreground="#27a436" Text="{lex:Loc SetupWizard_PrerequisitesInstallation_Installed}"/>
                         </Grid>
 
-                        <Grid Grid.Column="1" Visibility="{Binding InstallationFailed, Converter={StaticResource BooleanToVisibility}}">
+                        <StackPanel Grid.Column="1" Visibility="{Binding InstallationFailed, Converter={StaticResource BooleanToVisibility}}">
                             <TextBlock Foreground="#FF2419" Text="{lex:Loc SetupWizard_PrerequisitesInstallation_Failed}"/>
-                        </Grid>
+                            <TextBlock Foreground="#FF2419">
+                                <Hyperlink NavigateUri="{Binding DownloadUrl}" views:HyperlinkExtensions.IsExternal="True">
+                                    <TextBlock Text="{lex:Loc SetupWizard_PrerequisitesInstallation_ManualRequired}"/>
+                                </Hyperlink>
+                            </TextBlock>
+                        </StackPanel>
 
                         <Grid Grid.Column="1" Visibility="{Binding IsInstalling, Converter={StaticResource BooleanToVisibility}}">
                             <ProgressBar Value="{Binding InstallationProgress}" Minimum="0" Maximum="100"/>

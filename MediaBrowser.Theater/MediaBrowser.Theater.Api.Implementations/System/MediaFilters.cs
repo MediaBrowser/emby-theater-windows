@@ -1,41 +1,17 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using MediaBrowser.Common.Net;
 using MediaBrowser.Model.Logging;
+using Microsoft.Win32;
 
 namespace MediaBrowser.Theater.Api.System
 {
     public class MediaFilters : IMediaFilters
     {
-        #region COM Prerequisites
-
-        // Used for prerequisite detection only. These were copied from the imports used in the direct show solution
-        [ComImport, Guid("E8E73B6B-4CB3-44A4-BE99-4F7BCB96E491")]
-        internal class LAVAudio { }
-
-        [ComImport, Guid("B98D13E7-55DB-4385-A33D-09FD1BA26338")]
-        internal class LAVSplitter { }
-
-        [ComImport, Guid("EE30215D-164F-4A92-A4EB-9D4C13390F9F")]
-        internal class LAVVideo { }
-
-        [ComImport, Guid("93A22E7A-5091-45EF-BA61-6DA26156A5D0")]
-        internal class XYVSFilter { }
-
-        [ComImport, Guid("2DFCB782-EC20-4A7C-B530-4577ADB33F21")]
-        internal class XySubFilter { }
-
-        [ComImport, Guid("E1A8B82A-32CE-4B0D-BE0D-AA68C772E423")]
-        internal class MadVR { }
-
-        [ComImport, Guid("9DC15360-914C-46B8-B9DF-BFE67FD36C6A")]
-        internal class ReclockAudioRenderer { }
-
-        #endregion
+        private const string CodecsRegistryKey = @"HKEY_LOCAL_MACHINE\SOFTWARE\Classes\Wow6432Node\CLSID\{083863F1-70DE-11D0-BD40-00A0C911CE86}\Instance\";
 
         private readonly IHttpClient _httpClient;
         private readonly ILogger _logger;
@@ -49,7 +25,8 @@ namespace MediaBrowser.Theater.Api.System
         public bool IsXyVsFilterInstalled()
         {
             // Returns true if XY-VSFilter is installed
-            return CanInstantiate<XYVSFilter>();
+            var id = Registry.GetValue(CodecsRegistryKey + "{93A22E7A-5091-45EF-BA61-6DA26156A5D0}", "CLSID", "id");
+            return id != null;
         }
 
         public async Task InstallXyVsFilter(IProgress<double> progress, CancellationToken cancellationToken)
@@ -84,7 +61,8 @@ namespace MediaBrowser.Theater.Api.System
 
         public bool IsXySubFilterInstalled()
         {
-            return CanInstantiate<XySubFilter>();
+            var id = Registry.GetValue(CodecsRegistryKey + "{2DFCB782-EC20-4A7C-B530-4577ADB33F21}", "CLSID", "id");
+            return id != null;
         }
 
         public async Task InstallXySubFilter(IProgress<double> progress, CancellationToken cancellationToken)
@@ -120,19 +98,22 @@ namespace MediaBrowser.Theater.Api.System
         public bool IsLavSplitterInstalled()
         {
             // Returns true if 32-bit splitter are installed
-            return CanInstantiate<LAVSplitter>();
+            var id = Registry.GetValue(CodecsRegistryKey + "{B98D13E7-55DB-4385-A33D-09FD1BA26338}", "CLSID", "id");
+            return id != null;
         }
 
         public bool IsLavAudioInstalled()
         {
             // Returns true if 32-bit splitter + audio + video are installed
-            return CanInstantiate<LAVAudio>();
+            var id = Registry.GetValue(CodecsRegistryKey + "{E8E73B6B-4CB3-44A4-BE99-4F7BCB96E491}", "CLSID", "id");
+            return id != null;
         }
 
         public bool IsLavVideoInstalled()
         {
             // Returns true if 32-bit splitter + audio + video are installed
-            return CanInstantiate<LAVVideo>();
+            var id = Registry.GetValue(CodecsRegistryKey + "{EE30215D-164F-4A92-A4EB-9D4C13390F9F}", "CLSID", "id");
+            return id != null;
         }
 
         public async Task InstallLavFilters(IProgress<double> progress, CancellationToken cancellationToken)
@@ -140,7 +121,7 @@ namespace MediaBrowser.Theater.Api.System
             // Guess we'll have to hard-code the latest version?
             // https://code.google.com/p/lavfilters/downloads/list
 
-            const string url = "https://lavfilters.googlecode.com/files/LAVFilters-0.59.1.exe";
+            const string url = "https://lavfilters.googlecode.com/files/LAVFilters-0.60.1.exe";
 
             string tempFile = await _httpClient.GetTempFile(new HttpRequestOptions {
                 Url = url,
@@ -183,12 +164,14 @@ namespace MediaBrowser.Theater.Api.System
 
         public bool IsMadVrInstalled()
         {
-            return CanInstantiate<MadVR>();
+            var id = Registry.GetValue(CodecsRegistryKey + "{E1A8B82A-32CE-4B0D-BE0D-AA68C772E423}", "CLSID", "id");
+            return id != null;
         }
 
         public bool IsReClockInstalled()
         {
-            return CanInstantiate<ReclockAudioRenderer>();
+            var id = Registry.GetValue(CodecsRegistryKey + "{9DC15360-914C-46B8-B9DF-BFE67FD36C6A}", "CLSID", "id");
+            return id != null;
         }
 
         public async Task InstallReClock(IProgress<double> progress, CancellationToken cancellationToken)
@@ -226,18 +209,6 @@ namespace MediaBrowser.Theater.Api.System
                     _logger.ErrorException("Error deleting {0}", ex, exePath);
                 }
             }
-        }
-
-        private bool CanInstantiate<T>() where T : new()
-        {
-            try {
-                var obj = new T();
-            }
-            catch (Exception ex) {
-                return false;
-            }
-
-            return true;
         }
 
         private void OpenLavConfiguration(string path)

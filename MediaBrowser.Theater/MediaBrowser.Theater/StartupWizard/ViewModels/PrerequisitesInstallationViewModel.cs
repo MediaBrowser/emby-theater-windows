@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediaBrowser.Theater.Api.Theming.ViewModels;
+using MediaBrowser.Theater.StartupWizard.Prerequisites;
 
 namespace MediaBrowser.Theater.StartupWizard.ViewModels
 {
@@ -26,6 +27,11 @@ namespace MediaBrowser.Theater.StartupWizard.ViewModels
 
                 if (args.PropertyName == "IsInstalled") {
                     OnPropertyChanged("IsInstalled");
+
+                    if (prerequisite.IsInstalled) {
+                        IsInstalling = false;
+                        InstallationFailed = false;
+                    }
                 }
             };
         }
@@ -118,7 +124,7 @@ namespace MediaBrowser.Theater.StartupWizard.ViewModels
 
         public bool IsComplete
         {
-            get { return _prerequisites.All(p => p.RequiresManualInstallation || p.IsInstalled); }
+            get { return _prerequisites.All(p => p.IsInstalled); }
         }
 
         public PrerequisitesInstallationViewModel(IEnumerable<Prerequisite> prerequisites)
@@ -131,8 +137,25 @@ namespace MediaBrowser.Theater.StartupWizard.ViewModels
 
         private async void StartInstallation()
         {
-            var tasks = Prerequisites.Where(p => !p.RequiresManualInstallation).Select(p => Task.Run(async () => await p.Install()));
-            await Task.WhenAll(tasks);
+            foreach (var item in Prerequisites.Where(p => !p.RequiresManualInstallation)) {
+                await item.Install();
+            }
+
+            if (!IsComplete) {
+                // keep checking install status to confirm manual installation
+                Task.Run(async () => {
+                    while (!IsComplete) {
+                        await Task.Delay(TimeSpan.FromSeconds(2)).ConfigureAwait(false);
+
+                        foreach (var item in _prerequisites.Where(p => !p.IsInstalled)) {
+                            item.UpdateInstallStatus();
+                        }
+                    }
+
+                    OnPropertyChanged("IsComplete");
+                    OnPropertyChanged("HasErrors", false);
+                });
+            }
 
             OnPropertyChanged("IsComplete");
             OnPropertyChanged("HasErrors", false);

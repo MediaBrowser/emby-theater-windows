@@ -61,6 +61,7 @@
     <Compile Include="Theming\Navigation\DefaultPaths.cs" />
     <Compile Include="Theming\Navigation\Go.cs" />
     <Compile Include="Theming\Navigation\INavigationService.cs" />
+    <Compile Include="Theming\Navigation\IPresentationManager.cs" />
     <Compile Include="Theming\Navigation\NavigationPaths.cs" />
     <Compile Include="Theming\ViewModels\BaseValidatingViewModel.cs" />
     <Compile Include="Theming\ViewModels\BaseViewModel.cs" />

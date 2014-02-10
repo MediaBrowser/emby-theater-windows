@@ -28,6 +28,7 @@ using MediaBrowser.Theater.Api.Theming;
 using MediaBrowser.Theater.Api.Theming.Navigation;
 using MediaBrowser.Theater.DefaultTheme;
 using MediaBrowser.Theater.Networking;
+using MediaBrowser.Theater.Presentation.Events;
 using MediaBrowser.Theater.StartupWizard;
 using MediaBrowser.Theater.StartupWizard.ViewModels;
 using SimpleInjector;
@@ -50,6 +51,7 @@ namespace MediaBrowser.Theater
         public ITheme Theme { get; private set; }
         public IMediaFilters MediaFilters { get; private set; }
         public bool RestartOnExit { get; private set; }
+        public IEventAggregator Events { get; private set; }
 
         public ConfigurationManager TheaterConfigurationManager
         {
@@ -79,8 +81,10 @@ namespace MediaBrowser.Theater
             await base.RegisterResources(progress).ConfigureAwait(false);
 
             MediaFilters = new MediaFilters(HttpClient, Logger);
+            Events = new EventAggregator();
 
             RegisterSingleInstance(MediaFilters);
+            RegisterSingleInstance(Events);
             RegisterSingleInstance(ApplicationPaths);
             RegisterSingleInstance(ApiClient);
             RegisterSingleInstance<IServerEvents>(ApiWebSocket);

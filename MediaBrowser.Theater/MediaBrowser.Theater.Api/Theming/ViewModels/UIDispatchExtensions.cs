@@ -20,7 +20,7 @@ namespace MediaBrowser.Theater.Api.Theming.ViewModels
         /// <param name="action">The action to execute.</param>
         public static void OnUiThread(this Action action)
         {
-            if (Dispatcher.CheckAccess())
+            if (Dispatcher == null || Dispatcher.CheckAccess())
                 action();
             else
                 Dispatcher.Invoke(action);
@@ -33,7 +33,7 @@ namespace MediaBrowser.Theater.Api.Theming.ViewModels
         /// <returns>A task representing the asychronous operation.</returns>
         public static Task OnUiThreadAsync(this Action action)
         {
-            if (Dispatcher.CheckAccess())
+            if (Dispatcher == null || Dispatcher.CheckAccess())
             {
                 action();
                 return Completed;

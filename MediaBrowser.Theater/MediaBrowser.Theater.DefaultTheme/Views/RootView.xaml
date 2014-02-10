@@ -4,7 +4,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
+             xmlns:viewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.ViewModels"
              mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance viewModels:RootViewModel}"
              d:DesignHeight="480" d:DesignWidth="720">
     <Grid Background="White">
         <Grid.RowDefinitions>
@@ -14,5 +16,7 @@
         
         <controls:DragBar Grid.Row="0"/>
         <controls:WindowCommands Grid.Row="0" ShowButtons="{Binding IsMouseIdle, Converter={StaticResource BooleanInverter}, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type controls:BaseWindow}}}" HorizontalAlignment="Right"/>
+        
+        <ContentPresenter Grid.Row="1" Content="{Binding ActivePage}"/>
     </Grid>
 </UserControl>

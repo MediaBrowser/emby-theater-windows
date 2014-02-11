@@ -31,7 +31,7 @@ namespace MediaBrowser.Theater.Api.Theming.ViewModels
         /// <summary>
         ///     Gets or sets a value indicating if this view model is active.
         /// </summary>
-        public bool IsActive
+        public virtual bool IsActive
         {
             get { return _isActive; }
             set
@@ -45,7 +45,7 @@ namespace MediaBrowser.Theater.Api.Theming.ViewModels
         /// <summary>
         ///     Gets a value indicating if this view model has been initialized.
         /// </summary>
-        public bool IsInitialized
+        public virtual bool IsInitialized
         {
             get { return _isInitialized; }
             private set

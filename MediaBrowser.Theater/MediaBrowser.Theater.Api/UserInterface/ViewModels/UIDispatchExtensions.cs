@@ -14,6 +14,11 @@ namespace MediaBrowser.Theater.Api.Theming.ViewModels
             get { return _dispatcher ?? (_dispatcher = Dispatcher.CurrentDispatcher); }
         }
 
+        public static void ResetDispatcher()
+        {
+            _dispatcher = Dispatcher.CurrentDispatcher;
+        }
+
         /// <summary>
         ///     Executes the specified action on the UI thread.
         /// </summary>

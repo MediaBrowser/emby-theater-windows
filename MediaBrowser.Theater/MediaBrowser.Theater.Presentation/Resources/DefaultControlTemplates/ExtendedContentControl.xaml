@@ -7,7 +7,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:ExtendedContentControl}">
                     <Grid>
-                        <ContentPresenter x:Name="PART_ContentPresenter"/>
+                        <ContentPresenter x:Name="PART_ContentPresenter" Content="{x:Null}"/>
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>

@@ -11,6 +11,9 @@ namespace MediaBrowser.Theater.DefaultTheme.ViewModels
         public RootViewModel(IEventAggregator events)
         {
             events.Get<ShowPageEvent>().Subscribe(message => ActivePage = message.ViewModel);
+
+
+            events.Get<ShowPageEvent>().Publish(new ShowPageEvent { ViewModel = new HelloWorldViewModel() });
         }
 
         public BaseViewModel ActivePage

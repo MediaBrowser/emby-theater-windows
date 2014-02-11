@@ -1,11 +1,11 @@
 ﻿using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Media;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Plugins;
 using MediaBrowser.Model.Serialization;
 using MediaBrowser.Theater.Api.Theming;
 using MediaBrowser.Theater.Api.Theming.Navigation;
+using MediaBrowser.Theater.Api.Theming.ViewModels;
 using MediaBrowser.Theater.DefaultTheme.Configuration;
 using MediaBrowser.Theater.DefaultTheme.ViewModels;
 
@@ -37,6 +37,8 @@ namespace MediaBrowser.Theater.DefaultTheme
         {
             _application = new App();
             ApplyPalette(_application);
+
+            UIDispatchExtensions.ResetDispatcher();
             
             _application.Run(new MainWindow { DataContext = _rootViewModel });
             _running.SetResult(null);

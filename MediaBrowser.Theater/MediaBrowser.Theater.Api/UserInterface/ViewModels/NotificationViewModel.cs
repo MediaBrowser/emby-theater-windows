@@ -4,10 +4,50 @@ using MediaBrowser.Theater.Api.Theming.ViewModels;
 
 namespace MediaBrowser.Theater.Api.UserInterface.ViewModels
 {
-    public abstract class NotificationViewModel
+    public class NotificationViewModel
         : BaseViewModel
     {
         private readonly TimeSpan _duration;
+        private BaseViewModel _contents;
+        private BaseViewModel _icon;
+
+        public BaseViewModel Contents
+        {
+            get { return _contents; }
+            set
+            {
+                if (value == _contents) {
+                    return;
+                }
+                _contents = value;
+                OnPropertyChanged();
+                OnPropertyChanged("HasContents");
+            }
+        }
+
+        public BaseViewModel Icon
+        {
+            get { return _icon; }
+            set
+            {
+                if (Equals(value, _icon)) {
+                    return;
+                }
+                _icon = value;
+                OnPropertyChanged();
+                OnPropertyChanged("HasIcon");
+            }
+        }
+
+        public bool HasContents
+        {
+            get { return Contents != null; }
+        }
+
+        public bool HasIcon
+        {
+            get { return Icon != null; }
+        }
 
         protected NotificationViewModel(TimeSpan duration)
         {

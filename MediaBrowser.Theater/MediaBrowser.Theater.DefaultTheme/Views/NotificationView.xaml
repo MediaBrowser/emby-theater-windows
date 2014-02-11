@@ -1,0 +1,17 @@
+﻿<UserControl x:Class="MediaBrowser.Theater.DefaultTheme.Views.NotificationView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:viewModels="clr-namespace:MediaBrowser.Theater.Api.UserInterface.ViewModels;assembly=MediaBrowser.Theater.Api"
+             xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance viewModels:NotificationViewModel}"
+             d:DesignHeight="100" d:DesignWidth="261">
+    <StackPanel Orientation="Horizontal" Background="{StaticResource BackgroundBrush2}">
+        <controls:ExtendedContentControl Content="{Binding Icon}" Width="100" Height="100" Visibility="{Binding HasIcon, Converter={StaticResource BooleanToVisibility}}" />
+        <Grid Height="100" Width="161" Visibility="{Binding HasContents, Converter={StaticResource BooleanToVisibility}}">
+            <controls:ExtendedContentControl Content="{Binding Contents}" Margin="6"/>
+        </Grid>
+    </StackPanel>
+</UserControl>

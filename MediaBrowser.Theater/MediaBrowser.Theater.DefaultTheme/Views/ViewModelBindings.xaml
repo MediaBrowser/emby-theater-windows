@@ -1,7 +1,8 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:viewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.ViewModels"
-                    xmlns:views="clr-namespace:MediaBrowser.Theater.DefaultTheme.Views">
+                    xmlns:views="clr-namespace:MediaBrowser.Theater.DefaultTheme.Views"
+                    xmlns:viewModels1="clr-namespace:MediaBrowser.Theater.Api.UserInterface.ViewModels;assembly=MediaBrowser.Theater.Api">
     
     <DataTemplate DataType="{x:Type viewModels:RootViewModel}">
         <views:RootView/>
@@ -9,6 +10,10 @@
     
     <DataTemplate DataType="{x:Type viewModels:HelloWorldViewModel}">
         <views:HelloWorldView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels1:NotificationViewModel}">
+        <views:NotificationView/>
     </DataTemplate>
     
 </ResourceDictionary>

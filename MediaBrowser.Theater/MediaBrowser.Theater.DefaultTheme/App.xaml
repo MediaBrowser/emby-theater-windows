@@ -12,6 +12,7 @@
             </ResourceDictionary.MergedDictionaries>
             
             <converters:BooleanInverter x:Key="BooleanInverter"/>
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibility"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

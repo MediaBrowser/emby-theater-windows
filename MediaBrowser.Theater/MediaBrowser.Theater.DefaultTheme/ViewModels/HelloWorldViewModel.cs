@@ -8,7 +8,6 @@ namespace MediaBrowser.Theater.DefaultTheme.ViewModels
     {
         public override async Task Initialize()
         {
-            await Task.Delay(5000);
             await base.Initialize();
         }
     }

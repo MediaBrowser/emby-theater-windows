@@ -74,7 +74,6 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controls\AnimatedStackPanel.cs" />
     <Compile Include="Controls\BaseWindow.cs" />
     <Compile Include="Controls\DragBar.cs" />
     <Compile Include="Controls\ExtendedContentControl.cs" />

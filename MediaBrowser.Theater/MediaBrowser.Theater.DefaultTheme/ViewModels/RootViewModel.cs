@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using MediaBrowser.Theater.Api.UserInterface.ViewModels;
 using MediaBrowser.Theater.Presentation.Events;
 
@@ -22,6 +23,18 @@ namespace MediaBrowser.Theater.DefaultTheme.ViewModels
                 ViewModel = new NotificationViewModel(TimeSpan.FromSeconds(5)) {
                     Contents = new HelloWorldViewModel(),
                     Icon = new HelloWorldViewModel()
+                }
+            });
+
+            Task.Run(async () => {
+                while (true) {
+                    await Task.Delay(3000);
+                    events.Get<ShowNotificationEvent>().Publish(new ShowNotificationEvent {
+                        ViewModel = new NotificationViewModel(TimeSpan.FromSeconds(5)) {
+                            Contents = new HelloWorldViewModel(),
+                            Icon = new HelloWorldViewModel()
+                        }
+                    });
                 }
             });
         }

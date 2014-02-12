@@ -5,6 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:viewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.ViewModels"
              xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance viewModels:NotificationTrayViewModel}"
              d:DesignHeight="300" d:DesignWidth="300">
@@ -12,7 +14,15 @@
     <controls:ExtendedItemsControl ItemsSource="{Binding Notifications}">
         <controls:ExtendedItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
-                <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft"/>
+                <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft">
+                    <i:Interaction.Behaviors>
+                        <ei:FluidMoveBehavior AppliesTo="Children" Duration="0:0:0.5">
+                            <ei:FluidMoveBehavior.EaseX>
+                                <ExponentialEase EasingMode="EaseOut"/>
+                            </ei:FluidMoveBehavior.EaseX>
+                        </ei:FluidMoveBehavior>
+                    </i:Interaction.Behaviors>
+                </StackPanel>
             </ItemsPanelTemplate>
         </controls:ExtendedItemsControl.ItemsPanel>
     </controls:ExtendedItemsControl>

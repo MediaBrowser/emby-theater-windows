@@ -122,7 +122,7 @@ namespace MediaBrowser.Theater.Implementations.System
             // Guess we'll have to hard-code the latest version?
             // https://code.google.com/p/lavfilters/downloads/list
 
-            const string url = "https://lavfilters.googlecode.com/files/LAVFilters-0.59.1.exe";
+            const string url = "https://lavfilters.googlecode.com/files/LAVFilters-0.60.1.exe";
 
             var tempFile = await _httpClient.GetTempFile(new HttpRequestOptions
             {

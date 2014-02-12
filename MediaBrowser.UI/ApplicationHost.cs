@@ -380,5 +380,10 @@ namespace MediaBrowser.UI
         {
             get { return "Media Browser Theater"; }
         }
+
+        public override bool IsRunningAsService
+        {
+            get { return false; }
+        }
     }
 }

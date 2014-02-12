@@ -1,16 +1,10 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Color x:Key="AccentColor">#52B54B</Color>
-    <Color x:Key="ForegroundColor">#FFFFFF</Color>
-    <Color x:Key="BackgroundColor">#1E1E1E</Color>
-    <Color x:Key="BackgroundColor2">#2D2D30</Color>
-    <Color x:Key="BackgroundColor3">#6E6E6E</Color>
-    
     <SolidColorBrush x:Key="AccentBrush" Color="{DynamicResource AccentColor}"/>
     <SolidColorBrush x:Key="ForegroundBrush" Color="{DynamicResource ForegroundColor}"/>
     <SolidColorBrush x:Key="BackgroundBrush" Color="{DynamicResource BackgroundColor}"/>
     <SolidColorBrush x:Key="BackgroundBrush2" Color="{DynamicResource BackgroundColor2}"/>
     <SolidColorBrush x:Key="BackgroundBrush3" Color="{DynamicResource BackgroundColor3}"/>
-    
+
 </ResourceDictionary>

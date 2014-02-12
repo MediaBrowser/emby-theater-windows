@@ -58,9 +58,15 @@ namespace MediaBrowser.Theater.DefaultTheme
         
         private void ApplyPalette(Application app)
         {
-            app.Resources["AccentColor"] = Configuration.Palette.Accent;
-            app.Resources["ForegroundColor"] = Configuration.Palette.Style == ThemeStyle.Light ? ColorPalette.LightForeground : ColorPalette.DarkForeground;
-            app.Resources["BackgroundColor"] = Configuration.Palette.Style == ThemeStyle.Light ? ColorPalette.LightBackground : ColorPalette.DarkBackground;
+            var resources = Configuration.Palette.GetResources();
+            foreach (var resource in resources.Keys) {
+                var newValue = resources[resource];
+                app.Resources[resource] = newValue;
+            }
+
+//            app.Resources["AccentColor"] = Configuration.Palette.Accent;
+//            app.Resources["ForegroundColor"] = Configuration.Palette.Style == ThemeStyle.Light ? ColorPalette.LightForeground : ColorPalette.DarkForeground;
+//            app.Resources["BackgroundColor"] = Configuration.Palette.Style == ThemeStyle.Light ? ColorPalette.LightBackground : ColorPalette.DarkBackground;
         }
     }
 }

@@ -1,6 +1,4 @@
-﻿using MediaBrowser.Theater.Api.Theming.ViewModels;
-
-namespace MediaBrowser.Theater.DefaultTheme
+﻿namespace MediaBrowser.Theater.DefaultTheme
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

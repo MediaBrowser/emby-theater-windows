@@ -91,6 +91,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\NotificationTrayView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\NotificationView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -134,9 +138,13 @@
     </Compile>
     <Compile Include="Theme.cs" />
     <Compile Include="ViewModels\HelloWorldViewModel.cs" />
+    <Compile Include="ViewModels\NotificationTrayViewModel.cs" />
     <Compile Include="ViewModels\RootViewModel.cs" />
     <Compile Include="Views\HelloWorldView.xaml.cs">
       <DependentUpon>HelloWorldView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\NotificationTrayView.xaml.cs">
+      <DependentUpon>NotificationTrayView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\NotificationView.xaml.cs">
       <DependentUpon>NotificationView.xaml</DependentUpon>

@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace MediaBrowser.Theater.Api.Theming.ViewModels
+namespace MediaBrowser.Theater.Api.UserInterface.ViewModels
 {
     /// <summary>
     /// A base view model class which also provides validation logic.

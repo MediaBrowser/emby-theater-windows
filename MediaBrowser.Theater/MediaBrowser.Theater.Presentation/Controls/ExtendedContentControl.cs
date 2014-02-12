@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using MediaBrowser.Theater.Api.Theming.ViewModels;
+using MediaBrowser.Theater.Api.UserInterface.ViewModels;
 
 namespace MediaBrowser.Theater.Presentation.Controls
 {
@@ -12,6 +12,16 @@ namespace MediaBrowser.Theater.Presentation.Controls
         ///     The _content presenter
         /// </summary>
         private ContentPresenter _contentPresenter;
+
+        private ContentPresenter ContentPresenter
+        {
+            get { return _contentPresenter; }
+            set
+            {
+                _contentPresenter = value;
+                SetContent(Content);
+            }
+        }
 
         /// <summary>
         ///     Initializes static members of the <see cref="ExtendedContentControl" /> class.
@@ -29,7 +39,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-            _contentPresenter = GetTemplateChild("PART_ContentPresenter") as ContentPresenter;
+            ContentPresenter = GetTemplateChild("PART_ContentPresenter") as ContentPresenter;
         }
 
         /// <summary>
@@ -47,7 +57,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
 
         private async void SetContent(object content)
         {
-            if (_contentPresenter == null) {
+            if (ContentPresenter == null) {
                 return;
             }
 
@@ -59,7 +69,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
             if (Content == content) {
                 var currentActivatable = _contentPresenter.Content as IHasActivityStatus;
                 if (currentActivatable != null) {
-                    currentActivatable.IsActive = false;
+                    currentActivatable.IsClosed = true;
                 }
 
                 var activatable = content as IHasActivityStatus;
@@ -67,7 +77,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
                     activatable.IsActive = true;
                 }
 
-                _contentPresenter.Content = content;
+                ContentPresenter.Content = content;
             }
         }
     }

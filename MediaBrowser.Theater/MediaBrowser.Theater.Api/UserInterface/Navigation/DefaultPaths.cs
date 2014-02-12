@@ -1,6 +1,6 @@
 ﻿using MediaBrowser.Model.Dto;
 
-namespace MediaBrowser.Theater.Api.Theming.Navigation
+namespace MediaBrowser.Theater.Api.UserInterface.Navigation
 {
     // Application wide paths that all themes are expected to implement
 

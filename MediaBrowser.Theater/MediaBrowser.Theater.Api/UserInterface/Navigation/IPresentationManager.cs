@@ -1,6 +1,6 @@
-﻿using MediaBrowser.Theater.Api.Theming.ViewModels;
+﻿using MediaBrowser.Theater.Api.UserInterface.ViewModels;
 
-namespace MediaBrowser.Theater.Api.Theming.Navigation
+namespace MediaBrowser.Theater.Api.UserInterface.Navigation
 {
     public interface IPresentationManager
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace MediaBrowser.Theater.Api.Theming.ViewModels
+namespace MediaBrowser.Theater.Api.UserInterface.ViewModels
 {
     /// <summary>
     ///     Class RelayCommand

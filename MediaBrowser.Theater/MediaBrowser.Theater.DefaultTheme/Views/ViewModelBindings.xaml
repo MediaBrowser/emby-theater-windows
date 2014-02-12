@@ -16,4 +16,8 @@
         <views:NotificationView/>
     </DataTemplate>
     
+    <DataTemplate DataType="{x:Type viewModels:NotificationTrayViewModel}">
+        <views:NotificationTrayView/>
+    </DataTemplate>
+    
 </ResourceDictionary>

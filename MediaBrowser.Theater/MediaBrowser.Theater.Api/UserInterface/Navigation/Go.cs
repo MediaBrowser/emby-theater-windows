@@ -1,4 +1,4 @@
-﻿namespace MediaBrowser.Theater.Api.Theming.Navigation
+﻿namespace MediaBrowser.Theater.Api.UserInterface.Navigation
 {
     /// <summary>
     ///     The Go class provides an attachment point for root path creation methods.

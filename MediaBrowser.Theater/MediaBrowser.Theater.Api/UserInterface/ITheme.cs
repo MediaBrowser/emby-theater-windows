@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 using MediaBrowser.Common.Plugins;
-using MediaBrowser.Theater.Api.Theming.Navigation;
+using MediaBrowser.Theater.Api.UserInterface.Navigation;
 
-namespace MediaBrowser.Theater.Api.Theming
+namespace MediaBrowser.Theater.Api.UserInterface
 {
     public interface ITheme : IPlugin
     {

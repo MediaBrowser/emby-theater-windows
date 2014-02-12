@@ -19,5 +19,6 @@
         <controls:WindowCommands Grid.Row="0" ShowButtons="{Binding IsMouseIdle, Converter={StaticResource BooleanInverter}, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type controls:BaseWindow}}}" HorizontalAlignment="Right"/>
         
         <controls:ExtendedContentControl Grid.Row="1" Content="{Binding ActivePage}"/>
+        <ContentControl Grid.Row="1" Content="{Binding Notifications}" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,20,0"/>
     </Grid>
 </UserControl>

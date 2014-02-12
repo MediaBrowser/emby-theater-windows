@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using MediaBrowser.Theater.Api.Theming.ViewModels;
+using MediaBrowser.Theater.Api.UserInterface.ViewModels;
 
 namespace MediaBrowser.Theater.Presentation.Events
 {

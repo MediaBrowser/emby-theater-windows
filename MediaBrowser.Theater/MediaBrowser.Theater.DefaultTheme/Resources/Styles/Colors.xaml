@@ -4,7 +4,7 @@
     <Color x:Key="AccentColor">#52B54B</Color>
     <Color x:Key="ForegroundColor">#FFFFFF</Color>
     <Color x:Key="BackgroundColor">#1E1E1E</Color>
-    <Color x:Key="BackgroundColor2">#1F1F1F</Color>
+    <Color x:Key="BackgroundColor2">#222222</Color>
     <Color x:Key="BackgroundColor3">#6E6E6E</Color>
     
     <SolidColorBrush x:Key="AccentBrush" Color="{DynamicResource AccentColor}"/>

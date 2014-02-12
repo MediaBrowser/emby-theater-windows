@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using MediaBrowser.Theater.Api.Theming.ViewModels;
 
 namespace MediaBrowser.Theater.Api.UserInterface.ViewModels
 {
@@ -49,7 +48,7 @@ namespace MediaBrowser.Theater.Api.UserInterface.ViewModels
             get { return Icon != null; }
         }
 
-        protected NotificationViewModel(TimeSpan duration)
+        public NotificationViewModel(TimeSpan duration)
         {
             _duration = duration;
         }
@@ -63,7 +62,7 @@ namespace MediaBrowser.Theater.Api.UserInterface.ViewModels
                 if (value) {
                     Task.Run(async () => {
                         await Task.Delay(_duration);
-                        IsActive = false;
+                        IsClosed = true;
                     });
                 }
             }

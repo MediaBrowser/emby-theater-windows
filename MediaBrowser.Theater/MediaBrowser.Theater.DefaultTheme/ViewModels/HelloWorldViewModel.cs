@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using MediaBrowser.Theater.Api.Theming.ViewModels;
+using MediaBrowser.Theater.Api.UserInterface.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.ViewModels
 {

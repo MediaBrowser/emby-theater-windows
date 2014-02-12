@@ -3,9 +3,9 @@ using System.Windows;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Plugins;
 using MediaBrowser.Model.Serialization;
-using MediaBrowser.Theater.Api.Theming;
-using MediaBrowser.Theater.Api.Theming.Navigation;
-using MediaBrowser.Theater.Api.Theming.ViewModels;
+using MediaBrowser.Theater.Api.UserInterface;
+using MediaBrowser.Theater.Api.UserInterface.Navigation;
+using MediaBrowser.Theater.Api.UserInterface.ViewModels;
 using MediaBrowser.Theater.DefaultTheme.Configuration;
 using MediaBrowser.Theater.DefaultTheme.ViewModels;
 

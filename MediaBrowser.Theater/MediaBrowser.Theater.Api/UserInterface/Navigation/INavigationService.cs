@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace MediaBrowser.Theater.Api.Theming.Navigation
+namespace MediaBrowser.Theater.Api.UserInterface.Navigation
 {
     /// <summary>
     ///     The INavigationService interface defines the API for instructing a theme to

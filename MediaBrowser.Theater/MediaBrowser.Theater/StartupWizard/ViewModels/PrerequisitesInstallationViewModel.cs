@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using MediaBrowser.Theater.Api.Theming.ViewModels;
+using MediaBrowser.Theater.Api.UserInterface.ViewModels;
 using MediaBrowser.Theater.StartupWizard.Prerequisites;
 
 namespace MediaBrowser.Theater.StartupWizard.ViewModels

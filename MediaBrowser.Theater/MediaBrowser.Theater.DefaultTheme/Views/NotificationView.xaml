@@ -8,10 +8,10 @@
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModels:NotificationViewModel}"
              d:DesignHeight="100" d:DesignWidth="261">
-    <StackPanel Orientation="Horizontal" Background="{StaticResource BackgroundBrush2}">
+    <StackPanel Orientation="Horizontal" Background="{StaticResource BackgroundBrush2}" FlowDirection="LeftToRight">
         <controls:ExtendedContentControl Content="{Binding Icon}" Width="100" Height="100" Visibility="{Binding HasIcon, Converter={StaticResource BooleanToVisibility}}" />
         <Grid Height="100" Width="161" Visibility="{Binding HasContents, Converter={StaticResource BooleanToVisibility}}">
-            <controls:ExtendedContentControl Content="{Binding Contents}" Margin="6"/>
+            <controls:ExtendedContentControl Content="{Binding Contents}" Margin="6" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
         </Grid>
     </StackPanel>
 </UserControl>

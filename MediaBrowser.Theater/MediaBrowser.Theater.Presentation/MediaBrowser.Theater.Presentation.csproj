@@ -74,9 +74,11 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\AnimatedStackPanel.cs" />
     <Compile Include="Controls\BaseWindow.cs" />
     <Compile Include="Controls\DragBar.cs" />
     <Compile Include="Controls\ExtendedContentControl.cs" />
+    <Compile Include="Controls\ExtendedItemsControl.cs" />
     <Compile Include="Controls\WindowCommands.cs" />
     <Compile Include="Converters\BooleanInverter.cs" />
     <Compile Include="Converters\BooleanOrConverter.cs" />

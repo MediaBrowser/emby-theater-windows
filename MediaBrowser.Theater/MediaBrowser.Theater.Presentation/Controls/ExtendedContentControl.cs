@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using MediaBrowser.Theater.Api.UserInterface.ViewModels;
+using MediaBrowser.Theater.Presentation.ViewModels;
 
 namespace MediaBrowser.Theater.Presentation.Controls
 {
@@ -69,7 +70,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
             if (Content == content) {
                 var currentActivatable = _contentPresenter.Content as IHasActivityStatus;
                 if (currentActivatable != null) {
-                    currentActivatable.IsClosed = true;
+                    currentActivatable.IsActive = false;
                 }
 
                 var activatable = content as IHasActivityStatus;

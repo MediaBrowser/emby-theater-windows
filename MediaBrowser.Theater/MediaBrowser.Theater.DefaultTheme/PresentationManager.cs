@@ -7,12 +7,12 @@ namespace MediaBrowser.Theater.DefaultTheme
 {
     public struct ShowPageEvent
     {
-        public BaseViewModel ViewModel { get; set; }
+        public IViewModel ViewModel { get; set; }
     }
 
     public struct ShowNotificationEvent
     {
-        public BaseViewModel ViewModel { get; set; }
+        public IViewModel ViewModel { get; set; }
     }
     
     public class PresentationManager
@@ -27,17 +27,17 @@ namespace MediaBrowser.Theater.DefaultTheme
             _showNotificationEvent = events.Get<ShowNotificationEvent>();
         }
 
-        public void ShowPage(BaseViewModel contents)
+        public void ShowPage(IViewModel contents)
         {
             _showPageEvent.Publish(new ShowPageEvent { ViewModel = contents });
         }
 
-        public void ShowPopup(BaseViewModel contents)
+        public void ShowPopup(IViewModel contents)
         {
             throw new NotImplementedException();
         }
 
-        public void ShowNotification(BaseViewModel contents)
+        public void ShowNotification(IViewModel contents)
         {
             _showNotificationEvent.Publish(new ShowNotificationEvent { ViewModel = contents });
         }

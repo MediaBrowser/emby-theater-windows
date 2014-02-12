@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MediaBrowser.Theater.Api.UserInterface.ViewModels;
+using MediaBrowser.Theater.Presentation.ViewModels;
 
 namespace MediaBrowser.Theater.Presentation.Events
 {

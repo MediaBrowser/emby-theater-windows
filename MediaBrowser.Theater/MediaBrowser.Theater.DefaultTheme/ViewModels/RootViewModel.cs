@@ -2,13 +2,14 @@
 using System.Threading.Tasks;
 using MediaBrowser.Theater.Api.UserInterface.ViewModels;
 using MediaBrowser.Theater.Presentation.Events;
+using MediaBrowser.Theater.Presentation.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.ViewModels
 {
     public class RootViewModel
         : BaseViewModel
     {
-        private BaseViewModel _activePage;
+        private IViewModel _activePage;
         private NotificationTrayViewModel _notifications;
 
         public RootViewModel(IEventAggregator events)
@@ -39,7 +40,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ViewModels
             });
         }
 
-        public BaseViewModel ActivePage
+        public IViewModel ActivePage
         {
             get { return _activePage; }
             set

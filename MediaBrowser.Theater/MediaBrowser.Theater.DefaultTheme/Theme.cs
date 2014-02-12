@@ -8,6 +8,7 @@ using MediaBrowser.Theater.Api.UserInterface.Navigation;
 using MediaBrowser.Theater.Api.UserInterface.ViewModels;
 using MediaBrowser.Theater.DefaultTheme.Configuration;
 using MediaBrowser.Theater.DefaultTheme.ViewModels;
+using MediaBrowser.Theater.Presentation.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme
 {

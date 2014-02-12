@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Threading.Tasks;
+using MediaBrowser.Theater.Api.UserInterface.ViewModels;
 
-namespace MediaBrowser.Theater.Api.UserInterface.ViewModels
+namespace MediaBrowser.Theater.Presentation.ViewModels
 {
     public class NotificationViewModel
         : BaseViewModel
     {
         private readonly TimeSpan _duration;
-        private BaseViewModel _contents;
-        private BaseViewModel _icon;
+        private IViewModel _contents;
+        private IViewModel _icon;
 
-        public BaseViewModel Contents
+        public IViewModel Contents
         {
             get { return _contents; }
             set
@@ -24,7 +25,7 @@ namespace MediaBrowser.Theater.Api.UserInterface.ViewModels
             }
         }
 
-        public BaseViewModel Icon
+        public IViewModel Icon
         {
             get { return _icon; }
             set
@@ -56,13 +57,13 @@ namespace MediaBrowser.Theater.Api.UserInterface.ViewModels
         public override bool IsActive
         {
             get { return base.IsActive; }
-            set
+            protected set
             {
                 base.IsActive = value;
                 if (value) {
                     Task.Run(async () => {
                         await Task.Delay(_duration);
-                        IsClosed = true;
+                        await Close();
                     });
                 }
             }

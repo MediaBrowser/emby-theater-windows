@@ -1,7 +1,8 @@
-﻿using System.Collections.ObjectModel;
-using System.ComponentModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using MediaBrowser.Theater.Api.UserInterface.ViewModels;
 using MediaBrowser.Theater.Presentation.Events;
+using MediaBrowser.Theater.Presentation.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.ViewModels
 {
@@ -10,25 +11,23 @@ namespace MediaBrowser.Theater.DefaultTheme.ViewModels
     {
         public NotificationTrayViewModel(IEventAggregator events)
         {
-            Notifications = new ObservableCollection<BaseViewModel>();
+            Notifications = new ObservableCollection<IViewModel>();
 
             events.Get<ShowNotificationEvent>().Subscribe(e => {
-                BaseViewModel vm = e.ViewModel;
-
-                PropertyChangedEventHandler closed = null;
+                IViewModel vm = e.ViewModel;
+                
+                EventHandler closed = null;
                 closed = (sender, args) => {
-                    if (vm.IsClosed) {
-                        Notifications.Remove(vm);
-                        vm.PropertyChanged -= closed;
-                    }
+                    Notifications.Remove(vm);
+                    vm.Closed -= closed;
                 };
 
-                vm.PropertyChanged += closed;
+                vm.Closed += closed;
 
                 Notifications.Add(vm);
             }, false);
         }
 
-        public ObservableCollection<BaseViewModel> Notifications { get; private set; }
+        public ObservableCollection<IViewModel> Notifications { get; private set; }
     }
 }

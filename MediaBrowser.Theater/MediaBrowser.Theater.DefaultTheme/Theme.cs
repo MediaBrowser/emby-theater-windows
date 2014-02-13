@@ -82,8 +82,7 @@ namespace MediaBrowser.Theater.DefaultTheme
         {
             ResourceDictionary resources = Configuration.Palette.GetResources();
             foreach (object resource in resources.Keys) {
-                object newValue = resources[resource];
-                app.Resources[resource] = newValue;
+                app.Resources[resource] = resources[resource];
             }
         }
 

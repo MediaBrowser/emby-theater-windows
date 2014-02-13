@@ -14,16 +14,14 @@ namespace MediaBrowser.Theater.DefaultTheme
     public class Theme
         : BasePlugin<PluginConfiguration>, ITheme
     {
-        private readonly RootViewModel _rootViewModel;
         private readonly TaskCompletionSource<object> _running;
         private App _application;
-        private MainWindow _mainWindow;
+        private readonly PresentationManager _presentation;
 
-        public Theme(IApplicationPaths applicationPaths, IXmlSerializer xmlSerializer, PresentationManager presentationManager, RootViewModel rootViewModel) : base(applicationPaths, xmlSerializer)
+        public Theme(IApplicationPaths applicationPaths, IXmlSerializer xmlSerializer, PresentationManager presentationManager) : base(applicationPaths, xmlSerializer)
         {
-            _rootViewModel = rootViewModel;
             _running = new TaskCompletionSource<object>();
-            Presentation = presentationManager;
+            _presentation = presentationManager;
         }
 
         public override string Name
@@ -31,7 +29,11 @@ namespace MediaBrowser.Theater.DefaultTheme
             get { return "Default Theme"; }
         }
 
-        public IPresentationManager Presentation { get; private set; }
+        public IPresentationManager Presentation
+        {
+            get { return _presentation; }
+        }
+
         public INavigationService Navigation { get; private set; }
 
         public void Run()
@@ -41,8 +43,8 @@ namespace MediaBrowser.Theater.DefaultTheme
 
             UIDispatchExtensions.ResetDispatcher();
 
-            _mainWindow = CreateMainWindow();
-            _application.Run(_mainWindow);
+            var mainWindow = _presentation.CreateMainWindow(Configuration);
+            _application.Run(mainWindow);
 
             Cleanup();
 
@@ -62,20 +64,8 @@ namespace MediaBrowser.Theater.DefaultTheme
 
         private void Cleanup()
         {
-            SaveWindowPosition();
-        }
-
-        private void SaveWindowPosition()
-        {
-            if (_mainWindow != null) {
-                // Save window position
-                Configuration.WindowState = _mainWindow.WindowState;
-                Configuration.WindowTop = _mainWindow.Top;
-                Configuration.WindowLeft = _mainWindow.Left;
-                Configuration.WindowWidth = _mainWindow.Width;
-                Configuration.WindowHeight = _mainWindow.Height;
-                SaveConfiguration();
-            }
+            _presentation.SaveWindowPosition(Configuration);
+            SaveConfiguration();
         }
 
         private void ApplyPalette(Application app)
@@ -84,49 +74,6 @@ namespace MediaBrowser.Theater.DefaultTheme
             foreach (object resource in resources.Keys) {
                 app.Resources[resource] = resources[resource];
             }
-        }
-
-        private MainWindow CreateMainWindow()
-        {
-            var window = new MainWindow {
-                DataContext = _rootViewModel
-            };
-
-            // Restore window position/size
-            if (Configuration.WindowState.HasValue) {
-                // Set window state
-                window.WindowState = Configuration.WindowState.Value;
-
-                // Set position if not maximized
-                if (Configuration.WindowState.Value != WindowState.Maximized) {
-                    double left = 0;
-                    double top = 0;
-
-                    // Set left
-                    if (Configuration.WindowLeft.HasValue) {
-                        window.WindowStartupLocation = WindowStartupLocation.Manual;
-                        window.Left = left = Math.Max(Configuration.WindowLeft.Value, 0);
-                    }
-
-                    // Set top
-                    if (Configuration.WindowTop.HasValue) {
-                        window.WindowStartupLocation = WindowStartupLocation.Manual;
-                        window.Top = top = Math.Max(Configuration.WindowTop.Value, 0);
-                    }
-
-                    // Set width
-                    if (Configuration.WindowWidth.HasValue) {
-                        window.Width = Math.Min(Configuration.WindowWidth.Value, SystemParameters.VirtualScreenWidth - left);
-                    }
-
-                    // Set height
-                    if (Configuration.WindowHeight.HasValue) {
-                        window.Height = Math.Min(Configuration.WindowHeight.Value, SystemParameters.VirtualScreenHeight - top);
-                    }
-                }
-            }
-
-            return window;
         }
     }
 }

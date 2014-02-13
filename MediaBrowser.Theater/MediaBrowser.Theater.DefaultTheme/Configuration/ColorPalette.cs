@@ -10,6 +10,24 @@ namespace MediaBrowser.Theater.DefaultTheme.Configuration
         Dark
     }
 
+    public static class AccentColors
+    {
+        public static Color MediaBrowserGreen
+        {
+            get { return Color.FromRgb(82, 181, 75); }
+        }
+
+        public static Color Blue
+        {
+            get { return Color.FromRgb(0, 122, 204); }
+        }
+
+        public static Color Red
+        {
+            get { return Color.FromRgb(193, 21, 21); }
+        }
+    }
+
     public class ColorPalette
     {
         public ThemeStyle Style { get; set; }

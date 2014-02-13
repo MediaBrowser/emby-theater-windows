@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using MediaBrowser.Theater.Api.UserInterface.ViewModels;
-using MediaBrowser.Theater.Presentation.ViewModels;
+using MediaBrowser.Theater.Api.UserInterface;
 
-namespace MediaBrowser.Theater.Presentation.Events
+namespace MediaBrowser.Theater.Api.Events
 {
     public class EventBus<T> : IEventBus<T>
     {

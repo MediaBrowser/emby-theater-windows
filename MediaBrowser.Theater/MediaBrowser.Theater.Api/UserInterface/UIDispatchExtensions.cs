@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using System.Windows.Threading;
 
-namespace MediaBrowser.Theater.Presentation.ViewModels
+namespace MediaBrowser.Theater.Api.UserInterface
 {
     public static class UIDispatchExtensions
     {

@@ -1,17 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
+using System.Windows.Forms;
 using MediaBrowser.Common.Constants;
 using MediaBrowser.Common.Implementations.Logging;
 using MediaBrowser.Common.Implementations.Updates;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Api.Configuration;
-using MediaBrowser.Theater.StartupWizard;
-using MediaBrowser.Theater.StartupWizard.ViewModels;
+using MessageBox = System.Windows.MessageBox;
 
 namespace MediaBrowser.Theater
 {
@@ -39,9 +36,10 @@ namespace MediaBrowser.Theater
 
                 bool updateInstalling = InstallUpdatePackage(appPaths, logManager);
                 if (!updateInstalling) {
-                    restartOnExit = LaunchApplication(appPaths, logManager).Result;
+                    restartOnExit = LaunchApplication(appPaths, logManager);
                 }
-            } finally {
+            }
+            finally {
                 if (singleInstanceMutex != null) {
                     singleInstanceMutex.ReleaseMutex();
                     singleInstanceMutex.Close();
@@ -50,7 +48,7 @@ namespace MediaBrowser.Theater
             }
 
             if (restartOnExit) {
-                System.Windows.Forms.Application.Restart();
+                Application.Restart();
             }
         }
 
@@ -66,7 +64,8 @@ namespace MediaBrowser.Theater
 
                     // And just let the app exit so it can update
                     return true;
-                } catch (Exception e) {
+                }
+                catch (Exception e) {
                     MessageBox.Show(string.Format("Error attempting to update application.\n\n{0}\n\n{1}",
                                                   e.GetType().Name, e.Message));
                 }
@@ -75,7 +74,7 @@ namespace MediaBrowser.Theater
             return false;
         }
 
-        private static async Task<bool> LaunchApplication(ApplicationPaths appPaths, NlogManager logManager)
+        private static bool LaunchApplication(ApplicationPaths appPaths, NlogManager logManager)
         {
 #if !DEBUG
             ILogger logger = logManager.GetLogger("App");
@@ -85,15 +84,15 @@ namespace MediaBrowser.Theater
                 appHost.Init(new Progress<double>()).Wait();
 
                 if (!appHost.TheaterConfigurationManager.Configuration.IsStartupWizardCompleted) {
-                    var completed = appHost.RunStartupWizard();
+                    bool completed = appHost.RunStartupWizard();
 
                     if (completed) {
                         appHost.TheaterConfigurationManager.Configuration.IsStartupWizardCompleted = true;
                         appHost.TheaterConfigurationManager.SaveConfiguration();
 
-                        await appHost.Restart();
+                        appHost.Restart().Wait();
                     } else {
-                        await appHost.Shutdown();
+                        appHost.Shutdown().Wait();
                     }
                 } else {
                     appHost.RunUserInterface();

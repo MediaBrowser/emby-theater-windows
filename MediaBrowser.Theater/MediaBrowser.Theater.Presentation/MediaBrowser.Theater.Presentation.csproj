@@ -82,10 +82,6 @@
     <Compile Include="Controls\WindowCommands.cs" />
     <Compile Include="Converters\BooleanInverter.cs" />
     <Compile Include="Converters\BooleanOrConverter.cs" />
-    <Compile Include="Events\EventAggregator.cs" />
-    <Compile Include="Events\EventBus.cs" />
-    <Compile Include="Events\IEventAggregator.cs" />
-    <Compile Include="Events\IEventBus.cs" />
     <Compile Include="LocalizationExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -106,7 +102,6 @@
     <Compile Include="ViewModels\IHasCloseDelay.cs" />
     <Compile Include="ViewModels\NotificationViewModel.cs" />
     <Compile Include="ViewModels\RelayCommand.cs" />
-    <Compile Include="ViewModels\UIDispatchExtensions.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

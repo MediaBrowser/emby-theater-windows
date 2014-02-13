@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace MediaBrowser.Theater.Presentation.Events
+namespace MediaBrowser.Theater.Api.Events
 {
     public class EventAggregator : IEventAggregator
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
+using MediaBrowser.Theater.Api.Events;
 using MediaBrowser.Theater.Api.UserInterface.ViewModels;
-using MediaBrowser.Theater.Presentation.Events;
 using MediaBrowser.Theater.Presentation.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.ViewModels

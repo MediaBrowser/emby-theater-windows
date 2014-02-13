@@ -1,6 +1,6 @@
 using System;
 
-namespace MediaBrowser.Theater.Presentation.Events
+namespace MediaBrowser.Theater.Api.Events
 {
     public interface IEventBus<T>
     {

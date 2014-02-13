@@ -1,7 +1,7 @@
 ﻿using System;
+using MediaBrowser.Theater.Api.Events;
 using MediaBrowser.Theater.Api.UserInterface.Navigation;
 using MediaBrowser.Theater.Api.UserInterface.ViewModels;
-using MediaBrowser.Theater.Presentation.Events;
 
 namespace MediaBrowser.Theater.DefaultTheme
 {
@@ -14,12 +14,12 @@ namespace MediaBrowser.Theater.DefaultTheme
     {
         public IViewModel ViewModel { get; set; }
     }
-    
+
     public class PresentationManager
         : IPresentationManager
     {
-        private readonly IEventBus<ShowPageEvent> _showPageEvent;
         private readonly IEventBus<ShowNotificationEvent> _showNotificationEvent;
+        private readonly IEventBus<ShowPageEvent> _showPageEvent;
 
         public PresentationManager(IEventAggregator events)
         {

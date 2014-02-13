@@ -1,4 +1,4 @@
-﻿using System.Windows.Media;
+﻿using System.Windows;
 using MediaBrowser.Model.Plugins;
 
 namespace MediaBrowser.Theater.DefaultTheme.Configuration
@@ -8,9 +8,19 @@ namespace MediaBrowser.Theater.DefaultTheme.Configuration
     {
         public ColorPalette Palette { get; set; }
 
+        public WindowState? WindowState { get; set; }
+
+        public double? WindowTop { get; set; }
+
+        public double? WindowLeft { get; set; }
+
+        public double? WindowWidth { get; set; }
+
+        public double? WindowHeight { get; set; }
+
         public PluginConfiguration()
         {
-            Palette = new ColorPalette { Style = ThemeStyle.Dark, Accent = Color.FromRgb(82, 181, 75) };
+            Palette = new ColorPalette { Style = ThemeStyle.Dark, Accent = AccentColors.MediaBrowserGreen };
         }
     }
 }

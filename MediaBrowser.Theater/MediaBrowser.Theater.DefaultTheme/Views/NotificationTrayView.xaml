@@ -8,8 +8,9 @@
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
              mc:Ignorable="d" 
+             MaxHeight="100"
              d:DataContext="{d:DesignInstance viewModels:NotificationTrayViewModel}"
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="100" d:DesignWidth="300">
     
     <controls:ExtendedItemsControl ItemsSource="{Binding Notifications}">
         <controls:ExtendedItemsControl.ItemsPanel>

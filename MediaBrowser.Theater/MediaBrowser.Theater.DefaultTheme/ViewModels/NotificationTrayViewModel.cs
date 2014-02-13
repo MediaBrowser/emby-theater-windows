@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using MediaBrowser.Theater.Api.Events;
 using MediaBrowser.Theater.Api.UserInterface.ViewModels;
-using MediaBrowser.Theater.Presentation.Events;
 using MediaBrowser.Theater.Presentation.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.ViewModels
@@ -15,7 +15,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ViewModels
 
             events.Get<ShowNotificationEvent>().Subscribe(e => {
                 IViewModel vm = e.ViewModel;
-                
+
                 EventHandler closed = null;
                 closed = (sender, args) => {
                     Notifications.Remove(vm);

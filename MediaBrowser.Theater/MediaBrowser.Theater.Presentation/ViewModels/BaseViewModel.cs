@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using MediaBrowser.Theater.Api.Annotations;
+using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.Api.UserInterface.ViewModels;
 
 namespace MediaBrowser.Theater.Presentation.ViewModels

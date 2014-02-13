@@ -10,6 +10,7 @@
                      MinHeight="480"
                      WindowStyle="None"
                      AllowsTransparency="True"
+                     ResizeMode="CanResizeWithGrip"
                      WindowStartupLocation="CenterScreen">
     <Grid>
         <controls:ExtendedContentControl Content="{Binding}"/>

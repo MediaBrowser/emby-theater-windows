@@ -11,10 +11,13 @@ namespace MediaBrowser.Theater.DefaultTheme.ViewModels
     {
         private IViewModel _activePage;
         private NotificationTrayViewModel _notifications;
+        private bool _isInFocus;
+        private IViewModel _backgroundMedia;
 
         public RootViewModel(IEventAggregator events)
         {
             Notifications = new NotificationTrayViewModel(events);
+            IsInFocus = true;
 
             events.Get<ShowPageEvent>().Subscribe(message => ActivePage = message.ViewModel);
 
@@ -36,6 +39,8 @@ namespace MediaBrowser.Theater.DefaultTheme.ViewModels
                             Icon = new HelloWorldViewModel()
                         }
                     });
+
+                    IsInFocus = !IsInFocus;
                 }
             });
         }
@@ -62,6 +67,32 @@ namespace MediaBrowser.Theater.DefaultTheme.ViewModels
                     return;
                 }
                 _notifications = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public IViewModel BackgroundMedia
+        {
+            get { return _backgroundMedia; }
+            set
+            {
+                if (Equals(value, _backgroundMedia)) {
+                    return;
+                }
+                _backgroundMedia = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool IsInFocus
+        {
+            get { return _isInFocus; }
+            set
+            {
+                if (value.Equals(_isInFocus)) {
+                    return;
+                }
+                _isInFocus = value;
                 OnPropertyChanged();
             }
         }

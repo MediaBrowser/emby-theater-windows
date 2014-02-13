@@ -4,7 +4,7 @@
 
     /// <summary>
     ///     The <see cref="INavigationPath" /> interface defines a location given to the theme when
-    ///     instructing the theme to display content relavent to the given location.
+    ///     instructing the theme to display content relevant to the given location.
     /// </summary>
     public interface INavigationPath { }
 
@@ -24,7 +24,7 @@
 
     /// <summary>
     ///     The <see cref="INavigationPathArg{TParameter}" /> interface is a <see cref="INavigationPath" />
-    ///     wich can pass an argument to the theme during navigation.
+    ///     which can pass an argument to the theme during navigation.
     /// </summary>
     /// <typeparam name="TParameter">The type of argument to pass.</typeparam>
     public interface INavigationPathArg<out TParameter>

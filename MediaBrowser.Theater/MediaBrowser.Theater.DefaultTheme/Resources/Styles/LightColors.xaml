@@ -4,7 +4,7 @@
     <Color x:Key="AccentColor">#52B54B</Color>
     <Color x:Key="ForegroundColor">#000000</Color>
     <Color x:Key="BackgroundColor">#FFFFFF</Color>
-    <Color x:Key="BackgroundColor2">#EFEFF2</Color>
-    <Color x:Key="BackgroundColor3">#E6E7E8</Color>
+    <Color x:Key="BackgroundColor2">#F6F6F6</Color>
+    <Color x:Key="BackgroundColor3">#EFEFF2</Color>
 
 </ResourceDictionary>

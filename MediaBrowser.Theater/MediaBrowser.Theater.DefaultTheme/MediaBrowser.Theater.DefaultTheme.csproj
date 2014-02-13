@@ -77,6 +77,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="PopupWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Resources\Styles\Brushes.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -130,6 +134,9 @@
     <Compile Include="Configuration\PluginConfiguration.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PopupWindow.xaml.cs">
+      <DependentUpon>PopupWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="PresentationManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">

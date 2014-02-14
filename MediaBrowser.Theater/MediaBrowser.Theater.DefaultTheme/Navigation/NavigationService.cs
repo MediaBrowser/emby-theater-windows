@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using MediaBrowser.Theater.Api;
 using MediaBrowser.Theater.Api.UserInterface.Navigation;
 
 namespace MediaBrowser.Theater.DefaultTheme.Navigation
@@ -10,54 +12,97 @@ namespace MediaBrowser.Theater.DefaultTheme.Navigation
     public class NavigationService
         : INavigationService
     {
-        private struct LogicalContext
+        private struct NavigationFrame
         {
             public INavigationContext Context { get; set; }
             public INavigationPath Path { get; set; }
-            public bool IsManualNavigation { get; set; }
+            public bool IsUserNavigation { get; set; }
         }
 
         public INavigationPath CurrentLocation { get; private set; }
         public bool CanGoBack { get; private set; }
         public bool CanGoForward { get; private set; }
 
-        private readonly List<LogicalContext> _contextStack;
-        private readonly List<LogicalContext> _forwardContextStack;
+        private readonly Stack<NavigationFrame> _contextStack;
+        private readonly Stack<NavigationFrame> _logicalBackStack;
+        private readonly Stack<NavigationFrame> _logicalForwardStack;
+        private readonly AsyncLock _navigationLock;
 
         public NavigationService()
         {
-            _contextStack = new List<LogicalContext>();
-            _forwardContextStack = new List<LogicalContext>();
+            _contextStack = new Stack<NavigationFrame>();
+            _logicalBackStack = new Stack<NavigationFrame>();
+            _logicalForwardStack = new Stack<NavigationFrame>();
+            _navigationLock = new AsyncLock();
         }
 
-        public Task Navigate(INavigationPath path)
+        public async Task Navigate(INavigationPath path)
         {
-            // from top of context stack down to root, until handler found
-            //   ask context to handle navigation
-            //   if a context returns a resolved path, execute and if new context is not null
-            //     push new context onto stack together with IsManualNavigation=true and activate
-            //     recursively resolve final excess path against top of stack and push (and activate) context until path is no longer resolved
-            //       push with IsManualNavigation=false
+            using (await _navigationLock.LockAsync().ConfigureAwait(false)) {
 
-            throw new NotImplementedException();
+                // we give the navigation request to the current navigation context first, walking down the stack until we find a handler
+                foreach (var frame in _contextStack) {
+                    var resolution = frame.Context.HandleNavigation(path);
+
+                    if (resolution != null) {
+                        await ExecuteNavigationAction(path, resolution).ConfigureAwait(false);
+                        break;
+                    }
+                }
+            }
+        }
+        
+        private async Task ExecuteNavigationAction(INavigationPath path, PathResolution resolution)
+        {
+            var newFrames = FindNavigationFrames(resolution).ToList();
+
+            for (int i = 0; i < newFrames.Count; i++) {
+                var frame = newFrames[i];
+
+                // mark the last frame as a user navigation frame
+                frame.IsUserNavigation = i == newFrames.Count - 1;
+
+                // push new frames onto the stack
+                _contextStack.Push(frame);
+
+                // activate the context
+                await frame.Context.Activate().ConfigureAwait(false);
+            }
         }
 
-        public Task Back()
+        private IEnumerable<NavigationFrame> FindNavigationFrames(PathResolution resolution)
         {
-            // pop stack until a context with IsManualNavigation is found, pushing onto forward stack
-            //   activate context
-            // if no context found
-            //   navigate to /home
+            INavigationContext context;
 
-            throw new NotImplementedException();
+            // execute the resolution for as long as we get new contexts
+            while (resolution != null && (context = resolution.Execute()) != null) {
+
+                // yield a new navigation frame to represent the context
+                yield return new NavigationFrame {
+                    Context = context,
+                    Path = resolution.MatchingPath,
+                    IsUserNavigation = false
+                };
+
+                var excess = resolution.ExcessPath.LastOrDefault();
+                if (excess != null) {
+                    // only part of the path was handled, so ask the new context if it can handle the rest
+                    resolution = context.HandleNavigation(excess);
+                } else {
+                    // the full path has been handled, so exit
+                    break;
+                }
+            }
         }
 
-        public Task Forward()
+        public async Task Back()
         {
-            // pop forward stack until IsManualNavigation is found, pushing onto context stack
-            //   activate context
+           
+        }
 
-            throw new NotImplementedException();
+        public async Task Forward()
+        {
+            
         }
 
         public void ClearNavigationHistory(int count = Int32.MaxValue)
@@ -77,6 +122,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Navigation
         }
 
         public IEnumerable<INavigationPath> ExcessPath { get; private set; }
+        public INavigationPath MatchingPath { get; private set; }
     }
 
     public class PathBinder
@@ -88,6 +134,10 @@ namespace MediaBrowser.Theater.DefaultTheme.Navigation
 
         public PathResolution Resolve(INavigationContext path)
         {
+            // look for bindings with an exact match to the path type
+            // look for bindings for a base class path type
+            // repeat with the path parent
+
             throw new NotImplementedException();
         }
     }

@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using System.Windows;
 using MediaBrowser.Theater.Api.Events;
-using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.Api.UserInterface.Navigation;
 using MediaBrowser.Theater.Api.UserInterface.ViewModels;
 using MediaBrowser.Theater.DefaultTheme.Configuration;
@@ -37,27 +36,35 @@ namespace MediaBrowser.Theater.DefaultTheme
             _showNotificationEvent = events.Get<ShowNotificationEvent>();
         }
 
-        public Task ShowPage(IViewModel contents)
+        public async Task ShowPage(IViewModel contents)
         {
+            await ClosePopup();
+
             _showPageEvent.Publish(new ShowPageEvent { ViewModel = contents });
-            return Task.FromResult(0);
         }
 
         public async Task ShowPopup(IViewModel contents)
         {
-            if (_currentPopup != null && _currentPopup.IsActive) {
-                var context = _currentPopup.DataContext as IViewModel;
-                if (context != null) {
-                    await context.Close();
-                    _currentPopup.Close();
-                }
-            }
+            await ClosePopup();
 
             _currentPopup = new PopupWindow {
                 DataContext = contents
             };
 
             _currentPopup.ShowModal(_mainWindow);
+        }
+
+        private async Task ClosePopup()
+        {
+            if (_currentPopup != null && _currentPopup.IsActive) {
+                var context = _currentPopup.DataContext as IViewModel;
+                if (context != null) {
+                    await context.Close();
+                }
+
+                _currentPopup.Close();
+                _currentPopup = null;
+            }
         }
 
         public Task ShowNotification(IViewModel contents)

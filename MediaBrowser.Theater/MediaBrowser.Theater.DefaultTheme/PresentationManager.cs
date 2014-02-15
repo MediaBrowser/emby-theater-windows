@@ -51,7 +51,32 @@ namespace MediaBrowser.Theater.DefaultTheme
                 DataContext = contents
             };
 
+            EventHandler windowClosed = null;
+            windowClosed = (sender, args) => {
+                FocusMainWindow();
+                _currentPopup.Closed -= windowClosed;
+            };
+
+            _currentPopup.Closed += windowClosed;
+
+            UnfocusMainWindow();
             _currentPopup.ShowModal(_mainWindow);
+        }
+
+        private void FocusMainWindow()
+        {
+            var rootVm = _mainWindow.DataContext as RootViewModel;
+            if (rootVm != null) {
+                rootVm.IsInFocus = true;
+            }
+        }
+
+        private void UnfocusMainWindow()
+        {
+            var rootVm = _mainWindow.DataContext as RootViewModel;
+            if (rootVm != null) {
+                rootVm.IsInFocus = false;
+            }
         }
 
         private async Task ClosePopup()

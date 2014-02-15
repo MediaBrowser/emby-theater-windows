@@ -19,8 +19,8 @@ namespace MediaBrowser.Theater.DefaultTheme
         public IViewModel ViewModel { get; set; }
     }
 
-    public class PresentationManager
-        : IPresentationManager
+    public class Presenter
+        : IPresenter
     {
         private readonly IEventAggregator _events;
         private readonly IEventBus<ShowNotificationEvent> _showNotificationEvent;
@@ -29,7 +29,7 @@ namespace MediaBrowser.Theater.DefaultTheme
         private MainWindow _mainWindow;
         private PopupWindow _currentPopup;
 
-        public PresentationManager(IEventAggregator events)
+        public Presenter(IEventAggregator events)
         {
             _events = events;
             _showPageEvent = events.Get<ShowPageEvent>();

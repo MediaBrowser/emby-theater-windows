@@ -3,7 +3,7 @@ using MediaBrowser.Theater.Api.UserInterface.ViewModels;
 
 namespace MediaBrowser.Theater.Api.UserInterface.Navigation
 {
-    public interface IPresentationManager
+    public interface IPresenter
     {
         Task ShowPage(IViewModel contents);
         Task ShowPopup(IViewModel contents);

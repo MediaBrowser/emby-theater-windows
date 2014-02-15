@@ -135,11 +135,11 @@
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Navigation\NavigationService.cs" />
+    <Compile Include="Navigation\RootContext.cs" />
     <Compile Include="PopupWindow.xaml.cs">
       <DependentUpon>PopupWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="PresentationManager.cs" />
+    <Compile Include="Presenter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -158,6 +158,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Strings.resx</DependentUpon>
     </Compile>
+    <Compile Include="Navigation\RootNavigationManager.cs" />
     <Compile Include="Theme.cs" />
     <Compile Include="ViewModels\HelloWorldViewModel.cs" />
     <Compile Include="ViewModels\NotificationTrayViewModel.cs" />

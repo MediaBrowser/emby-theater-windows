@@ -7,14 +7,14 @@ namespace MediaBrowser.Theater.Api.UserInterface
     public interface ITheme : IPlugin
     {
         /// <summary>
-        ///     Gets the presentation manager used to show UI elements.
+        ///     Gets the presenter used to show UI elements.
         /// </summary>
-        IPresentationManager Presentation { get; }
+        IPresenter Presenter { get; }
 
         /// <summary>
         ///     Gets the navigation service implementation.
         /// </summary>
-        INavigationService Navigation { get; }
+        INavigator Navigator { get; }
 
         /// <summary>
         ///     Starts the theme. The theme is expected to present its GUI.

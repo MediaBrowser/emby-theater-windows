@@ -3,10 +3,10 @@
 namespace MediaBrowser.Theater.Api.UserInterface.Navigation
 {
     /// <summary>
-    ///     The INavigationService interface defines the API for instructing a theme to
+    ///     The INavigator interface defines the API for instructing a theme to
     ///     display the content relevant to a specified path.
     /// </summary>
-    public interface INavigationService
+    public interface INavigator
     {
         /// <summary>
         ///     Gets the current location.

@@ -1,26 +1,30 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Windows;
+using MediaBrowser.Common;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Plugins;
 using MediaBrowser.Model.Serialization;
+using MediaBrowser.Theater.Api.Events;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.Api.UserInterface.Navigation;
 using MediaBrowser.Theater.DefaultTheme.Configuration;
+using MediaBrowser.Theater.DefaultTheme.Navigation;
 
 namespace MediaBrowser.Theater.DefaultTheme
 {
     public class Theme
         : BasePlugin<PluginConfiguration>, ITheme
     {
+        private readonly INavigator _navigator;
+        private readonly Presenter _presenter;
         private readonly TaskCompletionSource<object> _running;
         private App _application;
-        private readonly PresentationManager _presentation;
 
-        public Theme(IApplicationPaths applicationPaths, IXmlSerializer xmlSerializer, PresentationManager presentationManager) : base(applicationPaths, xmlSerializer)
+        public Theme(IApplicationPaths applicationPaths, IXmlSerializer xmlSerializer, IEventAggregator events, IApplicationHost appHost) : base(applicationPaths, xmlSerializer)
         {
             _running = new TaskCompletionSource<object>();
-            _presentation = presentationManager;
+            _presenter = new Presenter(events);
+            _navigator = new RootNavigationManager(new RootContext(appHost));
         }
 
         public override string Name
@@ -28,12 +32,15 @@ namespace MediaBrowser.Theater.DefaultTheme
             get { return "Default Theme"; }
         }
 
-        public IPresentationManager Presentation
+        public IPresenter Presenter
         {
-            get { return _presentation; }
+            get { return _presenter; }
         }
 
-        public INavigationService Navigation { get; private set; }
+        public INavigator Navigator
+        {
+            get { return _navigator; }
+        }
 
         public void Run()
         {
@@ -42,7 +49,7 @@ namespace MediaBrowser.Theater.DefaultTheme
 
             UIDispatchExtensions.ResetDispatcher();
 
-            var mainWindow = _presentation.CreateMainWindow(Configuration);
+            var mainWindow = _presenter.CreateMainWindow(Configuration);
             _application.Run(mainWindow);
 
             Cleanup();
@@ -63,7 +70,7 @@ namespace MediaBrowser.Theater.DefaultTheme
 
         private void Cleanup()
         {
-            _presentation.SaveWindowPosition(Configuration);
+            _presenter.SaveWindowPosition(Configuration);
             SaveConfiguration();
         }
 

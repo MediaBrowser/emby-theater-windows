@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 
 namespace MediaBrowser.Theater.Api.UserInterface.Navigation
 {
-    public class NavigationService
-        : INavigationService
+    public class Navigator
+        : INavigator
     {
         private class NavigationFrame
         {
@@ -36,11 +36,13 @@ namespace MediaBrowser.Theater.Api.UserInterface.Navigation
 
         private NavigationFrame _activeFrame;
 
-        public NavigationService()
+        public Navigator(INavigationContext rootContext)
         {
             _logicalBackStack = new Stack<NavigationFrame>();
             _logicalForwardStack = new Stack<NavigationFrame>();
             _navigationLock = new AsyncLock();
+
+            _activeFrame = new NavigationFrame { Context = rootContext };
         }
 
         public async Task Navigate(INavigationPath path)

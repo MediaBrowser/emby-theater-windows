@@ -5,9 +5,8 @@ using MediaBrowser.Theater.Api;
 using MediaBrowser.Theater.Api.Configuration;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Session;
-using MediaBrowser.Theater.Api.UserInterface;
 
-namespace MediaBrowser.Theater.DefaultTheme.Navigation
+namespace MediaBrowser.Theater.DefaultTheme.Core
 {
     public class RootContext
         : NavigationContext

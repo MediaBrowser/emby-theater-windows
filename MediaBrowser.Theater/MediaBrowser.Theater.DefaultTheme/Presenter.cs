@@ -4,7 +4,7 @@ using System.Windows;
 using MediaBrowser.Theater.Api.Events;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Configuration;
-using MediaBrowser.Theater.DefaultTheme.ViewModels;
+using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme
 {

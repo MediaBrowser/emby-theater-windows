@@ -5,7 +5,7 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Views/ViewModelBindings.xaml"/>
+                <ResourceDictionary Source="ViewModelBindings.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/LightColors.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/Brushes.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/Fonts.xaml"/>

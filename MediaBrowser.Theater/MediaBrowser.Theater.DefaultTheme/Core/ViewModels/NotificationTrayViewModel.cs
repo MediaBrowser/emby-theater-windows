@@ -4,7 +4,7 @@ using MediaBrowser.Theater.Api.Events;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.Presentation.ViewModels;
 
-namespace MediaBrowser.Theater.DefaultTheme.ViewModels
+namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
 {
     public class NotificationTrayViewModel
         : BaseViewModel

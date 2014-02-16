@@ -28,7 +28,6 @@ using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.System;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme;
-using MediaBrowser.Theater.DefaultTheme.Navigation;
 using MediaBrowser.Theater.Networking;
 using MediaBrowser.Theater.StartupWizard;
 using MediaBrowser.Theater.StartupWizard.ViewModels;

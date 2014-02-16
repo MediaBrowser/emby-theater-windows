@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using MediaBrowser.Theater.Presentation.ViewModels;
 
-namespace MediaBrowser.Theater.DefaultTheme.ViewModels
+namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
 {
     public class HelloWorldViewModel
         : BaseViewModel

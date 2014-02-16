@@ -1,4 +1,8 @@
-﻿using MediaBrowser.Model.Logging;
+﻿using System.Diagnostics;
+using System.Runtime.Serialization.Formatters;
+using System.Windows.Input;
+using MediaBrowser.Model.Logging;
+using MediaBrowser.Plugins.DefaultTheme.Osd;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
@@ -9,6 +13,8 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Interop;
+using NLog;
+using KeyEventArgs = System.Windows.Forms.KeyEventArgs;
 
 namespace MediaBrowser.UI.EntryPoints
 {
@@ -20,6 +26,13 @@ namespace MediaBrowser.UI.EntryPoints
         private readonly INavigationService _nav;
         private readonly IUserInputManager _userInput;
         private readonly IHiddenWindow _hiddenWindow;
+
+        private System.Windows.Input.Key _lastWindowKeyDown;
+        private DateTime _lastWindowKeyDownTime;
+        private System.Windows.Forms.Keys _lastFormsKeyCode;
+        private DateTime _lastFormsKeyCodeTime;
+        private const double DuplicateCommandPeriod = 500;// Milliseconds
+
 
         public MediaCenterRemoteEntryPoint(IPresentationManager presenation, IPlaybackManager playback, ILogManager logManager, INavigationService nav, IUserInputManager userInput, IHiddenWindow hiddenWindow)
         {
@@ -178,11 +191,98 @@ namespace MediaBrowser.UI.EntryPoints
 //APPCOMMAND_ASP_AUTO (APPCOMMAND_CUSTOM + 23)
 //APPCOMMAND_ASP_TOGGLE (APPCOMMAND_CUSTOM + 24)
 
+
+// We need to handle 2 case of multiple key sequences for a single commmand
+//
+// its made a little more complex depending on wether the keydown event comes from a global hook or a window hook. The two
+// hooks use different types for there Key code enums.
+// 
+// For now we just processing using a multiple methods and boolean constructs. We will move it to  more generic
+// table drive logic when we refactor the key code mangtement to use a more sophisiphated key mapping architecture
+//
+//  1. some remotes produce a APPCOMMAND followed by a System.Windows.Forms.Keys Keycode or System.Windows.Input.Key Key (depending on hook method)
+//        
+//  Media Key types equivenlance table for media keys
+//  APPCOMMAND code				            System.Windows.Forms.Keys	    System.Windows.Input.Key
+//  APPCOMMAND_MEDIA_PLAY_PAUSE (14)    	MediaPlayPause (179)		    MediaPlayPause (135)
+//  APPCOMMAND_MEDIA_STOP (13) 	    	    MediaStop (178)			        MediaStop = (134)
+//  APPCOMMAND_MEDIA_NEXTTRACK (11)     	MediaNextTrack (176)		    MediaNextTrack = (132)
+//  APPCOMMAND_MEDIA_PREVIOUSTRACK (12)     MediaPreviousTrack(177)		    MediaPreviousTrack = (133)
+//
+//  2. some remotes produce 2 Keycodes in sequence for 1 the one event, notably for left and right arrow
+//  Right  &  LControlKey, LShiftKey, F   for fwd (>>)
+//  Left  & LControlKey, LSHiftKey, B    for backward (<<) 
+//
+//  We dont currently handle Left & Right so we can ignore this condition for now
+//
+        private bool IsMediaCommand(int cmd)
+        {
+            return cmd == APPCOMMAND_MEDIA_NEXTTRACK ||
+                   cmd == APPCOMMAND_MEDIA_PREVIOUSTRACK ||
+                   cmd == APPCOMMAND_MEDIA_STOP ||
+                   cmd == APPCOMMAND_MEDIA_PLAY_PAUSE;
+        }
+
+        private bool MatchCommandWithWindowsKey(int cmd)
+        {
+            if ((cmd == APPCOMMAND_MEDIA_NEXTTRACK && _lastWindowKeyDown == Key.MediaNextTrack) ||
+                (cmd == APPCOMMAND_MEDIA_PREVIOUSTRACK && _lastWindowKeyDown == Key.MediaPreviousTrack) ||
+                (cmd == APPCOMMAND_MEDIA_STOP && _lastWindowKeyDown == Key.MediaStop) ||
+                (cmd == APPCOMMAND_MEDIA_PLAY_PAUSE && _lastWindowKeyDown == Key.MediaPlayPause))
+            {
+                // its the same command, did it occur in the last DuplicateCommandPeriod Milliseconds
+                TimeSpan span = DateTime.Now - _lastWindowKeyDownTime;
+                return span.TotalMilliseconds < DuplicateCommandPeriod;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        
+        private bool MatchCommandWithFormsKey(int cmd)
+        {
+            if ((cmd == APPCOMMAND_MEDIA_NEXTTRACK && _lastFormsKeyCode == Keys.MediaNextTrack) ||
+                (cmd == APPCOMMAND_MEDIA_PREVIOUSTRACK && _lastFormsKeyCode == Keys.MediaPreviousTrack) ||
+                (cmd == APPCOMMAND_MEDIA_STOP && _lastFormsKeyCode == Keys.MediaStop) ||
+                (cmd == APPCOMMAND_MEDIA_PLAY_PAUSE && _lastFormsKeyCode == Keys.MediaPlayPause))
+            {
+                // its the same command, did it occur in the last DuplicateCommandPeriod Milliseconds
+                TimeSpan span = DateTime.Now - _lastFormsKeyCodeTime;
+           return span.TotalMilliseconds < DuplicateCommandPeriod;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+
+        private bool IsDuplicateMediaKeyEvent(int cmd)
+        {
+            // A number of remote controls send a KeyDown event and thne a command event via WndProc for the following
+            // media keys, PlayPause, Stop, Next, Previous, Fwd, Backwards. THis effect of this is to replicate the command
+            // for these key. This double the effect of Next, Previous, Fwd, Backwards and starts & stops or stops and then starts
+            // for PlayPause.
+            // We therefore remember that type and time of the last media keyDown event and when we get a Media Key APPCOMMAND
+            // get check if the correcponsing KetDown just occured and if it did ignore the APPCommand event
+
+            return IsMediaCommand(cmd) && (MatchCommandWithWindowsKey(cmd) || MatchCommandWithFormsKey(cmd));
+        }
+
         /// <summary>
         /// Responds to multimedia keys
         /// </summary>
         private bool ProcessRemoteCommand(int cmd)
         {
+            //Debug.WriteLine("ProcessRemoteCommand {0}", cmd);
+            if (IsDuplicateMediaKeyEvent(cmd))
+            {
+                 //Debug.WriteLine("IsDuplicateMediaKeyEvent");
+                 return true;
+            }
+
             switch (cmd)
             {
                 case APPCOMMAND_INFO:
@@ -197,12 +297,12 @@ namespace MediaBrowser.UI.EntryPoints
                 case APPCOMMAND_MEDIA_STOP:
                     ExecuteCommand(Stop);
                     return true;
-                //case APPCOMMAND_MEDIA_NEXTTRACK:
-                //    ExecuteCommand(OnNextTrackButton);
-                //    return true;
-                //case APPCOMMAND_MEDIA_PREVIOUSTRACK:
-                //    ExecuteCommand(OnPreviousTrackButton);
-                //    return true;
+                case APPCOMMAND_MEDIA_NEXTTRACK:
+                     ExecuteCommand(OnNextTrackButton);
+                    return true;
+                case APPCOMMAND_MEDIA_PREVIOUSTRACK:
+                    ExecuteCommand(OnPreviousTrackButton);
+                    return true;
                 case 4146:
                 case APPCOMMAND_MEDIA_REWIND:
                     ExecuteCommand(SkipBackward);
@@ -236,6 +336,7 @@ namespace MediaBrowser.UI.EntryPoints
         /// </summary>
         void window_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
+           // Debug.WriteLine("window_KeyDown {0}", e.Key);
             switch (e.Key)
             {
                 case System.Windows.Input.Key.BrowserSearch:
@@ -328,8 +429,12 @@ namespace MediaBrowser.UI.EntryPoints
                         break;
                     }
                 default:
-                    return;
+                    break;
             }
+
+            // record the key and the time but after the execute
+            _lastWindowKeyDown = e.Key;
+            _lastWindowKeyDownTime = DateTime.Now;
         }
 
         /// <summary>
@@ -337,6 +442,7 @@ namespace MediaBrowser.UI.EntryPoints
         /// </summary>
         void _userInput_KeyDown(object sender, KeyEventArgs e)
         {
+            //Debug.WriteLine("_userInput_KeyDown {0}", e.KeyCode);
             switch (e.KeyCode)
             {
                 case Keys.BrowserSearch:
@@ -427,8 +533,12 @@ namespace MediaBrowser.UI.EntryPoints
                     ExecuteCommand(ToggleInfoPanel);
                     break;
                 default:
-                    return;
+                    break;
             }
+
+            // record key and time but after the execute
+            _lastFormsKeyCode = e.KeyCode;
+            _lastFormsKeyCodeTime = DateTime.Now;
         }
 
         private bool IsShiftKeyDown(System.Windows.Input.KeyEventArgs e)

@@ -1022,7 +1022,7 @@ namespace MediaBrowser.Theater.DirectShow
 
         void HiddenForm_KeyDown(object sender, KeyEventArgs e)
         {
-            Debug.Print(string.Format("KeyPress: {0}", e));
+            Debug.WriteLine("HiddenForm_KeyDown: {0} {1}", e.KeyCode, (int) e.KeyCode);
             switch (e.KeyCode)
             {
                 case Keys.Return:

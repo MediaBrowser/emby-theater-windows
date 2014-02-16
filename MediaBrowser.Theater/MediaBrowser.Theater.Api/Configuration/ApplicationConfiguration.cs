@@ -36,6 +36,8 @@ namespace MediaBrowser.Theater.Api.Configuration
             ServerHostName = "127.0.0.1";
             ServerApiPort = 8096;
             ActiveThemeGuid = new Guid("C501C937-3BC9-471A-A538-20FAA9B7CE51");
+
+            AutoLoginConfiguration = new AutoLoginConfiguration();
         }
     }
 }

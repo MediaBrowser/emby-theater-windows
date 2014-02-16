@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace MediaBrowser.Theater.Api.UserInterface.Navigation
+namespace MediaBrowser.Theater.Api.Navigation
 {
     public class Navigator
         : INavigator
@@ -36,13 +36,19 @@ namespace MediaBrowser.Theater.Api.UserInterface.Navigation
 
         private NavigationFrame _activeFrame;
 
-        public Navigator(INavigationContext rootContext)
+        public Navigator()
         {
             _logicalBackStack = new Stack<NavigationFrame>();
             _logicalForwardStack = new Stack<NavigationFrame>();
             _navigationLock = new AsyncLock();
+        }
 
+        public Task Initialize(INavigationContext rootContext)
+        {
+            ClearNavigationHistory();
             _activeFrame = new NavigationFrame { Context = rootContext };
+
+            return _activeFrame.Context.Activate();
         }
 
         public async Task Navigate(INavigationPath path)

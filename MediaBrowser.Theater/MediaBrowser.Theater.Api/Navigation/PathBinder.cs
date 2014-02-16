@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MediaBrowser.Common;
 
-namespace MediaBrowser.Theater.Api.UserInterface.Navigation
+namespace MediaBrowser.Theater.Api.Navigation
 {
     public class PathBinder
     {

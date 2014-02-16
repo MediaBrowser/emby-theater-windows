@@ -1,6 +1,6 @@
 ﻿using MediaBrowser.Model.Dto;
 
-namespace MediaBrowser.Theater.Api.UserInterface.Navigation
+namespace MediaBrowser.Theater.Api.Navigation
 {
     // Application wide paths that all themes are expected to implement
 
@@ -75,10 +75,21 @@ namespace MediaBrowser.Theater.Api.UserInterface.Navigation
         ///     Gets a path to the specified items page.
         /// </summary>
         /// <param name="item">The item to view.</param>
+        /// <param name="go"></param>
         /// <returns>A path to the page for the specified item.</returns>
-        public static ItemPath Item(BaseItemDto item)
+        public static ItemPath Item(this Go go, BaseItemDto item)
         {
             return new ItemPath { Parameter = item };
+        }
+
+        /// <summary>
+        /// Gets a path to the user login page.
+        /// </summary>
+        /// <param name="go"></param>
+        /// <returns>A path to the user login page.</returns>
+        public static LoginPath Login(this Go go)
+        {
+            return new LoginPath();
         }
     }
 

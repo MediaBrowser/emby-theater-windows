@@ -2,8 +2,7 @@
 using System.Threading.Tasks;
 using System.Windows;
 using MediaBrowser.Theater.Api.Events;
-using MediaBrowser.Theater.Api.UserInterface.Navigation;
-using MediaBrowser.Theater.Api.UserInterface.ViewModels;
+using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Configuration;
 using MediaBrowser.Theater.DefaultTheme.ViewModels;
 
@@ -19,28 +18,43 @@ namespace MediaBrowser.Theater.DefaultTheme
         public IViewModel ViewModel { get; set; }
     }
 
-    public class Presenter
-        : IPresenter
+    public class WindowManager
     {
-        private readonly IEventAggregator _events;
-        private readonly IEventBus<ShowNotificationEvent> _showNotificationEvent;
-        private readonly IEventBus<ShowPageEvent> _showPageEvent;
-
         private MainWindow _mainWindow;
         private PopupWindow _currentPopup;
 
-        public Presenter(IEventAggregator events)
+        public MainWindow MainWindow
         {
-            _events = events;
-            _showPageEvent = events.Get<ShowPageEvent>();
-            _showNotificationEvent = events.Get<ShowNotificationEvent>();
+            get { return _mainWindow; }
         }
 
-        public async Task ShowPage(IViewModel contents)
+        private void FocusMainWindow()
         {
-            await ClosePopup();
+            var rootVm = _mainWindow.DataContext as RootViewModel;
+            if (rootVm != null) {
+                rootVm.IsInFocus = true;
+            }
+        }
 
-            _showPageEvent.Publish(new ShowPageEvent { ViewModel = contents });
+        private void UnfocusMainWindow()
+        {
+            var rootVm = _mainWindow.DataContext as RootViewModel;
+            if (rootVm != null) {
+                rootVm.IsInFocus = false;
+            }
+        }
+
+        public async Task ClosePopup()
+        {
+            if (_currentPopup != null && _currentPopup.IsActive) {
+                var context = _currentPopup.DataContext as IViewModel;
+                if (context != null) {
+                    await context.Close();
+                }
+
+                _currentPopup.Close();
+                _currentPopup = null;
+            }
         }
 
         public async Task ShowPopup(IViewModel contents)
@@ -63,45 +77,10 @@ namespace MediaBrowser.Theater.DefaultTheme
             _currentPopup.ShowModal(_mainWindow);
         }
 
-        private void FocusMainWindow()
-        {
-            var rootVm = _mainWindow.DataContext as RootViewModel;
-            if (rootVm != null) {
-                rootVm.IsInFocus = true;
-            }
-        }
-
-        private void UnfocusMainWindow()
-        {
-            var rootVm = _mainWindow.DataContext as RootViewModel;
-            if (rootVm != null) {
-                rootVm.IsInFocus = false;
-            }
-        }
-
-        private async Task ClosePopup()
-        {
-            if (_currentPopup != null && _currentPopup.IsActive) {
-                var context = _currentPopup.DataContext as IViewModel;
-                if (context != null) {
-                    await context.Close();
-                }
-
-                _currentPopup.Close();
-                _currentPopup = null;
-            }
-        }
-
-        public Task ShowNotification(IViewModel contents)
-        {
-            _showNotificationEvent.Publish(new ShowNotificationEvent { ViewModel = contents });
-            return Task.FromResult(0);
-        }
-
-        public MainWindow CreateMainWindow(PluginConfiguration config)
+        public MainWindow CreateMainWindow(PluginConfiguration config, IViewModel viewModel)
         {
             var window = new MainWindow {
-                DataContext = new RootViewModel(_events)
+                DataContext = viewModel
             };
 
             // Restore window position/size
@@ -144,8 +123,7 @@ namespace MediaBrowser.Theater.DefaultTheme
 
         public void SaveWindowPosition(PluginConfiguration config)
         {
-            if (_mainWindow != null)
-            {
+            if (_mainWindow != null) {
                 // Save window position
                 config.WindowState = _mainWindow.WindowState;
                 config.WindowTop = _mainWindow.Top;
@@ -153,6 +131,41 @@ namespace MediaBrowser.Theater.DefaultTheme
                 config.WindowWidth = _mainWindow.Width;
                 config.WindowHeight = _mainWindow.Height;
             }
+        }
+    }
+
+    public class Presenter
+        : IPresenter
+    {
+        private readonly IEventAggregator _events;
+        private readonly IEventBus<ShowNotificationEvent> _showNotificationEvent;
+        private readonly IEventBus<ShowPageEvent> _showPageEvent;
+
+        private readonly WindowManager _windowManager;
+        
+        public Presenter(IEventAggregator events, WindowManager windowManager)
+        {
+            _events = events;
+            _showPageEvent = events.Get<ShowPageEvent>();
+            _showNotificationEvent = events.Get<ShowNotificationEvent>();
+            _windowManager = windowManager;
+        }
+
+        public async Task ShowPage(IViewModel contents)
+        {
+            await _windowManager.ClosePopup();
+            _showPageEvent.Publish(new ShowPageEvent { ViewModel = contents });
+        }
+
+        public Task ShowPopup(IViewModel contents)
+        {
+            return _windowManager.ShowPopup(contents);
+        }
+
+        public Task ShowNotification(IViewModel contents)
+        {
+            _showNotificationEvent.Publish(new ShowNotificationEvent { ViewModel = contents });
+            return Task.FromResult(0);
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace MediaBrowser.Theater.Api.UserInterface.Navigation
+namespace MediaBrowser.Theater.Api.Navigation
 {
     /// <summary>
     ///     The INavigator interface defines the API for instructing a theme to
@@ -8,6 +8,13 @@ namespace MediaBrowser.Theater.Api.UserInterface.Navigation
     /// </summary>
     public interface INavigator
     {
+        /// <summary>
+        /// Initializes the navigator with an initial navigation context.
+        /// </summary>
+        /// <param name="rootContext">The root navigation context.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        Task Initialize(INavigationContext rootContext);
+
         /// <summary>
         ///     Gets the current location.
         /// </summary>

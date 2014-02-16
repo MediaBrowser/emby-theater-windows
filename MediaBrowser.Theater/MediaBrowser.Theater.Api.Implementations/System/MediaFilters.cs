@@ -16,10 +16,10 @@ namespace MediaBrowser.Theater.Api.System
         private readonly IHttpClient _httpClient;
         private readonly ILogger _logger;
 
-        public MediaFilters(IHttpClient httpClient, ILogger logger)
+        public MediaFilters(IHttpClient httpClient, ILogManager logManager)
         {
             _httpClient = httpClient;
-            _logger = logger;
+            _logger = logManager.GetLogger("MediaFilters");
         }
 
         public bool IsXyVsFilterInstalled()

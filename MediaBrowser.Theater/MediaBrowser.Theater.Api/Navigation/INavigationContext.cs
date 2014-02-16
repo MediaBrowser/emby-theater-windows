@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace MediaBrowser.Theater.Api.UserInterface.Navigation
+namespace MediaBrowser.Theater.Api.Navigation
 {
     public interface INavigationContext
     {

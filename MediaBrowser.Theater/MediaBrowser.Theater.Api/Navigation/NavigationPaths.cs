@@ -1,4 +1,4 @@
-﻿namespace MediaBrowser.Theater.Api.UserInterface.Navigation
+﻿namespace MediaBrowser.Theater.Api.Navigation
 {
     #region Interfaces
 

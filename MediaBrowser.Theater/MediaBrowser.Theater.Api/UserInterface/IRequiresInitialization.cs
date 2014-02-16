@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace MediaBrowser.Theater.Api.UserInterface.ViewModels
+namespace MediaBrowser.Theater.Api.UserInterface
 {
     public interface IRequiresInitialization
     {

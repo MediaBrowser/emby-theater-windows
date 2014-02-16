@@ -132,6 +132,7 @@
     </Compile>
     <Compile Include="Configuration\ColorPalette.cs" />
     <Compile Include="Configuration\PluginConfiguration.cs" />
+    <Compile Include="DependencyModule.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
@@ -158,7 +159,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Strings.resx</DependentUpon>
     </Compile>
-    <Compile Include="Navigation\RootNavigationManager.cs" />
     <Compile Include="Theme.cs" />
     <Compile Include="ViewModels\HelloWorldViewModel.cs" />
     <Compile Include="ViewModels\NotificationTrayViewModel.cs" />

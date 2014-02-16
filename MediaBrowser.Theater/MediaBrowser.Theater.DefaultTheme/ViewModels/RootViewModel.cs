@@ -1,7 +1,8 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using MediaBrowser.Theater.Api.Events;
-using MediaBrowser.Theater.Api.UserInterface.ViewModels;
+using MediaBrowser.Theater.Api.Navigation;
+using MediaBrowser.Theater.Api.UserInterface;
+using MediaBrowser.Theater.DefaultTheme.Navigation;
 using MediaBrowser.Theater.Presentation.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.ViewModels
@@ -9,40 +10,21 @@ namespace MediaBrowser.Theater.DefaultTheme.ViewModels
     public class RootViewModel
         : BaseViewModel
     {
+        private readonly INavigator _navigator;
+        private readonly RootContext _rootContext;
         private IViewModel _activePage;
         private NotificationTrayViewModel _notifications;
         private bool _isInFocus;
         private IViewModel _backgroundMedia;
 
-        public RootViewModel(IEventAggregator events)
+        public RootViewModel(IEventAggregator events, INavigator navigator, RootContext rootContext)
         {
+            _navigator = navigator;
+            _rootContext = rootContext;
             Notifications = new NotificationTrayViewModel(events);
             IsInFocus = true;
 
             events.Get<ShowPageEvent>().Subscribe(message => ActivePage = message.ViewModel);
-
-            // test page
-            events.Get<ShowPageEvent>().Publish(new ShowPageEvent { ViewModel = new HelloWorldViewModel() });
-            events.Get<ShowNotificationEvent>().Publish(new ShowNotificationEvent {
-                ViewModel = new NotificationViewModel(TimeSpan.FromSeconds(5)) {
-                    Contents = new HelloWorldViewModel(),
-                    Icon = new HelloWorldViewModel()
-                }
-            });
-
-            Task.Run(async () => {
-                while (true) {
-                    await Task.Delay(3000);
-                    events.Get<ShowNotificationEvent>().Publish(new ShowNotificationEvent {
-                        ViewModel = new NotificationViewModel(TimeSpan.FromSeconds(5)) {
-                            Contents = new HelloWorldViewModel(),
-                            Icon = new HelloWorldViewModel()
-                        }
-                    });
-
-                    IsInFocus = !IsInFocus;
-                }
-            });
         }
 
         public IViewModel ActivePage
@@ -95,6 +77,12 @@ namespace MediaBrowser.Theater.DefaultTheme.ViewModels
                 _isInFocus = value;
                 OnPropertyChanged();
             }
+        }
+
+        public override async Task Initialize()
+        {
+            await _navigator.Initialize(_rootContext);
+            await base.Initialize();
         }
     }
 }

@@ -20,14 +20,19 @@ using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.System;
 using MediaBrowser.Model.Updates;
+using MediaBrowser.Theater.Api;
 using MediaBrowser.Theater.Api.Configuration;
 using MediaBrowser.Theater.Api.Events;
+using MediaBrowser.Theater.Api.Navigation;
+using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.System;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme;
+using MediaBrowser.Theater.DefaultTheme.Navigation;
 using MediaBrowser.Theater.Networking;
 using MediaBrowser.Theater.StartupWizard;
 using MediaBrowser.Theater.StartupWizard.ViewModels;
+using SimpleInjector;
 using Application = System.Windows.Application;
 
 namespace MediaBrowser.Theater
@@ -35,7 +40,7 @@ namespace MediaBrowser.Theater
     /// <summary>
     ///     Class CompositionRoot
     /// </summary>
-    internal class ApplicationHost : BaseApplicationHost<ApplicationPaths>, IDisposable
+    internal class ApplicationHost : BaseApplicationHost<ApplicationPaths>, IDisposable, ITheaterApplicationHost
     {
         public ApplicationHost(ApplicationPaths applicationPaths, ILogManager logManager)
             : base(applicationPaths, logManager) { }
@@ -43,11 +48,9 @@ namespace MediaBrowser.Theater
         public IApiClient ApiClient { get; private set; }
         internal ApiWebSocket ApiWebSocket { get; set; }
         public ITheme Theme { get; private set; }
-        public IMediaFilters MediaFilters { get; private set; }
         public bool RestartOnExit { get; private set; }
-        public IEventAggregator Events { get; private set; }
 
-        public ConfigurationManager TheaterConfigurationManager
+        public ITheaterConfigurationManager TheaterConfigurationManager
         {
             get { return (ConfigurationManager) ConfigurationManager; }
         }
@@ -99,17 +102,20 @@ namespace MediaBrowser.Theater
 
             await base.RegisterResources(progress).ConfigureAwait(false);
 
-            MediaFilters = new MediaFilters(HttpClient, Logger);
-            Events = new EventAggregator();
-
-            RegisterSingleInstance(MediaFilters);
-            RegisterSingleInstance(Events);
             RegisterSingleInstance(ApplicationPaths);
             RegisterSingleInstance(ApiClient);
             RegisterSingleInstance<IServerEvents>(ApiWebSocket);
-            RegisterSingleInstance<ITheaterConfigurationManager>(TheaterConfigurationManager);
+            RegisterSingleInstance(TheaterConfigurationManager);
+            RegisterSingleInstance<ITheaterApplicationHost>(this);
 
             Container.RegisterSingle(typeof (ITheme), FindTheme());
+            Container.RegisterSingle(typeof (IMediaFilters), typeof (MediaFilters));
+            Container.RegisterSingle(typeof (IEventAggregator), typeof (EventAggregator));
+            Container.RegisterSingle(typeof (ISessionManager), typeof (SessionManager));
+
+            // temp bindings until it is possible for the theme to bind these
+            Container.RegisterSingle(typeof (IPresenter), typeof (Presenter));
+            Container.RegisterSingle(typeof (INavigator), typeof (Navigator));
         }
 
         protected override void FindParts()

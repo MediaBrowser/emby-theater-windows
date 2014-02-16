@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
-using MediaBrowser.Theater.Api.UserInterface.ViewModels;
 
-namespace MediaBrowser.Theater.Api.UserInterface.Navigation
+namespace MediaBrowser.Theater.Api.UserInterface
 {
     public interface IPresenter
     {

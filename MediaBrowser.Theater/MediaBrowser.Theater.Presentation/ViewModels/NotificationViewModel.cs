@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using MediaBrowser.Theater.Api.UserInterface.ViewModels;
+using MediaBrowser.Theater.Api.UserInterface;
 
 namespace MediaBrowser.Theater.Presentation.ViewModels
 {

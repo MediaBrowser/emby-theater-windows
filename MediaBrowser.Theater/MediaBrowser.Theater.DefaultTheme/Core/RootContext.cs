@@ -5,6 +5,8 @@ using MediaBrowser.Theater.Api;
 using MediaBrowser.Theater.Api.Configuration;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Session;
+using MediaBrowser.Theater.DefaultTheme.Home;
+using MediaBrowser.Theater.DefaultTheme.Login;
 
 namespace MediaBrowser.Theater.DefaultTheme.Core
 {
@@ -22,6 +24,10 @@ namespace MediaBrowser.Theater.DefaultTheme.Core
             _navigator = navigator;
             _sessionManager = sessionManager;
             _logger = logManager.GetLogger("RootContext");
+
+            // create root navigation bindings
+            Binder.Bind<LoginPath, LoginContext>();
+            Binder.Bind<HomePath, HomeContext>();
         }
 
         public override Task Activate()

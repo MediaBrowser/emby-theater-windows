@@ -46,6 +46,7 @@
       <HintPath>..\packages\Unofficial.Blend.Interactivity.1.0.0\lib\net45\Microsoft.Expression.Interactions.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Unofficial.Blend.Interactivity.1.0.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
@@ -70,6 +71,14 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="App.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Login\Views\LoginView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Login\Views\ManualLoginView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -98,6 +107,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Resources\Styles\MainWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\Styles\TextBlocks.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -133,6 +146,18 @@
     <Compile Include="Configuration\ColorPalette.cs" />
     <Compile Include="Configuration\PluginConfiguration.cs" />
     <Compile Include="DependencyModule.cs" />
+    <Compile Include="Home\HomeContext.cs" />
+    <Compile Include="Home\ViewModels\HomeViewModel.cs" />
+    <Compile Include="Login\LoginContext.cs" />
+    <Compile Include="Login\ViewModels\LoginViewModel.cs" />
+    <Compile Include="Login\ViewModels\ManualLoginViewModel.cs" />
+    <Compile Include="Login\ViewModels\UserLoginViewModel.cs" />
+    <Compile Include="Login\Views\LoginView.xaml.cs">
+      <DependentUpon>LoginView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Login\Views\ManualLoginView.xaml.cs">
+      <DependentUpon>ManualLoginView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>

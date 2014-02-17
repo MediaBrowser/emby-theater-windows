@@ -12,6 +12,7 @@ using MediaBrowser.Model.Users;
 using MediaBrowser.Theater.Api.Configuration;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Playback;
+using MediaBrowser.Theater.Api.UserInterface;
 
 namespace MediaBrowser.Theater.Api.Session
 {
@@ -21,11 +22,13 @@ namespace MediaBrowser.Theater.Api.Session
         private readonly ITheaterConfigurationManager _config;
         private readonly ILogger _logger;
         private readonly INavigator _navService;
+        private readonly IPresenter _presenter;
 //        private readonly IPlaybackManager _playback;
 
-        public SessionManager(INavigator navService, IApiClient apiClient, ILogger logger, ITheaterConfigurationManager config)//, IPlaybackManager playback)
+        public SessionManager(INavigator navService, IPresenter presenter, IApiClient apiClient, ILogger logger, ITheaterConfigurationManager config)//, IPlaybackManager playback)
         {
             _navService = navService;
+            _presenter = presenter;
             _apiClient = apiClient;
             _logger = logger;
             _config = config;
@@ -123,6 +126,7 @@ namespace MediaBrowser.Theater.Api.Session
             SystemInfo systemInfo = await _apiClient.GetSystemInfoAsync();
 
             if (Version.Parse(systemInfo.Version) < RequiredServerVersion) {
+                //todo show server connection error notification
                 throw new ApplicationException(string.Format("Media Browser Server is out of date. Please upgrade to {0} or greater.", RequiredServerVersion));
             }
 

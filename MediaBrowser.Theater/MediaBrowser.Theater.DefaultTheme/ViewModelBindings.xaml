@@ -2,7 +2,9 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:viewModelsPresentation="clr-namespace:MediaBrowser.Theater.Presentation.ViewModels;assembly=MediaBrowser.Theater.Presentation"
                     xmlns:viewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.Core.ViewModels"
-                    xmlns:views="clr-namespace:MediaBrowser.Theater.DefaultTheme.Core.Views">
+                    xmlns:views="clr-namespace:MediaBrowser.Theater.DefaultTheme.Core.Views"
+                    xmlns:loginViewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.Login.ViewModels"
+                    xmlns:loginViews="clr-namespace:MediaBrowser.Theater.DefaultTheme.Login.Views">
     
     <DataTemplate DataType="{x:Type viewModels:RootViewModel}">
         <views:RootView/>
@@ -18,6 +20,14 @@
     
     <DataTemplate DataType="{x:Type viewModels:NotificationTrayViewModel}">
         <views:NotificationTrayView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type loginViewModels:LoginViewModel}">
+        <loginViews:LoginView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type loginViewModels:ManualLoginViewModel}">
+        <loginViews:ManualLoginView/>
     </DataTemplate>
     
 </ResourceDictionary>

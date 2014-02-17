@@ -115,6 +115,7 @@ namespace MediaBrowser.Theater
             // temp bindings until it is possible for the theme to bind these
             Container.RegisterSingle(typeof (IPresenter), typeof (Presenter));
             Container.RegisterSingle(typeof (INavigator), typeof (Navigator));
+            Container.RegisterSingle(typeof (WindowManager), typeof (WindowManager));
         }
 
         protected override void FindParts()

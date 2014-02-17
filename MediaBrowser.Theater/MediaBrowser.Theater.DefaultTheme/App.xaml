@@ -10,6 +10,7 @@
                 <ResourceDictionary Source="Resources/Styles/Brushes.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/Fonts.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/MainWindow.xaml"/>
+                <ResourceDictionary Source="Resources/Styles/TextBlocks.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             
             <converters:BooleanInverter x:Key="BooleanInverter"/>

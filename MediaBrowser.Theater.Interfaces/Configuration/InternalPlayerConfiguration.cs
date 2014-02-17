@@ -119,19 +119,19 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
 
         public void SetDefaults()
         {
-            if (HwaMode < 0 || HwaResolution < 0)
-            {
-                if (GpuModel.IndexOf("Intel") > -1)
-                {
-                    HwaResolution = 7; // SD + HD + UHD
-                    HwaMode = 2; //LAVHWAccel.QuickSync;
-                }
-                else
-                {
-                    HwaResolution = 3; // SD + HD; 
-                    HwaMode = 3; // LAVHWAccel.DXVA2CopyBack;
-                }
-            }
+            //if (HwaMode < 0 || HwaResolution < 0)
+            //{
+            //    if (GpuModel.IndexOf("Intel") > -1)
+            //    {
+            //        HwaResolution = 7; // SD + HD + UHD
+            //        HwaMode = 2; //LAVHWAccel.QuickSync;
+            //    }
+            //    else
+            //    {
+            //        HwaResolution = 3; // SD + HD; 
+            //        HwaMode = 3; // LAVHWAccel.DXVA2CopyBack;
+            //    }
+            //}
             //reading through nevcariel's comments it appears that HWA DVD playback can have stability issues
             //and since most any PC should be able to manage it, we're not going to turn it on by default
             //also skip MPEG4 since most GPUs can't HWA and it's buggy

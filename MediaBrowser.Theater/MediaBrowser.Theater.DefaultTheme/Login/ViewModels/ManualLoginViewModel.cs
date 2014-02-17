@@ -1,15 +1,21 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 using MediaBrowser.Model.Logging;
-using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Presentation.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.Login.ViewModels
 {
+    public interface IHasImage
+    {
+        bool HasImage { get; }
+        BitmapImage Image { get; }
+    }
+
     public class ManualLoginViewModel
-        : BaseValidatingViewModel
+        : BaseValidatingViewModel, IHasImage
     {
         private string _password;
         private bool _rememberMe;
@@ -93,6 +99,16 @@ namespace MediaBrowser.Theater.DefaultTheme.Login.ViewModels
                 _rememberMe = value;
                 OnPropertyChanged();
             }
+        }
+
+        public bool HasImage 
+        {
+            get { return false; }
+        }
+
+        public BitmapImage Image
+        {
+            get { return null; }
         }
     }
 }

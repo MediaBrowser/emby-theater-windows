@@ -37,7 +37,7 @@ namespace MediaBrowser.Theater.DirectShow
 
         public InternalDirectShowPlayer(ILogManager logManager, IHiddenWindow hiddenWindow, IPresentationManager presentation, IApiClient apiClient, IPlaybackManager playbackManager, ITheaterConfigurationManager config, IIsoManager isoManager)
         {
-            _logger = logManager.GetLogger("DirectShowPlayer");
+            _logger = logManager.GetLogger("InternalDirectShowPlayer");
             _hiddenWindow = hiddenWindow;
             _presentation = presentation;
             _apiClient = apiClient;

@@ -25,8 +25,10 @@
 <!--            <TextBox Text="{Binding Username, ValidatesOnNotifyDataErrors=True}" />-->
 <!--            <TextBlock Text="Password:" />-->
 <!--            <TextBox Text="{Binding Password}" />-->
-            <Button x:Name="Button" Content="Login" Command="{Binding LoginCommand}" />
-            <TextBlock Text="{Binding ElementName=Button, Path=IsFocused}"/>
+            <Button x:Name="Button" Content="{Binding ElementName=Button, Path=IsKeyboardFocused}" Command="{Binding LoginCommand}" />
+            <Button x:Name="Button2" Content="{Binding ElementName=Button2, Path=IsKeyboardFocused}" Command="{Binding LoginCommand}" />
+            <Button x:Name="Button3" Content="{Binding ElementName=Button3, Path=IsKeyboardFocused}" Command="{Binding LoginCommand}" />
+<!--            <TextBlock Text="{Binding ElementName=Button, Path=IsFocused}"/>-->
 <!--            <CheckBox IsChecked="{Binding RememberMe}">-->
 <!--                <TextBlock Text="Remember me?" />-->
 <!--            </CheckBox>-->

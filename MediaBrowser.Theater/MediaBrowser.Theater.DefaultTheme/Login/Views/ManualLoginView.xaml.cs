@@ -24,5 +24,23 @@ namespace MediaBrowser.Theater.DefaultTheme.Login.Views
         {
             InitializeComponent();
         }
+
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            if (e.Key == Key.Down) {
+                var focused = Keyboard.FocusedElement as FrameworkElement;
+                focused.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
+                e.Handled = true;
+            }
+
+            if (e.Key == Key.Up) {
+                var focused = Keyboard.FocusedElement as FrameworkElement;
+                //var up = focused.PredictFocus(FocusNavigationDirection.Previous);
+                focused.MoveFocus(new TraversalRequest(FocusNavigationDirection.Previous));
+                e.Handled = true;
+            }
+
+            base.OnKeyDown(e);
+        }
     }
 }

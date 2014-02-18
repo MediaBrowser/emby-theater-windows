@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Session;
@@ -16,14 +17,33 @@ namespace MediaBrowser.Theater.DefaultTheme.Login.ViewModels
     public class LoginViewModel
         : BaseViewModel
     {
+        private readonly ISessionManager _session;
+        private readonly ILogManager _logManager;
+        private readonly IImageManager _imageManager;
+        private readonly IApiClient _apiClient;
+
         private readonly ObservableCollection<IViewModel> _users;
 
         public ListCollectionView Users { get; private set; }
 
-        public LoginViewModel(ISessionManager session, ILogManager logManager)
+        public LoginViewModel(ISessionManager session, ILogManager logManager, IImageManager imageManager, IApiClient apiClient)
         {
-            _users = new ObservableCollection<IViewModel> { new ManualLoginViewModel(session, logManager) };
+            _session = session;
+            _logManager = logManager;
+            _imageManager = imageManager;
+            _apiClient = apiClient;
+            _users = new ObservableCollection<IViewModel>() { new ManualLoginViewModel(_session, _logManager) };
             Users = new ListCollectionView(_users);
+
+            LoadUsers();
+        }
+
+        private async void LoadUsers()
+        {
+            var users = await _apiClient.GetPublicUsersAsync();
+            foreach (var user in users.Select(u => new UserLoginViewModel(u, _apiClient, _imageManager, _session, _logManager))) {
+                _users.Add(user);
+            }
         }
     }
 }

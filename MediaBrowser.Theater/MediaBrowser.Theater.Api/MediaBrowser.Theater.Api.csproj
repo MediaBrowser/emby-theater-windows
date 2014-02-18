@@ -40,9 +40,11 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\MediaBrowser.Common.3.0.328\lib\net45\MediaBrowser.Model.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -78,6 +80,7 @@
     <Compile Include="Navigation\Navigator.cs" />
     <Compile Include="Navigation\PathBinder.cs" />
     <Compile Include="Navigation\PathResolution.cs" />
+    <Compile Include="UserInterface\IImageManager.cs" />
     <Compile Include="UserInterface\UIDispatchExtensions.cs" />
     <Compile Include="UserInterface\ITheme.cs" />
     <Compile Include="Navigation\DefaultPaths.cs" />

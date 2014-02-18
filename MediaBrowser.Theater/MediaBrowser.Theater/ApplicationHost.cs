@@ -111,6 +111,7 @@ namespace MediaBrowser.Theater
             Container.RegisterSingle(typeof (IMediaFilters), typeof (MediaFilters));
             Container.RegisterSingle(typeof (IEventAggregator), typeof (EventAggregator));
             Container.RegisterSingle(typeof (ISessionManager), typeof (SessionManager));
+            Container.RegisterSingle(typeof (IImageManager), typeof (ImageManager));
 
             // temp bindings until it is possible for the theme to bind these
             Container.RegisterSingle(typeof (IPresenter), typeof (Presenter));

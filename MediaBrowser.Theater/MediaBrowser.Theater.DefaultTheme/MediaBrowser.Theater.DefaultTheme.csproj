@@ -82,6 +82,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Login\Views\UserLoginView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -157,6 +161,9 @@
     </Compile>
     <Compile Include="Login\Views\ManualLoginView.xaml.cs">
       <DependentUpon>ManualLoginView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Login\Views\UserLoginView.xaml.cs">
+      <DependentUpon>UserLoginView.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

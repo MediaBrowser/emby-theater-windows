@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using MediaBrowser.Common;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Session;
@@ -11,20 +12,25 @@ namespace MediaBrowser.Theater.DefaultTheme.Login
     public class LoginContext
         : NavigationContext
     {
+        private readonly ILogManager _logManager;
+        private readonly IImageManager _imageManager;
+        private readonly IApiClient _apiClient;
         private readonly IPresenter _presenter;
         private readonly ISessionManager _sessionManager;
-        private readonly ILogManager _logManager;
 
-        public LoginContext(IApplicationHost appHost, IPresenter presenter, ISessionManager sessionManager, ILogManager logManager) : base(appHost)
+        public LoginContext(IApplicationHost appHost, IPresenter presenter, ISessionManager sessionManager,
+                            ILogManager logManager, IImageManager imageManager, IApiClient apiClient) : base(appHost)
         {
             _presenter = presenter;
             _sessionManager = sessionManager;
             _logManager = logManager;
+            _imageManager = imageManager;
+            _apiClient = apiClient;
         }
 
         public override async Task Activate()
         {
-            var loginViewModel = new LoginViewModel(_sessionManager, _logManager);
+            var loginViewModel = new LoginViewModel(_sessionManager, _logManager, _imageManager, _apiClient);
             await _presenter.ShowPage(loginViewModel);
         }
     }

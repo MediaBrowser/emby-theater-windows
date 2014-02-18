@@ -2,13 +2,16 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     
     <!--Default TextBlock style. -->
-    <Style TargetType="TextBlock">
+    <Style TargetType="TextBlock" x:Key="TextBlockStyle">
         <Setter Property="FontSize" Value="{StaticResource DefaultFontSize}"/>
         <Setter Property="FontFamily" Value="{StaticResource DefaultFontFamily}"/>
         <Setter Property="FontWeight" Value="{StaticResource DefaultFontWeight}"/>
+        <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}"/>
         <Setter Property="TextWrapping" Value="Wrap" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
     </Style>
+    
+    <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockStyle}"/>
 
     <Style TargetType="TextBlock" x:Key="ParagraphTextBlockStyle">
         <Setter Property="FontSize" Value="{StaticResource DefaultFontSize}"/>

@@ -29,6 +29,8 @@ namespace MediaBrowser.UI.EntryPoints
 
         private System.Windows.Input.Key _lastKeyDown;
         private DateTime _lastKeyDownTime;
+        private int _lastCmd;
+        private DateTime _lastCmdTime;
         private const double DuplicateCommandPeriod = 500;// Milliseconds
 
 
@@ -211,6 +213,14 @@ namespace MediaBrowser.UI.EntryPoints
                    cmd == APPCOMMAND_MEDIA_PLAY_PAUSE;
         }
 
+        private bool IsMediaCommand(System.Windows.Input.Key key)
+        {
+            return key == Key.MediaNextTrack ||
+                   key == Key.MediaPreviousTrack ||
+                   key == Key.MediaStop ||
+                   key == Key.MediaPlayPause;
+        }
+
         private bool MatchCommandWithWindowsKey(int cmd)
         {
             if ((cmd == APPCOMMAND_MEDIA_NEXTTRACK && _lastKeyDown == Key.MediaNextTrack) ||
@@ -228,6 +238,22 @@ namespace MediaBrowser.UI.EntryPoints
             }
         }
 
+        private bool MatchCommandWithWindowsKey(System.Windows.Input.Key key)
+        {
+            if ((_lastCmd == APPCOMMAND_MEDIA_NEXTTRACK && key == Key.MediaNextTrack) ||
+                (_lastCmd == APPCOMMAND_MEDIA_PREVIOUSTRACK && key == Key.MediaPreviousTrack) ||
+                (_lastCmd == APPCOMMAND_MEDIA_STOP && key == Key.MediaStop) ||
+                (_lastCmd == APPCOMMAND_MEDIA_PLAY_PAUSE && key == Key.MediaPlayPause))
+            {
+                // its the same command, did it occur in the last DuplicateCommandPeriod Milliseconds
+                TimeSpan span = DateTime.Now - _lastCmdTime;
+                return span.TotalMilliseconds < DuplicateCommandPeriod;
+            }
+            else
+            {
+                return false;
+            }
+        }
 
         private bool IsDuplicateMediaKeyEvent(int cmd)
         {
@@ -241,69 +267,124 @@ namespace MediaBrowser.UI.EntryPoints
             return IsMediaCommand(cmd) && MatchCommandWithWindowsKey(cmd) ;
         }
 
+        private bool IsDuplicateMediaKeyEvent(System.Windows.Input.Key key)
+        {
+            return IsMediaCommand(key) && MatchCommandWithWindowsKey(key);
+        }
+
         /// <summary>
         /// Responds to multimedia keys
+        /// ToDo
+        ///  - Refactor ProcessRemoteCommand & ExecuteKeyCommand via
+        ///    1. define a enum of commands, independant of Key or APPCOMMANDS
+        ///    2. ExecuteCommand take a command and list of arguments (for latter key to command mapping)
+        ///    3. Use a table to map APP_COMMANDS, Key with modifiers to mbt commands
+        ///    4. External xml file generate table/dict what ever
         /// </summary>
+        /// 
         private bool ProcessRemoteCommand(int cmd)
         {
+            var handled = false;
+
             Debug.WriteLine("ProcessRemoteCommand {0}", cmd);
             if (IsDuplicateMediaKeyEvent(cmd))
             {
-                 Debug.WriteLine("IsDuplicateMediaKeyEvent");
-                 return true;
+                Debug.WriteLine("IsDuplicate - cmd after key");
+                handled = true;
+            }
+            else
+            {
+                switch (cmd)
+                {
+                    case APPCOMMAND_INFO:
+                        ExecuteCommand(Info);
+                        handled = true;
+                        break;
+
+                    case APPCOMMAND_BROWSER_HOME:
+                        ExecuteCommand(Home);
+                        handled = true;
+                        break;
+
+                    case APPCOMMAND_MEDIA_PLAY_PAUSE:
+                        ExecuteCommand(PlayPause);
+                        handled = true;
+                        break;
+
+                    case APPCOMMAND_MEDIA_STOP:
+                        ExecuteCommand(Stop);
+                        handled = true;
+                        break;
+
+                    case APPCOMMAND_MEDIA_NEXTTRACK:
+                        ExecuteCommand(OnNextTrackButton);
+                        handled = true;
+                        break;
+
+                    case APPCOMMAND_MEDIA_PREVIOUSTRACK:
+                        ExecuteCommand(OnPreviousTrackButton);
+                        handled = true;
+                        break;
+
+                    case 4146:
+                    case APPCOMMAND_MEDIA_REWIND:
+                        ExecuteCommand(SkipBackward);
+                        handled = true;
+                        break;
+
+                    case 4145:
+                    case APPCOMMAND_MEDIA_FAST_FORWARD:
+                        ExecuteCommand(SkipForward);
+                        handled = true;
+                        break;
+
+                    case APPCOMMAND_CLOSE:
+                        ExecuteCommand(Close);
+                        handled = true;
+                        break;
+
+                    case 4142:
+                    case APPCOMMAND_MEDIA_PLAY:
+                        ExecuteCommand(Play);
+                        handled = true;
+                        break;
+
+                    case 4143:
+                    case APPCOMMAND_MEDIA_PAUSE:
+                        ExecuteCommand(Pause);
+                        handled = true;
+                        break;
+
+                    case APPCOMMAND_FIND:
+                    case APPCOMMAND_BROWSER_SEARCH:
+                        ExecuteCommand(Search);
+                        handled = true;
+                        break;
+
+                    default:
+                        handled = false;
+                        break;
+                } 
             }
 
-            switch (cmd)
+            if (handled)
             {
-                case APPCOMMAND_INFO:
-                    ExecuteCommand(Info);
-                    return true;
-                case APPCOMMAND_BROWSER_HOME:
-                    ExecuteCommand(Home);
-                    return true;
-                case APPCOMMAND_MEDIA_PLAY_PAUSE:
-                    ExecuteCommand(PlayPause);
-                    return true;
-                case APPCOMMAND_MEDIA_STOP:
-                    ExecuteCommand(Stop);
-                    return true;
-                case APPCOMMAND_MEDIA_NEXTTRACK:
-                     ExecuteCommand(OnNextTrackButton);
-                    return true;
-                case APPCOMMAND_MEDIA_PREVIOUSTRACK:
-                    ExecuteCommand(OnPreviousTrackButton);
-                    return true;
-                case 4146:
-                case APPCOMMAND_MEDIA_REWIND:
-                    ExecuteCommand(SkipBackward);
-                    return true;
-                case 4145:
-                case APPCOMMAND_MEDIA_FAST_FORWARD:
-                    ExecuteCommand(SkipForward);
-                    return true;
-                case APPCOMMAND_CLOSE:
-                    ExecuteCommand(Close);
-                    return true;
-                case 4142:
-                case APPCOMMAND_MEDIA_PLAY:
-                    ExecuteCommand(Play);
-                    return true;
-                case 4143:
-                case APPCOMMAND_MEDIA_PAUSE:
-                    ExecuteCommand(Pause);
-                    return true;
-                case APPCOMMAND_FIND:
-                case APPCOMMAND_BROWSER_SEARCH:
-                    ExecuteCommand(Search);
-                    return true;
-                default:
-                    return false;
+                _lastCmd = cmd;
+                _lastCmdTime = DateTime.Now;
             }
+
+            return handled;
         }
 
          private void ExecuteKeyCommand(System.Windows.Input.Key key, Boolean shiftKeyDown, Boolean controlKeyDown)
         {
             Debug.WriteLine("ExecuteKeyCommand {0} {1} {2}", key, shiftKeyDown, controlKeyDown);
+            if (IsDuplicateMediaKeyEvent(key))
+            {
+                Debug.WriteLine("IsDuplicate- Key after cmd");
+                return;
+            }
+
             switch (key)
             {
                 case System.Windows.Input.Key.BrowserSearch:
@@ -765,3 +846,4 @@ namespace MediaBrowser.UI.EntryPoints
     }
 
 }
+

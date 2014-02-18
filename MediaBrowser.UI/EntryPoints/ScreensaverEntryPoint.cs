@@ -143,7 +143,7 @@ namespace MediaBrowser.UI.EntryPoints
 
                 _logger.Debug("Displaying screen saver");
 
-                new ScreensaverWindow(_session, _apiClient, _imageManager).ShowModal(_presentationManager.Window);
+                new ScreensaverWindow(_session, _apiClient, _imageManager, _logger).ShowModal(_presentationManager.Window);
 
                 StartTimer();
             });

@@ -10,7 +10,8 @@
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModels:NotificationViewModel}"
              viewModels:ViewModel.CloseDelay="0:0:0.2"
-             d:DesignHeight="100" d:DesignWidth="261">
+             d:DesignHeight="100" d:DesignWidth="261"
+             Focusable="False">
     <StackPanel x:Name="Panel" Background="{StaticResource BackgroundBrush2}" Orientation="Horizontal" FlowDirection="LeftToRight" Margin="20,0,0,0">
         <StackPanel.RenderTransform>
             <TranslateTransform x:Name="PanelTransform"/>
@@ -41,9 +42,9 @@
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
         
-        <controls:ExtendedContentControl Content="{Binding Icon}" Width="99" Height="99" Margin="1,1,0,1" Visibility="{Binding HasIcon, Converter={StaticResource BooleanToVisibility}}" />
+        <controls:ExtendedContentControl Content="{Binding Icon}" IsTabStop="False" Width="99" Height="99" Margin="1,1,0,1" Visibility="{Binding HasIcon, Converter={StaticResource BooleanToVisibility}}" />
         <Grid Height="100" MinWidth="161" Visibility="{Binding HasContents, Converter={StaticResource BooleanToVisibility}}">
-            <controls:ExtendedContentControl Content="{Binding Contents}" Margin="4" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+            <controls:ExtendedContentControl Content="{Binding Contents}" IsTabStop="False" Margin="4" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
         </Grid>
     </StackPanel>
 </UserControl>

@@ -17,6 +17,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
         {
             Loaded += DragBar_Loaded;
             MouseDown += DragBar_MouseDown;
+            Focusable = false;
         }
 
         private void DragBar_Loaded(object sender, RoutedEventArgs e)

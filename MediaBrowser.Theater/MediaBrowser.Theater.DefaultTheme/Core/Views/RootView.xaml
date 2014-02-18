@@ -54,7 +54,7 @@
                 <BlurEffect x:Name="BlurEffect" Radius="0" KernelType="Gaussian" RenderingBias="Performance" />
             </Grid.Effect>
 
-            <controls:ExtendedContentControl Content="{Binding BackgroundMedia}" />
+            <controls:ExtendedContentControl Focusable="False" Content="{Binding BackgroundMedia}" />
 
             <Grid>
                 <Grid.RowDefinitions>

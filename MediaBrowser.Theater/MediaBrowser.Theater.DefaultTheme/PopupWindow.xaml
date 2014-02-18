@@ -9,7 +9,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="1080" d:DesignWidth="1920">
     <Grid>
-        <controls:ExtendedContentControl Content="{Binding}" />
+        <controls:ExtendedContentControl Content="{Binding}" IsTabStop="False" />
 
         <Grid.LayoutTransform>
             <ScaleTransform ScaleX="{Binding Path=ContentScale, RelativeSource={RelativeSource AncestorType={x:Type defaultTheme:MainWindow}}}" 

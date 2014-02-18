@@ -12,8 +12,8 @@
              d:DataContext="{d:DesignInstance viewModels:NotificationTrayViewModel}"
              d:DesignHeight="100" d:DesignWidth="300">
     
-    <controls:ExtendedItemsControl ItemsSource="{Binding Notifications}">
-        <controls:ExtendedItemsControl.ItemsPanel>
+    <ItemsControl ItemsSource="{Binding Notifications}" Focusable="False">
+        <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
                 <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft">
                     <i:Interaction.Behaviors>
@@ -25,7 +25,7 @@
                     </i:Interaction.Behaviors>
                 </StackPanel>
             </ItemsPanelTemplate>
-        </controls:ExtendedItemsControl.ItemsPanel>
-    </controls:ExtendedItemsControl>
+        </ItemsControl.ItemsPanel>
+    </ItemsControl>
     
 </UserControl>

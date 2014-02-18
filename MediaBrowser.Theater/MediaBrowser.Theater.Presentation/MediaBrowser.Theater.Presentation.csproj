@@ -85,9 +85,11 @@
     <Compile Include="Behaviors\FocusChildOnLoaded.cs" />
     <Compile Include="Controls\BaseModalWindow.cs" />
     <Compile Include="Controls\BaseWindow.cs" />
+    <Compile Include="Controls\DoubleUtil.cs" />
     <Compile Include="Controls\DragBar.cs" />
     <Compile Include="Controls\ExtendedContentControl.cs" />
-    <Compile Include="Controls\ExtendedItemsControl.cs" />
+    <Compile Include="Controls\ExtendedScrollViewer.cs" />
+    <Compile Include="Controls\ScrollPanel.cs" />
     <Compile Include="Controls\WindowCommands.cs" />
     <Compile Include="Converters\BooleanInverter.cs" />
     <Compile Include="Converters\BooleanOrConverter.cs" />

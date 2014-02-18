@@ -7,6 +7,7 @@
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:behaviors="clr-namespace:MediaBrowser.Theater.Presentation.Behaviors;assembly=MediaBrowser.Theater.Presentation"
              xmlns:views="clr-namespace:MediaBrowser.Theater.DefaultTheme.Login.Views"
+             xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModels:LoginViewModel}"
              d:DesignHeight="300" d:DesignWidth="300"
@@ -24,14 +25,19 @@
 
         <TextBlock Text="Please Sign In" Style="{StaticResource Heading1TextBlockStyle}" />
 
-        <ItemsControl Grid.Row="1" ItemsSource="{Binding Users}" VerticalAlignment="Center"
-                      HorizontalAlignment="Center" VerticalContentAlignment="Top"
-                      ScrollViewer.VerticalScrollBarVisibility="Disabled" IsTabStop="False" Height="600">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <StackPanel Orientation="Horizontal" />
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-        </ItemsControl>
+        <controls:ExtendedScrollViewer x:Name="ScrollViewer" Grid.Row="1" IgnoreAllDirectionKeys="True" IsTabStop="False" Focusable="False" CanContentScroll="True" Margin="100" Height="600" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled">
+            <controls:ScrollingPanel CanHorizontallyScroll="True" CanVerticallyScroll="False">
+                <ItemsControl ItemsSource="{Binding Users}" VerticalAlignment="Center"
+                              HorizontalAlignment="Center" VerticalContentAlignment="Top"
+                              VirtualizingPanel.ScrollUnit="Pixel" VirtualizingPanel.IsVirtualizing="True" ScrollViewer.CanContentScroll="True"
+                              IsTabStop="False">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+            </controls:ScrollingPanel>
+        </controls:ExtendedScrollViewer>
     </Grid>
 </UserControl>

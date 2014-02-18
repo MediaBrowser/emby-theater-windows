@@ -47,6 +47,8 @@ namespace MediaBrowser.Theater.Presentation.Controls
 
         public WindowCommands()
         {
+            Focusable = false;
+
             Loaded += (s, e) => {
                 _window = Window.GetWindow(this);
                 if (_window != null) {

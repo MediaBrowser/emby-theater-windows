@@ -10,7 +10,7 @@
              d:DataContext="{d:DesignInstance viewModels:UserLoginViewModel}"
              d:DesignHeight="300" d:DesignWidth="300"
              x:Name="_this">
-    <StackPanel>
+    <StackPanel Margin="10">
         <TextBlock Text="{Binding ElementName=_this, Path=IsFocused}"/>
         <TextBlock Text="{Binding ElementName=_this, Path=IsKeyboardFocusWithin}"/>
         
@@ -59,7 +59,7 @@
             </Grid>
         </Grid>
 
-        <StackPanel Margin="20">
+        <StackPanel Margin="0,10,0,0">
 <!--            <TextBlock Text="Password:" Visibility="{Binding HasPassword, Converter={StaticResource BooleanToVisibility}}" />-->
 <!--            <TextBox Text="{Binding Password}" Visibility="{Binding HasPassword, Converter={StaticResource BooleanToVisibility}}" />-->
             <Button Content="Login" Command="{Binding LoginCommand}" />

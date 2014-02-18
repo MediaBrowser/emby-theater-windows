@@ -1321,8 +1321,10 @@ namespace MediaBrowser.Theater.DirectShow
 
                 var hr = _mediaSeeking.GetDuration(out duration);
 
-                if (ticks < duration)
+                if (ticks < 0)
                     ticks = 0;
+                else if (ticks > duration)
+                    ticks = duration;
 
                 // Seek to the position
                 hr = _mediaSeeking.SetPositions(new DsLong(ticks), AMSeekingSeekingFlags.AbsolutePositioning, new DsLong(duration), AMSeekingSeekingFlags.AbsolutePositioning);

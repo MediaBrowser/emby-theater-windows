@@ -46,5 +46,16 @@ namespace MediaBrowser.Theater.DirectShow
             else
                 return 3; // LAVHWAccel.DXVA2CopyBack;
         }
+
+        public static int GetHwaResolutions(VideoConfiguration config)
+        {
+            if (config.HwaResolution > -1)
+                return config.HwaResolution;
+
+            if (GpuModel.IndexOf("Intel") > -1)
+                return 7; // SD + HD + UHD
+            else
+                return 3; // SD + HD;
+        }
     }
 }

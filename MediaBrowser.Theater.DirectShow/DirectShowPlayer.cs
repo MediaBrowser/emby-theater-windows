@@ -67,6 +67,9 @@ namespace MediaBrowser.Theater.DirectShow
         //private DirectShowLib.IBaseFilter _dvdNav = null;
         private IDvdControl2 _mDvdControl = null;
         //private IDvdInfo2 _mDvdInfo = null;
+        private IDvdCmd _mDvdCmdOption = null;
+        private bool _pendingDvdCmd;
+        private double _currentPlaybackRate = 1.0;
 
         private MadVR _madvr = null;
 
@@ -226,6 +229,7 @@ namespace MediaBrowser.Theater.DirectShow
             DsError.ThrowExceptionForHR(hr);
 
             PlayState = PlayState.Playing;
+            _currentPlaybackRate = 1.0;
 
             _streams = GetStreams();
         }
@@ -484,7 +488,7 @@ namespace MediaBrowser.Theater.DirectShow
                             if (hwaRes != _videoConfig.HwaResolution)
                             {
                                 _logger.Debug("Change HWA resolution support from {0} to {1}.", hwaRes, _videoConfig.HwaResolution);
-                                hr = vsett.SetHWAccelResolutionFlags(_videoConfig.HwaResolution);
+                                hr = vsett.SetHWAccelResolutionFlags(VideoConfigurationUtils.GetHwaResolutions(_videoConfig));
                                 DsError.ThrowExceptionForHR(hr);
                             }
 
@@ -1249,6 +1253,66 @@ namespace MediaBrowser.Theater.DirectShow
             OnStopped(reason, pos, newTrackIndex);
         }
 
+        private void ModifyRate(double dRateAdjust)
+        {
+            int hr = 0;
+            double dRate;
+
+            if (_mDvdControl != null)
+            {
+                _currentPlaybackRate += dRateAdjust;
+
+                if (_currentPlaybackRate == 0) _currentPlaybackRate += dRateAdjust;
+
+                if (_currentPlaybackRate < 0)
+                    hr = _mDvdControl.PlayBackwards(Math.Abs(_currentPlaybackRate), DvdCmdFlags.SendEvents, out _mDvdCmdOption);
+                else
+                    hr = _mDvdControl.PlayForwards(_currentPlaybackRate, DvdCmdFlags.SendEvents, out _mDvdCmdOption);
+                DsError.ThrowExceptionForHR(hr);
+
+                if (_mDvdCmdOption != null)
+                {
+                    _pendingDvdCmd = true;
+                }
+            }
+            else if ((_mediaSeeking != null) && (dRateAdjust != 0.0))
+            {
+                hr = _mediaSeeking.GetRate(out dRate);
+                if (hr == 0)
+                {
+                    // Add current rate to adjustment value
+                    double dNewRate = dRate + dRateAdjust;
+                    hr = this._mediaSeeking.SetRate(dNewRate);
+                    DsError.ThrowExceptionForHR(hr);
+
+                    // Save global rate
+                    _currentPlaybackRate = dNewRate;
+                }
+            }
+        }
+
+        public void SetRate(double rate)
+        {
+            int hr = 0;
+            _currentPlaybackRate = rate;
+
+            if (_mDvdControl != null)
+            {
+                hr = _mDvdControl.PlayForwards(rate, DvdCmdFlags.SendEvents, out _mDvdCmdOption);
+                DsError.ThrowExceptionForHR(hr);
+
+                if (_mDvdCmdOption != null)
+                {
+                    _pendingDvdCmd = true;
+                }
+            }
+            else if (_mediaSeeking != null)
+            {
+                hr = _mediaSeeking.SetRate(rate);
+                DsError.ThrowExceptionForHR(hr);
+            }
+        }
+
         public void Seek(long ticks)
         {
             if (_mediaSeeking != null)
@@ -1257,8 +1321,25 @@ namespace MediaBrowser.Theater.DirectShow
 
                 var hr = _mediaSeeking.GetDuration(out duration);
 
+                if (ticks < 0)
+                    ticks = 0;
+                else if (ticks > duration)
+                    ticks = duration;
+
                 // Seek to the position
                 hr = _mediaSeeking.SetPositions(new DsLong(ticks), AMSeekingSeekingFlags.AbsolutePositioning, new DsLong(duration), AMSeekingSeekingFlags.AbsolutePositioning);
+            }
+        }
+
+        public void SeekRelative(long ticks)
+        {
+            if (_mediaSeeking != null)
+            {
+                long position;
+
+                var hr = _mediaSeeking.GetCurrentPosition(out position);
+                position += ticks;
+                Seek(position);
             }
         }
 
@@ -1316,7 +1397,7 @@ namespace MediaBrowser.Theater.DirectShow
                         case EventCode.DvdCmdStart:
                             break;
                         case EventCode.DvdCmdEnd:
-                            //OnCmdComplete(evParam1, evParam2);
+                            OnDvdCmdComplete(evParam1, evParam2);
                             break;
                         case EventCode.DvdStillOn:
                             if (evParam1 == IntPtr.Zero)
@@ -1351,6 +1432,40 @@ namespace MediaBrowser.Theater.DirectShow
             {
 
             }
+        }
+
+        private void OnDvdCmdComplete(IntPtr evParam1, IntPtr evParam2)
+        {
+            IDvdInfo2 dvdInfo = _sourceFilter as IDvdInfo2;
+
+            if ((_pendingDvdCmd == false) || (dvdInfo == null))
+            {
+                return;
+            }
+
+            IDvdCmd cmd = null;
+            int hr = dvdInfo.GetCmdFromEvent(evParam1, out cmd);
+            DsError.ThrowExceptionForHR(hr);
+
+            if (cmd == null)
+            {
+                // DVD OnCmdComplete GetCmdFromEvent failed
+                return;
+            }
+
+            if (cmd != _mDvdCmdOption)
+            {
+                // DVD OnCmdComplete UNKNOWN CMD
+                Marshal.ReleaseComObject(cmd);
+                cmd = null;
+                return;
+            }
+
+            Marshal.ReleaseComObject(cmd);
+            cmd = null;
+            Marshal.ReleaseComObject(_mDvdCmdOption);
+            _mDvdCmdOption = null;
+            _pendingDvdCmd = false;
         }
 
         private void HandleGraphEvent()

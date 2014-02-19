@@ -1,6 +1,7 @@
 ﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
+using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Theater.Core.ImageViewer;
 using MediaBrowser.Theater.Interfaces.Presentation;
@@ -8,7 +9,9 @@ using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.ViewModels;
 using MediaBrowser.Theater.Presentation.Controls;
 using Microsoft.Win32;
+using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -23,12 +26,14 @@ namespace MediaBrowser.Theater.Core.Screensaver
         private readonly ISessionManager _session;
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
+        private readonly ILogger _logger;
 
-        public ScreensaverWindow(ISessionManager session, IApiClient apiClient, IImageManager imageManager)
+        public ScreensaverWindow(ISessionManager session, IApiClient apiClient, IImageManager imageManager, ILogger logger)
         {
             _session = session;
             _apiClient = apiClient;
             _imageManager = imageManager;
+            _logger = logger;
             InitializeComponent();
 
             DataContext = this;
@@ -92,21 +97,28 @@ namespace MediaBrowser.Theater.Core.Screensaver
             CloseModal();
         }
 
-        private void LoadScreensaver()
+        private async void LoadScreensaver()
         {
             MainGrid.Children.Clear();
 
-            if (_session.CurrentUser == null)
+            if (_session.CurrentUser != null)
             {
-                MainGrid.Children.Add(new LogoScreensaver());
+                try
+                {
+                    await LoadUserScreensaver();
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    _logger.ErrorException("Error loading screensaver:", ex);
+                }
             }
-            else
-            {
-                LoadUserScreensaver();
-            }
+
+            // Fallback to the default screensaver if there's an error
+            MainGrid.Children.Add(new LogoScreensaver());
         }
 
-        private async void LoadUserScreensaver()
+        private async Task LoadUserScreensaver()
         {
             var items = await _apiClient.GetItemsAsync(new ItemQuery
             {

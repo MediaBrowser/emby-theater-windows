@@ -1023,7 +1023,7 @@ namespace MediaBrowser.Theater.DirectShow
 
         void HiddenForm_KeyDown(object sender, KeyEventArgs e)
         {
-            Debug.WriteLine("HiddenForm_KeyDown: {0} {1}", e.KeyCode, (int) e.KeyCode);
+            _logger.Debug("HiddenForm_KeyDown: {0} {1}", e.KeyCode, (int) e.KeyCode);
             switch (e.KeyCode)
             {
                 case Keys.Return:
@@ -1073,7 +1073,7 @@ namespace MediaBrowser.Theater.DirectShow
 
         void HiddenForm_MouseClick(object sender, MouseEventArgs e)
         {
-            Debug.WriteLine("HiddenForm_MouseClick: {0}", e);
+            _logger.Debug("HiddenForm_MouseClick: {0}", e);
             if ((_dvdMenuMode == DvdMenuMode.Buttons) && (_mDvdControl != null))
             {
                 Point pt = new Point();

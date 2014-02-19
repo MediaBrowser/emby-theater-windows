@@ -93,7 +93,6 @@ namespace MediaBrowser.UI.EntryPoints
             switch (msg)
             {
                 case WM_APPCOMMAND:
-                    Debug.WriteLine("WndProc WM_APPCOMMAND {0}", lParam.ToInt32() / 65536);
                     internallyHandled = ProcessRemoteCommand(lParam.ToInt32() / 65536);
                     break;
             }
@@ -286,10 +285,10 @@ namespace MediaBrowser.UI.EntryPoints
         {
             var handled = false;
 
-            Debug.WriteLine("ProcessRemoteCommand {0}", cmd);
+            _logger.Debug("MediaCenterRemoteEntryPoint: ProcessRemoteCommand {0}", cmd);
             if (IsDuplicateMediaKeyEvent(cmd))
             {
-                Debug.WriteLine("IsDuplicate - cmd after key");
+                _logger.Debug("MediaCenterRemoteEntryPoint: IsDuplicate - cmd {0} after key {1}", cmd, _lastKeyDown);
                 handled = true;
             }
             else
@@ -372,16 +371,21 @@ namespace MediaBrowser.UI.EntryPoints
                 _lastCmd = cmd;
                 _lastCmdTime = DateTime.Now;
             }
+            else
+            {
+                _logger.Debug("MediaCenterRemoteEntryPoint: ProcessRemoteCommand {0}, command not implemented", cmd);
+            }
 
             return handled;
         }
 
-         private void ExecuteKeyCommand(System.Windows.Input.Key key, Boolean shiftKeyDown, Boolean controlKeyDown)
+         private void ExecuteKeyCommand(System.Windows.Input.Key key, Boolean controlKeyDown,  Boolean shiftKeyDown)
         {
-            Debug.WriteLine("ExecuteKeyCommand {0} {1} {2}", key, shiftKeyDown, controlKeyDown);
+    
+            _logger.Debug("MediaCenterRemoteEntryPoint: ExecuteKeyCommand {0} {1} {2}", key, shiftKeyDown, controlKeyDown);
             if (IsDuplicateMediaKeyEvent(key))
             {
-                Debug.WriteLine("IsDuplicate- Key after cmd");
+                _logger.Debug("MediaCenterRemoteEntryPoint: IsDuplicate- Key {0} after cmd {1}", key, _lastCmd);
                 return;
             }
 
@@ -430,9 +434,16 @@ namespace MediaBrowser.UI.EntryPoints
                     }
                 case System.Windows.Input.Key.S:
                     {
-                        if (controlKeyDown && shiftKeyDown)
+                        if (controlKeyDown)
                         {
-                            ExecuteCommand(Stop);
+                            if (shiftKeyDown)
+                            {
+                                ExecuteCommand(Stop);
+                            }
+                            else
+                            {
+                                ExecuteCommand(Search);
+                            }
                         }
                         break;
                     }
@@ -466,11 +477,19 @@ namespace MediaBrowser.UI.EntryPoints
                         }
                         break;
                     }
-                case System.Windows.Input.Key.Multiply:
+
+                case System.Windows.Input.Key.D:
                     {
-                        ExecuteCommand(ToggleInfoPanel);
+                        if (controlKeyDown)
+                        {
+                            ExecuteCommand(ToggleInfoPanel);
+                        }
                         break;
                     }
+                   
+
+                case System.Windows.Input.Key.I:
+                case System.Windows.Input.Key.Multiply:
                 case System.Windows.Input.Key.D8:
                     {
                         ExecuteCommand(ToggleInfoPanel);
@@ -490,8 +509,8 @@ namespace MediaBrowser.UI.EntryPoints
         /// </summary>
         void window_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
-            Debug.WriteLine("windowhook wpf_KeyDown {0}", e.Key);
-            ExecuteKeyCommand(e.Key, IsControlKeyDown(e), IsShiftKeyDown(e));
+           _logger.Debug("MediaCenterRemoteEntryPoint: window_KeyDown {0}", e.Key);
+           ExecuteKeyCommand(e.Key, IsControlKeyDown(e), IsShiftKeyDown(e));
         }
 
         /// <summary>
@@ -500,30 +519,24 @@ namespace MediaBrowser.UI.EntryPoints
         //
         void directPlayWindow_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
         {
-            Debug.WriteLine("directPlayWindow_KeyDownn {0}", e.KeyCode);
+           _logger.Debug("MediaCenterRemoteEntryPoint:  {0}", e.KeyCode);
            ExecuteKeyCommand(KeyInterop.KeyFromVirtualKey((int)e.KeyCode), IsControlKeyDown(e), IsShiftKeyDown(e));
         }
 
+        // WPF key mangement
         private bool IsShiftKeyDown(System.Windows.Input.KeyEventArgs e)
         {
-            return e.Key.HasFlag(System.Windows.Input.Key.LeftShift) ||
-                e.Key.HasFlag(System.Windows.Input.Key.RightShift) ||
-                e.SystemKey.HasFlag(System.Windows.Input.Key.LeftShift) ||
-                e.SystemKey.HasFlag(System.Windows.Input.Key.RightShift) ||
-                e.KeyboardDevice.IsKeyDown(System.Windows.Input.Key.LeftShift) ||
-                e.KeyboardDevice.IsKeyDown(System.Windows.Input.Key.RightShift);
+            return Keyboard.IsKeyDown(System.Windows.Input.Key.LeftShift) ||
+                   Keyboard.IsKeyDown(System.Windows.Input.Key.RightShift);
         }
 
         private bool IsControlKeyDown(System.Windows.Input.KeyEventArgs e)
         {
-            return e.Key.HasFlag(System.Windows.Input.Key.LeftCtrl) ||
-                e.Key.HasFlag(System.Windows.Input.Key.RightCtrl) ||
-                e.SystemKey.HasFlag(System.Windows.Input.Key.LeftCtrl) ||
-                e.SystemKey.HasFlag(System.Windows.Input.Key.RightCtrl) ||
-                e.KeyboardDevice.IsKeyDown(System.Windows.Input.Key.LeftCtrl) ||
-                e.KeyboardDevice.IsKeyDown(System.Windows.Input.Key.RightCtrl);
+            return Keyboard.IsKeyDown(System.Windows.Input.Key.LeftCtrl) ||
+                   Keyboard.IsKeyDown(System.Windows.Input.Key.RightCtrl);
         }
 
+        // windows forms key management (events originate in hiddenform used in direct show player)
         private bool IsShiftKeyDown(KeyEventArgs e)
         {
             return e.Shift || HasShift(e.Modifiers) || HasShift(Control.ModifierKeys);
@@ -609,6 +622,7 @@ namespace MediaBrowser.UI.EntryPoints
 
         private void Search()
         {
+            _nav.NavigateToSearchPage();
         }
 
         private void SkipBackward()

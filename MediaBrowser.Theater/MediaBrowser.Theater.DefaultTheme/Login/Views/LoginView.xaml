@@ -25,15 +25,14 @@
 
         <TextBlock Text="Please Sign In" Style="{StaticResource Heading1TextBlockStyle}" />
 
-        <controls:ExtendedScrollViewer x:Name="ScrollViewer" Grid.Row="1" IgnoreAllDirectionKeys="True" IsTabStop="False" Focusable="False" CanContentScroll="True" Margin="100" Height="600" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled">
+        <controls:ExtendedScrollViewer x:Name="ScrollViewer" Grid.Row="1" IgnoreAllDirectionKeys="True" IsTabStop="False" Focusable="False" CanContentScroll="True" Height="600" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled">
             <controls:ScrollingPanel CanHorizontallyScroll="True" CanVerticallyScroll="False">
                 <ItemsControl ItemsSource="{Binding Users}" VerticalAlignment="Center"
                               HorizontalAlignment="Center" VerticalContentAlignment="Top"
-                              VirtualizingPanel.ScrollUnit="Pixel" VirtualizingPanel.IsVirtualizing="True" ScrollViewer.CanContentScroll="True"
                               IsTabStop="False">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <VirtualizingStackPanel Orientation="Horizontal"/>
+                            <StackPanel Orientation="Horizontal"/>
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                 </ItemsControl>

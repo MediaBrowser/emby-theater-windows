@@ -11,6 +11,15 @@
                 <ResourceDictionary Source="Resources/Styles/Fonts.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/MainWindow.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/TextBlocks.xaml"/>
+                <ResourceDictionary Source="Resources/Styles/Buttons.xaml"/>
+                <ResourceDictionary Source="Resources/Styles/Checkbox.xaml"/>
+                <ResourceDictionary Source="Resources/Styles/Controls.xaml"/>
+                <ResourceDictionary Source="Resources/Styles/ListBox.xaml"/>
+                <ResourceDictionary Source="Resources/Styles/ListBoxItems.xaml"/>
+                <ResourceDictionary Source="Resources/Styles/ListBoxItemsHighQuality.xaml"/>
+                <ResourceDictionary Source="Resources/Styles/RadioButton.xaml"/>
+                <ResourceDictionary Source="Resources/Styles/Slider.xaml"/>
+                <ResourceDictionary Source="Resources/Styles/TextBox.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             
             <converters:BooleanInverter x:Key="BooleanInverter"/>

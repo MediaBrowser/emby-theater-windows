@@ -63,6 +63,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Controls\Osk\VirtualKeyboardModalWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Resources\DefaultControlTemplates\DragBar.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -70,6 +74,10 @@
     <Page Include="Resources\DefaultControlTemplates\ExtendedContentControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\DefaultControlTemplates\VirtualKeyboard.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Resources\DefaultControlTemplates\WindowCommands.xaml">
       <SubType>Designer</SubType>
@@ -89,6 +97,34 @@
     <Compile Include="Controls\DragBar.cs" />
     <Compile Include="Controls\ExtendedContentControl.cs" />
     <Compile Include="Controls\ExtendedScrollViewer.cs" />
+    <Compile Include="Controls\Osk\AlternateKeySelection.cs" />
+    <Compile Include="Controls\Osk\EmptyStringVisibilityConverter.cs" />
+    <Compile Include="Controls\Osk\Layout\AcceptAction.cs" />
+    <Compile Include="Controls\Osk\Layout\BackspaceAction.cs" />
+    <Compile Include="Controls\Osk\Layout\CancelAction.cs" />
+    <Compile Include="Controls\Osk\Layout\CharacterAction.cs" />
+    <Compile Include="Controls\Osk\Layout\EndAction.cs" />
+    <Compile Include="Controls\Osk\Layout\HomeAction.cs" />
+    <Compile Include="Controls\Osk\Layout\KeySet.cs" />
+    <Compile Include="Controls\Osk\Layout\KeySetGroup.cs" />
+    <Compile Include="Controls\Osk\Layout\KeySets\EnglishKeySet.cs" />
+    <Compile Include="Controls\Osk\Layout\LeftAction.cs" />
+    <Compile Include="Controls\Osk\Layout\RightAction.cs" />
+    <Compile Include="Controls\Osk\Layout\ShiftAction.cs" />
+    <Compile Include="Controls\Osk\MinimalTextBox.cs" />
+    <Compile Include="Controls\Osk\MultiplyNumberConverter.cs" />
+    <Compile Include="Controls\Osk\RowMarginConverter.cs" />
+    <Compile Include="Controls\Osk\ScaleConverters.cs" />
+    <Compile Include="Controls\Osk\TextField.cs" />
+    <Compile Include="Controls\Osk\VirtualKey.cs" />
+    <Compile Include="Controls\Osk\VirtualKeyAction.cs" />
+    <Compile Include="Controls\Osk\VirtualKeyboard.cs" />
+    <Compile Include="Controls\Osk\VirtualKeyboardModalWindow.xaml.cs">
+      <DependentUpon>VirtualKeyboardModalWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Osk\VirtualKeyboardTextField.cs" />
+    <Compile Include="Controls\Osk\VirtualKeySet.cs" />
+    <Compile Include="Controls\Osk\VirtualKeySetRow.cs" />
     <Compile Include="Controls\ScrollPanel.cs" />
     <Compile Include="Controls\WindowCommands.cs" />
     <Compile Include="Converters\BooleanInverter.cs" />

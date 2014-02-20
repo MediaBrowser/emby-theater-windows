@@ -7,6 +7,10 @@
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:osk="clr-namespace:MediaBrowser.Theater.Presentation.Controls.Osk;assembly=MediaBrowser.Theater.Presentation"
              xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
+             xmlns:lex="http://wpflocalizeextension.codeplex.com"
+             lex:LocalizeDictionary.DesignCulture="en"
+             lex:ResxLocalizationProvider.DefaultAssembly="MediaBrowser.Theater.DefaultTheme"
+             lex:ResxLocalizationProvider.DefaultDictionary="Strings"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModels:UserLoginViewModel}"
              x:Name="_this">
@@ -166,7 +170,7 @@
         </Border>
 
         <StackPanel Margin="0,20,0,0" x:Name="Controls" IsHitTestVisible="False">
-            <osk:TextField x:Name="Username" Watermark="Username"
+            <osk:TextField x:Name="Username" Watermark="{lex:Loc Login_Username}"
                            Text="{Binding Username, ValidatesOnNotifyDataErrors=True, Mode=TwoWay}" Margin="0,0,0,10"
                            Visibility="{Binding RequiresUsername, Converter={StaticResource BooleanToVisibility}}"
                            Opacity="0">
@@ -175,7 +179,7 @@
                 </osk:TextField.RenderTransform>
             </osk:TextField>
 
-            <osk:TextField x:Name="Password" Watermark="Password" Text="{Binding Password, Mode=TwoWay}" IsMasked="True"
+            <osk:TextField x:Name="Password" Watermark="{lex:Loc Login_Password}" Text="{Binding Password, Mode=TwoWay}" IsMasked="True"
                            Visibility="{Binding RequiresPassword, Converter={StaticResource BooleanToVisibility}}"
                            Margin="0,0,0,10" Opacity="0">
                 <osk:TextField.RenderTransform>
@@ -183,7 +187,7 @@
                 </osk:TextField.RenderTransform>
             </osk:TextField>
 
-            <Button x:Name="Login" Content="Login" Command="{Binding LoginCommand}" Margin="0,0,0,10" Opacity="0">
+            <Button x:Name="Login" Content="{lex:Loc Login_Login}" Command="{Binding LoginCommand}" Margin="0,0,0,10" Opacity="0">
                 <Button.RenderTransform>
                     <TranslateTransform />
                 </Button.RenderTransform>
@@ -194,10 +198,10 @@
                     <TranslateTransform />
                 </CheckBox.RenderTransform>
 
-                <TextBlock Text="Remember me?" />
+                <TextBlock Text="{lex:Loc Login_RememberMe}" />
             </CheckBox>
 
-            <TextBlock Text="Invalid username or password" TextWrapping="Wrap" FontSize="18" Foreground="Red"
+            <TextBlock Text="{lex:Loc Login_InvalidCredentialsError}" TextWrapping="Wrap" FontSize="18" Foreground="Red"
                        HorizontalAlignment="Center"
                        Visibility="{Binding IsInvalidLoginDetails, Converter={StaticResource BooleanToVisibility}}" />
         </StackPanel>

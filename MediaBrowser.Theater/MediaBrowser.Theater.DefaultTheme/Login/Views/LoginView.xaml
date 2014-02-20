@@ -7,6 +7,10 @@
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:behaviors="clr-namespace:MediaBrowser.Theater.Presentation.Behaviors;assembly=MediaBrowser.Theater.Presentation"
              xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
+             xmlns:lex="http://wpflocalizeextension.codeplex.com"
+             lex:LocalizeDictionary.DesignCulture="en"
+             lex:ResxLocalizationProvider.DefaultAssembly="MediaBrowser.Theater.DefaultTheme"
+             lex:ResxLocalizationProvider.DefaultDictionary="Strings"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModels:LoginViewModel}"
              d:DesignHeight="1080" d:DesignWidth="1920"
@@ -22,7 +26,7 @@
             <RowDefinition Height="800" />
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" Text="Please Sign In" Style="{StaticResource Heading1TextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        <TextBlock Grid.Row="0" Text="{lex:Loc Login_Title}" Style="{StaticResource Heading1TextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
 
         <controls:ExtendedScrollViewer x:Name="ScrollViewer" Grid.Row="1" IgnoreAllDirectionKeys="True" IsTabStop="False" Focusable="False" CanContentScroll="True" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" VerticalAlignment="Top">
             <controls:ScrollingPanel CanHorizontallyScroll="True" CanVerticallyScroll="False">

@@ -1,4 +1,7 @@
-﻿namespace MediaBrowser.Theater.DefaultTheme
+﻿using System.Globalization;
+using WPFLocalizeExtension.Engine;
+
+namespace MediaBrowser.Theater.DefaultTheme
 {
     /// <summary>
     ///     Interaction logic for App.xaml
@@ -8,6 +11,7 @@
         public App()
         {
             InitializeComponent();
+            LocalizeDictionary.Instance.Culture = CultureInfo.CurrentCulture;
         }
     }
 }

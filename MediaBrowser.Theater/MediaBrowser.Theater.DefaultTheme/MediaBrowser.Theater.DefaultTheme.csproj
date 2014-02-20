@@ -185,6 +185,7 @@
     </Compile>
     <Compile Include="Configuration\ColorPalette.cs" />
     <Compile Include="Configuration\PluginConfiguration.cs" />
+    <Compile Include="Core\ViewModels\IRootPresentationOptions.cs" />
     <Compile Include="DependencyModule.cs" />
     <Compile Include="Home\HomeContext.cs" />
     <Compile Include="Home\ViewModels\HomeViewModel.cs" />

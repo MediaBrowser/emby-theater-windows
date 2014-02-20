@@ -48,5 +48,14 @@ namespace MediaBrowser.Theater.Presentation.Controls
             // Let the base class do it's thing
             base.OnKeyDown(e);
         }
+
+        protected override void OnMouseWheel(MouseWheelEventArgs e)
+        {
+            if (VerticalScrollBarVisibility == ScrollBarVisibility.Disabled && HorizontalScrollBarVisibility != ScrollBarVisibility.Disabled) {
+                ScrollToHorizontalOffset(HorizontalOffset - e.Delta);
+            } else {
+                base.OnMouseWheel(e);
+            }
+        }
     }
 }

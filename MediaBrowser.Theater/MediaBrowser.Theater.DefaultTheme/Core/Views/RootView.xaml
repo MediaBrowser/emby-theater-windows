@@ -67,10 +67,48 @@
                 <controls:WindowCommands Grid.Row="0"
                                          ShowButtons="{Binding IsMouseIdle, Converter={StaticResource BooleanInverter}, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type controls:BaseWindow}}}"
                                          HorizontalAlignment="Right" />
-                
-                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="20,0,0,0">
-                    <TextBlock Text="MEDIA"/>
-                    <TextBlock Text="BROWSER" Foreground="#52B54B"/>
+
+                <StackPanel x:Name="LogoPanel" Grid.Row="1" Orientation="Horizontal" Margin="30,0,0,0">
+                    <StackPanel.RenderTransform>
+                        <TranslateTransform x:Name="PanelTransform" />
+                    </StackPanel.RenderTransform>
+
+                    <VisualStateManager.VisualStateGroups>
+                        <VisualStateGroup>
+                            <VisualState x:Name="Visible">
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="LogoPanel"
+                                                     Storyboard.TargetProperty="RenderTransform.(TranslateTransform.X)"
+                                                     From="-20" To="0" FillBehavior="HoldEnd" Duration="0:0:0.2"
+                                                     DecelerationRatio="0.5" />
+                                    <DoubleAnimation Storyboard.TargetName="LogoPanel"
+                                                     Storyboard.TargetProperty="Opacity" To="1" FillBehavior="HoldEnd"
+                                                     Duration="0:0:0.2" DecelerationRatio="0.5" />
+                                </Storyboard>
+                            </VisualState>
+                            <VisualState x:Name="Hidden">
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="LogoPanel"
+                                                     Storyboard.TargetProperty="RenderTransform.(TranslateTransform.X)"
+                                                     From="0" To="-20" FillBehavior="HoldEnd" Duration="0:0:0.2"
+                                                     AccelerationRatio="0.5" />
+                                    <DoubleAnimation Storyboard.TargetName="LogoPanel"
+                                                     Storyboard.TargetProperty="Opacity" To="0" FillBehavior="HoldEnd"
+                                                     Duration="0:0:0.2" DecelerationRatio="0.5" />
+                                </Storyboard>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateManager.VisualStateGroups>
+
+                    <i:Interaction.Behaviors>
+                        <ei:DataStateBehavior Binding="{Binding DisplayLogo}"
+                                              Value="True"
+                                              TrueState="Visible"
+                                              FalseState="Hidden" />
+                    </i:Interaction.Behaviors>
+
+                    <TextBlock Text="MEDIA" />
+                    <TextBlock Text="BROWSER" Foreground="#52B54B" />
                 </StackPanel>
 
                 <controls:ExtendedContentControl Grid.Row="2" Content="{Binding ActivePage}" IsTabStop="False" />

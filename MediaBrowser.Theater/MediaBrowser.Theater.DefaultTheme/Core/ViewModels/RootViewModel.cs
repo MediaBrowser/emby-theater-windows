@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.ComponentModel;
+using System.Threading.Tasks;
 using MediaBrowser.Theater.Api.Events;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.UserInterface;
@@ -12,9 +13,9 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
         private readonly INavigator _navigator;
         private readonly RootContext _rootContext;
         private IViewModel _activePage;
-        private NotificationTrayViewModel _notifications;
-        private bool _isInFocus;
         private IViewModel _backgroundMedia;
+        private bool _isInFocus;
+        private NotificationTrayViewModel _notifications;
 
         public RootViewModel(IEventAggregator events, INavigator navigator, RootContext rootContext)
         {
@@ -34,8 +35,20 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
                 if (Equals(value, _activePage)) {
                     return;
                 }
+
+                if (_activePage != null) {
+                    _activePage.PropertyChanged -= ActivePagePropertyChanged;
+                }
+
                 _activePage = value;
+
+                if (_activePage != null) {
+                    _activePage.PropertyChanged += ActivePagePropertyChanged;
+                }
+
                 OnPropertyChanged();
+                OnPropertyChanged("DisplayLogo");
+                OnPropertyChanged("DisplayCommandBar");
             }
         }
 
@@ -75,6 +88,35 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
                 }
                 _isInFocus = value;
                 OnPropertyChanged();
+            }
+        }
+
+        public bool DisplayLogo
+        {
+            get
+            {
+                var options = ActivePage as IRootPresentationOptions;
+                return options == null || options.ShowMediaBrowserLogo;
+            }
+        }
+
+        public bool DisplayCommandBar
+        {
+            get
+            {
+                var options = ActivePage as IRootPresentationOptions;
+                return options == null || options.ShowCommandBar;
+            }
+        }
+
+        private void ActivePagePropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "ShowMediaBrowserLogo") {
+                OnPropertyChanged("DisplayLogo");
+            }
+
+            if (e.PropertyName == "ShowCommandBar") {
+                OnPropertyChanged("DisplayCommandBar");
             }
         }
 

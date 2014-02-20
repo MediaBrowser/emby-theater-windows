@@ -8,6 +8,7 @@ using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
+using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
 using MediaBrowser.Theater.Presentation.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.Login.ViewModels
@@ -77,15 +78,10 @@ namespace MediaBrowser.Theater.DefaultTheme.Login.ViewModels
                 OnPropertyChanged();
             }
         }
-
+        
         public bool HasUsername
         {
             get { return _user != null; }
-        }
-
-        public bool RequiresUsername 
-        {
-            get { return !HasUsername; }
         }
 
         public string Username
@@ -128,9 +124,14 @@ namespace MediaBrowser.Theater.DefaultTheme.Login.ViewModels
             }
         }
 
+        public bool RequiresUsername
+        {
+            get { return !HasUsername; }
+        }
+
         public ICommand LoginCommand { get; private set; }
 
-        public bool RequiresPassword 
+        public bool RequiresPassword
         {
             get { return _user == null || _user.HasPassword; }
         }

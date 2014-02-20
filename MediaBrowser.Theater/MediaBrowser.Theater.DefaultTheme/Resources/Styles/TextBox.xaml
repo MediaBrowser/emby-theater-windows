@@ -3,17 +3,6 @@
                     xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
                     xmlns:behaviors="clr-namespace:MediaBrowser.Theater.Presentation.Behaviors;assembly=MediaBrowser.Theater.Presentation">
 
-    <Color x:Key="AccentColor">#1ba1e2</Color>
-    <SolidColorBrush x:Key="Accent" Color="{StaticResource AccentColor}" />
-
-    <SolidColorBrush x:Key="InputBackground" Color="#262626" />
-    <SolidColorBrush x:Key="InputBackgroundHover" Color="#3e3e42" />
-    <SolidColorBrush x:Key="InputBorder" Color="#444444" />
-    <SolidColorBrush x:Key="InputBorderHover" Color="#3e3e42" />
-    <SolidColorBrush x:Key="InputText" Color="#ffffff" />
-    <SolidColorBrush x:Key="InputTextHover" Color="#ffffff" />
-    <SolidColorBrush x:Key="InputTextDisabled" Color="#717171" />
-
     <Style x:Key="{x:Type TextBoxBase}" TargetType="{x:Type TextBoxBase}" BasedOn="{x:Null}">
         <Setter Property="FontSize" Value="{StaticResource DefaultFontSize}"/>
         <Setter Property="FontFamily" Value="{StaticResource DefaultFontFamily}"/>
@@ -27,7 +16,7 @@
         <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
         <Setter Property="ScrollViewer.PanningMode" Value="VerticalFirst"/>
         <Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
-        <Setter Property="SelectionBrush" Value="{StaticResource Accent}" />
+        <Setter Property="SelectionBrush" Value="{StaticResource AccentBrush}" />
 <!--        <Setter Property="behaviors:SuppressBackKeyBehavior.SuppressBackKey" Value="true"></Setter>-->
         <Setter Property="Validation.ErrorTemplate">
             <Setter.Value>
@@ -97,7 +86,7 @@
                             <Setter Property="Foreground" Value="{StaticResource InputTextDisabled}"/>
                         </Trigger>
                         <Trigger Property="IsFocused" Value="true">
-                            <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource Accent}" />
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource AccentBrush}" />
                         </Trigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>

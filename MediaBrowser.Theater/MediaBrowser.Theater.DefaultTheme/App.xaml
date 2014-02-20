@@ -20,6 +20,7 @@
                 <ResourceDictionary Source="Resources/Styles/RadioButton.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/Slider.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/TextBox.xaml"/>
+                <ResourceDictionary Source="Resources/Styles/VirtualKeyboard.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             
             <converters:BooleanInverter x:Key="BooleanInverter"/>

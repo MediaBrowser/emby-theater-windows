@@ -10,6 +10,16 @@
         <Setter Property="BackgroundHoverBrush" Value="{StaticResource InputBackgroundHover}"/>
         <Setter Property="BorderHoverBrush" Value="{StaticResource InputBorderHover}"/>
         <Setter Property="TextDisabledBrush" Value="{StaticResource InputTextDisabled}"/>
+        <Style.Triggers>
+            <MultiTrigger>
+                <MultiTrigger.Conditions>
+                    <Condition Property="IsEnabled" Value="True" />
+                    <Condition Property="IsMouseOver" Value="True" />
+                </MultiTrigger.Conditions>
+                <Setter Property="Background" Value="{StaticResource InputBackgroundHover}" />
+                <Setter Property="BorderBrush" Value="{StaticResource InputBorderHover}" />
+            </MultiTrigger>
+        </Style.Triggers>
     </Style>
     
 </ResourceDictionary>

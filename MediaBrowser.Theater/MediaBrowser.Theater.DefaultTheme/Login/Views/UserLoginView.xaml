@@ -115,7 +115,7 @@
                 </Style>
             </Border.Style>
 
-            <Grid Width="400" Height="400" x:Name="UserImage" Opacity="0.8">
+            <Grid Width="400" Height="400" x:Name="UserImage" Opacity="0.6">
                 <Grid Background="#CFCFCF">
                     <Grid.Style>
                         <Style TargetType="{x:Type Grid}">

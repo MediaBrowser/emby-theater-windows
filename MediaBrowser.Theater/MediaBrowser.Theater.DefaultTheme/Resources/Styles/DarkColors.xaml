@@ -6,5 +6,19 @@
     <Color x:Key="BackgroundColor">#1E1E1E</Color>
     <Color x:Key="BackgroundColor2">#2D2D30</Color>
     <Color x:Key="BackgroundColor3">#333333</Color>
-    
+
+    <Color x:Key="InputHighlightColor">#1ba1e2</Color>
+    <Color x:Key="InputBackgroundColor">#262626</Color>
+    <Color x:Key="InputBackgroundHoverColor">#3e3e42</Color>
+    <Color x:Key="InputBorderColor">#444444</Color>
+    <Color x:Key="InputBorderHoverColor">#444444</Color>
+    <Color x:Key="InputForegroundDisabledColor">#515151</Color>
+
+    <Color x:Key="ButtonBackgroundColor">#202020</Color>
+    <Color x:Key="ButtonBackgroundHoverColor">#3e3e42</Color>
+    <Color x:Key="ButtonBackgroundPressedColor">#1ba1e2</Color>
+    <Color x:Key="ButtonBorderColor">#444444</Color>
+    <Color x:Key="ButtonBorderHoverColor">#3e3e42</Color>
+    <Color x:Key="ButtonBorderPressedColor">#1ba1e2</Color>
+
 </ResourceDictionary>

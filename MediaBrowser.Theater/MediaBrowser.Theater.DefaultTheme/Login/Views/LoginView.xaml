@@ -6,7 +6,6 @@
              xmlns:viewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.Login.ViewModels"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:behaviors="clr-namespace:MediaBrowser.Theater.Presentation.Behaviors;assembly=MediaBrowser.Theater.Presentation"
-             xmlns:views="clr-namespace:MediaBrowser.Theater.DefaultTheme.Login.Views"
              xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModels:LoginViewModel}"

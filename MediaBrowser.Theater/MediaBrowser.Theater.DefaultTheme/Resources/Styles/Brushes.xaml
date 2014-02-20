@@ -9,12 +9,19 @@
     
     <SolidColorBrush x:Key="ImageOverlayBackgroundBrush" Color="#A6000000"/>
 
-    <SolidColorBrush x:Key="InputBackground" Color="#262626" />
-    <SolidColorBrush x:Key="InputBackgroundHover" Color="#3e3e42" />
-    <SolidColorBrush x:Key="InputBorder" Color="#444444" />
-    <SolidColorBrush x:Key="InputBorderHover" Color="#3e3e42" />
-    <SolidColorBrush x:Key="InputText" Color="#ffffff" />
-    <SolidColorBrush x:Key="InputTextHover" Color="#ffffff" />
-    <SolidColorBrush x:Key="InputTextDisabled" Color="#717171" />
-    
+    <SolidColorBrush x:Key="InputBackground" Color="{DynamicResource InputBackgroundColor}" />
+    <SolidColorBrush x:Key="InputBackgroundHover" Color="{DynamicResource InputBackgroundHoverColor}" />
+    <SolidColorBrush x:Key="InputBorder" Color="{DynamicResource InputBorderColor}" />
+    <SolidColorBrush x:Key="InputBorderHover" Color="{DynamicResource InputBorderHoverColor}" />
+    <SolidColorBrush x:Key="InputText" Color="{DynamicResource ForegroundColor}" />
+    <SolidColorBrush x:Key="InputTextHover" Color="{DynamicResource ForegroundColor}" />
+    <SolidColorBrush x:Key="InputTextDisabled" Color="{DynamicResource InputForegroundDisabledColor}" />
+
+    <SolidColorBrush x:Key="ButtonBackground" Color="{DynamicResource ButtonBackgroundColor}" />
+    <SolidColorBrush x:Key="ButtonBackgroundHover" Color="{DynamicResource ButtonBackgroundHoverColor}" />
+    <SolidColorBrush x:Key="ButtonBackgroundPressed" Color="{DynamicResource ButtonBackgroundPressedColor}" />
+    <SolidColorBrush x:Key="ButtonBorder" Color="{DynamicResource ButtonBorderColor}" />
+    <SolidColorBrush x:Key="ButtonBorderHover" Color="{DynamicResource ButtonBorderHoverColor}" />
+    <SolidColorBrush x:Key="ButtonBorderPressed" Color="{DynamicResource ButtonBorderPressedColor}" />
+
 </ResourceDictionary>

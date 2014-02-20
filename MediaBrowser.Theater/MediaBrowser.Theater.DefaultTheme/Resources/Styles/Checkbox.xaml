@@ -1,14 +1,11 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <SolidColorBrush x:Key="CheckboxForeground" Color="#ffffff" />
-    <SolidColorBrush x:Key="CheckboxBorder" Color="#444444" />
-
     <Style x:Key="{x:Type CheckBox}" TargetType="{x:Type CheckBox}">
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="Background" Value="{StaticResource ButtonBackground}" />
-        <Setter Property="BorderBrush" Value="{StaticResource CheckboxBorder}" />
-        <Setter Property="Foreground" Value="{StaticResource CheckboxForeground}" />
+        <Setter Property="BorderBrush" Value="{StaticResource ButtonBorder}" />
+        <Setter Property="Foreground" Value="{StaticResource InputText}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="KeyboardNavigation.AcceptsReturn" Value="true"/>
 
@@ -23,7 +20,7 @@
                     </StackPanel>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="Foreground" Value="{StaticResource ButtonTextDisabled}" />
+                            <Setter Property="Foreground" Value="{StaticResource InputTextDisabled}" />
                         </Trigger>
                         <Trigger Property="IsChecked" Value="True">
                             <Setter TargetName="CheckMark" Property="Visibility" Value="Visible" />
@@ -31,17 +28,17 @@
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="CheckBorder" Property="Background" Value="{StaticResource ButtonBackgroundHover}" />
                             <Setter TargetName="CheckBorder" Property="BorderBrush" Value="{StaticResource ButtonBorderHover}" />
-                            <Setter TargetName="CheckMark" Property="Fill" Value="{StaticResource ButtonTextHover}" />
+                            <Setter TargetName="CheckMark" Property="Fill" Value="{StaticResource InputTextHover}" />
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
                             <Setter TargetName="CheckBorder" Property="Background" Value="{StaticResource ButtonBackgroundPressed}" />
                             <Setter TargetName="CheckBorder" Property="BorderBrush" Value="{StaticResource ButtonBorderPressed}" />
-                            <Setter TargetName="CheckMark" Property="Fill" Value="{StaticResource ButtonTextPressed}" />
+                            <Setter TargetName="CheckMark" Property="Fill" Value="{StaticResource InputTextHover}" />
                         </Trigger>
                         <Trigger Property="IsKeyboardFocused" Value="true">
                             <Setter TargetName="CheckBorder" Property="Background" Value="{StaticResource ButtonBackgroundPressed}" />
                             <Setter TargetName="CheckBorder" Property="BorderBrush" Value="{StaticResource ButtonBorderPressed}" />
-                            <Setter TargetName="CheckMark" Property="Fill" Value="{StaticResource ButtonTextPressed}" />
+                            <Setter TargetName="CheckMark" Property="Fill" Value="{StaticResource InputTextHover}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

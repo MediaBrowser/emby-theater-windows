@@ -406,9 +406,9 @@
                                 <Condition Property="IsEnabled" Value="True" />
                                 <Condition Property="IsMouseOver" Value="True" />
                             </MultiTrigger.Conditions>
-                            <Setter Property="Background" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type osk:TextField}}, Path=BackgroundHoverBrush}" />
-                            <Setter Property="BorderBrush" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type osk:TextField}}, Path=BorderHoverBrush}" />
-                            <Setter Property="Foreground" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type osk:TextField}}, Path=TextHoverBrush}" />
+                            <Setter Property="Background" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type osk:TextField}}, Path=(osk:TextField.BackgroundHoverBrush)}" />
+                            <Setter Property="BorderBrush" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type osk:TextField}}, Path=(osk:TextField.BorderHoverBrush)}" />
+                            <Setter Property="Foreground" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type osk:TextField}}, Path=(osk:TextField.TextHoverBrush)}" />
                         </MultiTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

@@ -33,8 +33,7 @@ namespace MediaBrowser.Theater.Presentation.Controls.Osk
         // Using a DependencyProperty as the backing store for BackgroundHoverBrush.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty BackgroundHoverBrushProperty =
             DependencyProperty.Register("BackgroundHoverBrush", typeof (Brush), typeof (TextField), new PropertyMetadata(new SolidColorBrush(Color.FromRgb(62, 62, 66))));
-
-
+        
         // Using a DependencyProperty as the backing store for TextHoverBrush.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty TextHoverBrushProperty =
             DependencyProperty.Register("TextHoverBrush", typeof (Brush), typeof (TextField), new PropertyMetadata(new SolidColorBrush(Colors.White)));

@@ -2,19 +2,6 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation">
 
-    <Color x:Key="AccentColor">#1ba1e2</Color>
-
-    <SolidColorBrush x:Key="ButtonBackground" Color="#202020" />
-    <SolidColorBrush x:Key="ButtonBackgroundHover" Color="#3e3e42" />
-    <SolidColorBrush x:Key="ButtonBackgroundPressed" Color="#1ba1e2" />
-    <SolidColorBrush x:Key="ButtonBorder" Color="#444444" />
-    <SolidColorBrush x:Key="ButtonBorderHover" Color="#3e3e42" />
-    <SolidColorBrush x:Key="ButtonBorderPressed" Color="#1ba1e2" />
-    <SolidColorBrush x:Key="ButtonText" Color="#ffffff" />
-    <SolidColorBrush x:Key="ButtonTextHover" Color="#ffffff" />
-    <SolidColorBrush x:Key="ButtonTextPressed" Color="#ffffff" />
-    <SolidColorBrush x:Key="ButtonTextDisabled" Color="#515151" />
-
     <!--Default style for buttons that have images. -->
     <Style TargetType="Button" x:Key="ImageButton" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
         <Setter Property="SnapsToDevicePixels" Value="true"/>
@@ -32,13 +19,13 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsKeyboardFocused" Value="true">
-                            <Setter TargetName="Border" Property="Background" Value="{StaticResource ButtonBackgroundPressed}" />
+                            <Setter TargetName="Border" Property="Background" Value="{StaticResource InputHighlightColor}" />
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="true">
-                            <Setter TargetName="Border" Property="Background" Value="{StaticResource ButtonBackgroundPressed}" />
+                            <Setter TargetName="Border" Property="Background" Value="{StaticResource InputHighlightColor}" />
                         </Trigger>
                         <Trigger Property="IsPressed" Value="true">
-                            <Setter TargetName="Border" Property="Background" Value="{StaticResource ButtonBackgroundPressed}" />
+                            <Setter TargetName="Border" Property="Background" Value="{StaticResource InputHighlightColor}" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="false">
                             <Setter TargetName="Border" Property="Opacity" Value=".2" />
@@ -54,7 +41,7 @@
         <Setter Property="Background" Value="{StaticResource ButtonBackground}"/>
         <Setter Property="BorderBrush" Value="{StaticResource ButtonBorder}"/>
         <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="Foreground" Value="{StaticResource ButtonText}"/>
+        <Setter Property="Foreground" Value="{StaticResource InputText}"/>
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Setter Property="Padding" Value="16,3,16,5"/>
@@ -74,23 +61,23 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsEnabled" Value="false">
-                            <Setter Property="Foreground" Value="{StaticResource ButtonTextDisabled}"/>
+                            <Setter Property="Foreground" Value="{StaticResource InputTextDisabled}"/>
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter Property="Background" Value="{StaticResource ButtonBackgroundHover}" />
                             <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderHover}"/>
-                            <Setter Property="Foreground" Value="{StaticResource ButtonTextHover}"/>
+                            <Setter Property="Foreground" Value="{StaticResource InputTextHover}"/>
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
                             <Setter Property="Background" Value="{StaticResource ButtonBackgroundPressed}" />
                             <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderPressed}"/>
-                            <Setter Property="Foreground" Value="{StaticResource ButtonTextPressed}"/>
+                            <Setter Property="Foreground" Value="{StaticResource InputTextHover}"/>
                         </Trigger>
                         <Trigger Property="IsKeyboardFocused" Value="true">
                             <Setter Property="Background" Value="{StaticResource ButtonBackgroundPressed}" />
                             <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderPressed}"/>
-                            <Setter Property="Foreground" Value="{StaticResource ButtonTextPressed}"/>
-                            <Setter TargetName="Chrome" Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+                            <Setter Property="Foreground" Value="{StaticResource InputTextHover}"/>
+<!--                            <Setter TargetName="Chrome" Property="BorderBrush" Value="{StaticResource AccentBrush}" />-->
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -103,7 +90,7 @@
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="BorderBrush" Value="Transparent"/>
         <Setter Property="BorderThickness" Value="0 0 0 2"/>
-        <Setter Property="Foreground" Value="{StaticResource ButtonText}"/>
+        <Setter Property="Foreground" Value="{StaticResource InputText}"/>
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Setter Property="Padding" Value="0,3,0,0"/>
@@ -123,23 +110,23 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsEnabled" Value="false">
-                            <Setter Property="Foreground" Value="{StaticResource ButtonTextDisabled}"/>
+                            <Setter Property="Foreground" Value="{StaticResource InputTextDisabled}"/>
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter Property="Background" Value="{StaticResource ButtonBackgroundPressed}" />
                             <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderPressed}"/>
-                            <Setter Property="Foreground" Value="{StaticResource ButtonTextPressed}"/>
+                            <Setter Property="Foreground" Value="{StaticResource InputTextHover}"/>
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
                             <Setter Property="Background" Value="{StaticResource ButtonBackgroundPressed}" />
                             <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderPressed}"/>
-                            <Setter Property="Foreground" Value="{StaticResource ButtonTextPressed}"/>
+                            <Setter Property="Foreground" Value="{StaticResource InputTextHover}"/>
                         </Trigger>
                         <Trigger Property="IsKeyboardFocused" Value="true">
                             <Setter Property="Background" Value="{StaticResource ButtonBackgroundPressed}" />
                             <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderPressed}"/>
-                            <Setter Property="Foreground" Value="{StaticResource ButtonTextPressed}"/>
-                            <Setter TargetName="Chrome" Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+                            <Setter Property="Foreground" Value="{StaticResource InputTextHover}"/>
+<!--                            <Setter TargetName="Chrome" Property="BorderBrush" Value="{StaticResource AccentBrush}" />-->
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

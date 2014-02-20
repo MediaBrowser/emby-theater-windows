@@ -6,6 +6,7 @@
              xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
              xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:ee="clr-namespace:Microsoft.Expression.Media.Effects;assembly=Microsoft.Expression.Effects"
              xmlns:viewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.Core.ViewModels"
              mc:Ignorable="d"
              Foreground="{StaticResource ForegroundBrush}"
@@ -111,7 +112,19 @@
                     <TextBlock Text="BROWSER" Foreground="#52B54B" />
                 </StackPanel>
 
-                <controls:ExtendedContentControl Grid.Row="2" Content="{Binding ActivePage}" IsTabStop="False" />
+                <controls:ExtendedContentControl Grid.Row="2" Content="{Binding ActivePage}" IsTabStop="False">
+                    <controls:ExtendedContentControl.TransitionAnimation>
+                        <DoubleAnimation Duration="0:0:0.3" >
+                            <DoubleAnimation.EasingFunction>
+                                <ExponentialEase EasingMode="EaseOut"/>
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                    </controls:ExtendedContentControl.TransitionAnimation>
+                    <controls:ExtendedContentControl.TransitionType>
+                        <ee:SlideInTransitionEffect SlideDirection="RightToLeft"/>
+                    </controls:ExtendedContentControl.TransitionType>
+                </controls:ExtendedContentControl>
+                
                 <controls:ExtendedContentControl Grid.Row="2" Content="{Binding Notifications}" IsTabStop="False"
                                                  HorizontalAlignment="Right" VerticalAlignment="Top" />
             </Grid>

@@ -11,46 +11,85 @@
              d:DataContext="{d:DesignInstance viewModels:ManualLoginViewModel}"
              x:Name="_this">
     <StackPanel Margin="10">
-        
+
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup>
                 <VisualState x:Name="Selected">
                     <Storyboard>
-                        <DoubleAnimation Storyboard.TargetName="UserImage" Storyboard.TargetProperty="Opacity" To="1" FillBehavior="HoldEnd" Duration="0:0:0.1" DecelerationRatio="0.5"/>
-                        
-                        <DoubleAnimation Storyboard.TargetName="Username" Storyboard.TargetProperty="RenderTransform.(TranslateTransform.X)" From="20" To="0" FillBehavior="HoldEnd" Duration="0:0:0.2" DecelerationRatio="0.5"/>
-                        <DoubleAnimation Storyboard.TargetName="Username" Storyboard.TargetProperty="Opacity" To="1" FillBehavior="HoldEnd" Duration="0:0:0.2" DecelerationRatio="0.5"/>
-                        
-                        <DoubleAnimation Storyboard.TargetName="Password" Storyboard.TargetProperty="RenderTransform.(TranslateTransform.X)" From="20" To="0" FillBehavior="HoldEnd" Duration="0:0:0.2" BeginTime="0:0:0.05" DecelerationRatio="0.5"/>
-                        <DoubleAnimation Storyboard.TargetName="Password" Storyboard.TargetProperty="Opacity" To="1" FillBehavior="HoldEnd" Duration="0:0:0.2" BeginTime="0:0:0.05" DecelerationRatio="0.5"/>
+                        <DoubleAnimation Storyboard.TargetName="UserImage" Storyboard.TargetProperty="Opacity" To="1"
+                                         FillBehavior="HoldEnd" Duration="0:0:0.1" DecelerationRatio="0.5" />
 
-                        <DoubleAnimation Storyboard.TargetName="Login" Storyboard.TargetProperty="RenderTransform.(TranslateTransform.X)" From="20" To="0" FillBehavior="HoldEnd" Duration="0:0:0.2" BeginTime="0:0:0.1" DecelerationRatio="0.5"/>
-                        <DoubleAnimation Storyboard.TargetName="Login" Storyboard.TargetProperty="Opacity" To="1" FillBehavior="HoldEnd" Duration="0:0:0.2" BeginTime="0:0:0.1" DecelerationRatio="0.5"/>
+                        <DoubleAnimation Storyboard.TargetName="Username"
+                                         Storyboard.TargetProperty="RenderTransform.(TranslateTransform.X)" From="20"
+                                         To="0" FillBehavior="HoldEnd" Duration="0:0:0.2" DecelerationRatio="0.5" />
+                        <DoubleAnimation Storyboard.TargetName="Username" Storyboard.TargetProperty="Opacity" To="1"
+                                         FillBehavior="HoldEnd" Duration="0:0:0.2" DecelerationRatio="0.5" />
 
-                        <DoubleAnimation Storyboard.TargetName="RememberMe" Storyboard.TargetProperty="RenderTransform.(TranslateTransform.X)" From="20" To="0" FillBehavior="HoldEnd" Duration="0:0:0.2" BeginTime="0:0:0.15" DecelerationRatio="0.5"/>
-                        <DoubleAnimation Storyboard.TargetName="RememberMe" Storyboard.TargetProperty="Opacity" To="1" FillBehavior="HoldEnd" Duration="0:0:0.2" BeginTime="0:0:0.15" DecelerationRatio="0.5"/>
+                        <DoubleAnimation Storyboard.TargetName="Password"
+                                         Storyboard.TargetProperty="RenderTransform.(TranslateTransform.X)" From="20"
+                                         To="0" FillBehavior="HoldEnd" Duration="0:0:0.2" BeginTime="0:0:0.05"
+                                         DecelerationRatio="0.5" />
+                        <DoubleAnimation Storyboard.TargetName="Password" Storyboard.TargetProperty="Opacity" To="1"
+                                         FillBehavior="HoldEnd" Duration="0:0:0.2" BeginTime="0:0:0.05"
+                                         DecelerationRatio="0.5" />
 
-                        <BooleanAnimationUsingKeyFrames Storyboard.TargetName="Controls" Storyboard.TargetProperty="(UIElement.IsHitTestVisible)">
-                            <DiscreteBooleanKeyFrame KeyTime="0:0:0" Value="True"/>
+                        <DoubleAnimation Storyboard.TargetName="Login"
+                                         Storyboard.TargetProperty="RenderTransform.(TranslateTransform.X)" From="20"
+                                         To="0" FillBehavior="HoldEnd" Duration="0:0:0.2" BeginTime="0:0:0.1"
+                                         DecelerationRatio="0.5" />
+                        <DoubleAnimation Storyboard.TargetName="Login" Storyboard.TargetProperty="Opacity" To="1"
+                                         FillBehavior="HoldEnd" Duration="0:0:0.2" BeginTime="0:0:0.1"
+                                         DecelerationRatio="0.5" />
+
+                        <DoubleAnimation Storyboard.TargetName="RememberMe"
+                                         Storyboard.TargetProperty="RenderTransform.(TranslateTransform.X)" From="20"
+                                         To="0" FillBehavior="HoldEnd" Duration="0:0:0.2" BeginTime="0:0:0.15"
+                                         DecelerationRatio="0.5" />
+                        <DoubleAnimation Storyboard.TargetName="RememberMe" Storyboard.TargetProperty="Opacity" To="1"
+                                         FillBehavior="HoldEnd" Duration="0:0:0.2" BeginTime="0:0:0.15"
+                                         DecelerationRatio="0.5" />
+
+                        <BooleanAnimationUsingKeyFrames Storyboard.TargetName="Controls"
+                                                        Storyboard.TargetProperty="(UIElement.IsHitTestVisible)">
+                            <DiscreteBooleanKeyFrame KeyTime="0:0:0" Value="True" />
                         </BooleanAnimationUsingKeyFrames>
                     </Storyboard>
                 </VisualState>
                 <VisualState x:Name="Hidden">
                     <Storyboard>
-                        <DoubleAnimation Storyboard.TargetName="Username" Storyboard.TargetProperty="RenderTransform.(TranslateTransform.X)" From="0" To="-20" FillBehavior="HoldEnd" Duration="0:0:0.2" BeginTime="0:0:0.15" DecelerationRatio="0.5"/>
-                        <DoubleAnimation Storyboard.TargetName="Username" Storyboard.TargetProperty="Opacity" To="0" FillBehavior="HoldEnd" Duration="0:0:0.2" BeginTime="0:0:0.15" DecelerationRatio="0.5"/>
+                        <DoubleAnimation Storyboard.TargetName="Username"
+                                         Storyboard.TargetProperty="RenderTransform.(TranslateTransform.X)" From="0"
+                                         To="-20" FillBehavior="HoldEnd" Duration="0:0:0.2" BeginTime="0:0:0.15"
+                                         DecelerationRatio="0.5" />
+                        <DoubleAnimation Storyboard.TargetName="Username" Storyboard.TargetProperty="Opacity" To="0"
+                                         FillBehavior="HoldEnd" Duration="0:0:0.2" BeginTime="0:0:0.15"
+                                         DecelerationRatio="0.5" />
 
-                        <DoubleAnimation Storyboard.TargetName="Password" Storyboard.TargetProperty="RenderTransform.(TranslateTransform.X)" From="0" To="-20" FillBehavior="HoldEnd" Duration="0:0:0.2" BeginTime="0:0:0.1" DecelerationRatio="0.5"/>
-                        <DoubleAnimation Storyboard.TargetName="Password" Storyboard.TargetProperty="Opacity" To="0" FillBehavior="HoldEnd" Duration="0:0:0.2" BeginTime="0:0:0.1" DecelerationRatio="0.5"/>
+                        <DoubleAnimation Storyboard.TargetName="Password"
+                                         Storyboard.TargetProperty="RenderTransform.(TranslateTransform.X)" From="0"
+                                         To="-20" FillBehavior="HoldEnd" Duration="0:0:0.2" BeginTime="0:0:0.1"
+                                         DecelerationRatio="0.5" />
+                        <DoubleAnimation Storyboard.TargetName="Password" Storyboard.TargetProperty="Opacity" To="0"
+                                         FillBehavior="HoldEnd" Duration="0:0:0.2" BeginTime="0:0:0.1"
+                                         DecelerationRatio="0.5" />
 
-                        <DoubleAnimation Storyboard.TargetName="Login" Storyboard.TargetProperty="RenderTransform.(TranslateTransform.X)" From="0" To="-20" FillBehavior="HoldEnd" Duration="0:0:0.2" BeginTime="0:0:0.05" DecelerationRatio="0.5"/>
-                        <DoubleAnimation Storyboard.TargetName="Login" Storyboard.TargetProperty="Opacity" To="0" FillBehavior="HoldEnd" Duration="0:0:0.2" BeginTime="0:0:0.05" DecelerationRatio="0.5"/>
+                        <DoubleAnimation Storyboard.TargetName="Login"
+                                         Storyboard.TargetProperty="RenderTransform.(TranslateTransform.X)" From="0"
+                                         To="-20" FillBehavior="HoldEnd" Duration="0:0:0.2" BeginTime="0:0:0.05"
+                                         DecelerationRatio="0.5" />
+                        <DoubleAnimation Storyboard.TargetName="Login" Storyboard.TargetProperty="Opacity" To="0"
+                                         FillBehavior="HoldEnd" Duration="0:0:0.2" BeginTime="0:0:0.05"
+                                         DecelerationRatio="0.5" />
 
-                        <DoubleAnimation Storyboard.TargetName="RememberMe" Storyboard.TargetProperty="RenderTransform.(TranslateTransform.X)" From="0" To="-20" FillBehavior="HoldEnd" Duration="0:0:0.2" DecelerationRatio="0.5"/>
-                        <DoubleAnimation Storyboard.TargetName="RememberMe" Storyboard.TargetProperty="Opacity" To="0" FillBehavior="HoldEnd" Duration="0:0:0.2" DecelerationRatio="0.5"/>
+                        <DoubleAnimation Storyboard.TargetName="RememberMe"
+                                         Storyboard.TargetProperty="RenderTransform.(TranslateTransform.X)" From="0"
+                                         To="-20" FillBehavior="HoldEnd" Duration="0:0:0.2" DecelerationRatio="0.5" />
+                        <DoubleAnimation Storyboard.TargetName="RememberMe" Storyboard.TargetProperty="Opacity" To="0"
+                                         FillBehavior="HoldEnd" Duration="0:0:0.2" DecelerationRatio="0.5" />
 
-                        <BooleanAnimationUsingKeyFrames Storyboard.TargetName="Controls" Storyboard.TargetProperty="(UIElement.IsHitTestVisible)">
-                            <DiscreteBooleanKeyFrame KeyTime="0:0:0" Value="False"/>
+                        <BooleanAnimationUsingKeyFrames Storyboard.TargetName="Controls"
+                                                        Storyboard.TargetProperty="(UIElement.IsHitTestVisible)">
+                            <DiscreteBooleanKeyFrame KeyTime="0:0:0" Value="False" />
                         </BooleanAnimationUsingKeyFrames>
                     </Storyboard>
                 </VisualState>
@@ -62,39 +101,53 @@
                 Binding="{Binding ElementName=_this, Path=IsKeyboardFocusWithin}"
                 Value="True"
                 TrueState="Selected"
-                FalseState="Hidden"/>
+                FalseState="Hidden" />
         </i:Interaction.Behaviors>
-        
-        <Grid x:Name="UserImage" Background="#CFCFCF" Width="400" Height="400" Opacity="0.8">
-            <Path Fill="#FFFFFF"
-                    Data="M15.930851,36.710608C22.14356,36.647291 30.005098,41.570198 30.005098,41.570198 38.080673,46.45562 45.657448,38.281082 45.657448,38.281082 48.847534,35.288968 53.432121,42.865801 53.432121,42.865801 59.214702,51.040343 59.414001,64.000004 59.414001,64.000004L0,64.000004C2.092523,41.669198 12.360659,37.482978 12.360659,37.482978 13.423015,36.951675 14.64142,36.723749 15.930851,36.710608z M33.0965,0C42.015587,0 49.245998,7.8997269 49.245998,17.644449 49.245998,27.390621 42.015587,35.288998 33.0965,35.288999 24.177311,35.288998 16.947,27.390621 16.947,17.644449 16.947,7.8997269 24.177311,0 33.0965,0z"
-                    Stretch="Uniform" Margin="20" RenderTransformOrigin="0.5,0.5" />
-        </Grid>
+
+        <Border BorderThickness="2" Background="Transparent" IsHitTestVisible="True">
+            <Border.Style>
+                <Style TargetType="Border">
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="BorderBrush" Value="{StaticResource ForegroundBrush}" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+            <Grid x:Name="UserImage" Background="#CFCFCF" Width="400" Height="400" Opacity="0.8">
+                <Path Fill="#FFFFFF"
+                      Data="M15.930851,36.710608C22.14356,36.647291 30.005098,41.570198 30.005098,41.570198 38.080673,46.45562 45.657448,38.281082 45.657448,38.281082 48.847534,35.288968 53.432121,42.865801 53.432121,42.865801 59.214702,51.040343 59.414001,64.000004 59.414001,64.000004L0,64.000004C2.092523,41.669198 12.360659,37.482978 12.360659,37.482978 13.423015,36.951675 14.64142,36.723749 15.930851,36.710608z M33.0965,0C42.015587,0 49.245998,7.8997269 49.245998,17.644449 49.245998,27.390621 42.015587,35.288998 33.0965,35.288999 24.177311,35.288998 16.947,27.390621 16.947,17.644449 16.947,7.8997269 24.177311,0 33.0965,0z"
+                      Stretch="Uniform" Margin="20" RenderTransformOrigin="0.5,0.5" />
+            </Grid>
+        </Border>
 
         <StackPanel Margin="0,20,0,0" x:Name="Controls" IsHitTestVisible="False">
-            <osk:TextField x:Name="Username" Watermark="Username" Text="{Binding Username, ValidatesOnNotifyDataErrors=True, Mode=TwoWay}" Margin="0,0,0,10" Opacity="0">
+            <osk:TextField x:Name="Username" Watermark="Username"
+                           Text="{Binding Username, ValidatesOnNotifyDataErrors=True, Mode=TwoWay}" Margin="0,0,0,10"
+                           Opacity="0">
                 <osk:TextField.RenderTransform>
-                    <TranslateTransform/>
+                    <TranslateTransform />
                 </osk:TextField.RenderTransform>
             </osk:TextField>
-            
-            <osk:TextField x:Name="Password" Watermark="Password" IsMasked="True" Text="{Binding Password, Mode=TwoWay}" Margin="0,0,0,10" Opacity="0">
+
+            <osk:TextField x:Name="Password" Watermark="Password" IsMasked="True"
+                           Text="{Binding Password, Mode=TwoWay}" Margin="0,0,0,10" Opacity="0">
                 <osk:TextField.RenderTransform>
-                    <TranslateTransform/>
+                    <TranslateTransform />
                 </osk:TextField.RenderTransform>
             </osk:TextField>
-            
+
             <Button x:Name="Login" Content="Login" Command="{Binding LoginCommand}" Margin="0,0,0,10" Opacity="0">
                 <Button.RenderTransform>
-                    <TranslateTransform/>
+                    <TranslateTransform />
                 </Button.RenderTransform>
             </Button>
-            
+
             <CheckBox x:Name="RememberMe" IsChecked="{Binding RememberMe}" Opacity="0">
                 <CheckBox.RenderTransform>
-                    <TranslateTransform/>
+                    <TranslateTransform />
                 </CheckBox.RenderTransform>
-                
+
                 <TextBlock Text="Remember me?" />
             </CheckBox>
 

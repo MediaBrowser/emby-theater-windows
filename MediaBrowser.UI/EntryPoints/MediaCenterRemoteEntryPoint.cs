@@ -27,10 +27,10 @@ namespace MediaBrowser.UI.EntryPoints
         private readonly IUserInputManager _userInput;
         private readonly IHiddenWindow _hiddenWindow;
 
-        private System.Windows.Input.Key _lastWindowKeyDown;
-        private DateTime _lastWindowKeyDownTime;
-        private System.Windows.Forms.Keys _lastFormsKeyCode;
-        private DateTime _lastFormsKeyCodeTime;
+        private System.Windows.Input.Key _lastKeyDown;
+        private DateTime _lastKeyDownTime;
+        private int _lastCmd;
+        private DateTime _lastCmdTime;
         private const double DuplicateCommandPeriod = 500;// Milliseconds
 
 
@@ -55,43 +55,32 @@ namespace MediaBrowser.UI.EntryPoints
 
                 source.AddHook(WndProc);
             });
-
+            
             _nav.Navigated += _nav_Navigated;
+            _presenation.Window.KeyDown += window_KeyDown;
         }
 
         void _nav_Navigated(object sender, NavigationEventArgs e)
         {
             if (e.NewPage is IFullscreenVideoPage)
             {
-                RemoveWindowHook();
-                AddGlobalHook();
+                AddirectPlayWindowHook();
             }
             else
             {
-                RemoveGlobalHook();
-                AddWindowHook();
-            }
+                RemoveDirectPlayWindowHook();
+           }
         }
 
-        private void AddWindowHook()
+        private void AddirectPlayWindowHook()
         {
-            _presenation.Window.KeyDown -= window_KeyDown;
-            _presenation.Window.KeyDown += window_KeyDown;
-        }
-        private void RemoveWindowHook()
-        {
-            _presenation.Window.KeyDown -= window_KeyDown;
+            App.Instance.HiddenWindow.KeyDown -= directPlayWindow_KeyDown;
+            App.Instance.HiddenWindow.KeyDown += directPlayWindow_KeyDown;
         }
 
-        private void AddGlobalHook()
+        private void RemoveDirectPlayWindowHook()
         {
-            _userInput.KeyDown -= _userInput_KeyDown;
-            _userInput.KeyDown += _userInput_KeyDown;
-        }
-
-        private void RemoveGlobalHook()
-        {
-            _userInput.KeyDown -= _userInput_KeyDown;
+            App.Instance.HiddenWindow.KeyDown -= directPlayWindow_KeyDown;
         }
 
         private const int WM_APPCOMMAND = 0x319;
@@ -223,15 +212,23 @@ namespace MediaBrowser.UI.EntryPoints
                    cmd == APPCOMMAND_MEDIA_PLAY_PAUSE;
         }
 
+        private bool IsMediaCommand(System.Windows.Input.Key key)
+        {
+            return key == Key.MediaNextTrack ||
+                   key == Key.MediaPreviousTrack ||
+                   key == Key.MediaStop ||
+                   key == Key.MediaPlayPause;
+        }
+
         private bool MatchCommandWithWindowsKey(int cmd)
         {
-            if ((cmd == APPCOMMAND_MEDIA_NEXTTRACK && _lastWindowKeyDown == Key.MediaNextTrack) ||
-                (cmd == APPCOMMAND_MEDIA_PREVIOUSTRACK && _lastWindowKeyDown == Key.MediaPreviousTrack) ||
-                (cmd == APPCOMMAND_MEDIA_STOP && _lastWindowKeyDown == Key.MediaStop) ||
-                (cmd == APPCOMMAND_MEDIA_PLAY_PAUSE && _lastWindowKeyDown == Key.MediaPlayPause))
+            if ((cmd == APPCOMMAND_MEDIA_NEXTTRACK && _lastKeyDown == Key.MediaNextTrack) ||
+                (cmd == APPCOMMAND_MEDIA_PREVIOUSTRACK && _lastKeyDown == Key.MediaPreviousTrack) ||
+                (cmd == APPCOMMAND_MEDIA_STOP && _lastKeyDown == Key.MediaStop) ||
+                (cmd == APPCOMMAND_MEDIA_PLAY_PAUSE && _lastKeyDown == Key.MediaPlayPause))
             {
                 // its the same command, did it occur in the last DuplicateCommandPeriod Milliseconds
-                TimeSpan span = DateTime.Now - _lastWindowKeyDownTime;
+                TimeSpan span = DateTime.Now - _lastKeyDownTime;
                 return span.TotalMilliseconds < DuplicateCommandPeriod;
             }
             else
@@ -240,24 +237,22 @@ namespace MediaBrowser.UI.EntryPoints
             }
         }
 
-        
-        private bool MatchCommandWithFormsKey(int cmd)
+        private bool MatchCommandWithWindowsKey(System.Windows.Input.Key key)
         {
-            if ((cmd == APPCOMMAND_MEDIA_NEXTTRACK && _lastFormsKeyCode == Keys.MediaNextTrack) ||
-                (cmd == APPCOMMAND_MEDIA_PREVIOUSTRACK && _lastFormsKeyCode == Keys.MediaPreviousTrack) ||
-                (cmd == APPCOMMAND_MEDIA_STOP && _lastFormsKeyCode == Keys.MediaStop) ||
-                (cmd == APPCOMMAND_MEDIA_PLAY_PAUSE && _lastFormsKeyCode == Keys.MediaPlayPause))
+            if ((_lastCmd == APPCOMMAND_MEDIA_NEXTTRACK && key == Key.MediaNextTrack) ||
+                (_lastCmd == APPCOMMAND_MEDIA_PREVIOUSTRACK && key == Key.MediaPreviousTrack) ||
+                (_lastCmd == APPCOMMAND_MEDIA_STOP && key == Key.MediaStop) ||
+                (_lastCmd == APPCOMMAND_MEDIA_PLAY_PAUSE && key == Key.MediaPlayPause))
             {
                 // its the same command, did it occur in the last DuplicateCommandPeriod Milliseconds
-                TimeSpan span = DateTime.Now - _lastFormsKeyCodeTime;
-           return span.TotalMilliseconds < DuplicateCommandPeriod;
+                TimeSpan span = DateTime.Now - _lastCmdTime;
+                return span.TotalMilliseconds < DuplicateCommandPeriod;
             }
             else
             {
                 return false;
             }
         }
-
 
         private bool IsDuplicateMediaKeyEvent(int cmd)
         {
@@ -268,76 +263,133 @@ namespace MediaBrowser.UI.EntryPoints
             // We therefore remember that type and time of the last media keyDown event and when we get a Media Key APPCOMMAND
             // get check if the correcponsing KetDown just occured and if it did ignore the APPCommand event
 
-            return IsMediaCommand(cmd) && (MatchCommandWithWindowsKey(cmd) || MatchCommandWithFormsKey(cmd));
+            return IsMediaCommand(cmd) && MatchCommandWithWindowsKey(cmd) ;
+        }
+
+        private bool IsDuplicateMediaKeyEvent(System.Windows.Input.Key key)
+        {
+            return IsMediaCommand(key) && MatchCommandWithWindowsKey(key);
         }
 
         /// <summary>
         /// Responds to multimedia keys
+        /// ToDo
+        ///  - Refactor ProcessRemoteCommand & ExecuteKeyCommand via
+        ///    1. define a enum of commands, independant of Key or APPCOMMANDS
+        ///    2. ExecuteCommand take a command and list of arguments (for latter key to command mapping)
+        ///    3. Use a table to map APP_COMMANDS, Key with modifiers to mbt commands
+        ///    4. External xml file generate table/dict what ever
         /// </summary>
+        /// 
         private bool ProcessRemoteCommand(int cmd)
         {
-            //Debug.WriteLine("ProcessRemoteCommand {0}", cmd);
+            var handled = false;
+
+            _logger.Debug("MediaCenterRemoteEntryPoint: ProcessRemoteCommand {0}", cmd);
             if (IsDuplicateMediaKeyEvent(cmd))
             {
-                 //Debug.WriteLine("IsDuplicateMediaKeyEvent");
-                 return true;
+                _logger.Debug("MediaCenterRemoteEntryPoint: IsDuplicate - cmd {0} after key {1}", cmd, _lastKeyDown);
+                handled = true;
+            }
+            else
+            {
+                switch (cmd)
+                {
+                    case APPCOMMAND_INFO:
+                        ExecuteCommand(Info);
+                        handled = true;
+                        break;
+
+                    case APPCOMMAND_BROWSER_HOME:
+                        ExecuteCommand(Home);
+                        handled = true;
+                        break;
+
+                    case APPCOMMAND_MEDIA_PLAY_PAUSE:
+                        ExecuteCommand(PlayPause);
+                        handled = true;
+                        break;
+
+                    case APPCOMMAND_MEDIA_STOP:
+                        ExecuteCommand(Stop);
+                        handled = true;
+                        break;
+
+                    case APPCOMMAND_MEDIA_NEXTTRACK:
+                        ExecuteCommand(OnNextTrackButton);
+                        handled = true;
+                        break;
+
+                    case APPCOMMAND_MEDIA_PREVIOUSTRACK:
+                        ExecuteCommand(OnPreviousTrackButton);
+                        handled = true;
+                        break;
+
+                    case 4146:
+                    case APPCOMMAND_MEDIA_REWIND:
+                        ExecuteCommand(SkipBackward);
+                        handled = true;
+                        break;
+
+                    case 4145:
+                    case APPCOMMAND_MEDIA_FAST_FORWARD:
+                        ExecuteCommand(SkipForward);
+                        handled = true;
+                        break;
+
+                    case APPCOMMAND_CLOSE:
+                        ExecuteCommand(Close);
+                        handled = true;
+                        break;
+
+                    case 4142:
+                    case APPCOMMAND_MEDIA_PLAY:
+                        ExecuteCommand(Play);
+                        handled = true;
+                        break;
+
+                    case 4143:
+                    case APPCOMMAND_MEDIA_PAUSE:
+                        ExecuteCommand(Pause);
+                        handled = true;
+                        break;
+
+                    case APPCOMMAND_FIND:
+                    case APPCOMMAND_BROWSER_SEARCH:
+                        ExecuteCommand(Search);
+                        handled = true;
+                        break;
+
+                    default:
+                        handled = false;
+                        break;
+                } 
             }
 
-            switch (cmd)
+            if (handled)
             {
-                case APPCOMMAND_INFO:
-                    ExecuteCommand(Info);
-                    return true;
-                case APPCOMMAND_BROWSER_HOME:
-                    ExecuteCommand(Home);
-                    return true;
-                case APPCOMMAND_MEDIA_PLAY_PAUSE:
-                    ExecuteCommand(PlayPause);
-                    return true;
-                case APPCOMMAND_MEDIA_STOP:
-                    ExecuteCommand(Stop);
-                    return true;
-                case APPCOMMAND_MEDIA_NEXTTRACK:
-                     ExecuteCommand(OnNextTrackButton);
-                    return true;
-                case APPCOMMAND_MEDIA_PREVIOUSTRACK:
-                    ExecuteCommand(OnPreviousTrackButton);
-                    return true;
-                case 4146:
-                case APPCOMMAND_MEDIA_REWIND:
-                    ExecuteCommand(SkipBackward);
-                    return true;
-                case 4145:
-                case APPCOMMAND_MEDIA_FAST_FORWARD:
-                    ExecuteCommand(SkipForward);
-                    return true;
-                case APPCOMMAND_CLOSE:
-                    ExecuteCommand(Close);
-                    return true;
-                case 4142:
-                case APPCOMMAND_MEDIA_PLAY:
-                    ExecuteCommand(Play);
-                    return true;
-                case 4143:
-                case APPCOMMAND_MEDIA_PAUSE:
-                    ExecuteCommand(Pause);
-                    return true;
-                case APPCOMMAND_FIND:
-                case APPCOMMAND_BROWSER_SEARCH:
-                    ExecuteCommand(Search);
-                    return true;
-                default:
-                    return false;
+                _lastCmd = cmd;
+                _lastCmdTime = DateTime.Now;
             }
+            else
+            {
+                _logger.Debug("MediaCenterRemoteEntryPoint: ProcessRemoteCommand {0}, command not implemented", cmd);
+            }
+
+            return handled;
         }
 
-        /// <summary>
-        /// Responds to key presses inside a wpf window
-        /// </summary>
-        void window_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+         private void ExecuteKeyCommand(System.Windows.Input.Key key, Boolean controlKeyDown,  Boolean shiftKeyDown)
         {
-           // Debug.WriteLine("window_KeyDown {0}", e.Key);
-            switch (e.Key)
+    
+            _logger.Debug("MediaCenterRemoteEntryPoint: ExecuteKeyCommand {0} {1} {2}", key, shiftKeyDown, controlKeyDown);
+            if (IsDuplicateMediaKeyEvent(key))
+            {
+                _logger.Debug("MediaCenterRemoteEntryPoint: IsDuplicate- Key {0} after cmd {1}", key, _lastCmd);
+                return;
+            }
+
+            switch (key)
             {
                 case System.Windows.Input.Key.BrowserSearch:
                     ExecuteCommand(Search);
@@ -367,9 +419,9 @@ namespace MediaBrowser.UI.EntryPoints
                     break;
                 case System.Windows.Input.Key.P:
                     {
-                        if (IsControlKeyDown(e))
+                        if (controlKeyDown)
                         {
-                            if (IsShiftKeyDown(e))
+                            if (shiftKeyDown)
                             {
                                 ExecuteCommand(Play);
                             }
@@ -382,17 +434,24 @@ namespace MediaBrowser.UI.EntryPoints
                     }
                 case System.Windows.Input.Key.S:
                     {
-                        if (IsControlKeyDown(e) && IsShiftKeyDown(e))
+                        if (controlKeyDown)
                         {
-                            ExecuteCommand(Stop);
+                            if (shiftKeyDown)
+                            {
+                                ExecuteCommand(Stop);
+                            }
+                            else
+                            {
+                                ExecuteCommand(Search);
+                            }
                         }
                         break;
                     }
                 case System.Windows.Input.Key.B:
                     {
-                        if (IsControlKeyDown(e))
+                        if (controlKeyDown)
                         {
-                            if (IsShiftKeyDown(e))
+                            if (shiftKeyDown)
                             {
                                 ExecuteCommand(SkipBackward);
                             }
@@ -405,9 +464,9 @@ namespace MediaBrowser.UI.EntryPoints
                     }
                 case System.Windows.Input.Key.F:
                     {
-                        if (IsControlKeyDown(e))
+                        if (controlKeyDown)
                         {
-                            if (IsShiftKeyDown(e))
+                            if (shiftKeyDown)
                             {
                                 ExecuteCommand(SkipForward);
                             }
@@ -418,11 +477,19 @@ namespace MediaBrowser.UI.EntryPoints
                         }
                         break;
                     }
-                case System.Windows.Input.Key.Multiply:
+
+                case System.Windows.Input.Key.D:
                     {
-                        ExecuteCommand(ToggleInfoPanel);
+                        if (controlKeyDown)
+                        {
+                            ExecuteCommand(ToggleInfoPanel);
+                        }
                         break;
                     }
+                   
+
+                case System.Windows.Input.Key.I:
+                case System.Windows.Input.Key.Multiply:
                 case System.Windows.Input.Key.D8:
                     {
                         ExecuteCommand(ToggleInfoPanel);
@@ -433,134 +500,43 @@ namespace MediaBrowser.UI.EntryPoints
             }
 
             // record the key and the time but after the execute
-            _lastWindowKeyDown = e.Key;
-            _lastWindowKeyDownTime = DateTime.Now;
+             _lastKeyDown = key;
+            _lastKeyDownTime = DateTime.Now;
         }
 
         /// <summary>
-        /// Responds globally to key presses
+        /// Responds to key presses inside a wpf window
         /// </summary>
-        void _userInput_KeyDown(object sender, KeyEventArgs e)
+        void window_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
-            //Debug.WriteLine("_userInput_KeyDown {0}", e.KeyCode);
-            switch (e.KeyCode)
-            {
-                case Keys.BrowserSearch:
-                    ExecuteCommand(Search);
-                    break;
-                case Keys.BrowserHome:
-                case Keys.Home:
-                    ExecuteCommand(Home);
-                    break;
-                case Keys.Play:
-                    ExecuteCommand(Play);
-                    break;
-                case Keys.Space:
-                case Keys.Pause:
-                    ExecuteCommand(Pause);
-                    break;
-                case Keys.MediaPlayPause:
-                    ExecuteCommand(PlayPause);
-                    break;
-                case Keys.MediaNextTrack:
-                    ExecuteCommand(OnNextTrackButton);
-                    break;
-                case Keys.MediaPreviousTrack:
-                    ExecuteCommand(OnPreviousTrackButton);
-                    break;
-                case Keys.MediaStop:
-                    ExecuteCommand(Stop);
-                    break;
-                case Keys.P:
-                    {
-                        if (IsControlKeyDown(e))
-                        {
-                            if (IsShiftKeyDown(e))
-                            {
-                                ExecuteCommand(Play);
-                            }
-                            else
-                            {
-                                ExecuteCommand(Pause);
-                            }
-                        }
-                        break;
-                    }
-                case Keys.S:
-                    {
-                        if (IsControlKeyDown(e) && IsShiftKeyDown(e))
-                        {
-                            ExecuteCommand(Stop);
-                        }
-                        break;
-                    }
-                case Keys.B:
-                    {
-                        if (IsControlKeyDown(e))
-                        {
-                            if (IsShiftKeyDown(e))
-                            {
-                                ExecuteCommand(SkipBackward);
-                            }
-                            else
-                            {
-                                ExecuteCommand(OnPreviousTrackButton);
-                            }
-                        }
-                        break;
-                    }
-                case Keys.F:
-                    {
-                        if (IsControlKeyDown(e))
-                        {
-                            if (IsShiftKeyDown(e))
-                            {
-                                ExecuteCommand(SkipForward);
-                            }
-                            else
-                            {
-                                ExecuteCommand(OnNextTrackButton);
-                            }
-                        }
-                        break;
-                    }
-                case Keys.D8:
-                    {
-                        ExecuteCommand(ToggleInfoPanel);
-                        break;
-                    }
-                case Keys.Multiply:
-                    ExecuteCommand(ToggleInfoPanel);
-                    break;
-                default:
-                    break;
-            }
-
-            // record key and time but after the execute
-            _lastFormsKeyCode = e.KeyCode;
-            _lastFormsKeyCodeTime = DateTime.Now;
+           _logger.Debug("MediaCenterRemoteEntryPoint: window_KeyDown {0}", e.Key);
+           ExecuteKeyCommand(e.Key, IsControlKeyDown(e), IsShiftKeyDown(e));
         }
 
+        /// <summary>
+        /// Responds to key presses in hidden window play via directpay
+        /// </summary>
+        //
+        void directPlayWindow_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+        {
+           _logger.Debug("MediaCenterRemoteEntryPoint:  {0}", e.KeyCode);
+           ExecuteKeyCommand(KeyInterop.KeyFromVirtualKey((int)e.KeyCode), IsControlKeyDown(e), IsShiftKeyDown(e));
+        }
+
+        // WPF key mangement
         private bool IsShiftKeyDown(System.Windows.Input.KeyEventArgs e)
         {
-            return e.Key.HasFlag(System.Windows.Input.Key.LeftShift) ||
-                e.Key.HasFlag(System.Windows.Input.Key.RightShift) ||
-                e.SystemKey.HasFlag(System.Windows.Input.Key.LeftShift) ||
-                e.SystemKey.HasFlag(System.Windows.Input.Key.RightShift) ||
-                e.KeyboardDevice.IsKeyDown(System.Windows.Input.Key.LeftShift) ||
-                e.KeyboardDevice.IsKeyDown(System.Windows.Input.Key.RightShift);
+            return Keyboard.IsKeyDown(System.Windows.Input.Key.LeftShift) ||
+                   Keyboard.IsKeyDown(System.Windows.Input.Key.RightShift);
         }
 
         private bool IsControlKeyDown(System.Windows.Input.KeyEventArgs e)
         {
-            return e.Key.HasFlag(System.Windows.Input.Key.LeftCtrl) ||
-                e.Key.HasFlag(System.Windows.Input.Key.RightCtrl) ||
-                e.SystemKey.HasFlag(System.Windows.Input.Key.LeftCtrl) ||
-                e.SystemKey.HasFlag(System.Windows.Input.Key.RightCtrl) ||
-                e.KeyboardDevice.IsKeyDown(System.Windows.Input.Key.LeftCtrl) ||
-                e.KeyboardDevice.IsKeyDown(System.Windows.Input.Key.RightCtrl);
+            return Keyboard.IsKeyDown(System.Windows.Input.Key.LeftCtrl) ||
+                   Keyboard.IsKeyDown(System.Windows.Input.Key.RightCtrl);
         }
 
+        // windows forms key management (events originate in hiddenform used in direct show player)
         private bool IsShiftKeyDown(KeyEventArgs e)
         {
             return e.Shift || HasShift(e.Modifiers) || HasShift(Control.ModifierKeys);
@@ -646,6 +622,7 @@ namespace MediaBrowser.UI.EntryPoints
 
         private void Search()
         {
+            _nav.NavigateToSearchPage();
         }
 
         private void SkipBackward()
@@ -859,4 +836,28 @@ namespace MediaBrowser.UI.EntryPoints
             }
         }
     }
+
+    public static class Extensions
+    {
+        public static T SetFlag<T>(this Enum value, T flag, bool set)
+        {
+            Type underlyingType = Enum.GetUnderlyingType(value.GetType());
+
+            // note: AsInt mean: math integer vs enum (not the c# int type)
+            dynamic valueAsInt = Convert.ChangeType(value, underlyingType);
+            dynamic flagAsInt = Convert.ChangeType(flag, underlyingType);
+            if (set)
+            {
+                valueAsInt |= flagAsInt;
+            }
+            else
+            {
+                valueAsInt &= ~flagAsInt;
+            }
+
+            return (T)valueAsInt;
+        }
+    }
+
 }
+

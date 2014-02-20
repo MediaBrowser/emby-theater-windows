@@ -32,7 +32,7 @@ namespace MediaBrowser.Theater.DirectShow
         private readonly ILogger _logger;
         private readonly IHiddenWindow _hiddenWindow;
         private readonly InternalDirectShowPlayer _playerWrapper;
-
+    
         private DirectShowLib.IGraphBuilder m_graph = null;
         private DirectShowLib.FilterGraphNoThread m_filterGraph = null;
 
@@ -1006,7 +1006,8 @@ namespace MediaBrowser.Theater.DirectShow
 
                 else
                 {
-                    hr = _videoWindow.put_MessageDrain(VideoWindowHandle);
+                   // hr = _videoWindow.put_MessageDrain(VideoWindowHandle); XXX
+                    hr = _videoWindow.put_MessageDrain(_applicationWindowHandle);
                     DsError.ThrowExceptionForHR(hr);
                 }
             }
@@ -1026,7 +1027,7 @@ namespace MediaBrowser.Theater.DirectShow
 
         void HiddenForm_KeyDown(object sender, KeyEventArgs e)
         {
-            Debug.WriteLine("HiddenForm_KeyDown: {0} {1}", e.KeyCode, (int) e.KeyCode);
+            _logger.Debug("HiddenForm_KeyDown: {0} {1}", e.KeyCode, (int) e.KeyCode);
             switch (e.KeyCode)
             {
                 case Keys.Return:
@@ -1076,8 +1077,7 @@ namespace MediaBrowser.Theater.DirectShow
 
         void HiddenForm_MouseClick(object sender, MouseEventArgs e)
         {
-            Debug.Print(string.Format("Mouse Click: {0}", e));
-
+            _logger.Debug("HiddenForm_MouseClick: {0}", e);
             if ((_dvdMenuMode == DvdMenuMode.Buttons) && (_mDvdControl != null))
             {
                 Point pt = new Point();

@@ -12,18 +12,37 @@ using MediaBrowser.Theater.Presentation.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.Login.ViewModels
 {
-    public class UserLoginViewModel
-        : BaseViewModel, IHasImage
+    public interface IUserImageViewModel : IViewModel
     {
-        private readonly UserDto _user;
+        bool HasImage { get; }
+        BitmapImage Image { get; }
+        bool HasUsername { get; }
+        string Username { get; }
+    }
+
+    public interface IUserLoginViewModel : IViewModel
+    {
+        bool RequiresUsername { get; }
+        string Username { get; set; }
+        bool RequiresPassword { get; }
+        string Password { get; set; }
+        bool RememberLogin { get; set; }
+        ICommand LoginCommand { get; }
+    }
+
+    public class UserLoginViewModel
+        : BaseViewModel, IUserImageViewModel, IUserLoginViewModel
+    {
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
+        private readonly UserDto _user;
 
         private BitmapImage _image;
         private CancellationTokenSource _imageCancellationTokenSource;
+        private bool _isInvalidLoginDetails;
         private string _password;
         private bool _rememberMe;
-        private bool _isInvalidLoginDetails;
+        private string _username;
 
         public UserLoginViewModel(UserDto user, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, ILogManager logManager)
         {
@@ -31,34 +50,26 @@ namespace MediaBrowser.Theater.DefaultTheme.Login.ViewModels
             _apiClient = apiClient;
             _imageManager = imageManager;
 
-            var logger = logManager.GetLogger("Login");
+            ILogger logger = logManager.GetLogger("Login");
 
             LoginCommand = new RelayCommand(async arg => {
-                try
-                {
+                try {
                     IsInvalidLoginDetails = false;
-                    await sessionManager.Login(Username, Password, RememberMe);
-                }
-                catch (UnauthorizedAccessException)
-                {
+                    await sessionManager.Login(Username, Password, RememberLogin);
+                } catch (UnauthorizedAccessException) {
                     IsInvalidLoginDetails = true;
-                }
-                catch (Exception e)
-                {
+                } catch (Exception e) {
                     logger.ErrorException("Error while attempting to login", e);
                 }
             });
         }
-
-        public ICommand LoginCommand { get; private set; }
 
         public bool IsInvalidLoginDetails
         {
             get { return _isInvalidLoginDetails; }
             private set
             {
-                if (Equals(_isInvalidLoginDetails, value))
-                {
+                if (Equals(_isInvalidLoginDetails, value)) {
                     return;
                 }
 
@@ -67,49 +78,32 @@ namespace MediaBrowser.Theater.DefaultTheme.Login.ViewModels
             }
         }
 
-        public string Password
+        public bool HasUsername
         {
-            get { return _password; }
-            set
-            {
-                if (Equals(_password, value))
-                {
-                    return;
-                }
-
-                _password = value;
-                OnPropertyChanged();
-            }
+            get { return _user != null; }
         }
 
-        public bool RememberMe
+        public bool RequiresUsername 
         {
-            get { return _rememberMe; }
-            set
-            {
-                if (Equals(_rememberMe, value))
-                {
-                    return;
-                }
-
-                _rememberMe = value;
-                OnPropertyChanged();
-            }
+            get { return !HasUsername; }
         }
 
         public string Username
         {
-            get { return _user.Name; }
-        }
-        
-        public bool HasPassword
-        {
-            get { return _user.HasPassword; }
+            get { return _user != null ? _user.Name : _username; }
+            set
+            {
+                if (_user != null) {
+                    _user.Name = value;
+                } else {
+                    _username = value;
+                }
+            }
         }
 
         public bool HasImage
         {
-            get { return _user.HasPrimaryImage; }
+            get { return _user != null && _user.HasPrimaryImage; }
         }
 
         public BitmapImage Image
@@ -134,9 +128,44 @@ namespace MediaBrowser.Theater.DefaultTheme.Login.ViewModels
             }
         }
 
+        public ICommand LoginCommand { get; private set; }
+
+        public bool RequiresPassword 
+        {
+            get { return _user == null || _user.HasPassword; }
+        }
+
+        public string Password
+        {
+            get { return _password; }
+            set
+            {
+                if (Equals(_password, value)) {
+                    return;
+                }
+
+                _password = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool RememberLogin
+        {
+            get { return _rememberMe; }
+            set
+            {
+                if (Equals(_rememberMe, value)) {
+                    return;
+                }
+
+                _rememberMe = value;
+                OnPropertyChanged();
+            }
+        }
+
         private async void DownloadImage()
         {
-            if (!_user.PrimaryImageTag.HasValue) {
+            if (_user == null || !_user.PrimaryImageTag.HasValue) {
                 return;
             }
 
@@ -145,8 +174,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Login.ViewModels
             try {
                 var options = new ImageOptions { ImageType = ImageType.Primary };
                 Image = await _imageManager.GetRemoteBitmapAsync(_apiClient.GetUserImageUrl(_user, options), _imageCancellationTokenSource.Token);
-            }
-            finally {
+            } finally {
                 _imageCancellationTokenSource.Dispose();
                 _imageCancellationTokenSource = null;
             }

@@ -9,6 +9,7 @@
         <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}"/>
         <Setter Property="TextWrapping" Value="Wrap" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="TextOptions.TextFormattingMode" Value="Ideal"/>
     </Style>
     
     <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockStyle}"/>
@@ -21,6 +22,7 @@
         <Setter Property="TextWrapping" Value="Wrap" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="LineHeight" Value="44" />
+        <Setter Property="TextOptions.TextFormattingMode" Value="Ideal"/>
     </Style>
 
     <!--Default TextBlock style. -->
@@ -31,6 +33,7 @@
         <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}"/>
         <Setter Property="TextWrapping" Value="Wrap" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="TextOptions.TextFormattingMode" Value="Ideal"/>
     </Style>
 
     <!--Default TextBlock style. -->
@@ -41,6 +44,7 @@
         <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}"/>
         <Setter Property="TextWrapping" Value="Wrap" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="TextOptions.TextFormattingMode" Value="Ideal"/>
     </Style>
 
     <!--Default TextBlock style. -->
@@ -51,5 +55,6 @@
         <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}"/>
         <Setter Property="TextWrapping" Value="Wrap" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="TextOptions.TextFormattingMode" Value="Ideal"/>
     </Style>
 </ResourceDictionary>

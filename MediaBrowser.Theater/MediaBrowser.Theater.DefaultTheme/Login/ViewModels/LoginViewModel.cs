@@ -32,7 +32,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Login.ViewModels
             _logManager = logManager;
             _imageManager = imageManager;
             _apiClient = apiClient;
-            _users = new ObservableCollection<IViewModel>() { new ManualLoginViewModel(_session, _logManager) };
+            _users = new ObservableCollection<IViewModel>() { new UserLoginViewModel(null, _apiClient, _imageManager, _session, _logManager) };
             Users = new ListCollectionView(_users);
 
             LoadUsers();

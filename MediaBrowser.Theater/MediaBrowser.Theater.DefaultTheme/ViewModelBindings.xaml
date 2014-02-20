@@ -26,10 +26,6 @@
         <loginViews:LoginView/>
     </DataTemplate>
     
-    <DataTemplate DataType="{x:Type loginViewModels:ManualLoginViewModel}">
-        <loginViews:ManualLoginView/>
-    </DataTemplate>
-    
     <DataTemplate DataType="{x:Type loginViewModels:UserLoginViewModel}">
         <loginViews:UserLoginView/>
     </DataTemplate>

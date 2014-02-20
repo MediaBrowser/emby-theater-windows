@@ -6,15 +6,61 @@
              xmlns:viewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.Login.ViewModels"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:behaviors="clr-namespace:MediaBrowser.Theater.Presentation.Behaviors;assembly=MediaBrowser.Theater.Presentation"
+             xmlns:osk="clr-namespace:MediaBrowser.Theater.Presentation.Controls.Osk;assembly=MediaBrowser.Theater.Presentation"
+             xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance viewModels:UserLoginViewModel}"
-             d:DesignHeight="300" d:DesignWidth="300"
              x:Name="_this">
     <StackPanel Margin="10">
-        <TextBlock Text="{Binding ElementName=_this, Path=IsFocused}"/>
-        <TextBlock Text="{Binding ElementName=_this, Path=IsKeyboardFocusWithin}"/>
-        
-        <Grid Width="300" Height="300">
+
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+                <VisualState x:Name="Selected">
+                    <Storyboard>
+                        <DoubleAnimation Storyboard.TargetName="UserImage" Storyboard.TargetProperty="Opacity" To="1" FillBehavior="HoldEnd" Duration="0:0:0.1" DecelerationRatio="0.5"/>
+                        
+                        <DoubleAnimation Storyboard.TargetName="Password" Storyboard.TargetProperty="RenderTransform.(TranslateTransform.X)" From="20" To="0" FillBehavior="HoldEnd" Duration="0:0:0.2" DecelerationRatio="0.5"/>
+                        <DoubleAnimation Storyboard.TargetName="Password" Storyboard.TargetProperty="Opacity" To="1" FillBehavior="HoldEnd" Duration="0:0:0.2" DecelerationRatio="0.5"/>
+
+                        <DoubleAnimation Storyboard.TargetName="Login" Storyboard.TargetProperty="RenderTransform.(TranslateTransform.X)" From="20" To="0" FillBehavior="HoldEnd" Duration="0:0:0.2" BeginTime="0:0:0.05" DecelerationRatio="0.5"/>
+                        <DoubleAnimation Storyboard.TargetName="Login" Storyboard.TargetProperty="Opacity" To="1" FillBehavior="HoldEnd" Duration="0:0:0.2" BeginTime="0:0:0.05" DecelerationRatio="0.5"/>
+
+                        <DoubleAnimation Storyboard.TargetName="RememberMe" Storyboard.TargetProperty="RenderTransform.(TranslateTransform.X)" From="20" To="0" FillBehavior="HoldEnd" Duration="0:0:0.2" BeginTime="0:0:0.1" DecelerationRatio="0.5"/>
+                        <DoubleAnimation Storyboard.TargetName="RememberMe" Storyboard.TargetProperty="Opacity" To="1" FillBehavior="HoldEnd" Duration="0:0:0.2" BeginTime="0:0:0.1" DecelerationRatio="0.5"/>
+
+                        <BooleanAnimationUsingKeyFrames Storyboard.TargetName="Controls" Storyboard.TargetProperty="(UIElement.IsHitTestVisible)">
+                            <DiscreteBooleanKeyFrame KeyTime="0:0:0" Value="True"/>
+                        </BooleanAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+                <VisualState x:Name="Hidden">
+                    <Storyboard>
+                        <DoubleAnimation Storyboard.TargetName="Password" Storyboard.TargetProperty="RenderTransform.(TranslateTransform.X)" From="0" To="-20" FillBehavior="HoldEnd" Duration="0:0:0.2" BeginTime="0:0:0.1" DecelerationRatio="0.5"/>
+                        <DoubleAnimation Storyboard.TargetName="Password" Storyboard.TargetProperty="Opacity" To="0" FillBehavior="HoldEnd" Duration="0:0:0.2" BeginTime="0:0:0.1" DecelerationRatio="0.5"/>
+
+                        <DoubleAnimation Storyboard.TargetName="Login" Storyboard.TargetProperty="RenderTransform.(TranslateTransform.X)" From="0" To="-20" FillBehavior="HoldEnd" Duration="0:0:0.2" BeginTime="0:0:0.05" DecelerationRatio="0.5"/>
+                        <DoubleAnimation Storyboard.TargetName="Login" Storyboard.TargetProperty="Opacity" To="0" FillBehavior="HoldEnd" Duration="0:0:0.2" BeginTime="0:0:0.05" DecelerationRatio="0.5"/>
+
+                        <DoubleAnimation Storyboard.TargetName="RememberMe" Storyboard.TargetProperty="RenderTransform.(TranslateTransform.X)" From="0" To="-20" FillBehavior="HoldEnd" Duration="0:0:0.2" DecelerationRatio="0.5"/>
+                        <DoubleAnimation Storyboard.TargetName="RememberMe" Storyboard.TargetProperty="Opacity" To="0" FillBehavior="HoldEnd" Duration="0:0:0.2" DecelerationRatio="0.5"/>
+
+                        <BooleanAnimationUsingKeyFrames Storyboard.TargetName="Controls" Storyboard.TargetProperty="(UIElement.IsHitTestVisible)">
+                            <DiscreteBooleanKeyFrame KeyTime="0:0:0" Value="False"/>
+                        </BooleanAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
+        <i:Interaction.Behaviors>
+            <ei:DataStateBehavior
+                Binding="{Binding ElementName=_this, Path=IsKeyboardFocusWithin}"
+                Value="True"
+                TrueState="Selected"
+                FalseState="Hidden"/>
+        </i:Interaction.Behaviors>
+
+        <Grid Width="400" Height="400" x:Name="UserImage" Opacity="0.8">
             <Grid Background="#CFCFCF">
                 <Grid.Style>
                     <Style TargetType="{x:Type Grid}">
@@ -59,16 +105,30 @@
             </Grid>
         </Grid>
 
-        <StackPanel Margin="0,10,0,0">
-<!--            <TextBlock Text="Password:" Visibility="{Binding HasPassword, Converter={StaticResource BooleanToVisibility}}" />-->
-<!--            <TextBox Text="{Binding Password}" Visibility="{Binding HasPassword, Converter={StaticResource BooleanToVisibility}}" />-->
-            <Button Content="Login" Command="{Binding LoginCommand}" />
-<!--            <CheckBox IsChecked="{Binding RememberMe}">-->
-<!--                <TextBlock Text="Remember me?" />-->
-<!--            </CheckBox>-->
-<!--            <TextBlock Text="Invalid username or password" TextWrapping="Wrap" FontSize="18" Foreground="Red"-->
-<!--                       HorizontalAlignment="Center"-->
-<!--                       Visibility="{Binding IsInvalidLoginDetails, Converter={StaticResource BooleanToVisibility}}" />-->
+        <StackPanel Margin="0,20,0,0" x:Name="Controls" IsHitTestVisible="False">
+            <osk:TextField x:Name="Password" Watermark="Password" Text="{Binding Password}" Visibility="{Binding HasPassword, Converter={StaticResource BooleanToVisibility}}" Margin="0,0,0,10" Opacity="0">
+                <osk:TextField.RenderTransform>
+                    <TranslateTransform/>
+                </osk:TextField.RenderTransform>
+            </osk:TextField>
+
+            <Button x:Name="Login" Content="Login" Command="{Binding LoginCommand}" Margin="0,0,0,10" Opacity="0">
+                <Button.RenderTransform>
+                    <TranslateTransform/>
+                </Button.RenderTransform>
+            </Button>
+
+            <CheckBox x:Name="RememberMe" IsChecked="{Binding RememberMe}" Opacity="0">
+                <CheckBox.RenderTransform>
+                    <TranslateTransform/>
+                </CheckBox.RenderTransform>
+
+                <TextBlock Text="Remember me?" />
+            </CheckBox>
+
+            <TextBlock Text="Invalid username or password" TextWrapping="Wrap" FontSize="18" Foreground="Red"
+                       HorizontalAlignment="Center"
+                       Visibility="{Binding IsInvalidLoginDetails, Converter={StaticResource BooleanToVisibility}}" />
         </StackPanel>
     </StackPanel>
 </UserControl>

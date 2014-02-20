@@ -44,14 +44,6 @@ namespace MediaBrowser.Theater.DefaultTheme.Login.ViewModels
             foreach (var user in users.Select(u => new UserLoginViewModel(u, _apiClient, _imageManager, _session, _logManager))) {
                 _users.Add(user);
             }
-            foreach (var user in users.Select(u => new UserLoginViewModel(u, _apiClient, _imageManager, _session, _logManager)))
-            {
-                _users.Add(user);
-            }
-            foreach (var user in users.Select(u => new UserLoginViewModel(u, _apiClient, _imageManager, _session, _logManager)))
-            {
-                _users.Add(user);
-            }
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:osk="clr-namespace:MediaBrowser.Theater.Presentation.Controls.Osk">
+                    xmlns:osk="clr-namespace:MediaBrowser.Theater.Presentation.Controls.Osk"
+                    xmlns:converters="clr-namespace:MediaBrowser.Theater.Presentation.Converters">
 
     <Style TargetType="{x:Type TextBlock}" x:Key="VirtualKeyboardTextBlock">
         <Setter Property="FontSize" Value="24" />
@@ -316,7 +317,7 @@
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="Padding" Value="2,1,1,1" />
         <Setter Property="AllowDrop" Value="true" />
-                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="ScrollViewer.PanningMode" Value="VerticalFirst" />
         <Setter Property="Stylus.IsFlicksEnabled" Value="False" />
 <!--        <Setter Property="behaviors:SuppressBackKeyBehavior.SuppressBackKey" Value="true" />-->
@@ -378,9 +379,20 @@
                             Background="{TemplateBinding Background}"
                             Padding="{TemplateBinding Padding}"
                             SnapsToDevicePixels="true">
-                        <TextBlock
-                            Margin="2,0,2,0"
-                            Text="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type osk:TextField}}, Path=VisibleText}" />
+                        <Grid>
+                            <Grid.Resources>
+                                <converters:StringNotEmptyToVisbilityConverter x:Key="StringEmptyConverter"/>
+                            </Grid.Resources>
+                            
+                            <TextBlock
+                                Margin="2,0,2,0"
+                                Text="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type osk:TextField}}, Path=VisibleText}"/>
+                            <TextBlock
+                                Margin="2,0,2,0"
+                                Opacity="0.4"
+                                Text="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type osk:TextField}}, Path=Watermark}"
+                                Visibility="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type osk:TextField}}, Path=VisibleText, Converter={StaticResource StringEmptyConverter}}"/>
+                        </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsEnabled" Value="false">

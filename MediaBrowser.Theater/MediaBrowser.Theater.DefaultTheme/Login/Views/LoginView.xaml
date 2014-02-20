@@ -10,7 +10,7 @@
              xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModels:LoginViewModel}"
-             d:DesignHeight="300" d:DesignWidth="300"
+             d:DesignHeight="1080" d:DesignWidth="1920"
              IsTabStop="False">
 
     <i:Interaction.Behaviors>
@@ -19,13 +19,13 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="auto" />
             <RowDefinition />
+            <RowDefinition Height="800" />
         </Grid.RowDefinitions>
 
-        <TextBlock Text="Please Sign In" Style="{StaticResource Heading1TextBlockStyle}" />
+        <TextBlock Grid.Row="0" Text="Please Sign In" Style="{StaticResource Heading1TextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
 
-        <controls:ExtendedScrollViewer x:Name="ScrollViewer" Grid.Row="1" IgnoreAllDirectionKeys="True" IsTabStop="False" Focusable="False" CanContentScroll="True" Height="600" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled">
+        <controls:ExtendedScrollViewer x:Name="ScrollViewer" Grid.Row="1" IgnoreAllDirectionKeys="True" IsTabStop="False" Focusable="False" CanContentScroll="True" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" VerticalAlignment="Top">
             <controls:ScrollingPanel CanHorizontallyScroll="True" CanVerticallyScroll="False">
                 <ItemsControl ItemsSource="{Binding Users}" VerticalAlignment="Center"
                               HorizontalAlignment="Center" VerticalContentAlignment="Top"

@@ -59,6 +59,7 @@
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
@@ -66,9 +67,14 @@
                 <controls:WindowCommands Grid.Row="0"
                                          ShowButtons="{Binding IsMouseIdle, Converter={StaticResource BooleanInverter}, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type controls:BaseWindow}}}"
                                          HorizontalAlignment="Right" />
+                
+                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="20,0,0,0">
+                    <TextBlock Text="MEDIA"/>
+                    <TextBlock Text="BROWSER" Foreground="#52B54B"/>
+                </StackPanel>
 
-                <controls:ExtendedContentControl Grid.Row="1" Content="{Binding ActivePage}" IsTabStop="False" />
-                <controls:ExtendedContentControl Grid.Row="1" Content="{Binding Notifications}" IsTabStop="False"
+                <controls:ExtendedContentControl Grid.Row="2" Content="{Binding ActivePage}" IsTabStop="False" />
+                <controls:ExtendedContentControl Grid.Row="2" Content="{Binding Notifications}" IsTabStop="False"
                                                  HorizontalAlignment="Right" VerticalAlignment="Top" />
             </Grid>
 

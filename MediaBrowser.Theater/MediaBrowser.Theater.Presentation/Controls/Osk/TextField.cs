@@ -45,9 +45,20 @@ namespace MediaBrowser.Theater.Presentation.Controls.Osk
             DependencyProperty.Register("BorderHoverBrush", typeof (Brush), typeof (TextField), new PropertyMetadata(new SolidColorBrush(Color.FromRgb(62, 62, 66))));
 
 
+        // Using a DependencyProperty as the backing store for Watermark.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty WatermarkProperty =
+            DependencyProperty.Register("Watermark", typeof (string), typeof (TextField), new PropertyMetadata(null));
+
+
         static TextField()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof (TextField), new FrameworkPropertyMetadata(typeof (TextField)));
+        }
+
+        public string Watermark
+        {
+            get { return (string) GetValue(WatermarkProperty); }
+            set { SetValue(WatermarkProperty, value); }
         }
 
         public Brush TextDisabledBrush
@@ -97,7 +108,7 @@ namespace MediaBrowser.Theater.Presentation.Controls.Osk
             get { return (string) GetValue(TitleProperty); }
             set { SetValue(TitleProperty, value); }
         }
-
+        
         private static void OnTextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var field = d as TextField;

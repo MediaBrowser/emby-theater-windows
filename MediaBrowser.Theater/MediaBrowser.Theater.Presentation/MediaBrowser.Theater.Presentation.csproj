@@ -129,6 +129,7 @@
     <Compile Include="Controls\WindowCommands.cs" />
     <Compile Include="Converters\BooleanInverter.cs" />
     <Compile Include="Converters\BooleanOrConverter.cs" />
+    <Compile Include="Converters\StringNotEmptyToVisbilityConverter.cs" />
     <Compile Include="LocalizationExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>

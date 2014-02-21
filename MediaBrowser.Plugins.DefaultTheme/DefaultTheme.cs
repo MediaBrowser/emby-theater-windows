@@ -190,12 +190,15 @@ namespace MediaBrowser.Plugins.DefaultTheme
 
                         ParentId = item.Id,
 
-                        SortBy = new[] { ItemSortBy.SortName },
-
-                        SortOrder = displayPreferences.SortOrder,
-
                         Fields = FolderPage.QueryFields
                     };
+
+                    // Server will sort boxset titles based on server settings
+                    if (!item.IsType("boxset"))
+                    {
+                        query.SortBy = new[] {ItemSortBy.SortName};
+                        query.SortOrder = displayPreferences.SortOrder;
+                    }
 
                     if (item.IsType("series") && item.IsType("season"))
                     {

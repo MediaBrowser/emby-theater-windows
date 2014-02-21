@@ -6,5 +6,6 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
     {
         bool ShowMediaBrowserLogo { get; }
         bool ShowCommandBar { get; }
+        bool ShowClock { get; }
     }
 }

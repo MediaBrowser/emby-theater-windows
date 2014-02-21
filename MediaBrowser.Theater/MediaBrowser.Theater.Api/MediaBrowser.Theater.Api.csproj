@@ -80,6 +80,7 @@
     <Compile Include="Navigation\Navigator.cs" />
     <Compile Include="Navigation\PathBinder.cs" />
     <Compile Include="Navigation\PathResolution.cs" />
+    <Compile Include="UserInterface\IGlobalCommand.cs" />
     <Compile Include="UserInterface\IImageManager.cs" />
     <Compile Include="UserInterface\UIDispatchExtensions.cs" />
     <Compile Include="UserInterface\ITheme.cs" />

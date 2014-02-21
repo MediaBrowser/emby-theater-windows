@@ -1,0 +1,14 @@
+﻿<UserControl x:Class="MediaBrowser.Theater.DefaultTheme.Core.Views.GlobalCommandView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:viewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.Core.ViewModels"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance viewModels:GlobalCommandViewModel}"
+             Margin="10,0,0,0">
+    <Grid Width="38" Height="38">
+            <Button Content="{Binding Icon}" Command="{Binding ExecuteCommand}" ToolTip="{Binding DisplayName}"
+                    Style="{StaticResource ImageButton}"/>
+    </Grid>
+</UserControl>

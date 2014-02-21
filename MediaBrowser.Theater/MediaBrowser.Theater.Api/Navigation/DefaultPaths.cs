@@ -34,6 +34,11 @@ namespace MediaBrowser.Theater.Api.Navigation
     /// </summary>
     public class ItemPath : NavigationPathArg<BaseItemDto> { }
 
+    /// <summary>
+    ///     The path to the search page.
+    /// </summary>
+    public class SearchPath : NavigationPath { }
+
     #region Fluent Interface
 
     /// <summary>
@@ -83,13 +88,23 @@ namespace MediaBrowser.Theater.Api.Navigation
         }
 
         /// <summary>
-        /// Gets a path to the user login page.
+        ///     Gets a path to the user login page.
         /// </summary>
         /// <param name="go"></param>
         /// <returns>A path to the user login page.</returns>
         public static LoginPath Login(this Go go)
         {
             return new LoginPath();
+        }
+
+        /// <summary>
+        ///     Gets a path to the search page.
+        /// </summary>
+        /// <param name="go"></param>
+        /// <returns>A path to the search page.</returns>
+        public static SearchPath Search(this Go go)
+        {
+            return new SearchPath();
         }
     }
 

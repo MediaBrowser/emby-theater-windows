@@ -4,10 +4,16 @@
                     xmlns:viewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.Core.ViewModels"
                     xmlns:views="clr-namespace:MediaBrowser.Theater.DefaultTheme.Core.Views"
                     xmlns:loginViewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.Login.ViewModels"
-                    xmlns:loginViews="clr-namespace:MediaBrowser.Theater.DefaultTheme.Login.Views">
+                    xmlns:loginViews="clr-namespace:MediaBrowser.Theater.DefaultTheme.Login.Views"
+                    xmlns:viewModels1="clr-namespace:MediaBrowser.Theater.DefaultTheme.Search.ViewModels"
+                    xmlns:views1="clr-namespace:MediaBrowser.Theater.DefaultTheme.Search.Views">
     
     <DataTemplate DataType="{x:Type viewModels:RootViewModel}">
         <views:RootView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels:ClockViewModel}">
+        <views:ClockView/>
     </DataTemplate>
     
     <DataTemplate DataType="{x:Type viewModels:HelloWorldViewModel}">
@@ -17,9 +23,21 @@
     <DataTemplate DataType="{x:Type viewModelsPresentation:NotificationViewModel}">
         <views:NotificationView/>
     </DataTemplate>
-    
+
     <DataTemplate DataType="{x:Type viewModels:NotificationTrayViewModel}">
         <views:NotificationTrayView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type viewModels:CommandBarViewModel}">
+        <views:CommandBarView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels:GlobalCommandViewModel}">
+        <views:GlobalCommandView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels1:SearchCommandIconViewModel}">
+        <views1:SearchCommandIconView/>
     </DataTemplate>
     
     <DataTemplate DataType="{x:Type loginViewModels:LoginViewModel}">

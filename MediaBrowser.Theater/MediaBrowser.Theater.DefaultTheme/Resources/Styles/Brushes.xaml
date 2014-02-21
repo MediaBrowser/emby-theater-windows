@@ -9,6 +9,7 @@
     
     <SolidColorBrush x:Key="ImageOverlayBackgroundBrush" Color="#A6000000"/>
 
+    <SolidColorBrush x:Key="InputHighlightBrush" Color="{DynamicResource InputHighlightColor}"/>
     <SolidColorBrush x:Key="InputBackground" Color="{DynamicResource InputBackgroundColor}" />
     <SolidColorBrush x:Key="InputBackgroundHover" Color="{DynamicResource InputBackgroundHoverColor}" />
     <SolidColorBrush x:Key="InputBorder" Color="{DynamicResource InputBorderColor}" />

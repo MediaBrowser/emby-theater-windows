@@ -80,6 +80,18 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Core\Views\ClockView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Core\Views\CommandBarView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Core\Views\GlobalCommandView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Login\Views\LoginView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -160,6 +172,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Search\Views\SearchCommandIconView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -191,7 +207,18 @@
     </Compile>
     <Compile Include="Configuration\ColorPalette.cs" />
     <Compile Include="Configuration\PluginConfiguration.cs" />
+    <Compile Include="Core\ViewModels\ClockViewModel.cs" />
+    <Compile Include="Core\ViewModels\CommandBarViewModel.cs" />
     <Compile Include="Core\ViewModels\IRootPresentationOptions.cs" />
+    <Compile Include="Core\Views\ClockView.xaml.cs">
+      <DependentUpon>ClockView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Views\CommandBarView.xaml.cs">
+      <DependentUpon>CommandBarView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Views\GlobalCommandView.xaml.cs">
+      <DependentUpon>GlobalCommandView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="DependencyModule.cs" />
     <Compile Include="Home\HomeContext.cs" />
     <Compile Include="Home\ViewModels\HomeViewModel.cs" />
@@ -212,6 +239,7 @@
       <DependentUpon>PopupWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Presenter.cs" />
+    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -229,6 +257,11 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Strings.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Search\SearchContext.cs" />
+    <Compile Include="Search\ViewModels\SearchCommand.cs" />
+    <Compile Include="Search\Views\SearchCommandIconView.xaml.cs">
+      <DependentUpon>SearchCommandIconView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Theme.cs" />
     <Compile Include="Core\ViewModels\HelloWorldViewModel.cs" />

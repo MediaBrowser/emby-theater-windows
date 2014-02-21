@@ -3,6 +3,7 @@ using System.Windows;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Plugins;
 using MediaBrowser.Model.Serialization;
+using MediaBrowser.Theater.Api;
 using MediaBrowser.Theater.Api.Events;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.UserInterface;
@@ -16,16 +17,18 @@ namespace MediaBrowser.Theater.DefaultTheme
         : BasePlugin<PluginConfiguration>, ITheme
     {
         private readonly TaskCompletionSource<object> _running;
+        private readonly ITheaterApplicationHost _appHost;
         private readonly WindowManager _windowManager;
         private readonly IEventAggregator _events;
         private readonly INavigator _navigator;
         private readonly RootContext _rootContext;
         private App _application;
 
-        public Theme(IApplicationPaths applicationPaths, IXmlSerializer xmlSerializer, WindowManager windowManager, IEventAggregator events, INavigator navigator, RootContext rootContext)
+        public Theme(ITheaterApplicationHost appHost, IApplicationPaths applicationPaths, IXmlSerializer xmlSerializer, WindowManager windowManager, IEventAggregator events, INavigator navigator, RootContext rootContext)
             : base(applicationPaths, xmlSerializer)
         {
             _running = new TaskCompletionSource<object>();
+            _appHost = appHost;
             _windowManager = windowManager;
             _events = events;
             _navigator = navigator;
@@ -44,7 +47,7 @@ namespace MediaBrowser.Theater.DefaultTheme
 
             UIDispatchExtensions.ResetDispatcher();
 
-            MainWindow mainWindow = _windowManager.CreateMainWindow(Configuration, new RootViewModel(_events, _navigator, _rootContext));
+            MainWindow mainWindow = _windowManager.CreateMainWindow(Configuration, new RootViewModel(_events, _navigator, _appHost, _rootContext));
             _application.Run(mainWindow);
 
             Cleanup();

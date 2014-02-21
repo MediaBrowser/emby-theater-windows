@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Threading.Tasks;
+using MediaBrowser.Theater.Api;
 using MediaBrowser.Theater.Api.Events;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.UserInterface;
@@ -16,12 +17,16 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
         private IViewModel _backgroundMedia;
         private bool _isInFocus;
         private NotificationTrayViewModel _notifications;
+        private CommandBarViewModel _commands;
+        private ClockViewModel _clock;
 
-        public RootViewModel(IEventAggregator events, INavigator navigator, RootContext rootContext)
+        public RootViewModel(IEventAggregator events, INavigator navigator, ITheaterApplicationHost appHost, RootContext rootContext)
         {
             _navigator = navigator;
             _rootContext = rootContext;
             Notifications = new NotificationTrayViewModel(events);
+            Commands = new CommandBarViewModel(appHost);
+            Clock = new ClockViewModel();
             IsInFocus = true;
 
             events.Get<ShowPageEvent>().Subscribe(message => ActivePage = message.ViewModel);
@@ -61,6 +66,34 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
                     return;
                 }
                 _notifications = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public CommandBarViewModel Commands
+        {
+            get { return _commands; }
+            private set
+            {
+                if (Equals(_commands, value)) {
+                    return;
+                }
+
+                _commands = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ClockViewModel Clock
+        {
+            get { return _clock; }
+            private set
+            {
+                if (Equals(_clock, value)) {
+                    return;
+                }
+
+                _clock = value;
                 OnPropertyChanged();
             }
         }
@@ -109,6 +142,15 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
             }
         }
 
+        public bool DisplayClock
+        {
+            get
+            {
+                var options = ActivePage as IRootPresentationOptions;
+                return options == null || options.ShowClock;
+            }
+        }
+
         private void ActivePagePropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "ShowMediaBrowserLogo") {
@@ -117,6 +159,10 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
 
             if (e.PropertyName == "ShowCommandBar") {
                 OnPropertyChanged("DisplayCommandBar");
+            }
+
+            if (e.PropertyName == "ShowClock") {
+                OnPropertyChanged("DisplayClock");
             }
         }
 

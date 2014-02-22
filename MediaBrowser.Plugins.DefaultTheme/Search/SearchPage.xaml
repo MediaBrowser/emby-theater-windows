@@ -30,6 +30,10 @@
             </controls:ExtendedListBox>
         </Grid>
 
+        <Grid Grid.Row="0" Grid.Column="0"   Grid.RowSpan="2"   Visibility="{Binding EmptyResultsTextBlockVisibility}" HorizontalAlignment="Center"  VerticalAlignment="Center">
+            <TextBlock  VerticalAlignment="Center" Text="Search for Movies,TV Shows and People" Style="{StaticResource TextBlockStyle}"   />
+        </Grid>
+        
         <Grid Grid.Row="1" Margin="0 30 0 0" VerticalAlignment="Top">
 
              <Grid.RowDefinitions>
@@ -44,11 +48,10 @@
             </Grid.ColumnDefinitions>
 
             
+          
+
             <TextBox Grid.Row="0" Grid.Column="0" x:Name="SearchTextBlock" HorizontalAlignment="Left"  Margin="225 0 0 0"  Background="Transparent" BorderThickness="0" Text="{Binding CurrentSearch}" IsReadOnly="True" IsTabStop="False" Style="{StaticResource SearchTextBoxStyle}" />
-
             <Grid Grid.Row="1" Grid.Column="0" Margin="220 10 0 0" MinWidth="1150" Visibility="{Binding MatchedItemsVisibility}" >
-
-
                 <controls:ExtendedListBox Name="MatchedItemsListBox" Margin="-5" DataContext="{Binding MatchedItemsViewModel}" ItemsSource="{Binding ListCollectionView}" KeyboardNavigation.DirectionalNavigation="Continue" Command="{Binding NavigateCommand}"   Style="{StaticResource ListBoxStyle}" ItemContainerStyle="{StaticResource HighlightedBorderListBoxItemStyle}" ItemTemplate="{StaticResource HomePageItemTemplate}" >
                     <controls:ExtendedListBox.ItemsPanel>
                         <ItemsPanelTemplate>

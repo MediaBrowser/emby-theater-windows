@@ -179,7 +179,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Search
         {
             MatchedPeopleVisibility = String.IsNullOrEmpty(CurrentSearch) ? Visibility.Hidden : Visibility.Visible;
             MatchedItemsVisibility = String.IsNullOrEmpty(CurrentSearch) ? Visibility.Hidden : Visibility.Visible;
-
+            
+            if (EmptyResultsTextBlockVisibility == Visibility.Visible)
+                EmptyResultsTextBlockVisibility = Visibility.Collapsed;
 
             if (!String.IsNullOrEmpty(CurrentSearch))
             {
@@ -221,6 +223,23 @@ namespace MediaBrowser.Plugins.DefaultTheme.Search
             return Task.FromResult(true);
         }
 
+        private Visibility _emptyResultsTextBlockVisibility = Visibility.Visible;
+        public Visibility EmptyResultsTextBlockVisibility
+       {
+             get { return _emptyResultsTextBlockVisibility; }
+ 
+             set
+             {
+                 var changed = _emptyResultsTextBlockVisibility != value;
+ 
+                 _emptyResultsTextBlockVisibility = value;
+ 
+                 if (changed)
+                 {
+                     OnPropertyChanged("EmptyResultsTextBlockVisibility");
+                 }
+             }
+         }
 
         private Visibility _matchedItemsVisibility = Visibility.Hidden;
         public Visibility MatchedItemsVisibility

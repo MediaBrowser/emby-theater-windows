@@ -27,6 +27,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
         {
             SizeChanged += MainWindow_SizeChanged;
             Loaded += BaseWindow_Loaded;
+            AddHandler(KeyDownEvent, new RoutedEventHandler(HandleHandledKeyDown), true);
         }
 
         void BaseWindow_Loaded(object sender, RoutedEventArgs e)
@@ -351,6 +352,28 @@ namespace MediaBrowser.Theater.Presentation.Controls
             else
             {
                 base.OnMouseUp(e);
+            }
+        }
+
+        public void HandleHandledKeyDown(object sender, RoutedEventArgs e)
+        {
+            //Quick fix for backspace and Alt-left key down commands being eaten by the UI on manual login
+            if (e.Handled)
+            {
+                var keyEvent = e as KeyEventArgs;
+
+                if (keyEvent != null)
+                {
+                    if (keyEvent.Key == Key.BrowserBack || keyEvent.Key == Key.Back)
+                    {
+                        OnKeyDown(keyEvent);
+                    }
+                    else if (keyEvent.SystemKey == Key.Left &&
+                             (keyEvent.KeyboardDevice.Modifiers & ModifierKeys.Alt) == ModifierKeys.Alt)
+                    {
+                        OnKeyDown(keyEvent);
+                    }
+                }
             }
         }
     }

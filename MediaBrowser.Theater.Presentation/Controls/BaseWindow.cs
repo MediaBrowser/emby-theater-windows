@@ -13,6 +13,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
     public abstract class BaseWindow : Window, INotifyPropertyChanged
     {
         private Timer _activityTimer;
+        private bool _backHandled;
 
         /// <summary>
         /// Occurs when [property changed].
@@ -270,8 +271,11 @@ namespace MediaBrowser.Theater.Presentation.Controls
         /// <param name="e">The <see cref="T:System.Windows.Input.KeyEventArgs" /> that contains the event data.</param>
         protected override void OnKeyDown(KeyEventArgs e)
         {
+            _backHandled = false;
+
             if (IsBackPress(e))
             {
+                _backHandled = true;
                 e.Handled = true;
 
                 if (!e.IsRepeat)
@@ -358,7 +362,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
         public void HandleHandledKeyDown(object sender, RoutedEventArgs e)
         {
             //Quick fix for backspace and Alt-left key down commands being eaten by the UI on manual login
-            if (e.Handled)
+            if (e.Handled && !_backHandled)
             {
                 var keyEvent = e as KeyEventArgs;
 

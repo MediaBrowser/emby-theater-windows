@@ -27,7 +27,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
 
         public ImageSlideshowViewModel(IImageManager imageManager, IEnumerable<string> initialImageUrls)
         {
-            ImageStretch = Stretch.Uniform;
+            ImageStretch = Stretch.UniformToFill;
 
             _images.AddRange(initialImageUrls);
 

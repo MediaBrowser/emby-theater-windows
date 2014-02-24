@@ -22,15 +22,16 @@
 
         <Button Style="{StaticResource BaseItemButtonStyle}"
                 Width="{Binding SpotlightWidth}" Height="{Binding SpotlightHeight}"
-                 Command="{Binding SpotlightViewModel.ItemSelectedCommand}" 
+                Command="{Binding SpotlightViewModel.ItemSelectedCommand}"
+                Margin="5"
                 HorizontalAlignment="Center" VerticalAlignment="Top" Grid.Row="0">
             <controls:ExtendedContentControl Content="{Binding SpotlightViewModel}" Width="{Binding SpotlightWidth}" Height="{Binding SpotlightHeight}"/>
         </Button>
 
         <WrapPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0 0 0 0">
 
-            <Button Style="{StaticResource BaseItemButtonStyle}"  Command="{Binding AllShowsCommand}">
-                <Grid Width="{Binding LowerSpotlightWidth}" Height="{Binding LowerSpotlightHeight}" Background="Yellow">
+            <Button Style="{StaticResource BaseItemButtonStyle}"  Command="{Binding AllShowsCommand}" Width="{Binding LowerSpotlightWidth}" Height="{Binding LowerSpotlightHeight}" Margin="5">
+                <Grid>
                     <controls:ExtendedContentControl Content="{Binding AllShowsImagesViewModel}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
 
                     <Border HorizontalAlignment="Left" VerticalAlignment="Bottom" Background="{DynamicResource TextBackgroundBrush}" Margin="0 0 0 -1">
@@ -39,8 +40,8 @@
                 </Grid>
             </Button>
 
-            <Button Style="{StaticResource BaseItemButtonStyle}" Command="{Binding GenresCommand}">
-                <Grid Width="{Binding LowerSpotlightWidth}" Height="{Binding LowerSpotlightHeight}">
+            <Button Style="{StaticResource BaseItemButtonStyle}" Command="{Binding GenresCommand}" Width="{Binding LowerSpotlightWidth}" Height="{Binding LowerSpotlightHeight}" Margin="5">
+                <Grid>
                     <Image Source="/MediaBrowser.Theater.DefaultTheme;component/Resources/Images/moviegenres.jpg" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Top"></Image>
 
                     <Border HorizontalAlignment="Left" VerticalAlignment="Bottom" Background="{DynamicResource TextBackgroundBrush}" Margin="0 0 0 -1">
@@ -49,8 +50,8 @@
                 </Grid>
             </Button>
 
-            <Button Style="{StaticResource BaseItemButtonStyle}" Command="{Binding UpcommingCommand}">
-                <Grid Width="{Binding LowerSpotlightWidth}" Height="{Binding LowerSpotlightHeight}">
+            <Button Style="{StaticResource BaseItemButtonStyle}" Command="{Binding UpcommingCommand}"  Width="{Binding LowerSpotlightWidth}" Height="{Binding LowerSpotlightHeight}" Margin="5">
+                <Grid>
                     <Image Source="/MediaBrowser.Theater.DefaultTheme;component/Resources/Images/upcomingtv.jpg" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Top"></Image>
 
                     <Border HorizontalAlignment="Left" VerticalAlignment="Bottom" Background="{DynamicResource TextBackgroundBrush}" Margin="0 0 0 -1">

@@ -129,6 +129,9 @@
                                         <DoubleAnimation Storyboard.TargetName="CommandBar"
                                                          Storyboard.TargetProperty="Opacity" To="1" FillBehavior="HoldEnd"
                                                          Duration="0:0:0.2" DecelerationRatio="0.5" />
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="CommandBar" Storyboard.TargetProperty="Visibilty">
+                                            <DiscreteObjectKeyFrame Value="Visible"/>
+                                        </ObjectAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
                                 <VisualState x:Name="CommandsHidden">
@@ -140,6 +143,9 @@
                                         <DoubleAnimation Storyboard.TargetName="CommandBar"
                                                          Storyboard.TargetProperty="Opacity" To="0" FillBehavior="HoldEnd"
                                                          Duration="0:0:0.2" DecelerationRatio="0.5" />
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="CommandBar" Storyboard.TargetProperty="Visibilty">
+                                            <DiscreteObjectKeyFrame KeyTime="0:0:0.2" Value="Collapsed"/>
+                                        </ObjectAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
                             </VisualStateGroup>

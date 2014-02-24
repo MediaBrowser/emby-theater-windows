@@ -7,6 +7,8 @@
     <Color x:Key="BackgroundColor2">#2D2D30</Color>
     <Color x:Key="BackgroundColor3">#333333</Color>
 
+    <Color x:Key="TextBackgroundColor">#60000000</Color>
+
     <Color x:Key="InputHighlightColor">#1ba1e2</Color>
     <Color x:Key="InputBackgroundColor">#262626</Color>
     <Color x:Key="InputBackgroundHoverColor">#3e3e42</Color>

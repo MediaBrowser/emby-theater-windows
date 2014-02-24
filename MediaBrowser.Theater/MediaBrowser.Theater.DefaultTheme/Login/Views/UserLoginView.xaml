@@ -150,7 +150,7 @@
 
                 <Grid Visibility="{Binding HasUsername, Converter={StaticResource BooleanToVisibility}}"
                       HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
-                      Background="{StaticResource ImageOverlayBackgroundBrush}">
+                      Background="{StaticResource TextBackgroundBrush}">
 
                     <Grid.Style>
                         <Style TargetType="{x:Type Grid}">
@@ -163,7 +163,7 @@
                     </Grid.Style>
 
                     <StackPanel Orientation="Vertical" Margin="10 5 0 10">
-                        <TextBlock Foreground="White" Text="{Binding Username}" />
+                        <TextBlock Text="{Binding Username}" />
                     </StackPanel>
                 </Grid>
             </Grid>

@@ -1,0 +1,64 @@
+﻿<UserControl x:Class="MediaBrowser.Theater.DefaultTheme.Home.Views.TV.TvSpotlightView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:lex="http://wpflocalizeextension.codeplex.com"
+             xmlns:tv="clr-namespace:MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV"
+             xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
+             lex:LocalizeDictionary.DesignCulture="en"
+             lex:ResxLocalizationProvider.DefaultAssembly="MediaBrowser.Theater.DefaultTheme"
+             lex:ResxLocalizationProvider.DefaultDictionary="Strings"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance tv:TvSpotlightViewModel}"
+             Focusable="False"
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="2*" />
+            <RowDefinition Height="1*" />
+        </Grid.RowDefinitions>
+
+        <Button Style="{StaticResource BaseItemButtonStyle}"
+                Width="{Binding SpotlightWidth}" Height="{Binding SpotlightHeight}"
+                 Command="{Binding SpotlightViewModel.ItemSelectedCommand}" 
+                HorizontalAlignment="Center" VerticalAlignment="Top" Grid.Row="0">
+            <controls:ExtendedContentControl Content="{Binding SpotlightViewModel}" Width="{Binding SpotlightWidth}" Height="{Binding SpotlightHeight}"/>
+        </Button>
+
+        <WrapPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0 0 0 0">
+
+            <Button Style="{StaticResource BaseItemButtonStyle}"  Command="{Binding AllShowsCommand}">
+                <Grid Width="{Binding LowerSpotlightWidth}" Height="{Binding LowerSpotlightHeight}" Background="Yellow">
+                    <controls:ExtendedContentControl Content="{Binding AllShowsImagesViewModel}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+
+                    <Border HorizontalAlignment="Left" VerticalAlignment="Bottom" Background="{DynamicResource TextBackgroundBrush}" Margin="0 0 0 -1">
+                        <TextBlock Text="TV Shows" Style="{StaticResource SmallTextBlockStyle}" Margin="10 5 15 10"></TextBlock>
+                    </Border>
+                </Grid>
+            </Button>
+
+            <Button Style="{StaticResource BaseItemButtonStyle}" Command="{Binding GenresCommand}">
+                <Grid Width="{Binding LowerSpotlightWidth}" Height="{Binding LowerSpotlightHeight}">
+                    <Image Source="/MediaBrowser.Theater.DefaultTheme;component/Resources/Images/moviegenres.jpg" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Top"></Image>
+
+                    <Border HorizontalAlignment="Left" VerticalAlignment="Bottom" Background="{DynamicResource TextBackgroundBrush}" Margin="0 0 0 -1">
+                        <TextBlock Text="Genres" Style="{StaticResource SmallTextBlockStyle}" Margin="10 5 15 10"></TextBlock>
+                    </Border>
+                </Grid>
+            </Button>
+
+            <Button Style="{StaticResource BaseItemButtonStyle}" Command="{Binding UpcommingCommand}">
+                <Grid Width="{Binding LowerSpotlightWidth}" Height="{Binding LowerSpotlightHeight}">
+                    <Image Source="/MediaBrowser.Theater.DefaultTheme;component/Resources/Images/upcomingtv.jpg" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Top"></Image>
+
+                    <Border HorizontalAlignment="Left" VerticalAlignment="Bottom" Background="{DynamicResource TextBackgroundBrush}" Margin="0 0 0 -1">
+                        <TextBlock Text="Upcoming TV" Style="{StaticResource SmallTextBlockStyle}" Margin="10 5 15 10"></TextBlock>
+                    </Border>
+                </Grid>
+            </Button>
+
+        </WrapPanel>
+    </Grid>
+</UserControl>

@@ -92,6 +92,26 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Core\Views\ImageSlideshowView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Core\Views\ImageViewerView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Core\Views\ItemSpotlightView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Home\Views\HomeView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Home\Views\TV\TvSpotlightView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Login\Views\LoginView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -152,6 +172,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Resources\Styles\Panorama.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Resources\Styles\RadioButton.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -209,7 +233,10 @@
     <Compile Include="Configuration\PluginConfiguration.cs" />
     <Compile Include="Core\ViewModels\ClockViewModel.cs" />
     <Compile Include="Core\ViewModels\CommandBarViewModel.cs" />
+    <Compile Include="Core\ViewModels\ImageSlideshowViewModel.cs" />
+    <Compile Include="Core\ViewModels\ImageViewerViewModel.cs" />
     <Compile Include="Core\ViewModels\IRootPresentationOptions.cs" />
+    <Compile Include="Core\ViewModels\ItemSpotlightViewModel.cs" />
     <Compile Include="Core\Views\ClockView.xaml.cs">
       <DependentUpon>ClockView.xaml</DependentUpon>
     </Compile>
@@ -219,9 +246,28 @@
     <Compile Include="Core\Views\GlobalCommandView.xaml.cs">
       <DependentUpon>GlobalCommandView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Core\Views\ImageSlideshowView.xaml.cs">
+      <DependentUpon>ImageSlideshowView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Views\ImageViewerView.xaml.cs">
+      <DependentUpon>ImageViewerView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Views\ItemSpotlightView.xaml.cs">
+      <DependentUpon>ItemSpotlightView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="DependencyModule.cs" />
+    <Compile Include="Home\Api.cs" />
     <Compile Include="Home\HomeContext.cs" />
     <Compile Include="Home\ViewModels\HomeViewModel.cs" />
+    <Compile Include="Home\ViewModels\IHomePageGenerator.cs" />
+    <Compile Include="Home\ViewModels\TV\TvHomePageGenerator.cs" />
+    <Compile Include="Home\ViewModels\TV\TvSpotlightViewModel.cs" />
+    <Compile Include="Home\Views\HomeView.xaml.cs">
+      <DependentUpon>HomeView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Home\Views\TV\TvSpotlightView.xaml.cs">
+      <DependentUpon>TvSpotlightView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Login\LoginContext.cs" />
     <Compile Include="Login\ViewModels\LoginViewModel.cs" />
     <Compile Include="Login\ViewModels\UserLoginViewModel.cs" />
@@ -327,6 +373,23 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\Icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\dislike.png" />
+    <Resource Include="Resources\Images\favorite.png" />
+    <Resource Include="Resources\Images\fresh.png" />
+    <Resource Include="Resources\Images\gamegenres.jpg" />
+    <Resource Include="Resources\Images\gametimeline.jpg" />
+    <Resource Include="Resources\Images\like.png" />
+    <Resource Include="Resources\Images\moviegenres.jpg" />
+    <Resource Include="Resources\Images\movietimeline.jpg" />
+    <Resource Include="Resources\Images\rotten.png" />
+    <Resource Include="Resources\Images\starEmpty.png" />
+    <Resource Include="Resources\Images\starFull.png" />
+    <Resource Include="Resources\Images\starHalf.png" />
+    <Resource Include="Resources\Images\trailer.png" />
+    <Resource Include="Resources\Images\tvgenres.jpg" />
+    <Resource Include="Resources\Images\upcomingtv.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

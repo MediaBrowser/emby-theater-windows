@@ -21,6 +21,7 @@
                 <ResourceDictionary Source="Resources/Styles/Slider.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/TextBox.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/VirtualKeyboard.xaml"/>
+                <ResourceDictionary Source="Resources/Styles/Panorama.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             
             <converters:BooleanInverter x:Key="BooleanInverter"/>

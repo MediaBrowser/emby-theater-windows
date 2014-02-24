@@ -34,6 +34,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MediaBrowser.Common, Version=3.0.5157.41670, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.328\lib\net45\MediaBrowser.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="MediaBrowser.Model, Version=3.0.5157.41669, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.328\lib\net45\MediaBrowser.Model.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Expression.Effects, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\ThirdParty\Expression\Microsoft.Expression.Effects.dll</HintPath>
@@ -81,6 +89,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Resources\DefaultControlTemplates\Panorama.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Resources\DefaultControlTemplates\VirtualKeyboard.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -102,6 +114,8 @@
     <Compile Include="Controls\DoubleUtil.cs" />
     <Compile Include="Controls\DragBar.cs" />
     <Compile Include="Controls\ExtendedContentControl.cs" />
+    <Compile Include="Controls\ExtendedItemsControl.cs" />
+    <Compile Include="Controls\ExtendedListBox.cs" />
     <Compile Include="Controls\ExtendedScrollViewer.cs" />
     <Compile Include="Controls\Osk\AlternateKeySelection.cs" />
     <Compile Include="Controls\Osk\EmptyStringVisibilityConverter.cs" />
@@ -131,7 +145,8 @@
     <Compile Include="Controls\Osk\VirtualKeyboardTextField.cs" />
     <Compile Include="Controls\Osk\VirtualKeySet.cs" />
     <Compile Include="Controls\Osk\VirtualKeySetRow.cs" />
-    <Compile Include="Controls\ScrollPanel.cs" />
+    <Compile Include="Controls\Panorama.cs" />
+    <Compile Include="Controls\ScrollingPanel.cs" />
     <Compile Include="Controls\WindowCommands.cs" />
     <Compile Include="Converters\BooleanInverter.cs" />
     <Compile Include="Converters\BooleanOrConverter.cs" />
@@ -154,7 +169,9 @@
     <Compile Include="ViewModels\BaseViewModel.cs" />
     <Compile Include="ViewModels\IHasActivityStatus.cs" />
     <Compile Include="ViewModels\IHasCloseDelay.cs" />
+    <Compile Include="ViewModels\IPanoramaPage.cs" />
     <Compile Include="ViewModels\NotificationViewModel.cs" />
+    <Compile Include="ViewModels\RangeObservableCollection.cs" />
     <Compile Include="ViewModels\RelayCommand.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

@@ -48,4 +48,9 @@
         <Setter Property="KeyboardNavigation.IsTabStop" Value="false"/>
         <Setter Property="Focusable" Value="false"/>
     </Style>
+    
+    <Style TargetType="{x:Type controls:ExtendedContentControl}">
+        <Setter Property="KeyboardNavigation.IsTabStop" Value="false"/>
+        <Setter Property="Focusable" Value="False"/>
+    </Style>
 </ResourceDictionary>

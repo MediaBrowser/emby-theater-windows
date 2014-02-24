@@ -6,7 +6,11 @@
                     xmlns:loginViewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.Login.ViewModels"
                     xmlns:loginViews="clr-namespace:MediaBrowser.Theater.DefaultTheme.Login.Views"
                     xmlns:viewModels1="clr-namespace:MediaBrowser.Theater.DefaultTheme.Search.ViewModels"
-                    xmlns:views1="clr-namespace:MediaBrowser.Theater.DefaultTheme.Search.Views">
+                    xmlns:views1="clr-namespace:MediaBrowser.Theater.DefaultTheme.Search.Views"
+                    xmlns:viewModels2="clr-namespace:MediaBrowser.Theater.DefaultTheme.Home.ViewModels"
+                    xmlns:views2="clr-namespace:MediaBrowser.Theater.DefaultTheme.Home.Views"
+                    xmlns:tv="clr-namespace:MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV"
+                    xmlns:tv1="clr-namespace:MediaBrowser.Theater.DefaultTheme.Home.Views.TV">
     
     <DataTemplate DataType="{x:Type viewModels:RootViewModel}">
         <views:RootView/>
@@ -46,6 +50,26 @@
     
     <DataTemplate DataType="{x:Type loginViewModels:UserLoginViewModel}">
         <loginViews:UserLoginView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels2:HomeViewModel}">
+        <views2:HomeView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type tv:TvSpotlightViewModel}">
+        <tv1:TvSpotlightView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels:ImageViewerViewModel}">
+        <views:ImageViewerView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels:ImageSlideshowViewModel}">
+        <views:ImageSlideshowView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels:ItemSpotlightViewModel}">
+        <views:ItemSpotlightView/>
     </DataTemplate>
     
 </ResourceDictionary>

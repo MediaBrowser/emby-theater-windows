@@ -50,9 +50,14 @@ namespace MediaBrowser.Theater.Presentation.Controls.Osk
             };
         }
 
-//        protected override void OnBrowserBack()
-//        {
-//            Cancel();
-//        }
+        protected override void OnKeyDown(System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == System.Windows.Input.Key.Escape) {
+                Close();
+                e.Handled = true;
+            }
+
+            base.OnKeyDown(e);
+        }
     }
 }

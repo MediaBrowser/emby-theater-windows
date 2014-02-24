@@ -7,6 +7,7 @@
         <ResourceDictionary Source="/MediaBrowser.Theater.Presentation;component/Resources/DefaultControlTemplates/DragBar.xaml"/>
         <ResourceDictionary Source="/MediaBrowser.Theater.Presentation;component/Resources/DefaultControlTemplates/ExtendedContentControl.xaml"/>
         <ResourceDictionary Source="/MediaBrowser.Theater.Presentation;component/Resources/DefaultControlTemplates/VirtualKeyboard.xaml"/>
+        <ResourceDictionary Source="/MediaBrowser.Theater.Presentation;component/Resources/DefaultControlTemplates/Panorama.xaml"/>
     </ResourceDictionary.MergedDictionaries>
     
 </ResourceDictionary>

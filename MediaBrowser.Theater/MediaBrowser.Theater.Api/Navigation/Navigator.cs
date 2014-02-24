@@ -43,6 +43,16 @@ namespace MediaBrowser.Theater.Api.Navigation
             _navigationLock = new AsyncLock();
         }
 
+        public event EventHandler<NavigationEventArgs> Navigated;
+
+        protected virtual void OnNavigated(NavigationEventArgs e)
+        {
+            EventHandler<NavigationEventArgs> handler = Navigated;
+            if (handler != null) {
+                handler(this, e);
+            }
+        }
+
         public Task Initialize(INavigationContext rootContext)
         {
             ClearNavigationHistory();
@@ -60,6 +70,7 @@ namespace MediaBrowser.Theater.Api.Navigation
                     var resolution = frame.Context.HandleNavigation(path);
                     if (resolution != null) {
                         await ExecuteNavigationAction(resolution).ConfigureAwait(false);
+                        OnNavigated(new NavigationEventArgs(CurrentLocation));
                         break;
                     }
                 }

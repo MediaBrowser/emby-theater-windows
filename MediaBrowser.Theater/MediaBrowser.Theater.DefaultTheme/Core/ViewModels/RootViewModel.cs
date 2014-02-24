@@ -25,7 +25,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
             _navigator = navigator;
             _rootContext = rootContext;
             Notifications = new NotificationTrayViewModel(events);
-            Commands = new CommandBarViewModel(appHost);
+            Commands = new CommandBarViewModel(appHost, navigator);
             Clock = new ClockViewModel();
             IsInFocus = true;
 

@@ -1,4 +1,5 @@
 ﻿using System.Windows.Input;
+using MediaBrowser.Theater.Api.Navigation;
 
 namespace MediaBrowser.Theater.Api.UserInterface
 {
@@ -7,5 +8,6 @@ namespace MediaBrowser.Theater.Api.UserInterface
         IViewModel IconViewModel { get; }
         string DisplayName { get; }
         ICommand ExecuteCommand { get; }
+        bool EvaluateVisibility(INavigationPath currentPath);
     }
 }

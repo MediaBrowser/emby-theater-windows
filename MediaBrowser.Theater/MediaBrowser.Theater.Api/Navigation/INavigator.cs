@@ -1,20 +1,33 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace MediaBrowser.Theater.Api.Navigation
 {
+    public class NavigationEventArgs : EventArgs
+    {
+        public INavigationPath Path { get;set; }
+
+        public NavigationEventArgs(INavigationPath path)
+        {
+            Path = path;
+        }
+    }
+
     /// <summary>
     ///     The INavigator interface defines the API for instructing a theme to
     ///     display the content relevant to a specified path.
     /// </summary>
     public interface INavigator
     {
+        event EventHandler<NavigationEventArgs> Navigated;
+        
         /// <summary>
         /// Initializes the navigator with an initial navigation context.
         /// </summary>
         /// <param name="rootContext">The root navigation context.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
         Task Initialize(INavigationContext rootContext);
-
+        
         /// <summary>
         ///     Gets the current location.
         /// </summary>

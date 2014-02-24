@@ -1,0 +1,79 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls">
+    <Style TargetType="{x:Type controls:Panorama}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type controls:Panorama}">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+
+                            <controls:ExtendedListBox Grid.Row="0"
+                                     Background="{x:Null}"
+                                     BorderBrush="{x:Null}"
+                                     BorderThickness="0"
+                                     ItemsSource="{TemplateBinding TitleItems}" 
+                                     SelectedItem="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SelectedTitleItem, Mode=TwoWay}" 
+                                     ItemTemplate="{TemplateBinding TitleTemplate}" 
+                                     IsSynchronizedWithCurrentItem="True" 
+                                     Focusable="False"
+                                     ScrollViewer.VerticalScrollBarVisibility="Disabled" 
+                                     ScrollViewer.HorizontalScrollBarVisibility="Hidden">
+                                <ListBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Horizontal"/>
+                                    </ItemsPanelTemplate>
+                                </ListBox.ItemsPanel>
+                                <ListBox.ItemContainerStyle>
+                                    <Style TargetType="ListBoxItem">
+                                        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                                        <Setter Property="Foreground" Value="Blue"/>
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                                    <ContentPresenter/>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </ListBox.ItemContainerStyle>
+                            </controls:ExtendedListBox>
+
+                            <controls:ExtendedScrollViewer Grid.Row="1" IgnoreAllDirectionKeys="True" IsTabStop="False" Focusable="False" CanContentScroll="True" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" VerticalAlignment="Top">
+                                <controls:ScrollingPanel CanHorizontallyScroll="True" CanVerticallyScroll="False">
+                                    <ItemsPresenter/>
+                                </controls:ScrollingPanel>
+                            </controls:ExtendedScrollViewer>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type controls:PanoramaItem}">
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type controls:PanoramaItem}">
+                    <Grid Margin="50,0,0,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Text="{TemplateBinding DisplayName}" Style="{TemplateBinding DisplayNameStyle}"/>
+                        <controls:ExtendedContentControl Grid.Row="1" Content="{TemplateBinding Content}" Focusable="False"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

@@ -24,6 +24,10 @@ namespace MediaBrowser.Theater.DefaultTheme.Search.ViewModels
         }
 
         public ICommand ExecuteCommand { get; private set; }
+        public bool EvaluateVisibility(INavigationPath currentPath)
+        {
+            return !(currentPath is SearchPath) && !(currentPath is LoginPath);
+        }
     }
 
     public class SearchCommandIconViewModel : BaseViewModel { }

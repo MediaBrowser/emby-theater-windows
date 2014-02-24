@@ -6,12 +6,13 @@
              xmlns:viewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.Core.ViewModels"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
+             xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance viewModels:CommandBarViewModel}"
              d:DesignHeight="300" d:DesignWidth="300">
-    
-    <ItemsControl ItemsSource="{Binding Commands}" Focusable="False">
-        <ItemsControl.ItemsPanel>
+
+    <controls:ExtendedItemsControl ItemsSource="{Binding CommandViewModels}" Focusable="False">
+        <controls:ExtendedItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
                 <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft">
                     <i:Interaction.Behaviors>
@@ -23,6 +24,6 @@
                     </i:Interaction.Behaviors>
                 </StackPanel>
             </ItemsPanelTemplate>
-        </ItemsControl.ItemsPanel>
-    </ItemsControl>
+        </controls:ExtendedItemsControl.ItemsPanel>
+    </controls:ExtendedItemsControl>
 </UserControl>

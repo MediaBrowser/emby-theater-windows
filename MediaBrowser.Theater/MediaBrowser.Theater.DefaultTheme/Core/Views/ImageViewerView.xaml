@@ -1,0 +1,75 @@
+﻿<UserControl x:Class="MediaBrowser.Theater.DefaultTheme.Core.Views.ImageViewerView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
+             xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
+             xmlns:ee="http://schemas.microsoft.com/expression/2010/effects"
+             xmlns:viewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.Core.ViewModels"
+             xmlns:lex="http://wpflocalizeextension.codeplex.com"
+             lex:LocalizeDictionary.DesignCulture="en"
+             lex:ResxLocalizationProvider.DefaultAssembly="MediaBrowser.Theater.DefaultTheme"
+             lex:ResxLocalizationProvider.DefaultDictionary="Strings"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance viewModels:ImageViewerViewModel}"
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid Height="{Binding Height}" Width="{Binding Width}">
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+                <VisualState Name="ImageLoaded">
+                    <Storyboard>
+                        <DoubleAnimation Storyboard.TargetName="Image" Storyboard.TargetProperty="Opacity"
+                                                 To="1" FillBehavior="HoldEnd" Duration="0:0:1.75"
+                                                 DecelerationRatio="0.5" />
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="EmptyBackground"
+                                                               Storyboard.TargetProperty="Visibility">
+                            <DiscreteObjectKeyFrame KeyTime="0:0:1.75" Value="{x:Static Visibility.Collapsed}" />
+                        </ObjectAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+                <VisualState Name="ImageUnloaded">
+                    <Storyboard>
+                        <DoubleAnimation Storyboard.TargetName="Image" Storyboard.TargetProperty="Opacity"
+                                                 To="0" FillBehavior="HoldEnd" Duration="0:0:1.75"
+                                                 DecelerationRatio="0.5" />
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="EmptyBackground"
+                                                               Storyboard.TargetProperty="Visibility">
+                            <DiscreteObjectKeyFrame KeyTime="0:0:0" Value="{x:Static Visibility.Visible}" />
+                        </ObjectAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
+        <i:Interaction.Behaviors>
+            <ei:DataStateBehavior
+                        Binding="{Binding HasImage}" Value="True"
+                        TrueState="ImageLoaded"
+                        FalseState="ImageUnloaded" />
+        </i:Interaction.Behaviors>
+
+
+        <Border x:Name="EmptyBackground" Background="{StaticResource ForegroundBrush}" Opacity="0.05"
+                        BorderThickness="0" />
+
+        <controls:ExtendedContentControl x:Name="Image" Content="{Binding CurrentImage}">
+            <controls:ExtendedContentControl.TransitionAnimation>
+                <DoubleAnimation Duration="0:0:1.75">
+                    <DoubleAnimation.EasingFunction>
+                        <ExponentialEase EasingMode="EaseInOut" />
+                    </DoubleAnimation.EasingFunction>
+                </DoubleAnimation>
+            </controls:ExtendedContentControl.TransitionAnimation>
+            <controls:ExtendedContentControl.TransitionType>
+                <ee:FadeTransitionEffect />
+            </controls:ExtendedContentControl.TransitionType>
+        </controls:ExtendedContentControl>
+
+        <Border HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                        Background="{StaticResource TextBackgroundBrush}" Margin="0 0 0 -1">
+            <TextBlock Text="{Binding CurrentText}" Style="{StaticResource TextBlockStyle}" Margin="15 5 20 10" />
+        </Border>
+    </Grid>
+</UserControl>

@@ -133,6 +133,11 @@ namespace MediaBrowser.Theater.Presentation.Controls
 
         private void ChangeDisplayedContent(object content)
         {
+            if (_contentPresenter.Content == null) {
+                _contentPresenter.Content = content;
+                return;
+            }
+
             FrameworkElement oldContentVisual;
 
             try {

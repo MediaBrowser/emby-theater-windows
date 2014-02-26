@@ -25,10 +25,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
 
         private int _currentIndex = -1;
         private string _currentText;
-        private double _height;
         private CancellationTokenSource _imageDownloadCancellationTokenSource;
         private Timer _rotationTimer;
-        private double _width;
 
         public ImageViewerViewModel(IImageManager imageManager, IEnumerable<ImageViewerImage> initialImages)
         {
@@ -100,36 +98,6 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
                 bool changed = !string.Equals(_currentText, value);
 
                 _currentText = value;
-
-                if (changed) {
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public double Width
-        {
-            get { return _width; }
-            set
-            {
-                bool changed = !_width.Equals(value);
-
-                _width = value;
-
-                if (changed) {
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public double Height
-        {
-            get { return _height; }
-            set
-            {
-                bool changed = !_height.Equals(value);
-
-                _height = value;
 
                 if (changed) {
                     OnPropertyChanged();

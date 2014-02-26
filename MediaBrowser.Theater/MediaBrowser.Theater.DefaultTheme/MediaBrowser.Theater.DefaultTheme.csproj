@@ -237,6 +237,7 @@
     <Compile Include="Core\ViewModels\ImageViewerViewModel.cs" />
     <Compile Include="Core\ViewModels\IRootPresentationOptions.cs" />
     <Compile Include="Core\ViewModels\ItemSpotlightViewModel.cs" />
+    <Compile Include="Core\ViewModels\ItemTileViewModel.cs" />
     <Compile Include="Core\Views\ClockView.xaml.cs">
       <DependentUpon>ClockView.xaml</DependentUpon>
     </Compile>

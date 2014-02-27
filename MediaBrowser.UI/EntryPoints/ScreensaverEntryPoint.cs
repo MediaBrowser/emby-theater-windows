@@ -11,6 +11,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
+using Microsoft.Win32;
 
 namespace MediaBrowser.UI.EntryPoints
 {
@@ -51,6 +52,8 @@ namespace MediaBrowser.UI.EntryPoints
             _serverEvents.PlaystateCommand += _serverEvents_PlaystateCommand;
             _serverEvents.SystemCommand += _serverEvents_SystemCommand;
 
+            SystemEvents.PowerModeChanged += SystemEvents_PowerModeChanged;
+
             StartTimer();
         }
 
@@ -80,6 +83,16 @@ namespace MediaBrowser.UI.EntryPoints
         }
 
         private void OnRemoteControlCommand()
+        {
+            _lastInputTime = DateTime.Now;
+
+            if (_presentationManager.IsScreenSaverRunning)
+            {
+                _presentationManager.StopScreenSaver();
+            }
+        }
+
+        void SystemEvents_PowerModeChanged(object sender, PowerModeChangedEventArgs e)
         {
             _lastInputTime = DateTime.Now;
 
@@ -178,6 +191,8 @@ namespace MediaBrowser.UI.EntryPoints
             _serverEvents.PlayCommand -= _serverEvents_PlayCommand;
             _serverEvents.PlaystateCommand -= _serverEvents_PlaystateCommand;
             _serverEvents.SystemCommand -= _serverEvents_SystemCommand;
+
+            SystemEvents.PowerModeChanged -= SystemEvents_PowerModeChanged;
             
             StopTimer();
         }

@@ -16,9 +16,9 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
     {
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
-        private readonly BaseItemDto _item;
+        private BaseItemDto _item;
         private readonly INavigator _navigator;
-        private readonly IPlaybackManager _playbackManager;
+        //private readonly IPlaybackManager _playbackManager;
 
         private bool _imageInvalid;
         private readonly ImageViewerViewModel _image;
@@ -27,14 +27,15 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
         private bool _downloadImagesAtExactSize;
         private bool _downloadPrimaryImageAtExactSize;
         private bool _enableServerImageEnhancers;
+        private ImageType[] _preferredImageTypes;
 
         public ItemTileViewModel(IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents,
-                                 INavigator navigator, IPlaybackManager playbackManager, BaseItemDto item)
+                                 INavigator navigator, /*IPlaybackManager playbackManager,*/ BaseItemDto item)
         {
             _apiClient = apiClient;
             _imageManager = imageManager;
             _navigator = navigator;
-            _playbackManager = playbackManager;
+            //_playbackManager = playbackManager;
             _item = item;
 
             _image = new ImageViewerViewModel(imageManager, Enumerable.Empty<ImageViewerImage>());
@@ -48,21 +49,42 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
             _imageInvalid = true;
         }
 
+        public BaseItemDto Item
+        {
+            get { return _item; }
+            set
+            {
+                if (Equals(_item, value)) {
+                    return;
+                }
+
+                _item = value;
+                OnPropertyChanged();
+                RefreshItemFields();
+                InvalidateImage();
+            }
+        }
+
         public string DisplayName
         {
-            get { return DisplayNameGenerator(_item); }
+            get { return _item == null ? string.Empty : DisplayNameGenerator(_item); }
+        }
+
+        public bool IsFolder 
+        {
+            get { return _item != null && _item.IsFolder; }
         }
 
         public Func<BaseItemDto, string> DisplayNameGenerator { get; set; }
 
         public string Creator
         {
-            get { return _item.AlbumArtist; }
+            get { return _item == null ? string.Empty : _item.AlbumArtist; }
         }
 
         public bool HasCreator
         {
-            get { return !string.IsNullOrEmpty(_item.AlbumArtist); }
+            get { return _item != null && !string.IsNullOrEmpty(_item.AlbumArtist); }
         }
 
         public ImageViewerViewModel Image
@@ -77,11 +99,20 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
             }
         }
 
-        public ImageType[] PreferredImageTypes { get; private set; }
+        public ImageType[] PreferredImageTypes
+        {
+            get { return _preferredImageTypes; }
+            set 
+            {
+                _preferredImageTypes = value;
+                OnPropertyChanged();
+                InvalidateImage();
+            }
+        }
 
         public bool IsPlayed
         {
-            get { return _item.UserData.Played; }
+            get { return _item != null && _item.UserData.Played; }
         }
 
         public bool IsInProgress
@@ -97,6 +128,10 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
         {
             get
             {
+                if (_item == null) {
+                    return 0;
+                }
+
                 if (_item.IsFolder) {
                     return _item.PlayedPercentage ?? 0;
                 }
@@ -205,6 +240,17 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
             OnPropertyChanged("IsPlayed");
         }
 
+        private void RefreshItemFields()
+        {
+            OnPropertyChanged("DisplayName");
+            OnPropertyChanged("IsFolder");
+            OnPropertyChanged("Creator");
+            OnPropertyChanged("HasCreator");
+            OnPropertyChanged("IsPlayed");
+            OnPropertyChanged("IsInProgress");
+            OnPropertyChanged("PlayedPercent");
+        }
+
         private void InvalidateImage()
         {
             _imageInvalid = true;
@@ -248,29 +294,33 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
 
             _imageInvalid = false;
 
-            foreach (ImageType imageType in preferredImageTypes) {
-                if (imageType == ImageType.Backdrop) {
-                    if (item.BackdropCount == 0) {
-                        continue;
+            if (item != null) {
+                foreach (ImageType imageType in preferredImageTypes) {
+                    if (imageType == ImageType.Backdrop) {
+                        if (item.BackdropCount == 0) {
+                            continue;
+                        }
+                    } else if (imageType == ImageType.Thumb) {
+                        if (!item.ImageTags.ContainsKey(imageType) && !item.ParentThumbImageTag.HasValue && !item.SeriesThumbImageTag.HasValue) {
+                            continue;
+                        }
+                    } else {
+                        if (!item.ImageTags.ContainsKey(imageType)) {
+                            continue;
+                        }
                     }
-                } else if (imageType == ImageType.Thumb) {
-                    if (!item.ImageTags.ContainsKey(imageType) && !item.ParentThumbImageTag.HasValue && !item.SeriesThumbImageTag.HasValue) {
-                        continue;
-                    }
-                } else {
-                    if (!item.ImageTags.ContainsKey(imageType)) {
-                        continue;
-                    }
-                }
 
-                string url = GetImageUrl(imageType);
-                Image.Images.Clear();
-                Image.Images.Add(new ImageViewerImage { Url = url });
-               
-                return;
+                    string url = GetImageUrl(imageType);
+                    Image.Images.Clear();
+                    Image.Images.Add(new ImageViewerImage { Url = url });
+                    Image.StartRotating();
+
+                    return;
+                }
             }
 
             Image.Images.Clear();
+            Image.StartRotating();
         }
     }
 }

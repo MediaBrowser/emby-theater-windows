@@ -104,6 +104,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Core\Views\ItemTileView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Home\Views\HomeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -255,6 +259,9 @@
     </Compile>
     <Compile Include="Core\Views\ItemSpotlightView.xaml.cs">
       <DependentUpon>ItemSpotlightView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Views\ItemTileView.xaml.cs">
+      <DependentUpon>ItemTileView.xaml</DependentUpon>
     </Compile>
     <Compile Include="DependencyModule.cs" />
     <Compile Include="Home\Api.cs" />

@@ -53,4 +53,11 @@
         <Setter Property="KeyboardNavigation.IsTabStop" Value="false"/>
         <Setter Property="Focusable" Value="False"/>
     </Style>
+
+    <Style TargetType="ProgressBar" x:Key="ResumeProgressBar">
+        <Setter Property="Foreground" Value="{StaticResource AccentBrush}"/>
+        <Setter Property="Background" Value="{StaticResource TextBackgroundBrush}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Height" Value="20"/>
+    </Style>
 </ResourceDictionary>

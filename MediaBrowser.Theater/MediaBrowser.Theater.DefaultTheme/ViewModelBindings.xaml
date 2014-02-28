@@ -72,4 +72,8 @@
         <views:ItemSpotlightView/>
     </DataTemplate>
     
+    <DataTemplate DataType="{x:Type viewModels:ItemTileViewModel}">
+        <views:ItemTileView/>
+    </DataTemplate>
+    
 </ResourceDictionary>

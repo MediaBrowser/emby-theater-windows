@@ -137,7 +137,6 @@ namespace MediaBrowser.Theater.DefaultTheme
     public class Presenter
         : IPresenter
     {
-        private readonly IEventAggregator _events;
         private readonly IEventBus<ShowNotificationEvent> _showNotificationEvent;
         private readonly IEventBus<ShowPageEvent> _showPageEvent;
 
@@ -145,7 +144,6 @@ namespace MediaBrowser.Theater.DefaultTheme
         
         public Presenter(IEventAggregator events, WindowManager windowManager)
         {
-            _events = events;
             _showPageEvent = events.Get<ShowPageEvent>();
             _showNotificationEvent = events.Get<ShowNotificationEvent>();
             _windowManager = windowManager;

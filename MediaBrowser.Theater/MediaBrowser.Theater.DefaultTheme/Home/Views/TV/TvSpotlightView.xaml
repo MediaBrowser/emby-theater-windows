@@ -13,53 +13,75 @@
              d:DataContext="{d:DesignInstance tv:TvSpotlightViewModel}"
              Focusable="False"
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid>
+    <StackPanel Orientation="Horizontal">
+        <Grid>
 
-        <Grid.RowDefinitions>
-            <RowDefinition Height="2*" />
-            <RowDefinition Height="1*" />
-        </Grid.RowDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="2*" />
+                <RowDefinition Height="1*" />
+            </Grid.RowDefinitions>
 
-        <Button Style="{StaticResource BaseItemButtonStyle}"
-                Width="{Binding SpotlightWidth}" Height="{Binding SpotlightHeight}"
-                Command="{Binding SpotlightViewModel.ItemSelectedCommand}"
-                Margin="5"
-                HorizontalAlignment="Center" VerticalAlignment="Top" Grid.Row="0">
-            <controls:ExtendedContentControl Content="{Binding SpotlightViewModel}" Width="{Binding SpotlightWidth}" Height="{Binding SpotlightHeight}"/>
-        </Button>
-
-        <WrapPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0 0 0 0">
-
-            <Button Style="{StaticResource BaseItemButtonStyle}"  Command="{Binding AllShowsCommand}" Width="{Binding LowerSpotlightWidth}" Height="{Binding LowerSpotlightHeight}" Margin="5">
-                <Grid>
-                    <controls:ExtendedContentControl Content="{Binding AllShowsImagesViewModel}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-
-                    <Border HorizontalAlignment="Left" VerticalAlignment="Bottom" Background="{DynamicResource TextBackgroundBrush}" Margin="0 0 0 -1">
-                        <TextBlock Text="TV Shows" Style="{StaticResource SmallTextBlockStyle}" Margin="10 5 15 10"></TextBlock>
-                    </Border>
-                </Grid>
+            <Button Style="{StaticResource BaseItemButtonStyle}"
+                    Width="{Binding SpotlightWidth}" Height="{Binding SpotlightHeight}"
+                    Command="{Binding SpotlightViewModel.ItemSelectedCommand}"
+                    Margin="5"
+                    HorizontalAlignment="Center" VerticalAlignment="Top" Grid.Row="0">
+                <controls:ExtendedContentControl Content="{Binding SpotlightViewModel}"
+                                                 Width="{Binding SpotlightWidth}" Height="{Binding SpotlightHeight}" />
             </Button>
 
-            <Button Style="{StaticResource BaseItemButtonStyle}" Command="{Binding GenresCommand}" Width="{Binding LowerSpotlightWidth}" Height="{Binding LowerSpotlightHeight}" Margin="5">
-                <Grid>
-                    <Image Source="/MediaBrowser.Theater.DefaultTheme;component/Resources/Images/moviegenres.jpg" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Top"></Image>
+            <WrapPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top"
+                       Margin="0 0 0 0">
 
-                    <Border HorizontalAlignment="Left" VerticalAlignment="Bottom" Background="{DynamicResource TextBackgroundBrush}" Margin="0 0 0 -1">
-                        <TextBlock Text="Genres" Style="{StaticResource SmallTextBlockStyle}" Margin="10 5 15 10"></TextBlock>
-                    </Border>
-                </Grid>
-            </Button>
+                <Button Style="{StaticResource BaseItemButtonStyle}" Command="{Binding AllShowsCommand}"
+                        Width="{Binding LowerSpotlightWidth}" Height="{Binding LowerSpotlightHeight}" Margin="5">
+                    <Grid>
+                        <controls:ExtendedContentControl Content="{Binding AllShowsImagesViewModel}"
+                                                         HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
 
-            <Button Style="{StaticResource BaseItemButtonStyle}" Command="{Binding UpcommingCommand}"  Width="{Binding LowerSpotlightWidth}" Height="{Binding LowerSpotlightHeight}" Margin="5">
-                <Grid>
-                    <Image Source="/MediaBrowser.Theater.DefaultTheme;component/Resources/Images/upcomingtv.jpg" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Top"></Image>
+                        <Border HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                                Background="{DynamicResource TextBackgroundBrush}" Margin="0 0 0 -1">
+                            <TextBlock Text="TV Shows" Style="{StaticResource SmallTextBlockStyle}" Margin="10 5 15 10" />
+                        </Border>
+                    </Grid>
+                </Button>
 
-                    <Border HorizontalAlignment="Left" VerticalAlignment="Bottom" Background="{DynamicResource TextBackgroundBrush}" Margin="0 0 0 -1">
-                        <TextBlock Text="Upcoming TV" Style="{StaticResource SmallTextBlockStyle}" Margin="10 5 15 10"></TextBlock>
-                    </Border>
-                </Grid>
-            </Button>
+                <Button Style="{StaticResource BaseItemButtonStyle}" Command="{Binding GenresCommand}"
+                        Width="{Binding LowerSpotlightWidth}" Height="{Binding LowerSpotlightHeight}" Margin="5">
+                    <Grid>
+                        <Image Source="/MediaBrowser.Theater.DefaultTheme;component/Resources/Images/moviegenres.jpg"
+                               Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Top" />
 
-        </WrapPanel>
-    </Grid>
+                        <Border HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                                Background="{DynamicResource TextBackgroundBrush}" Margin="0 0 0 -1">
+                            <TextBlock Text="Genres" Style="{StaticResource SmallTextBlockStyle}" Margin="10 5 15 10" />
+                        </Border>
+                    </Grid>
+                </Button>
+
+                <Button Style="{StaticResource BaseItemButtonStyle}" Command="{Binding UpcommingCommand}"
+                        Width="{Binding LowerSpotlightWidth}" Height="{Binding LowerSpotlightHeight}" Margin="5">
+                    <Grid>
+                        <Image Source="/MediaBrowser.Theater.DefaultTheme;component/Resources/Images/upcomingtv.jpg"
+                               Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Top" />
+
+                        <Border HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                                Background="{DynamicResource TextBackgroundBrush}" Margin="0 0 0 -1">
+                            <TextBlock Text="Upcoming TV" Style="{StaticResource SmallTextBlockStyle}"
+                                       Margin="10 5 15 10" />
+                        </Border>
+                    </Grid>
+                </Button>
+
+            </WrapPanel>
+        </Grid>
+
+        <controls:ExtendedItemsControl ItemsSource="{Binding MiniSpotlightItems}">
+            <controls:ExtendedItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Vertical" />
+                </ItemsPanelTemplate>
+            </controls:ExtendedItemsControl.ItemsPanel>
+        </controls:ExtendedItemsControl>
+    </StackPanel>
 </UserControl>

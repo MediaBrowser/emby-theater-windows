@@ -1,7 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Media;
 using MediaBrowser.Model.ApiClient;
@@ -9,6 +10,7 @@ using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Api.Navigation;
+using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
@@ -20,18 +22,27 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
         : BaseViewModel, IPanoramaPage
     {
         private readonly IApiClient _apiClient;
+        private readonly IImageManager _imageManager;
         private readonly ILogger _logger;
+        private readonly INavigator _navigator;
+        //private readonly IPlaybackManager _playbackManager;
+        private readonly IServerEvents _serverEvents;
         private readonly ISessionManager _sessionManager;
         private CancellationTokenSource _mainViewCancellationTokenSource;
         private TvView _tvView;
-        
-        public TvSpotlightViewModel(IImageManager imageManager, INavigator navigator, IApiClient apiClient, ISessionManager sessionManager, ILogManager logManager)
+
+        public TvSpotlightViewModel(IImageManager imageManager, INavigator navigator, IApiClient apiClient, IServerEvents serverEvents,
+                                    /*IPlaybackManager playbackManager,*/ ISessionManager sessionManager, ILogManager logManager)
         {
+            _imageManager = imageManager;
+            _navigator = navigator;
             _apiClient = apiClient;
+            _serverEvents = serverEvents;
+            //_playbackManager = playbackManager;
             _sessionManager = sessionManager;
             _logger = logManager.GetLogger("TV Spotlight");
-            SpotlightHeight = HomeViewModel.TileHeight * 2 + HomeViewModel.TileMargin * 2;
-            SpotlightWidth = 16 * (SpotlightHeight / 9) + 100;
+            SpotlightHeight = HomeViewModel.TileHeight*2 + HomeViewModel.TileMargin*2;
+            SpotlightWidth = 16*(SpotlightHeight/9) + 100;
 
             LowerSpotlightWidth = SpotlightWidth/3 - HomeViewModel.TileMargin*1.5;
             LowerSpotlightHeight = SpotlightHeight/2;
@@ -45,6 +56,12 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
                 ImageStretch = Stretch.UniformToFill
             };
 
+            MiniSpotlightItems = new RangeObservableCollection<ItemTileViewModel>() { 
+                CreateMiniSpotlightItem(),
+                CreateMiniSpotlightItem(),
+                CreateMiniSpotlightItem(),
+            };
+
             LoadViewModels();
         }
 
@@ -55,14 +72,15 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
         public double LowerSpotlightHeight { get; private set; }
 
         public ItemSpotlightViewModel SpotlightViewModel { get; private set; }
+        public RangeObservableCollection<ItemTileViewModel> MiniSpotlightItems { get; private set; }
         public ImageSlideshowViewModel AllShowsImagesViewModel { get; private set; }
         public ICommand AllShowsCommand { get; private set; }
         public ICommand GenresCommand { get; private set; }
-        public ICommand UpcommingCommand { get; private set; } 
+        public ICommand UpcommingCommand { get; private set; }
 
         public string DisplayName
         {
-            get { return "TV Spotlight"; }
+            get { return "TV"; }
         }
 
         public bool IsTitlePage
@@ -76,8 +94,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
                 if (cancel) {
                     try {
                         _mainViewCancellationTokenSource.Cancel();
-                    }
-                    catch (ObjectDisposedException) { }
+                    } catch (ObjectDisposedException) { }
                 }
                 _mainViewCancellationTokenSource.Dispose();
                 _mainViewCancellationTokenSource = null;
@@ -97,16 +114,45 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
 
                 LoadSpotlightViewModel(view);
                 LoadAllShowsViewModel(view);
-//                LoadMiniSpotlightsViewModel(view);
+                LoadMiniSpotlightsViewModel(view);
 //                LoadNextUpViewModel(view);
 //                LoadLatestEpisodesViewModel(view);
 //                LoadResumableViewModel(view);
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 _logger.ErrorException("Error getting tv view", ex);
-            }
-            finally {
+            } finally {
                 DisposeMainViewCancellationTokenSource(false);
+            }
+        }
+
+        private ItemTileViewModel CreateMiniSpotlightItem()
+        {
+            return new ItemTileViewModel(_apiClient, _imageManager, _serverEvents, _navigator, /*_playbackManager,*/ null) {
+                ImageWidth = HomeViewModel.TileWidth + (HomeViewModel.TileMargin/4) - 1,
+                ImageHeight = HomeViewModel.TileHeight,
+                PreferredImageTypes = new[] { ImageType.Backdrop, ImageType.Thumb },
+                DownloadImagesAtExactSize = true
+            };
+        }
+
+        private void LoadMiniSpotlightsViewModel(TvView view)
+        {
+            BaseItemDto[] items = view.MiniSpotlights.Take(3).ToArray();
+
+            for (int i = 0; i < items.Length; i++) {
+                if (MiniSpotlightItems.Count > i) {
+                    MiniSpotlightItems[i].Item = items[i];
+                } else {
+                    var vm = CreateMiniSpotlightItem();
+                    vm.Item = items[i];
+
+                    MiniSpotlightItems.Add(vm);
+                }
+            }
+
+            if (MiniSpotlightItems.Count > items.Length) {
+                var toRemove = MiniSpotlightItems.Skip(items.Length).ToList();
+                MiniSpotlightItems.RemoveRange(toRemove);
             }
         }
 
@@ -117,11 +163,10 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
 
         private void LoadAllShowsViewModel(TvView view)
         {
-            var images = view.ShowsItems.Take(1).Select(i => _apiClient.GetImageUrl(i.Id, new ImageOptions
-            {
+            IEnumerable<string> images = view.ShowsItems.Take(1).Select(i => _apiClient.GetImageUrl(i.Id, new ImageOptions {
                 ImageType = i.ImageType,
                 Tag = i.ImageTag,
-                Height = Convert.ToInt32(HomeViewModel.TileWidth * 2),
+                Height = Convert.ToInt32(HomeViewModel.TileWidth*2),
                 EnableImageEnhancers = false
             }));
 

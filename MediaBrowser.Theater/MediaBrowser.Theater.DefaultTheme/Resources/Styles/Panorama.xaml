@@ -3,7 +3,7 @@
                     xmlns:viewModels1="clr-namespace:MediaBrowser.Theater.Presentation.ViewModels;assembly=MediaBrowser.Theater.Presentation">
     
     <DataTemplate x:Key="PanoramaTitleTemplate" DataType="{x:Type viewModels1:IPanoramaPage}">
-        <TextBlock Text="{Binding DisplayName}" Margin="50,0,0,0">
+        <TextBlock Text="{Binding DisplayName}" Margin="50,0,30,50">
             <TextBlock.Style>
                 <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
                     <Style.Triggers>

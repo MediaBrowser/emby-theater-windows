@@ -7,7 +7,7 @@
     <Color x:Key="BackgroundColor2">#F6F6F6</Color>
     <Color x:Key="BackgroundColor3">#EFEFF2</Color>
 
-    <Color x:Key="TextBackgroundColor">#60FFFFFF</Color>
+    <Color x:Key="TextBackgroundColor">#70FFFFFF</Color>
 
     <Color x:Key="InputHighlightColor">SkyBlue</Color>
     <Color x:Key="InputBackgroundColor">#E5E5E5</Color>

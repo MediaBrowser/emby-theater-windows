@@ -80,7 +80,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
 
         public string DisplayName
         {
-            get { return "TV"; }
+            get { return "TV Shows"; }
         }
 
         public bool IsTitlePage

@@ -10,34 +10,49 @@
                             BorderThickness="{TemplateBinding BorderThickness}">
                         <Grid>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="auto"/>
-                                <RowDefinition/>
+                                <RowDefinition Height="auto" />
+                                <RowDefinition />
                             </Grid.RowDefinitions>
 
-                            <controls:ExtendedListBox Grid.Row="0"
-                                     Background="{x:Null}"
-                                     BorderBrush="{x:Null}"
-                                     BorderThickness="0"
-                                     ItemsSource="{TemplateBinding TitleItems}" 
-                                     SelectedItem="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SelectedTitleItem, Mode=TwoWay}" 
-                                     ItemTemplate="{TemplateBinding TitleTemplate}" 
-                                     IsSynchronizedWithCurrentItem="True" 
-                                     Focusable="False"
-                                     ScrollViewer.VerticalScrollBarVisibility="Disabled" 
-                                     ScrollViewer.HorizontalScrollBarVisibility="Hidden">
-                                <ListBox.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <StackPanel Orientation="Horizontal"/>
-                                    </ItemsPanelTemplate>
-                                </ListBox.ItemsPanel>
+                            <controls:ExtendedListBox
+                                Background="{x:Null}"
+                                BorderBrush="{x:Null}"
+                                BorderThickness="0"
+                                ItemsSource="{TemplateBinding TitleItems}"
+                                SelectedItem="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SelectedTitleItem, Mode=TwoWay}"
+                                ItemTemplate="{TemplateBinding TitleTemplate}"
+                                IsSynchronizedWithCurrentItem="True"
+                                ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+                                ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                Focusable="False">
+                                <controls:ExtendedListBox.Style>
+                                    <Style TargetType="{x:Type controls:ExtendedListBox}">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="{x:Type controls:ExtendedListBox}">
+                                                    <controls:ExtendedScrollViewer IgnoreAllDirectionKeys="True"
+                                                                                   IsTabStop="False"
+                                                                                   Focusable="False"
+                                                                                   CanContentScroll="True"
+                                                                                   VerticalAlignment="Top">
+                                                        <controls:ScrollingPanel CanHorizontallyScroll="True"
+                                                                                 CanVerticallyScroll="False">
+                                                            <StackPanel Orientation="Horizontal" IsItemsHost="True" />
+                                                        </controls:ScrollingPanel>
+                                                    </controls:ExtendedScrollViewer>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </controls:ExtendedListBox.Style>
+
                                 <ListBox.ItemContainerStyle>
                                     <Style TargetType="ListBoxItem">
-                                        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-                                        <Setter Property="Foreground" Value="Blue"/>
+                                        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
                                         <Setter Property="Template">
                                             <Setter.Value>
                                                 <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                                                    <ContentPresenter/>
+                                                    <ContentPresenter />
                                                 </ControlTemplate>
                                             </Setter.Value>
                                         </Setter>
@@ -45,9 +60,13 @@
                                 </ListBox.ItemContainerStyle>
                             </controls:ExtendedListBox>
 
-                            <controls:ExtendedScrollViewer Grid.Row="1" IgnoreAllDirectionKeys="True" IsTabStop="False" Focusable="False" CanContentScroll="True" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" VerticalAlignment="Top">
+                            <controls:ExtendedScrollViewer Grid.Row="1" IgnoreAllDirectionKeys="True" IsTabStop="False"
+                                                           Focusable="False" CanContentScroll="True"
+                                                           HorizontalScrollBarVisibility="Hidden"
+                                                           VerticalScrollBarVisibility="Disabled"
+                                                           VerticalAlignment="Top">
                                 <controls:ScrollingPanel CanHorizontallyScroll="True" CanVerticallyScroll="False">
-                                    <ItemsPresenter/>
+                                    <ItemsPresenter />
                                 </controls:ScrollingPanel>
                             </controls:ExtendedScrollViewer>
                         </Grid>
@@ -58,19 +77,21 @@
     </Style>
 
     <Style TargetType="{x:Type controls:PanoramaItem}">
-        <Setter Property="Focusable" Value="False"/>
-        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:PanoramaItem}">
                     <Grid Margin="50,0,0,0">
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="auto"/>
-                            <RowDefinition/>
+                            <RowDefinition Height="auto" />
+                            <RowDefinition />
                         </Grid.RowDefinitions>
 
-                        <TextBlock Grid.Row="0" Text="{TemplateBinding DisplayName}" Style="{TemplateBinding DisplayNameStyle}"/>
-                        <controls:ExtendedContentControl Grid.Row="1" Content="{TemplateBinding Content}" Focusable="False"/>
+                        <TextBlock Grid.Row="0" Text="{TemplateBinding DisplayName}"
+                                   Style="{TemplateBinding DisplayNameStyle}" />
+                        <controls:ExtendedContentControl Grid.Row="1" Content="{TemplateBinding Content}"
+                                                         Focusable="False" />
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>

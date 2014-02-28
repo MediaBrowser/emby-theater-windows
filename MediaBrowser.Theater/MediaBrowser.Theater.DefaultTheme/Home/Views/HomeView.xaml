@@ -17,6 +17,6 @@
         <controls:Panorama ItemsSource="{Binding Pages}" TitleItems="{Binding TitlePages}"
                            ItemDisplayNameStyle="{StaticResource SmallTextBlockStyle}" FocusVisualStyle="{x:Null}"
                            TitleTemplate="{StaticResource PanoramaTitleTemplate}" 
-                           Margin="0,50,0,0"/>
+                           Margin="0,30,0,0"/>
     </Grid>
 </UserControl>

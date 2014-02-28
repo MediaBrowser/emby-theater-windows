@@ -39,9 +39,9 @@
                         <controls:ExtendedContentControl Content="{Binding AllShowsImagesViewModel}"
                                                          HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
 
-                        <Border HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                        <Border HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
                                 Background="{DynamicResource TextBackgroundBrush}" Margin="0 0 0 -1">
-                            <TextBlock Text="TV Shows" Style="{StaticResource SmallTextBlockStyle}" Margin="10 5 15 10" />
+                            <TextBlock Text="Browse All Shows" Style="{StaticResource SmallTextBlockStyle}" Margin="10 5 15 10" />
                         </Border>
                     </Grid>
                 </Button>
@@ -52,9 +52,9 @@
                         <Image Source="/MediaBrowser.Theater.DefaultTheme;component/Resources/Images/moviegenres.jpg"
                                Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Top" />
 
-                        <Border HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                        <Border HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
                                 Background="{DynamicResource TextBackgroundBrush}" Margin="0 0 0 -1">
-                            <TextBlock Text="Genres" Style="{StaticResource SmallTextBlockStyle}" Margin="10 5 15 10" />
+                            <TextBlock Text="To Watch Next" Style="{StaticResource SmallTextBlockStyle}" Margin="10 5 15 10" />
                         </Border>
                     </Grid>
                 </Button>
@@ -65,7 +65,7 @@
                         <Image Source="/MediaBrowser.Theater.DefaultTheme;component/Resources/Images/upcomingtv.jpg"
                                Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Top" />
 
-                        <Border HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                        <Border HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
                                 Background="{DynamicResource TextBackgroundBrush}" Margin="0 0 0 -1">
                             <TextBlock Text="Upcoming TV" Style="{StaticResource SmallTextBlockStyle}"
                                        Margin="10 5 15 10" />

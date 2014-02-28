@@ -16,8 +16,8 @@
     <system:Double x:Key="SmallFontSize">25</system:Double>
 
     <!--Default font for h1 headers. Themes should override these as needed-->
-    <!--<FontFamily x:Key="Heading1FontFamily">Segoe UI Light, Lucida Sans Unicode, Verdana</FontFamily>-->
-    <FontFamily x:Key="Heading1FontFamily">pack://application:,,,/Resources/fonts/#Source Sans Pro Light</FontFamily>
+    <FontFamily x:Key="Heading1FontFamily">Segoe UI Light, Lucida Sans Unicode, Verdana</FontFamily>
+<!--    <FontFamily x:Key="Heading1FontFamily">pack://application:,,,/Resources/fonts/#Source Sans Pro Light</FontFamily>-->
     <system:Double x:Key="Heading1FontSize">42</system:Double>
     <FontWeight x:Key="Heading1FontWeight">Normal</FontWeight>
     <SolidColorBrush x:Key="Heading1FontForeground" Color="{DynamicResource ForegroundColor}"/>

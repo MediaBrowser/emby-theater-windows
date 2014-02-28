@@ -101,8 +101,14 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
 
                 if (changed) {
                     OnPropertyChanged();
+                    OnPropertyChanged("HasCurrentText");
                 }
             }
+        }
+
+        public bool HasCurrentText
+        {
+            get { return !string.IsNullOrEmpty(CurrentText); }
         }
 
         public Action<ImageViewerImage> CustomCommandAction { get; set; }

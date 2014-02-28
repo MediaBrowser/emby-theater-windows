@@ -60,6 +60,10 @@
         <tv1:TvSpotlightView/>
     </DataTemplate>
     
+    <DataTemplate DataType="{x:Type tv:LatestEpisodesViewModel}">
+        <tv1:LatestEpisodesView/>
+    </DataTemplate>
+    
     <DataTemplate DataType="{x:Type viewModels:ImageViewerViewModel}">
         <views:ImageViewerView/>
     </DataTemplate>

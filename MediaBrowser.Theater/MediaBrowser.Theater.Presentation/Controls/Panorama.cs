@@ -8,6 +8,7 @@ using MediaBrowser.Theater.Presentation.ViewModels;
 
 namespace MediaBrowser.Theater.Presentation.Controls
 {
+    [TemplatePart(Name="PART_Titles", Type=typeof(ListBox))]
     public class Panorama : ItemsControl
     {
         // Using a DependencyProperty as the backing store for TitleItems.  This enables animation, styling, binding, etc...
@@ -28,6 +29,36 @@ namespace MediaBrowser.Theater.Presentation.Controls
         public static readonly DependencyProperty TitleTemplateProperty =
             DependencyProperty.Register("TitleTemplate", typeof (DataTemplate), typeof (Panorama), new PropertyMetadata(null));
 
+        private ListBox _titlesListBox;
+
+        private ListBox TitlesListBox
+        {
+            get { return _titlesListBox; }
+            set
+            {
+                if (_titlesListBox != null) {
+                    _titlesListBox.PreviewKeyDown -= _titlesListBox_PreviewKeyDown;
+                }
+
+                _titlesListBox = value;
+
+                if (_titlesListBox != null) {
+                    _titlesListBox.PreviewKeyDown += _titlesListBox_PreviewKeyDown;
+                }
+            }
+        }
+
+        void _titlesListBox_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Down) {
+                var container = ItemContainerGenerator.ContainerFromItem(SelectedTitleItem) as FrameworkElement;
+                if (container != null) {
+                    container.MoveFocus(new TraversalRequest(FocusNavigationDirection.First));
+                }
+
+                e.Handled = true;
+            }
+        }
 
         static Panorama()
         {
@@ -41,6 +72,12 @@ namespace MediaBrowser.Theater.Presentation.Controls
             DefaultStyleKeyProperty.OverrideMetadata(typeof (Panorama), new FrameworkPropertyMetadata(typeof (Panorama)));
             FocusableProperty.OverrideMetadata(typeof (Panorama), new FrameworkPropertyMetadata(false));
             ItemsPanelProperty.OverrideMetadata(typeof(Panorama), new FrameworkPropertyMetadata(defaultPanel));
+        }
+        
+        public override void OnApplyTemplate()
+        {
+            TitlesListBox = GetTemplateChild("PART_Titles") as ListBox;
+            base.OnApplyTemplate();
         }
 
         public Panorama()

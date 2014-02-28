@@ -21,13 +21,17 @@
                     <ProgressBar Minimum="0" Maximum="100" Value="{Binding PlayedPercent, Mode=OneWay}" Height="12">
                         <ProgressBar.Style>
                             <Style TargetType="{x:Type ProgressBar}" BasedOn="{StaticResource ResumeProgressBar}">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsInProgress}" Value="False">
-                                        <Setter Property="Visibility" Value="Collapsed" />
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding IsFolder}" Value="True">
-                                        <Setter Property="Visibility" Value="Collapsed" />
-                                    </DataTrigger>
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding IsInProgress}" Value="True"/>
+                                            <Condition Binding="{Binding IsFolder}" Value="False"/>
+                                        </MultiDataTrigger.Conditions>
+                                            
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </MultiDataTrigger>
                                 </Style.Triggers>
                             </Style>
                         </ProgressBar.Style>

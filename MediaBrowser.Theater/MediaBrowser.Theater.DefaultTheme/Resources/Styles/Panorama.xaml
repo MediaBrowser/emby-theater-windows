@@ -37,4 +37,8 @@
         </TextBlock>
     </DataTemplate>
 
+    <Style TargetType="TextBlock" x:Key="PanoramaTitleTextBlockStyle" BasedOn="{StaticResource SmallTextBlockStyle}">
+        <Setter Property="Margin" Value="5,0,0,0"/>
+    </Style>
+
 </ResourceDictionary>

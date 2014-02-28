@@ -26,6 +26,7 @@
             
             <converters:BooleanInverter x:Key="BooleanInverter"/>
             <BooleanToVisibilityConverter x:Key="BooleanToVisibility"/>
+            <converters:UppercaseConverter x:Key="UppercaseConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

@@ -1,6 +1,7 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls">
+                    xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls"
+                    xmlns:converters="clr-namespace:MediaBrowser.Theater.Presentation.Converters">
     <Style TargetType="{x:Type controls:Panorama}">
         <Setter Property="Template">
             <Setter.Value>
@@ -15,6 +16,7 @@
                             </Grid.RowDefinitions>
 
                             <controls:ExtendedListBox
+                                x:Name="PART_Titles"
                                 Background="{x:Null}"
                                 BorderBrush="{x:Null}"
                                 BorderThickness="0"
@@ -83,12 +85,16 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:PanoramaItem}">
                     <Grid Margin="50,0,0,0">
+                        <Grid.Resources>
+                            <converters:UppercaseConverter x:Key="UppercaseConverter"/>
+                        </Grid.Resources>
+                        
                         <Grid.RowDefinitions>
                             <RowDefinition Height="auto" />
                             <RowDefinition />
                         </Grid.RowDefinitions>
 
-                        <TextBlock Grid.Row="0" Text="{TemplateBinding DisplayName}"
+                        <TextBlock Grid.Row="0" Text="{TemplateBinding DisplayName, Converter={StaticResource UppercaseConverter}}"
                                    Style="{TemplateBinding DisplayNameStyle}" />
                         <controls:ExtendedContentControl Grid.Row="1" Content="{TemplateBinding Content}"
                                                          Focusable="False" />

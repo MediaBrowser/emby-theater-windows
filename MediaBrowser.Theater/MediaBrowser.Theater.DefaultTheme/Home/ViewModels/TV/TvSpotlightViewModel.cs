@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Media;
 using MediaBrowser.Model.ApiClient;
@@ -29,9 +30,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
         private readonly IServerEvents _serverEvents;
         private readonly ISessionManager _sessionManager;
         private CancellationTokenSource _mainViewCancellationTokenSource;
-        private TvView _tvView;
 
-        public TvSpotlightViewModel(IImageManager imageManager, INavigator navigator, IApiClient apiClient, IServerEvents serverEvents,
+        public TvSpotlightViewModel(Task<TvView> tvViewTask, IImageManager imageManager, INavigator navigator, IApiClient apiClient, IServerEvents serverEvents,
                                     /*IPlaybackManager playbackManager,*/ ISessionManager sessionManager, ILogManager logManager)
         {
             _imageManager = imageManager;
@@ -62,7 +62,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
                 CreateMiniSpotlightItem(),
             };
 
-            LoadViewModels();
+            LoadViewModels(tvViewTask);
         }
 
         public double SpotlightWidth { get; private set; }
@@ -101,15 +101,31 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
             }
         }
 
-        private async void LoadViewModels()
+        public static string GetDisplayName(BaseItemDto item)
+        {
+            var name = item.Name;
+
+            if (item.IsType("Episode"))
+            {
+                name = item.SeriesName;
+
+                if (item.IndexNumber.HasValue && item.ParentIndexNumber.HasValue)
+                {
+                    name = name + " " + string.Format("S{0}, E{1}", item.ParentIndexNumber.Value, item.IndexNumber.Value);
+                }
+
+            }
+
+            return name;
+        }
+
+        private async void LoadViewModels(Task<TvView> tvViewTask)
         {
             CancellationTokenSource cancellationSource = _mainViewCancellationTokenSource = new CancellationTokenSource();
 
             try {
-                TvView view = await _apiClient.GetTvView(_sessionManager.CurrentUser.Id, cancellationSource.Token);
-
-                _tvView = view;
-
+                TvView view = await tvViewTask;
+                
                 cancellationSource.Token.ThrowIfCancellationRequested();
 
                 LoadSpotlightViewModel(view);
@@ -131,6 +147,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
                 ImageWidth = HomeViewModel.TileWidth + (HomeViewModel.TileMargin/4) - 1,
                 ImageHeight = HomeViewModel.TileHeight,
                 PreferredImageTypes = new[] { ImageType.Backdrop, ImageType.Thumb },
+                DisplayNameGenerator = GetDisplayName,
                 DownloadImagesAtExactSize = true
             };
         }

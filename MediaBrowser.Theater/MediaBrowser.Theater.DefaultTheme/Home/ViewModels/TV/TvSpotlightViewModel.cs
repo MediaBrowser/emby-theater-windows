@@ -45,7 +45,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
             SpotlightWidth = 16*(SpotlightHeight/9) + 100;
 
             LowerSpotlightWidth = SpotlightWidth/3 - HomeViewModel.TileMargin*1.5;
-            LowerSpotlightHeight = SpotlightHeight/2;
+            LowerSpotlightHeight = HomeViewModel.TileHeight;
 
             SpotlightViewModel = new ItemSpotlightViewModel(imageManager, apiClient) {
                 ImageType = ImageType.Backdrop,

@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
@@ -19,12 +16,20 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
     {
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
+        private readonly BaseItemDto _item;
         private readonly INavigator _navigator;
         private readonly IPlaybackManager _playbackManager;
 
-        private readonly BaseItemDto _item;
+        private bool _imageInvalid;
+        private readonly ImageViewerViewModel _image;
+        private double? _imageWidth;
+        private double? _imageHeight;
+        private bool _downloadImagesAtExactSize;
+        private bool _downloadPrimaryImageAtExactSize;
+        private bool _enableServerImageEnhancers;
 
-        public ItemTileViewModel(IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator, IPlaybackManager playbackManager, BaseItemDto item)
+        public ItemTileViewModel(IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents,
+                                 INavigator navigator, IPlaybackManager playbackManager, BaseItemDto item)
         {
             _apiClient = apiClient;
             _imageManager = imageManager;
@@ -32,32 +37,58 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
             _playbackManager = playbackManager;
             _item = item;
 
+            _image = new ImageViewerViewModel(imageManager, Enumerable.Empty<ImageViewerImage>());
+            
             DisplayNameGenerator = i => i.Name;
             PreferredImageTypes = new[] { ImageType.Primary, ImageType.Thumb, ImageType.Backdrop };
+            GoToDetailsCommand = new RelayCommand(o => navigator.Navigate(Go.To.Item(item)));
 
             serverEvents.UserDataChanged += serverEvents_UserDataChanged;
+
+            _imageInvalid = true;
         }
 
-        void serverEvents_UserDataChanged(object sender, UserDataChangedEventArgs e)
+        public string DisplayName
         {
-            throw new NotImplementedException();
+            get { return DisplayNameGenerator(_item); }
         }
 
-        public string DisplayName { get { return DisplayNameGenerator(_item); } }
         public Func<BaseItemDto, string> DisplayNameGenerator { get; set; }
-        public string Creator {
+
+        public string Creator
+        {
             get { return _item.AlbumArtist; }
         }
-        public bool HasCreator { get { return !string.IsNullOrEmpty(_item.AlbumArtist); } }
-        public ImageViewerViewModel Image { get; private set; }
-        public ImageType[] PreferredImageTypes { get; set; }
-        public bool IsPlayed { get { return _item.UserData.Played; } }
+
+        public bool HasCreator
+        {
+            get { return !string.IsNullOrEmpty(_item.AlbumArtist); }
+        }
+
+        public ImageViewerViewModel Image
+        {
+            get
+            {
+                if (_imageInvalid) {
+                    DownloadImage();
+                }
+
+                return _image;
+            }
+        }
+
+        public ImageType[] PreferredImageTypes { get; private set; }
+
+        public bool IsPlayed
+        {
+            get { return _item.UserData.Played; }
+        }
 
         public bool IsInProgress
         {
             get
             {
-                var percent = PlayedPercent;
+                double percent = PlayedPercent;
                 return percent > 0 && percent < 100;
             }
         }
@@ -70,14 +101,12 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
                     return _item.PlayedPercentage ?? 0;
                 }
 
-                if (_item.RunTimeTicks.HasValue)
-                {
-                    if (_item.UserData != null && _item.UserData.PlaybackPositionTicks > 0)
-                    {
+                if (_item.RunTimeTicks.HasValue) {
+                    if (_item.UserData != null && _item.UserData.PlaybackPositionTicks > 0) {
                         double percent = _item.UserData.PlaybackPositionTicks;
                         percent /= _item.RunTimeTicks.Value;
 
-                        return percent * 100;
+                        return percent*100;
                     }
                 }
 
@@ -88,7 +117,160 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
         public ICommand PlayCommand { get; private set; }
         public ICommand GoToDetailsCommand { get; private set; }
         public ICommand PlayTrailerCommand { get; private set; }
-        public double Width { get; set; }
-        public double Height { get; set; }
+
+        public double? ImageWidth
+        {
+            get { return _imageWidth; }
+            set
+            {
+                if (Equals(_imageWidth, value)) {
+                    return;
+                }
+
+                _imageWidth = value;
+                OnPropertyChanged();
+                InvalidateImage();
+            }
+        }
+
+        public double? ImageHeight
+        {
+            get { return _imageHeight; }
+            set
+            {
+                if (Equals(_imageHeight, value)) {
+                    return;
+                }
+
+                _imageHeight = value;
+                OnPropertyChanged();
+                InvalidateImage();
+            }
+        }
+
+        public bool DownloadImagesAtExactSize
+        {
+            get { return _downloadImagesAtExactSize; }
+            set
+            {
+                if (Equals(_downloadImagesAtExactSize, value)) {
+                    return;
+                }
+
+                _downloadImagesAtExactSize = value;
+                OnPropertyChanged();
+                InvalidateImage();
+            }
+        }
+
+        public bool DownloadPrimaryImageAtExactSize
+        {
+            get { return _downloadPrimaryImageAtExactSize; }
+            set
+            {
+                if (Equals(_downloadPrimaryImageAtExactSize, value)) {
+                    return;
+                }
+
+                _downloadPrimaryImageAtExactSize = value;
+                OnPropertyChanged();
+                InvalidateImage();
+            }
+        }
+
+        public bool EnableServerImageEnhancers
+        {
+            get { return _enableServerImageEnhancers; }
+            set
+            {
+                if (Equals(_enableServerImageEnhancers, value)) {
+                    return;
+                }
+
+                _enableServerImageEnhancers = value;
+                OnPropertyChanged();
+                InvalidateImage();
+            }
+        }
+
+        private void serverEvents_UserDataChanged(object sender, UserDataChangedEventArgs e)
+        {
+            RefreshUserDataFields();
+        }
+
+        private void RefreshUserDataFields()
+        {
+            OnPropertyChanged("PlayedPercent");
+            OnPropertyChanged("IsInProgress");
+            OnPropertyChanged("IsPlayed");
+        }
+
+        private void InvalidateImage()
+        {
+            _imageInvalid = true;
+            OnPropertyChanged("Image");
+        }
+        
+        /// <summary>
+        ///     Gets an image url that can be used to download an image from the api
+        /// </summary>
+        /// <param name="imageType">The type of image requested</param>
+        /// <param name="imageIndex">
+        ///     The image index, if there are multiple. Currently only applies to backdrops. Supply null or 0
+        ///     for first backdrop.
+        /// </param>
+        /// <returns>System.String.</returns>
+        private string GetImageUrl(ImageType imageType, int? imageIndex = null)
+        {
+            var imageOptions = new ImageOptions {
+                ImageType = imageType,
+                ImageIndex = imageIndex,
+                Height = ImageHeight != null ? (int?) Convert.ToInt32(ImageHeight) : null,
+                EnableImageEnhancers = EnableServerImageEnhancers
+            };
+
+            if ((imageType == ImageType.Primary && DownloadPrimaryImageAtExactSize)
+                || (imageType != ImageType.Primary && DownloadImagesAtExactSize)) {
+                imageOptions.Width = ImageWidth != null ? (int?) Convert.ToInt32(ImageWidth) : null;
+            }
+
+            if (imageType == ImageType.Thumb) {
+                return _apiClient.GetThumbImageUrl(_item, imageOptions);
+            }
+
+            return _apiClient.GetImageUrl(_item, imageOptions);
+        }
+
+        public void DownloadImage()
+        {
+            ImageType[] preferredImageTypes = PreferredImageTypes;
+            BaseItemDto item = _item;
+
+            _imageInvalid = false;
+
+            foreach (ImageType imageType in preferredImageTypes) {
+                if (imageType == ImageType.Backdrop) {
+                    if (item.BackdropCount == 0) {
+                        continue;
+                    }
+                } else if (imageType == ImageType.Thumb) {
+                    if (!item.ImageTags.ContainsKey(imageType) && !item.ParentThumbImageTag.HasValue && !item.SeriesThumbImageTag.HasValue) {
+                        continue;
+                    }
+                } else {
+                    if (!item.ImageTags.ContainsKey(imageType)) {
+                        continue;
+                    }
+                }
+
+                string url = GetImageUrl(imageType);
+                Image.Images.Clear();
+                Image.Images.Add(new ImageViewerImage { Url = url });
+               
+                return;
+            }
+
+            Image.Images.Clear();
+        }
     }
 }

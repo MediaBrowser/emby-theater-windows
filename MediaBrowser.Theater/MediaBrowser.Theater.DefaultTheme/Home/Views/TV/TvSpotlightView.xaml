@@ -15,23 +15,18 @@
              Focusable="False"
              d:DesignHeight="300" d:DesignWidth="300">
     <StackPanel Orientation="Horizontal">
-        <Grid>
-
-            <Grid.RowDefinitions>
-                <RowDefinition Height="2*" />
-                <RowDefinition Height="1*" />
-            </Grid.RowDefinitions>
+        <StackPanel Orientation="Vertical">
 
             <Button Style="{StaticResource BaseItemButtonStyle}"
                     Width="{Binding SpotlightWidth}" Height="{Binding SpotlightHeight}"
                     Command="{Binding SpotlightViewModel.ItemSelectedCommand}"
                     Margin="{x:Static viewModels:HomeViewModel.TileMarginThickness}"
-                    HorizontalAlignment="Center" VerticalAlignment="Top" Grid.Row="0">
+                    HorizontalAlignment="Center" VerticalAlignment="Top">
                 <controls:ExtendedContentControl Content="{Binding SpotlightViewModel}"
                                                  Width="{Binding SpotlightWidth}" Height="{Binding SpotlightHeight}" />
             </Button>
 
-            <WrapPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top"
+            <WrapPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top"
                        Margin="0 0 0 0">
 
                 <Button Style="{StaticResource BaseItemButtonStyle}" Command="{Binding AllShowsCommand}"
@@ -75,7 +70,7 @@
                 </Button>
 
             </WrapPanel>
-        </Grid>
+        </StackPanel>
 
         <controls:ExtendedItemsControl ItemsSource="{Binding MiniSpotlightItems}" Margin="0,0,0,5">
             <controls:ExtendedItemsControl.ItemsPanel>

@@ -21,12 +21,12 @@
                     Width="{Binding SpotlightWidth}" Height="{Binding SpotlightHeight}"
                     Command="{Binding SpotlightViewModel.ItemSelectedCommand}"
                     Margin="{x:Static viewModels:HomeViewModel.TileMarginThickness}"
-                    HorizontalAlignment="Center" VerticalAlignment="Top" Grid.Row="0">
+                    HorizontalAlignment="Center" VerticalAlignment="Top">
                 <controls:ExtendedContentControl Content="{Binding SpotlightViewModel}"
                                                  Width="{Binding SpotlightWidth}" Height="{Binding SpotlightHeight}" />
             </Button>
 
-            <WrapPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top"
+            <WrapPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top"
                        Margin="0 0 0 0">
 
                 <Button Style="{StaticResource BaseItemButtonStyle}" Command="{Binding AllMoviesCommand}"

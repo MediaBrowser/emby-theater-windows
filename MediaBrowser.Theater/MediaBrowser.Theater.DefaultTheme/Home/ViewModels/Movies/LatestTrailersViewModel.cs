@@ -21,6 +21,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
         private readonly INavigator _navigator;
         private readonly IServerEvents _serverEvents;
 
+        private bool _isVisible;
+
         public LatestTrailersViewModel(Task<MoviesView> moviesViewTask, IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator)
         {
             _apiClient = apiClient;
@@ -33,6 +35,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
                 Trailers.Add(CreateMovieItem());
             }
 
+            IsVisible = true;
             LoadItems(moviesViewTask);
         }
 
@@ -46,6 +49,21 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
         public bool IsTitlePage
         {
             get { return false; }
+        }
+
+        public bool IsVisible
+        {
+            get { return _isVisible; }
+            private set
+            {
+                if (Equals(_isVisible, value))
+                {
+                    return;
+                }
+
+                _isVisible = value;
+                OnPropertyChanged();
+            }
         }
 
         private async void LoadItems(Task<MoviesView> moviesViewTask)
@@ -68,6 +86,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
                 List<ItemTileViewModel> toRemove = Trailers.Skip(items.Length).ToList();
                 Trailers.RemoveRange(toRemove);
             }
+
+            IsVisible = Trailers.Count > 0;
         }
 
         private ItemTileViewModel CreateMovieItem()

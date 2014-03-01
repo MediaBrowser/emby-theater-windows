@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using MediaBrowser.Theater.Presentation.ViewModels;
@@ -156,11 +157,6 @@ namespace MediaBrowser.Theater.Presentation.Controls
                     panoramaItem.DisplayNameStyle = ItemDisplayNameStyle;
                 }
 
-                var name = item as IPanoramaPage;
-                if (name != null) {
-                    panoramaItem.DisplayName = name.DisplayName;
-                }
-
                 panoramaItem.Content = item;
             }
 
@@ -177,14 +173,37 @@ namespace MediaBrowser.Theater.Presentation.Controls
 
         // Using a DependencyProperty as the backing store for Content.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ContentProperty =
-            DependencyProperty.Register("Content", typeof (object), typeof (PanoramaItem), new PropertyMetadata(null));
+            DependencyProperty.Register("Content", typeof (object), typeof (PanoramaItem), new PropertyMetadata(null, OnContentChanged));
 
+        private static void OnContentChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var item = (PanoramaItem)d;
+            var content = e.NewValue as IPanoramaPage;
+
+            if (content != null) {
+                var visibilityBinding = new Binding("IsVisible");
+                item.SetBinding(IsContentVisibleProperty, visibilityBinding);
+
+                var nameBinding = new Binding("DisplayName");
+                item.SetBinding(DisplayNameProperty, nameBinding);
+            }
+        }
 
         // Using a DependencyProperty as the backing store for DisplayNameStyle.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty DisplayNameStyleProperty =
             DependencyProperty.Register("DisplayNameStyle", typeof (Style), typeof (PanoramaItem), new PropertyMetadata(null));
+        
+        public bool IsContentVisible
+        {
+            get { return (bool)GetValue(IsContentVisibleProperty); }
+            set { SetValue(IsContentVisibleProperty, value); }
+        }
 
+        // Using a DependencyProperty as the backing store for IsContentVisible.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsContentVisibleProperty =
+            DependencyProperty.Register("IsContentVisible", typeof(bool), typeof(PanoramaItem), new PropertyMetadata(true));
 
+        
         static PanoramaItem()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof (PanoramaItem), new FrameworkPropertyMetadata(typeof (PanoramaItem)));

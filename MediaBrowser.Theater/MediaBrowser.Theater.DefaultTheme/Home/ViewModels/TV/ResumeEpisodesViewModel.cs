@@ -21,6 +21,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
         private readonly INavigator _navigator;
         private readonly IServerEvents _serverEvents;
 
+        private bool _isVisible;
+
         public ResumeEpisodesViewModel(Task<TvView> tvViewTask, IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator)
         {
             _apiClient = apiClient;
@@ -33,6 +35,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
                 Episodes.Add(CreateEpisodeItem());
             }
 
+            IsVisible = false;
             LoadItems(tvViewTask);
         }
 
@@ -46,6 +49,21 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
         public bool IsTitlePage
         {
             get { return false; }
+        }
+
+        public bool IsVisible
+        {
+            get { return _isVisible; }
+            private set
+            {
+                if (Equals(_isVisible, value))
+                {
+                    return;
+                }
+
+                _isVisible = value;
+                OnPropertyChanged();
+            }
         }
 
         private async void LoadItems(Task<TvView> tvViewTask)
@@ -68,6 +86,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
                 List<ItemTileViewModel> toRemove = Episodes.Skip(items.Length).ToList();
                 Episodes.RemoveRange(toRemove);
             }
+
+            IsVisible = Episodes.Count > 0;
         }
 
         private ItemTileViewModel CreateEpisodeItem()

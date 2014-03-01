@@ -84,7 +84,11 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:PanoramaItem}">
-                    <Grid Margin="50,0,0,0">
+                    <ControlTemplate.Resources>
+                        <BooleanToVisibilityConverter x:Key="BooleanToVisibility"/>
+                    </ControlTemplate.Resources>
+
+                    <Grid Margin="50,0,0,0" Visibility="{TemplateBinding IsContentVisible, Converter={StaticResource BooleanToVisibility}}">
                         <Grid.Resources>
                             <converters:UppercaseConverter x:Key="UppercaseConverter"/>
                         </Grid.Resources>

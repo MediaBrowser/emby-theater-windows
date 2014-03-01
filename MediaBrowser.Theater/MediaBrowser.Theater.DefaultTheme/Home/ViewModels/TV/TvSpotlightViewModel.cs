@@ -88,6 +88,11 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
             get { return true; }
         }
 
+        public bool IsVisible
+        {
+            get { return true; }
+        }
+
         private void DisposeMainViewCancellationTokenSource(bool cancel)
         {
             if (_mainViewCancellationTokenSource != null) {

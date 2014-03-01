@@ -23,4 +23,8 @@
     <Color x:Key="ButtonBorderHoverColor">#3e3e42</Color>
     <Color x:Key="ButtonBorderPressedColor">#1ba1e2</Color>
 
+    <SolidColorBrush x:Key="SelectionBorderBrush" Color="{StaticResource ForegroundColor}"/>
+    <Thickness x:Key="SelectionBorderMargin">-3</Thickness>
+    <Thickness x:Key="SelectionBorderThickness">2</Thickness>
+
 </ResourceDictionary>

@@ -59,20 +59,22 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
-                    <Border x:Name="Bd" SnapsToDevicePixels="true" RenderTransformOrigin="0.5,0.5" Padding="0">
+                    <Border x:Name="Bd" SnapsToDevicePixels="true" RenderTransformOrigin="0.5,0.5" Padding="0" Opacity="0.9">
 
                         <Grid x:Name="ContentGrid">
-                            <Border x:Name="BdDropShadow" Margin="-3" BorderBrush="{StaticResource ForegroundBrush}" BorderThickness="2" Background="Transparent" SnapsToDevicePixels="true" CornerRadius="0" Visibility="Hidden"/>
+                            <Border x:Name="BdDropShadow" Margin="{DynamicResource SelectionBorderMargin}" BorderBrush="{DynamicResource SelectionBorderBrush}" BorderThickness="{DynamicResource SelectionBorderThickness}" Background="Transparent" SnapsToDevicePixels="true" CornerRadius="0" Visibility="Hidden"/>
                             <ContentPresenter Margin="0" HorizontalAlignment="Stretch" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Stretch"/>
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsFocused" Value="true">
                             <Setter Property="Visibility" TargetName="BdDropShadow" Value="Visible"/>
+                            <Setter Property="Opacity" TargetName="Bd" Value="1"/>
                             <Setter Property="Panel.ZIndex" Value="5"/>
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="true">
                             <Setter Property="Visibility" TargetName="BdDropShadow" Value="Visible"/>
+                            <Setter Property="Opacity" TargetName="Bd" Value="1"/>
                             <Setter Property="Panel.ZIndex" Value="5"/>
                         </Trigger>
                     </ControlTemplate.Triggers>

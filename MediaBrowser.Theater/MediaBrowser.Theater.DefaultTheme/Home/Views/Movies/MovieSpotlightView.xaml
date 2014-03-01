@@ -15,12 +15,7 @@
              Focusable="False"
              d:DesignHeight="300" d:DesignWidth="300">
     <StackPanel Orientation="Horizontal">
-        <Grid>
-
-            <Grid.RowDefinitions>
-                <RowDefinition Height="2*" />
-                <RowDefinition Height="1*" />
-            </Grid.RowDefinitions>
+        <StackPanel Orientation="Vertical">
 
             <Button Style="{StaticResource BaseItemButtonStyle}"
                     Width="{Binding SpotlightWidth}" Height="{Binding SpotlightHeight}"
@@ -62,7 +57,7 @@
                 </Button>
 
             </WrapPanel>
-        </Grid>
+        </StackPanel>
 
         <controls:ExtendedItemsControl ItemsSource="{Binding MiniSpotlightItems}">
             <controls:ExtendedItemsControl.ItemsPanel>

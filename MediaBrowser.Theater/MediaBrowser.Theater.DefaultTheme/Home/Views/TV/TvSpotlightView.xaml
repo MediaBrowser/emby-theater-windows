@@ -6,6 +6,7 @@
              xmlns:lex="http://wpflocalizeextension.codeplex.com"
              xmlns:tv="clr-namespace:MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV"
              xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
+             xmlns:viewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.Home.ViewModels"
              lex:LocalizeDictionary.DesignCulture="en"
              lex:ResxLocalizationProvider.DefaultAssembly="MediaBrowser.Theater.DefaultTheme"
              lex:ResxLocalizationProvider.DefaultDictionary="Strings"
@@ -24,7 +25,7 @@
             <Button Style="{StaticResource BaseItemButtonStyle}"
                     Width="{Binding SpotlightWidth}" Height="{Binding SpotlightHeight}"
                     Command="{Binding SpotlightViewModel.ItemSelectedCommand}"
-                    Margin="5"
+                    Margin="{x:Static viewModels:HomeViewModel.TileMarginThickness}"
                     HorizontalAlignment="Center" VerticalAlignment="Top" Grid.Row="0">
                 <controls:ExtendedContentControl Content="{Binding SpotlightViewModel}"
                                                  Width="{Binding SpotlightWidth}" Height="{Binding SpotlightHeight}" />
@@ -34,7 +35,7 @@
                        Margin="0 0 0 0">
 
                 <Button Style="{StaticResource BaseItemButtonStyle}" Command="{Binding AllShowsCommand}"
-                        Width="{Binding LowerSpotlightWidth}" Height="{Binding LowerSpotlightHeight}" Margin="5">
+                        Width="{Binding LowerSpotlightWidth}" Height="{Binding LowerSpotlightHeight}" Margin="{x:Static viewModels:HomeViewModel.TileMarginThickness}">
                     <Grid>
                         <controls:ExtendedContentControl Content="{Binding AllShowsImagesViewModel}"
                                                          HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
@@ -47,7 +48,7 @@
                 </Button>
 
                 <Button Style="{StaticResource BaseItemButtonStyle}" Command="{Binding GenresCommand}"
-                        Width="{Binding LowerSpotlightWidth}" Height="{Binding LowerSpotlightHeight}" Margin="5">
+                        Width="{Binding LowerSpotlightWidth}" Height="{Binding LowerSpotlightHeight}" Margin="{x:Static viewModels:HomeViewModel.TileMarginThickness}">
                     <Grid>
                         <Image Source="/MediaBrowser.Theater.DefaultTheme;component/Resources/Images/moviegenres.jpg"
                                Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Top" />
@@ -60,7 +61,7 @@
                 </Button>
 
                 <Button Style="{StaticResource BaseItemButtonStyle}" Command="{Binding UpcommingCommand}"
-                        Width="{Binding LowerSpotlightWidth}" Height="{Binding LowerSpotlightHeight}" Margin="5">
+                        Width="{Binding LowerSpotlightWidth}" Height="{Binding LowerSpotlightHeight}" Margin="{x:Static viewModels:HomeViewModel.TileMarginThickness}">
                     <Grid>
                         <Image Source="/MediaBrowser.Theater.DefaultTheme;component/Resources/Images/upcomingtv.jpg"
                                Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Top" />
@@ -76,7 +77,7 @@
             </WrapPanel>
         </Grid>
 
-        <controls:ExtendedItemsControl ItemsSource="{Binding MiniSpotlightItems}">
+        <controls:ExtendedItemsControl ItemsSource="{Binding MiniSpotlightItems}" Margin="0,0,0,5">
             <controls:ExtendedItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel Orientation="Vertical" />

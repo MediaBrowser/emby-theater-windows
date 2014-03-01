@@ -379,6 +379,10 @@ namespace MediaBrowser.Theater.Presentation.Controls
             var scaleY = CanVerticallyScroll ? (rectangle.Height * .6) : 0;
             rectangle.Inflate(scaleX, scaleY);
 
+            scaleX = Math.Min(rectangle.Width, ViewportWidth) - rectangle.Width;
+            scaleY = Math.Min(rectangle.Height, ViewportHeight) - rectangle.Height;
+            rectangle.Inflate(scaleX * 0.5, scaleY * 0.5);
+
             var rect = new Rect(HorizontalOffset, VerticalOffset, ViewportWidth, ViewportHeight);
 
             rectangle.X += rect.X;

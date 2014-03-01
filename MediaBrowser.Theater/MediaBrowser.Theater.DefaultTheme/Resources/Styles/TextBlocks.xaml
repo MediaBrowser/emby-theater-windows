@@ -57,4 +57,15 @@
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="TextOptions.TextFormattingMode" Value="Ideal"/>
     </Style>
+
+    <!--Default TextBlock style. -->
+    <Style TargetType="TextBlock" x:Key="Heading3TextBlockStyle">
+        <Setter Property="FontSize" Value="{StaticResource Heading3FontSize}"/>
+        <Setter Property="FontFamily" Value="{StaticResource Heading3FontFamily}"/>
+        <Setter Property="FontWeight" Value="{StaticResource Heading3FontWeight}"/>
+        <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}"/>
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="TextOptions.TextFormattingMode" Value="Ideal"/>
+    </Style>
 </ResourceDictionary>

@@ -62,7 +62,7 @@
                     <Border x:Name="Bd" SnapsToDevicePixels="true" RenderTransformOrigin="0.5,0.5" Padding="0">
 
                         <Grid x:Name="ContentGrid">
-                            <Border x:Name="BdDropShadow" Margin="-5" BorderBrush="{StaticResource ForegroundBrush}" BorderThickness="3" Background="Transparent" SnapsToDevicePixels="true" CornerRadius="0" Visibility="Hidden"/>
+                            <Border x:Name="BdDropShadow" Margin="-3" BorderBrush="{StaticResource ForegroundBrush}" BorderThickness="2" Background="Transparent" SnapsToDevicePixels="true" CornerRadius="0" Visibility="Hidden"/>
                             <ContentPresenter Margin="0" HorizontalAlignment="Stretch" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Stretch"/>
                         </Grid>
                     </Border>

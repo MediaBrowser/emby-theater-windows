@@ -5,10 +5,11 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:viewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.Core.ViewModels"
              xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
+             xmlns:viewModels1="clr-namespace:MediaBrowser.Theater.DefaultTheme.Home.ViewModels"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModels:ItemTileViewModel}"
              d:DesignHeight="300" d:DesignWidth="300">
-    <Button Command="{Binding GoToDetailsCommand}" Style="{StaticResource BaseItemButtonStyle}" Margin="5">
+    <Button Command="{Binding GoToDetailsCommand}" Style="{StaticResource BaseItemButtonStyle}" Margin="{x:Static viewModels1:HomeViewModel.TileMarginThickness}">
         <Grid Width="{Binding ImageWidth}" Height="{Binding ImageHeight}">
             <controls:ExtendedContentControl Content="{Binding Image}" />
 

@@ -69,12 +69,13 @@ namespace MediaBrowser.Theater.Presentation.Playback
         /// Skips the forward.
         /// </summary>
         /// <param name="player">The player.</param>
+        ///<param name="seconds"> Number of seconds to skip forward, defaults to 10.</param>
         /// <returns>Task.</returns>
-        public static void SkipForward(this IMediaPlayer player)
+        public static void SkipForward(this IMediaPlayer player, int seconds = 10)
         {
             var current = player.CurrentPositionTicks ?? 0;
 
-            current += TimeSpan.FromSeconds(10).Ticks;
+            current += TimeSpan.FromSeconds(seconds).Ticks;
 
             if (current < 0)
             {
@@ -88,12 +89,13 @@ namespace MediaBrowser.Theater.Presentation.Playback
         /// Skips the backward.
         /// </summary>
         /// <param name="player">The player.</param>
+        ///<param name="seconds"> Number of seconds to skip forward, defaults to 10.</param>
         /// <returns>Task.</returns>
-        public static void SkipBackward(this IMediaPlayer player)
+        public static void SkipBackward(this IMediaPlayer player, int seconds = 10)
         {
             var current = player.CurrentPositionTicks ?? 0;
 
-            current -= TimeSpan.FromSeconds(10).Ticks;
+            current -= TimeSpan.FromSeconds(seconds).Ticks;
 
             if (current < 0)
             {

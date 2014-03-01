@@ -116,6 +116,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Home\Views\TV\ResumeEpisodesView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Home\Views\TV\TvSpotlightView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -273,6 +277,7 @@
     <Compile Include="Home\ViewModels\HomeViewModel.cs" />
     <Compile Include="Home\ViewModels\IHomePageGenerator.cs" />
     <Compile Include="Home\ViewModels\TV\LatestEpisodesViewModel.cs" />
+    <Compile Include="Home\ViewModels\TV\ResumeEpisodesViewModel.cs" />
     <Compile Include="Home\ViewModels\TV\TvHomePageGenerator.cs" />
     <Compile Include="Home\ViewModels\TV\TvSpotlightViewModel.cs" />
     <Compile Include="Home\Views\HomeView.xaml.cs">
@@ -280,6 +285,9 @@
     </Compile>
     <Compile Include="Home\Views\TV\LatestEpisodesView.xaml.cs">
       <DependentUpon>LatestEpisodesView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Home\Views\TV\ResumeEpisodesView.xaml.cs">
+      <DependentUpon>ResumeEpisodesView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Home\Views\TV\TvSpotlightView.xaml.cs">
       <DependentUpon>TvSpotlightView.xaml</DependentUpon>

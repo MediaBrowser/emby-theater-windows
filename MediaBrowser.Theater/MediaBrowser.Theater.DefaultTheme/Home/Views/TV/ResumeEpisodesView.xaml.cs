@@ -13,21 +13,16 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace MediaBrowser.Theater.DefaultTheme.Home.Views
+namespace MediaBrowser.Theater.DefaultTheme.Home.Views.TV
 {
     /// <summary>
-    /// Interaction logic for HomeView.xaml
+    /// Interaction logic for ResumeEpisodesView.xaml
     /// </summary>
-    public partial class HomeView : UserControl
+    public partial class ResumeEpisodesView : UserControl
     {
-        public HomeView()
+        public ResumeEpisodesView()
         {
             InitializeComponent();
-
-            Loaded += (s, e) => {
-                MoveFocus(new TraversalRequest(FocusNavigationDirection.First));
-                MoveFocus(new TraversalRequest(FocusNavigationDirection.Down));
-            };
         }
     }
 }

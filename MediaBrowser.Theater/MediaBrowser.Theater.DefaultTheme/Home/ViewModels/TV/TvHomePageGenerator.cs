@@ -40,6 +40,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
 
             yield return new TvSpotlightViewModel(tvView, _imageManager, _navigator, _apiClient, _serverEvents, /*_playbackManager,*/ _sessionManager, _logManager);
             yield return new LatestEpisodesViewModel(tvView, _apiClient, _imageManager, _serverEvents, _navigator);
+            yield return new ResumeEpisodesViewModel(tvView, _apiClient, _imageManager, _serverEvents, _navigator);
             yield return new TvSpotlightViewModel(tvView, _imageManager, _navigator, _apiClient, _serverEvents, /*_playbackManager,*/ _sessionManager, _logManager);
             yield return new TvSpotlightViewModel(tvView, _imageManager, _navigator, _apiClient, _serverEvents, /*_playbackManager,*/ _sessionManager, _logManager);
             yield return new TvSpotlightViewModel(tvView, _imageManager, _navigator, _apiClient, _serverEvents, /*_playbackManager,*/ _sessionManager, _logManager);

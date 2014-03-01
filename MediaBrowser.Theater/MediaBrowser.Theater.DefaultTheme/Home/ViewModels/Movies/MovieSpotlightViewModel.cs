@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -11,15 +11,14 @@ using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Api.Navigation;
-using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
 using MediaBrowser.Theater.Presentation.ViewModels;
 
-namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
+namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
 {
-    public class TvSpotlightViewModel
+    public class MovieSpotlightViewModel
         : BaseViewModel, IPanoramaPage
     {
         private readonly IApiClient _apiClient;
@@ -31,7 +30,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
         private readonly ISessionManager _sessionManager;
         private CancellationTokenSource _mainViewCancellationTokenSource;
 
-        public TvSpotlightViewModel(Task<TvView> tvViewTask, IImageManager imageManager, INavigator navigator, IApiClient apiClient, IServerEvents serverEvents,
+        public MovieSpotlightViewModel(Task<MoviesView> moviesViewTask, IImageManager imageManager, INavigator navigator, IApiClient apiClient, IServerEvents serverEvents,
                                     /*IPlaybackManager playbackManager,*/ ISessionManager sessionManager, ILogManager logManager)
         {
             _imageManager = imageManager;
@@ -40,11 +39,11 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
             _serverEvents = serverEvents;
             //_playbackManager = playbackManager;
             _sessionManager = sessionManager;
-            _logger = logManager.GetLogger("TV Spotlight");
+            _logger = logManager.GetLogger("Movies Spotlight");
             SpotlightHeight = HomeViewModel.TileHeight*2 + HomeViewModel.TileMargin*2;
             SpotlightWidth = 16*(SpotlightHeight/9) + 100;
 
-            LowerSpotlightWidth = SpotlightWidth/3 - HomeViewModel.TileMargin*1.5;
+            LowerSpotlightWidth = SpotlightWidth/2 - HomeViewModel.TileMargin;
             LowerSpotlightHeight = HomeViewModel.TileHeight;
 
             SpotlightViewModel = new ItemSpotlightViewModel(imageManager, apiClient) {
@@ -52,7 +51,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
                 ItemSelectedAction = i => navigator.Navigate(Go.To.Item(i))
             };
 
-            AllShowsImagesViewModel = new ImageSlideshowViewModel(imageManager, Enumerable.Empty<string>()) {
+            AllMoviesImagesViewModel = new ImageSlideshowViewModel(imageManager, Enumerable.Empty<string>()) {
                 ImageStretch = Stretch.UniformToFill
             };
 
@@ -62,7 +61,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
                 CreateMiniSpotlightItem(),
             };
 
-            LoadViewModels(tvViewTask);
+            LoadViewModels(moviesViewTask);
         }
 
         public double SpotlightWidth { get; private set; }
@@ -73,14 +72,13 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
 
         public ItemSpotlightViewModel SpotlightViewModel { get; private set; }
         public RangeObservableCollection<ItemTileViewModel> MiniSpotlightItems { get; private set; }
-        public ImageSlideshowViewModel AllShowsImagesViewModel { get; private set; }
-        public ICommand AllShowsCommand { get; private set; }
-        public ICommand GenresCommand { get; private set; }
-        public ICommand UpcommingCommand { get; private set; }
+        public ImageSlideshowViewModel AllMoviesImagesViewModel { get; private set; }
+        public ICommand AllMoviesCommand { get; private set; }
+        public ICommand TrailersCommand { get; private set; }
 
         public string DisplayName
         {
-            get { return "TV Shows"; }
+            get { return "Movies"; }
         }
 
         public bool IsTitlePage
@@ -101,35 +99,17 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
             }
         }
 
-        public static string GetDisplayName(BaseItemDto item)
-        {
-            var name = item.Name;
-
-            if (item.IsType("Episode"))
-            {
-                name = item.SeriesName;
-
-                if (item.IndexNumber.HasValue && item.ParentIndexNumber.HasValue)
-                {
-                    name = name + " " + string.Format("S{0}, E{1}", item.ParentIndexNumber.Value, item.IndexNumber.Value);
-                }
-
-            }
-
-            return name;
-        }
-
-        private async void LoadViewModels(Task<TvView> tvViewTask)
+        private async void LoadViewModels(Task<MoviesView> moviesViewTask)
         {
             CancellationTokenSource cancellationSource = _mainViewCancellationTokenSource = new CancellationTokenSource();
 
             try {
-                TvView view = await tvViewTask;
+                MoviesView view = await moviesViewTask;
                 
                 cancellationSource.Token.ThrowIfCancellationRequested();
 
                 LoadSpotlightViewModel(view);
-                LoadAllShowsViewModel(view);
+                LoadAllMoviesViewModel(view);
                 LoadMiniSpotlightsViewModel(view);
             } catch (Exception ex) {
                 _logger.ErrorException("Error getting tv view", ex);
@@ -144,12 +124,11 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
                 ImageWidth = HomeViewModel.TileWidth + (HomeViewModel.TileMargin/4) - 1,
                 ImageHeight = HomeViewModel.TileHeight,
                 PreferredImageTypes = new[] { ImageType.Backdrop, ImageType.Thumb },
-                DisplayNameGenerator = GetDisplayName,
                 DownloadImagesAtExactSize = true
             };
         }
 
-        private void LoadMiniSpotlightsViewModel(TvView view)
+        private void LoadMiniSpotlightsViewModel(MoviesView view)
         {
             BaseItemDto[] items = view.MiniSpotlights.Take(3).ToArray();
 
@@ -170,22 +149,22 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
             }
         }
 
-        private void LoadSpotlightViewModel(TvView view)
+        private void LoadSpotlightViewModel(MoviesView view)
         {
             SpotlightViewModel.Items = view.SpotlightItems;
         }
 
-        private void LoadAllShowsViewModel(TvView view)
+        private void LoadAllMoviesViewModel(MoviesView view)
         {
-            IEnumerable<string> images = view.ShowsItems.Take(1).Select(i => _apiClient.GetImageUrl(i.Id, new ImageOptions {
+            IEnumerable<string> images = view.MovieItems.Take(1).Select(i => _apiClient.GetImageUrl(i.Id, new ImageOptions {
                 ImageType = i.ImageType,
                 Tag = i.ImageTag,
                 Height = Convert.ToInt32(HomeViewModel.TileWidth*2),
                 EnableImageEnhancers = false
             }));
 
-            AllShowsImagesViewModel.Images.AddRange(images);
-            AllShowsImagesViewModel.StartRotating();
+            AllMoviesImagesViewModel.Images.AddRange(images);
+            AllMoviesImagesViewModel.StartRotating();
         }
     }
 }

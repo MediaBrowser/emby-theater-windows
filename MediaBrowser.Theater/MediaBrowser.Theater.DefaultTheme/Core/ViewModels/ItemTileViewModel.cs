@@ -28,6 +28,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
         private bool _downloadPrimaryImageAtExactSize;
         private bool _enableServerImageEnhancers;
         private ImageType[] _preferredImageTypes;
+        private bool _showDisplayName;
 
         public ItemTileViewModel(IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents,
                                  INavigator navigator, /*IPlaybackManager playbackManager,*/ BaseItemDto item)
@@ -37,6 +38,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
             _navigator = navigator;
             //_playbackManager = playbackManager;
             _item = item;
+            _showDisplayName = true;
 
             _image = new ImageViewerViewModel(imageManager, Enumerable.Empty<ImageViewerImage>());
             
@@ -68,6 +70,26 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
         public string DisplayName
         {
             get { return _item == null ? string.Empty : DisplayNameGenerator(_item); }
+        }
+
+        public bool ShowCaptionBar
+        {
+            get { return ShowDisplayName || HasCreator || IsInProgress; }
+        }
+
+        public bool ShowDisplayName
+        {
+            get { return _showDisplayName; }
+            set
+            {
+                if (Equals(_showDisplayName, value)) {
+                    return;
+                }
+
+                _showDisplayName = value;
+                OnPropertyChanged();
+                OnPropertyChanged("ShowCaptionBar");
+            }
         }
 
         public bool IsFolder 
@@ -238,6 +260,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
             OnPropertyChanged("PlayedPercent");
             OnPropertyChanged("IsInProgress");
             OnPropertyChanged("IsPlayed");
+            OnPropertyChanged("ShowCaptionBar");
         }
 
         private void RefreshItemFields()
@@ -249,6 +272,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
             OnPropertyChanged("IsPlayed");
             OnPropertyChanged("IsInProgress");
             OnPropertyChanged("PlayedPercent");
+            OnPropertyChanged("ShowCaptionBar");
         }
 
         private void InvalidateImage()

@@ -13,9 +13,10 @@
             <controls:ExtendedContentControl Content="{Binding Image}" />
 
             <Border HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
+                    Visibility="{Binding ShowCaptionBar, Converter={StaticResource BooleanToVisibility}}"
                     Background="{StaticResource TextBackgroundBrush}" Margin="0 0 0 -1">
                 <StackPanel Orientation="Vertical" Margin="15 5 20 10">
-                    <TextBlock Text="{Binding DisplayName}" Style="{StaticResource TextBlockStyle}" />
+                    <TextBlock Text="{Binding DisplayName}" Style="{StaticResource TextBlockStyle}" Visibility="{Binding ShowDisplayName, Converter={StaticResource BooleanToVisibility}}" />
                     <TextBlock Text="{Binding Creator}" Style="{StaticResource TextBlockStyle}" Visibility="{Binding HasCreator, Converter={StaticResource BooleanToVisibility}}" Opacity="0.8"/>
 
                     <ProgressBar Minimum="0" Maximum="100" Value="{Binding PlayedPercent, Mode=OneWay}" Height="12">

@@ -102,7 +102,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home
 
         public static Task<MoviesView> GetMovieView(this IApiClient apiClient, string userId, CancellationToken cancellationToken)
         {
-            string url = apiClient.GetApiUrl("MBT/DefaultTheme/Movies?familyrating=pg&userId=" + userId + "&ComedyGenre=" + ComedyGenre + "&RomanceGenre=" + RomanceGenre + "&FamilyGenre=" + FamilyGenre + "&LatestMoviesLimit=16&LatestTrailersLimit=6");
+            string url = apiClient.GetApiUrl("MBT/DefaultTheme/Movies?familyrating=pg&userId=" + userId + "&ComedyGenre=" + ComedyGenre + "&RomanceGenre=" + RomanceGenre + "&FamilyGenre=" + FamilyGenre + "&LatestMoviesLimit=8&LatestTrailersLimit=6");
 
             return apiClient.GetAsync<MoviesView>(url, cancellationToken);
         }

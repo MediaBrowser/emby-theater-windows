@@ -1,0 +1,25 @@
+﻿<UserControl x:Class="MediaBrowser.Theater.DefaultTheme.Home.Views.Movies.LatestMoviesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:lex="http://wpflocalizeextension.codeplex.com"
+             xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
+             xmlns:movies="clr-namespace:MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies"
+             lex:LocalizeDictionary.DesignCulture="en"
+             lex:ResxLocalizationProvider.DefaultAssembly="MediaBrowser.Theater.DefaultTheme"
+             lex:ResxLocalizationProvider.DefaultDictionary="Strings"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance movies:LatestMoviesViewModel}"
+             Focusable="False"
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid>
+        <controls:ExtendedItemsControl ItemsSource="{Binding Movies}">
+            <controls:ExtendedItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel Orientation="Vertical" />
+                </ItemsPanelTemplate>
+            </controls:ExtendedItemsControl.ItemsPanel>
+        </controls:ExtendedItemsControl>
+    </Grid>
+</UserControl>

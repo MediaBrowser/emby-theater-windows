@@ -42,6 +42,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
             var movieView = _apiClient.GetMovieView(_sessionManager.CurrentUser.Id, cancellationSource.Token);
 
             yield return new MovieSpotlightViewModel(movieView, _imageManager, _navigator, _apiClient, _serverEvents, _sessionManager, _logManager);
+            yield return new LatestMoviesViewModel(movieView, _apiClient, _imageManager, _serverEvents, _navigator);
         }
     }
 }

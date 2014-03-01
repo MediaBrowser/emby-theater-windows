@@ -74,6 +74,10 @@
         <movies1:MovieSpotlightView/>
     </DataTemplate>
     
+    <DataTemplate DataType="{x:Type movies:LatestMoviesViewModel}">
+        <movies1:LatestMoviesView/>
+    </DataTemplate>
+    
     <DataTemplate DataType="{x:Type viewModels:ImageViewerViewModel}">
         <views:ImageViewerView/>
     </DataTemplate>

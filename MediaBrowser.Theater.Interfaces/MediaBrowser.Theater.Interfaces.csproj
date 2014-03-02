@@ -78,6 +78,7 @@
     <Compile Include="Presentation\IHomePageInfo.cs" />
     <Compile Include="Presentation\IItemPage.cs" />
     <Compile Include="Presentation\ILoginPage.cs" />
+    <Compile Include="Presentation\ISearchPage.cs" />
     <Compile Include="Presentation\ISupportsBackdrops.cs" />
     <Compile Include="Presentation\ISupportsThemeMedia.cs" />
     <Compile Include="Presentation\IPresentationManager.cs" />

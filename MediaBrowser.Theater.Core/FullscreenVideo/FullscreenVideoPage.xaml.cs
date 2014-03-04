@@ -164,7 +164,7 @@ namespace MediaBrowser.Theater.Core.FullscreenVideo
 
                 };
 
-                _infoWindow.ShowModal(_presentation.Window);
+                _infoWindow.ShowModal(_presentation.Window, _userInputManager);
 
                 _infoWindow = null;
 

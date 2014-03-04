@@ -16,7 +16,7 @@ namespace MediaBrowser.Theater.Api.Navigation
             _appHost = appHost;
         }
 
-        public void Bind<T>(Func<INavigationPath, Task<INavigationContext>> handler)
+        public void Bind<T>(Func<T, Task<INavigationContext>> handler)
             where T : INavigationPath
         {
             var key = typeof (T);

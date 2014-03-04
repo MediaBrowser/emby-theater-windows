@@ -278,7 +278,7 @@ namespace MediaBrowser.Theater.Presentation.Playback
 
             if (options.Configuration.CloseOnStopButton && !CanCloseAutomaticallyOnStopButton)
             {
-                _userInput.KeyDown += KeyboardListener_KeyDown;
+                _userInput.GlobalKeyDown += KeyboardListener_KeyDown;
             }
 
             process.Exited += CurrentProcess_Exited;
@@ -339,7 +339,7 @@ namespace MediaBrowser.Theater.Presentation.Playback
         {
             _currentProcess = null;
 
-            _userInput.KeyDown -= KeyboardListener_KeyDown;
+            _userInput.GlobalKeyDown -= KeyboardListener_KeyDown;
 
             var process = (Process)sender;
 

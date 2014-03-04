@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using MediaBrowser.Theater.Api.Properties;
 using MediaBrowser.Theater.Api.UserInterface;
+using MediaBrowser.Theater.Presentation.Reflection;
 
 namespace MediaBrowser.Theater.Presentation.ViewModels
 {
@@ -58,6 +59,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
     /// <summary>
     ///     The base class for view models.
     /// </summary>
+    [TypeDescriptionProvider(typeof(HyperTypeDescriptionProvider))]
     public abstract class BaseViewModel
         : IHasActivityStatus, IHasCloseDelay, IViewModel
     {

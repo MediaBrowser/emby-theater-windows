@@ -15,6 +15,7 @@ using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
+using MediaBrowser.Theater.Presentation;
 using MediaBrowser.Theater.Presentation.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
@@ -80,7 +81,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
 
         public string DisplayName
         {
-            get { return "TV Shows"; }
+            get { return "MediaBrowser.Theater.DefaultTheme:Strings:Home_TvSpotlight_Title".Localize(); }
         }
 
         public bool IsTitlePage

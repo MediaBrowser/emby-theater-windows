@@ -7,6 +7,7 @@ using MediaBrowser.Model.Entities;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
+using MediaBrowser.Theater.Presentation;
 using MediaBrowser.Theater.Presentation.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
@@ -41,7 +42,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
 
         public string DisplayName
         {
-            get { return "Latest Episodes"; }
+            get { return "MediaBrowser.Theater.DefaultTheme:Strings:Home_LatestEpisodes_Title".Localize(); }
         }
 
         public bool IsTitlePage

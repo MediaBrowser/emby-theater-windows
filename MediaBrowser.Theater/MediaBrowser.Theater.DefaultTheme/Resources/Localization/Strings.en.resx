@@ -117,6 +117,24 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Home_LatestEpisodes_Title" xml:space="preserve">
+    <value>Latest Episodes</value>
+  </data>
+  <data name="Home_LatestMovies_Title" xml:space="preserve">
+    <value>Latest Movies</value>
+  </data>
+  <data name="Home_LatestTrailers_Title" xml:space="preserve">
+    <value>Latest Trailers</value>
+  </data>
+  <data name="Home_MovieSpotlight_Title" xml:space="preserve">
+    <value>Movies</value>
+  </data>
+  <data name="Home_ResumeEpisodes_Title" xml:space="preserve">
+    <value>Resume Episodes</value>
+  </data>
+  <data name="Home_TvSpotlight_Title" xml:space="preserve">
+    <value>TV Shows</value>
+  </data>
   <data name="Login_InvalidCredentialsError" xml:space="preserve">
     <value>Invalid username or password</value>
   </data>

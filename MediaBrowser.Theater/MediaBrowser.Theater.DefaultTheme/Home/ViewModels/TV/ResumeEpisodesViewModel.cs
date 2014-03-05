@@ -43,7 +43,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
 
         public string DisplayName
         {
-            get { return "Resume Episodes"; }
+            get { return "MediaBrowser.Theater.DefaultTheme:Strings:Home_ResumeEpisodes_Title"; }
         }
 
         public bool IsTitlePage

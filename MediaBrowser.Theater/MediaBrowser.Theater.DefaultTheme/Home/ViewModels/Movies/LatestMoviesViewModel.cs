@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
@@ -9,7 +7,7 @@ using MediaBrowser.Model.Entities;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
-using MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV;
+using MediaBrowser.Theater.Presentation;
 using MediaBrowser.Theater.Presentation.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
@@ -44,7 +42,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
 
         public string DisplayName
         {
-            get { return "Latest Movies"; }
+            get { return "MediaBrowser.Theater.DefaultTheme:Strings:Home_LatestMovies_Title".Localize(); }
         }
 
         public bool IsTitlePage

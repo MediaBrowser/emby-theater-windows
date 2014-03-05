@@ -12,7 +12,9 @@
                     xmlns:tv="clr-namespace:MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV"
                     xmlns:tv1="clr-namespace:MediaBrowser.Theater.DefaultTheme.Home.Views.TV"
                     xmlns:movies="clr-namespace:MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies"
-                    xmlns:movies1="clr-namespace:MediaBrowser.Theater.DefaultTheme.Home.Views.Movies">
+                    xmlns:movies1="clr-namespace:MediaBrowser.Theater.DefaultTheme.Home.Views.Movies"
+                    xmlns:viewModels3="clr-namespace:MediaBrowser.Theater.DefaultTheme.SideMenu.ViewModels"
+                    xmlns:views3="clr-namespace:MediaBrowser.Theater.DefaultTheme.SideMenu.Views">
     
     <DataTemplate DataType="{x:Type viewModels:RootViewModel}">
         <views:RootView/>
@@ -96,6 +98,14 @@
     
     <DataTemplate DataType="{x:Type viewModels:ItemTileViewModel}">
         <views:ItemTileView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels3:SideMenuViewModel}">
+        <views3:SideMenuView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels3:OpenSideMenuCommandViewModel}">
+        <views3:OpenSideMenuCommandView/>
     </DataTemplate>
     
 </ResourceDictionary>

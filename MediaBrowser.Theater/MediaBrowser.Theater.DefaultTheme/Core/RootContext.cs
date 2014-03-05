@@ -7,6 +7,8 @@ using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.DefaultTheme.Home;
 using MediaBrowser.Theater.DefaultTheme.Login;
+using MediaBrowser.Theater.DefaultTheme.SideMenu;
+using MediaBrowser.Theater.DefaultTheme.SideMenu.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.Core
 {
@@ -28,6 +30,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Core
             // create root navigation bindings
             Binder.Bind<LoginPath, LoginContext>();
             Binder.Bind<HomePath, HomeContext>();
+            Binder.Bind<SideMenuPath, SideMenuContext>();
         }
 
         public override Task Activate()

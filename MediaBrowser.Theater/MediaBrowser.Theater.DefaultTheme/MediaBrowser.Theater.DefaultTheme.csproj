@@ -172,6 +172,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Resources\Styles\Icons.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Resources\Styles\LightColors.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -221,6 +225,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Search\Views\SearchCommandIconView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SideMenu\Views\OpenSideMenuCommandView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SideMenu\Views\SideMenuView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -357,6 +369,16 @@
     <Compile Include="Search\ViewModels\SearchCommand.cs" />
     <Compile Include="Search\Views\SearchCommandIconView.xaml.cs">
       <DependentUpon>SearchCommandIconView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SideMenu\SideMenuContext.cs" />
+    <Compile Include="SideMenu\ViewModels\OpenSideMenuCommand.cs" />
+    <Compile Include="SideMenu\ViewModels\SideMenuPaths.cs" />
+    <Compile Include="SideMenu\ViewModels\SideMenuViewModel.cs" />
+    <Compile Include="SideMenu\Views\OpenSideMenuCommandView.xaml.cs">
+      <DependentUpon>OpenSideMenuCommandView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SideMenu\Views\SideMenuView.xaml.cs">
+      <DependentUpon>SideMenuView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Theme.cs" />
     <Compile Include="Core\ViewModels\HelloWorldViewModel.cs" />

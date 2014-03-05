@@ -14,6 +14,7 @@
                 <ResourceDictionary Source="Resources/Styles/Buttons.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/Checkbox.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/Controls.xaml"/>
+                <ResourceDictionary Source="Resources/Styles/Icons.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/ListBox.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/ListBoxItems.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/ListBoxItemsHighQuality.xaml"/>

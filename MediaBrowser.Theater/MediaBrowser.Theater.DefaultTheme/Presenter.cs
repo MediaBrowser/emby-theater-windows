@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using System.Windows;
 using MediaBrowser.Theater.Api.Events;
+using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Configuration;
 using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
@@ -20,8 +21,14 @@ namespace MediaBrowser.Theater.DefaultTheme
 
     public class WindowManager
     {
+        private INavigator _navigator;
         private MainWindow _mainWindow;
         private PopupWindow _currentPopup;
+
+        public WindowManager(INavigator navigator)
+        {
+            _navigator = navigator;
+        }
 
         public MainWindow MainWindow
         {
@@ -46,7 +53,7 @@ namespace MediaBrowser.Theater.DefaultTheme
 
         public async Task ClosePopup()
         {
-            if (_currentPopup != null && _currentPopup.IsActive) {
+            if (_currentPopup != null) {
                 var context = _currentPopup.DataContext as IViewModel;
                 if (context != null) {
                     await context.Close();
@@ -61,7 +68,7 @@ namespace MediaBrowser.Theater.DefaultTheme
         {
             await ClosePopup();
 
-            _currentPopup = new PopupWindow {
+            _currentPopup = new PopupWindow(_navigator) {
                 DataContext = contents
             };
 

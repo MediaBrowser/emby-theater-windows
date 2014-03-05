@@ -79,15 +79,27 @@ namespace MediaBrowser.Theater.Api.Navigation
 
         private async Task ExecuteNavigationAction(PathResolution resolution)
         {
-            var newFrames = await FindNavigationFrames(resolution).ConfigureAwait(false);
+            var newFrames = (await FindNavigationFrames(resolution).ConfigureAwait(false)).ToList();
 
-            foreach (var frame in newFrames.ToList()) {
+            if (newFrames.Count > 0) {
+                PushCurrentFrameOntoStack();
+            }
+
+            foreach (var frame in newFrames) {
                 // make frame the new active frame
                 frame.Parent = _activeFrame;
                 _activeFrame = frame;
 
                 // activate the context
                 await frame.Context.Activate().ConfigureAwait(false);
+            }
+        }
+
+        private void PushCurrentFrameOntoStack()
+        {
+            if (_activeFrame != null) {
+                _logicalBackStack.Push(_activeFrame);
+                _logicalForwardStack.Clear();
             }
         }
 

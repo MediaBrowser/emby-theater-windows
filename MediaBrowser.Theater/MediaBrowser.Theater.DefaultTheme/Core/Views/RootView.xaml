@@ -32,7 +32,7 @@
                     <VisualState x:Name="Background">
                         <Storyboard>
                             <DoubleAnimation Storyboard.TargetName="BlurEffect" Storyboard.TargetProperty="Radius"
-                                             To="10" FillBehavior="HoldEnd" Duration="0:0:0.2" DecelerationRatio="0.5" />
+                                             To="3" FillBehavior="HoldEnd" Duration="0:0:0.2" DecelerationRatio="0.5" />
                             <DoubleAnimation Storyboard.TargetName="FadeOverlay" Storyboard.TargetProperty="Opacity"
                                              To="0.8" FillBehavior="HoldEnd" Duration="0:0:0.2" DecelerationRatio="0.5" />
                             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="FadeOverlay"

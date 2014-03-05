@@ -1,0 +1,32 @@
+﻿<UserControl x:Class="MediaBrowser.Theater.DefaultTheme.SideMenu.Views.OpenSideMenuCommandView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d">
+    <Grid FlowDirection="LeftToRight" Width="67">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Column="0" Width="31" Height="36">
+            <Grid Background="#CFCFCF" Margin="4,4,0,4">
+            <Path Style="{StaticResource DefaultUserIcon}" Margin="2"/>
+            </Grid>
+        </Grid>
+
+        <Grid Grid.Column="1" Width="36" Height="36">
+            <Path x:Name="MenuIcon" Fill="{StaticResource ForegroundBrush}" Stretch="Uniform" Width="26" Height="26" Data="M25.379999,0L30.405999,0 30.405999,30.406 25.379999,30.406z M12.69,0L17.716,0 17.716,30.406 12.69,30.406z M0,0L5.0259995,0 5.0259995,30.406 0,30.406z" RenderTransformOrigin="0.5,0.5">
+                <Path.RenderTransform>
+                    <TransformGroup>
+                        <TransformGroup.Children>
+                            <RotateTransform Angle="90" />
+                            <ScaleTransform ScaleX="1" ScaleY="1" />
+                        </TransformGroup.Children>
+                    </TransformGroup>
+                </Path.RenderTransform>
+            </Path>
+        </Grid>
+    </Grid>
+</UserControl>

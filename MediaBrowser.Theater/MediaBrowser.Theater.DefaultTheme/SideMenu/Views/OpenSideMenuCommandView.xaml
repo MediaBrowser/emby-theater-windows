@@ -10,7 +10,7 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
-        <Grid Grid.Column="0" Width="31" Height="36">
+        <Grid Grid.Column="0" Height="36">
             <Grid Background="#CFCFCF" Margin="4,4,0,4">
             <Path Style="{StaticResource DefaultUserIcon}" Margin="2"/>
             </Grid>

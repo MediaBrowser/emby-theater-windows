@@ -11,7 +11,7 @@
              d:DataContext="{d:DesignInstance viewModels:GlobalCommandViewModel}"
              viewModels1:ViewModel.CloseDelay="0:0:0.2"
              Margin="10,0,0,0">
-    <Grid x:Name="Grid" Width="38" Height="38">
+    <Grid x:Name="Grid" MinWidth="38" Height="38">
         <Grid.RenderTransform>
             <TranslateTransform x:Name="PanelTransform"/>
         </Grid.RenderTransform>
@@ -42,6 +42,6 @@
         </VisualStateManager.VisualStateGroups>
 
         <Button Content="{Binding Icon}" Command="{Binding ExecuteCommand}" ToolTip="{Binding DisplayName}"
-                    Style="{StaticResource ImageButton}"/>
+                    Style="{StaticResource ImageButton}" Padding="2"/>
     </Grid>
 </UserControl>

@@ -7,14 +7,15 @@ using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.UserInput;
+using MediaBrowser.Theater.Presentation.Playback;
 using System;
 using System.Linq;
 using System.Windows;
-using System.Windows.Forms;
+using WindowsInput = System.Windows.Input;
 using System.Windows.Interop;
-using MediaBrowser.Theater.Presentation.Playback;
 
-namespace MediaBrowser.UI.Implementations
+
+namespace MediaBrowser.Theater.Implementations.Command
 {
     // received via WndProc
     public enum AppCommand
@@ -354,20 +355,20 @@ namespace MediaBrowser.UI.Implementations
         public Boolean ModAlt;
         public Boolean ModFn;
         public Boolean ModWindow;
-        public System.Windows.Input.Key Key;
+        public WindowsInput.Key Key;
         public AppCommand AppCommand;
 
         public Input()
         {
         }
 
-        public Input(System.Windows.Input.Key key)
+        public Input(WindowsInput.Key key)
         {
             this.Key = key;
             InputType = InputType.Key;
         }
 
-        public Input(System.Windows.Input.Key key, Boolean controlKeyDown, Boolean shiftKeyDown)
+        public Input(WindowsInput.Key key, Boolean controlKeyDown, Boolean shiftKeyDown)
         {
             this.Key = key;
             InputType = InputType.Key;
@@ -821,7 +822,7 @@ namespace MediaBrowser.UI.Implementations
       
         public void EnsureApplicationWindowHasFocus()
         {
-            IntPtr window = Interop.GetWindowHandle(App.Instance.ApplicationWindow);
+            IntPtr window = Interop.GetWindowHandle(_presenation.Window);
             IntPtr focused = Interop.GetForegroundWindow();
             if (window != focused)
             {
@@ -831,25 +832,25 @@ namespace MediaBrowser.UI.Implementations
 
         public  void FullScreen(Object sender, CommandEventArgs args)
         {
-            App.Instance.ApplicationWindow.WindowState = WindowState.Maximized;
+            _presenation.Window.WindowState = WindowState.Maximized;
             EnsureApplicationWindowHasFocus();
         }
 
         public void MinimizeScreen(Object sender, CommandEventArgs args)
         {
-            App.Instance.ApplicationWindow.WindowState = WindowState.Minimized;
+            _presenation.Window.WindowState = WindowState.Minimized;
             EnsureApplicationWindowHasFocus();
         }
 
         public void RestoreScreen(Object sender, CommandEventArgs args)
         {
-            App.Instance.ApplicationWindow.WindowState = WindowState.Normal;
+            _presenation.Window.WindowState = WindowState.Normal;
             EnsureApplicationWindowHasFocus();
         }
 
         public  void ToggleFullscreen(Object sender, CommandEventArgs args)
         {
-            if (App.Instance.ApplicationWindow.WindowState == WindowState.Maximized)
+            if (_presenation.Window.WindowState == WindowState.Maximized)
             {
                 RestoreScreen(sender, args);
             }
@@ -866,7 +867,7 @@ namespace MediaBrowser.UI.Implementations
         private readonly IUserInputManager _userInputManager;
         private readonly DefaultCommandActions _defaultCommandActions;
 
-        private System.Windows.Input.Key _lastKeyDown;
+        private WindowsInput.Key _lastKeyDown;
         private DateTime _lastKeyDownTime;
         private AppCommand _lastCmd;
         private DateTime _lastCmdTime;
@@ -925,7 +926,7 @@ namespace MediaBrowser.UI.Implementations
                    cmd == AppCommand.APPCOMMAND_MEDIA_PLAY_PAUSE;
         }
 
-        private bool IsMediaCommand(System.Windows.Input.Key key)
+        private bool IsMediaCommand(WindowsInput.Key key)
         {
             return key == Key.MediaNextTrack ||
                    key == Key.MediaPreviousTrack ||
@@ -950,7 +951,7 @@ namespace MediaBrowser.UI.Implementations
             }
         }
 
-        private bool MatchCommandWithWindowsKey(System.Windows.Input.Key key)
+        private bool MatchCommandWithWindowsKey(WindowsInput.Key key)
         {
             if ((_lastCmd == AppCommand.APPCOMMAND_MEDIA_NEXTTRACK && key == Key.MediaNextTrack) ||
                 (_lastCmd == AppCommand.APPCOMMAND_MEDIA_PREVIOUSTRACK && key == Key.MediaPreviousTrack) ||
@@ -973,7 +974,7 @@ namespace MediaBrowser.UI.Implementations
             return IsMediaCommand(cmd) && MatchCommandWithWindowsKey(cmd) ;
         }
 
-        private bool IsDuplicateMediaKeyEvent(System.Windows.Input.Key key)
+        private bool IsDuplicateMediaKeyEvent(WindowsInput.Key key)
         {
             return IsMediaCommand(key) && MatchCommandWithWindowsKey(key);
         }
@@ -983,7 +984,7 @@ namespace MediaBrowser.UI.Implementations
             AppCommand? appCommand = null;
 
             // dont use exception handling to exclude most frequent appCommand, its very slow
-            // use a aucik excludion test first that will catch most of teh cases
+            // use an excludion test first that will catch most of teh cases
             if (cmd >= (int) AppCommand.APPCOMMAND_BROWSER_BACKWARD  || cmd <= (int) AppCommand.APPCOMMAND_ASP_TOGGLE)
             {
                 try
@@ -1037,7 +1038,7 @@ namespace MediaBrowser.UI.Implementations
         /// <summary>
         /// Responds to key down in application
         /// </summary>
-        void input_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        void input_KeyDown(object sender, WindowsInput.KeyEventArgs e)
         {
             _logger.Debug("input_KeyDown {0} Ctrl({1}) Shift({2})", e.Key, IsControlKeyDown(), IsShiftKeyDown());
             if (IsDuplicateMediaKeyEvent(e.Key))
@@ -1056,14 +1057,12 @@ namespace MediaBrowser.UI.Implementations
 
         private bool IsShiftKeyDown()
         {
-            return Keyboard.IsKeyDown(System.Windows.Input.Key.LeftShift) ||
-                   Keyboard.IsKeyDown(System.Windows.Input.Key.RightShift);
+            return Keyboard.IsKeyDown(WindowsInput.Key.LeftShift) || Keyboard.IsKeyDown(WindowsInput.Key.RightShift);
         }
 
         private bool IsControlKeyDown()
         {
-            return Keyboard.IsKeyDown(System.Windows.Input.Key.LeftCtrl) ||
-                   Keyboard.IsKeyDown(System.Windows.Input.Key.RightCtrl);
+            return Keyboard.IsKeyDown(WindowsInput.Key.LeftCtrl) || Keyboard.IsKeyDown(WindowsInput.Key.RightCtrl);
         }
     }
 }

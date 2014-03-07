@@ -197,7 +197,6 @@
       <DependentUpon>HiddenForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Implementations\AppHiddenWIndow.cs" />
-    <Compile Include="Implementations\CommandManager.cs" />
     <Compile Include="Implementations\InternalPlayerPageBehavior.cs" />
     <Compile Include="Implementations\NavigationService.cs" />
     <Compile Include="Implementations\TheaterApplicationWindow.cs" />

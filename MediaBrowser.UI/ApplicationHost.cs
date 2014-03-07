@@ -15,6 +15,7 @@ using MediaBrowser.Model.Updates;
 using MediaBrowser.Plugins.DefaultTheme;
 using MediaBrowser.Theater.Core.Login;
 using MediaBrowser.Theater.DirectShow;
+using MediaBrowser.Theater.Implementations.Command;
 using MediaBrowser.Theater.Implementations.Configuration;
 using MediaBrowser.Theater.Implementations.Playback;
 using MediaBrowser.Theater.Implementations.Presentation;

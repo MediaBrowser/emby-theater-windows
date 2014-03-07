@@ -1,59 +1,57 @@
-﻿using System.Net.Mime;
+﻿using System.Collections.ObjectModel;
 using System.Threading;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
-using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
-using MediaBrowser.Theater.DefaultTheme.Search.ViewModels;
 using MediaBrowser.Theater.Presentation.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.SideMenu.ViewModels
 {
-    public class OpenSideMenuCommand
-        : IGlobalCommand
+    public class SideMenuUsersViewModel
+        : BaseViewModel
     {
-        private readonly ISessionManager _sessionManager;
-        private readonly IImageManager _imageManager;
         private readonly IApiClient _apiClient;
+        private readonly IImageManager _imageManager;
+        private readonly ISessionManager _sessionManager;
 
-        public OpenSideMenuCommand(INavigator navigator, ISessionManager sessionManager,IImageManager imageManager, IApiClient apiClient)
+        private BitmapImage _image;
+        private CancellationTokenSource _imageCancellationTokenSource;
+        private UserDto _user;
+
+        public SideMenuUsersViewModel(ISessionManager sessionManager, IImageManager imageManager, IApiClient apiClient)
         {
             _sessionManager = sessionManager;
             _imageManager = imageManager;
             _apiClient = apiClient;
-            ExecuteCommand = new RelayCommand(arg => navigator.Navigate(Go.To.SideMenu()));
+
+            sessionManager.UserLoggedOut += (s, e) => Image = null;
+            sessionManager.UserLoggedIn += (s, e) => {
+                _user = sessionManager.CurrentUser;
+                DownloadImage();
+            };
+
+            _user = sessionManager.CurrentUser;
+            DownloadImage();
+            
+            AdditionalUsers = new ObservableCollection<AdditionalUserViewModel>();
         }
 
-        public IViewModel IconViewModel 
+        public string Username
         {
-            get { return new OpenSideMenuCommandViewModel(_sessionManager, _imageManager, _apiClient); }
+            get { return _user == null ? null : _user.Name; }
         }
 
-        public string DisplayName
+        public ObservableCollection<AdditionalUserViewModel> AdditionalUsers { get; private set; }
+        public ICommand AddAdditionalUser { get; private set; }
+
+        public bool HasImage
         {
-            get { return "User"; }
+            get { return Image != null; }
         }
-
-        public ICommand ExecuteCommand { get; private set; }
-
-        public bool EvaluateVisibility(INavigationPath currentPath)
-        {
-            return true;
-        }
-    }
-
-    public class OpenSideMenuCommandViewModel : BaseViewModel
-    {
-        private UserDto _user;
-        private CancellationTokenSource _imageCancellationTokenSource;
-
-        private readonly IImageManager _imageManager;
-        private readonly IApiClient _apiClient;
-        private BitmapImage _image;
 
         public BitmapImage Image
         {
@@ -78,26 +76,6 @@ namespace MediaBrowser.Theater.DefaultTheme.SideMenu.ViewModels
             }
         }
 
-        public bool HasImage
-        {
-            get { return Image != null; }
-        }
-
-        public OpenSideMenuCommandViewModel(ISessionManager session, IImageManager imageManager, IApiClient apiClient)
-        {
-            _imageManager = imageManager;
-            _apiClient = apiClient;
-
-            session.UserLoggedOut += (s, e) => Image = null;
-            session.UserLoggedIn += (s, e) => {
-                _user = session.CurrentUser;
-                DownloadImage();
-            };
-
-            _user = session.CurrentUser;
-            DownloadImage();
-        }
-
         private async void DownloadImage()
         {
             if (_user == null || !_user.PrimaryImageTag.HasValue) {
@@ -115,5 +93,13 @@ namespace MediaBrowser.Theater.DefaultTheme.SideMenu.ViewModels
                 _imageCancellationTokenSource = null;
             }
         }
+    }
+
+    public class AdditionalUserViewModel
+        : BaseViewModel
+    {
+        public string Username { get; set; }
+        public BitmapImage Image { get; set; }
+        public ICommand RemoveFromSessionCommand { get; set; }
     }
 }

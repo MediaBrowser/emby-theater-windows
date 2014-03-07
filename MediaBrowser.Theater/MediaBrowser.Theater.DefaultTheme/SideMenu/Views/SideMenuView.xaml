@@ -2,9 +2,60 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             mc:Ignorable="d" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:viewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.SideMenu.ViewModels"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
+             xmlns:viewModels1="clr-namespace:MediaBrowser.Theater.Presentation.ViewModels;assembly=MediaBrowser.Theater.Presentation"
+             xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
+             mc:Ignorable="d"
+             viewModels1:ViewModel.CloseDelay="0:0:0.3"
+             d:DataContext="{d:DesignInstance viewModels:SideMenuViewModel}"
              d:DesignHeight="300" d:DesignWidth="1280">
-    <Grid Background="{StaticResource BackgroundBrush2}" MinWidth="300" HorizontalAlignment="Right">
+    <Grid x:Name="Sidebar" Background="{StaticResource BackgroundBrush2}" MinWidth="500" HorizontalAlignment="Right">
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+                <VisualState Name="Shown">
+                    <Storyboard>
+                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Sidebar"
+                                                       Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)">
+                            <EasingDoubleKeyFrame Value="0" KeyTime="00:00:0.3">
+                                <EasingDoubleKeyFrame.EasingFunction>
+                                    <CubicEase EasingMode="EaseOut" />
+                                </EasingDoubleKeyFrame.EasingFunction>
+                            </EasingDoubleKeyFrame>
+                        </DoubleAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+                
+                <VisualState Name="Hidden">
+                    <Storyboard>
+                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Sidebar"
+                                                       Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)">
+                            <EasingDoubleKeyFrame Value="500" KeyTime="00:00:0.3">
+                                <EasingDoubleKeyFrame.EasingFunction>
+                                    <CubicEase EasingMode="EaseOut" />
+                                </EasingDoubleKeyFrame.EasingFunction>
+                            </EasingDoubleKeyFrame>
+                        </DoubleAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
+        <i:Interaction.Behaviors>
+            <ei:DataStateBehavior
+                        Binding="{Binding IsActive}" Value="True"
+                        TrueState="Shown"
+                        FalseState="Hidden" />
+        </i:Interaction.Behaviors>
+        
+        <Grid.RenderTransform>
+            <TranslateTransform X="500"/>
+        </Grid.RenderTransform>
+        
+        <StackPanel Orientation="Vertical">
+            <controls:ExtendedContentControl Content="{Binding Users}" Margin="10"/>
+        </StackPanel>
     </Grid>
 </UserControl>

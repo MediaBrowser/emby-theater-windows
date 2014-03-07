@@ -153,6 +153,7 @@
     <Compile Include="Converters\StringNotEmptyToVisbilityConverter.cs" />
     <Compile Include="Converters\UppercaseConverter.cs" />
     <Compile Include="LocalizationExtensions.cs" />
+    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

@@ -107,5 +107,9 @@
     <DataTemplate DataType="{x:Type viewModels3:OpenSideMenuCommandViewModel}">
         <views3:OpenSideMenuCommandView/>
     </DataTemplate>
+
+    <DataTemplate DataType="{x:Type viewModels3:SideMenuUsersViewModel}">
+        <views3:SideMenuUsersView/>
+    </DataTemplate>
     
 </ResourceDictionary>

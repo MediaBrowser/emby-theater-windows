@@ -18,6 +18,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Login
         private readonly IPresenter _presenter;
         private readonly ISessionManager _sessionManager;
 
+        private LoginViewModel _loginViewModel;
+
         public LoginContext(IApplicationHost appHost, IPresenter presenter, ISessionManager sessionManager,
                             ILogManager logManager, IImageManager imageManager, IApiClient apiClient) : base(appHost)
         {
@@ -30,8 +32,11 @@ namespace MediaBrowser.Theater.DefaultTheme.Login
 
         public override async Task Activate()
         {
-            var loginViewModel = new LoginViewModel(_sessionManager, _logManager, _imageManager, _apiClient);
-            await _presenter.ShowPage(loginViewModel);
+            if (_loginViewModel == null || !_loginViewModel.IsActive) {
+                _loginViewModel = new LoginViewModel(_sessionManager, _logManager, _imageManager, _apiClient);
+            }
+
+            await _presenter.ShowPage(_loginViewModel);
         }
     }
 }

@@ -54,7 +54,7 @@
         <Border x:Name="EmptyBackground" Background="{StaticResource ForegroundBrush}" Opacity="0.05"
                         BorderThickness="0" />
 
-        <controls:ExtendedContentControl x:Name="Image" Content="{Binding CurrentImage}">
+        <controls:ExtendedContentControl x:Name="Image" Content="{Binding CurrentImage}" Opacity="0">
             <controls:ExtendedContentControl.TransitionAnimation>
                 <DoubleAnimation Duration="0:0:1.75">
                     <DoubleAnimation.EasingFunction>

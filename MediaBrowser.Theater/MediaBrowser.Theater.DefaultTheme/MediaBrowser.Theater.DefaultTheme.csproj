@@ -232,6 +232,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="SideMenu\Views\SideMenuUsersView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="SideMenu\Views\SideMenuView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -373,9 +377,13 @@
     <Compile Include="SideMenu\SideMenuContext.cs" />
     <Compile Include="SideMenu\ViewModels\OpenSideMenuCommand.cs" />
     <Compile Include="SideMenu\ViewModels\SideMenuPaths.cs" />
+    <Compile Include="SideMenu\ViewModels\SideMenuUsersViewModel.cs" />
     <Compile Include="SideMenu\ViewModels\SideMenuViewModel.cs" />
     <Compile Include="SideMenu\Views\OpenSideMenuCommandView.xaml.cs">
       <DependentUpon>OpenSideMenuCommandView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SideMenu\Views\SideMenuUsersView.xaml.cs">
+      <DependentUpon>SideMenuUsersView.xaml</DependentUpon>
     </Compile>
     <Compile Include="SideMenu\Views\SideMenuView.xaml.cs">
       <DependentUpon>SideMenuView.xaml</DependentUpon>

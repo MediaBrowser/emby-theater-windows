@@ -13,6 +13,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Home
         private readonly ITheaterApplicationHost _appHost;
         private readonly IPresenter _presenter;
 
+        private HomeViewModel _viewModel;
+
         public HomeContext(ITheaterApplicationHost appHost, IPresenter presenter) : base(appHost)
         {
             _appHost = appHost;
@@ -21,8 +23,11 @@ namespace MediaBrowser.Theater.DefaultTheme.Home
 
         public override async Task Activate()
         {
-            var viewModel = new HomeViewModel(_appHost);
-            await _presenter.ShowPage(viewModel);
+            if (_viewModel == null || !_viewModel.IsActive) {
+                _viewModel = new HomeViewModel(_appHost);
+            }
+
+            await _presenter.ShowPage(_viewModel);        
         }
     }
 }

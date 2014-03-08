@@ -187,6 +187,8 @@
     </Compile>
     <Compile Include="ApplicationHost.cs" />
     <Compile Include="EntryPoints\BackdropsEntryPoint.cs" />
+    <Compile Include="EntryPoints\CommandActions\CommandActionMap.cs" />
+    <Compile Include="EntryPoints\CommandActions\CommandActionsEntryPoint.cs" />
     <Compile Include="EntryPoints\ScreensaverEntryPoint.cs" />
     <Compile Include="EntryPoints\ThemeSongEntryPoint.cs" />
     <Compile Include="EntryPoints\WebSocketEntryPoint.cs" />

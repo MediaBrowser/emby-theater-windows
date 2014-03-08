@@ -1,113 +1,21 @@
-﻿using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 using MediaBrowser.Model.Logging;
-using MediaBrowser.Theater.Interfaces.Command;
+using MediaBrowser.Theater.Implementations.CommandActions;
+using MediaBrowser.Theater.Interfaces.Commands;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.UserInput;
-using MediaBrowser.Theater.Presentation.Playback; // TODO - we should not need this - commands shold be implement in presentation
 using System;
-using System.Linq;
-using System.Windows;
 using WindowsInput = System.Windows.Input;
-using System.Windows.Interop;
 
-namespace MediaBrowser.Theater.Implementations.Command
+namespace MediaBrowser.Theater.Implementations.Commands
 {
-    // received via WndProc
-    public enum AppCommand
-    {
-        APPCOMMAND_BROWSER_BACKWARD = 1,
-        APPCOMMAND_BROWSER_FORWARD = 2,
-        APPCOMMAND_BROWSER_REFRESH = 3,
-        APPCOMMAND_BROWSER_STOP = 4,
-        APPCOMMAND_BROWSER_SEARCH = 5,
-        APPCOMMAND_BROWSER_FAVORITES = 6,
-        APPCOMMAND_BROWSER_HOME = 7,
-        APPCOMMAND_VOLUME_MUTE = 8,
-        APPCOMMAND_VOLUME_DOWN = 9,
-        APPCOMMAND_VOLUME_UP = 10,
-        APPCOMMAND_MEDIA_NEXTTRACK = 11,
-        APPCOMMAND_MEDIA_PREVIOUSTRACK = 12,
-        APPCOMMAND_MEDIA_STOP = 13,
-        APPCOMMAND_MEDIA_PLAY_PAUSE = 14,
-        APPCOMMAND_LAUNCH_MAIL = 15,
-        APPCOMMAND_LAUNCH_MEDIA_SELECT = 16,
-        APPCOMMAND_LAUNCH_APP1 = 17,
-        APPCOMMAND_LAUNCH_APP2 = 18,
-        APPCOMMAND_BASS_DOWN = 19,
-        APPCOMMAND_BASS_BOOST = 20,
-        APPCOMMAND_BASS_UP = 21,
-        APPCOMMAND_TREBLE_DOWN = 22,
-        APPCOMMAND_TREBLE_UP = 23,
-        APPCOMMAND_MICROPHONE_VOLUME_MUTE = 24,
-        APPCOMMAND_MICROPHONE_VOLUME_DOWN = 25,
-        APPCOMMAND_MICROPHONE_VOLUME_UP = 26,
-        APPCOMMAND_HELP = 27,
-        APPCOMMAND_FIND = 28,
-        APPCOMMAND_NEW = 29,
-        APPCOMMAND_OPEN = 30,
-        APPCOMMAND_CLOSE = 31,
-        APPCOMMAND_SAVE = 32,
-        APPCOMMAND_PRINT = 33,
-        APPCOMMAND_UNDO = 34,
-        APPCOMMAND_REDO = 35,
-        APPCOMMAND_COPY = 36,
-        APPCOMMAND_CUT = 37,
-        APPCOMMAND_PASTE = 38,
-        APPCOMMAND_REPLY_TO_MAIL = 39,
-        APPCOMMAND_FORWARD_MAIL = 40,
-        APPCOMMAND_SEND_MAIL = 41,
-        APPCOMMAND_SPELL_CHECK = 42,
-        APPCOMMAND_DICTATE_OR_COMMAND_CONTROL_TOGGLE = 43,
-        APPCOMMAND_MIC_ON_OFF_TOGGLE = 44,
-        APPCOMMAND_CORRECTION_LIST = 45,
-        APPCOMMAND_MEDIA_PLAY = 46,
-        APPCOMMAND_MEDIA_PLAY_2 = 4142,
-        APPCOMMAND_MEDIA_PAUSE = 47,
-        APPCOMMAND_MEDIA_PAUSE_2 = 4143,
-        APPCOMMAND_MEDIA_RECORD = 48, 
-        APPCOMMAND_MEDIA_RECORD_2 = 4144,
-        APPCOMMAND_MEDIA_FAST_FORWARD = 49,
-        APPCOMMAND_MEDIA_FAST_FORWARD_2 = 49,
-        APPCOMMAND_MEDIA_REWIND = 50,
-        APPCOMMAND_MEDIA_REWIND_2 = 4146,
-        APPCOMMAND_MEDIA_CHANNEL_UP = 51,
-        APPCOMMAND_MEDIA_CHANNEL_DOWN = 52,
-        APPCOMMAND_CUSTOM = 200,
-        // Future Commands:
-        APPCOMMAND_OPENRECORDED = (APPCOMMAND_CUSTOM + 1),
-        APPCOMMAND_LIVETV = (APPCOMMAND_CUSTOM + 2),
-        APPCOMMAND_MENU = (APPCOMMAND_CUSTOM + 3),
-        APPCOMMAND_GUIDEMENU = (APPCOMMAND_CUSTOM + 4),
-        APPCOMMAND_CHANNELS = (APPCOMMAND_CUSTOM + 5),
-        APPCOMMAND_INFO = (APPCOMMAND_CUSTOM + 6),
-        APPCOMMAND_PROCAMP = (APPCOMMAND_CUSTOM + 7),
-        APPCOMMAND_TIMESHIFT = (APPCOMMAND_CUSTOM + 8),
-        APPCOMMAND_CC = (APPCOMMAND_CUSTOM + 9),
-        APPCOMMAND_EPG = (APPCOMMAND_CUSTOM + 10),
-        APPCOMMAND_CHANNEL_LAST = (APPCOMMAND_CUSTOM + 11),
-        APPCOMMAND_ASP_STRETCH = (APPCOMMAND_CUSTOM + 20),
-        APPCOMMAND_ASP_4X3 = (APPCOMMAND_CUSTOM + 21),
-        APPCOMMAND_ASP_16X9 = (APPCOMMAND_CUSTOM + 22),
-        APPCOMMAND_ASP_AUTO = (APPCOMMAND_CUSTOM + 23),
-        APPCOMMAND_ASP_TOGGLE = (APPCOMMAND_CUSTOM + 24)
-    } 
-
-   
-   
-
-
-
- 
    
     public class CommandManager : ICommandManager
     {
         private readonly ILogger _logger;
         private readonly IUserInputManager _userInputManager;
-        private readonly GlobalCommandActionMap _globalCommandActionMap;
         private readonly InputCommandMaps _inputCommandMaps;
 
         private WindowsInput.Key _lastKeyDown;
@@ -121,7 +29,6 @@ namespace MediaBrowser.Theater.Implementations.Command
         {
             _userInputManager = userInputManager;
             _inputCommandMaps = new InputCommandMaps();
-            _globalCommandActionMap = new GlobalCommandActionMap(presentationManager, playbackManager, navigationService, logManager);
 
             _userInputManager.KeyDown += input_KeyDown;
             _userInputManager.AppCommand += input_AppCommand;
@@ -129,38 +36,48 @@ namespace MediaBrowser.Theater.Implementations.Command
             _logger = logManager.GetLogger(GetType().Name);
         }
 
-       
-     
+        private event CommandEventHandler _commandReceived;
+        public event CommandEventHandler CommandReceived
+        {
+            add
+            {
+                _commandReceived += value;
+            }
+            remove
+            {
+                _commandReceived -= value;
+            }
+        }
 
-// We need to handle 2 case of multiple key sequences for a single commmand
-//
-// its made a little more complex depending on wether the keydown event comes from a global hook or a window hook. The two
-// hooks use different types for there Key code enums.
-// 
-// For now we just processing using a multiple methods and boolean constructs. We will move it to  more generic
-// table drive logic when we refactor the key code mangtement to use a more sophisiphated key mapping architecture
-//
-//  1. some remotes produce a APPCOMMAND followed by a System.Windows.Forms.Keys Keycode or System.Windows.Input.Key Key (depending on hook method)
-//        
-//  Media Key types equivenlance table for media keys
-//  APPCOMMAND code				            System.Windows.Forms.Keys	    System.Windows.Input.Key
-//  APPCOMMAND_MEDIA_PLAY_PAUSE (14)    	MediaPlayPause (179)		    MediaPlayPause (135)
-//  APPCOMMAND_MEDIA_STOP (13) 	    	    MediaStop (178)			        MediaStop = (134)
-//  APPCOMMAND_MEDIA_NEXTTRACK (11)     	MediaNextTrack (176)		    MediaNextTrack = (132)
-//  APPCOMMAND_MEDIA_PREVIOUSTRACK (12)     MediaPreviousTrack(177)		    MediaPreviousTrack = (133)
-//
-//  2. some remotes produce 2 Keycodes in sequence for 1 the one event, notably for left and right arrow
-//  Right  &  LControlKey, LShiftKey, F   for fwd (>>)
-//  Left  & LControlKey, LSHiftKey, B    for backward (<<) 
-//
-//  We dont currently handle Left & Right so we can ignore this condition for now
-//
-// A number of remote controls send a KeyDown event and then a command event via WndProc for the following
-// media keys, PlayPause, Stop, Next, Previous, Fwd, Backwards. THis effect of this is to replicate the command
-// for these key. This double the effect of Next, Previous, Fwd, Backwards and starts & stops or stops and then starts
-// for PlayPause.
-// We therefore remember that type and time of the last media keyDown event and when we get a Media Key APPCOMMAND
-// get check if the correcponsing KetDown just occured and if it did ignore the APPCommand event
+        // We need to handle 2 case of multiple key sequences for a single commmand
+        //
+        // its made a little more complex depending on wether the keydown event comes from a global hook or a window hook. The two
+        // hooks use different types for there Key code enums.
+        // 
+        // For now we just processing using a multiple methods and boolean constructs. We will move it to  more generic
+        // table drive logic when we refactor the key code mangtement to use a more sophisiphated key mapping architecture
+        //
+        //  1. some remotes produce a APPCOMMAND followed by a System.Windows.Forms.Keys Keycode or System.Windows.Input.Key Key (depending on hook method)
+        //        
+        //  Media Key types equivenlance table for media keys
+        //  APPCOMMAND code				            System.Windows.Forms.Keys	    System.Windows.Input.Key
+        //  APPCOMMAND_MEDIA_PLAY_PAUSE (14)    	MediaPlayPause (179)		    MediaPlayPause (135)
+        //  APPCOMMAND_MEDIA_STOP (13) 	    	    MediaStop (178)			        MediaStop = (134)
+        //  APPCOMMAND_MEDIA_NEXTTRACK (11)     	MediaNextTrack (176)		    MediaNextTrack = (132)
+        //  APPCOMMAND_MEDIA_PREVIOUSTRACK (12)     MediaPreviousTrack(177)		    MediaPreviousTrack = (133)
+        //
+        //  2. some remotes produce 2 Keycodes in sequence for 1 the one event, notably for left and right arrow
+        //  Right  &  LControlKey, LShiftKey, F   for fwd (>>)
+        //  Left  & LControlKey, LSHiftKey, B    for backward (<<) 
+        //
+        //  We dont currently handle Left & Right so we can ignore this condition for now
+        //
+        // A number of remote controls send a KeyDown event and then a command event via WndProc for the following
+        // media keys, PlayPause, Stop, Next, Previous, Fwd, Backwards. THis effect of this is to replicate the command
+        // for these key. This double the effect of Next, Previous, Fwd, Backwards and starts & stops or stops and then starts
+        // for PlayPause.
+        // We therefore remember that type and time of the last media keyDown event and when we get a Media Key APPCOMMAND
+        // get check if the correcponsing KetDown just occured and if it did ignore the APPCommand event
 
         private bool IsMediaCommand(AppCommand cmd)
         {
@@ -260,8 +177,11 @@ namespace MediaBrowser.Theater.Implementations.Command
                 }
                 else
                 {
-                    var command = _inputCommandMaps.GetMappedCommand(appCommand.Value);
-                    handled = _globalCommandActionMap.ExecuteCommand(command);
+                    if (_commandReceived != null)
+                    { 
+                        var command = _inputCommandMaps.GetMappedCommand(appCommand.Value);
+                        _commandReceived.Invoke(null, new CommandEventArgs {Command = command});
+                    }
                 }
          
                 if (handled)
@@ -291,8 +211,11 @@ namespace MediaBrowser.Theater.Implementations.Command
             }
             else
             {
-                var command = _inputCommandMaps.GetMappedCommand(e.Key, IsControlKeyDown(), IsShiftKeyDown());
-                _globalCommandActionMap.ExecuteCommand(command);
+                if (_commandReceived != null)
+                {
+                    var command = _inputCommandMaps.GetMappedCommand(e.Key, IsControlKeyDown(), IsShiftKeyDown());
+                    _commandReceived.Invoke(null, new CommandEventArgs {Command = command});
+                }
             }
 
            _lastKeyDown = e.Key;

@@ -1,4 +1,4 @@
-﻿namespace MediaBrowser.Theater.Implementations.Command
+﻿namespace MediaBrowser.Theater.Interfaces.Commands
 {
     public enum Command
     {

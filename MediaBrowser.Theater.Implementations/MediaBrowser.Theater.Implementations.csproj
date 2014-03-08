@@ -87,10 +87,10 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Command\CommandManager.cs" />
-    <Compile Include="Command\Commands.cs" />
-    <Compile Include="Command\CommandToAction.cs" />
-    <Compile Include="Command\InputToCommand.cs" />
+    <Compile Include="CommandActions\CommandActionsEntryPoint.cs" />
+    <Compile Include="Commands\CommandManager.cs" />
+    <Compile Include="CommandActions\CommandActionMap.cs" />
+    <Compile Include="Commands\InputToCommand.cs" />
     <Compile Include="Configuration\ApplicationPaths.cs" />
     <Compile Include="Configuration\ConfigurationManager.cs" />
     <Compile Include="Playback\PlaybackManager.cs" />

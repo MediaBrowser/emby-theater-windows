@@ -57,7 +57,8 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Command\ICommandManager.cs" />
+    <Compile Include="Commands\Commands.cs" />
+    <Compile Include="Commands\ICommandManager.cs" />
     <Compile Include="Configuration\AutoLoginConfiguration.cs" />
     <Compile Include="Configuration\InternalPlayerConfiguration.cs" />
     <Compile Include="Configuration\ITheaterConfigurationManager.cs" />

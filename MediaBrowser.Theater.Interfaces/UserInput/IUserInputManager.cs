@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Windows;
-using System.Windows.Forms;
-using System.Windows.Input;
 using WindowsForms = System.Windows.Forms;
 using WindowsInput = System.Windows.Input;
 
 namespace MediaBrowser.Theater.Interfaces.UserInput
 {
-    public class AppCommandEventArgs
+    public class AppCommandEventArgs: EventArgs
     {
         public int Cmd;
         public Boolean Handled = false;

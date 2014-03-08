@@ -5,24 +5,19 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
 using MediaBrowser.Model.Logging;
+using MediaBrowser.Theater.Interfaces.Commands;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Presentation.Playback;
 
-namespace MediaBrowser.Theater.Implementations.Command
+
+ namespace MediaBrowser.UI.EntryPoints
 {
-    
-    public class CommandEventArgs
-    {
-        public Command Command;
-        public Object Args;
-        public Boolean Handled = false;
-    }
 
-    public delegate void ActionDelagate(Object sender, CommandEventArgs args);
+    internal delegate void ActionDelagate(Object sender, CommandEventArgs args);
 
-    public class CommandActionMapping
+    internal class CommandActionMapping
     {
         public Command Command;
         public ActionDelagate Action;
@@ -36,11 +31,11 @@ namespace MediaBrowser.Theater.Implementations.Command
         }
     }
 
-    public class CommandActionMap : List<CommandActionMapping>
+    internal class CommandActionMap : List<CommandActionMapping>
     {
     }
 
-    public class GlobalCommandActionMap
+    internal class DefaultCommandActionMap
     {
         private readonly IPresentationManager _presenation;
         private readonly IPlaybackManager _playback;
@@ -49,7 +44,7 @@ namespace MediaBrowser.Theater.Implementations.Command
         private readonly CommandActionMapping _nullCommandActionMapping;
         private readonly CommandActionMap _globalCommandActionMap;
 
-        public GlobalCommandActionMap(IPresentationManager presenation, IPlaybackManager playback, INavigationService navigation, ILogManager logManager)
+        public DefaultCommandActionMap(IPresentationManager presenation, IPlaybackManager playback, INavigationService navigation, ILogManager logManager)
         {
             _presenation = presenation;
             _playback = playback;

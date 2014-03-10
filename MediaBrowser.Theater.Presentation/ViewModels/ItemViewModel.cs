@@ -643,17 +643,17 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         public int StudioCount
         {
-            get { return _item == null ? 0 : _item.Studios.Length; }
+            get { return _item == null ? 0 : (_item.Studios == null ? 0 : _item.Studios.Length); }
         }
 
         public List<string> StudioNames
         {
-            get { return _item == null ? null : _item.Studios.Select(i => i.Name).Take(3).ToList(); }
+            get { return _item == null ? null : (_item.Studios == null ? null : _item.Studios.Select(i => i.Name).Take(3).ToList()); }
         }
 
         public int DirectorCount
         {
-            get { return _item == null ? 0 : Directors.Count; }
+            get { return _item == null ? 0 : (Directors == null ? 0 : Directors.Count); }
         }
 
         public List<string> Directors
@@ -662,11 +662,12 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             {
                 return _item == null ?
                     null :
+                    (_item.People == null ? null :
                     _item.People
                     .Where(i => string.Equals(i.Type, PersonType.Director, StringComparison.OrdinalIgnoreCase) || string.Equals(i.Role, PersonType.Director, StringComparison.OrdinalIgnoreCase))
                     .Select(i => i.Name)
                     .Take(3)
-                    .ToList();
+                    .ToList());
             }
         }
 

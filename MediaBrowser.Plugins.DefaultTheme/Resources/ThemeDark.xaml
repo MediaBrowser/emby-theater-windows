@@ -56,7 +56,12 @@
     <Brush x:Key="Heading2Foreground">#ffffff</Brush>
 
     <Brush x:Key="SelectedMenuItemForeground">#ffffff</Brush>
-    <Brush x:Key="SpecialIndicatorBackground">#a6cc3333</Brush>
+    <Brush x:Key="SpecialIndicatorBackground">#52B54B</Brush>
+    <Style TargetType="Ellipse" x:Key="SpecialIndicatorEllipseStyle">
+        <Setter Property="Fill" Value="{DynamicResource SpecialIndicatorBackground}"/>
+        <Setter Property="Opacity" Value="0.9"/>
+        <Setter Property="Margin" Value="5,5,5,5"></Setter>
+    </Style>
 
     <Style TargetType="Path" x:Key="IconPath">
         <Setter Property="Fill">
@@ -78,5 +83,6 @@
             </Setter.Value>
         </Setter>
     </Style>
-    
+
+   
 </ResourceDictionary>

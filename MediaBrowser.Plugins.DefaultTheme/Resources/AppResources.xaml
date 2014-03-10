@@ -51,12 +51,20 @@
         <Setter Property="Source" Value="Images/fresh.png" />
     </Style>
 
-    <Style TargetType="ProgressBar" x:Key="ResumeProgressBar">
+    <Style x:Key="ResumeProgressBar" TargetType="{x:Type ProgressBar}" >
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ProgressBar}">
+                    <Grid MinHeight="14" MinWidth="200" Background="{TemplateBinding Background}">
+                        <Border x:Name="PART_Track" />
+                        <Border x:Name="PART_Indicator" HorizontalAlignment="Left" Background="{TemplateBinding Foreground}" Opacity="{TemplateBinding Opacity}"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
         <Setter Property="Foreground" Value="{StaticResource MediaBrowserAccent}"/>
         <Setter Property="Background" Value="#a6000000"/>
-        <Setter Property="BorderBrush" Value="#666666"/>
-        <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="Height" Value="20"/>
+        <Setter Property="Opacity" Value="0.7"/>
     </Style>
 
     <!--Default TextBox style. -->
@@ -398,6 +406,9 @@
                                 <DataTrigger Binding="{Binding IsInProgress}" Value="False">
                                     <Setter Property="Visibility" Value="Collapsed" />
                                 </DataTrigger>
+                                <DataTrigger Binding="{Binding ItemType}" Value="BoxSet">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
                                 <DataTrigger Binding="{Binding ItemType}" Value="Series">
                                     <Setter Property="Visibility" Value="Collapsed" />
                                 </DataTrigger>
@@ -453,7 +464,7 @@
 
             </StackPanel>
 
-            <Grid VerticalAlignment="Top" HorizontalAlignment="Right" Background="#a6CC3333" Width="50" Height="50">
+            <Grid VerticalAlignment="Top" HorizontalAlignment="Right" Width="50" Height="50">
 
                 <Grid.Style>
                     <Style TargetType="{x:Type Grid}">
@@ -468,7 +479,8 @@
                     </Style>
                 </Grid.Style>
 
-                <Path Data="M-150.204,626.126C-152.317,626.126 -154.429,626.126 -156.541,626.126 -167.642,633.42 -180.629,646.047 -189.668,657.238 -190.916,658.782 -192.945,662.362 -193.701,662.422 -194.041,662.448 -198.024,659.719 -198.614,659.297 -202.818,656.279 -205.779,653.709 -209.257,650.899 -211.248,652.172 -212.879,653.805 -214.153,655.797 -206.627,665.074 -200.283,675.534 -193.124,685.18 -181.491,665.11 -168.473,644.683 -152.796,629.006 -151.735,627.946 -149.817,626.933 -150.204,626.126z" Stretch="Uniform" Fill="#FFFFFFFF" Width="25" Height="25" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+                <Ellipse Style="{DynamicResource SpecialIndicatorEllipseStyle}"/>
+                <Path Data="{DynamicResource WatchedTickPathData}"  Stretch="Uniform" Fill="#FFFFFFFF" Width="25" Height="25" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
                     <Path.RenderTransform>
                         <TransformGroup>
                             <TransformGroup.Children>
@@ -480,9 +492,10 @@
                 </Path>
             </Grid>
 
-            <TextBlock Foreground="{DynamicResource TextForegroundOverBackground}" Background="#c666C010" VerticalAlignment="Top" HorizontalAlignment="Right" Padding="10 2 10 5" Text="NEW">
-                <TextBlock.Style>
-                    <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
+            <Grid VerticalAlignment="Top" HorizontalAlignment="Right" Width="50" Height="50">
+
+                <Grid.Style>
+                    <Style TargetType="{x:Type Grid}">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding IsOffline}" Value="True">
                                 <Setter Property="Visibility" Value="Hidden" />
@@ -498,12 +511,25 @@
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
-                </TextBlock.Style>
-            </TextBlock>
+                </Grid.Style>
 
-            <TextBlock Background="#c666C010" VerticalAlignment="Top" HorizontalAlignment="Right" Foreground="{DynamicResource TextForegroundOverBackground}" Padding="10 2 10 5" Text="{Binding RecursiveUnplayedItemCount, StringFormat='{}{0} NEW'}">
-                <TextBlock.Style>
-                    <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SmallTextBlockStyle}">
+                <Ellipse Style="{DynamicResource SpecialIndicatorEllipseStyle}"/>
+                <Path Data="{DynamicResource NewPathData}"  Stretch="Uniform" Fill="#FFFFFFFF" Width="25" Height="25" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+                    <Path.RenderTransform>
+                        <TransformGroup>
+                            <TransformGroup.Children>
+                                <RotateTransform Angle="0" />
+                                <ScaleTransform ScaleX="1" ScaleY="1" />
+                            </TransformGroup.Children>
+                        </TransformGroup>
+                    </Path.RenderTransform>
+                </Path>
+            </Grid>
+
+            <Grid VerticalAlignment="Top" HorizontalAlignment="Right" Width="50" Height="50">
+
+                <Grid.Style>
+                    <Style TargetType="{x:Type Grid}">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding IsOffline}" Value="True">
                                 <Setter Property="Visibility" Value="Hidden" />
@@ -516,8 +542,11 @@
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
-                </TextBlock.Style>
-            </TextBlock>
+                </Grid.Style>
+
+                <Ellipse Style="{DynamicResource SpecialIndicatorEllipseStyle}"/>
+                <TextBlock Style="{StaticResource SmallTextBlockStyle}" Foreground="{DynamicResource TextForegroundOverBackground}" Text="{Binding RecursiveUnplayedItemCount}" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="2,2,2,2"/>
+            </Grid>
 
             <TextBlock Background="{DynamicResource SpecialIndicatorBackground}" VerticalAlignment="Top" HorizontalAlignment="Right" Foreground="{DynamicResource TextForegroundOverBackground}" Margin="10 5" Text="OFFLINE">
                 <TextBlock.Style>
@@ -612,7 +641,7 @@
                         </ProgressBar.Style>
                     </ProgressBar>
 
-                    <Grid Background="#a6CC3333" Width="50" Height="50" Margin="10 0 0 0">
+                    <Grid Width="50" Height="50" Margin="10 0 0 0">
 
                         <Grid.Style>
                             <Style TargetType="{x:Type Grid}">
@@ -624,7 +653,8 @@
                             </Style>
                         </Grid.Style>
 
-                        <Path Data="M-150.204,626.126C-152.317,626.126 -154.429,626.126 -156.541,626.126 -167.642,633.42 -180.629,646.047 -189.668,657.238 -190.916,658.782 -192.945,662.362 -193.701,662.422 -194.041,662.448 -198.024,659.719 -198.614,659.297 -202.818,656.279 -205.779,653.709 -209.257,650.899 -211.248,652.172 -212.879,653.805 -214.153,655.797 -206.627,665.074 -200.283,675.534 -193.124,685.18 -181.491,665.11 -168.473,644.683 -152.796,629.006 -151.735,627.946 -149.817,626.933 -150.204,626.126z" Stretch="Uniform" Fill="#FFFFFFFF" Width="25" Height="25" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+                        <Ellipse Style="{DynamicResource SpecialIndicatorEllipseStyle}"/>
+                        <Path Data="{DynamicResource WatchedTickPathData}"  Stretch="Uniform" Fill="#FFFFFFFF" Width="25" Height="25" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
                             <Path.RenderTransform>
                                 <TransformGroup>
                                     <TransformGroup.Children>

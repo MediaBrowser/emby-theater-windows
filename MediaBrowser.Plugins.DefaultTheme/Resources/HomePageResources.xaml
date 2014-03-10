@@ -5,12 +5,20 @@
                     xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
                     xmlns:ee="clr-namespace:Microsoft.Expression.Media.Effects;assembly=Microsoft.Expression.Effects">
 
-    <Style TargetType="ProgressBar" x:Key="ResumeProgressBar">
+    <Style x:Key="ResumeProgressBar" TargetType="{x:Type ProgressBar}" >
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ProgressBar}">
+                    <Grid MinHeight="14" MinWidth="200" Background="{TemplateBinding Background}">
+                        <Border x:Name="PART_Track" />
+                        <Border x:Name="PART_Indicator" HorizontalAlignment="Left" Background="{TemplateBinding Foreground}" Opacity="{TemplateBinding Opacity}"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
         <Setter Property="Foreground" Value="{StaticResource MediaBrowserAccent}"/>
         <Setter Property="Background" Value="#a6000000"/>
-        <Setter Property="BorderBrush" Value="#666666"/>
-        <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="Height" Value="20"/>
+        <Setter Property="Opacity" Value="0.7"/>
     </Style>
 
     <ControlTemplate x:Key="NextButtonContent">

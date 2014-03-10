@@ -267,9 +267,10 @@
                 <Image Stretch="Uniform" VerticalAlignment="Top" HorizontalAlignment="Left" MaxWidth="550" MaxHeight="650" Source="{Binding Image}">
                 </Image>
 
-                <TextBlock Foreground="{DynamicResource TextForegroundOverBackground}" Background="#c666C010" VerticalAlignment="Top" HorizontalAlignment="Right" Padding="10 2 10 5" Text="NEW">
-                    <TextBlock.Style>
-                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
+                <Grid VerticalAlignment="Top" HorizontalAlignment="Right" Width="50" Height="50">
+
+                    <Grid.Style>
+                        <Style TargetType="{x:Type Grid}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding IsOffline}" Value="True">
                                     <Setter Property="Visibility" Value="Hidden" />
@@ -291,12 +292,25 @@
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
-                    </TextBlock.Style>
-                </TextBlock>
+                    </Grid.Style>
 
-                <TextBlock Background="#c666C010" VerticalAlignment="Top" HorizontalAlignment="Right" Foreground="{DynamicResource TextForegroundOverBackground}" Padding="10 2 10 5" Text="{Binding RecursiveUnplayedItemCount, StringFormat='{}{0} NEW'}">
-                    <TextBlock.Style>
-                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SmallTextBlockStyle}">
+                    <Ellipse Style="{DynamicResource SpecialIndicatorEllipseStyle}"/>
+                    <Path Data="{DynamicResource NewPathData}"  Stretch="Uniform" Fill="#FFFFFFFF" Width="25" Height="25" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+                        <Path.RenderTransform>
+                            <TransformGroup>
+                                <TransformGroup.Children>
+                                    <RotateTransform Angle="0" />
+                                    <ScaleTransform ScaleX="1" ScaleY="1" />
+                                </TransformGroup.Children>
+                            </TransformGroup>
+                        </Path.RenderTransform>
+                    </Path>
+                </Grid>
+
+                <Grid VerticalAlignment="Top" HorizontalAlignment="Right" Width="50" Height="50">
+
+                    <Grid.Style>
+                        <Style TargetType="{x:Type Grid}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding IsOffline}" Value="True">
                                     <Setter Property="Visibility" Value="Hidden" />
@@ -309,8 +323,11 @@
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
-                    </TextBlock.Style>
-                </TextBlock>
+                    </Grid.Style>
+
+                    <Ellipse Style="{DynamicResource SpecialIndicatorEllipseStyle}"/>
+                    <TextBlock Style="{StaticResource SmallTextBlockStyle}" Foreground="{DynamicResource TextForegroundOverBackground}" Text="{Binding RecursiveUnplayedItemCount}" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="2,2,2,2"/>
+                </Grid>
 
                 <TextBlock Background="{DynamicResource SpecialIndicatorBackground}" VerticalAlignment="Top" HorizontalAlignment="Right" Foreground="{DynamicResource TextForegroundOverBackground}" Padding="10 5" Text="OFFLINE">
                     <TextBlock.Style>

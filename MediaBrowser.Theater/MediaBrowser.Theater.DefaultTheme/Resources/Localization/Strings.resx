@@ -117,6 +117,22 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Core_ExitApplicationCommand" xml:space="preserve">
+    <value>@Core_ExitApplicationCommand</value>
+    <comment>The menu text for quitting the application</comment>
+  </data>
+  <data name="Core_RestartCommand" xml:space="preserve">
+    <value>@Core_RestartCommand</value>
+    <comment>The menu text for restarting the computer</comment>
+  </data>
+  <data name="Core_ShutdownCommand" xml:space="preserve">
+    <value>@Core_ShutdownCommand</value>
+    <comment>The menu text for turning off the computer</comment>
+  </data>
+  <data name="Core_SleepCommand" xml:space="preserve">
+    <value>@Core_SleepCommand</value>
+    <comment>The menu text for putting the computer to sleep</comment>
+  </data>
   <data name="Home_LatestEpisodes_Title" xml:space="preserve">
     <value>@Home_LatestEpisodes_Title</value>
     <comment>Section title for latest episodes</comment>
@@ -164,6 +180,22 @@
   <data name="Login_Username" xml:space="preserve">
     <value>@Login_Username</value>
     <comment>Username field text</comment>
+  </data>
+  <data name="Search_SearchCommand" xml:space="preserve">
+    <value>@Search_SearchCommand</value>
+    <comment>Command text for opening the search page</comment>
+  </data>
+  <data name="Sidebar_AddUserCommand" xml:space="preserve">
+    <value>@Sidebar_AddUserCommand</value>
+    <comment>The menu text for adding an additional user to the session</comment>
+  </data>
+  <data name="Sidebar_LogoutCommand" xml:space="preserve">
+    <value>@Sidebar_LogoutCommand</value>
+    <comment>The menu text for logging the current user out</comment>
+  </data>
+  <data name="Sidebar_OpenCommand" xml:space="preserve">
+    <value>@Sidebar_OpenCommand</value>
+    <comment>Command text for opening the side bar</comment>
   </data>
   <data name="Theme_Name" xml:space="preserve">
     <value>@Theme_Name</value>

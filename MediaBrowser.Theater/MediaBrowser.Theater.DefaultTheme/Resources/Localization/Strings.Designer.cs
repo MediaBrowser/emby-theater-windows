@@ -61,6 +61,42 @@ namespace MediaBrowser.Theater.DefaultTheme.Resources.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to @Core_ExitApplicationCommand.
+        /// </summary>
+        internal static string Core_ExitApplicationCommand {
+            get {
+                return ResourceManager.GetString("Core_ExitApplicationCommand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @Core_RestartCommand.
+        /// </summary>
+        internal static string Core_RestartCommand {
+            get {
+                return ResourceManager.GetString("Core_RestartCommand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @Core_ShutdownCommand.
+        /// </summary>
+        internal static string Core_ShutdownCommand {
+            get {
+                return ResourceManager.GetString("Core_ShutdownCommand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @Core_SleepCommand.
+        /// </summary>
+        internal static string Core_SleepCommand {
+            get {
+                return ResourceManager.GetString("Core_SleepCommand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to @Home_LatestEpisodes_Title.
         /// </summary>
         internal static string Home_LatestEpisodes_Title {
@@ -165,6 +201,42 @@ namespace MediaBrowser.Theater.DefaultTheme.Resources.Localization {
         internal static string Login_Username {
             get {
                 return ResourceManager.GetString("Login_Username", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @Search_SearchCommand.
+        /// </summary>
+        internal static string Search_SearchCommand {
+            get {
+                return ResourceManager.GetString("Search_SearchCommand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @Sidebar_AddUserCommand.
+        /// </summary>
+        internal static string Sidebar_AddUserCommand {
+            get {
+                return ResourceManager.GetString("Sidebar_AddUserCommand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @Sidebar_LogoutCommand.
+        /// </summary>
+        internal static string Sidebar_LogoutCommand {
+            get {
+                return ResourceManager.GetString("Sidebar_LogoutCommand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @Sidebar_OpenCommand.
+        /// </summary>
+        internal static string Sidebar_OpenCommand {
+            get {
+                return ResourceManager.GetString("Sidebar_OpenCommand", resourceCulture);
             }
         }
         

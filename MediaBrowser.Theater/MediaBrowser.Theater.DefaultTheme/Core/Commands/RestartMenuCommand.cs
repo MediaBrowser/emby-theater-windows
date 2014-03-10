@@ -2,6 +2,7 @@
 using System.Windows.Input;
 using MediaBrowser.Theater.Api.Commands;
 using MediaBrowser.Theater.Api.UserInterface;
+using MediaBrowser.Theater.Presentation;
 using MediaBrowser.Theater.Presentation.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.Core.Commands
@@ -19,7 +20,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.Commands
 
         public string DisplayName
         {
-            get { return "Restart"; }
+            get { return "MediaBrowser.Theater.DefaultTheme:Strings:Core_RestartCommand".Localize(); }
         }
 
         public ICommand ExecuteCommand { get; private set; }

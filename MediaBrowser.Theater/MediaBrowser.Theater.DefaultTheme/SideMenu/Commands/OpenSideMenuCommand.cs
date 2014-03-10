@@ -9,6 +9,7 @@ using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.SideMenu.ViewModels;
+using MediaBrowser.Theater.Presentation;
 using MediaBrowser.Theater.Presentation.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.SideMenu.Commands
@@ -35,7 +36,7 @@ namespace MediaBrowser.Theater.DefaultTheme.SideMenu.Commands
 
         public string DisplayName
         {
-            get { return "User"; }
+            get { return "MediaBrowser.Theater.DefaultTheme:Strings:Sidebar_OpenCommand".Localize(); }
         }
 
         public MenuCommandGroup Group

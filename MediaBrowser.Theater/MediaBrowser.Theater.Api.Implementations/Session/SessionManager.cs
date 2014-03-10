@@ -25,7 +25,7 @@ namespace MediaBrowser.Theater.Api.Session
         private readonly IPresenter _presenter;
 //        private readonly IPlaybackManager _playback;
 
-        public SessionManager(INavigator navService, IPresenter presenter, IApiClient apiClient, ILogger logger, ITheaterConfigurationManager config)//, IPlaybackManager playback)
+        public SessionManager(INavigator navService, IPresenter presenter, IApiClient apiClient, ILogger logger, ITheaterConfigurationManager config) //, IPlaybackManager playback)
         {
             _navService = navService;
             _presenter = presenter;
@@ -135,8 +135,7 @@ namespace MediaBrowser.Theater.Api.Session
 
                 CurrentUser = result.User;
                 _apiClient.CurrentUserId = CurrentUser.Id;
-            }
-            catch (HttpException ex) {
+            } catch (HttpException ex) {
                 throw new UnauthorizedAccessException("Invalid username or password. Please try again.");
             }
 

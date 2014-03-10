@@ -3,6 +3,7 @@ using MediaBrowser.Theater.Api.Commands;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
+using MediaBrowser.Theater.Presentation;
 using MediaBrowser.Theater.Presentation.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.SideMenu.Commands
@@ -19,7 +20,7 @@ namespace MediaBrowser.Theater.DefaultTheme.SideMenu.Commands
 
         public string DisplayName
         {
-            get { return "Logout"; }
+            get { return "MediaBrowser.Theater.DefaultTheme:Strings:Sidebar_LogoutCommand".Localize(); }
         }
 
         public ICommand ExecuteCommand { get; private set; }

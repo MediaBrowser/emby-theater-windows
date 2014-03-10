@@ -2,6 +2,7 @@
 using MediaBrowser.Theater.Api.Commands;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.UserInterface;
+using MediaBrowser.Theater.Presentation;
 using MediaBrowser.Theater.Presentation.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.Search.ViewModels
@@ -31,7 +32,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Search.ViewModels
 
         public string DisplayName
         {
-            get { return "Search"; }
+            get { return "MediaBrowser.Theater.DefaultTheme:Strings:Search_SearchCommand".Localize(); }
         }
 
         public ICommand ExecuteCommand { get; private set; }

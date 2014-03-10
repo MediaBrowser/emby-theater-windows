@@ -55,7 +55,7 @@
                     </Grid>
                 </Button>
 
-                <Button Style="{StaticResource BaseItemButtonStyle}" Command="{Binding UpcommingCommand}"
+                <Button Style="{StaticResource BaseItemButtonStyle}" Command="{Binding UpcomingCommand}"
                         Width="{Binding LowerSpotlightWidth}" Height="{Binding LowerSpotlightHeight}" Margin="{x:Static viewModels:HomeViewModel.TileMarginThickness}">
                     <Grid>
                         <Image Source="/MediaBrowser.Theater.DefaultTheme;component/Resources/Images/upcomingtv.jpg"

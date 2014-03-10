@@ -77,7 +77,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
         public ImageSlideshowViewModel AllShowsImagesViewModel { get; private set; }
         public ICommand AllShowsCommand { get; private set; }
         public ICommand GenresCommand { get; private set; }
-        public ICommand UpcommingCommand { get; private set; }
+        public ICommand UpcomingCommand { get; private set; }
 
         public string DisplayName
         {

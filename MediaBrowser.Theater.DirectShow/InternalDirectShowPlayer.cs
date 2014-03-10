@@ -233,8 +233,11 @@ namespace MediaBrowser.Theater.DirectShow
                     PreviousPlaylistIndex = previousIndex,
                     EndingPositionTicks = endingTicks
                 };
-
-                EventHelper.FireEventIfNotNull(MediaChanged, this, args, _logger);
+                // can't InvokeOnPlayerThread because InvokeRequired returns false
+                 _presentation.Window.Dispatcher.Invoke
+                (
+                    () => EventHelper.FireEventIfNotNull(MediaChanged, this, args, _logger)
+                );
             }
         }
 

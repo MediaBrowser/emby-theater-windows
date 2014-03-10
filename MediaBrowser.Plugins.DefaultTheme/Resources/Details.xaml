@@ -312,6 +312,15 @@
                     <Grid.Style>
                         <Style TargetType="{x:Type Grid}">
                             <Style.Triggers>
+                                <DataTrigger Binding="{Binding ItemType}" Value="BoxSet">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding ItemType}" Value="Series">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding ItemType}" Value="Season">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
                                 <DataTrigger Binding="{Binding IsOffline}" Value="True">
                                     <Setter Property="Visibility" Value="Hidden" />
                                 </DataTrigger>
@@ -322,6 +331,9 @@
                                     <Setter Property="Visibility" Value="Hidden" />
                                 </DataTrigger>
                             </Style.Triggers>
+                            <Style.Setters>
+                                <Setter Property="Visibility" Value="Hidden"></Setter>
+                            </Style.Setters>
                         </Style>
                     </Grid.Style>
 

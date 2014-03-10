@@ -27,10 +27,12 @@ namespace MediaBrowser.Theater.DefaultTheme.SideMenu
             _apiClient = apiClient;
         }
 
-        public override async Task Activate()
+        public override Task Activate()
         {
-            var viewModel = new SideMenuViewModel(_sessionManager, _imageManager, _apiClient);
-            await _presenter.ShowPopup(viewModel);
+            var viewModel = new SideMenuViewModel(_appHost, _sessionManager, _imageManager, _apiClient);
+            _presenter.ShowPopup(viewModel);
+
+            return Task.FromResult(0);
         }
     }
 }

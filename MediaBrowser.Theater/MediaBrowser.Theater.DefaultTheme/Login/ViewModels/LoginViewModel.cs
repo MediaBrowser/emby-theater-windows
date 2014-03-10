@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Data;
 using MediaBrowser.Model.ApiClient;
@@ -28,12 +29,14 @@ namespace MediaBrowser.Theater.DefaultTheme.Login.ViewModels
             _imageManager = imageManager;
             _apiClient = apiClient;
             _users = new ObservableCollection<IViewModel> { new UserLoginViewModel(null, _apiClient, _imageManager, _session, _logManager) };
-            Users = new ListCollectionView(_users);
 
             LoadUsers();
         }
 
-        public ListCollectionView Users { get; private set; }
+        public ObservableCollection<IViewModel> Users
+        {
+            get { return _users; }
+        }
 
         public bool ShowMediaBrowserLogo
         {
@@ -53,9 +56,14 @@ namespace MediaBrowser.Theater.DefaultTheme.Login.ViewModels
         private async void LoadUsers()
         {
             UserDto[] users = await _apiClient.GetPublicUsersAsync();
-            foreach (UserLoginViewModel user in users.Select(u => new UserLoginViewModel(u, _apiClient, _imageManager, _session, _logManager))) {
-                _users.Add(user);
-            }
+
+            Action action = () => {
+                foreach (UserLoginViewModel user in users.Select(u => new UserLoginViewModel(u, _apiClient, _imageManager, _session, _logManager))) {
+                    _users.Add(user);
+                }
+            };
+
+            await action.OnUiThreadAsync();
         }
     }
 }

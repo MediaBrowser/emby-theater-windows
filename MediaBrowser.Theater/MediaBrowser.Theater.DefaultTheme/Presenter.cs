@@ -81,6 +81,7 @@ namespace MediaBrowser.Theater.DefaultTheme
             _currentPopup.Closed += windowClosed;
 
             UnfocusMainWindow();
+
             _currentPopup.ShowModal(_mainWindow);
         }
 

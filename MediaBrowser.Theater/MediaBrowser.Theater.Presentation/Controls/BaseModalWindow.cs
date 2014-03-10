@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 
 namespace MediaBrowser.Theater.Presentation.Controls
 {
@@ -26,9 +27,15 @@ namespace MediaBrowser.Theater.Presentation.Controls
             WindowState = owner.WindowState;
             Owner = owner;
 
-            ShowDialog();
+            EventHandler closedHanlder = null;
+            closedHanlder = (sender, e) => {
+                owner.Activate();
+                Closed -= closedHanlder;
+            };
 
-            owner.Activate();
+            Closed += closedHanlder;
+
+            Show();
         }
     }
 }

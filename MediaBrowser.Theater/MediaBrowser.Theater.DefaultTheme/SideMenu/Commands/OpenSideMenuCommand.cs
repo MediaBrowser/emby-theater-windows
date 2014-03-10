@@ -1,26 +1,26 @@
-﻿using System.Net.Mime;
-using System.Threading;
+﻿using System.Threading;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
+using MediaBrowser.Theater.Api.Commands;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
-using MediaBrowser.Theater.DefaultTheme.Search.ViewModels;
+using MediaBrowser.Theater.DefaultTheme.SideMenu.ViewModels;
 using MediaBrowser.Theater.Presentation.ViewModels;
 
-namespace MediaBrowser.Theater.DefaultTheme.SideMenu.ViewModels
+namespace MediaBrowser.Theater.DefaultTheme.SideMenu.Commands
 {
-    public class OpenSideMenuCommand
-        : IGlobalCommand
+    public class OpenSideMenuMenuCommand
+        : IGlobalMenuCommand
     {
         private readonly ISessionManager _sessionManager;
         private readonly IImageManager _imageManager;
         private readonly IApiClient _apiClient;
 
-        public OpenSideMenuCommand(INavigator navigator, ISessionManager sessionManager,IImageManager imageManager, IApiClient apiClient)
+        public OpenSideMenuMenuCommand(INavigator navigator, ISessionManager sessionManager,IImageManager imageManager, IApiClient apiClient)
         {
             _sessionManager = sessionManager;
             _imageManager = imageManager;
@@ -36,6 +36,16 @@ namespace MediaBrowser.Theater.DefaultTheme.SideMenu.ViewModels
         public string DisplayName
         {
             get { return "User"; }
+        }
+
+        public MenuCommandGroup Group
+        {
+            get { return MenuCommandGroup.User; }
+        }
+
+        public int SortOrder
+        {
+            get { return 0; }
         }
 
         public ICommand ExecuteCommand { get; private set; }

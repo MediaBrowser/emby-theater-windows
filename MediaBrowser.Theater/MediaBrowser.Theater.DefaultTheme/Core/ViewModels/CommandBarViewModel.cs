@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
 using MediaBrowser.Theater.Api;
+using MediaBrowser.Theater.Api.Commands;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.Presentation.ViewModels;
@@ -13,14 +14,14 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
     public class CommandBarViewModel
         : BaseViewModel
     {
-        private readonly List<IGlobalCommand> _commands;
+        private readonly List<IGlobalMenuCommand> _commands;
         private readonly INavigator _navigator;
         private ObservableCollection<GlobalCommandViewModel> _commandViewModels;
 
         public CommandBarViewModel(ITheaterApplicationHost appHost, INavigator navigator)
         {
             _navigator = navigator;
-            _commands = appHost.GetExports<IGlobalCommand>().ToList();
+            _commands = appHost.GetExports<IGlobalMenuCommand>().ToList();
             CommandViewModels = new ObservableCollection<GlobalCommandViewModel>();
 
             _navigator.Navigated += (s, e) => UpdateCommandVisibility();
@@ -40,22 +41,29 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
             }
         }
 
-        private void UpdateCommandVisibility()
+        private async void UpdateCommandVisibility()
         {
             GlobalCommandViewModel[] visibleCommandViewModels = CommandViewModels.ToArray();
-            foreach (GlobalCommandViewModel viewModel in visibleCommandViewModels) {
-                if (!viewModel.Command.EvaluateVisibility(_navigator.CurrentLocation)) {
+            var commandsToHide = visibleCommandViewModels.Where(v => !v.MenuCommand.EvaluateVisibility(_navigator.CurrentLocation));
+
+            Action removeAction = () => {
+                foreach (GlobalCommandViewModel viewModel in commandsToHide) {
                     RemoveCommandViewModel(viewModel);
                 }
-            }
+            };
 
-            List<IGlobalCommand> visibleCommands = visibleCommandViewModels.Select(c => c.Command).ToList();
-            List<IGlobalCommand> hiddenCommands = _commands.Where(c => !visibleCommands.Contains(c)).ToList();
-            foreach (IGlobalCommand command in hiddenCommands) {
-                if (command.EvaluateVisibility(_navigator.CurrentLocation)) {
+            await removeAction.OnUiThreadAsync().ConfigureAwait(false);
+
+            List<IGlobalMenuCommand> visibleCommands = visibleCommandViewModels.Select(c => c.MenuCommand).ToList();
+            List<IGlobalMenuCommand> commandsToShow = _commands.Where(c => !visibleCommands.Contains(c) && c.EvaluateVisibility(_navigator.CurrentLocation)).ToList();
+
+            Action addAction = () => {
+                foreach (IGlobalMenuCommand command in commandsToShow) {
                     AddCommandViewModel(new GlobalCommandViewModel(command));
                 }
-            }
+            };
+
+            await addAction.OnUiThreadAsync().ConfigureAwait(false);
         }
 
         private void AddCommandViewModel(GlobalCommandViewModel viewModel)
@@ -74,37 +82,38 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
         private async void RemoveCommandViewModel(GlobalCommandViewModel viewModel)
         {
             await viewModel.Close();
+            CommandViewModels.Remove(viewModel);
         }
     }
 
     public class GlobalCommandViewModel
         : BaseViewModel
     {
-        private readonly IGlobalCommand _command;
+        private readonly IGlobalMenuCommand _menuCommand;
 
-        public GlobalCommandViewModel(IGlobalCommand command)
+        public GlobalCommandViewModel(IGlobalMenuCommand menuCommand)
         {
-            _command = command;
+            _menuCommand = menuCommand;
         }
 
-        public IGlobalCommand Command
+        public IGlobalMenuCommand MenuCommand
         {
-            get { return _command; }
+            get { return _menuCommand; }
         }
 
         public IViewModel Icon
         {
-            get { return _command.IconViewModel; }
+            get { return _menuCommand.IconViewModel; }
         }
 
         public ICommand ExecuteCommand
         {
-            get { return _command.ExecuteCommand; }
+            get { return _menuCommand.ExecuteCommand; }
         }
 
         public string DisplayName
         {
-            get { return _command.DisplayName; }
+            get { return _menuCommand.DisplayName; }
         }
     }
 }

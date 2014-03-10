@@ -44,15 +44,5 @@
             
             <TextBlock Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10" Text="{Binding Username}"/>
         </Grid>
-
-        <Grid Background="{StaticResource BackgroundBrush3}" Margin="50,2,0,2" Height="50">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="50"/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-            
-            <Button Content="+"/>
-            <TextBlock Grid.Column="1" Text="Add User to Session" Margin="10" Style="{StaticResource SmallTextBlockStyle}"/>
-        </Grid>
     </StackPanel>
 </UserControl>

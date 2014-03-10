@@ -5,6 +5,7 @@ using System.Windows.Media.Imaging;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
+using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.Presentation.ViewModels;
@@ -39,6 +40,8 @@ namespace MediaBrowser.Theater.DefaultTheme.SideMenu.ViewModels
             
             AdditionalUsers = new ObservableCollection<AdditionalUserViewModel>();
         }
+
+        public ICommand LoginAdditionalUser { get; private set; }
 
         public string Username
         {

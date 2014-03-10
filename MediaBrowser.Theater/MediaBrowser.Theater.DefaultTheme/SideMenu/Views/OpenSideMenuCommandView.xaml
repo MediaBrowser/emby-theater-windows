@@ -6,8 +6,9 @@
              xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:viewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.SideMenu.ViewModels"
+             xmlns:commands="clr-namespace:MediaBrowser.Theater.DefaultTheme.SideMenu.Commands"
              mc:Ignorable="d"
-             d:DataContext="{d:DesignInstance viewModels:OpenSideMenuCommandViewModel}">
+             d:DataContext="{d:DesignInstance commands:OpenSideMenuCommandViewModel}">
     <Grid FlowDirection="LeftToRight" Width="67">
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup>

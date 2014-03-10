@@ -12,7 +12,7 @@
              viewModels1:ViewModel.CloseDelay="0:0:0.3"
              d:DataContext="{d:DesignInstance viewModels:SideMenuViewModel}"
              d:DesignHeight="300" d:DesignWidth="1280">
-    <Grid x:Name="Sidebar" Background="{StaticResource BackgroundBrush2}" MinWidth="500" HorizontalAlignment="Right">
+    <Grid x:Name="Sidebar" Background="{StaticResource BackgroundBrush2}" MinWidth="400" HorizontalAlignment="Right" IsHitTestVisible="True">
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup>
                 <VisualState Name="Shown">
@@ -32,7 +32,7 @@
                     <Storyboard>
                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Sidebar"
                                                        Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)">
-                            <EasingDoubleKeyFrame Value="500" KeyTime="00:00:0.3">
+                            <EasingDoubleKeyFrame Value="400" KeyTime="00:00:0.3">
                                 <EasingDoubleKeyFrame.EasingFunction>
                                     <CubicEase EasingMode="EaseOut" />
                                 </EasingDoubleKeyFrame.EasingFunction>
@@ -51,11 +51,27 @@
         </i:Interaction.Behaviors>
         
         <Grid.RenderTransform>
-            <TranslateTransform X="500"/>
+            <TranslateTransform X="400"/>
         </Grid.RenderTransform>
         
         <StackPanel Orientation="Vertical">
-            <controls:ExtendedContentControl Content="{Binding Users}" Margin="10"/>
+            <controls:ExtendedContentControl Content="{Binding Users}" Margin="10" Visibility="{Binding IsUserSignedIn, Converter={StaticResource BooleanToVisibility}}"/>
+
+            <controls:ExtendedItemsControl ItemsSource="{Binding UserCommandGroups}" Margin="10" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" Visibility="{Binding IsUserSignedIn, Converter={StaticResource BooleanToVisibility}}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Vertical"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </controls:ExtendedItemsControl>
+
+            <controls:ExtendedItemsControl ItemsSource="{Binding CommandGroups}" Margin="10" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Vertical"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </controls:ExtendedItemsControl>
         </StackPanel>
     </Grid>
 </UserControl>

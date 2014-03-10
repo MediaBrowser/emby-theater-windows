@@ -14,7 +14,9 @@
                     xmlns:movies="clr-namespace:MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies"
                     xmlns:movies1="clr-namespace:MediaBrowser.Theater.DefaultTheme.Home.Views.Movies"
                     xmlns:viewModels3="clr-namespace:MediaBrowser.Theater.DefaultTheme.SideMenu.ViewModels"
-                    xmlns:views3="clr-namespace:MediaBrowser.Theater.DefaultTheme.SideMenu.Views">
+                    xmlns:views3="clr-namespace:MediaBrowser.Theater.DefaultTheme.SideMenu.Views"
+                    xmlns:commands="clr-namespace:MediaBrowser.Theater.DefaultTheme.SideMenu.Commands"
+                    xmlns:commands1="clr-namespace:MediaBrowser.Theater.DefaultTheme.Core.Commands">
     
     <DataTemplate DataType="{x:Type viewModels:RootViewModel}">
         <views:RootView/>
@@ -104,12 +106,44 @@
         <views3:SideMenuView/>
     </DataTemplate>
     
-    <DataTemplate DataType="{x:Type viewModels3:OpenSideMenuCommandViewModel}">
+    <DataTemplate DataType="{x:Type commands:OpenSideMenuCommandViewModel}">
         <views3:OpenSideMenuCommandView/>
     </DataTemplate>
 
     <DataTemplate DataType="{x:Type viewModels3:SideMenuUsersViewModel}">
         <views3:SideMenuUsersView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels3:SideMenuGroupViewModel}">
+        <views3:SideMenuGroupView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels3:SideMenuButtonViewModel}">
+        <views3:SideMenuButtonView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type commands:LogoutMenuCommandIconViewModel}">
+        <views3:LogoutMenuCommandIconView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type commands:AddUserCommandIconViewModel}">
+        <views3:AddUserCommandIconView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type commands1:ShutdownMenuCommandIconViewModel}">
+        <views:ShutdownMenuCommandIconView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type commands1:SleepMenuCommandIconViewModel}">
+        <views:SleepMenuCommandIconView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type commands1:RestartMenuCommandIconViewModel}">
+        <views:RestartMenuCommandIconView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type commands1:ExitMenuCommandIconViewModel}">
+        <views:ExitMenuCommandIconView/>
     </DataTemplate>
     
 </ResourceDictionary>

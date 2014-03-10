@@ -234,7 +234,10 @@ namespace MediaBrowser.Theater.DirectShow
                     EndingPositionTicks = endingTicks
                 };
 
-                EventHelper.FireEventIfNotNull(MediaChanged, this, args, _logger);
+                _presentation.Window.Dispatcher.Invoke
+                (
+                    () => EventHelper.FireEventIfNotNull(MediaChanged, this, args, _logger)
+                );
             }
         }
 

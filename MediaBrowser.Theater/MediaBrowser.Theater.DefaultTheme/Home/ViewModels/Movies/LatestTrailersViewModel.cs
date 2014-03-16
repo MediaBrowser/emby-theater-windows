@@ -18,8 +18,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
     public class LatestTrailersViewModel
         : BaseViewModel, IKnownSize, IHomePage
     {
-        const double PosterHeight = (HomeViewModel.TileHeight * 1.5) + HomeViewModel.TileMargin;
-        const double PosterWidth = PosterHeight * 2 / 3.0;
+        private const double PosterHeight = (HomeViewModel.TileHeight*1.5) + HomeViewModel.TileMargin;
+        private const double PosterWidth = PosterHeight*2/3.0;
 
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
@@ -44,8 +44,6 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
             LoadItems(moviesViewTask);
         }
 
-        public string SectionTitle { get { return "Movies"; } }
-
         public RangeObservableCollection<ItemTileViewModel> Trailers { get; private set; }
 
         public string Title
@@ -58,13 +56,32 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
             get { return _isVisible; }
             private set
             {
-                if (Equals(_isVisible, value))
-                {
+                if (Equals(_isVisible, value)) {
                     return;
                 }
 
                 _isVisible = value;
                 OnPropertyChanged();
+            }
+        }
+
+        public string SectionTitle
+        {
+            get { return "MediaBrowser.Theater.DefaultTheme:Strings:Home_MoviesSectionTitle".Localize(); }
+        }
+
+        public Size Size
+        {
+            get
+            {
+                if (Trailers.Count == 0) {
+                    return new Size();
+                }
+
+                var width = (int) Math.Ceiling(Trailers.Count/2.0);
+
+                return new Size(width*(PosterWidth + 2*HomeViewModel.TileMargin) + HomeViewModel.SectionSpacing,
+                                2*(PosterHeight + 2*HomeViewModel.TileMargin));
             }
         }
 
@@ -102,21 +119,6 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
                 PreferredImageTypes = new[] { ImageType.Primary, ImageType.Backdrop, ImageType.Thumb },
                 DownloadImagesAtExactSize = true
             };
-        }
-
-        public Size Size
-        {
-            get
-            {
-                if (Trailers.Count == 0) {
-                    return new Size();
-                }
-
-                int width = (int)Math.Ceiling(Trailers.Count / 2.0);
-
-                return new Size(width*(PosterWidth + 2*HomeViewModel.TileMargin) + HomeViewModel.SectionSpacing,
-                                2*(PosterHeight + 2*HomeViewModel.TileMargin));
-            }
         }
     }
 }

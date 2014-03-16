@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,7 +11,6 @@ using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Api.Navigation;
-using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
@@ -28,13 +26,12 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
         private readonly ILogger _logger;
+        private readonly double _miniSpotlightWidth;
         private readonly INavigator _navigator;
         //private readonly IPlaybackManager _playbackManager;
         private readonly IServerEvents _serverEvents;
         private readonly ISessionManager _sessionManager;
         private CancellationTokenSource _mainViewCancellationTokenSource;
-
-        private readonly double _miniSpotlightWidth;
 
         public TvSpotlightViewModel(Task<TvView> tvViewTask, IImageManager imageManager, INavigator navigator, IApiClient apiClient, IServerEvents serverEvents,
                                     /*IPlaybackManager playbackManager,*/ ISessionManager sessionManager, ILogManager logManager)
@@ -62,7 +59,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
                 ImageStretch = Stretch.UniformToFill
             };
 
-            MiniSpotlightItems = new RangeObservableCollection<ItemTileViewModel>() { 
+            MiniSpotlightItems = new RangeObservableCollection<ItemTileViewModel> {
                 CreateMiniSpotlightItem(),
                 CreateMiniSpotlightItem(),
                 CreateMiniSpotlightItem(),
@@ -70,8 +67,6 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
 
             LoadViewModels(tvViewTask);
         }
-
-        public string SectionTitle { get { return "TV"; } }
 
         public double SpotlightWidth { get; private set; }
         public double SpotlightHeight { get; private set; }
@@ -90,14 +85,29 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
         {
             get { return "MediaBrowser.Theater.DefaultTheme:Strings:Home_TvSpotlight_Title".Localize(); }
         }
-        
+
+        public string SectionTitle
+        {
+            get { return "MediaBrowser.Theater.DefaultTheme:Strings:Home_TVSectionTitle".Localize(); }
+        }
+
+        public Size Size
+        {
+            get
+            {
+                return new Size(SpotlightWidth + _miniSpotlightWidth + 4*HomeViewModel.TileMargin + HomeViewModel.SectionSpacing,
+                                SpotlightHeight + HomeViewModel.TileHeight + 4*HomeViewModel.TileMargin);
+            }
+        }
+
         private void DisposeMainViewCancellationTokenSource(bool cancel)
         {
             if (_mainViewCancellationTokenSource != null) {
                 if (cancel) {
                     try {
                         _mainViewCancellationTokenSource.Cancel();
-                    } catch (ObjectDisposedException) { }
+                    }
+                    catch (ObjectDisposedException) { }
                 }
                 _mainViewCancellationTokenSource.Dispose();
                 _mainViewCancellationTokenSource = null;
@@ -106,17 +116,14 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
 
         public static string GetDisplayName(BaseItemDto item)
         {
-            var name = item.Name;
+            string name = item.Name;
 
-            if (item.IsType("Episode"))
-            {
+            if (item.IsType("Episode")) {
                 name = item.SeriesName;
 
-                if (item.IndexNumber.HasValue && item.ParentIndexNumber.HasValue)
-                {
+                if (item.IndexNumber.HasValue && item.ParentIndexNumber.HasValue) {
                     name = name + " " + string.Format("S{0}, E{1}", item.ParentIndexNumber.Value, item.IndexNumber.Value);
                 }
-
             }
 
             return name;
@@ -128,15 +135,17 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
 
             try {
                 TvView view = await tvViewTask;
-                
+
                 cancellationSource.Token.ThrowIfCancellationRequested();
 
                 LoadSpotlightViewModel(view);
                 LoadAllShowsViewModel(view);
                 LoadMiniSpotlightsViewModel(view);
-            } catch (Exception ex) {
+            }
+            catch (Exception ex) {
                 _logger.ErrorException("Error getting tv view", ex);
-            } finally {
+            }
+            finally {
                 DisposeMainViewCancellationTokenSource(false);
             }
         }
@@ -160,7 +169,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
                 if (MiniSpotlightItems.Count > i) {
                     MiniSpotlightItems[i].Item = items[i];
                 } else {
-                    var vm = CreateMiniSpotlightItem();
+                    ItemTileViewModel vm = CreateMiniSpotlightItem();
                     vm.Item = items[i];
 
                     MiniSpotlightItems.Add(vm);
@@ -168,7 +177,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
             }
 
             if (MiniSpotlightItems.Count > items.Length) {
-                var toRemove = MiniSpotlightItems.Skip(items.Length).ToList();
+                List<ItemTileViewModel> toRemove = MiniSpotlightItems.Skip(items.Length).ToList();
                 MiniSpotlightItems.RemoveRange(toRemove);
             }
         }
@@ -189,15 +198,6 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
 
             AllShowsImagesViewModel.Images.AddRange(images);
             AllShowsImagesViewModel.StartRotating();
-        }
-
-        public Size Size
-        {
-            get
-            {
-                return new Size(SpotlightWidth + _miniSpotlightWidth + 4 * HomeViewModel.TileMargin + HomeViewModel.SectionSpacing,
-                                SpotlightHeight + HomeViewModel.TileHeight + 4 * HomeViewModel.TileMargin);
-            }
         }
     }
 }

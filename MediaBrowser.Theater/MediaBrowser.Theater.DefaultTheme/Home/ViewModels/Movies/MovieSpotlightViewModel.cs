@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -27,15 +26,15 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
         private readonly ILogger _logger;
+        private readonly double _miniSpotlightWidth;
         private readonly INavigator _navigator;
         //private readonly IPlaybackManager _playbackManager;
         private readonly IServerEvents _serverEvents;
         private readonly ISessionManager _sessionManager;
         private CancellationTokenSource _mainViewCancellationTokenSource;
-        private readonly double _miniSpotlightWidth;
 
         public MovieSpotlightViewModel(Task<MoviesView> moviesViewTask, IImageManager imageManager, INavigator navigator, IApiClient apiClient, IServerEvents serverEvents,
-                                    /*IPlaybackManager playbackManager,*/ ISessionManager sessionManager, ILogManager logManager)
+                                       /*IPlaybackManager playbackManager,*/ ISessionManager sessionManager, ILogManager logManager)
         {
             _imageManager = imageManager;
             _navigator = navigator;
@@ -60,7 +59,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
                 ImageStretch = Stretch.UniformToFill
             };
 
-            MiniSpotlightItems = new RangeObservableCollection<ItemTileViewModel>() { 
+            MiniSpotlightItems = new RangeObservableCollection<ItemTileViewModel> {
                 CreateMiniSpotlightItem(),
                 CreateMiniSpotlightItem(),
                 CreateMiniSpotlightItem(),
@@ -81,20 +80,33 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
         public ICommand AllMoviesCommand { get; private set; }
         public ICommand TrailersCommand { get; private set; }
 
-        public string SectionTitle { get { return "Movies"; } }
-
         public string Title
         {
             get { return "MediaBrowser.Theater.DefaultTheme:Strings:Home_MovieSpotlight_Title".Localize(); }
         }
-        
+
+        public string SectionTitle
+        {
+            get { return "MediaBrowser.Theater.DefaultTheme:Strings:Home_MoviesSectionTitle".Localize(); }
+        }
+
+        public Size Size
+        {
+            get
+            {
+                return new Size(SpotlightWidth + _miniSpotlightWidth + 4*HomeViewModel.TileMargin + HomeViewModel.SectionSpacing,
+                                SpotlightHeight + HomeViewModel.TileHeight + 4*HomeViewModel.TileMargin);
+            }
+        }
+
         private void DisposeMainViewCancellationTokenSource(bool cancel)
         {
             if (_mainViewCancellationTokenSource != null) {
                 if (cancel) {
                     try {
                         _mainViewCancellationTokenSource.Cancel();
-                    } catch (ObjectDisposedException) { }
+                    }
+                    catch (ObjectDisposedException) { }
                 }
                 _mainViewCancellationTokenSource.Dispose();
                 _mainViewCancellationTokenSource = null;
@@ -107,15 +119,17 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
 
             try {
                 MoviesView view = await moviesViewTask;
-                
+
                 cancellationSource.Token.ThrowIfCancellationRequested();
 
                 LoadSpotlightViewModel(view);
                 LoadAllMoviesViewModel(view);
                 LoadMiniSpotlightsViewModel(view);
-            } catch (Exception ex) {
+            }
+            catch (Exception ex) {
                 _logger.ErrorException("Error getting tv view", ex);
-            } finally {
+            }
+            finally {
                 DisposeMainViewCancellationTokenSource(false);
             }
         }
@@ -138,7 +152,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
                 if (MiniSpotlightItems.Count > i) {
                     MiniSpotlightItems[i].Item = items[i];
                 } else {
-                    var vm = CreateMiniSpotlightItem();
+                    ItemTileViewModel vm = CreateMiniSpotlightItem();
                     vm.Item = items[i];
 
                     MiniSpotlightItems.Add(vm);
@@ -146,7 +160,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
             }
 
             if (MiniSpotlightItems.Count > items.Length) {
-                var toRemove = MiniSpotlightItems.Skip(items.Length).ToList();
+                List<ItemTileViewModel> toRemove = MiniSpotlightItems.Skip(items.Length).ToList();
                 MiniSpotlightItems.RemoveRange(toRemove);
             }
         }
@@ -167,15 +181,6 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
 
             AllMoviesImagesViewModel.Images.AddRange(images);
             AllMoviesImagesViewModel.StartRotating();
-        }
-
-        public Size Size
-        {
-            get
-            {
-                return new Size(SpotlightWidth + _miniSpotlightWidth + 4*HomeViewModel.TileMargin + HomeViewModel.SectionSpacing,
-                                SpotlightHeight + HomeViewModel.TileHeight + 4*HomeViewModel.TileMargin);
-            }
         }
     }
 }

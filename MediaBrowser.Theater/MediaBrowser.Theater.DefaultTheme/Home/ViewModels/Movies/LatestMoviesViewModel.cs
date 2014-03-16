@@ -18,8 +18,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
     public class LatestMoviesViewModel
         : BaseViewModel, IKnownSize, IHomePage
     {
-        const double PosterHeight = (HomeViewModel.TileHeight * 1.5) + HomeViewModel.TileMargin;
-        const double PosterWidth = PosterHeight * 2 / 3.0;
+        private const double PosterHeight = (HomeViewModel.TileHeight*1.5) + HomeViewModel.TileMargin;
+        private const double PosterWidth = PosterHeight*2/3.0;
 
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
@@ -50,7 +50,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
         {
             get { return "MediaBrowser.Theater.DefaultTheme:Strings:Home_LatestMovies_Title".Localize(); }
         }
-        
+
         public bool IsVisible
         {
             get { return _isVisible; }
@@ -62,6 +62,26 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
 
                 _isVisible = value;
                 OnPropertyChanged();
+            }
+        }
+
+        public string SectionTitle
+        {
+            get { return "MediaBrowser.Theater.DefaultTheme:Strings:Home_MoviesSectionTitle".Localize(); }
+        }
+
+        public Size Size
+        {
+            get
+            {
+                if (Movies.Count == 0) {
+                    return new Size();
+                }
+
+                var width = (int) Math.Ceiling(Movies.Count/2.0);
+
+                return new Size(width*(PosterWidth + 2*HomeViewModel.TileMargin) + HomeViewModel.SectionSpacing,
+                                2*(PosterWidth + 2*HomeViewModel.TileMargin));
             }
         }
 
@@ -99,22 +119,5 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
                 DownloadImagesAtExactSize = true
             };
         }
-
-        public Size Size
-        {
-            get
-            {
-                if (Movies.Count == 0) {
-                    return new Size();
-                }
-
-                int width = (int)Math.Ceiling(Movies.Count / 2.0);
-
-                return new Size(width * (PosterWidth + 2 * HomeViewModel.TileMargin) + HomeViewModel.SectionSpacing,
-                                2 * (PosterWidth + 2 * HomeViewModel.TileMargin));
-            }
-        }
-
-        public string SectionTitle { get { return "Movies"; } }
     }
 }

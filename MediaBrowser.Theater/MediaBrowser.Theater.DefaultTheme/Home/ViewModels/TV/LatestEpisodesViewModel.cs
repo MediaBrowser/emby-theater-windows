@@ -41,8 +41,6 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
             LoadItems(tvViewTask);
         }
 
-        public string SectionTitle { get { return "TV"; } }
-
         public RangeObservableCollection<ItemTileViewModel> Episodes { get; private set; }
 
         public string Title
@@ -55,13 +53,32 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
             get { return _isVisible; }
             private set
             {
-                if (Equals(_isVisible, value))
-                {
+                if (Equals(_isVisible, value)) {
                     return;
                 }
 
                 _isVisible = value;
                 OnPropertyChanged();
+            }
+        }
+
+        public string SectionTitle
+        {
+            get { return "MediaBrowser.Theater.DefaultTheme:Strings:Home_TVSectionTitle".Localize(); }
+        }
+
+        public Size Size
+        {
+            get
+            {
+                if (Episodes.Count == 0) {
+                    return new Size();
+                }
+
+                var width = (int) Math.Ceiling(Episodes.Count/3.0);
+
+                return new Size(width*(HomeViewModel.TileWidth + 2*HomeViewModel.TileMargin) + HomeViewModel.SectionSpacing,
+                                3*(HomeViewModel.TileHeight + 2*HomeViewModel.TileMargin));
             }
         }
 
@@ -98,21 +115,6 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
                 DisplayNameGenerator = TvSpotlightViewModel.GetDisplayName,
                 DownloadImagesAtExactSize = true
             };
-        }
-
-        public Size Size
-        {
-            get
-            {
-                if (Episodes.Count == 0) {
-                    return new Size();
-                }
-
-                int width = (int)Math.Ceiling(Episodes.Count / 3.0);
-
-                return new Size(width * (HomeViewModel.TileWidth + 2 * HomeViewModel.TileMargin) + HomeViewModel.SectionSpacing,
-                                3 * (HomeViewModel.TileHeight + 2 * HomeViewModel.TileMargin));
-            }
         }
     }
 }

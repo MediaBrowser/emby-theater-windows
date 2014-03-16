@@ -149,9 +149,17 @@
     <value>@Home_MovieSpotlight_Title</value>
     <comment>Section title for movie spotlight</comment>
   </data>
+  <data name="Home_MoviesSectionTitle" xml:space="preserve">
+    <value>@Home_MoviesSectionTitle</value>
+    <comment>The movie section title</comment>
+  </data>
   <data name="Home_ResumeEpisodes_Title" xml:space="preserve">
     <value>@Home_ResumeEpisodes_Title</value>
     <comment>Section title for resume episodes</comment>
+  </data>
+  <data name="Home_TVSectionTitle" xml:space="preserve">
+    <value>@Home_TVSectionTitle</value>
+    <comment>The TV section title</comment>
   </data>
   <data name="Home_TvSpotlight_Title" xml:space="preserve">
     <value>@Home_TvSpotlight_Title</value>

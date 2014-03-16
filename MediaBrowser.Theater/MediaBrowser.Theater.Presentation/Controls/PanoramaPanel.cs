@@ -32,9 +32,9 @@ namespace MediaBrowser.Theater.Presentation.Controls
         private const double WheelSize = 3*LineSize;
         private static readonly Size InfiniteSize = new Size(double.PositiveInfinity, double.PositiveInfinity);
 
-        private readonly TimeSpan _animationTime = TimeSpan.FromMilliseconds(500);
+        private readonly TimeSpan _animationTime = TimeSpan.FromMilliseconds(250);
         private readonly Dictionary<int, DateTime> _lastVisibleTimes = new Dictionary<int, DateTime>();
-        private readonly TimeSpan _removalDelay = TimeSpan.FromMilliseconds(1000);
+        private readonly TimeSpan _removalDelay = TimeSpan.FromMilliseconds(600);
         private readonly TranslateTransform _transform;
 
         private Size _extent;

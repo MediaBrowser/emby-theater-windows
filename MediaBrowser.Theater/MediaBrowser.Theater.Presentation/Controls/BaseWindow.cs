@@ -181,6 +181,13 @@ namespace MediaBrowser.Theater.Presentation.Controls
             OnMouseMove();
         }
 
+        protected override void OnMouseWheel(MouseWheelEventArgs e)
+        {
+            base.OnMouseWheel(e);
+
+            OnMouseMove();
+        }
+
         protected override void OnClosing(CancelEventArgs e)
         {
             DisposeActivityTimer();

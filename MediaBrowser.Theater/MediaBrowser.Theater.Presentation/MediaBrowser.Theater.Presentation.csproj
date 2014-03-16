@@ -89,7 +89,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Resources\DefaultControlTemplates\Panorama.xaml">
+    <Page Include="Resources\DefaultControlTemplates\IndexedItemsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -146,7 +146,6 @@
     <Compile Include="Controls\Osk\VirtualKeyboardTextField.cs" />
     <Compile Include="Controls\Osk\VirtualKeySet.cs" />
     <Compile Include="Controls\Osk\VirtualKeySetRow.cs" />
-    <Compile Include="Controls\Panorama.cs" />
     <Compile Include="Controls\PanoramaPanel.cs" />
     <Compile Include="Controls\ScrollingPanel.cs" />
     <Compile Include="Controls\WindowCommands.cs" />
@@ -176,7 +175,6 @@
     <Compile Include="ViewModels\BaseViewModel.cs" />
     <Compile Include="ViewModels\IHasActivityStatus.cs" />
     <Compile Include="ViewModels\IHasCloseDelay.cs" />
-    <Compile Include="ViewModels\IPanoramaPage.cs" />
     <Compile Include="ViewModels\NotificationViewModel.cs" />
     <Compile Include="ViewModels\RangeObservableCollection.cs" />
     <Compile Include="ViewModels\RelayCommand.cs" />

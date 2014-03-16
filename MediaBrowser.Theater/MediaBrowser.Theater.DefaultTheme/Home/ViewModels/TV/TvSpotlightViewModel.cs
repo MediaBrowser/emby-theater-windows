@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using MediaBrowser.Model.ApiClient;
@@ -16,12 +17,13 @@ using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
 using MediaBrowser.Theater.Presentation;
+using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
 {
     public class TvSpotlightViewModel
-        : BaseViewModel, IPanoramaPage
+        : BaseViewModel, IPanoramaPage, IKnownSize
     {
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
@@ -31,6 +33,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
         private readonly IServerEvents _serverEvents;
         private readonly ISessionManager _sessionManager;
         private CancellationTokenSource _mainViewCancellationTokenSource;
+
+        private readonly double _miniSpotlightWidth;
 
         public TvSpotlightViewModel(Task<TvView> tvViewTask, IImageManager imageManager, INavigator navigator, IApiClient apiClient, IServerEvents serverEvents,
                                     /*IPlaybackManager playbackManager,*/ ISessionManager sessionManager, ILogManager logManager)
@@ -44,6 +48,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
             _logger = logManager.GetLogger("TV Spotlight");
             SpotlightHeight = HomeViewModel.TileHeight*2 + HomeViewModel.TileMargin*2;
             SpotlightWidth = 16*(SpotlightHeight/9) + 100;
+            _miniSpotlightWidth = HomeViewModel.TileWidth + (HomeViewModel.TileMargin/4) - 1;
 
             LowerSpotlightWidth = SpotlightWidth/3 - HomeViewModel.TileMargin*1.5;
             LowerSpotlightHeight = HomeViewModel.TileHeight;
@@ -147,7 +152,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
         private ItemTileViewModel CreateMiniSpotlightItem()
         {
             return new ItemTileViewModel(_apiClient, _imageManager, _serverEvents, _navigator, /*_playbackManager,*/ null) {
-                ImageWidth = HomeViewModel.TileWidth + (HomeViewModel.TileMargin/4) - 1,
+                ImageWidth = _miniSpotlightWidth,
                 ImageHeight = HomeViewModel.TileHeight,
                 PreferredImageTypes = new[] { ImageType.Backdrop, ImageType.Thumb },
                 DisplayNameGenerator = GetDisplayName,
@@ -192,6 +197,15 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
 
             AllShowsImagesViewModel.Images.AddRange(images);
             AllShowsImagesViewModel.StartRotating();
+        }
+
+        public Size Size
+        {
+            get
+            {
+                return new Size(SpotlightWidth + _miniSpotlightWidth + 4 * HomeViewModel.TileMargin + HomeViewModel.SectionSpacing,
+                                SpotlightHeight + HomeViewModel.TileHeight + 4 * HomeViewModel.TileMargin);
+            }
         }
     }
 }

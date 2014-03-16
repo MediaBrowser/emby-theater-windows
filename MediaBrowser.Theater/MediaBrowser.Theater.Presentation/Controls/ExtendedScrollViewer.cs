@@ -27,23 +27,27 @@ namespace MediaBrowser.Theater.Presentation.Controls
                 return;
             }
 
-            // Don't eat left/right if horizontal scrolling is disabled
-            if (e.Key == Key.Left || e.Key == Key.Right)
-            {
-                if (HorizontalScrollBarVisibility == ScrollBarVisibility.Disabled || HorizontalOffset.Equals(0) || IgnoreAllDirectionKeys)
-                {
-                    return;
-                }
+            if (e.Key == Key.Left || e.Key == Key.Right || e.Key == Key.Up || e.Key == Key.Down) {
+                return;
             }
 
-            // Don't eat up/down if vertical scrolling is disabled
-            if (e.Key == Key.Up || e.Key == Key.Down)
-            {
-                if (VerticalScrollBarVisibility == ScrollBarVisibility.Disabled || VerticalOffset.Equals(0) || IgnoreAllDirectionKeys)
-                {
-                    return;
-                }
-            }
+//            // Don't eat left/right if horizontal scrolling is disabled
+//            if (e.Key == Key.Left || e.Key == Key.Right)
+//            {
+//                if (HorizontalScrollBarVisibility == ScrollBarVisibility.Disabled || HorizontalOffset.Equals(0) || IgnoreAllDirectionKeys)
+//                {
+//                    return;
+//                }
+//            }
+//
+//            // Don't eat up/down if vertical scrolling is disabled
+//            if (e.Key == Key.Up || e.Key == Key.Down)
+//            {
+//                if (VerticalScrollBarVisibility == ScrollBarVisibility.Disabled || VerticalOffset.Equals(0) || IgnoreAllDirectionKeys)
+//                {
+//                    return;
+//                }
+//            }
 
             // Let the base class do it's thing
             base.OnKeyDown(e);

@@ -117,6 +117,7 @@
     <Compile Include="Controls\ExtendedItemsControl.cs" />
     <Compile Include="Controls\ExtendedListBox.cs" />
     <Compile Include="Controls\ExtendedScrollViewer.cs" />
+    <Compile Include="Controls\IndexedItemsControl.cs" />
     <Compile Include="Controls\Osk\AlternateKeySelection.cs" />
     <Compile Include="Controls\Osk\EmptyStringVisibilityConverter.cs" />
     <Compile Include="Controls\Osk\Layout\AcceptAction.cs" />
@@ -146,6 +147,7 @@
     <Compile Include="Controls\Osk\VirtualKeySet.cs" />
     <Compile Include="Controls\Osk\VirtualKeySetRow.cs" />
     <Compile Include="Controls\Panorama.cs" />
+    <Compile Include="Controls\PanoramaPanel.cs" />
     <Compile Include="Controls\ScrollingPanel.cs" />
     <Compile Include="Controls\WindowCommands.cs" />
     <Compile Include="Converters\BooleanInverter.cs" />

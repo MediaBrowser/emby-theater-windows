@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
@@ -10,13 +10,17 @@ using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
 using MediaBrowser.Theater.Presentation;
+using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
 {
     public class LatestTrailersViewModel
-        : BaseViewModel, IPanoramaPage
+        : BaseViewModel, IPanoramaPage, IKnownSize
     {
+        const double PosterHeight = (HomeViewModel.TileHeight * 1.5) + HomeViewModel.TileMargin;
+        const double PosterWidth = PosterHeight * 2 / 3.0;
+
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
         private readonly INavigator _navigator;
@@ -89,20 +93,29 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
             }
 
             IsVisible = Trailers.Count > 0;
+            OnPropertyChanged("Size");
         }
 
         private ItemTileViewModel CreateMovieItem()
         {
-            const double posterHeight = (HomeViewModel.TileHeight*1.5) + HomeViewModel.TileMargin;
-            const double posterWidth = posterHeight*2/3.0;
-
             return new ItemTileViewModel(_apiClient, _imageManager, _serverEvents, _navigator, /*_playbackManager,*/ null) {
-                ImageWidth = posterWidth,
-                ImageHeight = posterHeight,
+                ImageWidth = PosterWidth,
+                ImageHeight = PosterHeight,
                 ShowDisplayName = false,
                 PreferredImageTypes = new[] { ImageType.Primary, ImageType.Backdrop, ImageType.Thumb },
                 DownloadImagesAtExactSize = true
             };
+        }
+
+        public Size Size
+        {
+            get
+            {
+                int width = (int)Math.Ceiling(Trailers.Count / 2.0);
+
+                return new Size(width*(PosterWidth + 2*HomeViewModel.TileMargin) + HomeViewModel.SectionSpacing,
+                                2*(PosterHeight + 2*HomeViewModel.TileMargin));
+            }
         }
     }
 }

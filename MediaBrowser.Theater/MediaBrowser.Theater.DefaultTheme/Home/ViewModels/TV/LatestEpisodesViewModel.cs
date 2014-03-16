@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
@@ -8,12 +10,13 @@ using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
 using MediaBrowser.Theater.Presentation;
+using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
 {
     public class LatestEpisodesViewModel
-        : BaseViewModel, IPanoramaPage
+        : BaseViewModel, IPanoramaPage, IKnownSize
     {
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
@@ -98,6 +101,17 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
                 DisplayNameGenerator = TvSpotlightViewModel.GetDisplayName,
                 DownloadImagesAtExactSize = true
             };
+        }
+
+        public Size Size
+        {
+            get
+            {
+                int width = (int)Math.Ceiling(Episodes.Count / 3.0);
+
+                return new Size(width * (HomeViewModel.TileWidth + 2 * HomeViewModel.TileMargin) + HomeViewModel.SectionSpacing,
+                                3 * (HomeViewModel.TileHeight + 2 * HomeViewModel.TileMargin));
+            }
         }
     }
 }

@@ -10,9 +10,9 @@
              d:DataContext="{d:DesignInstance viewModels:ItemTileViewModel}"
              d:DesignHeight="300" d:DesignWidth="300">
     <Button Command="{Binding GoToDetailsCommand}" Style="{StaticResource BaseItemButtonStyle}" Margin="{x:Static viewModels1:HomeViewModel.TileMarginThickness}">
-        <Button.CacheMode>
-            <BitmapCache EnableClearType="True" RenderAtScale="1"/>
-        </Button.CacheMode>
+<!--        <Button.CacheMode>-->
+<!--            <BitmapCache EnableClearType="True" RenderAtScale="1"/>-->
+<!--        </Button.CacheMode>-->
         
         <Grid Width="{Binding ImageWidth}" Height="{Binding ImageHeight}">
             <controls:ExtendedContentControl Content="{Binding Image}" />

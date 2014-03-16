@@ -13,6 +13,10 @@
              d:DataContext="{d:DesignInstance tv:ResumeEpisodesViewModel}"
              Focusable="False"
              d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.CacheMode>
+        <BitmapCache EnableClearType="True" RenderAtScale="1"/>
+    </UserControl.CacheMode>
+    
     <Grid>
         <controls:ExtendedItemsControl ItemsSource="{Binding Episodes}">
             <controls:ExtendedItemsControl.ItemsPanel>

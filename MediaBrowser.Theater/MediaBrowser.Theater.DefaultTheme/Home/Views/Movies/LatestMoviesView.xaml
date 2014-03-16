@@ -13,11 +13,15 @@
              d:DataContext="{d:DesignInstance movies:LatestMoviesViewModel}"
              Focusable="False"
              d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.CacheMode>
+        <BitmapCache EnableClearType="True" RenderAtScale="1"/>
+    </UserControl.CacheMode>
+    
     <Grid>
         <controls:ExtendedItemsControl ItemsSource="{Binding Movies}">
             <controls:ExtendedItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <WrapPanel Orientation="Vertical" />
+                    <WrapPanel Orientation="Vertical" MaxHeight="750"/>
                 </ItemsPanelTemplate>
             </controls:ExtendedItemsControl.ItemsPanel>
         </controls:ExtendedItemsControl>

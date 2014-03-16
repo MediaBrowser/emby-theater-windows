@@ -14,6 +14,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels
         public const double TileWidth = 400; //336;
         public const double TileHeight = TileWidth * 9 / 16;
         public const int TileMargin = 2;
+        public const double SectionSpacing = 50;
 
         public static Thickness TileMarginThickness = new Thickness(TileMargin);
 

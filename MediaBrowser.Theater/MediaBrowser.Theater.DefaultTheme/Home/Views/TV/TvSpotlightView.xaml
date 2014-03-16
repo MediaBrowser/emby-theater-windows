@@ -14,6 +14,10 @@
              d:DataContext="{d:DesignInstance tv:TvSpotlightViewModel}"
              Focusable="False"
              d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.CacheMode>
+        <BitmapCache EnableClearType="True" RenderAtScale="1"/>
+    </UserControl.CacheMode>
+
     <StackPanel Orientation="Horizontal">
         <StackPanel Orientation="Vertical">
 

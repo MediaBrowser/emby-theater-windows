@@ -9,7 +9,7 @@
                      MinWidth="720"
                      MinHeight="480"
                      WindowStyle="None"
-                     AllowsTransparency="False"
+                     AllowsTransparency="True"
                      ResizeMode="CanResizeWithGrip"
                      WindowStartupLocation="CenterScreen">
     <Grid IsHitTestVisible="{Binding Path=IsMouseIdle, RelativeSource={RelativeSource AncestorType={x:Type defaultTheme:MainWindow}}, Converter={StaticResource BooleanInverter}}">

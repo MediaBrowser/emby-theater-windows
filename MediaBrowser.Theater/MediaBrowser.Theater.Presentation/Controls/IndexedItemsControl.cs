@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -134,23 +135,25 @@ namespace MediaBrowser.Theater.Presentation.Controls
 
         protected override void OnPreviewGotKeyboardFocus(KeyboardFocusChangedEventArgs e)
         {
-            var children = new List<DependencyObject>();
-            for (var control = e.NewFocus as DependencyObject; control != null; control = VisualTreeHelper.GetParent(control)) {
-                if (Equals(control, this)) {
-                    DependencyObject container = children.LastOrDefault(c => c is ExtendedContentControl);
-                    if (container != null) {
-                        object selectedItem = ItemContainerGenerator.ItemFromContainer(container);
-                        SelectedIndex = _indicesByItem[selectedItem];
-                    }
+            if (IsKeyboardFocusWithin) {
+                var children = new List<DependencyObject>();
+                for (var control = e.NewFocus as DependencyObject; control != null; control = VisualTreeHelper.GetParent(control)) {
+                    if (Equals(control, this)) {
+                        DependencyObject container = children.LastOrDefault(c => c is ExtendedContentControl);
+                        if (container != null) {
+                            object selectedItem = ItemContainerGenerator.ItemFromContainer(container);
+                            SelectedIndex = _indicesByItem[selectedItem];
+                        }
 
-                    break;
+                        break;
+                    }
+                    children.Add(control);
                 }
-                children.Add(control);
             }
 
             base.OnPreviewGotKeyboardFocus(e);
         }
-
+        
         protected override void OnItemsChanged(NotifyCollectionChangedEventArgs e)
         {
             FindIndices();

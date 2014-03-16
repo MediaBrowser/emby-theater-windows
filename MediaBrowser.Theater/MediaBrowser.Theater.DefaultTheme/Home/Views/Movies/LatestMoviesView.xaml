@@ -13,11 +13,9 @@
              d:DataContext="{d:DesignInstance movies:LatestMoviesViewModel}"
              Focusable="False"
              d:DesignHeight="300" d:DesignWidth="300">
-    <UserControl.CacheMode>
-        <BitmapCache EnableClearType="True" RenderAtScale="1"/>
-    </UserControl.CacheMode>
-    
-    <Grid>
+    <StackPanel Visibility="{Binding IsVisible, Converter={StaticResource BooleanToVisibility}}" Margin="50,0,0,0">
+        <TextBlock Text="{Binding Title, Converter={StaticResource UppercaseConverter}}" Margin="2,0,0,0" Style="{StaticResource PanoramaTitleTextBlockStyle}" />
+        
         <controls:ExtendedItemsControl ItemsSource="{Binding Movies}">
             <controls:ExtendedItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -25,5 +23,5 @@
                 </ItemsPanelTemplate>
             </controls:ExtendedItemsControl.ItemsPanel>
         </controls:ExtendedItemsControl>
-    </Grid>
+    </StackPanel>
 </UserControl>

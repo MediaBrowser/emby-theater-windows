@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
@@ -49,6 +50,47 @@ namespace MediaBrowser.Theater.Presentation.Controls
         {
             _transform = new TranslateTransform();
             RenderTransform = _transform;
+        }
+
+        private DateTime _lastHandledNavigation;
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            if (e.IsRepeat && (e.Key == Key.Left || e.Key == Key.Right)) {
+                if (DateTime.Now - _lastHandledNavigation < TimeSpan.FromMilliseconds(200)) {
+                    e.Handled = true;
+                    return;
+                }
+            }
+
+            _lastHandledNavigation = DateTime.Now;
+
+            if (e.Key == Key.Left) {
+                var currentFocus = Keyboard.FocusedElement as FrameworkElement;
+                if (currentFocus != null) {
+                    var nextFocus = currentFocus.PredictFocus(FocusNavigationDirection.Left) as FrameworkElement;
+                    if (nextFocus != null) {
+                        var position = nextFocus.TransformToAncestor(this).Transform(new Point(0, 0));
+                        if (position.X - HorizontalOffset > ViewportWidth) {
+                            e.Handled = true;
+                        }
+                    }
+                }
+            }
+
+            if (e.Key == Key.Right) {
+                var currentFocus = Keyboard.FocusedElement as FrameworkElement;
+                if (currentFocus != null) {
+                    var nextFocus = currentFocus.PredictFocus(FocusNavigationDirection.Right) as FrameworkElement;
+                    if (nextFocus != null) {
+                        var position = nextFocus.TransformToAncestor(this).Transform(new Point(0, 0));
+                        if (position.X < HorizontalOffset) {
+                            e.Handled = true;
+                        }
+                    }
+                }
+            }
+
+            base.OnKeyDown(e);
         }
 
         public ScrollViewer ScrollOwner { get; set; }
@@ -104,8 +146,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
             offset = Math.Max(0, Math.Min(offset, ExtentWidth - ViewportWidth));
             if (offset != _offset.X) {
                 _offset.X = offset;
-
-                Debug.WriteLine(_offset.X);
+                
                 _transform.BeginAnimation(TranslateTransform.XProperty, GetAnimation(-offset), HandoffBehavior.SnapshotAndReplace);
 
                 InvalidateMeasure();

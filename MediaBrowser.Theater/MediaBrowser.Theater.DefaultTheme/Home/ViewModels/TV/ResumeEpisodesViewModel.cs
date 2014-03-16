@@ -17,7 +17,7 @@ using MediaBrowser.Theater.Presentation.ViewModels;
 namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
 {
     public class ResumeEpisodesViewModel
-       : BaseViewModel, IPanoramaPage, IKnownSize
+       : BaseViewModel, IKnownSize, IHomePage
     {
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
@@ -42,16 +42,13 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
             LoadItems(tvViewTask);
         }
 
+        public string SectionTitle { get { return "TV"; } }
+
         public RangeObservableCollection<ItemTileViewModel> Episodes { get; private set; }
 
-        public string DisplayName
+        public string Title
         {
             get { return "MediaBrowser.Theater.DefaultTheme:Strings:Home_ResumeEpisodes_Title".Localize(); }
-        }
-
-        public bool IsTitlePage
-        {
-            get { return false; }
         }
 
         public bool IsVisible
@@ -108,6 +105,10 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
         {
             get
             {
+                if (Episodes.Count == 0) {
+                    return new Size();
+                }
+
                 int width = (int)Math.Ceiling(Episodes.Count / 3.0);
 
                 return new Size(width*(HomeViewModel.TileWidth + 2*HomeViewModel.TileMargin) + HomeViewModel.SectionSpacing,

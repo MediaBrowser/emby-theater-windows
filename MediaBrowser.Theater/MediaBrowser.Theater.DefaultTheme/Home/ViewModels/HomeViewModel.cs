@@ -1,15 +1,22 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using MediaBrowser.Theater.Api;
+using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.Presentation.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels
 {
+    public interface IHomePage
+    {
+        string SectionTitle { get; }
+    }
+
     public class HomeViewModel
         : BaseViewModel
     {
-        public List<IPanoramaPage> Pages { get; private set; }
+        public List<IViewModel> Pages { get; private set; }
 
         public const double TileWidth = 400; //336;
         public const double TileHeight = TileWidth * 9 / 16;
@@ -18,9 +25,9 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels
 
         public static Thickness TileMarginThickness = new Thickness(TileMargin);
 
-        public List<IPanoramaPage> TitlePages
+        public Func<object, object> TitleSelector
         {
-            get { return Pages.Where(p => p.IsTitlePage).ToList(); }
+            get { return item => ((IHomePage) item).SectionTitle; }
         }
 
         public HomeViewModel(ITheaterApplicationHost appHost)

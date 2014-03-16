@@ -22,7 +22,7 @@ using MediaBrowser.Theater.Presentation.ViewModels;
 namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
 {
     public class MovieSpotlightViewModel
-        : BaseViewModel, IPanoramaPage, IKnownSize
+        : BaseViewModel, IKnownSize, IHomePage
     {
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
@@ -81,21 +81,13 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
         public ICommand AllMoviesCommand { get; private set; }
         public ICommand TrailersCommand { get; private set; }
 
-        public string DisplayName
+        public string SectionTitle { get { return "Movies"; } }
+
+        public string Title
         {
             get { return "MediaBrowser.Theater.DefaultTheme:Strings:Home_MovieSpotlight_Title".Localize(); }
         }
-
-        public bool IsTitlePage
-        {
-            get { return true; }
-        }
-
-        public bool IsVisible
-        {
-            get { return true; }
-        }
-
+        
         private void DisposeMainViewCancellationTokenSource(bool cancel)
         {
             if (_mainViewCancellationTokenSource != null) {

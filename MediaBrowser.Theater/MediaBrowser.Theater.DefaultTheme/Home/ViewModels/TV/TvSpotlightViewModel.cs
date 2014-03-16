@@ -23,7 +23,7 @@ using MediaBrowser.Theater.Presentation.ViewModels;
 namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
 {
     public class TvSpotlightViewModel
-        : BaseViewModel, IPanoramaPage, IKnownSize
+        : BaseViewModel, IKnownSize, IHomePage
     {
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
@@ -71,6 +71,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
             LoadViewModels(tvViewTask);
         }
 
+        public string SectionTitle { get { return "TV"; } }
+
         public double SpotlightWidth { get; private set; }
         public double SpotlightHeight { get; private set; }
 
@@ -84,21 +86,11 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
         public ICommand GenresCommand { get; private set; }
         public ICommand UpcomingCommand { get; private set; }
 
-        public string DisplayName
+        public string Title
         {
             get { return "MediaBrowser.Theater.DefaultTheme:Strings:Home_TvSpotlight_Title".Localize(); }
         }
-
-        public bool IsTitlePage
-        {
-            get { return true; }
-        }
-
-        public bool IsVisible
-        {
-            get { return true; }
-        }
-
+        
         private void DisposeMainViewCancellationTokenSource(bool cancel)
         {
             if (_mainViewCancellationTokenSource != null) {

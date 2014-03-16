@@ -32,7 +32,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
             _logManager = logManager;
         }
 
-        public IEnumerable<IPanoramaPage> GetHomePages()
+        public IEnumerable<IViewModel> GetHomePages()
         {
             var cancellationSource = new CancellationTokenSource();
             Task<MoviesView> movieView = _apiClient.GetMovieView(_sessionManager.CurrentUser.Id, cancellationSource.Token);

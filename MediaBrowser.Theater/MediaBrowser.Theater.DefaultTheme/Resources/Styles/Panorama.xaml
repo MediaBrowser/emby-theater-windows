@@ -1,9 +1,10 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:viewModels1="clr-namespace:MediaBrowser.Theater.Presentation.ViewModels;assembly=MediaBrowser.Theater.Presentation">
+                    xmlns:viewModels1="clr-namespace:MediaBrowser.Theater.Presentation.ViewModels;assembly=MediaBrowser.Theater.Presentation"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib">
 
-    <DataTemplate x:Key="PanoramaTitleTemplate" DataType="{x:Type viewModels1:IPanoramaPage}">
-        <TextBlock Text="{Binding DisplayName}" Margin="50,0,30,20">
+    <DataTemplate x:Key="PanoramaTitleTemplate" DataType="{x:Type system:String}">
+        <TextBlock Text="{Binding}" Margin="50,0,30,20">
             <TextBlock.Style>
                 <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource Heading1TextBlockStyle}">
                     <Setter Property="Opacity" Value="0.15"/>

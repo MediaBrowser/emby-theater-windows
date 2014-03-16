@@ -16,7 +16,7 @@ using MediaBrowser.Theater.Presentation.ViewModels;
 namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
 {
     public class LatestTrailersViewModel
-        : BaseViewModel, IPanoramaPage, IKnownSize
+        : BaseViewModel, IKnownSize, IHomePage
     {
         const double PosterHeight = (HomeViewModel.TileHeight * 1.5) + HomeViewModel.TileMargin;
         const double PosterWidth = PosterHeight * 2 / 3.0;
@@ -44,16 +44,13 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
             LoadItems(moviesViewTask);
         }
 
+        public string SectionTitle { get { return "Movies"; } }
+
         public RangeObservableCollection<ItemTileViewModel> Trailers { get; private set; }
 
-        public string DisplayName
+        public string Title
         {
             get { return "MediaBrowser.Theater.DefaultTheme:Strings:Home_LatestTrailers_Title".Localize(); }
-        }
-
-        public bool IsTitlePage
-        {
-            get { return false; }
         }
 
         public bool IsVisible
@@ -111,6 +108,10 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
         {
             get
             {
+                if (Trailers.Count == 0) {
+                    return new Size();
+                }
+
                 int width = (int)Math.Ceiling(Trailers.Count / 2.0);
 
                 return new Size(width*(PosterWidth + 2*HomeViewModel.TileMargin) + HomeViewModel.SectionSpacing,

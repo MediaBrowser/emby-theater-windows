@@ -41,14 +41,38 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
             _showDisplayName = true;
 
             _image = new ImageViewerViewModel(imageManager, Enumerable.Empty<ImageViewerImage>());
-            
-            DisplayNameGenerator = i => i.Name;
+
+            DisplayNameGenerator = GetDisplayNameWithAiredSpecial;
             PreferredImageTypes = new[] { ImageType.Primary, ImageType.Thumb, ImageType.Backdrop };
             GoToDetailsCommand = new RelayCommand(o => navigator.Navigate(Go.To.Item(item)));
 
             serverEvents.UserDataChanged += serverEvents_UserDataChanged;
 
             _imageInvalid = true;
+        }
+
+        public static string GetDisplayName(BaseItemDto item)
+        {
+            var name = item.Name;
+
+            if (item.IndexNumber.HasValue && !item.IsType("season")) {
+                name = item.IndexNumber + " - " + name;
+            }
+
+            if (item.ParentIndexNumber.HasValue && item.IsAudio) {
+                name = item.ParentIndexNumber + "." + name;
+            }
+
+            return name;
+        }
+
+        public static string GetDisplayNameWithAiredSpecial(BaseItemDto item)
+        {
+            if (item.IsType("episode") && item.ParentIndexNumber.HasValue && item.ParentIndexNumber.Value == 0) {
+                return "Special - " + item.Name;
+            }
+
+            return GetDisplayName(item);
         }
 
         public BaseItemDto Item

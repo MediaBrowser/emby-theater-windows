@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Threading.Tasks;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Api;
 using MediaBrowser.Theater.Api.Configuration;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Session;
+using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Home;
+using MediaBrowser.Theater.DefaultTheme.ItemList;
 using MediaBrowser.Theater.DefaultTheme.Login;
 using MediaBrowser.Theater.DefaultTheme.SideMenu;
 using MediaBrowser.Theater.DefaultTheme.SideMenu.ViewModels;
@@ -31,6 +34,13 @@ namespace MediaBrowser.Theater.DefaultTheme.Core
             Binder.Bind<LoginPath, LoginContext>();
             Binder.Bind<HomePath, HomeContext>();
             Binder.Bind<SideMenuPath, SideMenuContext>();
+
+            Binder.Bind<ItemListPath>(async path => {
+                var context = appHost.CreateInstance(typeof (ItemListContext)) as ItemListContext;
+                context.Parameters = path.Parameter;
+
+                return context;
+            });
         }
 
         public override Task Activate()

@@ -16,7 +16,9 @@
                     xmlns:viewModels3="clr-namespace:MediaBrowser.Theater.DefaultTheme.SideMenu.ViewModels"
                     xmlns:views3="clr-namespace:MediaBrowser.Theater.DefaultTheme.SideMenu.Views"
                     xmlns:commands="clr-namespace:MediaBrowser.Theater.DefaultTheme.SideMenu.Commands"
-                    xmlns:commands1="clr-namespace:MediaBrowser.Theater.DefaultTheme.Core.Commands">
+                    xmlns:commands1="clr-namespace:MediaBrowser.Theater.DefaultTheme.Core.Commands"
+                    xmlns:viewModels4="clr-namespace:MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels"
+                    xmlns:views4="clr-namespace:MediaBrowser.Theater.DefaultTheme.ItemList.Views">
     
     <DataTemplate DataType="{x:Type viewModels:RootViewModel}">
         <views:RootView/>
@@ -144,6 +146,10 @@
     
     <DataTemplate DataType="{x:Type commands1:ExitMenuCommandIconViewModel}">
         <views:ExitMenuCommandIconView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels4:ItemListViewModel}">
+        <views4:ItemListView/>
     </DataTemplate>
     
 </ResourceDictionary>

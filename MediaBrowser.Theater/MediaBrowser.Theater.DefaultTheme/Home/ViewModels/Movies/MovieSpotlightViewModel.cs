@@ -10,6 +10,7 @@ using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
+using MediaBrowser.Model.Querying;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
@@ -50,6 +51,15 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
             LowerSpotlightWidth = SpotlightWidth/2 - HomeViewModel.TileMargin;
             LowerSpotlightHeight = HomeViewModel.TileHeight;
 
+            BrowseMoviesCommand = new RelayCommand(arg => {
+                var itemParams = new ItemListParameters { 
+                    Items = GetMovies(),
+                    Title = "Movies"
+                };
+
+                navigator.Navigate(Go.To.ItemList(itemParams));
+            });
+
             SpotlightViewModel = new ItemSpotlightViewModel(imageManager, apiClient) {
                 ImageType = ImageType.Backdrop,
                 ItemSelectedAction = i => navigator.Navigate(Go.To.Item(i))
@@ -68,6 +78,18 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
             LoadViewModels(moviesViewTask);
         }
 
+        private Task<ItemsResult> GetMovies() 
+        {
+            var query = new ItemQuery {
+                UserId = _sessionManager.CurrentUser.Id,
+                IncludeItemTypes = new[] { "Movie" },
+                SortBy = new[] { ItemSortBy.SortName },
+                Recursive = true
+            };
+
+            return _apiClient.GetItemsAsync(query);
+        }
+
         public double SpotlightWidth { get; private set; }
         public double SpotlightHeight { get; private set; }
 
@@ -77,7 +99,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
         public ItemSpotlightViewModel SpotlightViewModel { get; private set; }
         public RangeObservableCollection<ItemTileViewModel> MiniSpotlightItems { get; private set; }
         public ImageSlideshowViewModel AllMoviesImagesViewModel { get; private set; }
-        public ICommand AllMoviesCommand { get; private set; }
+
+        public ICommand BrowseMoviesCommand { get; private set; }
         public ICommand TrailersCommand { get; private set; }
 
         public string Title

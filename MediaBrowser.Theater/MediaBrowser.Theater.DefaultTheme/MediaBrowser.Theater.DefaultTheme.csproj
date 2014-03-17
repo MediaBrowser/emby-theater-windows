@@ -153,6 +153,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="ItemList\Views\ItemListView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Login\Views\LoginView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -377,6 +381,11 @@
     </Compile>
     <Compile Include="Home\Views\TV\TvSpotlightView.xaml.cs">
       <DependentUpon>TvSpotlightView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ItemList\ItemListContext.cs" />
+    <Compile Include="ItemList\ViewModels\ItemListViewModel.cs" />
+    <Compile Include="ItemList\Views\ItemListView.xaml.cs">
+      <DependentUpon>ItemListView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Login\LoginContext.cs" />
     <Compile Include="Login\ViewModels\LoginViewModel.cs" />

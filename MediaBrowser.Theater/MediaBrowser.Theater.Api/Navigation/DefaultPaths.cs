@@ -1,4 +1,6 @@
-﻿using MediaBrowser.Model.Dto;
+﻿using System.Threading.Tasks;
+using MediaBrowser.Model.Dto;
+using MediaBrowser.Model.Querying;
 
 namespace MediaBrowser.Theater.Api.Navigation
 {
@@ -33,6 +35,11 @@ namespace MediaBrowser.Theater.Api.Navigation
     ///     The path to the page for the specified item.
     /// </summary>
     public class ItemPath : NavigationPathArg<BaseItemDto> { }
+
+    /// <summary>
+    ///     The path to a page for displaying the results of an items query.
+    /// </summary>
+    public class ItemListPath : NavigationPathArg<ItemListParameters> { }
 
     /// <summary>
     ///     The path to the search page.
@@ -88,6 +95,17 @@ namespace MediaBrowser.Theater.Api.Navigation
         }
 
         /// <summary>
+        ///     Gets a path to the a page to display the specified items result.
+        /// </summary>
+        /// <param name="go"></param>
+        /// <param name="parameters">The items to display.</param>
+        /// <returns>A path to the a page to display the specified items result.</returns>
+        public static ItemListPath ItemList(this Go go, ItemListParameters parameters) 
+        {
+            return new ItemListPath { Parameter = parameters };
+        }
+
+        /// <summary>
         ///     Gets a path to the user login page.
         /// </summary>
         /// <param name="go"></param>
@@ -106,6 +124,16 @@ namespace MediaBrowser.Theater.Api.Navigation
         {
             return new SearchPath();
         }
+    }
+
+    #endregion
+
+    #region Parameters
+
+    public class ItemListParameters 
+    {
+        public Task<ItemsResult> Items { get; set; }
+        public string Title { get; set; }
     }
 
     #endregion

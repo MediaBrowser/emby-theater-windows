@@ -34,7 +34,7 @@
                 <WrapPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top"
                            Margin="0 0 0 0">
 
-                    <Button Style="{StaticResource BaseItemButtonStyle}" Command="{Binding AllMoviesCommand}"
+                    <Button Style="{StaticResource BaseItemButtonStyle}" Command="{Binding BrowseMoviesCommand}"
                             Width="{Binding LowerSpotlightWidth}" Height="{Binding LowerSpotlightHeight}"
                             Margin="{x:Static viewModels:HomeViewModel.TileMarginThickness}">
                         <Grid>

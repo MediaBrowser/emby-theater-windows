@@ -267,62 +267,33 @@
                 <Image Stretch="Uniform" VerticalAlignment="Top" HorizontalAlignment="Left" MaxWidth="550" MaxHeight="650" Source="{Binding Image}">
                 </Image>
 
-                <TextBlock Foreground="{DynamicResource TextForegroundOverBackground}" Background="#c666C010" VerticalAlignment="Top" HorizontalAlignment="Right" Padding="10 2 10 5" Text="NEW">
-                    <TextBlock.Style>
-                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsOffline}" Value="True">
-                                    <Setter Property="Visibility" Value="Hidden" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding IsFolder}" Value="True">
-                                    <Setter Property="Visibility" Value="Hidden" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding IsNew}" Value="False">
-                                    <Setter Property="Visibility" Value="Hidden" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding IsPlayed}" Value="True">
-                                    <Setter Property="Visibility" Value="Hidden" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding IsMissingEpisode}" Value="True">
-                                    <Setter Property="Visibility" Value="Hidden" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding IsVirtualUnairedEpisode}" Value="True">
-                                    <Setter Property="Visibility" Value="Hidden" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
-                </TextBlock>
+                <Grid VerticalAlignment="Top" HorizontalAlignment="Right" Width="50" Height="50">
 
-                <TextBlock Background="#c666C010" VerticalAlignment="Top" HorizontalAlignment="Right" Foreground="{DynamicResource TextForegroundOverBackground}" Padding="10 2 10 5" Text="{Binding RecursiveUnplayedItemCount, StringFormat='{}{0} NEW'}">
-                    <TextBlock.Style>
-                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SmallTextBlockStyle}">
+                    <Grid.Style>
+                        <Style TargetType="{x:Type Grid}">
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsOffline}" Value="True">
-                                    <Setter Property="Visibility" Value="Hidden" />
+                                <DataTrigger Binding="{Binding ItemType}" Value="BoxSet">
+                                    <Setter Property="Visibility" Value="Visible" />
                                 </DataTrigger>
-                                <DataTrigger Binding="{Binding PlayedPercentage}" Value="0">
-                                    <Setter Property="Visibility" Value="Hidden" />
+                                <DataTrigger Binding="{Binding ItemType}" Value="Series">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding ItemType}" Value="Season">
+                                    <Setter Property="Visibility" Value="Visible" />
                                 </DataTrigger>
                                 <DataTrigger Binding="{Binding RecursiveUnplayedItemCount}" Value="0">
                                     <Setter Property="Visibility" Value="Hidden" />
                                 </DataTrigger>
                             </Style.Triggers>
+                            <Style.Setters>
+                                <Setter Property="Visibility" Value="Hidden"></Setter>
+                            </Style.Setters>
                         </Style>
-                    </TextBlock.Style>
-                </TextBlock>
+                    </Grid.Style>
 
-                <TextBlock Background="{DynamicResource SpecialIndicatorBackground}" VerticalAlignment="Top" HorizontalAlignment="Right" Foreground="{DynamicResource TextForegroundOverBackground}" Padding="10 5" Text="OFFLINE">
-                    <TextBlock.Style>
-                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SmallTextBlockStyle}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsOffline}" Value="False">
-                                    <Setter Property="Visibility" Value="Hidden" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
-                </TextBlock>
+                    <Ellipse Style="{DynamicResource SpecialIndicatorEllipseStyle}"/>
+                    <TextBlock Style="{StaticResource SmallTextBlockStyle}" Foreground="{DynamicResource TextForegroundOverBackground}" Text="{Binding RecursiveUnplayedItemCount}" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="2,0,2,2"/>
+                </Grid>
 
                 <TextBlock Background="{DynamicResource SpecialIndicatorBackground}" VerticalAlignment="Top" HorizontalAlignment="Right" Foreground="{DynamicResource TextForegroundOverBackground}" Padding="10 5" Text="MISSING">
                     <TextBlock.Style>

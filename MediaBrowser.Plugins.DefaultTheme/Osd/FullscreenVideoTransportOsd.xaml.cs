@@ -53,7 +53,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Osd
                 vm.PropertyChanged += vm_PropertyChanged;
 
                 TxtNowPlayingName.Text = NowPlayingInfo.GetName(vm.NowPlayingItem);
-
                 UpdateLogo(vm, vm.NowPlayingItem);
             }
         }
@@ -76,6 +75,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Osd
 
             if (string.Equals(e.PropertyName, "NowPlayingItem"))
             {
+                TxtNowPlayingName.Text = NowPlayingInfo.GetName(vm.NowPlayingItem);
                 UpdateLogo(vm, vm.NowPlayingItem);
             }
             else if (string.Equals(e.PropertyName, "PositionTicks"))

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Windows;
 using System.Windows.Input;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
@@ -7,12 +8,14 @@ using MediaBrowser.Model.Entities;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.UserInterface;
+using MediaBrowser.Theater.DefaultTheme.Home.ViewModels;
+using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
 {
     public class ItemTileViewModel
-        : BaseViewModel
+        : BaseViewModel, IKnownSize
     {
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
@@ -22,8 +25,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
 
         private bool _imageInvalid;
         private readonly ImageViewerViewModel _image;
-        private double? _imageWidth;
-        private double? _imageHeight;
+        private double? _desiredImageWidth;
+        private double? _desiredImageHeight;
         private bool _downloadImagesAtExactSize;
         private bool _downloadPrimaryImageAtExactSize;
         private bool _enableServerImageEnhancers;
@@ -41,6 +44,19 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
             _showDisplayName = true;
 
             _image = new ImageViewerViewModel(imageManager, Enumerable.Empty<ImageViewerImage>());
+            _image.PropertyChanged += (senger, args) => {
+                if (args.PropertyName == "CurrentImage") {
+                    OnPropertyChanged("ActualWidth");
+                }
+
+                if (args.PropertyName == "ImageHeight") {
+                    OnPropertyChanged("ActualHeight");
+                }
+
+                if (args.PropertyName == "CurrentImage") {
+                    OnPropertyChanged("Size");
+                }
+            };
 
             DisplayNameGenerator = GetDisplayNameWithAiredSpecial;
             PreferredImageTypes = new[] { ImageType.Primary, ImageType.Thumb, ImageType.Backdrop };
@@ -199,33 +215,70 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
         public ICommand GoToDetailsCommand { get; private set; }
         public ICommand PlayTrailerCommand { get; private set; }
 
-        public double? ImageWidth
+        public double? DesiredImageWidth
         {
-            get { return _imageWidth; }
+            get { return _desiredImageWidth; }
             set
             {
-                if (Equals(_imageWidth, value)) {
+                if (Equals(_desiredImageWidth, value)) {
                     return;
                 }
 
-                _imageWidth = value;
+                _desiredImageWidth = value;
                 OnPropertyChanged();
                 InvalidateImage();
             }
         }
 
-        public double? ImageHeight
+        public double? DesiredImageHeight
         {
-            get { return _imageHeight; }
+            get { return _desiredImageHeight; }
             set
             {
-                if (Equals(_imageHeight, value)) {
+                if (Equals(_desiredImageHeight, value)) {
                     return;
                 }
 
-                _imageHeight = value;
+                _desiredImageHeight = value;
                 OnPropertyChanged();
                 InvalidateImage();
+            }
+        }
+
+        public double ActualWidth
+        {
+            get
+            {
+                if (DesiredImageWidth != null) {
+                    return (double)DesiredImageWidth;
+                }
+
+                if (DesiredImageHeight != null && (int)Image.ImageWidth != 0 && (int)Image.ImageHeight != 0)
+                {
+                    var aspectRatio = Image.ImageWidth/Image.ImageHeight;
+                    return (double)DesiredImageHeight*aspectRatio;
+                }
+
+                return Image.ImageWidth;
+            }
+        }
+
+        public double ActualHeight
+        {
+            get
+            {
+                if (DesiredImageHeight != null)
+                {
+                    return (double)DesiredImageHeight;
+                }
+
+                if (DesiredImageWidth != null && (int)Image.ImageWidth != 0 && (int)Image.ImageHeight != 0)
+                {
+                    var aspectRatio = Image.ImageWidth / Image.ImageHeight;
+                    return (double)DesiredImageWidth / aspectRatio;
+                }
+
+                return Image.ImageHeight;
             }
         }
 
@@ -319,13 +372,13 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
             var imageOptions = new ImageOptions {
                 ImageType = imageType,
                 ImageIndex = imageIndex,
-                Height = ImageHeight != null ? (int?) Convert.ToInt32(ImageHeight) : null,
+                Height = DesiredImageHeight != null && !double.IsPositiveInfinity((double) DesiredImageHeight) ? (int?) Convert.ToInt32(DesiredImageHeight) : null,
                 EnableImageEnhancers = EnableServerImageEnhancers
             };
 
             if ((imageType == ImageType.Primary && DownloadPrimaryImageAtExactSize)
                 || (imageType != ImageType.Primary && DownloadImagesAtExactSize)) {
-                imageOptions.Width = ImageWidth != null ? (int?) Convert.ToInt32(ImageWidth) : null;
+                imageOptions.Width = DesiredImageWidth != null && !double.IsPositiveInfinity((double) DesiredImageWidth) ? (int?) Convert.ToInt32(DesiredImageWidth) : null;
             }
 
             if (imageType == ImageType.Thumb) {
@@ -369,6 +422,11 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
 
             Image.Images.Clear();
             Image.StartRotating();
+        }
+
+        public Size Size
+        {
+            get { return new Size(ActualWidth + 2 * HomeViewModel.TileMargin, ActualHeight + 2 * HomeViewModel.TileMargin); }
         }
     }
 }

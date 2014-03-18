@@ -20,7 +20,7 @@
         </Grid.RowDefinitions>
 
         <controls:ExtendedListBox Grid.Row="0"
-                                  Margin="0,30,0,0"
+                                  Margin="0,50,0,0"
                                   Background="{x:Null}"
                                   BorderBrush="{x:Null}"
                                   BorderThickness="0"

@@ -19,7 +19,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
         /// Responds to specific keyboard input and invokes associated scrolling behavior.
         /// </summary>
         /// <param name="e">Required arguments for this event.</param>
-        protected override void OnKeyDown(KeyEventArgs e)
+        protected override async void OnKeyDown(KeyEventArgs e)
         {
             if (e.Handled || e.OriginalSource.Equals(this))
             {
@@ -30,7 +30,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
             if (e.Key == Key.Left || e.Key == Key.Right || e.Key == Key.Up || e.Key == Key.Down) {
                 return;
             }
-
+            
 //            // Don't eat left/right if horizontal scrolling is disabled
 //            if (e.Key == Key.Left || e.Key == Key.Right)
 //            {
@@ -51,6 +51,16 @@ namespace MediaBrowser.Theater.Presentation.Controls
 
             // Let the base class do it's thing
             base.OnKeyDown(e);
+
+            if (e.Key == Key.Home) {
+                await Task.Delay(100);
+                MoveFocus(new TraversalRequest(FocusNavigationDirection.First));
+            }
+
+            if (e.Key == Key.End) {
+                await Task.Delay(100);
+                MoveFocus(new TraversalRequest(FocusNavigationDirection.Last));
+            }
         }
 
         protected override void OnMouseWheel(MouseWheelEventArgs e)

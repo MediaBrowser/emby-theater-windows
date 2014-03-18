@@ -93,8 +93,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
         private ItemTileViewModel CreateEpisodeItem()
         {
             return new ItemTileViewModel(_apiClient, _imageManager, _serverEvents, _navigator, /*_playbackManager,*/ null) {
-                ImageWidth = HomeViewModel.TileWidth,
-                ImageHeight = HomeViewModel.TileHeight,
+                DesiredImageWidth = HomeViewModel.TileWidth,
+                DesiredImageHeight = HomeViewModel.TileHeight,
                 PreferredImageTypes = new[] { ImageType.Primary, ImageType.Screenshot, ImageType.Thumb, ImageType.Backdrop },
                 DisplayNameGenerator = TvSpotlightViewModel.GetDisplayName,
                 DownloadImagesAtExactSize = true

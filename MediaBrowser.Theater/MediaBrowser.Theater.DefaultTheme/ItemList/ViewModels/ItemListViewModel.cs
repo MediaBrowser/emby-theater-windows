@@ -40,24 +40,29 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
             {
                 return item => {
                     var viewModel = (ItemTileViewModel) item;
-                    string name = viewModel.Item.SortName ?? viewModel.Item.Name;
-                    if (name.Length > 0) {
-                        return name.First().ToString(CultureInfo.CurrentUICulture).ToUpper(CultureInfo.CurrentUICulture);
-                    }
-                    return string.Empty;
+                    return GetSortKey(viewModel);
                 };
             }
+        }
+
+        private static object GetSortKey(ItemTileViewModel viewModel)
+        {
+            string name = viewModel.Item.SortName ?? viewModel.Item.Name;
+            if (name.Length > 0) {
+                return name.First().ToString(CultureInfo.CurrentUICulture).ToUpper(CultureInfo.CurrentUICulture);
+            }
+            return string.Empty;
         }
 
         private async void LoadItems(Task<ItemsResult> itemsTask)
         {
             ItemsResult result = await itemsTask;
             IEnumerable<ItemTileViewModel> viewModels = result.Items.Select(dto => new ItemTileViewModel(_apiClient, _imageManager, _serverEvents, _navigator, dto) {
-                ImageHeight = ItemHeight,
+                DesiredImageHeight = ItemHeight,
                 DownloadImagesAtExactSize = true
             });
 
-            Items.AddRange(viewModels);
+            Items.AddRange(viewModels.OrderBy(GetSortKey));
         }
     }
 }

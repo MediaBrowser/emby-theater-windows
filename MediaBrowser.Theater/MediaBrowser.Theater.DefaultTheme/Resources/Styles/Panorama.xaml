@@ -4,7 +4,7 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib">
 
     <DataTemplate x:Key="PanoramaTitleTemplate" DataType="{x:Type system:String}">
-        <TextBlock Text="{Binding}" Margin="50,0,30,20">
+        <TextBlock Text="{Binding}" Margin="50,0,30,0">
             <TextBlock.Style>
                 <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource Heading1TextBlockStyle}">
                     <Setter Property="Opacity" Value="0.15"/>
@@ -18,6 +18,41 @@
 
                             <MultiDataTrigger.Setters>
                                 <Setter Property="Opacity" Value="1" />
+                            </MultiDataTrigger.Setters>
+                        </MultiDataTrigger>
+                        <DataTrigger
+                            Binding="{Binding IsKeyboardFocusWithin, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}"
+                            Value="True">
+                            <Setter Property="Foreground" Value="{StaticResource InputHighlightBrush}" />
+                            <Setter Property="Opacity" Value="1" />
+                        </DataTrigger>
+                        <DataTrigger
+                            Binding="{Binding IsMouseOver, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}"
+                            Value="True">
+                            <Setter Property="Foreground" Value="{StaticResource InputHighlightBrush}" />
+                            <Setter Property="Opacity" Value="1" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
+    </DataTemplate>
+
+    <DataTemplate x:Key="PanoramaIndexTemplate" DataType="{x:Type system:String}">
+        <TextBlock Text="{Binding}" Margin="50,0,50,0">
+            <TextBlock.Style>
+                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
+                    <Setter Property="Opacity" Value="0.15"/>
+                    <Style.Triggers>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}" Value="True" />
+                                <Condition Binding="{Binding IsKeyboardFocusWithin, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}" Value="False" />
+                                <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}" Value="False" />
+                            </MultiDataTrigger.Conditions>
+
+                            <MultiDataTrigger.Setters>
+                                <Setter Property="Opacity" Value="0.5" />
                             </MultiDataTrigger.Setters>
                         </MultiDataTrigger>
                         <DataTrigger

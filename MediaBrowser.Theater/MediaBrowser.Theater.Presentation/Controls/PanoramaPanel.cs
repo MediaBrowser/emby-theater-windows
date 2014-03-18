@@ -69,8 +69,9 @@ namespace MediaBrowser.Theater.Presentation.Controls
                 if (currentFocus != null) {
                     var nextFocus = currentFocus.PredictFocus(FocusNavigationDirection.Left) as FrameworkElement;
                     if (nextFocus != null) {
+                        var currentPosition = currentFocus.TransformToAncestor(this).Transform(new Point(currentFocus.ActualWidth, 0));
                         var position = nextFocus.TransformToAncestor(this).Transform(new Point(0, 0));
-                        if (position.X - HorizontalOffset > ViewportWidth) {
+                        if (position.X > currentPosition.X) {
                             e.Handled = true;
                         }
                     }
@@ -82,8 +83,9 @@ namespace MediaBrowser.Theater.Presentation.Controls
                 if (currentFocus != null) {
                     var nextFocus = currentFocus.PredictFocus(FocusNavigationDirection.Right) as FrameworkElement;
                     if (nextFocus != null) {
-                        var position = nextFocus.TransformToAncestor(this).Transform(new Point(0, 0));
-                        if (position.X < HorizontalOffset) {
+                        var currentPosition = currentFocus.TransformToAncestor(this).Transform(new Point(0, 0));
+                        var position = nextFocus.TransformToAncestor(this).Transform(new Point(nextFocus.ActualWidth, 0));
+                        if (position.X < currentPosition.X) {
                             e.Handled = true;
                         }
                     }

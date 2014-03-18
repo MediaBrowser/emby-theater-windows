@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Theater.Api.UserInterface;
@@ -27,10 +28,12 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
         private string _currentText;
         private CancellationTokenSource _imageDownloadCancellationTokenSource;
         private Timer _rotationTimer;
+        private double _imageWidth;
+        private double _imageHeight;
 
         public ImageViewerViewModel(IImageManager imageManager, IEnumerable<ImageViewerImage> initialImages)
         {
-            ImageStretch = Stretch.Uniform;
+            ImageStretch = Stretch.UniformToFill;
 
             _images.AddRange(initialImages);
 
@@ -81,6 +84,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
                 if (changed) {
                     OnPropertyChanged();
                     OnPropertyChanged("HasImage");
+                    OnPropertyChanged("ImageWidth");
+                    OnPropertyChanged("ImageHeight");
                 }
             }
         }
@@ -159,6 +164,34 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
             CurrentIndex = index;
         }
 
+        public double ImageWidth
+        {
+            get
+            {
+                var img = CurrentImage as Image;
+                if (img != null) {
+                    var source = img.Source as BitmapSource;
+                    return source.PixelWidth;
+                }
+
+                return 0;
+            }
+        }
+
+        public double ImageHeight
+        {
+            get
+            {
+                var img = CurrentImage as Image;
+                if (img != null) {
+                    var source = img.Source as BitmapSource;
+                    return source.PixelHeight;
+                }
+
+                return 0;
+            }
+        }
+
         private async void OnIndexChanged()
         {
             int index = CurrentIndex;
@@ -192,9 +225,9 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
                 token.ThrowIfCancellationRequested();
 
                 img.Stretch = ImageStretch;
-
+                
                 CurrentImage = img;
-
+                
                 await Task.Delay(200, token);
 
                 CurrentText = image.Caption;

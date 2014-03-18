@@ -31,7 +31,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
         private bool _downloadPrimaryImageAtExactSize;
         private bool _enableServerImageEnhancers;
         private ImageType[] _preferredImageTypes;
-        private bool _showDisplayName;
+        private bool? _showDisplayName;
 
         public ItemTileViewModel(IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents,
                                  INavigator navigator, /*IPlaybackManager playbackManager,*/ BaseItemDto item)
@@ -41,16 +41,17 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
             _navigator = navigator;
             //_playbackManager = playbackManager;
             _item = item;
-            _showDisplayName = true;
 
             _image = new ImageViewerViewModel(imageManager, Enumerable.Empty<ImageViewerImage>());
             _image.PropertyChanged += (senger, args) => {
                 if (args.PropertyName == "CurrentImage") {
                     OnPropertyChanged("ActualWidth");
+                    OnPropertyChanged("ShowDisplayName");
                 }
 
                 if (args.PropertyName == "ImageHeight") {
                     OnPropertyChanged("ActualHeight");
+                    OnPropertyChanged("ShowDisplayName");
                 }
 
                 if (args.PropertyName == "CurrentImage") {
@@ -119,7 +120,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
 
         public bool ShowDisplayName
         {
-            get { return _showDisplayName; }
+            get { return _showDisplayName ?? ShouldShowDisplayNameByImageType(); }
             set
             {
                 if (Equals(_showDisplayName, value)) {
@@ -130,6 +131,12 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
                 OnPropertyChanged();
                 OnPropertyChanged("ShowCaptionBar");
             }
+        }
+
+        private bool ShouldShowDisplayNameByImageType()
+        {
+            var aspectRatio = ActualWidth/ActualHeight;
+            return aspectRatio >= 1;
         }
 
         public bool IsFolder 

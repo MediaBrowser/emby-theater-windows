@@ -107,7 +107,10 @@ namespace MediaBrowser.Theater.Presentation.Controls
 
         private void ScrollToSelectedIndex()
         {
-            object item = _itemsByIndex[SelectedIndex];
+            object item;
+            if (!_itemsByIndex.TryGetValue(SelectedIndex, out item)) {
+                return;
+            }
 
             var virtualizedPanel = _panel as IVirtualizedPanel;
             if (virtualizedPanel != null) {
@@ -212,6 +215,10 @@ namespace MediaBrowser.Theater.Presentation.Controls
             _indexObjects.Clear();
             foreach (object index in _itemsByIndex.Keys) {
                 _indexObjects.Add(index);
+            }
+
+            if (SelectedIndex == null || !_indexObjects.Contains(SelectedIndex)) {
+                SelectedIndex = _indexObjects.FirstOrDefault();
             }
         }
 

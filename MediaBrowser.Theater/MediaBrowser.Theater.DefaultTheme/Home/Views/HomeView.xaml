@@ -68,6 +68,12 @@
 
         <controls:IndexedItemsControl x:Name="Panorama" Grid.Row="1" ItemsSource="{Binding Pages}"
                                       IndexSelector="{Binding TitleSelector}" FocusVisualStyle="{x:Null}"
-                                      VirtualizingPanel.VirtualizationMode="Recycling" />
+                                      VirtualizingPanel.VirtualizationMode="Recycling">
+            <controls:IndexedItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <controls:PanoramaPanel EndScrollPadding="50"/>
+                </ItemsPanelTemplate>
+            </controls:IndexedItemsControl.ItemsPanel>
+        </controls:IndexedItemsControl>
     </Grid>
 </UserControl>

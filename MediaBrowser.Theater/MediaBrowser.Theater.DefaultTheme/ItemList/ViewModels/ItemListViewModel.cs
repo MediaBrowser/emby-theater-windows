@@ -15,7 +15,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
     public class ItemListViewModel
         : BaseViewModel
     {
-        public const double ItemHeight = 600;
+        public const double ItemHeight = 500;
 
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;

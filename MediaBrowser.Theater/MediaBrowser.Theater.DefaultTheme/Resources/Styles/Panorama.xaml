@@ -39,9 +39,9 @@
     </DataTemplate>
 
     <DataTemplate x:Key="PanoramaIndexTemplate" DataType="{x:Type system:String}">
-        <TextBlock Text="{Binding}" Margin="50,0,50,0">
+        <TextBlock Text="{Binding}" Margin="30,0,30,0">
             <TextBlock.Style>
-                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
+                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SmallTextBlockStyle}">
                     <Setter Property="Opacity" Value="0.15"/>
                     <Style.Triggers>
                         <MultiDataTrigger>

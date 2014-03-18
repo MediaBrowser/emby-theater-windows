@@ -95,6 +95,9 @@ namespace MediaBrowser.Theater.Presentation.Controls
             base.OnKeyDown(e);
         }
 
+        public double StartScrollPadding { get; set; }
+        public double EndScrollPadding { get; set; }
+
         public ScrollViewer ScrollOwner { get; set; }
 
         public bool CanHorizontallyScroll { get; set; }
@@ -181,7 +184,11 @@ namespace MediaBrowser.Theater.Presentation.Controls
                 return new Rect();
             }
 
-            return new Rect(_itemPositionOffsets[index], 0, _itemPositionOffsets[index + 1] - _itemPositionOffsets[index], _itemOffAxisExtent);
+//            if (index == itemsControl.Items.Count - 1) {
+//                return new Rect(_itemPositionOffsets[index], 0, _itemPositionOffsets[index + 1] - _itemPositionOffsets[index] + EndScrollPadding, _itemOffAxisExtent);
+//            } else {
+                return new Rect(_itemPositionOffsets[index], 0, _itemPositionOffsets[index + 1] - _itemPositionOffsets[index], _itemOffAxisExtent);
+//            }
         }
 
         private Rect MakeRectVisible(Rect rectangle)
@@ -190,11 +197,16 @@ namespace MediaBrowser.Theater.Presentation.Controls
             double desiredHeight = CanVerticallyScroll ? Math.Min(rectangle.Height*1.6, _viewport.Height) : rectangle.Height;
             rectangle.Inflate(Math.Max(desiredWidth - rectangle.Width, 0)*0.5, Math.Max(desiredHeight - rectangle.Height, 0)*0.5);
 
+            if (ExtentWidth - rectangle.Right <= EndScrollPadding + 1) {
+                rectangle.Width += EndScrollPadding;
+            }
+
             var viewRect = new Rect(HorizontalOffset, VerticalOffset, ViewportWidth, ViewportHeight);
             viewRect.X = CalculateNewScrollOffset(viewRect.Left,
                                                   viewRect.Right, rectangle.Left, rectangle.Right);
             viewRect.Y = CalculateNewScrollOffset(viewRect.Top,
                                                   viewRect.Bottom, rectangle.Top, rectangle.Bottom);
+            
             SetHorizontalOffset(viewRect.X);
             SetVerticalOffset(viewRect.Y);
             rectangle.Intersect(viewRect);
@@ -229,6 +241,8 @@ namespace MediaBrowser.Theater.Presentation.Controls
             }
 
             _itemPositionOffsets = new double[itemsControl.Items.Count + 1];
+            _itemPositionOffsets[0] = StartScrollPadding;
+
             _itemOffAxisExtent = 0;
 
             for (int i = 0; i < itemsControl.Items.Count; i++) {
@@ -316,7 +330,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
 
             int itemCount = _itemPositionOffsets.Length - 1;
 
-            var totalSize = new Size(_itemPositionOffsets[_itemPositionOffsets.Length - 1], _itemOffAxisExtent);
+            var totalSize = new Size(_itemPositionOffsets[_itemPositionOffsets.Length - 1] + EndScrollPadding, _itemOffAxisExtent);
             VerifyScrollData(availableSize, totalSize);
 
             if (itemCount > 0) {
@@ -385,7 +399,6 @@ namespace MediaBrowser.Theater.Presentation.Controls
             DateTime now = DateTime.Now;
 
             for (int i = children.Count - 1; i >= 0; i--) {
-                UIElement child = children[i];
                 DateTime lastVisible;
                 
                 // Map a child index to an item index by going through a generator position
@@ -453,7 +466,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
                 ArrangeChild(itemIndex, child);
             }
 
-            VerifyScrollData(finalSize, new Size(_itemPositionOffsets[_itemPositionOffsets.Length - 1], _itemOffAxisExtent));
+            VerifyScrollData(finalSize, new Size(_itemPositionOffsets[_itemPositionOffsets.Length - 1] + EndScrollPadding, _itemOffAxisExtent));
 
             return finalSize;
         }

@@ -108,7 +108,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
         private void ScrollToSelectedIndex()
         {
             object item;
-            if (!_itemsByIndex.TryGetValue(SelectedIndex, out item)) {
+            if (SelectedIndex == null || !_itemsByIndex.TryGetValue(SelectedIndex, out item)) {
                 return;
             }
 

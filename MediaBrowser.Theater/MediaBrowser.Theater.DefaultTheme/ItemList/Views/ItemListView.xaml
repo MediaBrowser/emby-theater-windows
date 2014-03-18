@@ -18,7 +18,13 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
         
-        <controls:IndexedItemsControl x:Name="Panorama" Margin="0,80,0,0" Grid.Row="0" ItemsSource="{Binding Items}" IndexSelector="{Binding IndexSelector}" VirtualizingPanel.VirtualizationMode="Recycling"/>
+        <controls:IndexedItemsControl x:Name="Panorama" Margin="0,80,0,0" Grid.Row="0" ItemsSource="{Binding Items}" IndexSelector="{Binding IndexSelector}" VirtualizingPanel.VirtualizationMode="Recycling">
+            <controls:IndexedItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <controls:PanoramaPanel StartScrollPadding="50" EndScrollPadding="50"/>
+                </ItemsPanelTemplate>
+            </controls:IndexedItemsControl.ItemsPanel>
+        </controls:IndexedItemsControl>
 
         <controls:ExtendedListBox Grid.Row="1"
                                   Margin="0,20,0,0"

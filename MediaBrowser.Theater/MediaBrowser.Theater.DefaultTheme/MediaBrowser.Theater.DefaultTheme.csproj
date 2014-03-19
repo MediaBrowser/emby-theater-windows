@@ -383,6 +383,7 @@
       <DependentUpon>TvSpotlightView.xaml</DependentUpon>
     </Compile>
     <Compile Include="ItemList\ItemListContext.cs" />
+    <Compile Include="ItemList\ItemListPath.cs" />
     <Compile Include="ItemList\ViewModels\ItemListViewModel.cs" />
     <Compile Include="ItemList\Views\ItemListView.xaml.cs">
       <DependentUpon>ItemListView.xaml</DependentUpon>

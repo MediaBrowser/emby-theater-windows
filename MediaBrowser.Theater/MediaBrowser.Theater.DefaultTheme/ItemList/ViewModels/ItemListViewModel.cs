@@ -13,7 +13,7 @@ using MediaBrowser.Theater.Presentation.ViewModels;
 namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
 {
     public class ItemListViewModel
-        : BaseViewModel
+        : BaseViewModel, IRootPresentationOptions
     {
         public const double ItemHeight = 500;
 
@@ -64,5 +64,10 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
 
             Items.AddRange(viewModels.OrderBy(GetSortKey));
         }
+
+        public bool ShowMediaBrowserLogo { get { return false; } }
+        public bool ShowCommandBar { get { return true; } }
+        public bool ShowClock { get { return true; } }
+        public string Title { get { return "Browse Movies"; } }
     }
 }

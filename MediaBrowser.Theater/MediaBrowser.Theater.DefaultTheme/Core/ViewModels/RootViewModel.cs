@@ -54,6 +54,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
                 OnPropertyChanged();
                 OnPropertyChanged("DisplayLogo");
                 OnPropertyChanged("DisplayCommandBar");
+                OnPropertyChanged("DisplayTitle");
+                OnPropertyChanged("Title");
             }
         }
 
@@ -151,6 +153,24 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
             }
         }
 
+        public bool DisplayTitle
+        {
+            get
+            {
+                var options = ActivePage as IRootPresentationOptions;
+                return options != null && !string.IsNullOrEmpty(options.Title);
+            }
+        }
+
+        public string Title
+        {
+            get
+            {
+                var options = ActivePage as IRootPresentationOptions;
+                return options != null ? options.Title : null;
+            }
+        }
+
         private void ActivePagePropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "ShowMediaBrowserLogo") {
@@ -163,6 +183,11 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
 
             if (e.PropertyName == "ShowClock") {
                 OnPropertyChanged("DisplayClock");
+            }
+
+            if (e.PropertyName == "Title") {
+                OnPropertyChanged("DisplayTitle");
+                OnPropertyChanged("Title");
             }
         }
 

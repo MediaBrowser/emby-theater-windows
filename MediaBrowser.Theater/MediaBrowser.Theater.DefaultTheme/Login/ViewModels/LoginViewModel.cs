@@ -53,6 +53,11 @@ namespace MediaBrowser.Theater.DefaultTheme.Login.ViewModels
             get { return true; }
         }
 
+        public string Title
+        {
+            get { return null; }
+        }
+
         private async void LoadUsers()
         {
             UserDto[] users = await _apiClient.GetPublicUsersAsync();

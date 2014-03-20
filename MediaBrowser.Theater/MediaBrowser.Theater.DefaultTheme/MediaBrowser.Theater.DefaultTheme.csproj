@@ -313,6 +313,7 @@
     <Compile Include="Core\ViewModels\ImageSlideshowViewModel.cs" />
     <Compile Include="Core\ViewModels\ImageViewerViewModel.cs" />
     <Compile Include="Core\ViewModels\IRootPresentationOptions.cs" />
+    <Compile Include="Core\ViewModels\ItemInfoDetailsViewModel.cs" />
     <Compile Include="Core\ViewModels\ItemSpotlightViewModel.cs" />
     <Compile Include="Core\ViewModels\ItemTileViewModel.cs" />
     <Compile Include="Core\Views\ClockView.xaml.cs">

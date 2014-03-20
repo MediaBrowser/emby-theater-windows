@@ -246,7 +246,7 @@ namespace MediaBrowser.Theater.Implementations.UserInput
         /// </summary>
         public void OnMouseMove(WindowsInput.MouseEventArgs e)
         {
-            _logger.Debug("OnMouseMove {0}");
+            //_logger.Debug("OnMouseMove {0}");
             Window_MouseMove(null, e);
         }
   

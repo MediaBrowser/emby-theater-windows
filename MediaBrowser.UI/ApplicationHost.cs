@@ -15,6 +15,7 @@ using MediaBrowser.Model.Updates;
 using MediaBrowser.Plugins.DefaultTheme;
 using MediaBrowser.Theater.Core.Login;
 using MediaBrowser.Theater.DirectShow;
+using MediaBrowser.Theater.Implementations.Commands;
 using MediaBrowser.Theater.Implementations.Configuration;
 using MediaBrowser.Theater.Implementations.Playback;
 using MediaBrowser.Theater.Implementations.Presentation;
@@ -23,6 +24,7 @@ using MediaBrowser.Theater.Implementations.System;
 using MediaBrowser.Theater.Implementations.Theming;
 using MediaBrowser.Theater.Implementations.UserInput;
 using MediaBrowser.Theater.Interfaces;
+using MediaBrowser.Theater.Interfaces.Commands;
 using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
@@ -69,6 +71,7 @@ namespace MediaBrowser.UI
         public ISessionManager SessionManager { get; private set; }
         public IPresentationManager PresentationManager { get; private set; }
         public IUserInputManager UserInputManager { get; private set; }
+        public ICommandManager CommandManager { get; private set; }
         public IMediaFilters MediaFilters { get; private set; }
 
         public ConfigurationManager TheaterConfigurationManager
@@ -135,20 +138,23 @@ namespace MediaBrowser.UI
             RegisterSingleInstance(ApplicationPaths);
 
             RegisterSingleInstance<ITheaterConfigurationManager>(TheaterConfigurationManager);
+         
+            var hiddenWindow = new AppHiddenWIndow();
+
+            NavigationService = new NavigationService(ThemeManager, () => PlaybackManager, ApiClient, PresentationManager, TheaterConfigurationManager, () => SessionManager, this, InstallationManager, ImageManager, Logger, () => UserInputManager, ApiWebSocket, hiddenWindow);
+            RegisterSingleInstance(NavigationService);
+
+            UserInputManager = new UserInputManager(PresentationManager, NavigationService, hiddenWindow, LogManager);
+            RegisterSingleInstance(UserInputManager);
 
             ImageManager = new ImageManager(ApiClient, ApplicationPaths, TheaterConfigurationManager);
             RegisterSingleInstance(ImageManager);
 
-            UserInputManager = new UserInputManager();
-            RegisterSingleInstance(UserInputManager);
-
-            var hiddenWindow = new AppHiddenWIndow();
-
-            NavigationService = new NavigationService(ThemeManager, () => PlaybackManager, ApiClient, PresentationManager, TheaterConfigurationManager, () => SessionManager, this, InstallationManager, ImageManager, Logger, UserInputManager, ApiWebSocket, hiddenWindow);
-            RegisterSingleInstance(NavigationService);
-
             PlaybackManager = new PlaybackManager(TheaterConfigurationManager, Logger, ApiClient, NavigationService, PresentationManager);
             RegisterSingleInstance(PlaybackManager);
+
+            CommandManager = new CommandManager(PresentationManager, PlaybackManager, NavigationService, UserInputManager, LogManager);
+            RegisterSingleInstance(CommandManager);
 
             SessionManager = new SessionManager(NavigationService, ApiClient, Logger, ThemeManager, TheaterConfigurationManager, PlaybackManager);
             RegisterSingleInstance(SessionManager);

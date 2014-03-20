@@ -12,7 +12,7 @@ namespace MediaBrowser.Theater.Interfaces.Presentation
         event EventHandler SizeChanged;
         event KeyEventHandler KeyDown;
         event MouseEventHandler MouseClick;
-
+        event MouseEventHandler MouseMove;
         /// <summary>
         /// Gets the windows forms host.
         /// </summary>

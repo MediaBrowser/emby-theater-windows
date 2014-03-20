@@ -237,7 +237,7 @@
                             </Grid>
                         </Button>
 
-                        <Button Margin="0 0 30 0" Command="{Binding MasterCommands.FullscreenVideoCommand}">
+                        <Button Margin="0 0 30 0" Command="{Binding MasterCommands.FullscreenVideoCommand}" Background="BlueViolet">
 
                             <Button.Style>
                                 <Style TargetType="{x:Type Button}" BasedOn="{StaticResource ImageButton}">

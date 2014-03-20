@@ -1,29 +1,18 @@
-﻿using System.Diagnostics;
-using System.Windows.Forms.VisualStyles;
-using MediaBrowser.Model.ApiClient;
-using MediaBrowser.Model.Dto;
+﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
-using MediaBrowser.Model.Querying;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Reflection;
 using MediaBrowser.Theater.Interfaces.ViewModels;
 using MediaBrowser.Theater.Presentation.Controls;
-using MediaBrowser.Theater.Presentation.Extensions;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Data;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Threading;
-using MediaBrowser.Plugins.DefaultTheme.Search;
 using Key = System.Windows.Input.Key;
 
 namespace MediaBrowser.Theater.Presentation.ViewModels

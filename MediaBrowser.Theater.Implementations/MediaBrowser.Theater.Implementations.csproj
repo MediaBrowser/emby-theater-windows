@@ -87,6 +87,10 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommandActions\CommandActionsEntryPoint.cs" />
+    <Compile Include="Commands\CommandManager.cs" />
+    <Compile Include="CommandActions\CommandActionMap.cs" />
+    <Compile Include="Commands\InputToCommand.cs" />
     <Compile Include="Configuration\ApplicationPaths.cs" />
     <Compile Include="Configuration\ConfigurationManager.cs" />
     <Compile Include="Playback\PlaybackManager.cs" />
@@ -134,6 +138,10 @@
     <ProjectReference Include="..\MediaBrowser.Theater.Interfaces\MediaBrowser.Theater.Interfaces.csproj">
       <Project>{cc3e6aed-e761-42de-a9be-e40ab246a5e0}</Project>
       <Name>MediaBrowser.Theater.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MediaBrowser.Theater.Presentation\MediaBrowser.Theater.Presentation.csproj">
+      <Project>{14eddb65-890e-40b5-8d29-414d0aed60c1}</Project>
+      <Name>MediaBrowser.Theater.Presentation</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

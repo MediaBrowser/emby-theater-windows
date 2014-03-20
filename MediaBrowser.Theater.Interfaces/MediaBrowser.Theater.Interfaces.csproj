@@ -57,6 +57,8 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\Commands.cs" />
+    <Compile Include="Commands\ICommandManager.cs" />
     <Compile Include="Configuration\AutoLoginConfiguration.cs" />
     <Compile Include="Configuration\InternalPlayerConfiguration.cs" />
     <Compile Include="Configuration\ITheaterConfigurationManager.cs" />
@@ -78,6 +80,7 @@
     <Compile Include="Presentation\IHomePageInfo.cs" />
     <Compile Include="Presentation\IItemPage.cs" />
     <Compile Include="Presentation\ILoginPage.cs" />
+    <Compile Include="Presentation\ISearchPage.cs" />
     <Compile Include="Presentation\ISupportsBackdrops.cs" />
     <Compile Include="Presentation\ISupportsThemeMedia.cs" />
     <Compile Include="Presentation\IPresentationManager.cs" />

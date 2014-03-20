@@ -76,7 +76,7 @@ namespace MediaBrowser.UI.Implementations
         private readonly ILogger _logger;
         private readonly IServerEvents _serverEvents;
 
-        private readonly IUserInputManager _userInputManager;
+        private readonly Func<IUserInputManager> _userInputManagerFactory;
         private readonly IHiddenWindow _hiddenWindow;
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace MediaBrowser.UI.Implementations
         /// <param name="playbackManagerFactory">The playback manager factory.</param>
         /// <param name="apiClient">The API client.</param>
         /// <param name="presentationManager">The presentation manager.</param>
-        public NavigationService(IThemeManager themeManager, Func<IPlaybackManager> playbackManagerFactory, IApiClient apiClient, IPresentationManager presentationManager, ITheaterConfigurationManager config, Func<ISessionManager> sessionFactory, IApplicationHost appHost, IInstallationManager installationManager, IImageManager imageManager, ILogger logger, IUserInputManager userInputManager, IServerEvents serverEvents, IHiddenWindow hiddenWindow)
+        public NavigationService(IThemeManager themeManager, Func<IPlaybackManager> playbackManagerFactory, IApiClient apiClient, IPresentationManager presentationManager, ITheaterConfigurationManager config, Func<ISessionManager> sessionFactory, IApplicationHost appHost, IInstallationManager installationManager, IImageManager imageManager, ILogger logger, Func<IUserInputManager> userInputManagerFactory, IServerEvents serverEvents, IHiddenWindow hiddenWindow)
         {
             _themeManager = themeManager;
             _playbackManagerFactory = playbackManagerFactory;
@@ -98,7 +98,7 @@ namespace MediaBrowser.UI.Implementations
             _installationManager = installationManager;
             _imageManager = imageManager;
             _logger = logger;
-            _userInputManager = userInputManager;
+            _userInputManagerFactory = userInputManagerFactory;
             _serverEvents = serverEvents;
             _hiddenWindow = hiddenWindow;
 
@@ -192,7 +192,7 @@ namespace MediaBrowser.UI.Implementations
 
             App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(async () =>
             {
-                var page = new FullscreenVideoPage(_userInputManager, _playbackManagerFactory(), this, _presentationManager, _apiClient, _imageManager, _logger, _serverEvents, _hiddenWindow);
+                var page = new FullscreenVideoPage(_userInputManagerFactory(), _playbackManagerFactory(), this, _presentationManager, _apiClient, _imageManager, _logger, _serverEvents, _hiddenWindow);
 
                 new InternalPlayerPageBehavior(page).AdjustPresentationForPlayback();
 

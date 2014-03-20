@@ -37,12 +37,17 @@ namespace MediaBrowser.Theater.Interfaces.UserInput
         /// <summary>
         /// Occurs when [mouse move].
         /// </summary>
-        event WindowsForms.MouseEventHandler MouseMove;
+        event WindowsForms.MouseEventHandler GlobalMouseMove;
 
         /// <summary>
         /// Occurs when [key down]. Local to MBT
         /// </summary>
         event WindowsInput.KeyEventHandler KeyDown;
+
+        /// <summary>
+        /// Occurs when [key down]. Local to MBT
+        /// </summary>
+        event WindowsInput.MouseEventHandler MouseMove;
 
         /// <summary>
         /// Occurs when an AppCommand is sent to MBT Main window. Local to MBT
@@ -53,5 +58,10 @@ namespace MediaBrowser.Theater.Interfaces.UserInput
         /// Route a KeyDown event via the input Manager
         /// </summary>
         void OnKeyDown(WindowsInput.KeyEventArgs e);
+
+        /// <summary>
+        /// Route a mouse move event via the input Manager
+        /// </summary>
+        void OnMouseMove(WindowsInput.MouseEventArgs e);
     }
 }

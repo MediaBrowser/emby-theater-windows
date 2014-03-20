@@ -48,7 +48,7 @@ namespace MediaBrowser.Theater.Implementations.UserInput
         /// <summary>
         /// Occurs when [mouse move].
         /// </summary>
-        public event WindowsForms.MouseEventHandler MouseMove
+        public event WindowsForms.MouseEventHandler GlobalMouseMove
         {
             add
             {
@@ -88,13 +88,27 @@ namespace MediaBrowser.Theater.Implementations.UserInput
         {
             add
             {
-                //EnsureSubscribedToApplicationKeyboardEvents();
                 _keyDown += value;
             }
             remove
             {
                 _keyDown -= value;
-                //TryUnsubscribeFromApplicationlKeyboardEvents();
+            }
+        }
+
+        /// <summary>
+        /// Occurs when [key down]. Local to MBT
+        /// </summary>
+        private event WindowsInput.MouseEventHandler _mouseMove;
+        public event WindowsInput.MouseEventHandler MouseMove
+        {
+            add
+            {
+                _mouseMove += value;
+            }
+            remove
+            {
+                _mouseMove -= value;
             }
         }
 
@@ -113,6 +127,7 @@ namespace MediaBrowser.Theater.Implementations.UserInput
                 _appCommand -= value;
             }
         }
+
 
         private readonly IPresentationManager _presenationManager;
         private readonly ILogger _logger;
@@ -141,7 +156,10 @@ namespace MediaBrowser.Theater.Implementations.UserInput
             });
 
             _navigationService.Navigated += _nav_Navigated;
-            _presenationManager.Window.KeyDown += window_KeyDown;
+            // subscribe and manager key down events from the application window
+            // note, the hiddenform will also route keydown and mousemove event though here
+            _presenationManager.Window.KeyDown += Window_KeyDown;
+            _presenationManager.Window.MouseMove += Window_MouseMove;
         }
 
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
@@ -176,24 +194,41 @@ namespace MediaBrowser.Theater.Implementations.UserInput
 
         private void AddirectPlayWindowHook()
         {
-           _hiddenWindow.KeyDown -= directPlayWindow_KeyDown;
+            // can't subscribe directly to Windw_Keydow - have to map a form event to a wpf window event
+           _hiddenWindow.KeyDown -= directPlayWindow_KeyDown; // 
            _hiddenWindow.KeyDown += directPlayWindow_KeyDown;
-        }
 
+           _hiddenWindow.MouseMove -= directPlayWindow_MouseMove;
+           _hiddenWindow.MouseMove += directPlayWindow_MouseMove;
+        }
+        
         private void RemoveDirectPlayWindowHook()
         {
             _hiddenWindow.KeyDown -= directPlayWindow_KeyDown;
+            _hiddenWindow.MouseMove -= directPlayWindow_MouseMove;
         }
 
         /// <summary>
         /// Responds to key presses inside a wpf window
         /// </summary>
-        void window_KeyDown(object sender, WindowsInput.KeyEventArgs e)
+        void Window_KeyDown(object sender, WindowsInput.KeyEventArgs e)
         {
-            _logger.Debug("window_KeyDown {0}", e.Key);
+            _logger.Debug("Window_KeyDown {0}", e.Key);
             if (_keyDown != null)
             {
                 _keyDown.Invoke(null, e);
+            }
+        }
+
+        /// <summary>
+        /// Responds to key presses inside a wpf window
+        /// </summary>
+        void Window_MouseMove(object sender, WindowsInput.MouseEventArgs e)
+        {
+            //_logger.Debug("Window_MouseMove");
+            if (_mouseMove != null)
+            {
+                _mouseMove.Invoke(null, e);
             }
         }
 
@@ -203,18 +238,27 @@ namespace MediaBrowser.Theater.Implementations.UserInput
         public void OnKeyDown(WindowsInput.KeyEventArgs e)
         {
              _logger.Debug("OnKeyDown {0}", e.Key);
-             window_KeyDown(null, e);
+             Window_KeyDown(null, e);
         }
 
+        /// <summary>
+        /// Route a KeyDown event via the input Manager
+        /// </summary>
+        public void OnMouseMove(WindowsInput.MouseEventArgs e)
+        {
+            _logger.Debug("OnMouseMove {0}");
+            Window_MouseMove(null, e);
+        }
+  
         /// <summary>
         /// Responds to key down in hiddenwindow 
         /// </summary>
         //
         void directPlayWindow_KeyDown(object sender, WindowsForms.KeyEventArgs e)
         {
-            _logger.Debug("directPlayWindow_KeyDown {0}", e.KeyCode);
             if (_keyDown != null)
             {
+                _logger.Debug("directPlayWindow_KeyDown {0}", e.KeyCode);
                 // map from System.Windows.Forms to System.Windows.Input key event
                 var window = _presenationManager.Window;
                 
@@ -231,6 +275,49 @@ namespace MediaBrowser.Theater.Implementations.UserInput
                     }
                 });
             }
+        }
+
+        /// <summary>
+        /// Responds to key down in hiddenwindow 
+        /// </summary>
+        //
+        void directPlayWindow_MouseMove(object sender, WindowsForms.MouseEventArgs e)
+        {
+            if (_mouseMove != null)
+            {
+                //_logger.Debug("directPlayWindow_MouseMove");
+                // map from System.Windows.Forms to System.Windows.Input mouse move event
+                  var window = _presenationManager.Window.Dispatcher.InvokeAsync(() =>
+                  {
+                    var mouseEventArgs = new MouseButtonEventArgs(WindowsInput.InputManager.Current.PrimaryMouseDevice,
+                        0,
+                        ConvertMouseButton(e.Button));
+                    _mouseMove.Invoke(null, mouseEventArgs);
+                  });
+            }
+        }
+
+
+        private WindowsInput.MouseButton ConvertMouseButton(WindowsForms.MouseButtons button)
+        {
+            switch (button)
+            {
+                case WindowsForms.MouseButtons.Left:
+                    return WindowsInput.MouseButton.Left;
+                case WindowsForms.MouseButtons.Right:
+                    return WindowsInput.MouseButton.Right;
+                case WindowsForms.MouseButtons.Middle:
+                    return WindowsInput.MouseButton.Middle;
+                case WindowsForms.MouseButtons.XButton1:
+                    return WindowsInput.MouseButton.XButton1;
+                case WindowsForms.MouseButtons.XButton2:
+                    return WindowsInput.MouseButton.XButton2;
+                // can't map none & can't access MouseButtonEventArgs.ButtonState
+                // todo - use reflection to set button sate, join new MouseButtonEventArgs call & and this method 
+                case WindowsForms.MouseButtons.None:
+                    return WindowsInput.MouseButton.XButton2; 
+            }
+            throw new InvalidOperationException();
         }
     }
 }

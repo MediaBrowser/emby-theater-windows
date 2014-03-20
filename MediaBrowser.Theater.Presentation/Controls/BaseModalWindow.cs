@@ -12,10 +12,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
     {
         IUserInputManager _userInputManager;
 
-        // KeyDown Events are not being routed to the application main window for modal dialogs fro some reason
-        // so we will eplictily route then to the InputManager
-        //
-        // TODO - replace with addhandler to add a routed event handler so we can forward it to
+        // route all keydown events for MBT windows var the input manager
         // input manager only if routed event leave hadled  = false (currently tab are arrows use go via routed events)
         protected override void OnKeyDown(KeyEventArgs e)
         {
@@ -25,6 +22,20 @@ namespace MediaBrowser.Theater.Presentation.Controls
               {
                 _userInputManager.OnKeyDown(e);
               }
+        }
+
+
+        // route all MouseMove events for MBT windows var the input manager
+        // input manager only if routed event leave hadled  = false (currently tab are arrows use go via routed events)
+        // Note, BaseWindow uses MouseMove for turning off the cursor after a period of inactivity, so we must call it
+        protected override void OnMouseMove(MouseEventArgs e)
+        {
+            base.OnMouseMove(e);
+
+            if (_userInputManager != null && !e.Handled)
+            {
+                _userInputManager.OnMouseMove(e);
+            }
         }
 
         /// <summary>

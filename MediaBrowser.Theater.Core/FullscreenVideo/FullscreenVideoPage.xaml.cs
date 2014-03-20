@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.ApiClient;
+﻿using System.Runtime.InteropServices;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
@@ -9,7 +10,7 @@ using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
 using System.Threading;
 using System.Windows;
-using System.Windows.Forms;
+using System.Windows.Input;
 using System.Windows.Threading;
 using Timer = System.Threading.Timer;
 
@@ -219,7 +220,7 @@ namespace MediaBrowser.Theater.Core.FullscreenVideo
             _lastMouseInput = DateTime.Now;
             _activityTimer = new Timer(TimerCallback, null, 100, 100);
 
-            _hiddenWindow.Form.MouseMove += _userInputManager_MouseMove;
+            _userInputManager.MouseMove += _userInputManager_MouseMove;
             _presentation.SetGlobalThemeContentVisibility(false);
             _playbackManager.PlaybackCompleted += _playbackManager_PlaybackCompleted;
 
@@ -236,7 +237,7 @@ namespace MediaBrowser.Theater.Core.FullscreenVideo
 
             DisposeOsdTimer();
 
-            _hiddenWindow.Form.MouseMove -= _userInputManager_MouseMove;
+            _userInputManager.MouseMove -= _userInputManager_MouseMove;
             _presentation.SetGlobalThemeContentVisibility(true);
             _playbackManager.PlaybackCompleted -= _playbackManager_PlaybackCompleted;
 
@@ -256,19 +257,58 @@ namespace MediaBrowser.Theater.Core.FullscreenVideo
             }
         }
 
-        private System.Drawing.Point? _lastMouseMovePoint;
+        /// <summary>
+        /// Struct representing a point.
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential)]
+        public struct POINT
+        {
+            public int X;
+            public int Y;
+
+            public static implicit operator Point(POINT point)
+            {
+                return new Point(point.X, point.Y);
+            }
+        }
+
+        /// <summary>
+        /// Retrieves the cursor's position, in screen coordinates.
+        /// </summary>
+        /// <see>See MSDN documentation for further information.</see>
+        [DllImport("user32.dll")]
+        public static extern bool GetCursorPos(out POINT lpPoint);
+
+        public static Point GetCursorPosition()
+        {
+            POINT lpPoint;
+            GetCursorPos(out lpPoint);
+            //bool success = User32.GetCursorPos(out lpPoint);
+            // if (!success)
+
+            return lpPoint;
+        }
+
+        /// <summary>
+        /// Mouse moved event - figure if we have moved and update input time
+        /// </summary>
+        // mouse move is moving across 2 different windows
+        // hiddenwindow & the OSD/Info, windows relaive position would cause problems
+        // so use interop to call GetCursorPosition fro absolute screen position as we
+        // are only interested in change in position.
+         private System.Windows.Point? _lastMouseMovePoint;
         void _userInputManager_MouseMove(object sender, MouseEventArgs e)
         {
             if (!_lastMouseMovePoint.HasValue)
             {
-                _lastMouseMovePoint = e.Location;
+                _lastMouseMovePoint = GetCursorPosition();
                 return;
             }
-            if (_lastMouseMovePoint == e.Location)
+            if (_lastMouseMovePoint == GetCursorPosition())
             {
                 return;
             }
-            _lastMouseMovePoint = e.Location;
+            _lastMouseMovePoint = GetCursorPosition();
             _lastMouseInput = DateTime.Now;
         }
 

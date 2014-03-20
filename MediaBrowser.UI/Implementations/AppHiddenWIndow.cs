@@ -46,6 +46,15 @@ namespace MediaBrowser.UI.Implementations
             }
         }
 
+        public event MouseEventHandler MouseMove
+        {
+            add { App.Instance.HiddenWindow.MouseMove += value; }
+            remove
+            {
+                App.Instance.HiddenWindow.MouseMove -= value;
+            }
+        }
+
         public Size ContentPixelSize
         {
             get { return new Size(App.Instance.HiddenWindow.Width, App.Instance.HiddenWindow.Height); }

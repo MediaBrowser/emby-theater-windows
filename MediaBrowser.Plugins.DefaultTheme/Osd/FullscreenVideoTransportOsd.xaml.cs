@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.Dto;
+﻿using System.Diagnostics;
+using MediaBrowser.Model.Dto;
 using MediaBrowser.Plugins.DefaultTheme.ListPage;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Presentation.ViewModels;
@@ -19,7 +20,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Osd
         /// <summary>
         /// The is position slider dragging
         /// </summary>
-        private bool _isPositionSliderDragging;
+        private bool _isPositionSliderUpdating;
+
+        /// <summary>
+        /// Event handler for mouse down, add via addhandler so we can catch handled events
+        /// </summary>
+        private MouseButtonEventHandler _previewMouseDown;
 
         /// <summary>
         /// Gets the view model.
@@ -39,12 +45,32 @@ namespace MediaBrowser.Plugins.DefaultTheme.Osd
             Unloaded += FullscreenVideoTransportOsd_Unloaded;
         }
 
-        void FullscreenVideoTransportOsd_Loaded(object sender, RoutedEventArgs e)
+        private void FullscreenVideoTransportOsd_Loaded(object sender, RoutedEventArgs e)
         {
-            CurrentPositionSlider.PreviewMouseUp += CurrentPositionSlider_PreviewMouseUp;
+            // The silder has IsMoveToPointEnabled=true, which means it moves the thumb when we click the mouse, which also set handled to true
+            // so we can't get the event. We need to turn event on so we can tell the slider to ignore position tick property notifications until
+            // we get a mouse up and update the slider position. So we use AddHanlder, so we can catch handled events
+            if (_previewMouseDown == null)
+            {
+                _previewMouseDown = new MouseButtonEventHandler(CurrentPositionSlider_PreviewMouseDown);
+                CurrentPositionSlider.AddHandler(PreviewMouseDownEvent, _previewMouseDown, true);
+            }
         }
 
-        void FullscreenVideoTransportOsd_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        private void FullscreenVideoTransportOsd_Unloaded(object sender, RoutedEventArgs e)
+        {
+            CurrentPositionSlider.RemoveHandler(PreviewMouseDownEvent, _previewMouseDown);
+            _previewMouseDown = null;
+
+            var vm = ViewModel;
+
+            if (vm != null)
+            {
+                vm.PropertyChanged -= vm_PropertyChanged;
+            }
+        }
+
+        private void FullscreenVideoTransportOsd_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             var vm = ViewModel;
 
@@ -57,19 +83,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Osd
             }
         }
 
-        void FullscreenVideoTransportOsd_Unloaded(object sender, RoutedEventArgs e)
-        {
-            CurrentPositionSlider.PreviewMouseUp -= CurrentPositionSlider_PreviewMouseUp;
-
-            var vm = ViewModel;
-
-            if (vm != null)
-            {
-                vm.PropertyChanged -= vm_PropertyChanged;
-            }
-        }
-
-        void vm_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void vm_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             var vm = ViewModel;
 
@@ -80,7 +94,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Osd
             }
             else if (string.Equals(e.PropertyName, "PositionTicks"))
             {
-                if (!_isPositionSliderDragging)
+                if (!_isPositionSliderUpdating)
                 {
                     CurrentPositionSlider.Value = vm.PositionTicks;
                 }
@@ -95,9 +109,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Osd
             {
                 try
                 {
-                    ImgLogo.Source = await viewModel.ImageManager.GetRemoteBitmapAsync(viewModel.ApiClient.GetLogoImageUrl(media, new ImageOptions
-                    {
-                    }));
+                    ImgLogo.Source =
+                        await
+                            viewModel.ImageManager.GetRemoteBitmapAsync(viewModel.ApiClient.GetLogoImageUrl(media,
+                                new ImageOptions
+                                {
+                                }));
 
                     ImgLogo.Visibility = Visibility.Visible;
                 }
@@ -115,7 +132,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Osd
         /// <param name="e">The <see cref="DragStartedEventArgs" /> instance containing the event data.</param>
         private void CurrentPositionSlider_DragStarted(object sender, DragStartedEventArgs e)
         {
-            _isPositionSliderDragging = true;
+            _isPositionSliderUpdating = true;
         }
 
         /// <summary>
@@ -125,17 +142,25 @@ namespace MediaBrowser.Plugins.DefaultTheme.Osd
         /// <param name="e">The <see cref="DragCompletedEventArgs" /> instance containing the event data.</param>
         private void CurrentPositionSlider_DragCompleted(object sender, DragCompletedEventArgs e)
         {
-            _isPositionSliderDragging = false;
+            ViewModel.Seek(Convert.ToInt64(CurrentPositionSlider.Value));
+            _isPositionSliderUpdating = false;
         }
 
-        /// <summary>
-        /// Handles the PreviewMouseUp event of the CurrentPositionSlider control.
+        // Handles the PreviewMouseDown event of the CurrentPositionSlider control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="MouseButtonEventArgs" /> instance containing the event data.</param>
-        void CurrentPositionSlider_PreviewMouseUp(object sender, MouseButtonEventArgs e)
+        private void CurrentPositionSlider_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
-            ViewModel.Seek(Convert.ToInt64(CurrentPositionSlider.Value));
+            _isPositionSliderUpdating = true;
+            try
+            {
+                ViewModel.Seek(Convert.ToInt64(CurrentPositionSlider.Value));
+            }
+            finally
+            {
+                _isPositionSliderUpdating = false;
+            }
         }
     }
 }

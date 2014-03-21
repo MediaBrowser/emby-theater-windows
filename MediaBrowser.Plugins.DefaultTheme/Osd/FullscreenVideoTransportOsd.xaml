@@ -110,7 +110,7 @@
                         <ColumnDefinition Width="auto"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
 
-                    <Slider x:Name="CurrentPositionSlider" Grid.Column="0" VerticalAlignment="Center" Minimum="0" IsMoveToPointEnabled="True" Maximum="{Binding DurationTicks}" Thumb.DragStarted="CurrentPositionSlider_DragStarted" Thumb.DragCompleted="CurrentPositionSlider_DragCompleted"></Slider>
+                    <Slider x:Name="CurrentPositionSlider" Grid.Column="0" VerticalAlignment="Center" Minimum="0" IsMoveToPointEnabled="True" Maximum="{Binding DurationTicks}" Thumb.DragStarted="CurrentPositionSlider_DragStarted" Thumb.DragCompleted="CurrentPositionSlider_DragCompleted" Focusable="False"></Slider>
 
                     <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 0 0 3">
                         <TextBlock x:Name="TxtCurrentPosition" Style="{DynamicResource TextBlockStyle}" Foreground="{DynamicResource MediaBrowserAccent}" Margin="20 0 0 0" VerticalAlignment="Center" Text="{Binding DisplayPosition}"></TextBlock>

@@ -173,7 +173,14 @@ namespace MediaBrowser.UI.EntryPoints
                     Ids = e.Request.ItemIds,
                     UserId = _session.CurrentUser.Id,
 
-                    Fields = new[] { ItemFields.Chapters, ItemFields.MediaStreams, ItemFields.Path }
+                    Fields = new[]
+                    {
+                        ItemFields.Chapters, 
+                        ItemFields.MediaStreams, 
+                        ItemFields.Overview,
+                        ItemFields.Path,
+                        ItemFields.People,
+                    }
                 });
 
                 await _playbackManager.Play(new PlayOptions

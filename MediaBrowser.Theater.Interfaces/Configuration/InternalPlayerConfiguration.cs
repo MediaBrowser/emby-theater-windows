@@ -110,7 +110,7 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
             HwaEnabledCodecs = new List<string>();
             EnabledCodecs = new List<string>();
 
-            UseMadVrSmoothMotion = true;
+            UseMadVrSmoothMotion = false;
             MadVrSmoothMotionMode = "avoidJudder";
 
             HwaResolution = -1;

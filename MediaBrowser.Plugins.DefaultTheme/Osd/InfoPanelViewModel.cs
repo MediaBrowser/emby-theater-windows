@@ -34,7 +34,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Osd
             }
 
             var nowPlaying = _transportViewModel.NowPlayingItem;
-            if (nowPlaying != null && nowPlaying.People.Any(i => i.HasPrimaryImage))
+            if (nowPlaying != null && nowPlaying.People != null && nowPlaying.People.Any(i => i.HasPrimaryImage))
             {
                 list.Add(new TabItem
                 {

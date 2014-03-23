@@ -26,10 +26,14 @@
         <CheckBox x:Name="ChkEnableReclock" Margin="0 30 0 0" VerticalAlignment="Center">
             <TextBlock Style="{StaticResource TextBlockStyle}">Enable Reclock *</TextBlock>
         </CheckBox>
-
-        <CheckBox x:Name="ChkEnableMadvr" Margin="0 30 0 0" VerticalAlignment="Center">
-            <TextBlock Style="{StaticResource TextBlockStyle}">Enable Madvr *</TextBlock>
-        </CheckBox>
+        <StackPanel Orientation="Horizontal" Margin="0 10 0 0">
+            <CheckBox x:Name="ChkEnableMadvr" Margin="0 30 0 0" VerticalAlignment="Center">
+                <TextBlock Style="{StaticResource TextBlockStyle}" >Enable madVR *</TextBlock>
+            </CheckBox>
+            <Button Margin="85,60,0,0" x:Name="BtnConfigureMadVr" Click="BtnConfigureMadVr_Click" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <TextBlock Style="{StaticResource TextBlockStyle}">madVR Settings</TextBlock>
+            </Button>
+        </StackPanel>
 
         <CheckBox x:Name="ChkEnableXySubFilter" Margin="0 30 0 0" VerticalAlignment="Center">
             <TextBlock Style="{StaticResource TextBlockStyle}">Enable XySubFilter *</TextBlock>

@@ -6,6 +6,7 @@ using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.Pages;
 using System;
 using System.Windows;
+using MediaBrowser.Theater.Interfaces.Navigation;
 
 namespace MediaBrowser.Theater.DirectShow.Configuration
 {
@@ -14,12 +15,14 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
     /// </summary>
     public partial class ConfigurationPage : BasePage
     {
+        private readonly INavigationService _nav;
         private readonly ITheaterConfigurationManager _config;
         private readonly IMediaFilters _mediaFilters;
         private readonly IPresentationManager _presentation;
 
-        public ConfigurationPage(ITheaterConfigurationManager config, IPresentationManager presentation, IMediaFilters mediaFilters)
+        public ConfigurationPage(INavigationService nav, ITheaterConfigurationManager config, IPresentationManager presentation, IMediaFilters mediaFilters)
         {
+            _nav = nav;
             _config = config;
             _presentation = presentation;
             _mediaFilters = mediaFilters;
@@ -65,16 +68,17 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
             }
         }
 
-        void BtnConfigureAudio_Click(object sender, RoutedEventArgs e)
+        async void BtnConfigureAudio_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                _mediaFilters.LaunchLavAudioConfiguration();
-            }
-            catch
-            {
-                _presentation.ShowDefaultErrorMessage();
-            }
+            //try
+            //{
+            //    _mediaFilters.LaunchLavAudioConfiguration();
+            //}
+            //catch
+            //{
+            //    _presentation.ShowDefaultErrorMessage();
+            //}
+            await _nav.Navigate(new LavAudioSettingsPage(_nav, _config, _presentation, _mediaFilters));
         }
 
         void GeneralSettingsPage_Loaded(object sender, RoutedEventArgs e)
@@ -101,6 +105,11 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
             config.VideoConfig.HwaMode = int.Parse(SelectHwaMode.SelectedValue);
 
             _config.SaveConfiguration();
+        }
+
+        async void BtnConfigureMadVr_Click(object sender, RoutedEventArgs e)
+        {
+            await _nav.Navigate(new MadVrSettingsPage(_nav, _config, _presentation, _mediaFilters));
         }
     }
 }

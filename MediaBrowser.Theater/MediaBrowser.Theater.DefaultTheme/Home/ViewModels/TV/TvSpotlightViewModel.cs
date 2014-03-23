@@ -182,8 +182,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
                 DesiredImageWidth = _miniSpotlightWidth,
                 DesiredImageHeight = HomeViewModel.TileHeight,
                 PreferredImageTypes = new[] { ImageType.Backdrop, ImageType.Thumb },
-                DisplayNameGenerator = GetDisplayName,
-                DownloadImagesAtExactSize = true
+                DisplayNameGenerator = GetDisplayName
             };
         }
 

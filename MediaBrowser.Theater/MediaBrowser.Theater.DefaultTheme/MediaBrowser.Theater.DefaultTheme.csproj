@@ -109,6 +109,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Core\Views\ItemArtworkView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Core\Views\ItemFooterView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -162,6 +166,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Home\Views\TV\TvSpotlightView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ItemDetails\Views\ItemDetailsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -328,6 +336,7 @@
     <Compile Include="Core\ViewModels\ImageSlideshowViewModel.cs" />
     <Compile Include="Core\ViewModels\ImageViewerViewModel.cs" />
     <Compile Include="Core\ViewModels\IRootPresentationOptions.cs" />
+    <Compile Include="Core\ViewModels\ItemArtworkViewModel.cs" />
     <Compile Include="Core\ViewModels\ItemInfoDetailsViewModel.cs" />
     <Compile Include="Core\ViewModels\ItemSpotlightViewModel.cs" />
     <Compile Include="Core\ViewModels\ItemTileViewModel.cs" />
@@ -348,6 +357,9 @@
     </Compile>
     <Compile Include="Core\Views\ImageViewerView.xaml.cs">
       <DependentUpon>ImageViewerView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Views\ItemArtworkView.xaml.cs">
+      <DependentUpon>ItemArtworkView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Core\Views\ItemFooterView.xaml.cs">
       <DependentUpon>ItemFooterView.xaml</DependentUpon>
@@ -403,6 +415,11 @@
     </Compile>
     <Compile Include="Home\Views\TV\TvSpotlightView.xaml.cs">
       <DependentUpon>TvSpotlightView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ItemDetails\ItemDetailsContext.cs" />
+    <Compile Include="ItemDetails\ViewModels\ItemDetailsViewModel.cs" />
+    <Compile Include="ItemDetails\Views\ItemDetailsView.xaml.cs">
+      <DependentUpon>ItemDetailsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="ItemList\ItemListContext.cs" />
     <Compile Include="ItemList\ItemListPath.cs" />

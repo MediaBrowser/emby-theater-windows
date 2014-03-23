@@ -115,8 +115,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
                 DesiredImageWidth = PosterWidth,
                 DesiredImageHeight = PosterHeight,
                 ShowDisplayName = false,
-                PreferredImageTypes = new[] { ImageType.Primary, ImageType.Backdrop, ImageType.Thumb },
-                DownloadImagesAtExactSize = true
+                PreferredImageTypes = new[] { ImageType.Primary, ImageType.Backdrop, ImageType.Thumb }
             };
         }
     }

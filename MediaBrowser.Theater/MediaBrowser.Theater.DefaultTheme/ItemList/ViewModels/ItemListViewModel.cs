@@ -108,8 +108,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
         {
             ItemsResult result = await itemsTask;
             IEnumerable<ItemTileViewModel> viewModels = result.Items.Select(dto => new ItemTileViewModel(_apiClient, _imageManager, _serverEvents, _navigator, dto) {
-                DesiredImageHeight = ItemHeight,
-                DownloadImagesAtExactSize = true
+                DesiredImageHeight = ItemHeight
             });
 
             Items.AddRange(viewModels.OrderBy(GetSortKey));

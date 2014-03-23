@@ -96,8 +96,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
                 DesiredImageWidth = HomeViewModel.TileWidth,
                 DesiredImageHeight = HomeViewModel.TileHeight,
                 PreferredImageTypes = new[] { ImageType.Primary, ImageType.Screenshot, ImageType.Thumb, ImageType.Backdrop },
-                DisplayNameGenerator = TvSpotlightViewModel.GetDisplayName,
-                DownloadImagesAtExactSize = true
+                DisplayNameGenerator = TvSpotlightViewModel.GetDisplayName
             };
         }
 

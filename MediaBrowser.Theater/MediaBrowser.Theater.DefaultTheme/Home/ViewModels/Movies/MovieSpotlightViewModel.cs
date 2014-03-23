@@ -175,8 +175,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
             return new ItemTileViewModel(_apiClient, _imageManager, _serverEvents, _navigator, /*_playbackManager,*/ null) {
                 DesiredImageWidth = _miniSpotlightWidth,
                 DesiredImageHeight = HomeViewModel.TileHeight,
-                PreferredImageTypes = new[] { ImageType.Backdrop, ImageType.Thumb },
-                DownloadImagesAtExactSize = true
+                PreferredImageTypes = new[] { ImageType.Backdrop, ImageType.Thumb }
             };
         }
 

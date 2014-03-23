@@ -14,7 +14,7 @@
 <!--            <BitmapCache EnableClearType="True" RenderAtScale="1"/>-->
 <!--        </Button.CacheMode>-->
 
-        <Grid Width="{Binding ActualWidth}" Height="{Binding ActualHeight}">
+        <Grid Width="{Binding Image.ActualWidth}" Height="{Binding Image.ActualHeight}">
             <controls:ExtendedContentControl Content="{Binding Image}" />
 
             <Border HorizontalAlignment="Stretch" VerticalAlignment="Bottom"

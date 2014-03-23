@@ -10,10 +10,13 @@ using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
+using MediaBrowser.Model.Querying;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
+using MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies;
+using MediaBrowser.Theater.DefaultTheme.ItemList;
 using MediaBrowser.Theater.Presentation;
 using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.ViewModels;
@@ -50,6 +53,15 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
             LowerSpotlightWidth = SpotlightWidth/3 - HomeViewModel.TileMargin*1.5;
             LowerSpotlightHeight = HomeViewModel.TileHeight;
 
+            AllShowsCommand = new RelayCommand(arg => {
+                var itemParams = new ItemListParameters {
+                    Items = GetShows(),
+                    Title = "Browse TV Shows"
+                };
+
+                navigator.Navigate(Go.To.ItemList(itemParams));
+            });
+
             SpotlightViewModel = new ItemSpotlightViewModel(imageManager, apiClient) {
                 ImageType = ImageType.Backdrop,
                 ItemSelectedAction = i => navigator.Navigate(Go.To.Item(i))
@@ -66,6 +78,20 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
             };
 
             LoadViewModels(tvViewTask);
+        }
+
+        private Task<ItemsResult> GetShows()
+        {
+            var query = new ItemQuery
+            {
+                UserId = _sessionManager.CurrentUser.Id,
+                IncludeItemTypes = new[] { "Series" },
+                SortBy = new[] { ItemSortBy.SortName },
+                Fields = MovieSpotlightViewModel.QueryFields,
+                Recursive = true
+            };
+
+            return _apiClient.GetItemsAsync(query);
         }
 
         public double SpotlightWidth { get; private set; }

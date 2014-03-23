@@ -247,7 +247,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
             get { return _item.UserData != null && (_item.UserData.Likes ?? false); }
         }
 
-        public bool IsFavorate
+        public bool IsFavorite
         {
             get { return _item.UserData != null && _item.UserData.IsFavorite; }
         }

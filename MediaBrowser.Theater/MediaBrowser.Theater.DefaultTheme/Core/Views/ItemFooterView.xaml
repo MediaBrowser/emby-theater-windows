@@ -15,12 +15,13 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
         
 
         <StackPanel Grid.Row="0" Orientation="Horizontal">
-
+            
             <TextBlock Style="{StaticResource Heading2TextBlockStyle}" Margin="0 -8 20 0" MaxWidth="800" TextWrapping="NoWrap" Text="{Binding DisplayName}" VerticalAlignment="Center"></TextBlock>
             <controls:StarRating Margin="0,0,20,0" Rating="{Binding CommunityRating}" Visibility="{Binding HasCommunityRating, Converter={StaticResource BooleanToVisibility}}"/>
             
@@ -68,9 +69,6 @@
                     <Grid.Style>
                         <Style TargetType="{x:Type Grid}">
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding }" Value="{x:Null}">
-                                    <Setter Property="Visibility" Value="Collapsed" />
-                                </DataTrigger>
                                 <DataTrigger Binding="{Binding IsFavorite}" Value="False">
                                     <Setter Property="Visibility" Value="Collapsed" />
                                 </DataTrigger>
@@ -241,7 +239,8 @@
             <!--This textblock is just to make sure the panel always takes up the same amount of vertical space, so that content never moves due to height changes -->
             <TextBlock Style="{StaticResource SmallTextBlockStyle}" Visibility="Hidden" Text="P"></TextBlock>
         </StackPanel>
-        
-        <TextBlock Grid.Row="1" Style="{StaticResource SmallTextBlockStyle}" Margin="0 5 0 0" Text="{Binding Overview}" Foreground="#ddd" FontSize="24" MinHeight="80" TextTrimming="CharacterEllipsis" Width="1200" HorizontalAlignment="Left" TextWrapping="WrapWithOverflow"/>
+
+        <TextBlock Grid.Row="1" Style="{StaticResource SmallTextBlockStyle}" Margin="0 5 0 0" Text="{Binding Genres}" Visibility="{Binding HasGenres, Converter={StaticResource BooleanToVisibility}}"/>
+        <TextBlock Grid.Row="2" Style="{StaticResource SmallTextBlockStyle}" Margin="0 5 0 0" Text="{Binding Overview}" Foreground="#ddd" FontSize="24" MinHeight="80" TextTrimming="CharacterEllipsis" Width="1200" HorizontalAlignment="Left" TextWrapping="WrapWithOverflow"/>
     </Grid>
 </UserControl>

@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.UserInterface;
@@ -18,6 +19,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
         public const double ItemHeight = 500;
 
         private readonly Task<ItemsResult> _items;
+        private readonly string _title;
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
         private readonly INavigator _navigator;
@@ -25,15 +27,15 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
         private ItemTileViewModel _selectedItem;
         private ItemInfoDetailsViewModel _selectedItemDetails;
 
-        public ItemListViewModel(Task<ItemsResult> items, IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator)
+        public ItemListViewModel(Task<ItemsResult> items, string title, IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator)
         {
             _items = items;
+            _title = title;
             _apiClient = apiClient;
             _imageManager = imageManager;
             _serverEvents = serverEvents;
             _navigator = navigator;
             Items = new RangeObservableCollection<ItemTileViewModel>();
-            
         }
 
         public override async Task Initialize()
@@ -116,6 +118,6 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
         public bool ShowMediaBrowserLogo { get { return false; } }
         public bool ShowCommandBar { get { return true; } }
         public bool ShowClock { get { return true; } }
-        public string Title { get { return "Browse Movies"; } }
+        public string Title { get { return _title; } }
     }
 }

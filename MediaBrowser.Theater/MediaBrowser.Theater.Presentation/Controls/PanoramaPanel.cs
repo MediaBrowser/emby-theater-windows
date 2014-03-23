@@ -172,7 +172,9 @@ namespace MediaBrowser.Theater.Presentation.Controls
 
         public void MakeItemVisible(object item)
         {
-            MakeRectVisible(GetItemLocation(item));
+            var location = GetItemLocation(item);
+            SetHorizontalOffset(location.Left);
+            SetVerticalOffset(location.Top);
         }
 
         public Rect GetItemLocation(object item)
@@ -184,11 +186,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
                 return new Rect();
             }
 
-//            if (index == itemsControl.Items.Count - 1) {
-//                return new Rect(_itemPositionOffsets[index], 0, _itemPositionOffsets[index + 1] - _itemPositionOffsets[index] + EndScrollPadding, _itemOffAxisExtent);
-//            } else {
-                return new Rect(_itemPositionOffsets[index], 0, _itemPositionOffsets[index + 1] - _itemPositionOffsets[index], _itemOffAxisExtent);
-//            }
+            return new Rect(_itemPositionOffsets[index], 0, _itemPositionOffsets[index + 1] - _itemPositionOffsets[index], _itemOffAxisExtent);
         }
 
         private Rect MakeRectVisible(Rect rectangle)

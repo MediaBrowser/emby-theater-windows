@@ -32,7 +32,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList
         public override async Task Activate()
         {
             if (_viewModel == null || !_viewModel.IsActive) {
-                _viewModel = new ItemListViewModel(Parameters.Items, _apiClient, _imageManager, _serverEvents, _navigator);
+                _viewModel = new ItemListViewModel(Parameters.Items, Parameters.Title, _apiClient, _imageManager, _serverEvents, _navigator);
             }
 
             await _presenter.ShowPage(_viewModel);

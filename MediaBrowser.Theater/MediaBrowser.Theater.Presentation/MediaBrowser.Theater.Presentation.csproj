@@ -153,6 +153,7 @@
     <Compile Include="Converters\BooleanOrConverter.cs" />
     <Compile Include="Converters\StringNotEmptyToVisbilityConverter.cs" />
     <Compile Include="Converters\UppercaseConverter.cs" />
+    <Compile Include="ImageTypeExtensions.cs" />
     <Compile Include="LocalizationExtensions.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">

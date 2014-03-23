@@ -9,6 +9,7 @@ using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Home.ViewModels;
+using MediaBrowser.Theater.Presentation;
 using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.ViewModels;
 
@@ -32,6 +33,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
         private bool _enableServerImageEnhancers;
         private ImageType[] _preferredImageTypes;
         private bool? _showDisplayName;
+        private bool _enforcePreferredImageAspectRatio;
 
         public ItemTileViewModel(IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents,
                                  INavigator navigator, /*IPlaybackManager playbackManager,*/ BaseItemDto item)
@@ -62,6 +64,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
             DisplayNameGenerator = GetDisplayNameWithAiredSpecial;
             PreferredImageTypes = new[] { ImageType.Primary, ImageType.Thumb, ImageType.Backdrop };
             GoToDetailsCommand = new RelayCommand(o => navigator.Navigate(Go.To.Item(item)));
+            EnforcePreferredImageAspectRatio = true;
 
             serverEvents.UserDataChanged += serverEvents_UserDataChanged;
 
@@ -179,6 +182,20 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
             }
         }
 
+        public bool EnforcePreferredImageAspectRatio
+        {
+            get { return _enforcePreferredImageAspectRatio; }
+            set
+            {
+                if (value.Equals(_enforcePreferredImageAspectRatio)) {
+                    return;
+                }
+                _enforcePreferredImageAspectRatio = value;
+                OnPropertyChanged();
+                InvalidateImage();
+            }
+        }
+
         public bool IsPlayed
         {
             get { return _item != null && _item.UserData.Played; }
@@ -257,13 +274,12 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
             get
             {
                 if (DesiredImageWidth != null) {
-                    return (double)DesiredImageWidth;
+                    return (double) DesiredImageWidth;
                 }
 
-                if (DesiredImageHeight != null && (int)Image.ImageWidth != 0 && (int)Image.ImageHeight != 0)
-                {
-                    var aspectRatio = Image.ImageWidth/Image.ImageHeight;
-                    return (double)DesiredImageHeight*aspectRatio;
+                if (DesiredImageHeight != null) {
+                    var aspectRatio = EnforcePreferredImageAspectRatio || (int) Image.ImageHeight == 0 ? PreferredImageTypes.First().GetAspectRatio() : Image.ImageWidth/Image.ImageHeight;
+                    return (double) DesiredImageHeight*aspectRatio;
                 }
 
                 return Image.ImageWidth;
@@ -274,15 +290,13 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
         {
             get
             {
-                if (DesiredImageHeight != null)
-                {
-                    return (double)DesiredImageHeight;
+                if (DesiredImageHeight != null) {
+                    return (double) DesiredImageHeight;
                 }
 
-                if (DesiredImageWidth != null && (int)Image.ImageWidth != 0 && (int)Image.ImageHeight != 0)
-                {
-                    var aspectRatio = Image.ImageWidth / Image.ImageHeight;
-                    return (double)DesiredImageWidth / aspectRatio;
+                if (DesiredImageWidth != null) {
+                    var aspectRatio = EnforcePreferredImageAspectRatio || (int) Image.ImageWidth == 0 ? PreferredImageTypes.First().GetAspectRatio() : Image.ImageWidth/Image.ImageHeight;
+                    return (double) DesiredImageWidth/aspectRatio;
                 }
 
                 return Image.ImageHeight;
@@ -383,9 +397,14 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
                 EnableImageEnhancers = EnableServerImageEnhancers
             };
 
-            if ((imageType == ImageType.Primary && DownloadPrimaryImageAtExactSize)
+            if (EnforcePreferredImageAspectRatio
+                || (imageType == ImageType.Primary && DownloadPrimaryImageAtExactSize)
                 || (imageType != ImageType.Primary && DownloadImagesAtExactSize)) {
-                imageOptions.Width = DesiredImageWidth != null && !double.IsPositiveInfinity((double) DesiredImageWidth) ? (int?) Convert.ToInt32(DesiredImageWidth) : null;
+                if (DesiredImageWidth == null) {
+                    imageOptions.Width = (int)ActualWidth;
+                } else {
+                    imageOptions.Width = DesiredImageWidth != null && !double.IsPositiveInfinity((double) DesiredImageWidth) ? (int?) Convert.ToInt32(DesiredImageWidth) : null;
+                }
             }
 
             if (imageType == ImageType.Thumb) {

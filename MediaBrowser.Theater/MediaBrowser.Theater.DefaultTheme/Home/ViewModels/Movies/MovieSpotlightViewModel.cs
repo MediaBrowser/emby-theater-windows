@@ -55,7 +55,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
             BrowseMoviesCommand = new RelayCommand(arg => {
                 var itemParams = new ItemListParameters { 
                     Items = GetMovies(),
-                    Title = "Movies"
+                    Title = "Browse Movies"
                 };
 
                 navigator.Navigate(Go.To.ItemList(itemParams));

@@ -203,7 +203,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         {
             get
             {
-                return _item != null && !_item.IsFolder && _item.UserData != null && _item.UserData.PlaybackPositionTicks > 0;
+                return CanPlay && _item.UserData != null && _item.UserData.PlaybackPositionTicks > 0;
             }
         }
 
@@ -1217,6 +1217,9 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             {
                 var item = _item;
 
+                if (! _playbackManager.CanPlay(item))
+                    return;
+
                 if (item.IsVideo && (item.Chapters == null || item.MediaStreams == null))
                 {
                     item = await _apiClient.GetItemAsync(item.Id, _apiClient.CurrentUserId);
@@ -1230,7 +1233,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                     item = await _apiClient.GetItemAsync(item.Id, _apiClient.CurrentUserId);
                 }
 
-                await _playbackManager.Play(new PlayOptions(item));
+               await _playbackManager.Play(new PlayOptions(item));
             }
             catch (Exception)
             {

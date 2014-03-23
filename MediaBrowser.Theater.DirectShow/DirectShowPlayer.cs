@@ -46,6 +46,7 @@ namespace MediaBrowser.Theater.DirectShow
         private DirectShowLib.IBaseFilter _sourceFilter = null;
         private DirectShowLib.IFilterGraph2 _filterGraph = null;
         DsROTEntry m_dsRot = null;
+        bool _isDvd = false;
 
         private XYVSFilter _xyVsFilter = null;
         private XySubFilter _xySubFilter = null;
@@ -237,6 +238,7 @@ namespace MediaBrowser.Theater.DirectShow
         private void InitializeGraph(bool isDvd)
         {
             int hr = 0;
+            _isDvd = isDvd;
             m_filterGraph = new FilterGraphNoThread();
             m_graph = (m_filterGraph as DirectShowLib.IGraphBuilder);
 
@@ -726,7 +728,8 @@ namespace MediaBrowser.Theater.DirectShow
                         hr = m_graph.AddFilter(_mPEvr, "EVR");
                         DsError.ThrowExceptionForHR(hr);
 
-                        InitializeEvr(_mPEvr, 1);
+                        //we only need 2 input pins on the EVR if LAV Video isn't used for DVDs, but it doesn't hurt to have them
+                        InitializeEvr(_mPEvr, _isDvd ? 2 : 1); 
                     }
 
                     // Fallback to xyVsFilter
@@ -893,11 +896,13 @@ namespace MediaBrowser.Theater.DirectShow
                 throw new Exception("Could not render any streams from the source Uri");
             }
 
-            _logger.Info("Completed RenderStreams with {0} pins.", pinsRendered);
+            _logger.Debug("Completed RenderStreams with {0} pins.", pinsRendered);
 
             if (_item.IsVideo)
             {
                 SetVideoWindow(enableMadvrExclusiveMode);
+                if(_mPEvr != null)
+                    SetEvrVppMode(_mPEvr);
             }
         }
 
@@ -963,8 +968,90 @@ namespace MediaBrowser.Theater.DirectShow
             hr = pDisplay.SetVideoWindow(VideoWindowHandle);
             DsError.ThrowExceptionForHR(hr);
 
+            IEVRFilterConfig evrConfig = pEvr as IEVRFilterConfig;
+            int pdwMaxStreams;
+
+            if (evrConfig != null)
+            {
+                hr = evrConfig.GetNumberOfStreams(out pdwMaxStreams);
+                DsError.ThrowExceptionForHR(hr);
+                _logger.Debug("NumberOfStreams: {0}", pdwMaxStreams);
+
+                if (pdwMaxStreams < dwStreams)
+                {
+                    hr = evrConfig.SetNumberOfStreams(dwStreams);
+                    DsError.ThrowExceptionForHR(hr);
+                    _logger.Debug("Set NumberOfStreams: {0}", dwStreams);
+                }
+            }
+            else
+                _logger.Error("Couldn't get IEVRFilterConfig from EVR");
+
             // Return the IMFVideoDisplayControl pointer to the caller.
             _mPDisplay = pDisplay;
+        }
+
+        private void SetEvrVppMode(DirectShowLib.IBaseFilter pEvr)
+        {
+            int hr = 0;
+            object objVideoProc = null;
+            IMFGetService mfgs = pEvr as IMFGetService;
+            if (mfgs != null)
+            {
+                try
+                {
+                    mfgs.GetService(MFServices.MR_VIDEO_MIXER_SERVICE,
+                        typeof(IMFVideoProcessor).GUID,
+                        out objVideoProc
+                        );
+                    MediaBrowser.Theater.DirectShow.InterfaceOverride.IMFVideoProcessor evrProc = objVideoProc as MediaBrowser.Theater.DirectShow.InterfaceOverride.IMFVideoProcessor;
+                    int dModes;
+                    IntPtr ppModes = IntPtr.Zero;
+                    Guid lpMode = Guid.Empty;
+                    Guid bestMode = Guid.Empty;
+                    hr = evrProc.GetVideoProcessorMode(out lpMode);
+                    DsError.ThrowExceptionForHR(hr);
+                    List<Guid> vpModes = new List<Guid>();
+
+                    try
+                    {
+                        hr = evrProc.GetAvailableVideoProcessorModes(out dModes, out ppModes);
+                        DsError.ThrowExceptionForHR(hr);
+                        if (dModes > 0)
+                        {
+                            for (int i = 0; i < dModes; i++)
+                            {
+                                int offSet = Marshal.SizeOf(Guid.Empty) * i;
+                                Guid vpMode = (Guid)Marshal.PtrToStructure(((IntPtr)((int)ppModes + offSet)), typeof(Guid));
+                                vpModes.Add(vpMode);
+                                _logger.Debug("VideoMode Found: {0}", vpMode);
+                            }
+                        }
+                    }
+                    finally
+                    {
+                        if (ppModes != IntPtr.Zero)
+                            Marshal.FreeCoTaskMem(ppModes);
+                    }
+
+                    bestMode = vpModes[0];
+                    _logger.Debug("Set ProcessorMode: {0} BestMode: {1}", lpMode, bestMode);
+                    if (lpMode.CompareTo(bestMode) != 0)
+                    {
+                        hr = evrProc.SetVideoProcessorMode(ref bestMode);
+                        DsError.ThrowExceptionForHR(hr);
+
+                        hr = evrProc.GetVideoProcessorMode(out lpMode);
+                        DsError.ThrowExceptionForHR(hr);
+                        _logger.Debug("Current ProcessorMode: {0} BestMode: {1}", lpMode, bestMode);
+                    }
+                }
+                finally
+                {
+                    if (objVideoProc != null)
+                        Marshal.ReleaseComObject(objVideoProc);
+                }
+            }
         }
 
         private void SetVideoWindow(bool enableMadVrExclusiveMode)

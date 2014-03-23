@@ -1,0 +1,21 @@
+﻿<Page x:Class="MediaBrowser.Theater.DirectShow.Configuration.MadVrSettingsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      mc:Ignorable="d" 
+      xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
+                                 d:DesignHeight="500" d:DesignWidth="1450"
+	Title="MadVrSettingsPage">
+
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Orientation="Vertical" Width="1450">
+        <TextBlock x:Name="TxtTitle" Style="{StaticResource Heading1TextBlockStyle}" Margin="0 10 0 0">madVR Settings</TextBlock>
+        <CheckBox x:Name="ChkEnableSmoothMotion" Margin="0 30 0 0" VerticalAlignment="Center">
+                <TextBlock Style="{StaticResource TextBlockStyle}">Enable Smooth Motion</TextBlock>
+            </CheckBox>
+        <StackPanel Orientation="Horizontal" Margin="0 50 0 0">
+            <TextBlock Style="{StaticResource TextBlockStyle}" Margin="0 0 0 0">Smooth Motion Mode:</TextBlock>
+            <controls:SelectList x:Name="SelectSmoothMode" Margin="40 0 0 0"></controls:SelectList>
+        </StackPanel>
+    </StackPanel>
+</Page>

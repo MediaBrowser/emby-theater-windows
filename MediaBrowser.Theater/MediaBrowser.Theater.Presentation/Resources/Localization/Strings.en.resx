@@ -117,118 +117,16 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AiredLabel" xml:space="preserve">
-    <value>Aired</value>
+  <data name="Lists_End" xml:space="preserve">
+    <value>{0} and {1}</value>
   </data>
-  <data name="AiringLabel" xml:space="preserve">
-    <value>Airing</value>
+  <data name="Lists_Middle" xml:space="preserve">
+    <value>{0}, {1}</value>
   </data>
-  <data name="Core_ExitApplicationCommand" xml:space="preserve">
-    <value>Exit Application</value>
+  <data name="Lists_Start" xml:space="preserve">
+    <value>{0}, {1}</value>
   </data>
-  <data name="Core_RestartCommand" xml:space="preserve">
-    <value>Restart</value>
-  </data>
-  <data name="Core_ShutdownCommand" xml:space="preserve">
-    <value>Turn Off</value>
-  </data>
-  <data name="Core_SleepCommand" xml:space="preserve">
-    <value>Sleep</value>
-  </data>
-  <data name="DateLabel" xml:space="preserve">
-    <value>Date</value>
-  </data>
-  <data name="GenreLabel" xml:space="preserve">
-    <value>Genres</value>
-  </data>
-  <data name="Home_LatestEpisodes_Title" xml:space="preserve">
-    <value>Latest Episodes</value>
-  </data>
-  <data name="Home_LatestMovies_Title" xml:space="preserve">
-    <value>Latest Movies</value>
-  </data>
-  <data name="Home_LatestTrailers_Title" xml:space="preserve">
-    <value>Latest Trailers</value>
-  </data>
-  <data name="Home_MovieSpotlight_Title" xml:space="preserve">
-    <value>Movies</value>
-  </data>
-  <data name="Home_MoviesSectionTitle" xml:space="preserve">
-    <value>Movies</value>
-  </data>
-  <data name="Home_ResumeEpisodes_Title" xml:space="preserve">
-    <value>Resume Episodes</value>
-  </data>
-  <data name="Home_TVSectionTitle" xml:space="preserve">
-    <value>TV</value>
-  </data>
-  <data name="Home_TvSpotlight_Title" xml:space="preserve">
-    <value>TV Shows</value>
-  </data>
-  <data name="ItemInfo_DateRange" xml:space="preserve">
-    <value>{0} - {1}</value>
-  </data>
-  <data name="ItemInfo_DateRangeContinuing" xml:space="preserve">
-    <value>{0} - Present</value>
-  </data>
-  <data name="Login_InvalidCredentialsError" xml:space="preserve">
-    <value>Invalid username or password</value>
-  </data>
-  <data name="Login_Login" xml:space="preserve">
-    <value>Login</value>
-  </data>
-  <data name="Login_Password" xml:space="preserve">
-    <value>Password</value>
-  </data>
-  <data name="Login_RememberMe" xml:space="preserve">
-    <value>Remember me?</value>
-  </data>
-  <data name="Login_Title" xml:space="preserve">
-    <value>Please Sign In</value>
-  </data>
-  <data name="Login_Username" xml:space="preserve">
-    <value>Username</value>
-  </data>
-  <data name="RatingLabel" xml:space="preserve">
-    <value>Rating</value>
-  </data>
-  <data name="RuntimeMinutes" xml:space="preserve">
-    <value>{0} minutes</value>
-  </data>
-  <data name="Search_SearchCommand" xml:space="preserve">
-    <value>Search</value>
-  </data>
-  <data name="SeriesAirTime_Days" xml:space="preserve">
-    <value>{0}</value>
-  </data>
-  <data name="SeriesAirTime_DaysNetwork" xml:space="preserve">
-    <value>{0} on {1}</value>
-  </data>
-  <data name="SeriesAirTime_DaysTime" xml:space="preserve">
-    <value>{0} at {1}</value>
-  </data>
-  <data name="SeriesAirTime_DaysTimeNetwork" xml:space="preserve">
-    <value>{0} at {1} on {2}</value>
-  </data>
-  <data name="SeriesAirTime_Network" xml:space="preserve">
-    <value>{0}</value>
-  </data>
-  <data name="SeriesAirTime_Time" xml:space="preserve">
-    <value>{0}</value>
-  </data>
-  <data name="SeriesAirTime_TimeNetwork" xml:space="preserve">
-    <value>{0} on {1}</value>
-  </data>
-  <data name="Sidebar_AddUserCommand" xml:space="preserve">
-    <value>Add User to Session</value>
-  </data>
-  <data name="Sidebar_LogoutCommand" xml:space="preserve">
-    <value>Logout</value>
-  </data>
-  <data name="Sidebar_OpenCommand" xml:space="preserve">
-    <value>Menu</value>
-  </data>
-  <data name="Theme_Name" xml:space="preserve">
-    <value>Default Theme</value>
+  <data name="Lists_TwoItems" xml:space="preserve">
+    <value>{0} and {1}</value>
   </data>
 </root>

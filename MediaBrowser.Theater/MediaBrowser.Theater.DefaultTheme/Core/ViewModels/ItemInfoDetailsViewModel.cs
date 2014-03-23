@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Theater.Presentation;
@@ -19,14 +17,15 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
 
         public ItemInfoDetailsViewModel(BaseItemDto item)
         {
-            if (_item == null) {
+            if (item == null) {
                 throw new ArgumentNullException("item");
             }
 
             _item = item;
+            DisplayNameGenerator = ItemTileViewModel.GetDisplayNameWithAiredSpecial;
         }
 
-        public string DisplayName 
+        public string DisplayName
         {
             get { return DisplayNameGenerator(_item); }
         }
@@ -45,9 +44,14 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
             }
         }
 
-        public string Overview 
+        public string Overview
         {
             get { return _item.Overview; }
+        }
+
+        public string ItemType
+        {
+            get { return _item.Type; }
         }
 
         public string Date
@@ -79,12 +83,31 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
             get
             {
                 if (_item.MediaStreams != null) {
+                    MediaStream stream = _item.MediaStreams
+                                              .OrderBy(i => i.Index)
+                                              .FirstOrDefault(i => i.Type == MediaStreamType.Audio);
+
+                    if (stream != null) {
+                        return stream.ChannelLayout;
+                    }
+                }
+
+                return null;
+            }
+        }
+
+        public string AudioCodec
+        {
+            get
+            {
+
+                if (_item != null && _item.MediaStreams != null) {
                     var stream = _item.MediaStreams
                                       .OrderBy(i => i.Index)
                                       .FirstOrDefault(i => i.Type == MediaStreamType.Audio);
 
                     if (stream != null) {
-                        return stream.ChannelLayout;
+                        return string.Equals(stream.Codec, "dca", StringComparison.OrdinalIgnoreCase) ? stream.Profile : stream.Codec;
                     }
                 }
 
@@ -107,13 +130,14 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
             }
         }
 
-        public string Resolution {
+        public string Resolution
+        {
             get
             {
                 if (_item.MediaStreams != null) {
-                    var stream = _item.MediaStreams
-                                      .OrderBy(i => i.Index)
-                                      .FirstOrDefault(i => i.Type == MediaStreamType.Video);
+                    MediaStream stream = _item.MediaStreams
+                                              .OrderBy(i => i.Index)
+                                              .FirstOrDefault(i => i.Type == MediaStreamType.Video);
 
                     if (stream != null) {
                         if (stream.Width.HasValue && stream.Height.HasValue) {
@@ -135,9 +159,24 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
             }
         }
 
-        private bool IsCloseTo(int x, int y)
+        public bool HasResolution
         {
-            return Math.Abs(x - y) <= 20;
+            get { return !string.IsNullOrEmpty(Resolution); }
+        }
+
+        public string MediaType
+        {
+            get { return _item.MediaType; }
+        }
+
+        public string Genres
+        {
+            get { return _item.Genres != null ? string.Join(" / ", _item.Genres) : string.Empty; }
+        }
+
+        public bool HasGenres
+        {
+            get { return _item.Genres != null && _item.Genres.Count > 0; }
         }
 
         public string SeriesAirTime
@@ -151,12 +190,6 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
                 string formatStringKey = "MediaBrowser.Theater.DefaultTheme:Strings:SeriesAirTime_";
                 var formatParameters = new List<string>();
 
-                if ((_item.Status ?? SeriesStatus.Continuing) == SeriesStatus.Continuing) {
-                    formatStringKey += "Airing";
-                } else {
-                    formatStringKey += "Aired";
-                }
-
                 if (_item.AirDays != null && _item.AirDays.Count > 0) {
                     formatStringKey += "Days";
                     formatParameters.Add(_item.AirDays.Select(i => i.Localize()).ToLocalizedList());
@@ -167,7 +200,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
                     formatParameters.Add(_item.AirTime); //todo convert series air time to localized time
                 }
 
-                var studio = _item.Studios.FirstOrDefault();
+                StudioDto studio = _item.Studios.FirstOrDefault();
                 if (studio != null) {
                     formatStringKey += "Network";
                     formatParameters.Add(studio.Name);
@@ -177,13 +210,140 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
             }
         }
 
-        public string Runtime { get; set; }
-        public string OfficialRating { get; set; }
-        public float CommunityRating { get; set; }
-        public bool HasCommunityRating { get; set; }
-        public float CriticRating { get; set; }
-        public bool HasCriticRating { get; set; }
-        public bool HasPositiveCriticRating { get; set; }
-        public bool HasNegativeCriticRating { get; set; }
+        public string SeriesAirTimeLabel
+        {
+            get
+            {
+                if ((_item.Status ?? SeriesStatus.Continuing) == SeriesStatus.Continuing) {
+                    return "MediaBrowser.Theater.DefaultTheme:Strings:AiringLabel".Localize();
+                }
+
+                return "MediaBrowser.Theater.DefaultTheme:Strings:AiredLabel".Localize();
+            }
+        }
+
+        public bool HasAirTime
+        {
+            get { return _item.IsType("series"); }
+        }
+
+        public string Runtime
+        {
+            get
+            {
+                long? ticks = _item.RunTimeTicks;
+
+                if (!ticks.HasValue) {
+                    return null;
+                }
+
+                double minutes = Math.Round(TimeSpan.FromTicks(ticks.Value).TotalMinutes);
+                return "MediaBrowser.Theater.DefaultTheme:Strings:RuntimeMinutes".LocalizeFormat(minutes);
+            }
+        }
+
+        public bool IsLiked
+        {
+            get { return _item.UserData != null && (_item.UserData.Likes ?? false); }
+        }
+
+        public bool IsFavorate
+        {
+            get { return _item.UserData != null && _item.UserData.IsFavorite; }
+        }
+
+        public bool IsDisliked
+        {
+            get { return _item.UserData != null && _item.UserData.Likes.HasValue && !_item.UserData.Likes.Value; }
+        }
+
+        public string OfficialRating
+        {
+            get { return _item.OfficialRating; }
+        }
+
+        public float CommunityRating
+        {
+            get { return _item.CommunityRating ?? 0; }
+        }
+
+        public bool HasCommunityRating
+        {
+            get { return _item.CommunityRating.HasValue; }
+        }
+
+        public float CriticRating
+        {
+            get { return _item.CriticRating ?? 0; }
+        }
+
+        public bool HasCriticRating
+        {
+            get { return _item.CriticRating.HasValue; }
+        }
+
+        public bool HasPositiveCriticRating
+        {
+            get { return HasCriticRating && _item.CriticRating >= 60; }
+        }
+
+        public bool HasNegativeCriticRating
+        {
+            get { return HasCriticRating && _item.CriticRating < 60; }
+        }
+
+        private bool IsCloseTo(int x, int y)
+        {
+            return Math.Abs(x - y) <= 20;
+        }
+
+        public string Players
+        {
+            get { return (_item.Players ?? 0).ToString(CultureInfo.InvariantCulture); }
+        }
+
+        public bool HasPlayers
+        {
+            get { return _item.Players.HasValue; }
+        }
+
+        public bool IsFolder
+        {
+            get { return _item.IsFolder; }
+        }
+
+        public double PlayedPercentage
+        {
+            get
+            {
+                var item = _item;
+
+                if (item != null) {
+                    if (item.IsFolder) {
+                        return item.PlayedPercentage ?? 0;
+                    }
+
+                    if (item.RunTimeTicks.HasValue) {
+                        if (item.UserData != null && item.UserData.PlaybackPositionTicks > 0) {
+                            double percent = item.UserData.PlaybackPositionTicks;
+                            percent /= item.RunTimeTicks.Value;
+
+                            return percent*100;
+                        }
+                    }
+                }
+
+                return 0;
+            }
+        }
+
+        public bool IsInProgress
+        {
+            get
+            {
+                var progress = PlayedPercentage;
+                return progress > 0 && progress < 100;
+            }
+        }
     }
 }

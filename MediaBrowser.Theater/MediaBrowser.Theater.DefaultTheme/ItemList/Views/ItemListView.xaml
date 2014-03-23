@@ -6,6 +6,8 @@
              xmlns:lex="http://wpflocalizeextension.codeplex.com"
              xmlns:viewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels"
              xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
+             xmlns:viewModels1="clr-namespace:MediaBrowser.Theater.DefaultTheme.Core.ViewModels"
+             xmlns:views="clr-namespace:MediaBrowser.Theater.DefaultTheme.Core.Views"
              lex:LocalizeDictionary.DesignCulture="en"
              lex:ResxLocalizationProvider.DefaultAssembly="MediaBrowser.Theater.DefaultTheme"
              lex:ResxLocalizationProvider.DefaultDictionary="Strings"
@@ -15,10 +17,11 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
         
-        <controls:IndexedItemsControl x:Name="Panorama" Margin="0,80,0,0" Grid.Row="0" ItemsSource="{Binding Items}" IndexSelector="{Binding IndexSelector}" VirtualizingPanel.VirtualizationMode="Recycling">
+        <controls:IndexedItemsControl x:Name="Panorama" Margin="0,80,0,0" Grid.Row="0" ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem, Mode=TwoWay}" IndexSelector="{Binding IndexSelector}" VirtualizingPanel.VirtualizationMode="Recycling">
             <controls:IndexedItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <controls:PanoramaPanel StartScrollPadding="50" EndScrollPadding="50"/>
@@ -73,5 +76,13 @@
                 </Style>
             </ListBox.ItemContainerStyle>
         </controls:ExtendedListBox>
+
+        <controls:ExtendedContentControl Grid.Row="2" Margin="50" Content="{Binding SelectedItemDetails}" Visibility="{Binding HasSelectedItemDetails, Converter={StaticResource BooleanToVisibility}}" HorizontalAlignment="Center" VerticalAlignment="Stretch">
+            <controls:ExtendedContentControl.ContentTemplate>
+                <DataTemplate DataType="{x:Type viewModels1:ItemInfoDetailsViewModel}">
+                    <views:ItemFooterView/>
+                </DataTemplate>
+            </controls:ExtendedContentControl.ContentTemplate>
+        </controls:ExtendedContentControl>
     </Grid>
 </UserControl>

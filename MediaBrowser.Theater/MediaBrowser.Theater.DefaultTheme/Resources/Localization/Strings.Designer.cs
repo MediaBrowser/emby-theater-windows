@@ -61,6 +61,24 @@ namespace MediaBrowser.Theater.DefaultTheme.Resources.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to @AiredLabel.
+        /// </summary>
+        internal static string AiredLabel {
+            get {
+                return ResourceManager.GetString("AiredLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @AiringLabel.
+        /// </summary>
+        internal static string AiringLabel {
+            get {
+                return ResourceManager.GetString("AiringLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to @Core_ExitApplicationCommand.
         /// </summary>
         internal static string Core_ExitApplicationCommand {
@@ -93,6 +111,24 @@ namespace MediaBrowser.Theater.DefaultTheme.Resources.Localization {
         internal static string Core_SleepCommand {
             get {
                 return ResourceManager.GetString("Core_SleepCommand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @DateLabel.
+        /// </summary>
+        internal static string DateLabel {
+            get {
+                return ResourceManager.GetString("DateLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @GenreLabel.
+        /// </summary>
+        internal static string GenreLabel {
+            get {
+                return ResourceManager.GetString("GenreLabel", resourceCulture);
             }
         }
         
@@ -169,6 +205,24 @@ namespace MediaBrowser.Theater.DefaultTheme.Resources.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to @ItemInfo_DateRange.
+        /// </summary>
+        internal static string ItemInfo_DateRange {
+            get {
+                return ResourceManager.GetString("ItemInfo_DateRange", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @ItemInfo_DateRangeContinuing.
+        /// </summary>
+        internal static string ItemInfo_DateRangeContinuing {
+            get {
+                return ResourceManager.GetString("ItemInfo_DateRangeContinuing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to @Login_InvalidCredentialsError.
         /// </summary>
         internal static string Login_InvalidCredentialsError {
@@ -223,11 +277,92 @@ namespace MediaBrowser.Theater.DefaultTheme.Resources.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to @RatingLabel.
+        /// </summary>
+        internal static string RatingLabel {
+            get {
+                return ResourceManager.GetString("RatingLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @RuntimeMinutes.
+        /// </summary>
+        internal static string RuntimeMinutes {
+            get {
+                return ResourceManager.GetString("RuntimeMinutes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to @Search_SearchCommand.
         /// </summary>
         internal static string Search_SearchCommand {
             get {
                 return ResourceManager.GetString("Search_SearchCommand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @SeriesAirTime_Days.
+        /// </summary>
+        internal static string SeriesAirTime_Days {
+            get {
+                return ResourceManager.GetString("SeriesAirTime_Days", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @SeriesAirTime_DaysNetwork.
+        /// </summary>
+        internal static string SeriesAirTime_DaysNetwork {
+            get {
+                return ResourceManager.GetString("SeriesAirTime_DaysNetwork", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @SeriesAirTime_DaysTime.
+        /// </summary>
+        internal static string SeriesAirTime_DaysTime {
+            get {
+                return ResourceManager.GetString("SeriesAirTime_DaysTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @SeriesAirTime_DaysTimeNetwork.
+        /// </summary>
+        internal static string SeriesAirTime_DaysTimeNetwork {
+            get {
+                return ResourceManager.GetString("SeriesAirTime_DaysTimeNetwork", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @SeriesAirTime_Network.
+        /// </summary>
+        internal static string SeriesAirTime_Network {
+            get {
+                return ResourceManager.GetString("SeriesAirTime_Network", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @SeriesAirTime_Time.
+        /// </summary>
+        internal static string SeriesAirTime_Time {
+            get {
+                return ResourceManager.GetString("SeriesAirTime_Time", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @SeriesAirTime_TimeNetwork.
+        /// </summary>
+        internal static string SeriesAirTime_TimeNetwork {
+            get {
+                return ResourceManager.GetString("SeriesAirTime_TimeNetwork", resourceCulture);
             }
         }
         

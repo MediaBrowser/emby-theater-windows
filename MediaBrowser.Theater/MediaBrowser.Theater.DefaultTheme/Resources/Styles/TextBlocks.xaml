@@ -68,4 +68,11 @@
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="TextOptions.TextFormattingMode" Value="Ideal"/>
     </Style>
+
+    <Style TargetType="TextBlock" x:Key="MediaInfoTextBlock" BasedOn="{StaticResource SmallTextBlockStyle}">
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="FontSize" Value="22" />
+        <Setter Property="Foreground" Value="#eee" />
+        <Setter Property="FontFamily" Value="/MediaBrowser.Theater.DefaultTheme;component/Resources/#Gotham Book" />
+    </Style>
 </ResourceDictionary>

@@ -152,4 +152,8 @@
         <views4:ItemListView/>
     </DataTemplate>
     
+    <DataTemplate DataType="{x:Type viewModels:ItemInfoDetailsViewModel}">
+        <views:ItemInfoDetailsView/>
+    </DataTemplate>
+    
 </ResourceDictionary>

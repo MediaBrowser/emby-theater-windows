@@ -85,11 +85,23 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
                 UserId = _sessionManager.CurrentUser.Id,
                 IncludeItemTypes = new[] { "Movie" },
                 SortBy = new[] { ItemSortBy.SortName },
+                Fields = QueryFields,
                 Recursive = true
             };
 
             return _apiClient.GetItemsAsync(query);
         }
+
+        public static ItemFields[] QueryFields = new[]
+            {
+                ItemFields.PrimaryImageAspectRatio,
+                ItemFields.DateCreated,
+                ItemFields.MediaStreams,
+                ItemFields.Taglines,
+                ItemFields.Genres,
+                ItemFields.Overview,
+                ItemFields.DisplayPreferencesId
+            };
 
         public double SpotlightWidth { get; private set; }
         public double SpotlightHeight { get; private set; }

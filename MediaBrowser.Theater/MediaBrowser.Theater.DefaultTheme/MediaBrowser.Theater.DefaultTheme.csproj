@@ -81,6 +81,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Controls\StarRating.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Core\Views\ClockView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -102,6 +106,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Core\Views\ImageViewerView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Core\Views\ItemFooterView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Core\Views\ItemInfoDetailsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -304,6 +316,9 @@
     </Compile>
     <Compile Include="Configuration\ColorPalette.cs" />
     <Compile Include="Configuration\PluginConfiguration.cs" />
+    <Compile Include="Controls\StarRating.xaml.cs">
+      <DependentUpon>StarRating.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Core\Commands\ExitMenuCommand.cs" />
     <Compile Include="Core\Commands\RestartMenuCommand.cs" />
     <Compile Include="Core\Commands\ShutdownMenuCommand.cs" />
@@ -333,6 +348,12 @@
     </Compile>
     <Compile Include="Core\Views\ImageViewerView.xaml.cs">
       <DependentUpon>ImageViewerView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Views\ItemFooterView.xaml.cs">
+      <DependentUpon>ItemFooterView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Views\ItemInfoDetailsView.xaml.cs">
+      <DependentUpon>ItemInfoDetailsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Core\Views\ItemSpotlightView.xaml.cs">
       <DependentUpon>ItemSpotlightView.xaml</DependentUpon>
@@ -493,6 +514,7 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
+    <Resource Include="Resources\Fonts\Gotham-Book.otf" />
     <Resource Include="Resources\Fonts\ClearSans-Light.ttf" />
     <Resource Include="Resources\Fonts\ClearSans-Regular.ttf" />
     <Resource Include="Resources\Fonts\ClearSans-Thin.ttf" />
@@ -517,9 +539,7 @@
       <Name>MediaBrowser.Theater.Presentation</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Controls\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Resource Include="Resources\Images\Icon.ico" />
   </ItemGroup>

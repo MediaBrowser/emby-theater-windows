@@ -19,6 +19,31 @@ namespace MediaBrowser.Theater.Presentation.Controls
         public static readonly DependencyProperty IndexSelectorProperty =
             DependencyProperty.Register("IndexSelector", typeof (Func<object, object>), typeof (IndexedItemsControl), new PropertyMetadata((Func<object, object>) (SelectByToString), SelectorChanged));
 
+
+
+        public object SelectedItem
+        {
+            get { return (object)GetValue(SelectedItemProperty); }
+            set { SetValue(SelectedItemProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for SelectedItem.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty SelectedItemProperty =
+            DependencyProperty.Register("SelectedItem", typeof(object), typeof(IndexedItemsControl), new PropertyMetadata(null, OnSelectedItemChanged));
+
+        private static void OnSelectedItemChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var control = (IndexedItemsControl)d;
+
+            object item;
+            if (control.SelectedItem != null && control._indicesByItem.TryGetValue(control.SelectedItem, out item)) {
+                control.SelectedIndex = item;
+            } else {
+                control.SelectedItem = null;
+            }
+        }
+
+
         private readonly ObservableCollection<object> _indexObjects;
         private readonly Dictionary<object, object> _indicesByItem;
         private readonly Dictionary<object, object> _itemsByIndex;
@@ -136,7 +161,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
             return item != null ? item.ToString() : string.Empty;
         }
 
-        protected override void OnPreviewGotKeyboardFocus(KeyboardFocusChangedEventArgs e)
+        protected override void OnGotKeyboardFocus(KeyboardFocusChangedEventArgs e)
         {
             if (IsKeyboardFocusWithin) {
                 var children = new List<DependencyObject>();
@@ -144,22 +169,35 @@ namespace MediaBrowser.Theater.Presentation.Controls
                     if (Equals(control, this)) {
                         DependencyObject container = children.LastOrDefault(c => c is ExtendedContentControl);
                         if (container != null) {
-                            object selectedItem = ItemContainerGenerator.ItemFromContainer(container);
-                            SelectedIndex = _indicesByItem[selectedItem];
+                            SelectedItem = ItemContainerGenerator.ItemFromContainer(container);
                         }
 
                         break;
                     }
+                    
                     children.Add(control);
                 }
             }
 
             base.OnPreviewGotKeyboardFocus(e);
         }
+
+        protected override void OnLostKeyboardFocus(KeyboardFocusChangedEventArgs e)
+        {
+            SelectedItem = null;
+            base.OnLostKeyboardFocus(e);
+        }
         
         protected override void OnItemsChanged(NotifyCollectionChangedEventArgs e)
         {
             FindIndices();
+
+            if (SelectedItem == null && Items.Count > 0) {
+                SelectedItem = Items[0];
+            } else if (SelectedItem != null && !Items.Contains(SelectedItem)) {
+                SelectedItem = null;
+            }
+
             base.OnItemsChanged(e);
         }
 

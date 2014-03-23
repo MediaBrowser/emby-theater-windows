@@ -28,6 +28,8 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.Views
 
             // this is horrible
             Loaded += (s, e) => {
+                MoveFocus(new TraversalRequest(FocusNavigationDirection.First));
+
                 var context = DataContext as ItemListViewModel;
                 context.Items.CollectionChanged += async (sender, args) => {
                     if (args.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Reset) {

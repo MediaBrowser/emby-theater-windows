@@ -17,22 +17,70 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
     {
         public const double ItemHeight = 500;
 
+        private readonly Task<ItemsResult> _items;
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
         private readonly INavigator _navigator;
         private readonly IServerEvents _serverEvents;
+        private ItemTileViewModel _selectedItem;
+        private ItemInfoDetailsViewModel _selectedItemDetails;
 
         public ItemListViewModel(Task<ItemsResult> items, IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator)
         {
+            _items = items;
             _apiClient = apiClient;
             _imageManager = imageManager;
             _serverEvents = serverEvents;
             _navigator = navigator;
             Items = new RangeObservableCollection<ItemTileViewModel>();
-            LoadItems(items);
+            
+        }
+
+        public override async Task Initialize()
+        {
+            await LoadItems(_items);
+            await base.Initialize();
         }
 
         public RangeObservableCollection<ItemTileViewModel> Items { get; private set; }
+
+        public ItemTileViewModel SelectedItem
+        {
+            get { return _selectedItem; }
+            set
+            {
+                if (Equals(value, _selectedItem)) {
+                    return;
+                }
+                _selectedItem = value;
+                OnPropertyChanged();
+
+                if (_selectedItem != null) {
+                    SelectedItemDetails = new ItemInfoDetailsViewModel(_selectedItem.Item);
+                } else {
+                    SelectedItemDetails = null;
+                }
+            }
+        }
+
+        public bool HasSelectedItemDetails
+        {
+            get { return SelectedItemDetails != null; }
+        }
+
+        public ItemInfoDetailsViewModel SelectedItemDetails
+        {
+            get { return _selectedItemDetails; }
+            private set
+            {
+                if (Equals(value, _selectedItemDetails)) {
+                    return;
+                }
+                _selectedItemDetails = value;
+                OnPropertyChanged();
+                OnPropertyChanged("HasSelectedItemDetails");
+            }
+        }
 
         public Func<object, object> IndexSelector
         {
@@ -54,7 +102,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
             return string.Empty;
         }
 
-        private async void LoadItems(Task<ItemsResult> itemsTask)
+        private async Task LoadItems(Task<ItemsResult> itemsTask)
         {
             ItemsResult result = await itemsTask;
             IEnumerable<ItemTileViewModel> viewModels = result.Items.Select(dto => new ItemTileViewModel(_apiClient, _imageManager, _serverEvents, _navigator, dto) {

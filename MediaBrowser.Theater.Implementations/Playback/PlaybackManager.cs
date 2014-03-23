@@ -3,6 +3,7 @@ using MediaBrowser.Common.Events;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
+using MediaBrowser.Model.Library;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Navigation;
@@ -518,6 +519,17 @@ namespace MediaBrowser.Theater.Implementations.Playback
             }
 
             if (item.LocationType == LocationType.Virtual)
+            {
+                return false;
+            }
+           
+            // TODO - issues #100
+            // if (item.IsPlaceHolder)
+            //{
+            //    return false;
+            //}
+
+            if (item.PlayAccess != PlayAccess.Full)
             {
                 return false;
             }

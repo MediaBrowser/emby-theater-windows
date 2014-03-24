@@ -1,5 +1,6 @@
 ﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Logging;
+using MediaBrowser.Model.Session;
 using MediaBrowser.Theater.Interfaces.Playback;
 using System;
 using System.Collections.Generic;
@@ -44,7 +45,15 @@ namespace MediaBrowser.Theater.Implementations.Playback
                                      ? new List<string> { item.MediaType }
                                      : new List<string> { };
 
-                await _apiClient.ReportPlaybackStartAsync(item.Id, _apiClient.CurrentUserId, _mediaPlayer.CanSeek, queueTypes);
+                var info = new PlaybackStartInfo
+                {
+                    ItemId = item.Id,
+                    UserId = _apiClient.CurrentUserId,
+                    IsSeekable = _mediaPlayer.CanSeek,
+                    QueueableMediaTypes = queueTypes.ToArray()
+                };
+
+                await _apiClient.ReportPlaybackStartAsync(info);
 
                 if (_mediaPlayer.CanTrackProgress)
                 {
@@ -80,9 +89,16 @@ namespace MediaBrowser.Theater.Implementations.Playback
 
             if (e.EndingMedia != null)
             {
+                var info = new PlaybackStopInfo
+                {
+                    ItemId = e.EndingMedia.Id,
+                    UserId = _apiClient.CurrentUserId,
+                    PositionTicks = e.EndingPositionTicks
+                };
+
                 try
                 {
-                    await _apiClient.ReportPlaybackStoppedAsync(e.EndingMedia.Id, _apiClient.CurrentUserId, e.EndingPositionTicks);
+                    await _apiClient.ReportPlaybackStoppedAsync(info);
                 }
                 catch (Exception ex)
                 {
@@ -100,9 +116,16 @@ namespace MediaBrowser.Theater.Implementations.Playback
         {
             if (e.PreviousMedia != null)
             {
+                var info = new PlaybackStopInfo
+                {
+                    ItemId = e.PreviousMedia.Id,
+                    UserId = _apiClient.CurrentUserId,
+                    PositionTicks = e.EndingPositionTicks
+                };
+
                 try
                 {
-                    await _apiClient.ReportPlaybackStoppedAsync(e.PreviousMedia.Id, _apiClient.CurrentUserId, e.EndingPositionTicks);
+                    await _apiClient.ReportPlaybackStoppedAsync(info);
                 }
                 catch (Exception ex)
                 {
@@ -118,7 +141,15 @@ namespace MediaBrowser.Theater.Implementations.Playback
                                 ? new List<string> { e.NewMedia.MediaType }
                                 : new List<string> { };
 
-                    await _apiClient.ReportPlaybackStartAsync(e.NewMedia.Id, _apiClient.CurrentUserId, _mediaPlayer.CanSeek, queueTypes);
+                    var info = new PlaybackStartInfo
+                    {
+                        ItemId = e.NewMedia.Id,
+                        UserId = _apiClient.CurrentUserId,
+                        IsSeekable = _mediaPlayer.CanSeek,
+                        QueueableMediaTypes = queueTypes.ToArray()
+                    };
+
+                    await _apiClient.ReportPlaybackStartAsync(info);
                 }
                 catch (Exception ex)
                 {
@@ -140,9 +171,18 @@ namespace MediaBrowser.Theater.Implementations.Playback
                 return;
             }
 
+            var info = new PlaybackProgressInfo
+            {
+                ItemId = item.Id,
+                UserId = _apiClient.CurrentUserId,
+                IsMuted = _playback.IsMuted,
+                IsPaused = _mediaPlayer.PlayState == PlayState.Paused,
+                PositionTicks = _mediaPlayer.CurrentPositionTicks
+            };
+
             try
             {
-                await _apiClient.ReportPlaybackProgressAsync(item.Id, _apiClient.CurrentUserId, _mediaPlayer.CurrentPositionTicks, _mediaPlayer.PlayState == PlayState.Paused, _playback.IsMuted);
+                await _apiClient.ReportPlaybackProgressAsync(info);
             }
             catch (Exception ex)
             {

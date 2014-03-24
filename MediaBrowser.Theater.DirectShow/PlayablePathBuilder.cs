@@ -66,7 +66,7 @@ namespace MediaBrowser.Theater.DirectShow
                     {
                         ItemId = item.Id,
                         OutputFileExtension = ".aac",
-                        AudioCodec = AudioCodecs.Aac,
+                        AudioCodec = "aac",
                         StartTimeTicks = startTimeTicks
                     });
                 }
@@ -76,7 +76,7 @@ namespace MediaBrowser.Theater.DirectShow
                     Static = true,
                     ItemId = item.Id,
                     OutputFileExtension = extension,
-                    AudioCodec = AudioCodecs.Copy,
+                    AudioCodec = "copy",
                     StartTimeTicks = startTimeTicks
                 });
             }
@@ -87,8 +87,8 @@ namespace MediaBrowser.Theater.DirectShow
                 {
                     ItemId = item.Id,
                     OutputFileExtension = "ts",
-                    VideoCodec = VideoCodecs.H264,
-                    AudioCodec = AudioCodecs.Aac
+                    VideoCodec = "h264",
+                    AudioCodec = "aac"
                 });
             }
 
@@ -99,8 +99,8 @@ namespace MediaBrowser.Theater.DirectShow
                 {
                     ItemId = item.Id,
                     OutputFileExtension = "ts",
-                    VideoCodec = VideoCodecs.H264,
-                    AudioCodec = AudioCodecs.Aac
+                    VideoCodec = "h264",
+                    AudioCodec = "aac"
                 });
             }
 

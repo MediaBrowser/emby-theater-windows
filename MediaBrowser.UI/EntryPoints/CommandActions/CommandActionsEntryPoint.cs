@@ -34,6 +34,9 @@ using WindowsInput = System.Windows.Input;
 
         private void commandManager_CommandReceived(object sender, CommandEventArgs commandEventArgs)
         {
+            if (commandEventArgs.Command == Command.Null)
+                return;
+
             _logger.Debug("commandManager_CommandReceived {0} {1}", commandEventArgs.Command, commandEventArgs.Args);
             commandEventArgs.Handled = _defaultCommandActionMap.ExecuteCommand(commandEventArgs.Command);
         }

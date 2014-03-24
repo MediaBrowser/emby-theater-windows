@@ -1,4 +1,6 @@
-﻿using CoreAudioApi;
+﻿using System.Diagnostics;
+using System.Threading;
+using CoreAudioApi;
 using MediaBrowser.Common.Events;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
@@ -25,7 +27,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
         private readonly IApiClient _apiClient;
         private readonly INavigationService _nav;
         private readonly IPresentationManager _presentationManager;
-        private Boolean _isStarting = false;
+        private int _isStarting;
 
         public event EventHandler<PlaybackStartEventArgs> PlaybackStarted;
 
@@ -97,53 +99,52 @@ namespace MediaBrowser.Theater.Implementations.Playback
         /// <returns>Task.</returns>
         private async Task Play(IMediaPlayer player, PlayOptions options, PlayerConfiguration configuration)
         {
-
-            if (_isStarting) // if we are already in the process of starting to play an item, don't allow another, prevent race conditions
-                return;
-
-            _isStarting = true;
-            try
+            if (Interlocked.CompareExchange(ref _isStarting, 1, 0) == 0) // prevent race conditions, thread safe check we are not already starting to play an item
             {
-                if (options.Shuffle)
+                try
                 {
-                    options.Items = options.Items.OrderBy(i => Guid.NewGuid()).ToList();
+                    if (options.Shuffle)
+                    {
+                        options.Items = options.Items.OrderBy(i => Guid.NewGuid()).ToList();
+                    }
+
+                    var firstItem = options.Items[0];
+
+                    if (options.StartPositionTicks == 0 && player.SupportsMultiFilePlayback && firstItem.IsVideo && firstItem.LocationType == LocationType.FileSystem && options.GoFullScreen)
+                    {
+                        try
+                        {
+                            var intros = await _apiClient.GetIntrosAsync(firstItem.Id, _apiClient.CurrentUserId);
+
+                            options.Items.InsertRange(0, intros.Items);
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.ErrorException("Error retrieving intros", ex);
+                        }
+                    }
+
+                    options.Configuration = configuration;
+
+                    await player.Play(options);
+
+                    if (player is IInternalMediaPlayer && player is IVideoPlayer && firstItem.IsVideo)
+                    {
+                        await _presentationManager.Window.Dispatcher.InvokeAsync(() => _presentationManager.WindowOverlay.SetResourceReference(FrameworkElement.StyleProperty, "WindowBackgroundContentDuringPlayback"));
+
+                        if (options.GoFullScreen)
+                        {
+                            await _nav.NavigateToInternalPlayerPage();
+                        }
+                    }
+
+                    OnPlaybackStarted(player, options);
                 }
-
-                var firstItem = options.Items[0];
-
-                if (options.StartPositionTicks == 0 && player.SupportsMultiFilePlayback && firstItem.IsVideo && firstItem.LocationType == LocationType.FileSystem && options.GoFullScreen)
+                finally
                 {
-                    try
-                    {
-                        var intros = await _apiClient.GetIntrosAsync(firstItem.Id, _apiClient.CurrentUserId);
-
-                        options.Items.InsertRange(0, intros.Items);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.ErrorException("Error retrieving intros", ex);
-                    }
-                }
-
-                options.Configuration = configuration;
-
-                await player.Play(options);
-
-                if (player is IInternalMediaPlayer && player is IVideoPlayer && firstItem.IsVideo)
-                {
-                    await _presentationManager.Window.Dispatcher.InvokeAsync(() => _presentationManager.WindowOverlay.SetResourceReference(FrameworkElement.StyleProperty, "WindowBackgroundContentDuringPlayback"));
-
-                    if (options.GoFullScreen)
-                    {
-                        await _nav.NavigateToInternalPlayerPage();
-                    }
+                    Interlocked.Exchange(ref _isStarting, 0);
                 }
             }
-            finally
-            {
-                _isStarting = false;
-            }
-            OnPlaybackStarted(player, options);
         }
 
         /// <summary>

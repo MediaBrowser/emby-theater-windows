@@ -70,28 +70,32 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 GalleryHeight = TileHeight,
                 GalleryWidth = lowerSpotlightWidth,
-                CustomCommandAction = () => NavigateWithLoading(NavigateToGenresInternal)
+                CustomCommandAction = () => NavigateWithLoading(NavigateToGenresInternal),
+                FocusedCommandAction = () => GalleryItemFocused()
             };
 
             TrailersViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {
                 GalleryHeight = TileHeight,
                 GalleryWidth = lowerSpotlightWidth,
-                CustomCommandAction = () => NavigateWithLoading(() => NavigateToMoviesInternal("Trailers"))
+                CustomCommandAction = () => NavigateWithLoading(() => NavigateToMoviesInternal("Trailers")),
+                FocusedCommandAction = () => GalleryItemFocused()
             };
 
             YearsViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {
                 GalleryHeight = TileHeight,
                 GalleryWidth = lowerSpotlightWidth,
-                CustomCommandAction = () => NavigateWithLoading(NavigateToYearsInternal)
+                CustomCommandAction = () => NavigateWithLoading(NavigateToYearsInternal),
+                FocusedCommandAction = () => GalleryItemFocused()
             };
 
             AllMoviesViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {
                 GalleryHeight = TileHeight,
                 GalleryWidth = lowerSpotlightWidth,
-                CustomCommandAction = () => NavigateWithLoading(() => NavigateToMoviesInternal("AllMovies"))
+                CustomCommandAction = () => NavigateWithLoading(() => NavigateToMoviesInternal("AllMovies")),
+                FocusedCommandAction = () => GalleryItemFocused()
             };
 
             SpotlightViewModel = new ImageViewerViewModel(_imageManager, new List<ImageViewerImage>())
@@ -99,7 +103,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 Height = spotlightTileHeight,
                 Width = spotlightTileWidth,
                 CustomCommandAction = i => _navService.NavigateToItem(i.Item, ViewType.Movies),
-                ImageStretch = Stretch.UniformToFill
+                ImageStretch = Stretch.UniformToFill,
+                FocusedCommandAction = () => GalleryItemFocused()
             };
 
             LoadViewModels();
@@ -136,6 +141,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 LoadMiniSpotlightsViewModel(view);
                 LoadLatestMoviesViewModel(view);
                 LoadLatestTrailersViewModel(view);
+
+                LatestMoviesViewModel.CurrentItemUpdated += LatestMoviesViewModel_OnCurrentItemUpdated;
+                LatestTrailersViewModel.CurrentItemUpdated += LatestTrailersViewModel_OnCurrentItemUpdated;
+                MiniSpotlightsViewModel.CurrentItemUpdated += MiniSpotlightsViewModel_OnCurrentItemUpdated;
             }
             catch (Exception ex)
             {
@@ -692,6 +701,30 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 _mainViewCancellationTokenSource.Dispose();
                 _mainViewCancellationTokenSource = null;
             }
+        }
+
+        private void LatestMoviesViewModel_OnCurrentItemUpdated()
+        {
+            CurrentItem = LatestMoviesViewModel.CurrentItem;
+            OnCurrentItemChanged();
+        }
+
+        private void MiniSpotlightsViewModel_OnCurrentItemUpdated()
+        {
+            CurrentItem = MiniSpotlightsViewModel.CurrentItem;
+            OnCurrentItemChanged();
+        }
+
+        private void LatestTrailersViewModel_OnCurrentItemUpdated()
+        {
+            CurrentItem = LatestTrailersViewModel.CurrentItem;
+            OnCurrentItemChanged();
+        }
+
+        private void GalleryItemFocused()
+        {
+            CurrentItem = null;
+            OnCurrentItemChanged();
         }
 
         public void Dispose()

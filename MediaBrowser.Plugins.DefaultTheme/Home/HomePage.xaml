@@ -2,8 +2,9 @@
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
-                                 xmlns:pages="clr-namespace:MediaBrowser.Theater.Presentation.Pages;assembly=MediaBrowser.Theater.Presentation"
-                Title="HomePage">
+      xmlns:pages="clr-namespace:MediaBrowser.Theater.Presentation.Pages;assembly=MediaBrowser.Theater.Presentation"
+      xmlns:controls1="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Controls"
+      Title="HomePage">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"></RowDefinition>
@@ -90,5 +91,7 @@
                 </ContentControl>
             </controls:ScrollingPanel>
         </controls:ExtendedScrollViewer>
+
+        <controls1:ItemInfoFooter Grid.Row="1" Margin="90,0,0,0" VerticalContentAlignment="Center" KeyboardNavigation.IsTabStop="False" DataContext="{Binding CurrentItem}" VerticalAlignment="Bottom" HorizontalAlignment="Left" Visibility="{Binding Path=DataContext, RelativeSource={RelativeSource Self}, Converter={StaticResource NullToVisibilityConverter}}"/>
     </Grid>
 </pages:BasePage>

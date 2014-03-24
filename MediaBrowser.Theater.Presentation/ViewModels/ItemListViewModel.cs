@@ -583,7 +583,14 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         private void UpdateCurrentItem()
         {
             CurrentItem = ListCollectionView.CurrentItem as ItemViewModel;
+
+            if (CurrentItemUpdated != null)
+            {
+                CurrentItemUpdated();
+            }
         }
+
+        public event Action CurrentItemUpdated;
 
         public Func<ItemListViewModel, bool> ShowSidebarGenerator { get; set; }
         public Func<ItemListViewModel, ScrollDirection> ScrollDirectionGenerator { get; set; }

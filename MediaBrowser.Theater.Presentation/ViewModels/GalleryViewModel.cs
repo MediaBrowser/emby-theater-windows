@@ -131,8 +131,10 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         }
 
         public Action CustomCommandAction { get; set; }
+        public Action FocusedCommandAction { get; set; }
 
         public ICommand CustomCommand { get; private set; }
+        public ICommand FocusedCommand { get; private set; }
         
         public RangeObservableCollection<GalleryImageViewModel> ListItems { get; private set; }
 
@@ -149,6 +151,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             OpenImageViewerCommand = new RelayCommand(OpenImageViewer);
 
             CustomCommand = new RelayCommand(o => CustomCommandAction());
+            FocusedCommand = new RelayCommand(o => FocusedCommandAction());
         }
 
         public ListCollectionView ListCollectionView { get; private set; }

@@ -65,28 +65,32 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 Height = spotlightTileHeight,
                 Width = spotlightTileWidth,
                 CustomCommandAction = i => _navService.NavigateToItem(i.Item, ViewType.Tv),
-                ImageStretch = Stretch.UniformToFill
+                ImageStretch = Stretch.UniformToFill,
+                FocusedCommandAction = () => GalleryItemFocused()
             };
 
             GenresViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {
                 GalleryHeight = TileHeight,
                 GalleryWidth = lowerSpotlightWidth,
-                CustomCommandAction = () => NavigateWithLoading(NavigateToGenresInternal)
+                CustomCommandAction = () => NavigateWithLoading(NavigateToGenresInternal),
+                FocusedCommandAction = () => GalleryItemFocused()
             };
 
             AllShowsViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {
                 GalleryHeight = TileHeight,
                 GalleryWidth = lowerSpotlightWidth,
-                CustomCommandAction = () => NavigateWithLoading(NavigateToAllShows)
+                CustomCommandAction = () => NavigateWithLoading(NavigateToAllShows),
+                FocusedCommandAction = () => GalleryItemFocused()
             };
 
             UpcomingViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {
                 GalleryHeight = TileHeight,
                 GalleryWidth = lowerSpotlightWidth,
-                CustomCommandAction = () => NavigateWithLoading(NavigateToAllShows)
+                CustomCommandAction = () => NavigateWithLoading(NavigateToAllShows),
+                FocusedCommandAction = () => GalleryItemFocused()
             };
 
             LoadViewModels();
@@ -145,6 +149,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 LoadNextUpViewModel(view);
                 LoadLatestEpisodesViewModel(view);
                 LoadResumableViewModel(view);
+
+                LatestEpisodesViewModel.CurrentItemUpdated += LatestEpisodesViewModel_CurrentItemUpdated;
+                MiniSpotlightsViewModel.CurrentItemUpdated += MiniSpotlightsViewModel_CurrentItemUpdated;
+                NextUpViewModel.CurrentItemUpdated += NextUpViewModel_CurrentItemUpdated;
+                ResumeViewModel.CurrentItemUpdated += ResumeViewModel_CurrentItemUpdated;
             }
             catch (Exception ex)
             {
@@ -512,6 +521,36 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             ResumeVisibility = result.TotalRecordCount > 0 ? Visibility.Visible : Visibility.Collapsed;
 
             return Task.FromResult(result);
+        }
+
+        private void ResumeViewModel_CurrentItemUpdated()
+        {
+            CurrentItem = ResumeViewModel.CurrentItem;
+            OnCurrentItemChanged();
+        }
+
+        private void NextUpViewModel_CurrentItemUpdated()
+        {
+            CurrentItem = NextUpViewModel.CurrentItem;
+            OnCurrentItemChanged();
+        }
+
+        private void MiniSpotlightsViewModel_CurrentItemUpdated()
+        {
+            CurrentItem = MiniSpotlightsViewModel.CurrentItem;
+            OnCurrentItemChanged();
+        }
+
+        private void LatestEpisodesViewModel_CurrentItemUpdated()
+        {
+            CurrentItem = LatestEpisodesViewModel.CurrentItem;
+            OnCurrentItemChanged();
+        }
+
+        private void GalleryItemFocused()
+        {
+            CurrentItem = null;
+            OnCurrentItemChanged();
         }
 
         public void Dispose()

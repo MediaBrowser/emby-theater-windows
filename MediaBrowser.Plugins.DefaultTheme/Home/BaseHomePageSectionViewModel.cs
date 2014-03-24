@@ -48,6 +48,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 }
             }
         }
+
+        public delegate void CurrentItemChangedHandler(BaseHomePageSectionViewModel sender, EventArgs e);
+        public event CurrentItemChangedHandler CurrentItemChanged;
         
         protected async Task<BaseItemDto> GetRootFolder()
         {
@@ -74,16 +77,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             }
         }
 
-        public override void OnPropertyChanged(string name)
-        {
-            base.OnPropertyChanged(name);
-
-            if (string.Equals(name, "BackdropItems"))
-            {
-                SetBackdrops();
-            }
-        }
-
         public void SetBackdrops()
         {
             var items = BackdropItems ?? new BaseItemDto[] { };
@@ -105,6 +98,24 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 list.AddRange(chars.Select(i => new TabItem { Name = i, DisplayName = i, TabType = "Alphabet" }));
 
                 return list;
+            }
+        }
+
+        protected virtual void OnCurrentItemChanged()
+        {
+            if (CurrentItemChanged != null)
+            {
+                CurrentItemChanged(this, new EventArgs());
+            }
+        }
+
+        public override void OnPropertyChanged(string name)
+        {
+            base.OnPropertyChanged(name);
+
+            if (string.Equals(name, "BackdropItems"))
+            {
+                SetBackdrops();
             }
         }
     }

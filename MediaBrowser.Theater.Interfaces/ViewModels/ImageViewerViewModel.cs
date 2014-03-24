@@ -181,8 +181,10 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
         private CancellationTokenSource _imageDownloadCancellationTokenSource;
 
         public Action<ImageViewerImage> CustomCommandAction { get; set; }
+        public Action FocusedCommandAction { get; set; }
 
         public ICommand CustomCommand { get; private set; }
+        public ICommand FocusedCommand { get; private set; }
 
         public ImageViewerViewModel(IImageManager imageManager, IEnumerable<ImageViewerImage> initialImages)
         {
@@ -202,6 +204,8 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
                     CustomCommandAction(img);
                 }
             });
+
+            FocusedCommand = new RelayCommand(o=> FocusedCommandAction());
         }
 
         private async void OnIndexChanged()

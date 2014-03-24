@@ -3,7 +3,9 @@
                     xmlns:viewModels="clr-namespace:MediaBrowser.Theater.Presentation.ViewModels;assembly=MediaBrowser.Theater.Presentation"
                     xmlns:home="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Home"
                     xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
-                    xmlns:ee="clr-namespace:Microsoft.Expression.Media.Effects;assembly=Microsoft.Expression.Effects">
+                    xmlns:ee="clr-namespace:Microsoft.Expression.Media.Effects;assembly=Microsoft.Expression.Effects"
+                    xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+                    xmlns:converters="clr-namespace:MediaBrowser.Theater.Presentation.Converters;assembly=MediaBrowser.Theater.Presentation">
 
     <Style x:Key="ResumeProgressBar" TargetType="{x:Type ProgressBar}" >
         <Setter Property="Template">
@@ -178,6 +180,11 @@
                 </Grid.RowDefinitions>
 
                 <controls:ExtendedButton Style="{StaticResource BaseItemButtonStyle}" DataContext="{Binding SpotlightViewModel}" Command="{Binding CustomCommand}" HorizontalAlignment="Center" VerticalAlignment="Top" Grid.Row="0">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="GotFocus">
+                            <i:InvokeCommandAction Command="{Binding FocusedCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                     <Grid Height="{Binding Height}" Width="{Binding Width}">
                         <controls:TransitionControl Content="{Binding CurrentImage}">
                             <controls:TransitionControl.TransitionAnimation>
@@ -201,6 +208,11 @@
                 <WrapPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0 0 0 0">
 
                     <controls:ExtendedButton Style="{StaticResource BaseItemButtonStyle}" DataContext="{Binding AllShowsViewModel}" Command="{Binding CustomCommand}">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="GotFocus">
+                                <i:InvokeCommandAction Command="{Binding FocusedCommand}"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
                         <Grid Height="{Binding GalleryHeight}" Width="{Binding GalleryWidth}">
 
                             <ItemsControl ItemsSource="{Binding ListCollectionView}" Focusable="False">
@@ -224,6 +236,11 @@
                     </controls:ExtendedButton>
 
                     <controls:ExtendedButton Style="{StaticResource BaseItemButtonStyle}" DataContext="{Binding GenresViewModel}" Command="{Binding CustomCommand}">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="GotFocus">
+                                <i:InvokeCommandAction Command="{Binding FocusedCommand}"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
                         <Grid Height="{Binding GalleryHeight}" Width="{Binding GalleryWidth}">
 
                             <Image Source="Images/moviegenres.jpg" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Top"></Image>
@@ -235,6 +252,11 @@
                     </controls:ExtendedButton>
 
                     <controls:ExtendedButton Style="{StaticResource BaseItemButtonStyle}" DataContext="{Binding UpcomingViewModel}" Command="{Binding CustomCommand}">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="GotFocus">
+                                <i:InvokeCommandAction Command="{Binding FocusedCommand}"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
                         <Grid Height="{Binding GalleryHeight}" Width="{Binding GalleryWidth}">
 
                             <Image Source="Images/upcomingtv.jpg" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Top"></Image>
@@ -317,6 +339,11 @@
                 </Grid.RowDefinitions>
 
                 <controls:ExtendedButton Style="{StaticResource BaseItemButtonStyle}" DataContext="{Binding SpotlightViewModel}" Command="{Binding CustomCommand}" Grid.Row="0" HorizontalAlignment="Center">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="GotFocus">
+                            <i:InvokeCommandAction Command="{Binding FocusedCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                     <Grid Height="{Binding Height}" Width="{Binding Width}">
                         <controls:TransitionControl Content="{Binding CurrentImage}">
                             <controls:TransitionControl.TransitionAnimation>
@@ -339,6 +366,11 @@
 
                 <WrapPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0 0 0 0">
                     <controls:ExtendedButton Style="{StaticResource BaseItemButtonStyle}" DataContext="{Binding AllMoviesViewModel}" Command="{Binding CustomCommand}">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="GotFocus">
+                                <i:InvokeCommandAction Command="{Binding FocusedCommand}"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
                         <Grid Height="{Binding GalleryHeight}" Width="{Binding GalleryWidth}">
 
                             <ItemsControl ItemsSource="{Binding ListCollectionView}" Focusable="False">
@@ -362,6 +394,11 @@
                     </controls:ExtendedButton>
 
                     <controls:ExtendedButton Style="{StaticResource BaseItemButtonStyle}" DataContext="{Binding GenresViewModel}" Command="{Binding CustomCommand}">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="GotFocus">
+                                <i:InvokeCommandAction Command="{Binding FocusedCommand}"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
                         <Grid Height="{Binding GalleryHeight}" Width="{Binding GalleryWidth}">
 
                             <Image Source="Images/moviegenres.jpg" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Top"></Image>
@@ -373,6 +410,11 @@
                     </controls:ExtendedButton>
 
                     <controls:ExtendedButton Style="{StaticResource BaseItemButtonStyle}" DataContext="{Binding YearsViewModel}" Command="{Binding CustomCommand}">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="GotFocus">
+                                <i:InvokeCommandAction Command="{Binding FocusedCommand}"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
                         <Grid Height="{Binding GalleryHeight}" Width="{Binding GalleryWidth}">
 
                             <Image Source="Images/movietimeline.jpg" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Top"></Image>
@@ -384,6 +426,11 @@
                     </controls:ExtendedButton>
 
                     <controls:ExtendedButton Style="{StaticResource BaseItemButtonStyle}" DataContext="{Binding TrailersViewModel}" Command="{Binding CustomCommand}">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="GotFocus">
+                                <i:InvokeCommandAction Command="{Binding FocusedCommand}"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
                         <Grid Height="{Binding GalleryHeight}" Width="{Binding GalleryWidth}">
 
                             <Image Source="Images/trailer.png" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Top"></Image>
@@ -563,5 +610,7 @@
             </Button>
         </Grid>
     </DataTemplate>
+    
+    <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
 
 </ResourceDictionary>

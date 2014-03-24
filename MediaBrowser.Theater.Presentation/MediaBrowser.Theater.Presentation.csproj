@@ -114,6 +114,8 @@
     <Compile Include="Controls\TransitionFrame.cs" />
     <Compile Include="Controls\TreeHelper.cs" />
     <Compile Include="Controls\VirtualizingWrapPanel.cs" />
+    <Compile Include="Converters\NullToBooleanConverter.cs" />
+    <Compile Include="Converters\NullToVisibilityConverter.cs" />
     <Compile Include="Interop\WebBrowserHelper.cs" />
     <Compile Include="Playback\PlayableItem.cs" />
     <Compile Include="ViewModels\ChapterInfoListViewModel.cs" />

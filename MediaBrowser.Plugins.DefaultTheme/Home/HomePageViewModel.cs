@@ -155,6 +155,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         protected override object GetContentViewModel(string section)
         {
+            CurrentItem = null;
+
             if (string.Equals(section, "apps"))
             {
                 return new AppListViewModel(_presentationManager, _sessionManager, _logger);
@@ -183,11 +185,15 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             }
             if (string.Equals(section, "tv"))
             {
-                return GetTvViewModel();
+                var tvViewModel = GetTvViewModel();
+                tvViewModel.CurrentItemChanged += SectionViewModel_CurrentItemChanged;
+                return tvViewModel;
             }
             if (string.Equals(section, "movies"))
             {
-                return GetMoviesViewModel();
+                var moviesViewModel = GetMoviesViewModel();
+                moviesViewModel.CurrentItemChanged += SectionViewModel_CurrentItemChanged;
+                return moviesViewModel;
             }
 
             return null;
@@ -276,6 +282,21 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             }
 
             return vm.NavigateToMovies();
+        }
+
+        private ItemViewModel _currentItem;
+        public ItemViewModel CurrentItem
+        {
+            get { return _currentItem; }
+            private set
+            {
+                _currentItem = value;
+                OnPropertyChanged("CurrentItem");
+            }
+        }
+        private void SectionViewModel_CurrentItemChanged(BaseHomePageSectionViewModel sender, EventArgs e)
+        {
+            CurrentItem = sender.CurrentItem;
         }
     }
 }

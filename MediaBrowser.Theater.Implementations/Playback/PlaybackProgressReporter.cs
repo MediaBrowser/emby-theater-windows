@@ -1,5 +1,6 @@
 ﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Logging;
+using MediaBrowser.Model.Session;
 using MediaBrowser.Theater.Interfaces.Playback;
 using System;
 using System.Collections.Generic;
@@ -41,11 +42,11 @@ namespace MediaBrowser.Theater.Implementations.Playback
             try
             {
                 var queueTypes = _mediaPlayer.CanQueue
-                                     ? new List<string> { item.MediaType }
-                                     : new List<string> { };
+                                     ? new string[] { item.MediaType }
+                                     : new string[0];
 
-                await _apiClient.ReportPlaybackStartAsync(item.Id, _apiClient.CurrentUserId, _mediaPlayer.CanSeek, queueTypes);
-
+                await _apiClient.ReportPlaybackStartAsync(new PlaybackStartInfo { ItemId = item.Id, UserId = _apiClient.CurrentUserId, IsSeekable = _mediaPlayer.CanSeek, QueueableMediaTypes = queueTypes });
+           
                 if (_mediaPlayer.CanTrackProgress)
                 {
                     _timer = new Timer(TimerCallback, null, 1000, 1000);
@@ -82,7 +83,8 @@ namespace MediaBrowser.Theater.Implementations.Playback
             {
                 try
                 {
-                    await _apiClient.ReportPlaybackStoppedAsync(e.EndingMedia.Id, _apiClient.CurrentUserId, e.EndingPositionTicks);
+                    await _apiClient.ReportPlaybackStoppedAsync(new PlaybackStopInfo{ ItemId = e.EndingMedia.Id, UserId = _apiClient.CurrentUserId, PositionTicks = e.EndingPositionTicks} );
+                    
                 }
                 catch (Exception ex)
                 {
@@ -102,7 +104,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
             {
                 try
                 {
-                    await _apiClient.ReportPlaybackStoppedAsync(e.PreviousMedia.Id, _apiClient.CurrentUserId, e.EndingPositionTicks);
+                    await _apiClient.ReportPlaybackStoppedAsync(new PlaybackStopInfo { ItemId = e.PreviousMedia.Id, UserId = _apiClient.CurrentUserId, PositionTicks = e.EndingPositionTicks });
                 }
                 catch (Exception ex)
                 {
@@ -115,10 +117,10 @@ namespace MediaBrowser.Theater.Implementations.Playback
                 try
                 {
                     var queueTypes = _mediaPlayer.CanQueue
-                                ? new List<string> { e.NewMedia.MediaType }
-                                : new List<string> { };
-
-                    await _apiClient.ReportPlaybackStartAsync(e.NewMedia.Id, _apiClient.CurrentUserId, _mediaPlayer.CanSeek, queueTypes);
+                                ? new string[] { e.NewMedia.MediaType }
+                                : new string[0];
+                 
+                    await _apiClient.ReportPlaybackStartAsync(new PlaybackStartInfo { ItemId = e.NewMedia.Id, UserId = _apiClient.CurrentUserId, IsSeekable = _mediaPlayer.CanSeek, QueueableMediaTypes = queueTypes });
                 }
                 catch (Exception ex)
                 {
@@ -142,7 +144,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
 
             try
             {
-                await _apiClient.ReportPlaybackProgressAsync(item.Id, _apiClient.CurrentUserId, _mediaPlayer.CurrentPositionTicks, _mediaPlayer.PlayState == PlayState.Paused, _playback.IsMuted);
+                await _apiClient.ReportPlaybackProgressAsync(new PlaybackProgressInfo { ItemId = item.Id, UserId = _apiClient.CurrentUserId, PositionTicks = _mediaPlayer.CurrentPositionTicks, IsPaused = _mediaPlayer.PlayState == PlayState.Paused, IsMuted = _playback.IsMuted });
             }
             catch (Exception ex)
             {

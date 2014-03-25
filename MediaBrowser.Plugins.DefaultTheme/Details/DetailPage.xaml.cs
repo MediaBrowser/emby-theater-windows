@@ -1,4 +1,7 @@
-﻿using MediaBrowser.Model.Dto;
+﻿using System;
+using System.Windows.Input;
+using System.Windows.Threading;
+using MediaBrowser.Model.Dto;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.Pages;
@@ -17,10 +20,15 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
         private readonly ItemViewModel _itemViewModel;
         private readonly IPresentationManager _presentation;
 
+        private bool _isFocusFunctionButtons;
+        private bool _isInitialMenuSelection;
+
         public DetailPage(ItemViewModel itemViewModel, IPresentationManager presentation)
         {
             _itemViewModel = itemViewModel;
             _presentation = presentation;
+            _isFocusFunctionButtons = true;
+            _isInitialMenuSelection = true;
             InitializeComponent();
 
             Loaded += PanoramaDetailPage_Loaded;
@@ -76,6 +84,33 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             else
             {
                 DefaultTheme.Current.PageContentDataContext.SetPageTitle(item);
+            }
+
+            //Keyboard focuses the play or resume buttons once when the page is loaded
+            MenuList.SelectionChanged += MenuList_SelectionChanged;
+            FocusManager.AddGotFocusHandler(this, (o, args) =>
+            {
+                if (_isFocusFunctionButtons)
+                {
+                    var element = args.OriginalSource as FrameworkElement;
+
+                    if (element != null && !element.IsKeyboardFocused && (element.Name == "BtnPlay" || element.Name == "BtnResume"))
+                    {
+                        Dispatcher.BeginInvoke(DispatcherPriority.Input,
+                            new Action(() => Keyboard.Focus(element)));
+                    }
+                }
+            } );
+        }
+        private void MenuList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!_isInitialMenuSelection)
+            {
+                _isFocusFunctionButtons = false;
+            }
+            else
+            {
+                _isInitialMenuSelection = false;
             }
         }
 

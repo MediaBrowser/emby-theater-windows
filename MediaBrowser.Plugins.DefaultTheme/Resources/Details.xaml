@@ -333,6 +333,21 @@
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Row="0">
 
+                    <StackPanel.Style>
+                        <Style TargetType ="{x:Type StackPanel}">
+                            <Style.Triggers>
+                                <!--Order is important, if both are visible, we want BtnResume to have the focus -->
+                                <DataTrigger  Binding="{Binding ElementName=BtnPlay, Path=Visibility}" Value="Visible">
+                                    <Setter Property="FocusManager.FocusedElement" Value="{Binding ElementName=BtnPlay}"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding ElementName=BtnResume, Path=Visibility}" Value="Visible">
+                                    <Setter Property="FocusManager.FocusedElement" Value="{Binding ElementName=BtnResume}"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+
+
                     <Button x:Name="BtnResume"  Margin="0 0 10 0" Command="{Binding ResumeCommand}">
 
                         <Button.Style>

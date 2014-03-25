@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Windows;
+using System.Threading.Tasks;
+using System.Windows.Input;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
-using MediaBrowser.Model.Entities;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
-using MediaBrowser.Theater.DefaultTheme.Home.ViewModels;
-using MediaBrowser.Theater.Presentation;
-using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
@@ -29,6 +25,35 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
         public IEnumerable<IItemDetailSection> Sections
         {
             get { return _sections; }
+        }
+    }
+
+    public class ItemInfoSectionViewModel
+        : BaseViewModel, IItemDetailSection
+    {
+        public ItemArtworkViewModel Image { get; private set; }
+        public ItemInfoDetailsViewModel Details { get; private set; }
+        public ICommand PlayCommand { get; private set; }
+        public bool IsPlayable { get; private set; }
+        public ICommand PlayAllCommand { get; private set; }
+        public bool HasPlayAll { get; private set; }
+
+        public int SortOrder
+        {
+            get { return 0; }
+        }
+
+        public ItemInfoSectionViewModel(BaseItemDto item, IApiClient apiClient, IImageManager imageManager)
+        {
+            Image = new ItemArtworkViewModel(item, apiClient, imageManager);
+            Details = new ItemInfoDetailsViewModel(item);
+        }
+
+        public override async Task Initialize()
+        {
+            await Image.Initialize();
+            await Details.Initialize();
+            await base.Initialize();
         }
     }
 }

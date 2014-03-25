@@ -203,7 +203,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
             }
         }
 
-        private bool _showSearchButton = true;
+        private bool _showSearchButton = false;
         public bool ShowSearchButton
         {
             get { return _showSearchButton; }

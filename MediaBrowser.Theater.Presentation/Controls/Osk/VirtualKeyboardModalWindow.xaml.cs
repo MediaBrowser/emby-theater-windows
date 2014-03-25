@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Input;
 using MediaBrowser.Theater.Presentation.Controls.Osk.Layout.KeySets;
 
 namespace MediaBrowser.Theater.Presentation.Controls.Osk
@@ -26,6 +27,14 @@ namespace MediaBrowser.Theater.Presentation.Controls.Osk
         public void Cancel()
         {
             Keyboard.Cancel();
+        }
+
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+           // The Base.OnKeyDown event handles page back and page forward events
+           // We want the Osk input text box to handle all its own key events 
+           // with no post processing of back page and forward page
+           // so we override here and don't call base
         }
 
         public VirtualKeyboardModalWindow(string title = null, string initialText = null)

@@ -186,6 +186,7 @@
       <Link>Properties\SharedVersion.cs</Link>
     </Compile>
     <Compile Include="ApplicationHost.cs" />
+    <Compile Include="EntryPoints\DiscInsertEntryPoint.cs" />
     <Compile Include="EntryPoints\BackdropsEntryPoint.cs" />
     <Compile Include="EntryPoints\CommandActions\CommandActionMap.cs" />
     <Compile Include="EntryPoints\CommandActions\CommandActionsEntryPoint.cs" />

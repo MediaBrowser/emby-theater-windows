@@ -47,6 +47,7 @@ namespace MediaBrowser.Theater.DirectShow
         private DirectShowLib.IFilterGraph2 _filterGraph = null;
         DsROTEntry m_dsRot = null;
         bool _isDvd = false;
+        DirectShowLib.IPin m_adecOut = null;
 
         private XYVSFilter _xyVsFilter = null;
         private XySubFilter _xySubFilter = null;
@@ -404,7 +405,7 @@ namespace MediaBrowser.Theater.DirectShow
                 var aRenderer = _defaultAudioRenderer as DirectShowLib.IBaseFilter;
                 if (aRenderer != null)
                 {
-                    m_graph.AddFilter(aRenderer, "Default Audio Renderer");
+                    m_graph.AddFilter(aRenderer, "Default Audio Renderer");                    
                 }
             }
 
@@ -1344,59 +1345,128 @@ namespace MediaBrowser.Theater.DirectShow
         {
             int hr = 0;
             double dRate;
+            double dNewRate = 0;
 
             if (_mDvdControl != null)
             {
-                _currentPlaybackRate += dRateAdjust;
+                dNewRate += dRateAdjust;
 
-                if (_currentPlaybackRate == 0) _currentPlaybackRate += dRateAdjust;
-
-                if (_currentPlaybackRate < 0)
-                    hr = _mDvdControl.PlayBackwards(Math.Abs(_currentPlaybackRate), DvdCmdFlags.SendEvents, out _mDvdCmdOption);
-                else
-                    hr = _mDvdControl.PlayForwards(_currentPlaybackRate, DvdCmdFlags.SendEvents, out _mDvdCmdOption);
-                DsError.ThrowExceptionForHR(hr);
-
-                if (_mDvdCmdOption != null)
-                {
-                    _pendingDvdCmd = true;
-                }
+                if (dNewRate == 0) dNewRate += dRateAdjust;
             }
-            else if ((_mediaSeeking != null) && (dRateAdjust != 0.0))
+            else if ((this._mediaSeeking != null) && (dRateAdjust != 0.0))
             {
-                hr = _mediaSeeking.GetRate(out dRate);
+                hr = this._mediaSeeking.GetRate(out dRate);
                 if (hr == 0)
                 {
                     // Add current rate to adjustment value
-                    double dNewRate = dRate + dRateAdjust;
-                    hr = this._mediaSeeking.SetRate(dNewRate);
-                    DsError.ThrowExceptionForHR(hr);
-
-                    // Save global rate
-                    _currentPlaybackRate = dNewRate;
+                    dNewRate = dRate + dRateAdjust;
                 }
+            }
+
+            SetRate(dNewRate);
+        }
+
+        private void SetupGraphForRateChange(double rate, IBaseFilter audioRenderer)
+        {
+            IPin arIn = null;
+            int hr = 0;
+
+            try
+            {
+                if (rate > 1.5 && m_adecOut == null)
+                {
+                    //find the audio renderer
+                    if (audioRenderer != null)
+                    {
+                        //grab the audio decoder's output pin
+                        arIn = DsFindPin.ByDirection(audioRenderer, PinDirection.Input, 0);
+                        hr = arIn.ConnectedTo(out m_adecOut);
+                        DsError.ThrowExceptionForHR(hr);
+
+                        //stop the graph
+                        hr = _mediaControl.Stop();
+                        DsError.ThrowExceptionForHR(hr);
+
+                        //remove it
+                        hr = _filterGraph.RemoveFilter(audioRenderer);
+                        DsError.ThrowExceptionForHR(hr);
+
+                        //start the graph again
+                        hr = _mediaControl.Run();
+                        DsError.ThrowExceptionForHR(hr);
+                    }
+                }
+                else if (rate <= 1.5 && m_adecOut != null)
+                {
+                    if (audioRenderer != null)
+                    {
+                        //stop the graph
+                        hr = _mediaControl.Stop();
+                        DsError.ThrowExceptionForHR(hr);
+
+                        //add the audio renderer back into the graph
+                        hr = _filterGraph.AddFilter(audioRenderer, "Audio Renderer");
+                        DsError.ThrowExceptionForHR(hr);
+
+                        //connect it to the decoder pin
+                        arIn = DsFindPin.ByDirection(audioRenderer, PinDirection.Input, 0);
+                        hr = _filterGraph.ConnectDirect(m_adecOut, arIn, null);
+                        DsError.ThrowExceptionForHR(hr);
+
+                        Marshal.ReleaseComObject(m_adecOut);
+                        m_adecOut = null;
+
+                        //start the graph again
+                        hr = _mediaControl.Run();
+                        DsError.ThrowExceptionForHR(hr);
+                    }
+                }
+            }
+            finally
+            {
+                if (arIn != null)
+                    Marshal.ReleaseComObject(arIn);
             }
         }
 
         public void SetRate(double rate)
         {
             int hr = 0;
-            _currentPlaybackRate = rate;
+            //_currentPlaybackRate = rate;
+            SetupGraphForRateChange(rate, (_defaultAudioRenderer != null ? _defaultAudioRenderer as IBaseFilter : _reclockAudioRenderer as IBaseFilter));
 
             if (_mDvdControl != null)
             {
-                hr = _mDvdControl.PlayForwards(rate, DvdCmdFlags.SendEvents, out _mDvdCmdOption);
-                DsError.ThrowExceptionForHR(hr);
-
-                if (_mDvdCmdOption != null)
+                if (rate < 0)
+                    hr = _mDvdControl.PlayBackwards(Math.Abs(rate), DvdCmdFlags.SendEvents, out _mDvdCmdOption);
+                else
+                    hr = _mDvdControl.PlayForwards(rate, DvdCmdFlags.SendEvents, out _mDvdCmdOption);
+                //DsError.ThrowExceptionForHR(hr);
+                if (hr >= 0)
                 {
-                    _pendingDvdCmd = true;
+                    _currentPlaybackRate = rate;
+                    if (_mDvdCmdOption != null)
+                    {
+                        _pendingDvdCmd = true;
+                    }
                 }
+
+                //hr = _mDvdControl.PlayForwards(rate, DvdCmdFlags.SendEvents, out _mDvdCmdOption);
+                //DsError.ThrowExceptionForHR(hr);
+
+                //if (_mDvdCmdOption != null)
+                //{
+                //    _pendingDvdCmd = true;
+                //}
             }
             else if (_mediaSeeking != null)
             {
                 hr = _mediaSeeking.SetRate(rate);
-                DsError.ThrowExceptionForHR(hr);
+                //DsError.ThrowExceptionForHR(hr);
+                if (hr >= 0)
+                {
+                    _currentPlaybackRate = rate;
+                }
             }
         }
 
@@ -1625,6 +1695,12 @@ namespace MediaBrowser.Theater.DirectShow
         private void CloseInterfaces()
         {
             int hr;
+
+            if (m_adecOut != null)
+            {
+                CleanUpInterface(m_adecOut);
+                m_adecOut = null;
+            }
 
             if (_defaultAudioRenderer != null)
             {

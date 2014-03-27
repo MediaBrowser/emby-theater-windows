@@ -127,6 +127,7 @@
     <Compile Include="Osd\NowPlayingInfo.xaml.cs">
       <DependentUpon>NowPlayingInfo.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Apps\PlayExternalDisc.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -338,6 +339,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\trailer.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\insertDisc.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

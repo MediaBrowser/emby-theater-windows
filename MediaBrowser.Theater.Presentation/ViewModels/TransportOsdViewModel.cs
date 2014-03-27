@@ -496,7 +496,8 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         private void UpdatePlayerCapabilities(IMediaPlayer player, BaseItemDto media)
         {
-            SupportsChapters = player != null && player.CanSeek && media != null && media.Chapters.Count > 0;
+
+            SupportsChapters = player != null && player.CanSeek && media != null && media.Chapters != null && media.Chapters.Count > 0;
 
             var videoPlayer = player as IVideoPlayer;
 

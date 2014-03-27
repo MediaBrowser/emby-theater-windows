@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Diagnostics;
+using System.Threading;
 using CoreAudioApi;
 using MediaBrowser.Common.Events;
 using MediaBrowser.Model.ApiClient;
@@ -16,6 +17,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using MediaBrowser.Theater.Interfaces.Theming;
 
 namespace MediaBrowser.Theater.Implementations.Playback
 {
@@ -98,6 +100,14 @@ namespace MediaBrowser.Theater.Implementations.Playback
         /// <returns>Task.</returns>
         private async Task Play(IMediaPlayer player, PlayOptions options, PlayerConfiguration configuration)
         {
+            if (options.Items[0].IsPlaceHolder.HasValue && options.Items[0].IsPlaceHolder.Value)
+            {
+                // play a phyical disk in the cdrom drive
+                // Will be re-entrant call, so has to be made befpre the interlocked.CompareExchange below
+                await PlayExternalDisk(true);
+                return;
+            }
+
             if (Interlocked.CompareExchange(ref _isStarting, 1, 0) == 0) // prevent race conditions, thread safe check we are not already starting to play an item
             {
                 try
@@ -109,6 +119,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
 
                     var firstItem = options.Items[0];
 
+                  
                     if (options.StartPositionTicks == 0 && player.SupportsMultiFilePlayback && firstItem.IsVideo && firstItem.LocationType == LocationType.FileSystem && options.GoFullScreen)
                     {
                         try
@@ -123,6 +134,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
                         }
                     }
 
+
                     options.Configuration = configuration;
 
                     await player.Play(options);
@@ -136,8 +148,8 @@ namespace MediaBrowser.Theater.Implementations.Playback
                             await _nav.NavigateToInternalPlayerPage();
                         }
                     }
-
                     OnPlaybackStarted(player, options);
+                    
                 }
                 finally
                 {
@@ -159,7 +171,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
                 Player = player
             }, _logger);
 
-            await new PlaybackProgressReporter(_apiClient, player, _logger, this).Start().ConfigureAwait(false);
+           await new PlaybackProgressReporter(_apiClient, player, _logger, this).Start().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -186,6 +198,72 @@ namespace MediaBrowser.Theater.Implementations.Playback
             foreach (var player in players)
             {
                 player.Stop();
+            }
+        }
+
+        private async Task PlayDisc(DriveInfo drive)
+        {
+            string path = String.Empty;
+            VideoType videoType;
+
+            // check if there is a DVD
+            if (Directory.Exists(drive.Name + @"\VIDEO_TS"))
+            {
+                path = drive.Name + @"\VIDEO_TS";
+                videoType = VideoType.Dvd;
+            }
+            else if (Directory.Exists(drive.Name + @"\BDMV"))
+            {
+                path = drive.Name + @"\BDMV";
+                videoType = VideoType.BluRay;
+            }
+            else
+            {
+                throw new ApplicationException("The disc in the player contains neither a DVD or BLueray directory");
+            }
+
+            var item = new BaseItemDto()
+            {
+                Id = "-1",
+                Type = "movie",
+                VideoType = videoType,
+                Path = path,
+                Name = drive.VolumeLabel ?? String.Empty,
+                MediaType = "Video"
+            };
+
+            await Play(new PlayOptions(item));
+        }
+
+        /// <summary>
+        /// Plays a DVD or Blueray disc in an external disk drive
+        /// will ask for the disc to be inserted if it is not ready
+        /// </summary>
+        public async Task PlayExternalDisk(bool forceAskToInsertDisc)
+        {
+            var drive = DriveInfo.GetDrives().FirstOrDefault(d => d.DriveType == DriveType.CDRom);
+            if (drive == null)
+                return;
+
+            var msgResult = MessageBoxResult.OK;
+            while ((!drive.IsReady && msgResult != MessageBoxResult.Cancel) || forceAskToInsertDisc)
+            {
+                msgResult = _presentationManager.ShowMessage(new MessageBoxInfo
+                {
+                    Button = MessageBoxButton.OKCancel,
+                    Caption = "Insert disc",
+                    Icon = MessageBoxIcon.Warning,
+                    Text = "Insert a disk into the cd/dvd player and hit ok when ready "
+                });
+                forceAskToInsertDisc = false;
+            }
+
+            if (msgResult == MessageBoxResult.Cancel)
+                return;
+
+            if (drive.IsReady)
+            {
+                await PlayDisc(drive);
             }
         }
 
@@ -535,11 +613,6 @@ namespace MediaBrowser.Theater.Implementations.Playback
                 return false;
             }
            
-            // TODO - issues #100
-            // if (item.IsPlaceHolder)
-            //{
-            //    return false;
-            //}
 
             if (item.PlayAccess != PlayAccess.Full)
             {

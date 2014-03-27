@@ -1,4 +1,4 @@
-﻿using Microsoft.DirectX.PrivateImplementationDetails;
+﻿//using Microsoft.DirectX.PrivateImplementationDetails;
 using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
@@ -23,7 +23,7 @@ namespace MediaBrowser.Theater.DirectShow
     public interface IOsdRenderCallback
     {
         [PreserveSig]
-        int SetDevice([Out] out IDirect3DDevice9 dev);
+        int SetDevice([Out] out /*IDirect3DDevice9*/IntPtr dev);
 
         [PreserveSig]
         int ClearBackground(

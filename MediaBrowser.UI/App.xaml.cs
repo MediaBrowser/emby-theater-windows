@@ -103,7 +103,7 @@ namespace MediaBrowser.UI
                 // Update is there - execute update
                 try
                 {
-                    new ApplicationUpdater().UpdateApplication(MBApplication.MBTheater, appPaths, updateArchive,
+                    new ApplicationUpdater().UpdateApplication(appPaths, updateArchive,
                         logManager.GetLogger("ApplicationUpdater"), string.Empty);
 
                     // And just let the app exit so it can update

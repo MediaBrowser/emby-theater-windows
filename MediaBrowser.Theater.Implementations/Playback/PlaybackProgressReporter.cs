@@ -39,6 +39,13 @@ namespace MediaBrowser.Theater.Implementations.Playback
                 throw new InvalidOperationException("Nothing is currently playing");
             }
 
+            if (item.Id == null)
+            {
+                // Item is local media to the client (i.e playing local dvd)
+                // todo - fix up local media progress reporting
+                return;
+            }
+
             try
             {
                 var queueTypes = _mediaPlayer.CanQueue

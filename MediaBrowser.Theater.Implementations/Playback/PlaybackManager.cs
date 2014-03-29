@@ -100,7 +100,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
         /// <returns>Task.</returns>
         private async Task Play(IMediaPlayer player, PlayOptions options, PlayerConfiguration configuration)
         {
-            if (options.Items[0].IsPlaceHolder.HasValue && options.Items[0].IsPlaceHolder.Value)
+            if (options.Items[0].IsPlaceHolder??false)
             {
                 // play a phyical disk in the cdrom drive
                 // Will be re-entrant call, so has to be made befpre the interlocked.CompareExchange below
@@ -224,7 +224,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
 
             var item = new BaseItemDto()
             {
-                Id = "-1",
+                Id = null,
                 Type = "movie",
                 VideoType = videoType,
                 Path = path,

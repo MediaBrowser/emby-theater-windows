@@ -62,6 +62,7 @@ namespace MediaBrowser.Theater.Implementations.CommandActions
                 new CommandActionMapping( Command.Play,            Play),
                 new CommandActionMapping( Command.PlayPause,       PlayPause),
                 new CommandActionMapping( Command.Pause,           Pause),
+                new CommandActionMapping( Command.Stop,            Stop),
                 new CommandActionMapping( Command.TogglePause,     TogglePause),
                 new CommandActionMapping( Command.Queue,           NullAction),
                 new CommandActionMapping( Command.FastForward,     NullAction),
@@ -84,7 +85,7 @@ namespace MediaBrowser.Theater.Implementations.CommandActions
                 new CommandActionMapping( Command.GotoHome,        GotoHome),
                 new CommandActionMapping( Command.GotoSearch,      GotoSearch),
                 new CommandActionMapping( Command.GotoSettings,    GotoSettings),
-                new CommandActionMapping( Command.GotoPage,        Stop),
+                new CommandActionMapping( Command.GotoPage,        NullAction),
                 new CommandActionMapping( Command.Info,            Info),
                 new CommandActionMapping( Command.SkipNext,        SkipForward,        60),    // skip forward 60  seconds, boxed arguments
                 new CommandActionMapping( Command.SkipPrevious,    SkipBackward,       60),

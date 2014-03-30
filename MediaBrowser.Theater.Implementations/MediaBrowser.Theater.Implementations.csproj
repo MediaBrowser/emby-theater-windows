@@ -96,6 +96,7 @@
     <Compile Include="Playback\PlaybackManager.cs" />
     <Compile Include="Playback\PlaybackProgressReporter.cs" />
     <Compile Include="Presentation\ImageManager.cs" />
+    <Compile Include="Presentation\ScreensaverManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

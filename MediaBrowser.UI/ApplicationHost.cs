@@ -34,6 +34,7 @@ using MediaBrowser.Theater.Interfaces.System;
 using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Interfaces.UserInput;
 using MediaBrowser.Theater.Presentation.Playback;
+using MediaBrowser.UI.EntryPoints;
 using MediaBrowser.UI.Implementations;
 using MediaBrowser.UI.Networking;
 using System;
@@ -66,6 +67,7 @@ namespace MediaBrowser.UI
 
         public IThemeManager ThemeManager { get; private set; }
         public IPlaybackManager PlaybackManager { get; private set; }
+        public IScreensaverManager ScreensaverManager { get; private set; }
         public IImageManager ImageManager { get; private set; }
         public INavigationService NavigationService { get; private set; }
         public ISessionManager SessionManager { get; private set; }
@@ -159,6 +161,9 @@ namespace MediaBrowser.UI
             SessionManager = new SessionManager(NavigationService, ApiClient, Logger, ThemeManager, TheaterConfigurationManager, PlaybackManager);
             RegisterSingleInstance(SessionManager);
 
+            ScreensaverManager = new ScreensaverManager(UserInputManager, PresentationManager, PlaybackManager, SessionManager, ApiClient, ImageManager, LogManager, ApiWebSocket);
+            RegisterSingleInstance(ScreensaverManager);
+
             RegisterSingleInstance(ApiClient);
 
             RegisterSingleInstance<IHiddenWindow>(hiddenWindow);
@@ -175,8 +180,8 @@ namespace MediaBrowser.UI
 
             ThemeManager.AddParts(GetExports<ITheme>());
             PresentationManager.AddParts(GetExports<IAppFactory>(), GetExports<ISettingsPage>(), GetExports<IHomePageInfo>());
-
             PlaybackManager.AddParts(GetExports<IMediaPlayer>());
+            ScreensaverManager.AddParts(GetExports<IScreensaverFactory>());
         }
 
         protected override INetworkManager CreateNetworkManager()

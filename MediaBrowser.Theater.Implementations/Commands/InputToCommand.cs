@@ -255,6 +255,7 @@ namespace MediaBrowser.Theater.Implementations.Commands
 
             // MBT specific & Test
             new InputCommandMapping( Key.S,  Command.GotoSearch,           controlKey:true, shiftKey:false),
+            new InputCommandMapping( Key.E,  Command.ShowScreensaver,      controlKey:true, shiftKey:true),
         };
 
         private readonly InputCommandMapGroup _inputCommandMapGroup;

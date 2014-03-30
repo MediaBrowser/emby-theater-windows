@@ -40,14 +40,16 @@ using MediaBrowser.Theater.Presentation.Playback;
         private readonly IPresentationManager _presenation;
         private readonly IPlaybackManager _playback;
         private readonly INavigationService _navigation;
+        private readonly IScreensaverManager _screensaverManager;
         private readonly ILogger _logger;
         private readonly CommandActionMapping _nullCommandActionMapping;
         private readonly CommandActionMap _globalCommandActionMap;
 
-        public DefaultCommandActionMap(IPresentationManager presenation, IPlaybackManager playback, INavigationService navigation, ILogManager logManager)
+        public DefaultCommandActionMap(IPresentationManager presenation, IPlaybackManager playback, INavigationService navigation, IScreensaverManager screensaverManager, ILogManager logManager)
         {
             _presenation = presenation;
             _playback = playback;
+            _screensaverManager = screensaverManager;
             _navigation = navigation;
             _logger = logManager.GetLogger(GetType().Name);
             _globalCommandActionMap = CreateGlobalCommandActionMap();
@@ -107,7 +109,9 @@ using MediaBrowser.Theater.Presentation.Playback;
                 new CommandActionMapping( Command.Subtitles,       NullAction),
                 new CommandActionMapping( Command.NextSubtitle,    NullAction),
                 new CommandActionMapping( Command.AspectRatio,     NullAction),
-                new CommandActionMapping( Command.OSD,             OSD)
+                new CommandActionMapping( Command.OSD,             OSD),
+                new CommandActionMapping( Command.ShowScreensaver, ShowScreensaver),
+
             };
         }
 
@@ -505,6 +509,11 @@ using MediaBrowser.Theater.Presentation.Playback;
             {
                 FullScreen(sender, args);
             }
+        }
+
+        public void ShowScreensaver(Object sender, CommandEventArgs args)
+        {
+            _screensaverManager.ShowScreensaver(true);
         }
     }
 }

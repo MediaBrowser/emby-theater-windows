@@ -19,10 +19,10 @@ namespace MediaBrowser.Theater.Implementations.CommandActions
         private readonly DefaultCommandActionMap _defaultCommandActionMap;
 
 
-        public CommandActionsEntryPoint(ICommandManager commandManager, IPresentationManager presentationManager, IPlaybackManager playbackManager, INavigationService navigationService, ILogManager logManager)
+        public CommandActionsEntryPoint(ICommandManager commandManager, IPresentationManager presentationManager, IPlaybackManager playbackManager, INavigationService navigationService, IScreensaverManager screensaverManager, ILogManager logManager)
         {
             _commandManager = commandManager;
-            _defaultCommandActionMap = new DefaultCommandActionMap(presentationManager, playbackManager, navigationService, logManager);
+            _defaultCommandActionMap = new DefaultCommandActionMap(presentationManager, playbackManager, navigationService, screensaverManager, logManager);
         
             _logger = logManager.GetLogger(GetType().Name);
         }

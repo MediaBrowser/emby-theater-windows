@@ -1,6 +1,7 @@
-﻿using MediaBrowser.Model.ApiClient;
+﻿using System.Collections.Generic;
+using System.Windows.Media;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Logging;
-using MediaBrowser.Theater.Core.Screensaver;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
@@ -13,10 +14,13 @@ using System.Windows;
 using System.Windows.Threading;
 using Microsoft.Win32;
 
-namespace MediaBrowser.UI.EntryPoints
+namespace MediaBrowser.Theater.Implementations.Presentation
 {
-    public class ScreensaverEntryPoint : IStartupEntryPoint, IDisposable
+    public class ScreensaverManager : IScreensaverManager, IDisposable
     {
+        private const int Screensaver_Idle_Timeout_Secs = 15; // 300; // timeouot if we have been idle for 5 minutes
+        private const int Screensaver_Start_Check_MSec = 1000; //30000; // check idle timeout every 30 seconnds
+
         private readonly IUserInputManager _userInput;
         private readonly IPresentationManager _presentationManager;
         private readonly IPlaybackManager _playback;
@@ -29,7 +33,7 @@ namespace MediaBrowser.UI.EntryPoints
         private DateTime _lastInputTime;
         private Timer _timer;
 
-        public ScreensaverEntryPoint(IUserInputManager userInput, IPresentationManager presentationManager, IPlaybackManager playback, ISessionManager session, IApiClient apiClient, IImageManager imageManager, ILogger logger, IServerEvents serverEvents)
+        public ScreensaverManager(IUserInputManager userInput, IPresentationManager presentationManager, IPlaybackManager playback, ISessionManager session, IApiClient apiClient, IImageManager imageManager, ILogManager logManager, IServerEvents serverEvents)
         {
             _userInput = userInput;
             _presentationManager = presentationManager;
@@ -37,12 +41,9 @@ namespace MediaBrowser.UI.EntryPoints
             _session = session;
             _apiClient = apiClient;
             _imageManager = imageManager;
-            _logger = logger;
+            _logger = logManager.GetLogger("ScreensaverManager");
             _serverEvents = serverEvents;
-        }
 
-        public void Run()
-        {
             _playback.PlaybackCompleted += _playback_PlaybackCompleted;
             _playback.PlaybackStarted += _playback_PlaybackStarted;
 
@@ -55,6 +56,28 @@ namespace MediaBrowser.UI.EntryPoints
             SystemEvents.PowerModeChanged += SystemEvents_PowerModeChanged;
 
             StartTimer();
+        }
+
+        public IEnumerable<IScreensaverFactory> ScreensaverFactories { get; private set; }
+
+        public void AddParts(IEnumerable<IScreensaverFactory> screensaverFactories)
+        {
+            ScreensaverFactories = screensaverFactories;
+        }
+
+        public bool ScreensaverIsRunning
+        {
+            get { return Application.Current.Windows.OfType<IScreensaver>().Any(); }
+        }
+
+        public void StopScreenSaver()
+        {
+            var screenSaver = Application.Current.Windows.OfType<IScreensaver>().FirstOrDefault();
+
+            if (screenSaver != null)
+            {
+                screenSaver.Close();
+            }
         }
 
         void _serverEvents_SystemCommand(object sender, SystemCommandEventArgs e)
@@ -86,9 +109,9 @@ namespace MediaBrowser.UI.EntryPoints
         {
             _lastInputTime = DateTime.Now;
 
-            if (_presentationManager.IsScreenSaverRunning)
+            if (ScreensaverIsRunning)
             {
-                _presentationManager.StopScreenSaver();
+                StopScreenSaver();
             }
         }
 
@@ -96,9 +119,9 @@ namespace MediaBrowser.UI.EntryPoints
         {
             _lastInputTime = DateTime.Now;
 
-            if (_presentationManager.IsScreenSaverRunning)
+            if (ScreensaverIsRunning)
             {
-                _presentationManager.StopScreenSaver();
+                StopScreenSaver();
             }
         }
 
@@ -117,14 +140,14 @@ namespace MediaBrowser.UI.EntryPoints
         private void TimerCallback(object state)
         {
             _lastInputTime = new[] { _lastInputTime, _userInput.GetLastInputTime() }.Max();
-
-            if ((DateTime.Now - _lastInputTime) >= TimeSpan.FromSeconds(300))
+            _logger.Debug("TimerCallback {0} {1}", DateTime.Now, _lastInputTime);
+            if ((DateTime.Now - _lastInputTime) >= TimeSpan.FromSeconds(Screensaver_Idle_Timeout_Secs))
             {
-                ShowScreensaverIfNeeded();
+                ShowScreensaver(false);
             }
         }
 
-        private void ShowScreensaverIfNeeded()
+        public void ShowScreensaver(bool forceShowShowScreensaver)
         {
             var activeMedias = _playback.MediaPlayers
                 .Where(i => i.PlayState == PlayState.Playing)
@@ -132,7 +155,7 @@ namespace MediaBrowser.UI.EntryPoints
                 .Where(i => i != null)
                 .ToList();
 
-            if (activeMedias.Any(i => !i.IsAudio))
+            if (!forceShowShowScreensaver && activeMedias.Any(i => !i.IsAudio))
             {
                 _lastInputTime = DateTime.Now;
                 return;
@@ -155,9 +178,21 @@ namespace MediaBrowser.UI.EntryPoints
                 StopTimer();
 
                 _logger.Debug("Displaying screen saver");
+                IScreensaver screenSaver;
+                if (_session.CurrentUser == null)
+                {
+                    screenSaver = ScreensaverFactories.FirstOrDefault(ss => ss.Name.ToLower().Contains("logo")).GetScreensaver();
+                }
+                else
+                {
+                    screenSaver = ScreensaverFactories.FirstOrDefault(ss => ! ss.Name.ToLower().Contains("logo")).GetScreensaver();
+                }
 
-                new ScreensaverWindow(_session, _apiClient, _imageManager, _logger).ShowModal(_presentationManager.Window);
-
+                if (screenSaver!= null)
+                {
+                    screenSaver.ShowModal();
+                }
+              
                 StartTimer();
             });
         }
@@ -168,7 +203,7 @@ namespace MediaBrowser.UI.EntryPoints
 
             if (_timer == null)
             {
-                _timer = new Timer(TimerCallback, null, 30000, 30000);
+                _timer = new Timer(TimerCallback, null, Screensaver_Start_Check_MSec, Screensaver_Start_Check_MSec); // check every x millisecond (default 30 seconds) if we shoud start the screen saver
             }
         }
 

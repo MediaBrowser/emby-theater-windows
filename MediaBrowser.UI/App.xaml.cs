@@ -141,7 +141,7 @@ namespace MediaBrowser.UI
         {
             var win = new MainWindow(_logger, _appHost.PlaybackManager, _appHost.ApiClient, _appHost.ImageManager,
                 _appHost, _appHost.PresentationManager, _appHost.UserInputManager, _appHost.TheaterConfigurationManager,
-                _appHost.NavigationService);
+                _appHost.NavigationService, _appHost.ScreensaverManager);
 
             var config = _appHost.TheaterConfigurationManager.Configuration;
 

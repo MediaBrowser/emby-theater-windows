@@ -43,7 +43,7 @@ namespace MediaBrowser.UI
         /// <summary>
         /// Initializes a new instance of the <see cref="MainWindow" /> class.
         /// </summary>
-        public MainWindow(ILogger logger, IPlaybackManager playbackManager, IApiClient apiClient, IImageManager imageManager, IApplicationHost appHost, IPresentationManager appWindow, IUserInputManager userInput, ITheaterConfigurationManager config, INavigationService nav)
+        public MainWindow(ILogger logger, IPlaybackManager playbackManager, IApiClient apiClient, IImageManager imageManager, IApplicationHost appHost, IPresentationManager appWindow, IUserInputManager userInput, ITheaterConfigurationManager config, INavigationService nav, IScreensaverManager screensaverManager)
             : base()
         {
             _logger = logger;
@@ -58,7 +58,7 @@ namespace MediaBrowser.UI
 
             InitializeComponent();
 
-            RotatingBackdrops = new RotatingBackdropsViewModel(apiClient, _config, imageManager, playbackManager, logger, _appWindow);
+            RotatingBackdrops = new RotatingBackdropsViewModel(apiClient, _config, imageManager, playbackManager, logger, screensaverManager);
 
             _config.ConfigurationUpdated += _config_ConfigurationUpdated;
             _playbackManager.PlaybackStarted += _playbackManager_PlaybackStarted;

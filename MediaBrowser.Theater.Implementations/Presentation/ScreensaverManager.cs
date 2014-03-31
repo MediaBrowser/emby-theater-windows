@@ -18,8 +18,8 @@ namespace MediaBrowser.Theater.Implementations.Presentation
 {
     public class ScreensaverManager : IScreensaverManager, IDisposable
     {
-        private const int Screensaver_Idle_Timeout_Secs = 15; // 300; // timeouot if we have been idle for 5 minutes
-        private const int Screensaver_Start_Check_MSec = 1000; //30000; // check idle timeout every 30 seconnds
+        private const int Screensaver_Idle_Timeout_Secs = 300; // timeout if we have been idle for 5 minutes - use 15 for debug
+        private const int Screensaver_Start_Check_MSec = 30000; // check idle timeout every 30 seconnds - use 1000 for debug
 
         private readonly IUserInputManager _userInput;
         private readonly IPresentationManager _presentationManager;
@@ -140,7 +140,7 @@ namespace MediaBrowser.Theater.Implementations.Presentation
         private void TimerCallback(object state)
         {
             _lastInputTime = new[] { _lastInputTime, _userInput.GetLastInputTime() }.Max();
-            _logger.Debug("TimerCallback {0} {1}", DateTime.Now, _lastInputTime);
+            //_logger.Debug("TimerCallback {0} {1}", DateTime.Now, _lastInputTime);
             if ((DateTime.Now - _lastInputTime) >= TimeSpan.FromSeconds(Screensaver_Idle_Timeout_Secs))
             {
                 ShowScreensaver(false);

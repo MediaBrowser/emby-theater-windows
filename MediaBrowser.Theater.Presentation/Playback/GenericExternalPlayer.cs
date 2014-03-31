@@ -420,6 +420,16 @@ namespace MediaBrowser.Theater.Presentation.Playback
         }
 
         /// <summary>
+        /// Sets the playback speed
+        /// </summary>
+        /// <param name="rate">The playback speed</param>
+        /// <exception cref="System.NotImplementedException"></exception>
+        public virtual void SetRate(double rate)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
         /// Gets the process start info.
         /// </summary>
         /// <param name="items">The items.</param>

@@ -151,5 +151,11 @@ namespace MediaBrowser.Theater.Interfaces.Playback
         /// </summary>
         /// <param name="newIndex">The new index.</param>
         void ChangeTrack(int newIndex);
+
+        /// <summary>
+        /// Set the play rate - FF or Rewindw
+        /// </summary>
+        /// <param name="rate">The speed to play the media.</param>
+        void SetRate(Double rate);
     }
 }

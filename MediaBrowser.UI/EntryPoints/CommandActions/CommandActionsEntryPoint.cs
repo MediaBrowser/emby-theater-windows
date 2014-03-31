@@ -1,18 +1,16 @@
 ﻿using System.Windows.Input;
 using MediaBrowser.Model.Logging;
-using MediaBrowser.Theater.Implementations.CommandActions;
 using MediaBrowser.Theater.Interfaces.Commands;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
-using MediaBrowser.Theater.Interfaces.UserInput;
 using System;
 using WindowsInput = System.Windows.Input;
 
  namespace MediaBrowser.UI.EntryPoints.CommandActions
 {
 
-    public class CommandActionsEntryPoint : IStartupEntryPoint, IDisposable
+    public class CommandActionsEntryPoint :  IStartupEntryPoint, IDisposable
     {
         private readonly ILogger _logger;
         private ICommandManager _commandManager;

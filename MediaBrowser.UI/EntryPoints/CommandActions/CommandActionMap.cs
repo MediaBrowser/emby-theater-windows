@@ -44,6 +44,7 @@ using MediaBrowser.Theater.Presentation.Playback;
         private readonly ILogger _logger;
         private readonly CommandActionMapping _nullCommandActionMapping;
         private readonly CommandActionMap _globalCommandActionMap;
+        private double _currentPlaybackRate = 1.0; // Todo - move to reportable property of IPlaybackManager
 
         public DefaultCommandActionMap(IPresentationManager presenation, IPlaybackManager playback, INavigationService navigation, IScreensaverManager screensaverManager, ILogManager logManager)
         {
@@ -54,6 +55,19 @@ using MediaBrowser.Theater.Presentation.Playback;
             _logger = logManager.GetLogger(GetType().Name);
             _globalCommandActionMap = CreateGlobalCommandActionMap();
             _nullCommandActionMapping = new CommandActionMapping(Command.Null, NullAction);
+
+            _playback.PlaybackStarted += Playback_PlaybackStarted;
+            _playback.PlaybackCompleted+=_playback_PlaybackCompleted;
+        }
+
+        private void Playback_PlaybackStarted(object sender, PlaybackStartEventArgs playbackStartEventArgs)
+        {
+            _currentPlaybackRate = 1.0;
+        }
+
+        private void _playback_PlaybackCompleted(object sender, PlaybackStopEventArgs e)
+        {
+            _currentPlaybackRate = 1.0;
         }
 
         private CommandActionMap CreateGlobalCommandActionMap()
@@ -64,10 +78,11 @@ using MediaBrowser.Theater.Presentation.Playback;
                 new CommandActionMapping( Command.Play,            Play),
                 new CommandActionMapping( Command.PlayPause,       PlayPause),
                 new CommandActionMapping( Command.Pause,           Pause),
+                new CommandActionMapping( Command.Stop,            Stop),
                 new CommandActionMapping( Command.TogglePause,     TogglePause),
                 new CommandActionMapping( Command.Queue,           NullAction),
-                new CommandActionMapping( Command.FastForward,     NullAction),
-                new CommandActionMapping( Command.Rewind,          NullAction),
+                new CommandActionMapping( Command.FastForward,     FastForward),
+                new CommandActionMapping( Command.Rewind,          Rewind),
                 new CommandActionMapping( Command.PlaySpeedRatio,  NullAction),
                 new CommandActionMapping( Command.NextTrack,       NextTrackOrChapter),
                 new CommandActionMapping( Command.PrevisousTrack,  PreviousTrackOrChapter),
@@ -86,7 +101,7 @@ using MediaBrowser.Theater.Presentation.Playback;
                 new CommandActionMapping( Command.GotoHome,        GotoHome),
                 new CommandActionMapping( Command.GotoSearch,      GotoSearch),
                 new CommandActionMapping( Command.GotoSettings,    GotoSettings),
-                new CommandActionMapping( Command.GotoPage,        Stop),
+                new CommandActionMapping( Command.GotoPage,        NullAction),
                 new CommandActionMapping( Command.Info,            Info),
                 new CommandActionMapping( Command.SkipNext,        SkipForward,        60),    // skip forward 60  seconds, boxed arguments
                 new CommandActionMapping( Command.SkipPrevious,    SkipBackward,       60),
@@ -367,6 +382,32 @@ using MediaBrowser.Theater.Presentation.Playback;
             {
                 PreviousTrack(sender, args);
             }
+            args.Handled = true;
+        }
+
+        // todo - fastforwad doubles the forward speed, also need an inc that increments it by 1
+        private void FastForward(Object sender, CommandEventArgs args)
+        {
+            var activePlayer = GetActiveInternalMediaPlayer();
+
+            if (activePlayer != null && activePlayer.CurrentMedia != null && activePlayer.CurrentMedia.IsVideo)
+            {
+                _currentPlaybackRate = _currentPlaybackRate * 2.0;
+                activePlayer.SetRate(_currentPlaybackRate);
+            }
+            args.Handled = true;
+        }
+
+        private void Rewind(Object sender, CommandEventArgs args)
+        {
+            var activePlayer = GetActiveInternalMediaPlayer();
+
+            if (activePlayer != null && activePlayer.CurrentMedia != null && activePlayer.CurrentMedia.IsVideo)
+            {
+                _currentPlaybackRate = _currentPlaybackRate/2.0;
+               activePlayer.SetRate(_currentPlaybackRate);
+            }
+
             args.Handled = true;
         }
 

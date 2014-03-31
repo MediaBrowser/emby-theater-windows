@@ -87,9 +87,7 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CommandActions\CommandActionsEntryPoint.cs" />
     <Compile Include="Commands\CommandManager.cs" />
-    <Compile Include="CommandActions\CommandActionMap.cs" />
     <Compile Include="Commands\InputToCommand.cs" />
     <Compile Include="Configuration\ApplicationPaths.cs" />
     <Compile Include="Configuration\ConfigurationManager.cs" />

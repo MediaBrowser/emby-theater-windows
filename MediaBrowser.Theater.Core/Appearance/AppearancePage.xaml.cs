@@ -67,7 +67,7 @@ namespace MediaBrowser.Theater.Core.Appearance
 
             SelectSreensaver.Options = new List<SelectListItem> { new SelectListItem { Text = "None", Value = "None" } }.
                                             Union(
-                                                    _screensaverManager.Screensavers.Select(i => new SelectListItem
+                                                    _screensaverManager.ScreensaverFactories.Select(i => new SelectListItem
                                                     {
                                                         Text = i.Name,
                                                         Value = i.Name
@@ -96,8 +96,7 @@ namespace MediaBrowser.Theater.Core.Appearance
 
         private void SelectScreensaver_SelectedItemChanged(object sender, EventArgs e)
         {
-            var screensaverName = SelectSreensaver.SelectedValue;
-            _screensaverManager.CurrentScreensaver = _screensaverManager.Screensavers.FirstOrDefault(i => i.Name == screensaverName);
+            _screensaverManager.CurrentScreensaverName = SelectSreensaver.SelectedValue; ;
         }
 
         async void BtnApply_Click(object sender, RoutedEventArgs e)
@@ -158,7 +157,7 @@ namespace MediaBrowser.Theater.Core.Appearance
             SelectTheme.SelectedValue = themeOption.Value;
 
             var screensaverOption = SelectSreensaver.Options.FirstOrDefault(i => string.Equals(i.Text, userConfig.Screensaver, StringComparison.OrdinalIgnoreCase)) ??
-                SelectSreensaver.Options.FirstOrDefault(i => string.Equals(i.Text, (_screensaverManager.CurrentScreensaver != null) ? _screensaverManager.CurrentScreensaver.Name : string.Empty)) ??
+                SelectSreensaver.Options.FirstOrDefault(i => string.Equals(i.Text, _screensaverManager.CurrentScreensaverName )) ??
                 SelectSreensaver.Options.First();
 
             SelectSreensaver.SelectedValue = screensaverOption.Value;

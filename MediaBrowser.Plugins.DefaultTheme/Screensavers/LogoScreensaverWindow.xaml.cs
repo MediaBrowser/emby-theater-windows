@@ -20,6 +20,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
             _applicationHost = applicationHost;
         }
 
+        /// Gets the name.
+        /// </summary>
+        /// <value>The name.</value>
+        public string Name { get { return "Logo";  } }
+
+
         public IScreensaver GetScreensaver()
         {
             return (IScreensaver)_applicationHost.CreateInstance(typeof(LogoScreensaverWindow));

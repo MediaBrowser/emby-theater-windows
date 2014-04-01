@@ -161,7 +161,7 @@ namespace MediaBrowser.UI
             SessionManager = new SessionManager(NavigationService, ApiClient, Logger, ThemeManager, TheaterConfigurationManager, PlaybackManager);
             RegisterSingleInstance(SessionManager);
 
-            ScreensaverManager = new ScreensaverManager(UserInputManager, PresentationManager, PlaybackManager, SessionManager, ApiClient, ImageManager, LogManager, ApiWebSocket);
+            ScreensaverManager = new ScreensaverManager(UserInputManager, PresentationManager, PlaybackManager, SessionManager, ApiClient, TheaterConfigurationManager, LogManager, ApiWebSocket);
             RegisterSingleInstance(ScreensaverManager);
 
             RegisterSingleInstance(ApiClient);

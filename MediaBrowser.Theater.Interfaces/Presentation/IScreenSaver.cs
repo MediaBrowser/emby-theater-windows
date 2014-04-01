@@ -7,10 +7,11 @@ namespace MediaBrowser.Theater.Interfaces.Presentation
     /// </summary>
     public interface IScreensaver
     {
-        /// <summary>
-        /// Screensaver name
-        /// </summary>
-       new String Name { get; }
+       /// <summary>
+       /// Gets the name.
+       /// </summary>
+       /// <value>The name.</value>
+       string Name { get; }
 
         /// <summary>
         /// close the screen saver

@@ -28,16 +28,16 @@ namespace MediaBrowser.Theater.Interfaces.Presentation
         void ShowScreensaver(bool forceShowScreensaver);
 
         /// <summary>
-        /// Gets the screensavers
+        /// Gets/Set the current screen save factory list
         /// </summary>
-        /// <value>The screen savers.</value>
-        IEnumerable<IScreensaver> Screensavers { get; }
-
+        /// <value>The c current screen save factory list.</value>
+        IEnumerable<IScreensaverFactory> ScreensaverFactories { get;}
+      
         /// <summary>
         /// Gets/Set the current selected screen saver 
         /// </summary>
         /// <value>The current selected screen saver.</value>
-        IScreensaver CurrentScreensaver { get; set; }
+        string CurrentScreensaverName { get; set; }
 
     }
 }

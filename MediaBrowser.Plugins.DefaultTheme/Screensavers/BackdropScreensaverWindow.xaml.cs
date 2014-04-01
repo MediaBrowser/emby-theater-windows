@@ -25,6 +25,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
             _applicationHost = applicationHost;
         }
 
+        public string Name { get { return "Backdrop"; } }
 
         public IScreensaver GetScreensaver()
         {
@@ -55,7 +56,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
             LoadScreensaver();
         }
 
-        protected override string ScreensaverName() { return "Backdrop"; }
+       
 
         private  async void LoadScreensaver()
         {

@@ -6,13 +6,13 @@ using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.UserInput;
+using Microsoft.Win32;
 using System;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
-using Microsoft.Win32;
 
 namespace MediaBrowser.Theater.Implementations.Presentation
 {
@@ -51,8 +51,9 @@ namespace MediaBrowser.Theater.Implementations.Presentation
             _serverEvents.MessageCommand += _serverEvents_MessageCommand;
             _serverEvents.PlayCommand += _serverEvents_PlayCommand;
             _serverEvents.PlaystateCommand += _serverEvents_PlaystateCommand;
-            _serverEvents.SystemCommand += _serverEvents_SystemCommand;
-       
+
+            _serverEvents.GeneralCommand += _serverEvents_GeneralCommand; 
+
             SystemEvents.PowerModeChanged += SystemEvents_PowerModeChanged;
 
             StartTimer();
@@ -111,7 +112,8 @@ namespace MediaBrowser.Theater.Implementations.Presentation
             }
         }
 
-        void _serverEvents_SystemCommand(object sender, SystemCommandEventArgs e)
+
+        void _serverEvents_GeneralCommand(object sender, GeneralCommandEventArgs e)
         {
             _presentationManager.Window.Dispatcher.InvokeAsync(OnRemoteControlCommand, DispatcherPriority.Background);
         }
@@ -260,7 +262,7 @@ namespace MediaBrowser.Theater.Implementations.Presentation
             _serverEvents.MessageCommand -= _serverEvents_MessageCommand;
             _serverEvents.PlayCommand -= _serverEvents_PlayCommand;
             _serverEvents.PlaystateCommand -= _serverEvents_PlaystateCommand;
-            _serverEvents.SystemCommand -= _serverEvents_SystemCommand;
+            _serverEvents.GeneralCommand -= _serverEvents_GeneralCommand; 
 
             SystemEvents.PowerModeChanged -= SystemEvents_PowerModeChanged;
             

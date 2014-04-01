@@ -61,7 +61,7 @@ namespace MediaBrowser.UI.EntryPoints
             socket.UserDeleted += _apiWebSocket_UserDeleted;
             socket.UserUpdated += _apiWebSocket_UserUpdated;
             socket.PlaystateCommand += _apiWebSocket_PlaystateCommand;
-            socket.SystemCommand += socket_SystemCommand;
+            socket.GeneralCommand += socket_GeneralCommand;
             socket.MessageCommand += socket_MessageCommand;
             socket.PlayCommand += _apiWebSocket_PlayCommand;
             socket.Closed += socket_Closed;
@@ -123,38 +123,44 @@ namespace MediaBrowser.UI.EntryPoints
             });
         }
 
-        void socket_SystemCommand(object sender, SystemCommandEventArgs e)
+        void socket_GeneralCommand(object sender, GeneralCommandEventArgs e)
         {
-            switch (e.Command)
+            if (e.KnownCommandType.HasValue)
             {
-                case SystemCommand.GoHome:
-                    _nav.NavigateToHomePage();
-                    break;
-                case SystemCommand.GoToSettings:
-                    _nav.NavigateToSettingsPage();
-                    break;
-                case SystemCommand.Mute:
-                    _playbackManager.Mute();
-                    break;
-                case SystemCommand.Unmute:
-                    _playbackManager.UnMute();
-                    break;
-                case SystemCommand.ToggleMute:
-                    if (_playbackManager.IsMuted)
-                    {
-                        _playbackManager.UnMute();
-                    }
-                    else
-                    {
+                switch (e.KnownCommandType.Value)
+                {
+                    case GeneralCommandType.GoHome:
+                        _nav.NavigateToHomePage();
+                        break;
+                    case GeneralCommandType.GoToSettings:
+                        _nav.NavigateToSettingsPage();
+                        break;
+                    case GeneralCommandType.Mute:
                         _playbackManager.Mute();
-                    }
-                    break;
-                case SystemCommand.VolumeDown:
-                    _playbackManager.VolumeStepDown();
-                    break;
-                case SystemCommand.VolumeUp:
-                    _playbackManager.VolumeStepUp();
-                    break;
+                        break;
+                    case GeneralCommandType.Unmute:
+                        _playbackManager.UnMute();
+                        break;
+                    case GeneralCommandType.ToggleMute:
+                        if (_playbackManager.IsMuted)
+                        {
+                            _playbackManager.UnMute();
+                        }
+                        else
+                        {
+                            _playbackManager.Mute();
+                        }
+                        break;
+                    case GeneralCommandType.VolumeDown:
+                        _playbackManager.VolumeStepDown();
+                        break;
+                    case GeneralCommandType.VolumeUp:
+                        _playbackManager.VolumeStepUp();
+                        break;
+                    default:
+                        _logger.Warn("Unrecognized command: " + e.KnownCommandType.Value);
+                        break;
+                }
             }
         }
 
@@ -332,7 +338,7 @@ namespace MediaBrowser.UI.EntryPoints
                 socket.UserDeleted -= _apiWebSocket_UserDeleted;
                 socket.UserUpdated -= _apiWebSocket_UserUpdated;
                 socket.PlaystateCommand -= _apiWebSocket_PlaystateCommand;
-                socket.SystemCommand -= socket_SystemCommand;
+                socket.GeneralCommand -= socket_GeneralCommand;
                 socket.MessageCommand -= socket_MessageCommand;
                 socket.PlayCommand -= _apiWebSocket_PlayCommand;
                 socket.Closed -= socket_Closed;

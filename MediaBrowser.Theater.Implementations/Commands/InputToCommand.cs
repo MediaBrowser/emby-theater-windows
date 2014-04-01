@@ -225,8 +225,11 @@ namespace MediaBrowser.Theater.Implementations.Commands
             new InputCommandMapping( Key.Space,          Command.PlayPause),
             new InputCommandMapping( Key.S,              Command.Stop,           controlKey:true, shiftKey:true),
             new InputCommandMapping( Key.P,              Command.Pause,          controlKey:true, shiftKey:false),
-            new InputCommandMapping( Key.F,              Command.FastForward,    controlKey:true, shiftKey:true),
-            new InputCommandMapping( Key.B,              Command.Rewind,         controlKey:true, shiftKey:true),
+            new InputCommandMapping( Key.F,              Command.SmallStepForward,    controlKey:true, shiftKey:true),
+            new InputCommandMapping( Key.B,              Command.SmallStepBack,       controlKey:true, shiftKey:true),
+            new InputCommandMapping( Key.F,              Command.FastForward,    controlKey:true, shiftKey:false),
+            new InputCommandMapping( Key.B,              Command.Rewind,         controlKey:true, shiftKey:false),
+
             new InputCommandMapping( Key.F,              Command.SkipNext,       controlKey:true, shiftKey:false),
             new InputCommandMapping( Key.B,              Command.SkipPrevious,   controlKey:true, shiftKey:false),
             new InputCommandMapping( Key.D,              Command.Info,           controlKey:true, shiftKey:false),

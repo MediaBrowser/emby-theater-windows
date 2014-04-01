@@ -12,7 +12,7 @@
         Queue,              // args, queue the args 
         FastForward,        // sequence through 1x, 2x, 4x, 8x, 16, 32x forward
         Rewind,             // sequence through  1x, 2x, 4x, 8x, 16, 32x in reverse
-        PlaySpeedRatio,     // set play speed ratio , double, negative is rewind, positive is foward
+        PlaySpeedRatio,     // set play speed ratio , double, negative is rewind, positive is forward
         NextTrack,          // Next Media Track - chapter for video, track for audio
         PrevisousTrack,     // Previous Meda Track - - chapter for video, track for 
         Left,
@@ -35,11 +35,11 @@
         SkipNext,          // Skip to next chapter in video. If no chapters, then skip to next item in playlist. 
         SkipPrevious,      // Skip to prev chapter in video. If no chapters, then skip to prev item in playlist. 
         Step,              // args - step in seconds, -ve  is step backward, +ve is forwards
-        SmallStepForward,  // 10 sec step foward
-        SmallStepBack,     // 10 sec step foward
-        StepFoward,        // 30 sec step Back
+        SmallStepForward,  // 10 sec step forward
+        SmallStepBack,     // 10 sec step forward
+        StepForward,        // 30 sec step Back
         StepBack,          // 30 sec step Back
-        BigStepFoward,     // 5 Minutes setp fprward
+        BigStepForward,     // 5 Minutes setp fprward
         BigStepBack,       // 5 sec step Back
         FullScreen,        // set fullscreen, if it is full already, no change
         MinimizeScreen,    // Minimize screen

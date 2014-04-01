@@ -1,0 +1,18 @@
+﻿<screensavers:ScreensaverWindowBase x:Class="MediaBrowser.Plugins.DefaultTheme.Screensavers.LogoScreensaverWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:screensavers="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Screensavers"
+        Title="LogoScreensaverWindow" Height="300" Width="300"
+        Style="{StaticResource ModalWindow}">
+    <Canvas ClipToBounds="True" Name="CanMain" Background="Black" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  >
+        <Canvas.LayoutTransform>
+        <ScaleTransform ScaleX="{Binding Path=ContentScale}" ScaleY="{Binding Path=ContentScale}" CenterX="0" CenterY="0" />
+        </Canvas.LayoutTransform>
+        <Grid Name="Tbmarquee" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0 300 0 0">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <TextBlock Style="{StaticResource Heading1TextBlockStyle}" Foreground="White" FontSize="170">MEDIA</TextBlock>
+                <TextBlock Style="{StaticResource Heading1TextBlockStyle}" Foreground="{StaticResource MediaBrowserAccent}" FontSize="170">BROWSER</TextBlock>
+            </StackPanel>
+        </Grid>
+    </Canvas>
+</screensavers:ScreensaverWindowBase>

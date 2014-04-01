@@ -148,12 +148,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="Screensaver\LogoScreensaver.xaml.cs">
-      <DependentUpon>LogoScreensaver.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Screensaver\ScreensaverWindow.xaml.cs">
-      <DependentUpon>ScreensaverWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Settings\InProgressInstallation.xaml.cs">
       <DependentUpon>InProgressInstallation.xaml</DependentUpon>
     </Compile>
@@ -258,14 +252,6 @@
     <Page Include="Resources\Settings.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Screensaver\LogoScreensaver.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Screensaver\ScreensaverWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Settings\InProgressInstallation.xaml">
       <Generator>MSBuild:Compile</Generator>

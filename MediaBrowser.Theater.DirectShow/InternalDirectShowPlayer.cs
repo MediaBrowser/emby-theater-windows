@@ -376,6 +376,17 @@ namespace MediaBrowser.Theater.DirectShow
             }
         }
 
+        public void SetRate(double rate)
+        {
+            lock (_commandLock)
+            {
+                if (_mediaPlayer != null)
+                {
+                    InvokeOnPlayerThread(() => _mediaPlayer.SetRate(rate));
+                }
+            }
+        }
+
         /// <summary>
         /// Occurs when [play state changed].
         /// </summary>

@@ -40,18 +40,34 @@ using MediaBrowser.Theater.Presentation.Playback;
         private readonly IPresentationManager _presenation;
         private readonly IPlaybackManager _playback;
         private readonly INavigationService _navigation;
+        private readonly IScreensaverManager _screensaverManager;
         private readonly ILogger _logger;
         private readonly CommandActionMapping _nullCommandActionMapping;
         private readonly CommandActionMap _globalCommandActionMap;
+        private double _currentPlaybackRate = 1.0; // Todo - move to reportable property of IPlaybackManager
 
-        public DefaultCommandActionMap(IPresentationManager presenation, IPlaybackManager playback, INavigationService navigation, ILogManager logManager)
+        public DefaultCommandActionMap(IPresentationManager presenation, IPlaybackManager playback, INavigationService navigation, IScreensaverManager screensaverManager, ILogManager logManager)
         {
             _presenation = presenation;
             _playback = playback;
+            _screensaverManager = screensaverManager;
             _navigation = navigation;
             _logger = logManager.GetLogger(GetType().Name);
             _globalCommandActionMap = CreateGlobalCommandActionMap();
             _nullCommandActionMapping = new CommandActionMapping(Command.Null, NullAction);
+
+            _playback.PlaybackStarted += Playback_PlaybackStarted;
+            _playback.PlaybackCompleted+=_playback_PlaybackCompleted;
+        }
+
+        private void Playback_PlaybackStarted(object sender, PlaybackStartEventArgs playbackStartEventArgs)
+        {
+            _currentPlaybackRate = 1.0;
+        }
+
+        private void _playback_PlaybackCompleted(object sender, PlaybackStopEventArgs e)
+        {
+            _currentPlaybackRate = 1.0;
         }
 
         private CommandActionMap CreateGlobalCommandActionMap()
@@ -62,10 +78,11 @@ using MediaBrowser.Theater.Presentation.Playback;
                 new CommandActionMapping( Command.Play,            Play),
                 new CommandActionMapping( Command.PlayPause,       PlayPause),
                 new CommandActionMapping( Command.Pause,           Pause),
+                new CommandActionMapping( Command.Stop,            Stop),
                 new CommandActionMapping( Command.TogglePause,     TogglePause),
                 new CommandActionMapping( Command.Queue,           NullAction),
-                new CommandActionMapping( Command.FastForward,     NullAction),
-                new CommandActionMapping( Command.Rewind,          NullAction),
+                new CommandActionMapping( Command.FastForward,     FastForward),
+                new CommandActionMapping( Command.Rewind,          Rewind),
                 new CommandActionMapping( Command.PlaySpeedRatio,  NullAction),
                 new CommandActionMapping( Command.NextTrack,       NextTrackOrChapter),
                 new CommandActionMapping( Command.PrevisousTrack,  PreviousTrackOrChapter),
@@ -84,7 +101,7 @@ using MediaBrowser.Theater.Presentation.Playback;
                 new CommandActionMapping( Command.GotoHome,        GotoHome),
                 new CommandActionMapping( Command.GotoSearch,      GotoSearch),
                 new CommandActionMapping( Command.GotoSettings,    GotoSettings),
-                new CommandActionMapping( Command.GotoPage,        Stop),
+                new CommandActionMapping( Command.GotoPage,        NullAction),
                 new CommandActionMapping( Command.Info,            Info),
                 new CommandActionMapping( Command.SkipNext,        SkipForward,        60),    // skip forward 60  seconds, boxed arguments
                 new CommandActionMapping( Command.SkipPrevious,    SkipBackward,       60),
@@ -107,7 +124,9 @@ using MediaBrowser.Theater.Presentation.Playback;
                 new CommandActionMapping( Command.Subtitles,       NullAction),
                 new CommandActionMapping( Command.NextSubtitle,    NullAction),
                 new CommandActionMapping( Command.AspectRatio,     NullAction),
-                new CommandActionMapping( Command.OSD,             OSD)
+                new CommandActionMapping( Command.OSD,             OSD),
+                new CommandActionMapping( Command.ShowScreensaver, ShowScreensaver),
+
             };
         }
 
@@ -366,6 +385,32 @@ using MediaBrowser.Theater.Presentation.Playback;
             args.Handled = true;
         }
 
+        // todo - fastforwad doubles the forward speed, also need an inc that increments it by 1
+        private void FastForward(Object sender, CommandEventArgs args)
+        {
+            var activePlayer = GetActiveInternalMediaPlayer();
+
+            if (activePlayer != null && activePlayer.CurrentMedia != null && activePlayer.CurrentMedia.IsVideo)
+            {
+                _currentPlaybackRate = _currentPlaybackRate * 2.0;
+                activePlayer.SetRate(_currentPlaybackRate);
+            }
+            args.Handled = true;
+        }
+
+        private void Rewind(Object sender, CommandEventArgs args)
+        {
+            var activePlayer = GetActiveInternalMediaPlayer();
+
+            if (activePlayer != null && activePlayer.CurrentMedia != null && activePlayer.CurrentMedia.IsVideo)
+            {
+                _currentPlaybackRate = _currentPlaybackRate/2.0;
+               activePlayer.SetRate(_currentPlaybackRate);
+            }
+
+            args.Handled = true;
+        }
+
         private void OSD(Object sender, CommandEventArgs args)
         {
             var activePlayer = GetActiveInternalMediaPlayer();
@@ -505,6 +550,11 @@ using MediaBrowser.Theater.Presentation.Playback;
             {
                 FullScreen(sender, args);
             }
+        }
+
+        public void ShowScreensaver(Object sender, CommandEventArgs args)
+        {
+            _screensaverManager.ShowScreensaver(true);
         }
     }
 }

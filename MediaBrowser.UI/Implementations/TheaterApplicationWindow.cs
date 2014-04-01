@@ -6,7 +6,6 @@ using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Core.Loading;
 using MediaBrowser.Theater.Core.Modals;
-using MediaBrowser.Theater.Core.Screensaver;
 using MediaBrowser.Theater.Interfaces;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
@@ -165,6 +164,8 @@ namespace MediaBrowser.UI.Implementations
         /// </summary>
         /// <value>The settings pages.</value>
         public IEnumerable<ISettingsPage> SettingsPages { get; private set; }
+
+       
 
         /// <summary>
         /// Adds the parts.
@@ -340,20 +341,7 @@ namespace MediaBrowser.UI.Implementations
             }
         }
 
-        public bool IsScreenSaverRunning
-        {
-            get { return Application.Current.Windows.OfType<ScreensaverWindow>().Any(); }
-        }
-
-        public void StopScreenSaver()
-        {
-            var win = Application.Current.Windows.OfType<ScreensaverWindow>().FirstOrDefault();
-
-            if (win != null)
-            {
-                win.Close();
-            }
-        }
+       
 
         public IntPtr WindowHandle
         {

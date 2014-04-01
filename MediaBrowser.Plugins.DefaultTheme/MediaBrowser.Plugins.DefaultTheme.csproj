@@ -77,6 +77,12 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\ImageViewerControl.xaml.cs">
+      <DependentUpon>ImageViewerControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ImageViewerPage.xaml.cs">
+      <DependentUpon>ImageViewerPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\ItemInfoFooter.xaml.cs">
       <DependentUpon>ItemInfoFooter.xaml</DependentUpon>
     </Compile>
@@ -143,6 +149,13 @@
     </Compile>
     <Compile Include="Properties\SharedVersion.cs" />
     <Compile Include="DefaultTheme.cs" />
+    <Compile Include="Screensavers\LogoScreensaverWindow.xaml.cs">
+      <DependentUpon>LogoScreensaverWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Screensavers\ScreensaverWindowbase.cs" />
+    <Compile Include="Screensavers\BackdropScreensaverWindow.xaml.cs">
+      <DependentUpon>BackdropScreensaverWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SystemOptionsMenu\SystemOptionsWindow.xaml.cs">
       <DependentUpon>SystemOptionsWindow.xaml</DependentUpon>
     </Compile>
@@ -180,6 +193,14 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Controls\ImageViewerControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\ImageViewerPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Controls\ItemInfoFooter.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -281,6 +302,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Screensavers\LogoScreensaverWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screensavers\BackdropScreensaverWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="SystemOptionsMenu\SystemOptionsWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
@@ -343,6 +372,7 @@
   <ItemGroup>
     <Resource Include="Resources\Images\insertDisc.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

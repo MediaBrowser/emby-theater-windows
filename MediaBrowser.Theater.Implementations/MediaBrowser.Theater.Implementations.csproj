@@ -87,15 +87,14 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CommandActions\CommandActionsEntryPoint.cs" />
     <Compile Include="Commands\CommandManager.cs" />
-    <Compile Include="CommandActions\CommandActionMap.cs" />
     <Compile Include="Commands\InputToCommand.cs" />
     <Compile Include="Configuration\ApplicationPaths.cs" />
     <Compile Include="Configuration\ConfigurationManager.cs" />
     <Compile Include="Playback\PlaybackManager.cs" />
     <Compile Include="Playback\PlaybackProgressReporter.cs" />
     <Compile Include="Presentation\ImageManager.cs" />
+    <Compile Include="Presentation\ScreensaverManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

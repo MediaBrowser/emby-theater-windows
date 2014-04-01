@@ -1,28 +1,26 @@
 ﻿using System.Windows.Input;
 using MediaBrowser.Model.Logging;
-using MediaBrowser.Theater.Implementations.CommandActions;
 using MediaBrowser.Theater.Interfaces.Commands;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
-using MediaBrowser.Theater.Interfaces.UserInput;
 using System;
 using WindowsInput = System.Windows.Input;
 
- namespace MediaBrowser.UI.EntryPoints
+ namespace MediaBrowser.UI.EntryPoints.CommandActions
 {
 
-    public class CommandActionsEntryPoint : IStartupEntryPoint, IDisposable
+    public class CommandActionsEntryPoint :  IStartupEntryPoint, IDisposable
     {
         private readonly ILogger _logger;
         private ICommandManager _commandManager;
         private readonly DefaultCommandActionMap _defaultCommandActionMap;
 
 
-        public CommandActionsEntryPoint(ICommandManager commandManager, IPresentationManager presentationManager, IPlaybackManager playbackManager, INavigationService navigationService, ILogManager logManager)
+        public CommandActionsEntryPoint(ICommandManager commandManager, IPresentationManager presentationManager, IPlaybackManager playbackManager, INavigationService navigationService, IScreensaverManager screensaverManager, ILogManager logManager)
         {
             _commandManager = commandManager;
-            _defaultCommandActionMap = new DefaultCommandActionMap(presentationManager, playbackManager, navigationService, logManager);
+            _defaultCommandActionMap = new DefaultCommandActionMap(presentationManager, playbackManager, navigationService, screensaverManager, logManager);
         
             _logger = logManager.GetLogger(GetType().Name);
         }

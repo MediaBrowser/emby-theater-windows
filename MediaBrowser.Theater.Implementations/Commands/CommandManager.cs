@@ -1,6 +1,5 @@
 ﻿using System.Windows.Input;
 using MediaBrowser.Model.Logging;
-using MediaBrowser.Theater.Implementations.CommandActions;
 using MediaBrowser.Theater.Interfaces.Commands;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
@@ -181,6 +180,7 @@ namespace MediaBrowser.Theater.Implementations.Commands
                     { 
                         var command = _inputCommandMaps.GetMappedCommand(appCommand.Value);
                         _commandReceived.Invoke(null, new CommandEventArgs {Command = command});
+                        handled = true;
                     }
                 }
          

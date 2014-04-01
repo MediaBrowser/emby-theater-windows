@@ -153,8 +153,8 @@
       <DependentUpon>LogoScreensaverWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Screensavers\ScreensaverWindowbase.cs" />
-    <Compile Include="Screensavers\UserScreensaverWindow.xaml.cs">
-      <DependentUpon>UserScreensaverWindow.xaml</DependentUpon>
+    <Compile Include="Screensavers\BackdropScreensaverWindow.xaml.cs">
+      <DependentUpon>BackdropScreensaverWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="SystemOptionsMenu\SystemOptionsWindow.xaml.cs">
       <DependentUpon>SystemOptionsWindow.xaml</DependentUpon>
@@ -306,7 +306,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Screensavers\UserScreensaverWindow.xaml">
+    <Page Include="Screensavers\BackdropScreensaverWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

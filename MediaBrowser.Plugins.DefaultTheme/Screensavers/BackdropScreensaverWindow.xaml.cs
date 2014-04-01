@@ -14,36 +14,34 @@ using System.Windows.Media;
 namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
 {
     /// <summary>
-    /// Screen saver factory to create User Screen saver
+    /// Screen saver factory to create Backdrop Screen saver
     /// </summary>
-    public class UserScreensaverFactory : IScreensaverFactory
+    public class BackdropScreensaverFactory : IScreensaverFactory
     {
         private readonly IApplicationHost _applicationHost;
       
-        public UserScreensaverFactory(IApplicationHost applicationHost)
+        public BackdropScreensaverFactory(IApplicationHost applicationHost)
         {
             _applicationHost = applicationHost;
-            Name = "User Screensaver";
         }
 
-        public string Name { get; private set; }
 
         public IScreensaver GetScreensaver()
         {
-            return (IScreensaver)_applicationHost.CreateInstance(typeof(UserScreensaverWindow));
+            return (IScreensaver)_applicationHost.CreateInstance(typeof(BackdropScreensaverWindow));
         }
     }
    
     /// <summary>
     /// Interaction logic for ScreensaverWindow.xaml
     /// </summary>
-    public partial class UserScreensaverWindow : ScreensaverWindowBase
+    public partial class BackdropScreensaverWindow : ScreensaverWindowBase
     {
         private readonly ISessionManager _session;
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
 
-        public UserScreensaverWindow(ISessionManager session, IApiClient apiClient, IPresentationManager presentationManager, IScreensaverManager screensaverManager, IImageManager imageManager, ILogger logger)
+        public BackdropScreensaverWindow(ISessionManager session, IApiClient apiClient, IPresentationManager presentationManager, IScreensaverManager screensaverManager, IImageManager imageManager, ILogger logger)
             : base(presentationManager, screensaverManager, logger)
         {
             
@@ -57,7 +55,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
             LoadScreensaver();
         }
 
-        private async void LoadScreensaver()
+        protected override string ScreensaverName() { return "Backdrop"; }
+
+        private  async void LoadScreensaver()
         {
             MainGrid.Children.Clear();
 

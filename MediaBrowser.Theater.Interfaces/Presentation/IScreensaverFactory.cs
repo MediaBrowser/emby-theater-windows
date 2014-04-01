@@ -8,7 +8,6 @@ namespace MediaBrowser.Theater.Interfaces.Presentation
 {
     public interface IScreensaverFactory
     {
-        string Name { get; }
         IScreensaver GetScreensaver();
     }
 }

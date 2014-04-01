@@ -8,6 +8,11 @@ namespace MediaBrowser.Theater.Interfaces.Presentation
     public interface IScreensaver
     {
         /// <summary>
+        /// Screensaver name
+        /// </summary>
+       new String Name { get; }
+
+        /// <summary>
         /// close the screen saver
         /// </summary>
         void ShowModal();

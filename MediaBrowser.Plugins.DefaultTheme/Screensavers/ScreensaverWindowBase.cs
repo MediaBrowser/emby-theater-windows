@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Input;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Interfaces.Presentation;
@@ -58,6 +59,14 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
             _logger.Debug("OnMouseMove {0} {1}", pos, _lastMouseMovePoint.Value);
             _screensaverManager.StopScreenSaver(); // re-entrant into clase -  back in to closemodal
         }
+
+        protected virtual string ScreensaverName() { return "xxx"; }
+
+        /// <summary>
+        /// Screensaver name
+        /// </summary>
+        public new String Name { get { return ScreensaverName(); } }
+       
 
         void IScreensaver.ShowModal()
         {

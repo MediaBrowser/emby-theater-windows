@@ -41,7 +41,7 @@ namespace MediaBrowser.Theater.Implementations.Presentation
             _session = session;
             _apiClient = apiClient;
             _imageManager = imageManager;
-            _logger = logManager.GetLogger("ScreensaverManager");
+            _logger = logManager.GetLogger(GetType().Name);
             _serverEvents = serverEvents;
 
             _playback.PlaybackCompleted += _playback_PlaybackCompleted;
@@ -52,7 +52,7 @@ namespace MediaBrowser.Theater.Implementations.Presentation
             _serverEvents.PlayCommand += _serverEvents_PlayCommand;
             _serverEvents.PlaystateCommand += _serverEvents_PlaystateCommand;
             _serverEvents.SystemCommand += _serverEvents_SystemCommand;
-
+       
             SystemEvents.PowerModeChanged += SystemEvents_PowerModeChanged;
 
             StartTimer();
@@ -60,9 +60,37 @@ namespace MediaBrowser.Theater.Implementations.Presentation
 
         public IEnumerable<IScreensaverFactory> ScreensaverFactories { get; private set; }
 
+        private IEnumerable<IScreensaver> _screenSavers;
+        /// <summary>
+        /// Gets the screensavers
+        /// </summary>
+        /// <value>The screen savers.</value>
+        public IEnumerable<IScreensaver> Screensavers
+        {
+            get
+            {
+                if (_screenSavers == null)
+                {
+                    _screenSavers = ScreensaverFactories.Select(i => i.GetScreensaver());
+                 
+                    // set the default screensaver
+                    CurrentScreensaver = (_session.CurrentUser == null) ? Screensavers.FirstOrDefault(s => s.Name == "Logo") : Screensavers.FirstOrDefault(s => s.Name == "Backdrop") ?? Screensavers.FirstOrDefault(s => s.Name == "Logo");
+                }
+
+                return _screenSavers;
+            }
+        }
+
+        /// <summary>
+        /// Gets/Set the current selected screen saver 
+        /// </summary>
+        /// <value>The current selected screen saver.</value>
+        public IScreensaver CurrentScreensaver { get;  set; }
+
         public void AddParts(IEnumerable<IScreensaverFactory> screensaverFactories)
         {
             ScreensaverFactories = screensaverFactories;
+           
         }
 
         public bool ScreensaverIsRunning
@@ -70,6 +98,9 @@ namespace MediaBrowser.Theater.Implementations.Presentation
             get { return Application.Current.Windows.OfType<IScreensaver>().Any(); }
         }
 
+        /// <summary>
+        /// Stop screensaver running (if one is running)
+        /// </summary>
         public void StopScreenSaver()
         {
             var screenSaver = Application.Current.Windows.OfType<IScreensaver>().FirstOrDefault();
@@ -146,7 +177,11 @@ namespace MediaBrowser.Theater.Implementations.Presentation
                 ShowScreensaver(false);
             }
         }
-
+       
+        /// <summary>
+        /// Show  the current selected screen saver
+        /// <param name="forceShowScreensaver">Show the Screensave even regardless of screensave timeout</param>
+        /// </summary>
         public void ShowScreensaver(bool forceShowShowScreensaver)
         {
             var activeMedias = _playback.MediaPlayers
@@ -181,12 +216,12 @@ namespace MediaBrowser.Theater.Implementations.Presentation
                 IScreensaver screenSaver;
                 if (_session.CurrentUser == null)
                 {
-                    screenSaver = ScreensaverFactories.FirstOrDefault(ss => ss.Name.ToLower().Contains("logo")).GetScreensaver();
+                    screenSaver = Screensavers.FirstOrDefault(ss => ss.Name.ToLower().Contains("logo"));
                 }
                 else
                 {
-                    screenSaver = ScreensaverFactories.FirstOrDefault(ss => ! ss.Name.ToLower().Contains("logo")).GetScreensaver();
-                }
+                    screenSaver = CurrentScreensaver;
+                 }
 
                 if (screenSaver!= null)
                 {

@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.ApiClient;
+﻿using System.Collections.Generic;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Net;
 using MediaBrowser.Theater.Interfaces.Configuration;
@@ -27,8 +28,9 @@ namespace MediaBrowser.Theater.Core.Appearance
         private readonly IPresentationManager _presentation;
         private readonly IThemeManager _themeManager;
         private readonly INavigationService _nav;
+        private readonly IScreensaverManager _screensaverManager;
 
-        public AppearancePage(ITheaterConfigurationManager config, ISessionManager session, IImageManager imageManager, IApiClient apiClient, IPresentationManager presentation, IThemeManager themeManager, INavigationService nav)
+        public AppearancePage(ITheaterConfigurationManager config, ISessionManager session, IImageManager imageManager, IApiClient apiClient, IPresentationManager presentation, IThemeManager themeManager, INavigationService nav, IScreensaverManager screensaverManager)
         {
             _config = config;
             _session = session;
@@ -37,6 +39,8 @@ namespace MediaBrowser.Theater.Core.Appearance
             _presentation = presentation;
             _themeManager = themeManager;
             _nav = nav;
+            _screensaverManager = screensaverManager;
+
             InitializeComponent();
         }
 
@@ -59,12 +63,24 @@ namespace MediaBrowser.Theater.Core.Appearance
                 Value = i.Name
 
             }).ToList();
-
             SelectTheme.SelectedItemChanged += SelectTheme_SelectedItemChanged;
+
+            SelectSreensaver.Options = new List<SelectListItem> { new SelectListItem { Text = "None", Value = "None" } }.
+                                            Union(
+                                                    _screensaverManager.Screensavers.Select(i => new SelectListItem
+                                                    {
+                                                        Text = i.Name,
+                                                        Value = i.Name
+
+                                                    })).ToList();
+            SelectSreensaver.SelectedItemChanged += SelectScreensaver_SelectedItemChanged;
+
+           
 
             SetUserImage();
             LoadConfiguration();
         }
+
 
         void SelectTheme_SelectedItemChanged(object sender, EventArgs e)
         {
@@ -76,6 +92,12 @@ namespace MediaBrowser.Theater.Core.Appearance
             {
                 SelectHomePage.SelectedValue = themeInstance.DefaultHomePageName;
             }
+        }
+
+        private void SelectScreensaver_SelectedItemChanged(object sender, EventArgs e)
+        {
+            var screensaverName = SelectSreensaver.SelectedValue;
+            _screensaverManager.CurrentScreensaver = _screensaverManager.Screensavers.FirstOrDefault(i => i.Name == screensaverName);
         }
 
         async void BtnApply_Click(object sender, RoutedEventArgs e)
@@ -135,6 +157,12 @@ namespace MediaBrowser.Theater.Core.Appearance
 
             SelectTheme.SelectedValue = themeOption.Value;
 
+            var screensaverOption = SelectSreensaver.Options.FirstOrDefault(i => string.Equals(i.Text, userConfig.Screensaver, StringComparison.OrdinalIgnoreCase)) ??
+                SelectSreensaver.Options.FirstOrDefault(i => string.Equals(i.Text, (_screensaverManager.CurrentScreensaver != null) ? _screensaverManager.CurrentScreensaver.Name : string.Empty)) ??
+                SelectSreensaver.Options.First();
+
+            SelectSreensaver.SelectedValue = screensaverOption.Value;
+
             ChkShowBackButton.IsChecked = userConfig.ShowBackButton;
         }
 
@@ -144,6 +172,7 @@ namespace MediaBrowser.Theater.Core.Appearance
 
             userConfig.HomePage = SelectHomePage.SelectedValue;
             userConfig.Theme = SelectTheme.SelectedValue;
+            userConfig.Screensaver = SelectSreensaver.SelectedValue;
             userConfig.ShowBackButton = ChkShowBackButton.IsChecked ?? false;
 
             await _config.UpdateUserTheaterConfiguration(_session.CurrentUser.Id, userConfig);

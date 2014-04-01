@@ -18,10 +18,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
         public LogoScreensaverFactory(IApplicationHost applicationHost)
         {
             _applicationHost = applicationHost;
-            Name = "Logo Screensaver";
         }
-
-        public string Name { get; private set; }
 
         public IScreensaver GetScreensaver()
         {
@@ -42,7 +39,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
             Loaded += LogoScreensaver_Loaded;
         }
 
-       
+        protected override string ScreensaverName() { return "Logo"; }
+
         void LogoScreensaver_Loaded(object sender, RoutedEventArgs e)
         {
             var doubleAnimation = new DoubleAnimation();

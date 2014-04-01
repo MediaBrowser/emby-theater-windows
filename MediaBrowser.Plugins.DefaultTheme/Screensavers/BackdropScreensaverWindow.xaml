@@ -1,8 +1,8 @@
-﻿<screensavers:ScreensaverWindowBase x:Class="MediaBrowser.Plugins.DefaultTheme.Screensavers.UserScreensaverWindow"
+﻿<screensavers:ScreensaverWindowBase x:Class="MediaBrowser.Plugins.DefaultTheme.Screensavers.BackdropScreensaverWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:screensavers="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Screensavers"
-        Title="UserScreensaverWindow" Height="300" Width="300"
+        Title="BackdropScreensaverWindow" Height="300" Width="300"
         Style="{StaticResource ModalWindow}">
     <Grid Background="Black" x:Name="MainGrid">
 

@@ -58,7 +58,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
             _logger.Debug("OnMouseMove {0} {1}", pos, _lastMouseMovePoint.Value);
             _screensaverManager.StopScreenSaver(); // re-entrant into clase -  back in to closemodal
         }
-        
+
         void IScreensaver.ShowModal()
         {
             ShowModal(_presentationManager.Window);

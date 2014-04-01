@@ -149,10 +149,10 @@
     </Compile>
     <Compile Include="Properties\SharedVersion.cs" />
     <Compile Include="DefaultTheme.cs" />
-    <Compile Include="Screensavers\ScreensaverWindowBase.cs" />
     <Compile Include="Screensavers\LogoScreensaverWindow.xaml.cs">
       <DependentUpon>LogoScreensaverWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Screensavers\ScreensaverWindowbase.cs" />
     <Compile Include="Screensavers\UserScreensaverWindow.xaml.cs">
       <DependentUpon>UserScreensaverWindow.xaml</DependentUpon>
     </Compile>
@@ -303,8 +303,8 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Screensavers\LogoScreensaverWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Screensavers\UserScreensaverWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

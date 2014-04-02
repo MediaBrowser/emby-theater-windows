@@ -24,8 +24,9 @@ namespace MediaBrowser.Theater.Interfaces.Presentation
         /// <summary>
         /// Show  the current selected screen saver
         /// <param name="forceShowScreensaver">Show the Screensave even regardless of screensave timeout</param>
+        /// <param name="overRideScreenSaverName">override the default selected screensaver</param>
         /// </summary>
-        void ShowScreensaver(bool forceShowScreensaver);
+        void ShowScreensaver(bool forceShowScreensaver, string overRideScreenSaverName = null);
 
         /// <summary>
         /// Gets/Set the current screen save factory list
@@ -34,10 +35,9 @@ namespace MediaBrowser.Theater.Interfaces.Presentation
         IEnumerable<IScreensaverFactory> ScreensaverFactories { get;}
       
         /// <summary>
-        /// Gets/Set the current selected screen saver 
+        /// Gets/Set the current selected screen saver name
         /// </summary>
         /// <value>The current selected screen saver.</value>
         string CurrentScreensaverName { get; set; }
-
     }
 }

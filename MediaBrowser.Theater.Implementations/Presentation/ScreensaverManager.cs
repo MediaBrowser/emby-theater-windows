@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Windows.Media;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Model.ApiClient;
@@ -21,7 +22,7 @@ namespace MediaBrowser.Theater.Implementations.Presentation
 {
     public class ScreensaverManager : IScreensaverManager, IDisposable
     {
-        private const int ScreensaverIdleTimeoutSecs = 300; // timeout if we have been idle for 5 minutes - use 15 for debug
+        private const int ScreensaverIdleTimeoutSecs = 300; // timeout if we have been idle for 5 minutes - use the screen saver use 15 for debug
         private const int ScreensaverStartCheckMSec = 30000; // check idle timeout every 30 seconnds - use 1000 for debug
 
         private readonly IUserInputManager _userInput;
@@ -57,11 +58,9 @@ namespace MediaBrowser.Theater.Implementations.Presentation
             _serverEvents.MessageCommand += _serverEvents_MessageCommand;
             _serverEvents.PlayCommand += _serverEvents_PlayCommand;
             _serverEvents.PlaystateCommand += _serverEvents_PlaystateCommand;
-
             _serverEvents.GeneralCommand += _serverEvents_GeneralCommand; 
 
             SystemEvents.PowerModeChanged += SystemEvents_PowerModeChanged;
-          
 
             StartTimer();
         }
@@ -191,7 +190,7 @@ namespace MediaBrowser.Theater.Implementations.Presentation
         /// Show  the current selected screen saver
         /// <param name="forceShowShowScreensaver">Show the Screensave even regardless of screensave timeout</param>
         /// </summary>
-        public void ShowScreensaver(bool forceShowShowScreensaver)
+        public void ShowScreensaver(bool forceShowShowScreensaver, string overRideScreenSaverName = null)
         {
             var activeMedias = _playback.MediaPlayers
                 .Where(i => i.PlayState == PlayState.Playing)
@@ -205,10 +204,17 @@ namespace MediaBrowser.Theater.Implementations.Presentation
                 return;
             }
 
-            ShowScreensaver();
+            ShowScreensaver(overRideScreenSaverName);
         }
 
-        private void ShowScreensaver()
+        private IScreensaverFactory GetSelectedScreensaverFactory(string overRideScreenSaverName)
+        {
+            var screensaverName = _session.CurrentUser == null ? "Logo" : overRideScreenSaverName ?? CurrentScreensaverName;
+
+            return ScreensaverFactories.FirstOrDefault(i => string.Equals(i.Name, screensaverName));
+        }
+
+        private void ShowScreensaver(string overRideScreenSaverName)
         {
             _presentationManager.Window.Dispatcher.Invoke(() =>
             {
@@ -220,20 +226,26 @@ namespace MediaBrowser.Theater.Implementations.Presentation
                 }
 
                 StopTimer();
-
-                _logger.Debug("Displaying screen saver");
-                var screenSaverFactory = ScreensaverFactories.FirstOrDefault(i => string.Equals(i.Name, _session.CurrentUser == null ? "Logo" : CurrentScreensaverName));
-                if (screenSaverFactory != null)
+                try
                 {
-                    var screensaver = screenSaverFactory.GetScreensaver();
-
-                    if (screensaver != null)
+                    var screensaverFactory = GetSelectedScreensaverFactory(overRideScreenSaverName);
+                    if (screensaverFactory != null)
                     {
+                        var screensaver = screensaverFactory.GetScreensaver();
+                        Debug.Assert(screensaver != null);
+                        _logger.Debug("Show screen saver {0}", screensaverFactory.Name);
                         screensaver.ShowModal();
                     }
+                    else
+                    {
+                        _logger.Debug("Show screen saver - skip, none selected");
+                    }
                 }
-
-                StartTimer();
+                finally 
+                {
+                    StartTimer();
+                }
+                
             });
         }
 

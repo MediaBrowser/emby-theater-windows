@@ -1,4 +1,6 @@
-﻿using MediaBrowser.Common.Configuration;
+﻿using System.Diagnostics;
+using System.Windows.Documents;
+using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Extensions;
 using MediaBrowser.Common.IO;
 using MediaBrowser.Model.ApiClient;
@@ -144,7 +146,12 @@ namespace MediaBrowser.Theater.Implementations.Presentation
 
                     using (var fileStream = new FileStream(cachePath, FileMode.Create, FileAccess.Write, FileShare.Read, StreamDefaults.DefaultFileStreamBufferSize, true))
                     {
+                        Debug.WriteLine("Start streaming {0}", url);
+                        var d1 = DateTime.Now;
                         await httpStream.CopyToAsync(fileStream).ConfigureAwait(false);
+                        var d2 = DateTime.Now; 
+                        TimeSpan ts = d2 - d1;
+                        Debug.WriteLine("Copyto Async = {0}", (int)ts.TotalMilliseconds);
                     }
 
                     return GetCachedBitmapImage(cachePath);

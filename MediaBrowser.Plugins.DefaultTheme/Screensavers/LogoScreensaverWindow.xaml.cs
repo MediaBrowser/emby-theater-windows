@@ -45,8 +45,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
             Loaded += LogoScreensaver_Loaded;
         }
 
-        protected override string ScreensaverName() { return "Logo"; }
-
         void LogoScreensaver_Loaded(object sender, RoutedEventArgs e)
         {
             var doubleAnimation = new DoubleAnimation();

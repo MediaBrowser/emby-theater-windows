@@ -14,35 +14,35 @@ using System.Windows.Media;
 namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
 {
     /// <summary>
-    /// Screen saver factory to create Backdrop Screen saver
+    /// Screen saver factory to create Photo Screen saver
     /// </summary>
-    public class BackdropScreensaverFactory : IScreensaverFactory
+    public class PhotoScreensaverFactory : IScreensaverFactory
     {
         private readonly IApplicationHost _applicationHost;
       
-        public BackdropScreensaverFactory(IApplicationHost applicationHost)
+        public PhotoScreensaverFactory(IApplicationHost applicationHost)
         {
             _applicationHost = applicationHost;
         }
 
-        public string Name { get { return "Backdrop"; } }
+        public string Name { get { return "Photo"; } }
 
         public IScreensaver GetScreensaver()
         {
-            return (IScreensaver)_applicationHost.CreateInstance(typeof(BackdropScreensaverWindow));
+            return (IScreensaver)_applicationHost.CreateInstance(typeof(PhotoScreensaverWindow));
         }
     }
    
     /// <summary>
     /// Interaction logic for ScreensaverWindow.xaml
     /// </summary>
-    public partial class BackdropScreensaverWindow : ScreensaverWindowBase
+    public partial class PhotoScreensaverWindow : ScreensaverWindowBase
     {
         private readonly ISessionManager _session;
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
 
-        public BackdropScreensaverWindow(ISessionManager session, IApiClient apiClient, IPresentationManager presentationManager, IScreensaverManager screensaverManager, IImageManager imageManager, ILogger logger)
+        public PhotoScreensaverWindow(ISessionManager session, IApiClient apiClient, IPresentationManager presentationManager, IScreensaverManager screensaverManager, IImageManager imageManager, ILogger logger)
             : base(presentationManager, screensaverManager, logger)
         {
             
@@ -61,28 +61,34 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
             MainGrid.Children.Clear();
 
            
-            var items = await _apiClient.GetItemsAsync(new ItemQuery
-            {
-                UserId = _session.CurrentUser.Id,
-                ImageTypes = new[] { ImageType.Backdrop },
-                IncludeItemTypes = new[] { "Movie", "Boxset", "Trailer", "Game", "Series", "MusicArtist" },
-                Limit = 1000,
-                SortBy = new[] { ItemSortBy.Random },
-                Recursive = true
-            });
+           var items = await _apiClient.GetItemsAsync(new ItemQuery
+           {
+               UserId = _session.CurrentUser.Id,
+               ImageTypes = new[] { ImageType.Primary },
+               IncludeItemTypes = new[] { "Photo" },
+               Limit = 100,
+               SortBy = new[] { ItemSortBy.Random },
+               Recursive = true,
+           });
 
-            if (items.Items.Length == 0)
+           if (items.Items.Length == 0)
+           {
+               _screensaverManager.ShowScreensaver(true, "Logo");
+               return;
+           }
+
+            foreach (var i in items.Items)
             {
-                _screensaverManager.ShowScreensaver(true, "Logo");
-                return;
+                var x = 
             }
+
 
             var images = items.Items.Select(i => new ImageViewerImage
             {
                 Caption = i.Name,
                 Url = _apiClient.GetImageUrl(i, new ImageOptions
                 {
-                    ImageType = ImageType.Backdrop
+                    ImageType = ImageType.Primary
                 })
             });
 

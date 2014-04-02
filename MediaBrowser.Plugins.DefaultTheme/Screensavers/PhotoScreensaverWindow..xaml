@@ -1,0 +1,13 @@
+﻿<screensavers:ScreensaverWindowBase x:Class="MediaBrowser.Plugins.DefaultTheme.Screensavers.PhotoScreensaverWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:screensavers="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Screensavers"
+        Title="BackdropScreensaverWindow" Height="300" Width="300"
+        Style="{StaticResource ModalWindow}">
+    <Grid Background="Black" x:Name="MainGrid">
+
+        <Grid.LayoutTransform>
+            <ScaleTransform ScaleX="{Binding Path=ContentScale}" ScaleY="{Binding Path=ContentScale}" CenterX="0" CenterY="0" />
+        </Grid.LayoutTransform>
+    </Grid>
+</screensavers:ScreensaverWindowBase>

@@ -173,13 +173,23 @@ namespace MediaBrowser.Plugins.DefaultTheme
             {
                 config.CustomItemQuery = (vm, displayPreferences) =>
                 {
-                    if (item.IsType("season") && item.IndexNumber.HasValue)
+                    if (item.IsType("series"))
+                    {
+                        return _apiClient.GetSeasonsAsync(new SeasonQuery
+                        {
+                            UserId = _sessionManager.CurrentUser.Id,
+                            SeriesId = item.SeriesId,
+                            Fields = FolderPage.QueryFields
+                        });
+                    }
+
+                    if (item.IsType("season"))
                     {
                         return _apiClient.GetEpisodesAsync(new EpisodeQuery
                         {
                             UserId = _sessionManager.CurrentUser.Id,
                             SeriesId = item.SeriesId,
-                            SeasonNumber = item.IndexNumber.Value,
+                            SeasonId = item.Id,
                             Fields = FolderPage.QueryFields
                         });
                     }
@@ -198,19 +208,6 @@ namespace MediaBrowser.Plugins.DefaultTheme
                     {
                         query.SortBy = new[] {ItemSortBy.SortName};
                         query.SortOrder = displayPreferences.SortOrder;
-                    }
-
-                    if (item.IsType("series") && item.IsType("season"))
-                    {
-                        var userConfig = _sessionManager.CurrentUser.Configuration;
-                        if (!userConfig.DisplayMissingEpisodes)
-                        {
-                            query.IsMissing = false;
-                        }
-                        if (!userConfig.DisplayUnairedEpisodes)
-                        {
-                            query.IsVirtualUnaired = false;
-                        }
                     }
 
                     return _apiClient.GetItemsAsync(query);

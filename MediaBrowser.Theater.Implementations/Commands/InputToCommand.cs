@@ -195,7 +195,7 @@ namespace MediaBrowser.Theater.Implementations.Commands
             new InputCommandMapping( Key.D8,             Command.Info,  controlKey:false, shiftKey:true), // "*"
          
             new InputCommandMapping( Key.X,              Command.Stop),
-            new InputCommandMapping( Key.OemPeriod,      Command.BigStepFoward),
+            new InputCommandMapping( Key.OemPeriod,      Command.BigStepForward),
             new InputCommandMapping( Key.OemComma,       Command.BigStepBack),
             //new CommandMap( Key.Tab ,           Command.ToggleFullScreen),
             new InputCommandMapping( Key.OemMinus,       Command.VolumeDown),
@@ -221,22 +221,22 @@ namespace MediaBrowser.Theater.Implementations.Commands
             new InputCommandMapping( Key.MediaStop,      Command.Stop),
             new InputCommandMapping( Key.MediaPlayPause, Command.PlayPause),
             // MS Media Center keyboard shortcuts sent by MCE remote -  http://msdn.microsoft.com/en-us/library/bb189249.aspx //
-            new InputCommandMapping( Key.P,              Command.Play,           controlKey:true, shiftKey:true),
+            new InputCommandMapping( Key.P,              Command.Play,              controlKey:true, shiftKey:true),
             new InputCommandMapping( Key.Space,          Command.PlayPause),
-            new InputCommandMapping( Key.S,              Command.Stop,           controlKey:true, shiftKey:true),
-            new InputCommandMapping( Key.P,              Command.Pause,          controlKey:true, shiftKey:false),
-            new InputCommandMapping( Key.F,              Command.SmallStepForward,    controlKey:true, shiftKey:true),
-            new InputCommandMapping( Key.B,              Command.SmallStepBack,       controlKey:true, shiftKey:true),
-            new InputCommandMapping( Key.F,              Command.FastForward,    controlKey:true, shiftKey:false),
-            new InputCommandMapping( Key.B,              Command.Rewind,         controlKey:true, shiftKey:false),
+            new InputCommandMapping( Key.S,              Command.Stop,              controlKey:true, shiftKey:true),
+            new InputCommandMapping( Key.P,              Command.Pause,             controlKey:true, shiftKey:false),
+            new InputCommandMapping( Key.F,              Command.SmallStepForward,  controlKey:true, shiftKey:true),
+            new InputCommandMapping( Key.B,              Command.SmallStepBack,     controlKey:true, shiftKey:true),
+            new InputCommandMapping( Key.Right,          Command.FastForward,       controlKey:true, shiftKey:false),
+            new InputCommandMapping( Key.Left,           Command.Rewind,            controlKey:true, shiftKey:false),
 
-            new InputCommandMapping( Key.F,              Command.SkipNext,       controlKey:true, shiftKey:false),
-            new InputCommandMapping( Key.B,              Command.SkipPrevious,   controlKey:true, shiftKey:false),
-            new InputCommandMapping( Key.D,              Command.Info,           controlKey:true, shiftKey:false),
+            new InputCommandMapping( Key.F,              Command.StepForward,       controlKey:true, shiftKey:false),
+            new InputCommandMapping( Key.B,              Command.StepBack,          controlKey:true, shiftKey:false),
+            new InputCommandMapping( Key.D,              Command.Info,              controlKey:true, shiftKey:false),
             new InputCommandMapping( Key.F10,            Command.VolumeUp),
             new InputCommandMapping( Key.F9,             Command.VolumeDown),
             new InputCommandMapping( Key.F8,             Command.VolumeMute),
-            new InputCommandMapping( Key.G,              Command.OSD,           controlKey:true, shiftKey:false),
+            new InputCommandMapping( Key.G,              Command.OSD,               controlKey:true, shiftKey:false),
 
             // APP_COMMANDS
             new InputCommandMapping( AppCommand.APPCOMMAND_INFO,                 Command.Info),

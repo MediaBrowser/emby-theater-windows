@@ -110,6 +110,8 @@ namespace MediaBrowser.Theater.Implementations.Presentation
         /// </summary>
         public void StopScreenSaver()
         {
+            return;
+
             var screenSaver = Application.Current.Windows.OfType<IScreensaver>().FirstOrDefault();
 
             if (screenSaver != null)

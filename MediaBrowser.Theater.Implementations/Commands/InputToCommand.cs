@@ -175,12 +175,10 @@ namespace MediaBrowser.Theater.Implementations.Commands
         private  readonly InputCommandMap _defaultInputCommandMap = new InputCommandMap
         {
             new InputCommandMapping( Key.P,              Command.Play),
-            new InputCommandMapping( Key.Play,           Command.Play),
+           
             new InputCommandMapping( Key.F,              Command.FastForward),
             new InputCommandMapping( Key.Q,              Command.Queue),
             new InputCommandMapping( Key.R,              Command.Rewind),
-            new InputCommandMapping( Key.MediaNextTrack,     Command.NextTrack),
-            new InputCommandMapping( Key.MediaPreviousTrack, Command.PrevisousTrack),
             new InputCommandMapping( Key.Left,           Command.Left),
             new InputCommandMapping( Key.Right,          Command.Right),
             new InputCommandMapping( Key.Up,             Command.Up),
@@ -197,7 +195,6 @@ namespace MediaBrowser.Theater.Implementations.Commands
             new InputCommandMapping( Key.X,              Command.Stop),
             new InputCommandMapping( Key.OemPeriod,      Command.BigStepForward),
             new InputCommandMapping( Key.OemComma,       Command.BigStepBack),
-            //new CommandMap( Key.Tab ,           Command.ToggleFullScreen),
             new InputCommandMapping( Key.OemMinus,       Command.VolumeDown),
             new InputCommandMapping( Key.OemPlus,        Command.VolumeUp),
             new InputCommandMapping( Key.Subtract,       Command.VolumeDown),
@@ -207,6 +204,9 @@ namespace MediaBrowser.Theater.Implementations.Commands
             new InputCommandMapping( Key.Home,           Command.FirstPage),
             new InputCommandMapping( Key.End,            Command.LastPage),
             // Multi Media Keys
+            new InputCommandMapping( Key.Play,              Command.Play),
+            new InputCommandMapping( Key.MediaNextTrack,     Command.NextTrack),
+            new InputCommandMapping( Key.MediaPreviousTrack, Command.PrevisousTrack),
             new InputCommandMapping( Key.BrowserBack,    Command.Back),
             new InputCommandMapping( Key.BrowserForward, Command.Forward),
             new InputCommandMapping( Key.BrowserRefresh, Command.Null),
@@ -250,8 +250,8 @@ namespace MediaBrowser.Theater.Implementations.Commands
             new InputCommandMapping( AppCommand.APPCOMMAND_MEDIA_FAST_FORWARD,   Command.SmallStepForward),
             new InputCommandMapping( AppCommand.APPCOMMAND_MEDIA_FAST_FORWARD_2, Command.SmallStepForward),
             new InputCommandMapping( AppCommand.APPCOMMAND_CLOSE,                Command.Close),
-            new InputCommandMapping( AppCommand.APPCOMMAND_MEDIA_PLAY,           Command.PlayPause),        
-            new InputCommandMapping( AppCommand.APPCOMMAND_MEDIA_PLAY_2,         Command.PlayPause),  
+            new InputCommandMapping( AppCommand.APPCOMMAND_MEDIA_PLAY,           Command.Play),        
+            new InputCommandMapping( AppCommand.APPCOMMAND_MEDIA_PLAY_2,         Command.Play),  
             new InputCommandMapping( AppCommand.APPCOMMAND_MEDIA_PAUSE,          Command.PlayPause),        
             new InputCommandMapping( AppCommand.APPCOMMAND_MEDIA_PAUSE_2,        Command.PlayPause),  
             new InputCommandMapping( AppCommand.APPCOMMAND_FIND,                 Command.GotoSearch),        

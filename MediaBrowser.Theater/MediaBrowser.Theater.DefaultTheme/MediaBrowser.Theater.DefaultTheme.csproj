@@ -177,6 +177,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="ItemDetails\Views\RecommendationsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ItemList\Views\ItemListView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -423,11 +427,15 @@
     <Compile Include="ItemDetails\ItemDetailsContext.cs" />
     <Compile Include="ItemDetails\ViewModels\ItemDetailsViewModel.cs" />
     <Compile Include="ItemDetails\ViewModels\ItemOverviewViewModel.cs" />
+    <Compile Include="ItemDetails\ViewModels\RecommendationsViewModel.cs" />
     <Compile Include="ItemDetails\Views\ItemDetailsView.xaml.cs">
       <DependentUpon>ItemDetailsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="ItemDetails\Views\ItemOverviewView.xaml.cs">
       <DependentUpon>ItemOverviewView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ItemDetails\Views\RecommendationsView.xaml.cs">
+      <DependentUpon>RecommendationsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="ItemList\ItemListContext.cs" />
     <Compile Include="ItemList\ItemListPath.cs" />

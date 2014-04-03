@@ -37,8 +37,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
             Task<TvView> tvView = _apiClient.GetTvView(_sessionManager.CurrentUser.Id, cancellationSource.Token);
 
             yield return new TvSpotlightViewModel(tvView, _imageManager, _navigator, _apiClient, _serverEvents, /*_playbackManager,*/ _sessionManager, _logManager);
-            yield return new ResumeEpisodesViewModel(tvView, _apiClient, _imageManager, _serverEvents, _navigator);
-            yield return new LatestEpisodesViewModel(tvView, _apiClient, _imageManager, _serverEvents, _navigator);
+            yield return new ResumeEpisodesViewModel(tvView, _apiClient, _imageManager, _serverEvents, _navigator, _sessionManager);
+            yield return new LatestEpisodesViewModel(tvView, _apiClient, _imageManager, _serverEvents, _navigator, _sessionManager);
         }
     }
 }

@@ -79,7 +79,7 @@
 
         <controls:ExtendedContentControl Grid.Row="2" Margin="50" Content="{Binding SelectedItemDetails}" Visibility="{Binding HasSelectedItemDetails, Converter={StaticResource BooleanToVisibility}}" HorizontalAlignment="Center" VerticalAlignment="Stretch">
             <controls:ExtendedContentControl.ContentTemplate>
-                <DataTemplate DataType="{x:Type viewModels1:ItemInfoDetailsViewModel}">
+                <DataTemplate DataType="{x:Type viewModels1:ItemInfoViewModel}">
                     <views:ItemFooterView/>
                 </DataTemplate>
             </controls:ExtendedContentControl.ContentTemplate>

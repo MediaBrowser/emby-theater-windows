@@ -47,6 +47,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
                 }
             };
 
+            PreferredImageTypes = new ImageType[] { ImageType.Primary };
             _imageInvalid = true;
         }
 

@@ -10,7 +10,7 @@
              lex:ResxLocalizationProvider.DefaultAssembly="MediaBrowser.Theater.DefaultTheme"
              lex:ResxLocalizationProvider.DefaultDictionary="Strings"
              mc:Ignorable="d"
-             d:DataContext="{d:DesignInstance viewModels:ItemInfoDetailsViewModel}"
+             d:DataContext="{d:DesignInstance viewModels:ItemInfoViewModel}"
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
         <Grid.RowDefinitions>

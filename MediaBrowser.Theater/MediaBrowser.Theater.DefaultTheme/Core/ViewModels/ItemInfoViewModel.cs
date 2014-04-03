@@ -9,13 +9,13 @@ using MediaBrowser.Theater.Presentation.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
 {
-    public class ItemInfoDetailsViewModel
+    public class ItemInfoViewModel
         : BaseViewModel
     {
         private readonly BaseItemDto _item;
         private Func<BaseItemDto, string> _displayNameGenerator;
 
-        public ItemInfoDetailsViewModel(BaseItemDto item)
+        public ItemInfoViewModel(BaseItemDto item)
         {
             if (item == null) {
                 throw new ArgumentNullException("item");
@@ -166,7 +166,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
 
         public string MediaType
         {
-            get { return _item.MediaType; }
+            get { return _item != null ? _item.MediaType : null; }
         }
 
         public string Genres
@@ -200,13 +200,15 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
                     formatParameters.Add(_item.AirTime); //todo convert series air time to localized time
                 }
 
-                StudioDto studio = _item.Studios.FirstOrDefault();
-                if (studio != null) {
-                    formatStringKey += "Network";
-                    formatParameters.Add(studio.Name);
+                if (_item.Studios != null) {
+                    StudioDto studio = _item.Studios.FirstOrDefault();
+                    if (studio != null) {
+                        formatStringKey += "Network";
+                        formatParameters.Add(studio.Name);
+                    }
                 }
 
-                return formatStringKey.LocalizeFormat(formatParameters);
+                return formatStringKey.LocalizeFormat(formatParameters.ToArray());
             }
         }
 

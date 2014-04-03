@@ -7,6 +7,7 @@ using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Theater.Api.Navigation;
+using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
 using MediaBrowser.Theater.Presentation;
@@ -24,16 +25,18 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
         private readonly INavigator _navigator;
+        private readonly ISessionManager _sessionManager;
         private readonly IServerEvents _serverEvents;
 
         private bool _isVisible;
 
-        public LatestTrailersViewModel(Task<MoviesView> moviesViewTask, IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator)
+        public LatestTrailersViewModel(Task<MoviesView> moviesViewTask, IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator, ISessionManager sessionManager)
         {
             _apiClient = apiClient;
             _imageManager = imageManager;
             _serverEvents = serverEvents;
             _navigator = navigator;
+            _sessionManager = sessionManager;
 
             Trailers = new RangeObservableCollection<ItemTileViewModel>();
             for (int i = 0; i < 8; i++) {

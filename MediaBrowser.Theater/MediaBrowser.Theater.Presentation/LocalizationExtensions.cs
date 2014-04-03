@@ -23,6 +23,12 @@ namespace MediaBrowser.Theater.Presentation
             return string.Format(localized, arguments);
         }
 
+        public static string LocalizeFormat(this string key, IEnumerable<object> arguments)
+        {
+            var localized = key.Localize();
+            return string.Format(localized, arguments);
+        }
+
         public static string Localize(this DayOfWeek day, CultureInfo culture = null)
         {
             return (culture ?? CultureInfo.CurrentUICulture).DateTimeFormat.DayNames[(int) day];

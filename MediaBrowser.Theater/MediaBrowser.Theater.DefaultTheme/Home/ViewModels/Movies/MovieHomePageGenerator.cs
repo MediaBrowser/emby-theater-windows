@@ -38,8 +38,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
             Task<MoviesView> movieView = _apiClient.GetMovieView(_sessionManager.CurrentUser.Id, cancellationSource.Token);
 
             yield return new MovieSpotlightViewModel(movieView, _imageManager, _navigator, _apiClient, _serverEvents, _sessionManager, _logManager);
-            yield return new LatestMoviesViewModel(movieView, _apiClient, _imageManager, _serverEvents, _navigator);
-            yield return new LatestTrailersViewModel(movieView, _apiClient, _imageManager, _serverEvents, _navigator);
+            yield return new LatestMoviesViewModel(movieView, _apiClient, _imageManager, _serverEvents, _navigator, _sessionManager);
+            yield return new LatestTrailersViewModel(movieView, _apiClient, _imageManager, _serverEvents, _navigator, _sessionManager);
         }
     }
 }

@@ -8,6 +8,7 @@ using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Home;
+using MediaBrowser.Theater.DefaultTheme.ItemDetails;
 using MediaBrowser.Theater.DefaultTheme.ItemList;
 using MediaBrowser.Theater.DefaultTheme.Login;
 using MediaBrowser.Theater.DefaultTheme.SideMenu;
@@ -38,6 +39,13 @@ namespace MediaBrowser.Theater.DefaultTheme.Core
             Binder.Bind<ItemListPath>(async path => {
                 var context = appHost.CreateInstance(typeof (ItemListContext)) as ItemListContext;
                 context.Parameters = path.Parameter;
+
+                return context;
+            });
+
+            Binder.Bind<ItemPath>(async path => {
+                var context = appHost.CreateInstance(typeof (ItemDetailsContext)) as ItemDetailsContext;
+                context.Item = path.Parameter;
 
                 return context;
             });

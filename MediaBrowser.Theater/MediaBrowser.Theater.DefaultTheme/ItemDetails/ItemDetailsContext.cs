@@ -7,6 +7,7 @@ using MediaBrowser.Common;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Theater.Api.Navigation;
+using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels;
 using MediaBrowser.Theater.DefaultTheme.ItemList;
@@ -21,12 +22,13 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails
         private readonly IImageManager _imageManager;
         private readonly INavigator _navigator;
         private readonly IPresenter _presenter;
+        private readonly ISessionManager _sessionManager;
         private readonly IServerEvents _serverEvents;
         private readonly IEnumerable<IItemDetailSectionGenerator> _generators;
 
         private ItemDetailsViewModel _viewModel;
 
-        public ItemDetailsContext(IApplicationHost appHost, IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator, IPresenter presenter)
+        public ItemDetailsContext(IApplicationHost appHost, IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator, IPresenter presenter, ISessionManager sessionManager)
             : base(appHost)
         {
             _apiClient = apiClient;
@@ -34,6 +36,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails
             _serverEvents = serverEvents;
             _navigator = navigator;
             _presenter = presenter;
+            _sessionManager = sessionManager;
             _generators = appHost.GetExports<IItemDetailSectionGenerator>();
         }
 
@@ -42,11 +45,13 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails
         public override async Task Activate()
         {
             if (_viewModel == null || !_viewModel.IsActive) {
-                var sections = _generators.Where(g => g.HasSection(Item))
-                                          .Select(g => g.GetSection(Item))
+                var item = await _apiClient.GetItemAsync(Item.Id, _sessionManager.CurrentUser.Id);
+
+                var sections = _generators.Where(g => g.HasSection(item))
+                                          .Select(g => g.GetSection(item))
                                           .OrderBy(s => s.SortOrder);
 
-                _viewModel = new ItemDetailsViewModel(Item, sections);
+                _viewModel = new ItemDetailsViewModel(item, sections);
             }
 
             await _presenter.ShowPage(_viewModel);

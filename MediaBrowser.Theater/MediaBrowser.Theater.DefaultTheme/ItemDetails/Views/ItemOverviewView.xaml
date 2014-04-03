@@ -1,0 +1,55 @@
+﻿<UserControl x:Class="MediaBrowser.Theater.DefaultTheme.ItemDetails.Views.ItemOverviewView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
+             xmlns:viewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance viewModels:ItemOverviewViewModel}"
+             d:DesignHeight="300" d:DesignWidth="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        
+        <controls:ExtendedContentControl Grid.Column="0" Content="{Binding Artwork}"/>
+
+        <Grid Grid.Column="1" Background="{StaticResource BackgroundBrush2}" Margin="20,0,0,0" Width="600" Height="{Binding Size.Height}">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            
+            <controls:ExtendedContentControl Content="{Binding Info}" Margin="10"/>
+            
+            <StackPanel Grid.Row="1" Margin="10,5,10,5">
+                <Button HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Margin="0,5,0,5">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Info.IsFolder}" Value="True">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    
+                    <TextBlock Text="Play" Margin="10,0,10,0" VerticalAlignment="Center" Style="{StaticResource SmallTextBlockStyle}"/>
+                </Button>
+
+                <Button HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Margin="0,5,0,5" Visibility="{Binding Info.IsFolder, Converter={StaticResource BooleanToVisibility}}">
+                    <TextBlock Text="Play All" Margin="10,0,10,0" VerticalAlignment="Center" Style="{StaticResource SmallTextBlockStyle}"/>
+                </Button>
+
+                <Button HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Margin="0,5,0,5" Padding="0" Visibility="{Binding Info.IsInProgress, Converter={StaticResource BooleanToVisibility}}">
+                    <Grid HorizontalAlignment="Stretch">
+                        <ProgressBar Minimum="0" Maximum="100" Value="{Binding Info.PlayedPercentage, Mode=OneWay}" BorderThickness="0" Background="Transparent" Foreground="{StaticResource ForegroundBrush}" Opacity="0.1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                        <TextBlock Text="Resume" Margin="16,3,16,5" VerticalAlignment="Center" HorizontalAlignment="Center" Style="{StaticResource SmallTextBlockStyle}"/>
+                    </Grid>
+                </Button>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

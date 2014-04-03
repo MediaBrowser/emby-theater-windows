@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace MediaBrowser.Theater.DefaultTheme.Core.Views
+namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.Views
 {
     /// <summary>
-    /// Interaction logic for ItemInfoDetailsView.xaml
+    /// Interaction logic for ItemOverviewView.xaml
     /// </summary>
-    public partial class ItemInfoDetailsView : UserControl
+    public partial class ItemOverviewView : UserControl
     {
-        public ItemInfoDetailsView()
+        public ItemOverviewView()
         {
             InitializeComponent();
         }

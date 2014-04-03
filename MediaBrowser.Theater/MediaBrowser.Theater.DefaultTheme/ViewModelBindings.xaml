@@ -18,7 +18,9 @@
                     xmlns:commands="clr-namespace:MediaBrowser.Theater.DefaultTheme.SideMenu.Commands"
                     xmlns:commands1="clr-namespace:MediaBrowser.Theater.DefaultTheme.Core.Commands"
                     xmlns:viewModels4="clr-namespace:MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels"
-                    xmlns:views4="clr-namespace:MediaBrowser.Theater.DefaultTheme.ItemList.Views">
+                    xmlns:views4="clr-namespace:MediaBrowser.Theater.DefaultTheme.ItemList.Views"
+                    xmlns:viewModels5="clr-namespace:MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels"
+                    xmlns:views5="clr-namespace:MediaBrowser.Theater.DefaultTheme.ItemDetails.Views">
     
     <DataTemplate DataType="{x:Type viewModels:RootViewModel}">
         <views:RootView/>
@@ -152,12 +154,20 @@
         <views4:ItemListView/>
     </DataTemplate>
     
-    <DataTemplate DataType="{x:Type viewModels:ItemInfoDetailsViewModel}">
-        <views:ItemInfoDetailsView/>
+    <DataTemplate DataType="{x:Type viewModels:ItemInfoViewModel}">
+        <views:ItemInfoView/>
     </DataTemplate>
     
     <DataTemplate DataType="{x:Type viewModels:ItemArtworkViewModel}">
         <views:ItemArtworkView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels5:ItemDetailsViewModel}">
+        <views5:ItemDetailsView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels5:ItemOverviewViewModel}">
+        <views5:ItemOverviewView/>
     </DataTemplate>
     
 </ResourceDictionary>

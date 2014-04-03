@@ -172,7 +172,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
 
         private ItemTileViewModel CreateMiniSpotlightItem()
         {
-            return new ItemTileViewModel(_apiClient, _imageManager, _serverEvents, _navigator, /*_playbackManager,*/ null) {
+            return new ItemTileViewModel(_apiClient, _imageManager, _serverEvents, _navigator,  /*_playbackManager,*/ null) {
                 DesiredImageWidth = _miniSpotlightWidth,
                 DesiredImageHeight = HomeViewModel.TileHeight,
                 PreferredImageTypes = new[] { ImageType.Backdrop, ImageType.Thumb }

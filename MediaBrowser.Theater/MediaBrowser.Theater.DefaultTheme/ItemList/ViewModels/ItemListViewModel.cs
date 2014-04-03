@@ -7,6 +7,7 @@ using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Theater.Api.Navigation;
+using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
 using MediaBrowser.Theater.Presentation.ViewModels;
@@ -23,11 +24,12 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
         private readonly INavigator _navigator;
+        private readonly ISessionManager _sessionManager;
         private readonly IServerEvents _serverEvents;
         private ItemTileViewModel _selectedItem;
-        private ItemInfoDetailsViewModel _selectedItemDetails;
+        private ItemInfoViewModel _selectedItemDetails;
 
-        public ItemListViewModel(Task<ItemsResult> items, string title, IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator)
+        public ItemListViewModel(Task<ItemsResult> items, string title, IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator, ISessionManager sessionManager)
         {
             _items = items;
             _title = title;
@@ -35,6 +37,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
             _imageManager = imageManager;
             _serverEvents = serverEvents;
             _navigator = navigator;
+            _sessionManager = sessionManager;
             Items = new RangeObservableCollection<ItemTileViewModel>();
         }
 
@@ -58,7 +61,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
                 OnPropertyChanged();
 
                 if (_selectedItem != null) {
-                    SelectedItemDetails = new ItemInfoDetailsViewModel(_selectedItem.Item);
+                    SelectedItemDetails = new ItemInfoViewModel(_selectedItem.Item);
                 } else {
                     SelectedItemDetails = null;
                 }
@@ -70,7 +73,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
             get { return SelectedItemDetails != null; }
         }
 
-        public ItemInfoDetailsViewModel SelectedItemDetails
+        public ItemInfoViewModel SelectedItemDetails
         {
             get { return _selectedItemDetails; }
             private set

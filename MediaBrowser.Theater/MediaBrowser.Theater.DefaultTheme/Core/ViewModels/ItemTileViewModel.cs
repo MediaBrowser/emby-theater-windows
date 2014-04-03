@@ -5,6 +5,7 @@ using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Theater.Api.Navigation;
+using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Home.ViewModels;
 using MediaBrowser.Theater.Presentation.Controls;
@@ -41,7 +42,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
             };
 
             DisplayNameGenerator = GetDisplayNameWithAiredSpecial;
-            GoToDetailsCommand = new RelayCommand(o => navigator.Navigate(Go.To.Item(item)));
+            GoToDetailsCommand = new RelayCommand(async o => navigator.Navigate(Go.To.Item(Item)));
 
             serverEvents.UserDataChanged += serverEvents_UserDataChanged;
         }

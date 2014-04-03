@@ -174,4 +174,8 @@
         <views5:RecommendationsView/>
     </DataTemplate>
     
+    <DataTemplate DataType="{x:Type viewModels5:ItemChildrenViewModel}">
+        <views5:ItemChildrenView/>
+    </DataTemplate>
+    
 </ResourceDictionary>

@@ -38,8 +38,8 @@
             <TextBlock Grid.Column="0" Grid.Row="0" Text="{lex:Loc GenreLabel}" Style="{StaticResource SmallTextBlockStyle}" Opacity="0.5" HorizontalAlignment="Right" Visibility="{Binding HasGenres, Converter={StaticResource BooleanToVisibility}}"/>
             <TextBlock Grid.Column="2" Grid.Row="0" Text="{Binding Genres}" Style="{StaticResource SmallTextBlockStyle}" Visibility="{Binding HasGenres, Converter={StaticResource BooleanToVisibility}}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"/>
 
-            <TextBlock Grid.Column="0" Grid.Row="1" Text="{lex:Loc DateLabel}" Style="{StaticResource SmallTextBlockStyle}" Opacity="0.5" HorizontalAlignment="Right"/>
-            <TextBlock Grid.Column="2" Grid.Row="1" Text="{Binding Date}" Style="{StaticResource SmallTextBlockStyle}"/>
+            <TextBlock Grid.Column="0" Grid.Row="1" Text="{lex:Loc DateLabel}" Style="{StaticResource SmallTextBlockStyle}" Opacity="0.5" HorizontalAlignment="Right" Visibility="{Binding HasDate, Converter={StaticResource BooleanToVisibility}}"/>
+            <TextBlock Grid.Column="2" Grid.Row="1" Text="{Binding Date}" Style="{StaticResource SmallTextBlockStyle}" Visibility="{Binding HasDate, Converter={StaticResource BooleanToVisibility}}"/>
 
             <TextBlock Grid.Column="0" Grid.Row="2" Text="{Binding SeriesAirTimeLabel}" Style="{StaticResource SmallTextBlockStyle}" Opacity="0.5" HorizontalAlignment="Right" Visibility="{Binding HasAirTime, Converter={StaticResource BooleanToVisibility}}"/>
             <TextBlock Grid.Column="2" Grid.Row="2" Text="{Binding SeriesAirTime}" Style="{StaticResource SmallTextBlockStyle}" Visibility="{Binding HasAirTime, Converter={StaticResource BooleanToVisibility}}"/>

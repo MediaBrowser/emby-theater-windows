@@ -14,9 +14,9 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         
-        <controls:ExtendedContentControl Grid.Column="0" Content="{Binding Artwork}"/>
+        <controls:ExtendedContentControl Grid.Column="0" Content="{Binding Artwork}" MaxWidth="1200"/>
 
-        <Grid Grid.Column="1" Background="{StaticResource BackgroundBrush2}" Margin="20,0,0,0" Width="600" Height="{Binding Size.Height}">
+        <Grid Grid.Column="1" Background="{StaticResource BackgroundBrush2}" Margin="20,0,0,0" Width="600" Height="{Binding Size.Height}" Visibility="{Binding ShowInfo, Converter={StaticResource BooleanToVisibility}}">
             <Grid.RowDefinitions>
                 <RowDefinition/>
                 <RowDefinition Height="auto"/>

@@ -78,6 +78,11 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
             }
         }
 
+        public bool HasDate
+        {
+            get { return !string.IsNullOrEmpty(Date); }
+        }
+
         public string AudioChannelLayout
         {
             get

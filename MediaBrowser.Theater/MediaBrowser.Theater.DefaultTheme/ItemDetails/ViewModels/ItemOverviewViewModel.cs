@@ -1,7 +1,9 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Input;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
+using MediaBrowser.Model.Entities;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
 using MediaBrowser.Theater.Presentation.Controls;
@@ -32,12 +34,20 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
             get { return 0; }
         }
 
+        public bool ShowInfo
+        {
+            get { return !_item.IsFolder || !string.IsNullOrEmpty(_item.Overview); }
+        }
+
         public ItemOverviewViewModel(BaseItemDto item, IApiClient apiClient, IImageManager imageManager)
         {
             _item = item;
 
-            Artwork = new ItemArtworkViewModel(item, apiClient, imageManager) { DesiredImageHeight = 800 };
+            Artwork = new ItemArtworkViewModel(item, apiClient, imageManager) { DesiredImageHeight = 700 };
             Info = new ItemInfoViewModel(item);
+
+            if (item.Type == "Episode")
+                Artwork.PreferredImageTypes = new[] { ImageType.Screenshot, ImageType.Art, ImageType.Primary };
 
             Artwork.PropertyChanged += (s, e) => {
                 if (e.PropertyName == "Size") {
@@ -46,7 +56,18 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
             };
         }
 
-        public Size Size { get { return new Size(Artwork.ActualWidth + 600 + 20, 800); } }
+        public Size Size
+        {
+            get
+            {
+                var artWidth = Math.Min(1200, Artwork.ActualWidth);
+
+                if (ShowInfo)
+                    return new Size(artWidth + 600 + 20, 700);
+                else
+                    return new Size(artWidth, 700);
+            }
+        }
     }
 
     public class ItemOverviewSectionGenerator

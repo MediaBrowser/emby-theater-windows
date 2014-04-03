@@ -18,7 +18,7 @@ using MediaBrowser.Theater.Presentation.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 {
-    public class RecommendationsViewModel
+    public class ItemChildrenViewModel
         : BaseViewModel, IItemDetailSection, IKnownSize
     {
         private const double PosterHeight = 350 - HomeViewModel.TileMargin * 0.5;
@@ -31,12 +31,13 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
         private readonly ISessionManager _sessionManager;
 
         private bool _isVisible;
+        private ImageType[] _preferredImageTypes;
 
         public int SortOrder { get { return 2; } }
 
         public RangeObservableCollection<ItemTileViewModel> Items { get; private set; }
 
-        public RecommendationsViewModel(BaseItemDto item, IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator, ISessionManager sessionManager)
+        public ItemChildrenViewModel(BaseItemDto item, IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator, ISessionManager sessionManager)
         {
             _item = item;
             _apiClient = apiClient;
@@ -45,8 +46,14 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
             _navigator = navigator;
             _sessionManager = sessionManager;
 
+            if (item.Type == "Season")
+                _preferredImageTypes = new[] { ImageType.Screenshot, ImageType.Thumb, ImageType.Art, ImageType.Primary };
+            else
+                _preferredImageTypes = new[] { ImageType.Primary, ImageType.Backdrop, ImageType.Thumb };
+
             Items = new RangeObservableCollection<ItemTileViewModel>();
-            for (int i = 0; i < 6; i++) {
+            for (int i = 0; i < 4; i++)
+            {
                 Items.Add(CreateItem());
             }
 
@@ -56,7 +63,21 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
         public string Title
         {
-            get { return "Similar"; }
+            get
+            {
+                switch (_item.Type) {
+                    case "Series":
+                        return "Seasons";
+                    case "Season":
+                        return "Episodes";
+                    case "Artist":
+                        return "Albums";
+                    case "Album":
+                        return "Tracks";
+                    default:
+                        return "Items";
+                }
+            }
         }
 
         public Size Size
@@ -91,27 +112,8 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
         private async void LoadItems()
         {
-            var query = new SimilarItemsQuery { Id = _item.Id, UserId = _sessionManager.CurrentUser.Id, Limit = 6 };
-
-            switch (_item.Type) {
-                case "Movie":
-                    LoadItems(await _apiClient.GetSimilarMoviesAsync(query));
-                    break;
-                case "Series":
-                case "Season":
-                case "Episode":
-                    LoadItems(await _apiClient.GetSimilarSeriesAsync(query));
-                    break;
-                case "Game":
-                    LoadItems(await _apiClient.GetSimilarGamesAsync(query));
-                    break;
-                case "Album":
-                    LoadItems(await _apiClient.GetSimilarAlbumsAsync(query));
-                    break;
-                default:
-                    IsVisible = false;
-                    break;
-            }
+            var query = new ItemQuery { ParentId = _item.Id, UserId = _sessionManager.CurrentUser.Id, Limit = 8 };
+            LoadItems(await _apiClient.GetItemsAsync(query));
         }
 
         private async void LoadItems(ItemsResult result)
@@ -131,6 +133,11 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
                     Items.Add(vm);
                 }
+
+                Items[i].PropertyChanged += (s, e) => {
+                    if (e.PropertyName == "Size")
+                        OnPropertyChanged("Size");
+                };
             }
 
             if (Items.Count > items.Length)
@@ -148,12 +155,12 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
             return new ItemTileViewModel(_apiClient, _imageManager, _serverEvents, _navigator, /*_playbackManager,*/ null)
             {
                 DesiredImageHeight = PosterHeight,
-                PreferredImageTypes = new[] { ImageType.Primary, ImageType.Backdrop, ImageType.Thumb }
+                PreferredImageTypes = _preferredImageTypes
             };
         }
     }
 
-    public class RecommendationsSectionGenerator
+    public class ItemChildrenSectionGenerator
         : IItemDetailSectionGenerator
     {
         private readonly IApiClient _apiClient;
@@ -162,7 +169,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
         private readonly INavigator _navigator;
         private readonly ISessionManager _sessionManager;
 
-        public RecommendationsSectionGenerator(IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator, ISessionManager sessionManager)
+        public ItemChildrenSectionGenerator(IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator, ISessionManager sessionManager)
         {
             _apiClient = apiClient;
             _imageManager = imageManager;
@@ -173,12 +180,12 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
         public bool HasSection(BaseItemDto item)
         {
-            return item != null;
+            return item != null && item.IsFolder;
         }
 
         public IItemDetailSection GetSection(BaseItemDto item)
         {
-            return new RecommendationsViewModel(item, _apiClient, _imageManager, _serverEvents, _navigator, _sessionManager);
+            return new ItemChildrenViewModel(item, _apiClient, _imageManager, _serverEvents, _navigator, _sessionManager);
         }
     }
 }

@@ -206,7 +206,7 @@ namespace MediaBrowser.Theater.DirectShow
                 var enableMadVr = EnableMadvr(options);
                 var enableReclock = EnableReclock(options);
 
-                InvokeOnPlayerThread(() => _mediaPlayer.Play(playableItem, enableReclock, enableMadVr, false, _config.Configuration.InternalPlayerConfiguration.EnableXySubFilter, _config.Configuration.InternalPlayerConfiguration.VideoConfig, _config.Configuration.InternalPlayerConfiguration.AudioConfig));
+                InvokeOnPlayerThread(() => _mediaPlayer.Play(playableItem, enableReclock, enableMadVr, false, _config.Configuration.InternalPlayerConfiguration.EnableXySubFilter, _config.Configuration.InternalPlayerConfiguration.VideoConfig, _config.Configuration.InternalPlayerConfiguration.AudioConfig, _config.Configuration.InternalPlayerConfiguration.SubtitleConfig));
             }
             catch
             {

@@ -83,6 +83,8 @@ namespace MediaBrowser.Theater.DirectShow
         private bool _removeHandlers = false;
         private VideoConfiguration _videoConfig;
         private AudioConfiguration _audioConfig;
+        private SubtitleConfiguration _subtitleConfig;
+        private string _filePath = string.Empty;
 
         #region LAVConfigurationValues
 
@@ -205,7 +207,7 @@ namespace MediaBrowser.Theater.DirectShow
             }
         }
 
-        public void Play(PlayableItem item, bool enableReclock, bool enableMadvr, bool enableMadvrExclusiveMode, bool enableXySubFilter, VideoConfiguration videoConfig, AudioConfiguration audioConfig)
+        public void Play(PlayableItem item, bool enableReclock, bool enableMadvr, bool enableMadvrExclusiveMode, bool enableXySubFilter, VideoConfiguration videoConfig, AudioConfiguration audioConfig, SubtitleConfiguration subtitleConfig)
         {
             _logger.Info("Playing {0}. Reclock: {1}, Madvr: {2}, xySubFilter: {3}", item.OriginalItem.Name, enableReclock, enableMadvr, enableXySubFilter);
             _logger.Info("Playing Path {0}", item.PlayablePath);
@@ -215,9 +217,11 @@ namespace MediaBrowser.Theater.DirectShow
 
             _videoConfig = videoConfig;
             _audioConfig = audioConfig;
+            _subtitleConfig = subtitleConfig;
 
             _videoConfig.SetDefaults();
             _audioConfig.SetDefaults();
+            _subtitleConfig.SetDefaults();
 
             var isDvd = ((item.OriginalItem.VideoType ?? VideoType.VideoFile) == VideoType.Dvd || (item.OriginalItem.IsoType ?? IsoType.BluRay) == IsoType.Dvd) &&
                 item.PlayablePath.IndexOf("http://", StringComparison.OrdinalIgnoreCase) == -1;
@@ -268,6 +272,8 @@ namespace MediaBrowser.Theater.DirectShow
 
         private void Initialize(string path, bool enableReclock, bool enableMadvr, bool enableMadvrExclusiveMode, bool enableXySubFilter, bool isDvd)
         {
+            _filePath = path;
+
             InitializeGraph(isDvd);
 
             int hr = 0;
@@ -907,6 +913,41 @@ namespace MediaBrowser.Theater.DirectShow
             }
         }
 
+        public void LoadExternalSubs(string subtitleFile)
+        {
+            int hr = 0;
+
+            IBaseFilter subtitleFilter = _xySubFilter != null ? _xySubFilter as IBaseFilter : _xyVsFilter as IBaseFilter;
+
+            if (subtitleFilter != null)
+            {
+                IDirectVobSub extSubSource = subtitleFilter as IDirectVobSub;
+                if (extSubSource != null)
+                {
+                    //IntPtr sbSubSource = Marshal.AllocCoTaskMem(260);
+                    //try
+                    //{
+                    //hr = extSubSource.get_FileName(sbSubSource);
+                    //DsError.ThrowExceptionForHR(hr);
+
+                    //string subSource = Marshal.PtrToStringAuto(sbSubSource);
+                    hr = extSubSource.put_FileName(subtitleFile);
+                    DsError.ThrowExceptionForHR(hr);
+
+                    //    hr = extSubSource.get_FileName(sbSubSource);
+                    //    DsError.ThrowExceptionForHR(hr);
+
+                    //    subSource = Marshal.PtrToStringAuto(sbSubSource);
+                    //}
+                    //finally
+                    //{
+                    //    if (sbSubSource != IntPtr.Zero)
+                    //        Marshal.FreeCoTaskMem(sbSubSource);
+                    //}
+                }
+            }
+        }
+
         private List<Guid> GetPinMediaTypes(DirectShowLib.IPin pin)
         {
             int hr = 0;
@@ -1373,10 +1414,9 @@ namespace MediaBrowser.Theater.DirectShow
 
             try
             {
-                if (rate > 1.5 && m_adecOut == null)
+                if (audioRenderer != null)
                 {
-                    //find the audio renderer
-                    if (audioRenderer != null)
+                    if (rate > Math.Abs(4) && m_adecOut == null)
                     {
                         //grab the audio decoder's output pin
                         arIn = DsFindPin.ByDirection(audioRenderer, PinDirection.Input, 0);
@@ -1395,10 +1435,7 @@ namespace MediaBrowser.Theater.DirectShow
                         hr = _mediaControl.Run();
                         DsError.ThrowExceptionForHR(hr);
                     }
-                }
-                else if (rate <= 1.5 && m_adecOut != null)
-                {
-                    if (audioRenderer != null)
+                    else if (rate <= Math.Abs(4) && m_adecOut != null)
                     {
                         //stop the graph
                         hr = _mediaControl.Stop();
@@ -1419,6 +1456,29 @@ namespace MediaBrowser.Theater.DirectShow
                         //start the graph again
                         hr = _mediaControl.Run();
                         DsError.ThrowExceptionForHR(hr);
+                    }
+                }
+
+                if (Math.Abs(rate) <= 4)
+                {
+                    IBasicAudio ba = _filterGraph as IBasicAudio;
+                    if (ba != null)
+                    {
+                        int orgVol = 0;
+                        hr = ba.get_Volume(out orgVol);
+                        DsError.ThrowExceptionForHR(hr);
+
+                        if (rate > Math.Abs(1.5))
+                        {
+
+                            hr = ba.put_Volume(-10000); //turn off the volume so we can ffwd
+                            DsError.ThrowExceptionForHR(hr);
+                        }
+                        else if (rate <= Math.Abs(1.5))
+                        {
+                            hr = ba.put_Volume(0); //set the volume back to full
+                            DsError.ThrowExceptionForHR(hr);
+                        }
                     }
                 }
             }

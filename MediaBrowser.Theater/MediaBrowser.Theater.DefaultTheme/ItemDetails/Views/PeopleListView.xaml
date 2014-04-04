@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="MediaBrowser.Theater.DefaultTheme.ItemDetails.Views.ItemChildrenListView"
+﻿<UserControl x:Class="MediaBrowser.Theater.DefaultTheme.ItemDetails.Views.PeopleListView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -19,8 +19,8 @@
             <RowDefinition Height="20"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        
-        <TextBlock Text="{Binding Title, Converter={StaticResource UppercaseConverter}}" Margin="2,0,0,0" Style="{StaticResource PanoramaTitleTextBlockStyle}" Height="20"/>
+
+        <TextBlock Text="CAST" Margin="2,0,0,0" Style="{StaticResource PanoramaTitleTextBlockStyle}" Height="20"/>
 
         <Border Grid.Row="1" Background="{StaticResource BackgroundBrush2}">
             <controls:ExtendedListBox
@@ -28,7 +28,7 @@
                                   Height="700"
                                   BorderBrush="{x:Null}"
                                   BorderThickness="0"
-                                  ItemsSource="{Binding Items}"
+                                  ItemsSource="{Binding People}"
                                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                                   ScrollViewer.VerticalScrollBarVisibility="Hidden"
                                   HorizontalAlignment="Stretch"
@@ -70,4 +70,3 @@
         </Border>
     </Grid>
 </UserControl>
-

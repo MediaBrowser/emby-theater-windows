@@ -186,4 +186,12 @@
         <views5:EpisodeListItemView/>
     </DataTemplate>
     
+    <DataTemplate DataType="{x:Type viewModels5:PeopleListViewModel}">
+        <views5:PeopleListView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels5:PersonListItemViewModel}">
+        <views5:PersonListItemView/>
+    </DataTemplate>
+    
 </ResourceDictionary>

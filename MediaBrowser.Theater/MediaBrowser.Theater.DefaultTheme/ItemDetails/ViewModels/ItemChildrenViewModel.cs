@@ -159,6 +159,12 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
                 PreferredImageTypes = _preferredImageTypes
             };
         }
+
+        public static Task<ItemsResult> Query(BaseItemDto item, IApiClient apiClient, ISessionManager sessionManager)
+        {
+            var query = new ItemQuery { ParentId = item.Id, UserId = sessionManager.CurrentUser.Id };
+            return apiClient.GetItemsAsync(query);
+        }
     }
 
     public class ItemChildrenListViewModel 
@@ -213,10 +219,9 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
             LoadItems();
         }
 
-        private async void LoadItems() 
+        private async void LoadItems()
         {
-            var query = new ItemQuery { ParentId = _item.Id, UserId = _sessionManager.CurrentUser.Id };
-            var result = await _apiClient.GetItemsAsync(query);
+            var result = await ItemChildrenViewModel.Query(_item, _apiClient, _sessionManager);
 
             IEnumerable<IViewModel> items;
             if (_item.Type == "Season") {
@@ -305,15 +310,18 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
             return item != null && item.IsFolder;
         }
 
-        public Task<IItemDetailSection> GetSection(BaseItemDto item)
+        public async Task<IItemDetailSection> GetSection(BaseItemDto item)
         {
-            if (item.Type == "Season") {
-                IItemDetailSection section = new ItemChildrenListViewModel(item, _apiClient, _sessionManager, _imageManager, _navigator);
-                return Task.FromResult(section);
-            } else {
-                IItemDetailSection section = new ItemChildrenViewModel(item, _apiClient, _imageManager, _serverEvents, _navigator, _sessionManager);
-                return Task.FromResult(section);
+            var result = await ItemChildrenViewModel.Query(item, _apiClient, _sessionManager);
+            if (result.Items.Length == 1) {
+                return await GetSection(result.Items[0]);
             }
+
+            if (item.Type == "Season") {
+                return new ItemChildrenListViewModel(item, _apiClient, _sessionManager, _imageManager, _navigator);
+            }
+
+            return new ItemChildrenViewModel(item, _apiClient, _imageManager, _serverEvents, _navigator, _sessionManager);
         }
     }
 }

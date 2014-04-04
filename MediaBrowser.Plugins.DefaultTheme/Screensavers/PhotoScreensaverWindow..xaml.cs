@@ -1,10 +1,16 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms.VisualStyles;
 using System.Windows.Media.Animation;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MediaBrowser.Common;
 using MediaBrowser.Model.ApiClient;
@@ -29,6 +35,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
     {
         private readonly IApplicationHost _applicationHost;
       
+
         public PhotoScreensaverFactory(IApplicationHost applicationHost)
         {
             _applicationHost = applicationHost;
@@ -47,6 +54,24 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
     /// </summary>
     public partial class PhotoScreensaverWindow : ScreensaverWindowBase
     {
+        private double _canvasWidth;
+        private double _canvasHeight;
+        private double _canvasScaleX;
+        private double _canvasScaleY;
+
+        // gloabl behaviour parameters
+        private const int MaxPhotos = 50;
+        private const double MaxPhotoWidth = 200;
+        private const double MaxPhotoHeight = 200;
+        private const double PhotoScaleFactor = 4; // how many maxwidth photos should fixt across the screen
+        private const int NumLanes =  8;
+        private const int MinAnimateTimeSecs = 4;
+        private const int MaxAnimateTimeSecs = 15;
+
+        private readonly DoubleAnimation[] _animations = new DoubleAnimation[NumLanes];
+        private ImageViewerImage[] _photos;
+        private readonly Random _random = new Random();
+
         private readonly ISessionManager _session;
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
@@ -54,126 +79,150 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
         public PhotoScreensaverWindow(ISessionManager session, IApiClient apiClient, IPresentationManager presentationManager, IScreensaverManager screensaverManager, IImageManager imageManager, ILogger logger)
             : base(presentationManager, screensaverManager, logger)
         {
-            
             _session = session;
             _apiClient = apiClient;
             _imageManager = imageManager;
             InitializeComponent();
 
-            DataContext = this;
+            Timeline.DesiredFrameRateProperty.OverrideMetadata(
+              typeof(Timeline),
+              new FrameworkPropertyMetadata { DefaultValue = 40 });
 
+            for (var i = 0; i < _animations.Length; i++)
+            {
+                _animations[i] = new DoubleAnimation();
+               
+            }
+
+            DataContext = this;
+            ScreensaverCanvas.LayoutUpdated += ScreensaverCanvas_LayoutUpdated;
+
+            this.Loaded += PhotoScreensaverWindow_Loaded;
+        }
+
+        private void ScreensaverCanvas_LayoutUpdated(object sender, EventArgs e)
+        {
+            _canvasWidth = (int)ScreensaverCanvas.ActualWidth;
+            _canvasHeight = (int)ScreensaverCanvas.ActualHeight;
+
+            _canvasScaleX = (_canvasWidth / PhotoScaleFactor) / MaxPhotoWidth;
+            _canvasScaleY = _canvasScaleX * (_canvasHeight / _canvasWidth); // maintain aspect ratio
+        }
+
+        private int _currentIndex = 0;
+        private int CurrentIndex { get { return _currentIndex; } set { _currentIndex = value < _photos.Length ? value : 0; } }
+
+        private void PhotoScreensaverWindow_Loaded(object sender, RoutedEventArgs e)
+        {
             LoadScreensaver();
         }
 
-        private async void LoadScreensaver()
+        //
+        // Get photo metatdata and convert it to urls for Photo
+        // We are not getting the image data itself
+        //
+        private async Task<bool> GetPhotoData()
         {
-            MainGrid.Children.Clear();
-
-
-            var items = await _apiClient.GetItemsAsync(new ItemQuery
+            var items =  await _apiClient.GetItemsAsync(new ItemQuery
             {
                 UserId = _session.CurrentUser.Id,
                 ImageTypes = new[] { ImageType.Primary },
                 IncludeItemTypes = new[] { "Photo" },
-                Limit = 6,
+                Fields = new[] { ItemFields.PrimaryImageAspectRatio },
+                Limit = MaxPhotos,
                 SortBy = new[] { ItemSortBy.Random },
                 Recursive = true,
             });
 
-            if (items.Items.Length == 0)
-            {
-                _screensaverManager.ShowScreensaver(true, "Logo");
-                return;
-            }
+            var ars = items.Items.Select(i => i.PrimaryImageAspectRatio).ToArray();
 
-            var images = items.Items.Select(i => new ImageViewerImage
+            _photos  = items.Items.Select(i => new ImageViewerImage
             {
                 Caption = i.Name,
                 Url = _apiClient.GetImageUrl(i, new ImageOptions
                 {
                     ImageType = ImageType.Primary,
-                    MaxHeight = 100,
-                    MaxWidth = 100,
+                    MaxHeight = (int?) (MaxPhotoHeight * _canvasScaleY),
+                    MaxWidth = (int?)(MaxPhotoWidth * _canvasScaleX),
                     Quality = 20
                 })
-            });
+            }).ToArray();
 
-
-            var imageDownloadCancellationTokenSource = new CancellationTokenSource();
-            var c = 0;
-
-            var imgs = new Image[6];
-            for (var i = 0; i < imgs.Length; i++)
-            {
-                _logger.Debug("GetRemoteImageAsync {0}", c++);
-                imgs[i] = await _imageManager.GetRemoteImageAsync(images.ElementAt(i).Url, imageDownloadCancellationTokenSource.Token);
-                Debug.WriteLine("GetRemoteImageAsync finished {0}", c);
-                imageDownloadCancellationTokenSource.Token.ThrowIfCancellationRequested();
-
-                imgs[i].Stretch = Stretch.UniformToFill;
-                var s = "x" + i.ToString();
-                imgs[i].Name = s;
-            }
-
-
-            var r = new Random();
-            var sb = new Storyboard();
-            var animations = new DoubleAnimation[4];
-            for (var i = 0; i < 4; i++)
-            {
-                Canvas.SetLeft(imgs[i], 50 + i * 150);
-
-                animations[i] = new DoubleAnimation();
-                animations[i].From = -100;
-                animations[i].To = 300;
-                var rn = r.Next(4, 12);
-                var ts = TimeSpan.FromSeconds(rn);
-                _logger.Debug("random {0}", ts);
-                animations[i].Duration = new Duration(ts);
-
-                //Storyboard.SetTargetName(animations[i], imgs[i].Name);
-                Storyboard.SetTarget(animations[i], imgs[i]);
-                Storyboard.SetTargetProperty(animations[i], new PropertyPath("(Canvas.Top)"));
-
-                //this.RegisterName(imgs[i].Name, imgs[i]);
-                MainGrid.Children.Add(imgs[i]);
-                sb.Children.Add(animations[i]);
-            }
-
-            animations[1].Completed += PhotoScreensaverWindow_Completed;
-
-
-            sb.Begin(this);
-
-            MainGrid.MouseDown += (s, e) =>
-            {
-                sb.Children.Remove(animations[1]);
-
-            };
-
-
-
-            //this.UnregisterName("image");
-
-            /*
-            MainGrid.Children.Add(new ImageViewerControl
-            {
-                DataContext = new ImageViewerViewModel(_imageManager, images)
-                {
-                    ImageStretch = Stretch.UniformToFill
-                }
-            });
-            */
+            return true;
         }
 
-        void PhotoScreensaverWindow_Completed(object sender, EventArgs e)
+   
+        private async Task<Image> GetNextPhoto()
         {
-            var ac = sender as AnimationClock;
+            CurrentIndex++;
+            var imageDownloadCancellationTokenSource = new CancellationTokenSource();
+            var photo = await _imageManager.GetRemoteImageAsync(_photos[CurrentIndex].Url, imageDownloadCancellationTokenSource.Token);
+            imageDownloadCancellationTokenSource.Token.ThrowIfCancellationRequested();
 
-            var targetName = Storyboard.GetTargetName(((sender as AnimationClock).Timeline as AnimationTimeline));
-            var target = Storyboard.GetTarget(((sender as AnimationClock).Timeline as AnimationTimeline));
-
-            //MainGrid.Children.Remove(target.);
+            return photo;
         }
+
+        private async Task<DoubleAnimation> StartNextPhotoAnimation(DoubleAnimation animation, bool completionFlag = false)
+        {
+            var photoindex = CurrentIndex;
+            var photo = await GetNextPhoto();
+
+            var bi = photo.Source as BitmapImage;
+            Debug.Assert(bi != null);
+            var photoWidth = bi.Width;
+            var photoHeight = bi.Height;
+
+            
+            animation.Duration = new Duration(TimeSpan.FromSeconds(_random.Next(MinAnimateTimeSecs, MaxAnimateTimeSecs)));
+            animation.From = - photoHeight;                // y start
+            animation.To = _canvasHeight + photoHeight;    // y finish
+
+            // Completion handler - remove the image, start the next handler
+            EventHandler handler = null;
+            handler = async (s, e) =>
+            {
+                animation.Completed -= handler;
+                ScreensaverCanvas.Children.Remove(photo);
+                StartNextPhotoAnimation(animation, true);
+            };
+            animation.Completed += handler;
+
+            var r = _random.Next(0, NumLanes - 1);
+            double xStart = ((_canvasWidth - photoWidth)  / (NumLanes - 1)) * r; // and xfinish, stays in one lane
+
+            //_logger.Debug("xxx {0}", photoindex);
+            _logger.Debug("{0} Dur {1} ({2},{3}) From {4} - {5}  xStart {6} r {7} Canvas({8}, {9}) {10}", photoindex, animation.Duration, (int)photoWidth, (int)photoHeight, (int)animation.From, (int)animation.To, (int)xStart, r, (int) _canvasWidth, (int) _canvasHeight, completionFlag);
+            Canvas.SetLeft(photo, xStart);
+
+            photo.Stretch = Stretch.UniformToFill;
+            photo.Name = "Photo" + CurrentIndex;
+
+            ScreensaverCanvas.Children.Add(photo);
+            photo.BeginAnimation(Canvas.TopProperty, animation, HandoffBehavior.SnapshotAndReplace);
+
+            return animation;
+        }
+
+        private async void LoadScreensaver()
+        {
+            ScreensaverCanvas.Children.Clear();
+
+            await GetPhotoData();
+         
+            if (_photos.Length == 0)
+            {
+                _screensaverManager.ShowScreensaver(true, "Logo");
+                return;
+            }
+
+            
+            for (var i = 0; i < NumLanes; i++)
+            {
+                if (i >= _photos.Length)
+                    continue;
+                StartNextPhotoAnimation(_animations[i]);
+            }
+        }
+      
    }
 }

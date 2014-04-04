@@ -4,7 +4,7 @@
         xmlns:screensavers="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Screensavers"
         Title="BackdropScreensaverWindow" Height="300" Width="300"
         Style="{StaticResource ModalWindow}">
-    <Canvas Background="Black" x:Name="MainGrid">
+    <Canvas Background="Black" x:Name="ScreensaverCanvas">
 
         
     </Canvas>

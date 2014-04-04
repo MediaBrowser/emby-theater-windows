@@ -41,7 +41,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
                 Episodes.Add(CreateEpisodeItem());
             }
 
-            IsVisible = false;
+            IsVisible = true;
             LoadItems(tvViewTask);
         }
 
@@ -66,6 +66,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
 
                 _isVisible = value;
                 OnPropertyChanged();
+                OnPropertyChanged("Size");
             }
         }
 

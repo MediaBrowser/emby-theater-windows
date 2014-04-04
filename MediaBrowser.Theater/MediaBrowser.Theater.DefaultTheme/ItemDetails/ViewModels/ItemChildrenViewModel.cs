@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
@@ -160,6 +161,127 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
         }
     }
 
+    public class ItemChildrenListViewModel 
+        : BaseViewModel, IItemDetailSection, IKnownSize
+    {
+        private readonly BaseItemDto _item;
+        private readonly IApiClient _apiClient;
+        private readonly ISessionManager _sessionManager;
+        private readonly IImageManager _imageManager;
+        private readonly INavigator _navigator;
+
+        public int SortOrder 
+        {
+            get { return 2; }
+        }
+
+        public Size Size
+        {
+            get { return new Size(800, 700); }
+        }
+
+        public string Title
+        {
+            get
+            {
+                switch (_item.Type) {
+                    case "Series":
+                        return "Seasons";
+                    case "Season":
+                        return "Episodes";
+                    case "Artist":
+                        return "Albums";
+                    case "Album":
+                        return "Tracks";
+                    default:
+                        return "Items";
+                }
+            }
+        }
+
+        public RangeObservableCollection<IViewModel> Items { get; private set; }
+
+        public ItemChildrenListViewModel(BaseItemDto item, IApiClient apiClient, ISessionManager sessionManager, IImageManager imageManager, INavigator navigator)
+        {
+            _item = item;
+            _apiClient = apiClient;
+            _sessionManager = sessionManager;
+            _imageManager = imageManager;
+            _navigator = navigator;
+
+            Items = new RangeObservableCollection<IViewModel>();
+            LoadItems();
+        }
+
+        private async void LoadItems() 
+        {
+            var query = new ItemQuery { ParentId = _item.Id, UserId = _sessionManager.CurrentUser.Id };
+            var result = await _apiClient.GetItemsAsync(query);
+
+            IEnumerable<IViewModel> items;
+            if (_item.Type == "Season") {
+                items = result.Items.Select(i => new EpisodeListItemViewModel(i, _apiClient, _imageManager, _navigator));
+            } else {
+                items = result.Items.Select(i => new ItemInfoViewModel(i));
+            }
+
+            Items.Clear();
+            Items.AddRange(items);
+        }
+    }
+
+    public class EpisodeListItemViewModel
+        : BaseViewModel
+    {
+        private readonly BaseItemDto _item;
+
+        public ItemArtworkViewModel Artwork { get; private set; }
+
+        public ICommand NavigateCommand { get; private set; }
+
+        public string Name {
+            get { return _item.Name; }
+        }
+
+        public string Episodes
+        {
+            get
+            {
+                if (_item.IndexNumber == null) {
+                    return null;
+                }
+
+                if (_item.IndexNumberEnd != null) {
+                    return string.Format("S{0}, E{1}-{2}", _item.ParentIndexNumber, _item.IndexNumber, _item.IndexNumberEnd);
+                }
+
+                return string.Format("S{0}, E{1}", _item.ParentIndexNumber, _item.IndexNumber);
+            }
+        }
+
+        public float Rating
+        {
+            get { return _item.CommunityRating ?? 0; }
+        }
+
+        public bool HasRating
+        {
+            get { return _item.CommunityRating != null; }
+        }
+
+        public EpisodeListItemViewModel(BaseItemDto item, IApiClient apiClient, IImageManager imageManager, INavigator navigator)
+        {
+            _item = item;
+
+            Artwork = new ItemArtworkViewModel(item, apiClient, imageManager) { 
+                DesiredImageHeight = 100,
+                DesiredImageWidth = 178
+            };
+
+            NavigateCommand = new RelayCommand(arg => navigator.Navigate(Go.To.Item(item)));
+        }
+    }
+
     public class ItemChildrenSectionGenerator
         : IItemDetailSectionGenerator
     {
@@ -183,9 +305,16 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
             return item != null && item.IsFolder;
         }
 
-        public IItemDetailSection GetSection(BaseItemDto item)
+        public Task<IItemDetailSection> GetSection(BaseItemDto item)
         {
-            return new ItemChildrenViewModel(item, _apiClient, _imageManager, _serverEvents, _navigator, _sessionManager);
+            if (item.Type == "Season") {
+                IItemDetailSection section = new ItemChildrenListViewModel(item, _apiClient, _sessionManager, _imageManager, _navigator);
+                return Task.FromResult(section);
+            } else {
+                IItemDetailSection section = new ItemChildrenViewModel(item, _apiClient, _imageManager, _serverEvents, _navigator, _sessionManager);
+                return Task.FromResult(section);
+            }
         }
     }
 }
+

@@ -178,4 +178,12 @@
         <views5:ItemChildrenView/>
     </DataTemplate>
     
+    <DataTemplate DataType="{x:Type viewModels5:ItemChildrenListViewModel}">
+        <views5:ItemChildrenListView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels5:EpisodeListItemViewModel}">
+        <views5:EpisodeListItemView/>
+    </DataTemplate>
+    
 </ResourceDictionary>

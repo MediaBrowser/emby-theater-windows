@@ -169,6 +169,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="ItemDetails\Views\EpisodeListItemView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ItemDetails\Views\ItemChildrenListView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ItemDetails\Views\ItemChildrenView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -433,6 +441,12 @@
     <Compile Include="ItemDetails\ViewModels\ItemDetailsViewModel.cs" />
     <Compile Include="ItemDetails\ViewModels\ItemOverviewViewModel.cs" />
     <Compile Include="ItemDetails\ViewModels\RecommendationsViewModel.cs" />
+    <Compile Include="ItemDetails\Views\EpisodeListItemView.xaml.cs">
+      <DependentUpon>EpisodeListItemView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ItemDetails\Views\ItemChildrenListView.xaml.cs">
+      <DependentUpon>ItemChildrenListView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ItemDetails\Views\ItemChildrenView.xaml.cs">
       <DependentUpon>ItemChildrenView.xaml</DependentUpon>
     </Compile>

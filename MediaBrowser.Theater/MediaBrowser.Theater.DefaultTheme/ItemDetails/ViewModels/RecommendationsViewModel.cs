@@ -176,9 +176,10 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
             return item != null;
         }
 
-        public IItemDetailSection GetSection(BaseItemDto item)
+        public Task<IItemDetailSection> GetSection(BaseItemDto item)
         {
-            return new RecommendationsViewModel(item, _apiClient, _imageManager, _serverEvents, _navigator, _sessionManager);
+            IItemDetailSection section = new RecommendationsViewModel(item, _apiClient, _imageManager, _serverEvents, _navigator, _sessionManager);
+            return Task.FromResult(section);
         }
     }
 }

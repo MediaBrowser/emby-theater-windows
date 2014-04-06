@@ -884,7 +884,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                                  ItemFields.DateCreated,
                                  ItemFields.Overview
                         },
-                SeriesId = item.Id
+                SeriesId = item.Id,
+                IsSpecialSeason = false
             };
 
             return _apiClient.GetSeasonsAsync(query);

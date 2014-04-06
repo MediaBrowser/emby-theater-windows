@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using MediaBrowser.Common;
 using MediaBrowser.Theater.Api;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.UserInterface;
@@ -27,7 +26,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home
                 _viewModel = new HomeViewModel(_appHost);
             }
 
-            await _presenter.ShowPage(_viewModel);        
+            await _presenter.ShowPage(_viewModel);
         }
     }
 }

@@ -54,6 +54,11 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
             get { return _item.Type; }
         }
 
+        public bool ShowStats
+        {
+            get { return _item.Type != "Person"; }
+        }
+
         public string Date
         {
             get

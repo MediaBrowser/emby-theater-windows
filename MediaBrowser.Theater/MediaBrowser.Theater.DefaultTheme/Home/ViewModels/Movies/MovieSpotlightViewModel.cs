@@ -59,6 +59,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
                 };
 
                 navigator.Navigate(Go.To.ItemList(itemParams));
+
+                //await navigator.Navigate(Go.To.Item(await _apiClient.GetPersonAsync("Chris Pine", sessionManager.CurrentUser.Id)));
             });
 
             SpotlightViewModel = new ItemSpotlightViewModel(imageManager, apiClient) {

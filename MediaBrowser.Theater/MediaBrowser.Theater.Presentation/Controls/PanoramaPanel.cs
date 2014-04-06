@@ -53,6 +53,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
         }
 
         private DateTime _lastHandledNavigation;
+
         protected override void OnKeyDown(KeyEventArgs e)
         {
             if (e.IsRepeat && (e.Key == Key.Left || e.Key == Key.Right)) {
@@ -148,11 +149,20 @@ namespace MediaBrowser.Theater.Presentation.Controls
 
         public void SetHorizontalOffset(double offset)
         {
+            SetHorizontalOffset(offset, true);
+        }
+
+        public void SetHorizontalOffset(double offset, bool animate)
+        {
             offset = Math.Max(0, Math.Min(offset, ExtentWidth - ViewportWidth));
             if (offset != _offset.X) {
                 _offset.X = offset;
-                
-                _transform.BeginAnimation(TranslateTransform.XProperty, GetAnimation(-offset), HandoffBehavior.SnapshotAndReplace);
+
+                if (animate) {
+                    _transform.BeginAnimation(TranslateTransform.XProperty, GetAnimation(-offset), HandoffBehavior.SnapshotAndReplace);
+                } else {
+                    _transform.BeginAnimation(TranslateTransform.YProperty, new DoubleAnimation(-offset, TimeSpan.Zero), HandoffBehavior.SnapshotAndReplace);
+                }
 
                 InvalidateMeasure();
             }
@@ -160,14 +170,33 @@ namespace MediaBrowser.Theater.Presentation.Controls
 
         public void SetVerticalOffset(double offset)
         {
+            SetVerticalOffset(offset, true);
+        }
+
+        public void SetVerticalOffset(double offset, bool animate)
+        {
             offset = Math.Max(0, Math.Min(offset, ExtentHeight - ViewportHeight));
             if (offset != _offset.Y) {
                 _offset.Y = offset;
 
-                _transform.BeginAnimation(TranslateTransform.YProperty, GetAnimation(-offset), HandoffBehavior.SnapshotAndReplace);
+                if (animate) {
+                    _transform.BeginAnimation(TranslateTransform.YProperty, GetAnimation(-offset), HandoffBehavior.SnapshotAndReplace);
+                } else {
+                    _transform.BeginAnimation(TranslateTransform.YProperty, new DoubleAnimation(-offset, TimeSpan.Zero), HandoffBehavior.SnapshotAndReplace);
+                }
 
                 InvalidateMeasure();
             }
+        }
+
+        private void ResetScroll()
+        {
+            _offset = new Vector(0, 0);
+
+            _transform.BeginAnimation(TranslateTransform.XProperty, new DoubleAnimation(0, TimeSpan.Zero), HandoffBehavior.SnapshotAndReplace);
+            _transform.BeginAnimation(TranslateTransform.YProperty, new DoubleAnimation(0, TimeSpan.Zero), HandoffBehavior.SnapshotAndReplace);
+
+            InvalidateMeasure();
         }
 
         public void MakeItemVisible(object item)
@@ -274,6 +303,8 @@ namespace MediaBrowser.Theater.Presentation.Controls
                         notify.PropertyChanged += notify_PropertyChanged;
                     }
                 }
+
+                ResetScroll();
             } else {
                 if (e.NewItems != null) {
                     foreach (var item in e.NewItems) {
@@ -306,6 +337,8 @@ namespace MediaBrowser.Theater.Presentation.Controls
         protected override void OnItemsChanged(object sender, ItemsChangedEventArgs args)
         {
             CalculateItemSizes();
+
+            base.OnItemsChanged(sender, args);
         }
 
         private Size MeasureItem(object item)

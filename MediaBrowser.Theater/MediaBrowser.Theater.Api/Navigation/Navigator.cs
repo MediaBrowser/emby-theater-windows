@@ -63,6 +63,8 @@ namespace MediaBrowser.Theater.Api.Navigation
 
         public async Task Navigate(INavigationPath path)
         {
+            // major problem here: the lock is not re-entrant, and navigating while inside a navigation will deadlock the thread (waiting for itself to exit)
+            // todo change navigation code to cancel old nav requests when a new one is started, instead of locking
             using (await _navigationLock.LockAsync().ConfigureAwait(false)) {
 
                 // we give the navigation request to the current navigation context first, walking down the stack until we find a handler

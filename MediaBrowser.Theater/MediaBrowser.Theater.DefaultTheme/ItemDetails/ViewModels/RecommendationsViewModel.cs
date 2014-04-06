@@ -173,7 +173,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
         public bool HasSection(BaseItemDto item)
         {
-            return item != null;
+            return item != null && item.Type != "Person";
         }
 
         public Task<IItemDetailSection> GetSection(BaseItemDto item)

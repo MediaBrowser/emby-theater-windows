@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Plugins;

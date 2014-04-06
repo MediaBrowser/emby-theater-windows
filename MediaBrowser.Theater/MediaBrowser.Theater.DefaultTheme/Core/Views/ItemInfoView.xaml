@@ -20,8 +20,8 @@
         </Grid.RowDefinitions>
         
 <!--        <TextBlock Grid.Row="0" Text="{Binding DisplayName}" Style="{StaticResource Heading1TextBlockStyle}" HorizontalAlignment="Center" FontSize="52"/>-->
-        
-        <Grid Grid.Row="1">
+
+        <Grid Grid.Row="1" Visibility="{Binding ShowStats, Converter={StaticResource BooleanToVisibility}}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="10"/>
@@ -44,7 +44,7 @@
             <TextBlock Grid.Column="0" Grid.Row="2" Text="{Binding SeriesAirTimeLabel}" Style="{StaticResource SmallTextBlockStyle}" Opacity="0.5" HorizontalAlignment="Right" Visibility="{Binding HasAirTime, Converter={StaticResource BooleanToVisibility}}"/>
             <TextBlock Grid.Column="2" Grid.Row="2" Text="{Binding SeriesAirTime}" Style="{StaticResource SmallTextBlockStyle}" Visibility="{Binding HasAirTime, Converter={StaticResource BooleanToVisibility}}"/>
 
-            <TextBlock Grid.Column="0" Grid.Row="3" Text="{lex:Loc RatingLabel}" Style="{StaticResource SmallTextBlockStyle}" Opacity="0.5" HorizontalAlignment="Right"/>
+            <TextBlock Grid.Column="0" Grid.Row="3" Text="{lex:Loc RatingLabel}" Style="{StaticResource SmallTextBlockStyle}" Opacity="0.5" HorizontalAlignment="Right" Visibility="{Binding HasCommunityRating, Converter={StaticResource BooleanToVisibility}}"/>
             <controls:StarRating Grid.Column="2" Grid.Row="3" Rating="{Binding CommunityRating}" Visibility="{Binding HasCommunityRating, Converter={StaticResource BooleanToVisibility}}"/>
         </Grid>
 

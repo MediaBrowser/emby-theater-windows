@@ -51,9 +51,9 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
             get { return new Size(800, 700); }
         }
 
-        private async void LoadItems()
+        private void LoadItems()
         {
-            IEnumerable<IViewModel> items = _item.People.Select(p => new PersonListItemViewModel(p, _apiClient, _imageManager, _navigator));
+            IEnumerable<IViewModel> items = _item.People.Select(p => new PersonListItemViewModel(p, _apiClient, _imageManager, _sessionManager, _navigator));
 
             People.Clear();
             People.AddRange(items);
@@ -65,16 +65,28 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
     {
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
+        private readonly ISessionManager _sessionManager;
+        private readonly INavigator _navigator;
         private readonly BaseItemPerson _person;
 
         private Image _image;
         private CancellationTokenSource _imageCancellationTokenSource;
 
-        public PersonListItemViewModel(BaseItemPerson person, IApiClient apiClient, IImageManager imageManager, INavigator navigator)
+        public PersonListItemViewModel(BaseItemPerson person, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigator navigator)
         {
             _person = person;
             _apiClient = apiClient;
             _imageManager = imageManager;
+            _sessionManager = sessionManager;
+            _navigator = navigator;
+
+            NavigateCommand = new RelayCommand(arg => NavigateToPerson());
+        }
+
+        private async void NavigateToPerson()
+        {
+            var person = await _apiClient.GetPersonAsync(_person.Name, _sessionManager.CurrentUser.Id);
+            await _navigator.Navigate(Go.To.Item(person));
         }
 
         public string Name

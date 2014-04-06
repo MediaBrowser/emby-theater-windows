@@ -2,7 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Runtime.CompilerServices;
+using System.Security.Policy;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -25,6 +27,7 @@ using MediaBrowser.Plugins.DefaultTheme.Controls;
 using System.Linq;
 using System.Windows.Media;
 using ServiceStack.Text;
+using Image = System.Windows.Controls.Image;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
 {
@@ -61,12 +64,13 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
 
         // gloabl behaviour parameters
         private const int MaxPhotos = 50;
-        private const double MaxPhotoWidth = 200;
-        private const double MaxPhotoHeight = 200;
-        private const double PhotoScaleFactor = 4; // how many maxwidth photos should fixt across the screen
+        private const double MaxPhotoWidth = 1000;      // in photo pixels
+        private const double MaxPhotoHeight = 1000;
+        private const double MaxPhotoScaleFactor = 3.5; // how many maxwid+th photos should fixt across the screen
+        private const double PhotoScaleFactor = 4; // photo sizes  are rand-omly scaled by max b  1.0..4.0
         private const int NumLanes =  8;
         private const int MinAnimateTimeSecs = 4;
-        private const int MaxAnimateTimeSecs = 15;
+        private const int MaxAnimateTimeSecs = 30;
 
         private readonly DoubleAnimation[] _animations = new DoubleAnimation[NumLanes];
         private ImageViewerImage[] _photos;
@@ -84,9 +88,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
             _imageManager = imageManager;
             InitializeComponent();
 
-            Timeline.DesiredFrameRateProperty.OverrideMetadata(
-              typeof(Timeline),
-              new FrameworkPropertyMetadata { DefaultValue = 40 });
+            //Timeline.DesiredFrameRateProperty.OverrideMetadata(
+            //  typeof(Timeline),
+            //  new FrameworkPropertyMetadata { DefaultValue = 40 });
 
             for (var i = 0; i < _animations.Length; i++)
             {
@@ -100,13 +104,65 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
             this.Loaded += PhotoScreensaverWindow_Loaded;
         }
 
+        // Orientations.
+        private const int OrientationId = 0x0112;
+        public enum ExifOrientations : byte
+        {
+            Unknown = 0,
+            TopLeft = 1,
+            TopRight = 2,
+            BottomRight = 3,
+            BottomLeft = 4,
+            LeftTop = 5,
+            RightTop = 6,
+            RightBottom = 7,
+            LeftBottom = 8,
+        }
+
+        public enum Rotation
+        {
+            D0,
+            D90,
+            D180,
+            D270
+        }
+         private const string OrientationQuery = "System.Photo.Orientation";
+
+        // Return the image's orientation.
+         public static Rotation ImageOrientation(BitmapImage bitmapImage)
+        {
+          
+            var bitmapMetadata = bitmapImage.Metadata as BitmapMetadata;
+
+            if ((bitmapMetadata != null) && (bitmapMetadata.ContainsQuery(OrientationQuery)))
+            {
+                var orien = bitmapMetadata.GetQuery(OrientationQuery);
+
+                if (orien != null)
+                {
+                    switch ((PhotoScreensaverWindow.ExifOrientations) orien)
+                    {
+                        case ExifOrientations.RightTop:
+                            return Rotation.D90;
+                        case ExifOrientations.BottomRight:
+                            return Rotation.D180;
+                        case ExifOrientations.LeftBottom:
+                            return Rotation.D270;
+                    }
+                }
+            }
+
+             return Rotation.D0;
+        }
+
         private void ScreensaverCanvas_LayoutUpdated(object sender, EventArgs e)
         {
             _canvasWidth = (int)ScreensaverCanvas.ActualWidth;
             _canvasHeight = (int)ScreensaverCanvas.ActualHeight;
 
-            _canvasScaleX = (_canvasWidth / PhotoScaleFactor) / MaxPhotoWidth;
-            _canvasScaleY = _canvasScaleX * (_canvasHeight / _canvasWidth); // maintain aspect ratio
+            // we only scale one axis, leave other dependant to maintain aspect ratio
+            _canvasScaleX = (_canvasWidth / MaxPhotoScaleFactor) / MaxPhotoWidth;
+            _canvasScaleY = (_canvasHeight / MaxPhotoScaleFactor) / MaxPhotoHeight;  
         }
 
         private int _currentIndex = 0;
@@ -116,6 +172,42 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
         {
             LoadScreensaver();
         }
+
+       
+        private double MaxWidth(double aspectRatio)
+        {
+            double maxWidth;
+
+            if (aspectRatio >= 1)
+            {
+                maxWidth = MaxPhotoWidth*_canvasScaleX;
+            }
+            else
+            {
+                var maxHeight = MaxPhotoHeight*_canvasScaleY;
+                maxWidth = maxHeight * aspectRatio;
+            }
+
+            return maxWidth;
+        }
+
+        private double MaxHeight(double aspectRatio)
+        {
+            double maxHeight;
+
+            if (aspectRatio >= 1)
+            {
+                var maxWidth = MaxPhotoHeight * _canvasScaleY;
+                maxHeight = maxWidth * aspectRatio;
+            }
+            else
+            {
+                maxHeight = MaxPhotoHeight * _canvasScaleY;
+            }
+
+            return maxHeight;
+        }
+
 
         //
         // Get photo metatdata and convert it to urls for Photo
@@ -129,9 +221,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
                 ImageTypes = new[] { ImageType.Primary },
                 IncludeItemTypes = new[] { "Photo" },
                 Fields = new[] { ItemFields.PrimaryImageAspectRatio },
-                Limit = MaxPhotos,
-                SortBy = new[] { ItemSortBy.Random },
+                Limit = 2, //MaxPhotos,
+               // SortBy = new[] { ItemSortBy.Random },
                 Recursive = true,
+                NameStartsWith = "SCD1001",
+               
             });
 
             var ars = items.Items.Select(i => i.PrimaryImageAspectRatio).ToArray();
@@ -139,12 +233,13 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
             _photos  = items.Items.Select(i => new ImageViewerImage
             {
                 Caption = i.Name,
+                AspectRatio = i.OriginalPrimaryImageAspectRatio??1.0,
                 Url = _apiClient.GetImageUrl(i, new ImageOptions
                 {
                     ImageType = ImageType.Primary,
-                    MaxHeight = (int?) (MaxPhotoHeight * _canvasScaleY),
-                    MaxWidth = (int?)(MaxPhotoWidth * _canvasScaleX),
-                    Quality = 20
+                    MaxHeight = (int?)MaxHeight(i.OriginalPrimaryImageAspectRatio ?? 1.0),
+                    MaxWidth = (int?)MaxWidth(i.OriginalPrimaryImageAspectRatio ?? 1.0),
+                    Quality = 100
                 })
             }).ToArray();
 
@@ -152,21 +247,68 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
         }
 
    
-        private async Task<Image> GetNextPhoto()
+        private async Task<Image> GetNextPhoto(string url)
         {
             CurrentIndex++;
             var imageDownloadCancellationTokenSource = new CancellationTokenSource();
-            var photo = await _imageManager.GetRemoteImageAsync(_photos[CurrentIndex].Url, imageDownloadCancellationTokenSource.Token);
+            var photo = await _imageManager.GetRemoteImageAsync(url, imageDownloadCancellationTokenSource.Token);
             imageDownloadCancellationTokenSource.Token.ThrowIfCancellationRequested();
 
             return photo;
         }
 
-        private async Task<DoubleAnimation> StartNextPhotoAnimation(DoubleAnimation animation, bool completionFlag = false)
+        public async Task<System.IO.Stream> GetBitmapStream(string url)
+        {
+            return await Task.Run(() => _apiClient.GetImageStreamAsync(url));
+        }
+
+        // return a range 1..PhotoScaleFactor
+        private double RadomPhotoScale()
+        {
+            var sf = 1 + (_random.NextDouble()*(PhotoScaleFactor - 1));
+            return sf;
+        }
+
+        private  async Task<BitmapImage> GetNextPhotoBitmap()
+        {
+            CurrentIndex++;
+            var url = _photos[CurrentIndex].Url;
+            var aspectRatio = _photos[CurrentIndex].AspectRatio;
+            var cancellationToken = new CancellationToken();
+            var httpStream =  await GetBitmapStream(url);
+            cancellationToken.ThrowIfCancellationRequested();
+
+            int widthPixels, heightPixels;
+            if (aspectRatio >= 1.0)
+            {
+                widthPixels = (int) ((MaxPhotoWidth *_canvasScaleX) / RadomPhotoScale());
+                heightPixels = (int) (widthPixels/aspectRatio);
+            }
+            else
+            {
+                heightPixels = (int)((MaxPhotoHeight * _canvasScaleY) / RadomPhotoScale());
+                widthPixels = (int)(heightPixels * aspectRatio);
+            }
+
+            var bitmap = new BitmapImage();
+            RenderOptions.SetBitmapScalingMode(bitmap, BitmapScalingMode.Fant);
+            bitmap.BeginInit();
+            bitmap.DecodePixelWidth = widthPixels;
+            bitmap.DecodePixelHeight = heightPixels;
+            bitmap.StreamSource = httpStream;
+            bitmap.EndInit();
+
+            return bitmap;
+        }
+
+        private async Task<DoubleAnimation> StartNextPhotoAnimation(DoubleAnimation animation, int laneNum, bool completionFlag = false)
         {
             var photoindex = CurrentIndex;
-            var photo = await GetNextPhoto();
+            //var photo = await GetNextPhoto();
 
+            var photo = new Image { Source = await GetNextPhotoBitmap() };
+            //photo.LayoutTransform = new RotateTransform(45, 25, 25);
+           
             var bi = photo.Source as BitmapImage;
             Debug.Assert(bi != null);
             var photoWidth = bi.Width;
@@ -183,18 +325,20 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
             {
                 animation.Completed -= handler;
                 ScreensaverCanvas.Children.Remove(photo);
-                StartNextPhotoAnimation(animation, true);
+                await StartNextPhotoAnimation(animation, laneNum, true);
             };
             animation.Completed += handler;
 
-            var r = _random.Next(0, NumLanes - 1);
-            double xStart = ((_canvasWidth - photoWidth)  / (NumLanes - 1)) * r; // and xfinish, stays in one lane
+            //var r = _random.Next(0, NumLanes - 1);
 
+            //double xStart = ((_canvasWidth - photoWidth)  / (NumLanes - 1)) * r; // and xfinish, stays in one lane
+            var r = _random.Next(0, (int)_canvasWidth);
+            double xStart = r;
             //_logger.Debug("xxx {0}", photoindex);
-            _logger.Debug("{0} Dur {1} ({2},{3}) From {4} - {5}  xStart {6} r {7} Canvas({8}, {9}) {10}", photoindex, animation.Duration, (int)photoWidth, (int)photoHeight, (int)animation.From, (int)animation.To, (int)xStart, r, (int) _canvasWidth, (int) _canvasHeight, completionFlag);
+            _logger.Debug("{0} {1} Dur {2} ({3},{4}) From {5} - {6}  xStart {7} r {8} Canvas({9}, {10}) {11}", photoindex, laneNum, animation.Duration, (int)photoWidth, (int)photoHeight, (int)animation.From, (int)animation.To, (int)xStart, r, (int) _canvasWidth, (int) _canvasHeight, completionFlag);
             Canvas.SetLeft(photo, xStart);
 
-            photo.Stretch = Stretch.UniformToFill;
+           // photo.Stretch = Stretch.UniformToFill;
             photo.Name = "Photo" + CurrentIndex;
 
             ScreensaverCanvas.Children.Add(photo);
@@ -220,7 +364,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
             {
                 if (i >= _photos.Length)
                     continue;
-                StartNextPhotoAnimation(_animations[i]);
+              
+                await StartNextPhotoAnimation(_animations[i], i);
             }
         }
       

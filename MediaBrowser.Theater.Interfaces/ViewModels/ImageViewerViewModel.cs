@@ -316,5 +316,6 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
 
         public string Url { get; set; }
         public string Caption { get; set; }
+        public double AspectRatio { get; set; }
     }
 }

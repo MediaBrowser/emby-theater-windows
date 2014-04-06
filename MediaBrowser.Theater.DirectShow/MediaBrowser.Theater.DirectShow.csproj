@@ -93,6 +93,7 @@
     <Compile Include="Helpers.cs" />
     <Compile Include="Imports.cs" />
     <Compile Include="InterfaceOverride\EVR.cs" />
+    <Compile Include="InterfaceOverride\MFUtils.cs" />
     <Compile Include="InternalDirectShowPlayer.cs" />
     <Compile Include="LavInterfaces.cs" />
     <Compile Include="MadvrInterface.cs" />
@@ -111,6 +112,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="StringProcessing.cs" />
+    <Compile Include="Subtitles.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

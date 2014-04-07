@@ -4,6 +4,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
+        xmlns:lex="http://wpflocalizeextension.codeplex.com"
+        lex:LocalizeDictionary.DesignCulture="en"
+        lex:ResxLocalizationProvider.DefaultAssembly="MediaBrowser.Theater.DefaultTheme"
+        lex:ResxLocalizationProvider.DefaultDictionary="Strings"
         mc:Ignorable="d"
         d:DesignHeight="300" d:DesignWidth="300"
         HorizontalAlignment="Stretch"
@@ -17,7 +21,14 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
-        <controls:ExtendedContentControl Content="{Binding Image}" Margin="4" Height="100" MinWidth="67"/>
+        <Grid Height="100" MinWidth="178" Margin="4" Background="{StaticResource BackgroundBrush3}">
+            <controls:ExtendedContentControl Content="{Binding Image}" Height="100" MinWidth="178"
+                                             Visibility="{Binding ShowImage, Converter={StaticResource BooleanToVisibility}}" />
+            <TextBlock Text="{lex:Loc DetailSection_ChapterUnwatched}" HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       Visibility="{Binding IsUnwatched, Converter={StaticResource BooleanToVisibility}}"
+                       Style="{StaticResource SmallTextBlockStyle}" />
+        </Grid>
 
         <StackPanel Grid.Column="1" Margin="10,4,14,4">
             <TextBlock Text="{Binding Name}" />

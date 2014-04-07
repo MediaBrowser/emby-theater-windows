@@ -142,6 +142,15 @@ namespace MediaBrowser.Theater.DefaultTheme.Resources.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to @DetailSection_ChapterUnwatched.
+        /// </summary>
+        internal static string DetailSection_ChapterUnwatched {
+            get {
+                return ResourceManager.GetString("DetailSection_ChapterUnwatched", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to @DetailSection_EpisodesHeader.
         /// </summary>
         internal static string DetailSection_EpisodesHeader {

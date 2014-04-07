@@ -153,6 +153,10 @@
     <value>@DetailSection_ChaptersHeader</value>
     <comment>Chapters list section title</comment>
   </data>
+  <data name="DetailSection_ChapterUnwatched" xml:space="preserve">
+    <value>@DetailSection_ChapterUnwatched</value>
+    <comment>Text displayed in place of an unwatched chapter image</comment>
+  </data>
   <data name="DetailSection_EpisodesHeader" xml:space="preserve">
     <value>@DetailSection_EpisodesHeader</value>
     <comment>Episode list section title</comment>

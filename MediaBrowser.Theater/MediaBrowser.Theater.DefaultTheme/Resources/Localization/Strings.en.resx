@@ -144,6 +144,9 @@
   <data name="DetailSection_ChaptersHeader" xml:space="preserve">
     <value>Chapters</value>
   </data>
+  <data name="DetailSection_ChapterUnwatched" xml:space="preserve">
+    <value>Unwatched</value>
+  </data>
   <data name="DetailSection_EpisodesHeader" xml:space="preserve">
     <value>Episodes</value>
   </data>

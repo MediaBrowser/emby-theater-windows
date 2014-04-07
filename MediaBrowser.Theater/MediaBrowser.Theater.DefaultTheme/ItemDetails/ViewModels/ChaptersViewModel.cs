@@ -76,9 +76,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
             Items.Clear();
 
             if (_item.Chapters != null) {
-                var filter = Theme.Instance.Configuration.ShowOnlyWatchedChapters && _item.UserData != null;
-                var visibleChapters = filter ? _item.Chapters.Where(c => c.StartPositionTicks < _item.UserData.PlaybackPositionTicks) : _item.Chapters;
-                IEnumerable<IViewModel> items = visibleChapters.Select(c => new ChapterViewModel(_item, c, _apiClient, _imageManager));
+                IEnumerable<IViewModel> items = _item.Chapters.Select(c => new ChapterViewModel(_item, c, _apiClient, _imageManager));
                 Items.AddRange(items);
             }
 
@@ -119,6 +117,20 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
                 TimeSpan time = TimeSpan.FromTicks(_chapter.StartPositionTicks);
                 return time.ToString(time.TotalHours < 1 ? "m':'ss" : "h':'mm':'ss");
             }
+        }
+
+        public bool IsUnwatched
+        {
+            get
+            {
+                var filter = Theme.Instance.Configuration.ShowOnlyWatchedChapters && _item.UserData != null;
+                return filter && (_item.UserData.Played || _chapter.StartPositionTicks >= _item.UserData.PlaybackPositionTicks);
+            }
+        }
+
+        public bool ShowImage
+        {
+            get { return !IsUnwatched; }
         }
 
         public ICommand PlayCommand { get; private set; }
@@ -203,12 +215,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
         public bool HasSection(BaseItemDto item)
         {
-            return item.Chapters != null && item.Chapters.Count > 0 && (!Theme.Instance.Configuration.ShowOnlyWatchedChapters || HasWatchedAny(item));
-        }
-
-        private bool HasWatchedAny(BaseItemDto item)
-        {
-            return item.UserData == null || item.UserData.Played || (item.Chapters != null && item.UserData.PlaybackPositionTicks > item.Chapters.First().StartPositionTicks);
+            return item.Chapters != null && item.Chapters.Count > 0;
         }
 
         public Task<IEnumerable<IItemDetailSection>> GetSections(BaseItemDto item)

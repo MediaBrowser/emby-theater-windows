@@ -42,7 +42,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
             bool verticalScrollEnabled = ScrollViewer.GetVerticalScrollBarVisibility(this) != ScrollBarVisibility.Disabled;
 
             // wrap selected index if we are at the end and wrapping is enabled
-            if (WrapSelection) {
+            if (WrapSelection && SelectedIndex != -1) {
                 if (e.Key == Key.Left && SelectedIndex == 0 && horizontalScrollEnabled) {
                     SelectedIndex = Items.Count - 1;
                     FocusSelectedItem();
@@ -64,6 +64,27 @@ namespace MediaBrowser.Theater.Presentation.Controls
                 if (e.Key == Key.Down && SelectedIndex == Items.Count - 1 && verticalScrollEnabled) {
                     SelectedIndex = 0;
                     FocusSelectedItem();
+                    return;
+                }
+            } else {
+                // navigate out if we are at the end and wrapping is disabled
+                if (e.Key == Key.Left && (SelectedIndex == 0 || SelectedIndex == -1) && horizontalScrollEnabled) {
+                    MoveFocus(new TraversalRequest(FocusNavigationDirection.Left));
+                    return;
+                }
+
+                if (e.Key == Key.Right && (SelectedIndex == Items.Count - 1 || SelectedIndex == -1) && horizontalScrollEnabled) {
+                    MoveFocus(new TraversalRequest(FocusNavigationDirection.Right));
+                    return;
+                }
+
+                if (e.Key == Key.Up && (SelectedIndex == 0 || SelectedIndex == -1) && verticalScrollEnabled) {
+                    MoveFocus(new TraversalRequest(FocusNavigationDirection.Up));
+                    return;
+                }
+
+                if (e.Key == Key.Down && (SelectedIndex == Items.Count - 1 || SelectedIndex == -1) && verticalScrollEnabled) {
+                    MoveFocus(new TraversalRequest(FocusNavigationDirection.Down));
                     return;
                 }
             }

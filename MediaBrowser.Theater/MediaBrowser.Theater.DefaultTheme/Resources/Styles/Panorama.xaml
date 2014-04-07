@@ -7,7 +7,7 @@
         <TextBlock Text="{Binding}" Margin="50,0,30,0">
             <TextBlock.Style>
                 <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource Heading1TextBlockStyle}">
-                    <Setter Property="Opacity" Value="0.15"/>
+                    <Setter Property="Opacity" Value="0.2"/>
                     <Style.Triggers>
                         <MultiDataTrigger>
                             <MultiDataTrigger.Conditions>

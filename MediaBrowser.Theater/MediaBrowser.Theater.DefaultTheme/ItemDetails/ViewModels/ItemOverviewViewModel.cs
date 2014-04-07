@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -88,10 +89,10 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
             return item != null;
         }
 
-        public Task<IItemDetailSection> GetSection(BaseItemDto item)
+        public Task<IEnumerable<IItemDetailSection>> GetSections(BaseItemDto item)
         {
             IItemDetailSection section = new ItemOverviewViewModel(item, _apiClient, _imageManager);
-            return Task.FromResult(section);
+            return Task.FromResult<IEnumerable<IItemDetailSection>>(new[] { section });
         }
     }
 }

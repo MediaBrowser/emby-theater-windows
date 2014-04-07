@@ -24,7 +24,7 @@
             <TextBlock Text="{Binding Name}" />
 
             <Grid>
-                <TextBlock Text="{Binding Episodes}" />
+                <TextBlock Text="{Binding Detail}" />
                 <controls1:StarRating Rating="{Binding Rating}"
                                       Visibility="{Binding HasRating, Converter={StaticResource BooleanToVisibility}}"
                                       HorizontalAlignment="Right" />

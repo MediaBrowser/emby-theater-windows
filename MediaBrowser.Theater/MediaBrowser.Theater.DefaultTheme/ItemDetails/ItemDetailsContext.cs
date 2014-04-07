@@ -47,15 +47,15 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails
             if (_viewModel == null || !_viewModel.IsActive) {
                 var item = await _apiClient.GetItemAsync(Item.Id, _sessionManager.CurrentUser.Id);
 
-                var sections = new List<IItemDetailSection>();
+                var allSections = new List<IItemDetailSection>();
                 foreach (var generator in _generators.Where(g => g.HasSection(item))) {
-                    var section = await generator.GetSection(item);
-                    if (section != null) {
-                        sections.Add(section);
+                    var sections = await generator.GetSections(item);
+                    if (sections != null) {
+                        allSections.AddRange(sections);
                     }
                 }
-                
-                _viewModel = new ItemDetailsViewModel(item, sections.OrderBy(s => s.SortOrder));
+
+                _viewModel = new ItemDetailsViewModel(item, allSections.OrderBy(s => s.SortOrder));
             }
 
             await _presenter.ShowPage(_viewModel);
@@ -65,7 +65,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails
     public interface IItemDetailSectionGenerator
     {
         bool HasSection(BaseItemDto item);
-        Task<IItemDetailSection> GetSection(BaseItemDto item);
+        Task<IEnumerable<IItemDetailSection>> GetSections(BaseItemDto item);
     }
 
     public interface IItemDetailSection

@@ -176,10 +176,10 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
             return item != null && item.Type != "Person";
         }
 
-        public Task<IItemDetailSection> GetSection(BaseItemDto item)
+        public Task<IEnumerable<IItemDetailSection>> GetSections(BaseItemDto item)
         {
             IItemDetailSection section = new RecommendationsViewModel(item, _apiClient, _imageManager, _serverEvents, _navigator, _sessionManager);
-            return Task.FromResult(section);
+            return Task.FromResult<IEnumerable<IItemDetailSection>>(new[] { section });
         }
     }
 }

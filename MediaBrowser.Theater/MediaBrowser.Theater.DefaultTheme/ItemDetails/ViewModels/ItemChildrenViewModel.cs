@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -222,20 +223,14 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
         private async void LoadItems()
         {
             var result = await ItemChildrenViewModel.Query(_item, _apiClient, _sessionManager);
-
-            IEnumerable<IViewModel> items;
-            if (_item.Type == "Season") {
-                items = result.Items.Select(i => new EpisodeListItemViewModel(i, _apiClient, _imageManager, _navigator));
-            } else {
-                items = result.Items.Select(i => new ItemInfoViewModel(i));
-            }
+            IEnumerable<IViewModel> items = result.Items.Select(i => new ListItemViewModel(i, _apiClient, _imageManager, _navigator));
 
             Items.Clear();
             Items.AddRange(items);
         }
     }
 
-    public class EpisodeListItemViewModel
+    public class ListItemViewModel
         : BaseViewModel
     {
         private readonly BaseItemDto _item;
@@ -248,19 +243,27 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
             get { return _item.Name; }
         }
 
-        public string Episodes
+        public string Detail
         {
             get
             {
-                if (_item.IndexNumber == null) {
-                    return null;
+                if (_item.Type == "Episode") {
+                    if (_item.IndexNumber == null) {
+                        return null;
+                    }
+
+                    if (_item.IndexNumberEnd != null) {
+                        return string.Format("S{0}, E{1}-{2}", _item.ParentIndexNumber, _item.IndexNumber, _item.IndexNumberEnd);
+                    }
+
+                    return string.Format("S{0}, E{1}", _item.ParentIndexNumber, _item.IndexNumber);
                 }
 
-                if (_item.IndexNumberEnd != null) {
-                    return string.Format("S{0}, E{1}-{2}", _item.ParentIndexNumber, _item.IndexNumber, _item.IndexNumberEnd);
+                if (_item.ProductionYear != null) {
+                    return _item.ProductionYear.Value.ToString(CultureInfo.InvariantCulture);
                 }
 
-                return string.Format("S{0}, E{1}", _item.ParentIndexNumber, _item.IndexNumber);
+                return null;
             }
         }
 
@@ -274,7 +277,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
             get { return _item.CommunityRating != null; }
         }
 
-        public EpisodeListItemViewModel(BaseItemDto item, IApiClient apiClient, IImageManager imageManager, INavigator navigator)
+        public ListItemViewModel(BaseItemDto item, IApiClient apiClient, IImageManager imageManager, INavigator navigator)
         {
             _item = item;
 
@@ -310,18 +313,18 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
             return item != null && item.IsFolder;
         }
 
-        public async Task<IItemDetailSection> GetSection(BaseItemDto item)
+        public async Task<IEnumerable<IItemDetailSection>> GetSections(BaseItemDto item)
         {
             var result = await ItemChildrenViewModel.Query(item, _apiClient, _sessionManager);
             if (result.Items.Length == 1) {
-                return await GetSection(result.Items[0]);
+                return await GetSections(result.Items[0]);
             }
 
-            if (item.Type == "Season") {
-                return new ItemChildrenListViewModel(item, _apiClient, _sessionManager, _imageManager, _navigator);
+            if (item.Type == "Season" || result.Items.Length > 8) {
+                return new[] { new ItemChildrenListViewModel(item, _apiClient, _sessionManager, _imageManager, _navigator) };
             }
 
-            return new ItemChildrenViewModel(item, _apiClient, _imageManager, _serverEvents, _navigator, _sessionManager);
+            return new[] { new ItemChildrenViewModel(item, _apiClient, _imageManager, _serverEvents, _navigator, _sessionManager) };
         }
     }
 }

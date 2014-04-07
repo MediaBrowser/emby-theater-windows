@@ -182,7 +182,7 @@
         <views5:ItemChildrenListView/>
     </DataTemplate>
     
-    <DataTemplate DataType="{x:Type viewModels5:EpisodeListItemViewModel}">
+    <DataTemplate DataType="{x:Type viewModels5:ListItemViewModel}">
         <views5:EpisodeListItemView/>
     </DataTemplate>
     

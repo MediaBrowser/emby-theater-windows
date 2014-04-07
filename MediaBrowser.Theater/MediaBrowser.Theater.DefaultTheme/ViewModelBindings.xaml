@@ -178,14 +178,6 @@
         <views5:RecommendationsView/>
     </DataTemplate>
     
-    <DataTemplate DataType="{x:Type viewModels5:ItemChildrenViewModel}">
-        <views5:ItemChildrenView/>
-    </DataTemplate>
-    
-    <DataTemplate DataType="{x:Type viewModels5:ItemChildrenListViewModel}">
-        <views5:ItemChildrenListView/>
-    </DataTemplate>
-    
     <DataTemplate DataType="{x:Type viewModels5:ListItemViewModel}">
         <views5:EpisodeListItemView/>
     </DataTemplate>

@@ -1,19 +1,11 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
-using System.Runtime.CompilerServices;
-using System.Security.Policy;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Forms.VisualStyles;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using MediaBrowser.Common;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
@@ -23,10 +15,8 @@ using MediaBrowser.Model.Querying;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.ViewModels;
-using MediaBrowser.Plugins.DefaultTheme.Controls;
 using System.Linq;
 using System.Windows.Media;
-using ServiceStack.Text;
 using Image = System.Windows.Controls.Image;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
@@ -59,18 +49,19 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
     {
         private double _canvasWidth;
         private double _canvasHeight;
-        private double _canvasScaleX;
-        private double _canvasScaleY;
+        private double _maxRenderWidth;
+        private double _maxRenderHeight;
 
         // gloabl behaviour parameters
         private const int MaxPhotos = 50;
-        private const double MaxPhotoWidth = 1000;      // in photo pixels
-        private const double MaxPhotoHeight = 1000;
-        private const double MaxPhotoScaleFactor = 3.5; // how many maxwid+th photos should fixt across the screen
-        private const double PhotoScaleFactor = 4; // photo sizes  are rand-omly scaled by max b  1.0..4.0
+        private const double MaxDownloadWidth = 100;      // in photo pixels
+        private const double MaxDownloadHeight = 100;
+        private const double MaxPhotoScaleFactorWidth = 4; // how many maxwidth photos should fixt across the screen
+        private const double MaxPhotoScaleFactorHeight = 2; // how many maxwidth photos should fixt across the screen
+        private const double PhotoScaleFactor = 3.5; // photo sizes  are rand-omly scaled by max b  1.0..4.0
         private const int NumLanes =  8;
         private const int MinAnimateTimeSecs = 4;
-        private const int MaxAnimateTimeSecs = 30;
+        private const int MaxAnimateTimeSecs = 15;
 
         private readonly DoubleAnimation[] _animations = new DoubleAnimation[NumLanes];
         private ImageViewerImage[] _photos;
@@ -104,65 +95,16 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
             this.Loaded += PhotoScreensaverWindow_Loaded;
         }
 
-        // Orientations.
-        private const int OrientationId = 0x0112;
-        public enum ExifOrientations : byte
-        {
-            Unknown = 0,
-            TopLeft = 1,
-            TopRight = 2,
-            BottomRight = 3,
-            BottomLeft = 4,
-            LeftTop = 5,
-            RightTop = 6,
-            RightBottom = 7,
-            LeftBottom = 8,
-        }
-
-        public enum Rotation
-        {
-            D0,
-            D90,
-            D180,
-            D270
-        }
-         private const string OrientationQuery = "System.Photo.Orientation";
-
-        // Return the image's orientation.
-         public static Rotation ImageOrientation(BitmapImage bitmapImage)
-        {
-          
-            var bitmapMetadata = bitmapImage.Metadata as BitmapMetadata;
-
-            if ((bitmapMetadata != null) && (bitmapMetadata.ContainsQuery(OrientationQuery)))
-            {
-                var orien = bitmapMetadata.GetQuery(OrientationQuery);
-
-                if (orien != null)
-                {
-                    switch ((PhotoScreensaverWindow.ExifOrientations) orien)
-                    {
-                        case ExifOrientations.RightTop:
-                            return Rotation.D90;
-                        case ExifOrientations.BottomRight:
-                            return Rotation.D180;
-                        case ExifOrientations.LeftBottom:
-                            return Rotation.D270;
-                    }
-                }
-            }
-
-             return Rotation.D0;
-        }
-
+       
         private void ScreensaverCanvas_LayoutUpdated(object sender, EventArgs e)
         {
             _canvasWidth = (int)ScreensaverCanvas.ActualWidth;
             _canvasHeight = (int)ScreensaverCanvas.ActualHeight;
 
-            // we only scale one axis, leave other dependant to maintain aspect ratio
-            _canvasScaleX = (_canvasWidth / MaxPhotoScaleFactor) / MaxPhotoWidth;
-            _canvasScaleY = (_canvasHeight / MaxPhotoScaleFactor) / MaxPhotoHeight;  
+            // We calculate both x&y, but when we create the photo bitmap
+            // we only scale in one dimension per photo, and cal other dependant to maintain aspect ratio
+            _maxRenderWidth = _canvasWidth / MaxPhotoScaleFactorWidth;
+            _maxRenderHeight = _maxRenderWidth; //_canvasHeight / MaxPhotoScaleFactorHeight;  
         }
 
         private int _currentIndex = 0;
@@ -174,35 +116,33 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
         }
 
        
-        private double MaxWidth(double aspectRatio)
+        private double MaxDownloadWidthAR(double aspectRatio)
         {
             double maxWidth;
 
             if (aspectRatio >= 1)
             {
-                maxWidth = MaxPhotoWidth*_canvasScaleX;
+                maxWidth = MaxDownloadWidth;
             }
             else
             {
-                var maxHeight = MaxPhotoHeight*_canvasScaleY;
-                maxWidth = maxHeight * aspectRatio;
+                maxWidth = MaxDownloadHeight * aspectRatio;
             }
 
             return maxWidth;
         }
 
-        private double MaxHeight(double aspectRatio)
+        private double MaxDownloadHeightAR(double aspectRatio)
         {
             double maxHeight;
 
             if (aspectRatio >= 1)
             {
-                var maxWidth = MaxPhotoHeight * _canvasScaleY;
-                maxHeight = maxWidth * aspectRatio;
+                maxHeight = MaxDownloadWidth / aspectRatio;
             }
             else
             {
-                maxHeight = MaxPhotoHeight * _canvasScaleY;
+                maxHeight = MaxDownloadHeight;
             }
 
             return maxHeight;
@@ -224,8 +164,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
                 Limit = 2, //MaxPhotos,
                // SortBy = new[] { ItemSortBy.Random },
                 Recursive = true,
-                NameStartsWith = "SCD1001",
-               
             });
 
             var ars = items.Items.Select(i => i.PrimaryImageAspectRatio).ToArray();
@@ -237,8 +175,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
                 Url = _apiClient.GetImageUrl(i, new ImageOptions
                 {
                     ImageType = ImageType.Primary,
-                    MaxHeight = (int?)MaxHeight(i.OriginalPrimaryImageAspectRatio ?? 1.0),
-                    MaxWidth = (int?)MaxWidth(i.OriginalPrimaryImageAspectRatio ?? 1.0),
+                    MaxWidth = (int?)MaxDownloadWidthAR(i.OriginalPrimaryImageAspectRatio ?? 1.0),
+                    MaxHeight = (int?)MaxDownloadHeightAR(i.OriginalPrimaryImageAspectRatio ?? 1.0),
                     Quality = 100
                 })
             }).ToArray();
@@ -278,15 +216,17 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
             var httpStream =  await GetBitmapStream(url);
             cancellationToken.ThrowIfCancellationRequested();
 
+
+            // calculate the actaul render (pixels) size. Idpendant of  download size
             int widthPixels, heightPixels;
             if (aspectRatio >= 1.0)
             {
-                widthPixels = (int) ((MaxPhotoWidth *_canvasScaleX) / RadomPhotoScale());
+                widthPixels = (int) (_maxRenderWidth / RadomPhotoScale());
                 heightPixels = (int) (widthPixels/aspectRatio);
             }
             else
             {
-                heightPixels = (int)((MaxPhotoHeight * _canvasScaleY) / RadomPhotoScale());
+                heightPixels = (int)(_maxRenderHeight / RadomPhotoScale());
                 widthPixels = (int)(heightPixels * aspectRatio);
             }
 
@@ -301,19 +241,16 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
             return bitmap;
         }
 
-        private async Task<DoubleAnimation> StartNextPhotoAnimation(DoubleAnimation animation, int laneNum, bool completionFlag = false)
+        private async Task<DoubleAnimation> StartNextPhotoAnimation(DoubleAnimation animation, bool completionFlag = false)
         {
             var photoindex = CurrentIndex;
-            //var photo = await GetNextPhoto();
-
+            
             var photo = new Image { Source = await GetNextPhotoBitmap() };
-            //photo.LayoutTransform = new RotateTransform(45, 25, 25);
            
             var bi = photo.Source as BitmapImage;
             Debug.Assert(bi != null);
             var photoWidth = bi.Width;
             var photoHeight = bi.Height;
-
             
             animation.Duration = new Duration(TimeSpan.FromSeconds(_random.Next(MinAnimateTimeSecs, MaxAnimateTimeSecs)));
             animation.From = - photoHeight;                // y start
@@ -325,17 +262,17 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
             {
                 animation.Completed -= handler;
                 ScreensaverCanvas.Children.Remove(photo);
-                await StartNextPhotoAnimation(animation, laneNum, true);
+                await StartNextPhotoAnimation(animation, true);
             };
             animation.Completed += handler;
 
             //var r = _random.Next(0, NumLanes - 1);
 
             //double xStart = ((_canvasWidth - photoWidth)  / (NumLanes - 1)) * r; // and xfinish, stays in one lane
-            var r = _random.Next(0, (int)_canvasWidth);
+            var r = _random.Next(0, (int)_canvasWidth - (int) photoWidth);
             double xStart = r;
-            //_logger.Debug("xxx {0}", photoindex);
-            _logger.Debug("{0} {1} Dur {2} ({3},{4}) From {5} - {6}  xStart {7} r {8} Canvas({9}, {10}) {11}", photoindex, laneNum, animation.Duration, (int)photoWidth, (int)photoHeight, (int)animation.From, (int)animation.To, (int)xStart, r, (int) _canvasWidth, (int) _canvasHeight, completionFlag);
+           
+            _logger.Debug("{0} Dur {1} ({2},{3}) From {4} - {5}  xStart {6} r {7} Canvas({8}, {9}) {10}", photoindex, animation.Duration, (int)photoWidth, (int)photoHeight, (int)animation.From, (int)animation.To, (int)xStart, r, (int) _canvasWidth, (int) _canvasHeight, completionFlag);
             Canvas.SetLeft(photo, xStart);
 
            // photo.Stretch = Stretch.UniformToFill;
@@ -359,13 +296,13 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
                 return;
             }
 
-            
+            CurrentIndex = -1;
             for (var i = 0; i < NumLanes; i++)
             {
                 if (i >= _photos.Length)
                     continue;
               
-                await StartNextPhotoAnimation(_animations[i], i);
+                await StartNextPhotoAnimation(_animations[i]);
             }
         }
       

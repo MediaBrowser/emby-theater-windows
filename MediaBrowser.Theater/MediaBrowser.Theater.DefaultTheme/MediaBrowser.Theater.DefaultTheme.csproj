@@ -101,6 +101,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Core\Views\HomeCommandIconView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Core\Views\ImageSlideshowView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -356,6 +360,7 @@
       <DependentUpon>StarRating.xaml</DependentUpon>
     </Compile>
     <Compile Include="Core\Commands\ExitMenuCommand.cs" />
+    <Compile Include="Core\Commands\HomeCommand.cs" />
     <Compile Include="Core\Commands\RestartMenuCommand.cs" />
     <Compile Include="Core\Commands\ShutdownMenuCommand.cs" />
     <Compile Include="Core\Commands\SleepMenuCommand.cs" />
@@ -379,6 +384,9 @@
     </Compile>
     <Compile Include="Core\Views\GlobalCommandView.xaml.cs">
       <DependentUpon>GlobalCommandView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Views\HomeCommandIconView.xaml.cs">
+      <DependentUpon>HomeCommandIconView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Core\Views\ImageSlideshowView.xaml.cs">
       <DependentUpon>ImageSlideshowView.xaml</DependentUpon>

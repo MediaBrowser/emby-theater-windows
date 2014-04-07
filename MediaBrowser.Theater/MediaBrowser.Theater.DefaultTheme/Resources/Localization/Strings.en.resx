@@ -141,6 +141,9 @@
   <data name="GenreLabel" xml:space="preserve">
     <value>Genres</value>
   </data>
+  <data name="HomeCommand" xml:space="preserve">
+    <value>Home</value>
+  </data>
   <data name="Home_LatestEpisodes_Title" xml:space="preserve">
     <value>Latest Episodes</value>
   </data>

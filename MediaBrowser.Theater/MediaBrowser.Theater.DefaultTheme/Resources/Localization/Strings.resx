@@ -149,6 +149,10 @@
     <value>@GenreLabel</value>
     <comment>Genre list label</comment>
   </data>
+  <data name="HomeCommand" xml:space="preserve">
+    <value>@HomeCommand</value>
+    <comment>The display name of the button to navigate to the home page</comment>
+  </data>
   <data name="Home_LatestEpisodes_Title" xml:space="preserve">
     <value>@Home_LatestEpisodes_Title</value>
     <comment>Section title for latest episodes</comment>

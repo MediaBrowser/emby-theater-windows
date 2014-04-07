@@ -145,6 +145,34 @@
     <value>@DateLabel</value>
     <comment>Date label</comment>
   </data>
+  <data name="DetailSection_AlbumsHeader" xml:space="preserve">
+    <value>@DetailSection_AlbumsHeader</value>
+    <comment>Album list section title</comment>
+  </data>
+  <data name="DetailSection_EpisodesHeader" xml:space="preserve">
+    <value>@DetailSection_EpisodesHeader</value>
+    <comment>Episode list section title</comment>
+  </data>
+  <data name="DetailSection_ItemsHeader" xml:space="preserve">
+    <value>@DetailSection_ItemsHeader</value>
+    <comment>Generic item list section title</comment>
+  </data>
+  <data name="DetailSection_MoviesHeader" xml:space="preserve">
+    <value>@DetailSection_MoviesHeader</value>
+    <comment>Movies list section title</comment>
+  </data>
+  <data name="DetailSection_SeasonsHeader" xml:space="preserve">
+    <value>@DetailSection_SeasonsHeader</value>
+    <comment>Season list section title</comment>
+  </data>
+  <data name="DetailSection_SeriesHeader" xml:space="preserve">
+    <value>@DetailSection_SeriesHeader</value>
+    <comment>Series list section title</comment>
+  </data>
+  <data name="DetailSection_TracksHeader" xml:space="preserve">
+    <value>@DetailSection_TracksHeader</value>
+    <comment>Track list section title</comment>
+  </data>
   <data name="GenreLabel" xml:space="preserve">
     <value>@GenreLabel</value>
     <comment>Genre list label</comment>

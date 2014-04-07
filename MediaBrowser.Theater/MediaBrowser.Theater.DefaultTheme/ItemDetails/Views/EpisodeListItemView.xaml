@@ -24,7 +24,7 @@
             <TextBlock Text="{Binding Name}" />
 
             <Grid>
-                <TextBlock Text="{Binding Detail}" />
+                <TextBlock Text="{Binding Detail}" Opacity="0.8" />
                 <controls1:StarRating Rating="{Binding Rating}"
                                       Visibility="{Binding HasRating, Converter={StaticResource BooleanToVisibility}}"
                                       HorizontalAlignment="Right" />

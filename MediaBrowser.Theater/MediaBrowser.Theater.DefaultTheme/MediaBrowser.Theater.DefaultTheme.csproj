@@ -189,6 +189,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="ItemDetails\Views\ItemsGridView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ItemDetails\Views\ItemsListView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ItemDetails\Views\ItemOverviewView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -455,8 +463,10 @@
     <Compile Include="ItemDetails\ItemDetailsContext.cs" />
     <Compile Include="ItemDetails\ViewModels\ItemChildrenViewModel.cs" />
     <Compile Include="ItemDetails\ViewModels\ItemDetailsViewModel.cs" />
+    <Compile Include="ItemDetails\ViewModels\ItemListViewModel.cs" />
     <Compile Include="ItemDetails\ViewModels\ItemOverviewViewModel.cs" />
     <Compile Include="ItemDetails\ViewModels\PeopleViewModel.cs" />
+    <Compile Include="ItemDetails\ViewModels\PersonWorkSectionGenerator.cs" />
     <Compile Include="ItemDetails\ViewModels\RecommendationsViewModel.cs" />
     <Compile Include="ItemDetails\Views\EpisodeListItemView.xaml.cs">
       <DependentUpon>EpisodeListItemView.xaml</DependentUpon>
@@ -469,6 +479,12 @@
     </Compile>
     <Compile Include="ItemDetails\Views\ItemDetailsView.xaml.cs">
       <DependentUpon>ItemDetailsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ItemDetails\Views\ItemsGridView.xaml.cs">
+      <DependentUpon>ItemsGridView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ItemDetails\Views\ItemsListView.xaml.cs">
+      <DependentUpon>ItemsListView.xaml</DependentUpon>
     </Compile>
     <Compile Include="ItemDetails\Views\ItemOverviewView.xaml.cs">
       <DependentUpon>ItemOverviewView.xaml</DependentUpon>

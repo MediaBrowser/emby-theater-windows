@@ -38,7 +38,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
         public bool ShowInfo
         {
-            get { return !_item.IsFolder || !string.IsNullOrEmpty(_item.Overview); }
+            get { return (!_item.IsFolder && _item.Type != "Person") || !string.IsNullOrEmpty(_item.Overview); }
         }
 
         public ItemOverviewViewModel(BaseItemDto item, IApiClient apiClient, IImageManager imageManager)

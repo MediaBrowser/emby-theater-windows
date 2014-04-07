@@ -138,6 +138,27 @@
   <data name="DateLabel" xml:space="preserve">
     <value>Date</value>
   </data>
+  <data name="DetailSection_AlbumsHeader" xml:space="preserve">
+    <value>Albums</value>
+  </data>
+  <data name="DetailSection_EpisodesHeader" xml:space="preserve">
+    <value>Episodes</value>
+  </data>
+  <data name="DetailSection_ItemsHeader" xml:space="preserve">
+    <value>Items</value>
+  </data>
+  <data name="DetailSection_MoviesHeader" xml:space="preserve">
+    <value>Movies</value>
+  </data>
+  <data name="DetailSection_SeasonsHeader" xml:space="preserve">
+    <value>Seasons</value>
+  </data>
+  <data name="DetailSection_SeriesHeader" xml:space="preserve">
+    <value>Series</value>
+  </data>
+  <data name="DetailSection_TracksHeader" xml:space="preserve">
+    <value>Tracks</value>
+  </data>
   <data name="GenreLabel" xml:space="preserve">
     <value>Genres</value>
   </data>

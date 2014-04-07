@@ -198,4 +198,12 @@
         <views5:PersonListItemView/>
     </DataTemplate>
     
+    <DataTemplate DataType="{x:Type viewModels5:ItemsListViewModel}">
+        <views5:ItemsListView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels5:ItemsGridViewModel}">
+        <views5:ItemsGridView/>
+    </DataTemplate>
+    
 </ResourceDictionary>

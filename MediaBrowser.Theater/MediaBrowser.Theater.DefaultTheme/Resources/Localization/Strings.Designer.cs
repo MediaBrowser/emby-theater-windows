@@ -133,6 +133,15 @@ namespace MediaBrowser.Theater.DefaultTheme.Resources.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to @DetailSection_ChaptersHeader.
+        /// </summary>
+        internal static string DetailSection_ChaptersHeader {
+            get {
+                return ResourceManager.GetString("DetailSection_ChaptersHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to @DetailSection_EpisodesHeader.
         /// </summary>
         internal static string DetailSection_EpisodesHeader {

@@ -26,6 +26,8 @@ namespace MediaBrowser.Theater.DefaultTheme
         private readonly RootContext _rootContext;
         private App _application;
 
+        public static Theme Instance { get; private set; }
+
         public Theme(ITheaterApplicationHost appHost, IApplicationPaths applicationPaths, IXmlSerializer xmlSerializer, WindowManager windowManager, IEventAggregator events, INavigator navigator, RootContext rootContext)
             : base(applicationPaths, xmlSerializer)
         {
@@ -35,6 +37,8 @@ namespace MediaBrowser.Theater.DefaultTheme
             _events = events;
             _navigator = navigator;
             _rootContext = rootContext;
+
+            Instance = this;
         }
 
         public override string Name

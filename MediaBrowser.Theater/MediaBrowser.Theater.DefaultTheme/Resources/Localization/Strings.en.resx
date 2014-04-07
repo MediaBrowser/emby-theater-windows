@@ -141,6 +141,9 @@
   <data name="DetailSection_AlbumsHeader" xml:space="preserve">
     <value>Albums</value>
   </data>
+  <data name="DetailSection_ChaptersHeader" xml:space="preserve">
+    <value>Chapters</value>
+  </data>
   <data name="DetailSection_EpisodesHeader" xml:space="preserve">
     <value>Episodes</value>
   </data>

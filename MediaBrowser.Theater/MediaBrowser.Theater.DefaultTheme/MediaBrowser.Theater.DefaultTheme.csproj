@@ -173,6 +173,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="ItemDetails\Views\ChaptersView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ItemDetails\Views\ChapterView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ItemDetails\Views\EpisodeListItemView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -454,6 +462,7 @@
     </Compile>
     <Compile Include="ItemDetails\ItemDetailsContext.cs" />
     <Compile Include="ItemDetails\ViewModels\BaseItemsListSectionGenerator.cs" />
+    <Compile Include="ItemDetails\ViewModels\ChaptersViewModel.cs" />
     <Compile Include="ItemDetails\ViewModels\ItemChildrenSectionGenerator.cs" />
     <Compile Include="ItemDetails\ViewModels\ListItemViewModel.cs" />
     <Compile Include="ItemDetails\ViewModels\ItemDetailsViewModel.cs" />
@@ -463,6 +472,12 @@
     <Compile Include="ItemDetails\ViewModels\PeopleViewModel.cs" />
     <Compile Include="ItemDetails\ViewModels\PersonWorkSectionGenerator.cs" />
     <Compile Include="ItemDetails\ViewModels\RecommendationsViewModel.cs" />
+    <Compile Include="ItemDetails\Views\ChaptersView.xaml.cs">
+      <DependentUpon>ChaptersView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ItemDetails\Views\ChapterView.xaml.cs">
+      <DependentUpon>ChapterView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ItemDetails\Views\EpisodeListItemView.xaml.cs">
       <DependentUpon>EpisodeListItemView.xaml</DependentUpon>
     </Compile>

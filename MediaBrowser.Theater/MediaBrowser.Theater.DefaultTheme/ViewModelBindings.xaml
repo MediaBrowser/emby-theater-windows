@@ -198,4 +198,12 @@
         <views5:ItemsGridView/>
     </DataTemplate>
     
+    <DataTemplate DataType="{x:Type viewModels5:ChaptersViewModel}">
+        <views5:ChaptersView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels5:ChapterViewModel}">
+        <views5:ChapterView/>
+    </DataTemplate>
+    
 </ResourceDictionary>

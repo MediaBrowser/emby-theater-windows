@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="MediaBrowser.Theater.DefaultTheme.ItemDetails.Views.ItemsListView"
+﻿<UserControl x:Class="MediaBrowser.Theater.DefaultTheme.ItemDetails.Views.ChaptersView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -10,7 +10,7 @@
              lex:ResxLocalizationProvider.DefaultAssembly="MediaBrowser.Theater.DefaultTheme"
              lex:ResxLocalizationProvider.DefaultDictionary="Strings"
              mc:Ignorable="d"
-             d:DataContext="{d:DesignInstance viewModels:ItemsListViewModel}"
+             d:DataContext="{d:DesignInstance viewModels:ChaptersViewModel}"
              Focusable="False"
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid Visibility="{Binding IsVisible, Converter={StaticResource BooleanToVisibility}}" Margin="20,0,0,0" Width="600">

@@ -23,7 +23,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
             if (item.Type == "Episode") {
                 preferredImageTypes = new[] { ImageType.Primary, ImageType.Backdrop, ImageType.Thumb };
             } else {
-                preferredImageTypes = new[] { ImageType.Screenshot, ImageType.Thumb, ImageType.Art, ImageType.Primary };
+                preferredImageTypes = new[] { ImageType.Thumb, ImageType.Backdrop, ImageType.Art, ImageType.Screenshot, ImageType.Primary };
             }
 
             Artwork = new ItemArtworkViewModel(item, apiClient, imageManager) {

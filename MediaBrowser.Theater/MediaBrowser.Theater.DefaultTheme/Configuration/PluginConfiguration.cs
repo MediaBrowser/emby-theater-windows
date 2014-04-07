@@ -18,9 +18,12 @@ namespace MediaBrowser.Theater.DefaultTheme.Configuration
 
         public double? WindowHeight { get; set; }
 
+        public bool ShowOnlyWatchedChapters { get; set; }
+
         public PluginConfiguration()
         {
             Palette = new ColorPalette { Style = ThemeStyle.Dark, Accent = AccentColors.MediaBrowserGreen };
+            ShowOnlyWatchedChapters = true;
         }
     }
 }

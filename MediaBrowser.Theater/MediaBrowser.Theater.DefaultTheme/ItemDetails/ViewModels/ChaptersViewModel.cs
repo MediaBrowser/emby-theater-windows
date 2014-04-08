@@ -215,7 +215,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
         public bool HasSection(BaseItemDto item)
         {
-            return item.Chapters != null && item.Chapters.Count > 0;
+            return item.Chapters != null && item.Chapters.Count > 1;
         }
 
         public Task<IEnumerable<IItemDetailSection>> GetSections(BaseItemDto item)

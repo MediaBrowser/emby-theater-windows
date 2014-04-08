@@ -57,7 +57,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
         protected override void OnKeyDown(KeyEventArgs e)
         {
             if (e.IsRepeat && (e.Key == Key.Left || e.Key == Key.Right)) {
-                if (DateTime.Now - _lastHandledNavigation < TimeSpan.FromMilliseconds(200)) {
+                if (DateTime.Now - _lastHandledNavigation < TimeSpan.FromMilliseconds(50)) {
                     e.Handled = true;
                     return;
                 }

@@ -93,7 +93,9 @@ namespace MediaBrowser.Theater.Presentation.Controls
                 }
             }
 
-            base.OnKeyDown(e);
+            if (!e.Handled) {
+                base.OnKeyDown(e);
+            }
         }
 
         public double StartScrollPadding { get; set; }

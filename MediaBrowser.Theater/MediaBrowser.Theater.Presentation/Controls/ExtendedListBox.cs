@@ -14,6 +14,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
 
         public ExtendedListBox()
         {
+            SetValue(KeyboardNavigation.DirectionalNavigationProperty, KeyboardNavigationMode.Continue);
             SelectionChanged += ExtendedListBox_SelectionChanged;
         }
 
@@ -46,71 +47,28 @@ namespace MediaBrowser.Theater.Presentation.Controls
                 if (e.Key == Key.Left && SelectedIndex == 0 && horizontalScrollEnabled) {
                     SelectedIndex = Items.Count - 1;
                     FocusSelectedItem();
+                    e.Handled = true;
                     return;
                 }
 
                 if (e.Key == Key.Right && SelectedIndex == Items.Count - 1 && horizontalScrollEnabled) {
                     SelectedIndex = 0;
                     FocusSelectedItem();
+                    e.Handled = true;
                     return;
                 }
 
                 if (e.Key == Key.Up && SelectedIndex == 0 && verticalScrollEnabled) {
                     SelectedIndex = Items.Count - 1;
                     FocusSelectedItem();
+                    e.Handled = true;
                     return;
                 }
 
                 if (e.Key == Key.Down && SelectedIndex == Items.Count - 1 && verticalScrollEnabled) {
                     SelectedIndex = 0;
                     FocusSelectedItem();
-                    return;
-                }
-            } else {
-                // navigate out if we are at the end and wrapping is disabled
-                if (e.Key == Key.Left && (SelectedIndex == 0 || SelectedIndex == -1) && horizontalScrollEnabled) {
-                    MoveFocus(new TraversalRequest(FocusNavigationDirection.Left));
-                    return;
-                }
-
-                if (e.Key == Key.Right && (SelectedIndex == Items.Count - 1 || SelectedIndex == -1) && horizontalScrollEnabled) {
-                    MoveFocus(new TraversalRequest(FocusNavigationDirection.Right));
-                    return;
-                }
-
-                if (e.Key == Key.Up && (SelectedIndex == 0 || SelectedIndex == -1) && verticalScrollEnabled) {
-                    MoveFocus(new TraversalRequest(FocusNavigationDirection.Up));
-                    return;
-                }
-
-                if (e.Key == Key.Down && (SelectedIndex == Items.Count - 1 || SelectedIndex == -1) && verticalScrollEnabled) {
-                    MoveFocus(new TraversalRequest(FocusNavigationDirection.Down));
-                    return;
-                }
-            }
-
-            // navigate out of the control on left/right if horizontal scrolling is disabled
-            if (!horizontalScrollEnabled) {
-                if (e.Key == Key.Left) {
-                    MoveFocus(new TraversalRequest(FocusNavigationDirection.Left));
-                    return;
-                }
-
-                if (e.Key == Key.Right) {
-                    MoveFocus(new TraversalRequest(FocusNavigationDirection.Right));
-                    return;
-                }
-            }
-
-            // navigate out of the control on up/down if vertical scrolling is disabled
-            if (!verticalScrollEnabled) {
-                if (e.Key == Key.Up) {
-                    MoveFocus(new TraversalRequest(FocusNavigationDirection.Up));
-                    return;
-                }
-
-                if (e.Key == Key.Down) {
-                    MoveFocus(new TraversalRequest(FocusNavigationDirection.Down));
+                    e.Handled = true;
                     return;
                 }
             }

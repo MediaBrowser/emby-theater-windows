@@ -8,7 +8,8 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
         <controls:IndexedItemsControl x:Name="Items" Margin="0,80,0,0" 
-                                      ItemsSource="{Binding Sections}" VirtualizingPanel.VirtualizationMode="Recycling">
+                                      ItemsSource="{Binding Sections}" 
+                                      VirtualizingPanel.VirtualizationMode="Recycling">
             <controls:IndexedItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <controls:PanoramaPanel StartScrollPadding="50" EndScrollPadding="50"/>

@@ -573,7 +573,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             }
             if (string.Equals(section, "seasons"))
             {
-                return new ItemListViewModel(GetChildren, _presentationManager, _imageManager, _apiClient, _navigation, _playback, _logger, _serverEvents)
+                return new ItemListViewModel(GetSeasons, _presentationManager, _imageManager, _apiClient, _navigation, _playback, _logger, _serverEvents)
                 {
                     ImageDisplayWidth = 300,
                     EnableBackdropsForCurrentItem = false,
@@ -865,12 +865,30 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                                  ItemFields.Overview
                         },
                 ParentId = item.Id,
-                SortBy = new[] { ItemSortBy.SortName },
-
-                MinIndexNumber = item.IsType("Series") ? 1 : (int?)null
+                SortBy = new[] { ItemSortBy.SortName }
             };
 
             return _apiClient.GetItemsAsync(query);
+        }
+
+        private Task<ItemsResult> GetSeasons(ItemListViewModel viewModel)
+        {
+            var item = ItemViewModel.Item;
+
+            var query = new SeasonQuery
+            {
+                UserId = _sessionManager.CurrentUser.Id,
+                Fields = new[]
+                        {
+                                 ItemFields.PrimaryImageAspectRatio,
+                                 ItemFields.DateCreated,
+                                 ItemFields.Overview
+                        },
+                SeriesId = item.Id,
+                IsSpecialSeason = false
+            };
+
+            return _apiClient.GetSeasonsAsync(query);
         }
 
         private Task<ItemsResult> GetSeriesEpisodes(ItemListViewModel viewModel)

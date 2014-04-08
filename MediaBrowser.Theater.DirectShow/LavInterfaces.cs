@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -627,4 +628,157 @@ InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     }
 
     #endregion
+
+#region Splitter
+    public enum LAVSubtitleMode
+    {
+        LAVSubtitleMode_NoSubs = 0,
+        LAVSubtitleMode_ForcedOnly,
+        LAVSubtitleMode_Default,
+        LAVSubtitleMode_Advanced
+    };
+
+    [ComVisible(true), ComImport, SuppressUnmanagedCodeSecurity,
+Guid("774A919D-EA95-4A87-8A1E-F48ABE8499C7"),
+InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    public interface ILAVSplitterSettings
+    {
+        // Switch to Runtime Config mode. This will reset all settings to default, and no changes to the settings will be saved
+        // You can use this to programmatically configure LAV Splitter without interfering with the users settings in the registry.
+        // Subsequent calls to this function will reset all settings back to defaults, even if the mode does not change.
+        //
+        // Note that calling this function during playback is not supported and may exhibit undocumented behaviour.
+        // For smooth operations, it must be called before LAV Splitter opens a file.
+        [PreserveSig]
+        int SetRuntimeConfig(bool runtime);
+
+
+        // Retrieve the preferred languages as ISO 639-2 language codes, comma seperated
+        // If the result is NULL, no language has been set
+        // Memory for the string will be allocated, and has to be free'ed by the caller with CoTaskMemFree
+        [PreserveSig]
+        int GetPreferredLanguages([MarshalAs(UnmanagedType.LPWStr)]out string langs);
+
+        // Set the preferred languages as ISO 639-2 language codes, comma seperated
+        // To reset to no preferred language, pass NULL or the empty string
+        [PreserveSig]
+        int SetPreferredLanguages([MarshalAs(UnmanagedType.LPWStr)]string langs);
+
+        // Retrieve the preferred subtitle languages as ISO 639-2 language codes, comma seperated
+        // If the result is NULL, no language has been set
+        // If no subtitle language is set, the main language preference is used.
+        // Memory for the string will be allocated, and has to be free'ed by the caller with CoTaskMemFree
+        [PreserveSig]
+        int GetPreferredSubtitleLanguages([MarshalAs(UnmanagedType.LPWStr)]out string langs);
+
+        // Set the preferred subtitle languages as ISO 639-2 language codes, comma seperated
+        // To reset to no preferred language, pass NULL or the empty string
+        // If no subtitle language is set, the main language preference is used.
+        [PreserveSig]
+        int SetPreferredSubtitleLanguages([MarshalAs(UnmanagedType.LPWStr)]string langs);
+
+        // Get the current subtitle mode
+        // See enum for possible values
+        [PreserveSig]
+        LAVSubtitleMode GetSubtitleMode();
+
+        // Set the current subtitle mode
+        // See enum for possible values
+        [PreserveSig]
+        int SetSubtitleMode(LAVSubtitleMode mode);
+
+        // Get the subtitle matching language flag
+        // TRUE = Only subtitles with a language in the preferred list will be used; FALSE = All subtitles will be used
+        // @deprecated - do not use anymore, deprecated and non-functional, replaced by advanced subtitle mode
+        [PreserveSig]
+        bool GetSubtitleMatchingLanguage();
+
+        // Set the subtitle matching language flag
+        // TRUE = Only subtitles with a language in the preferred list will be used; FALSE = All subtitles will be used
+        // @deprecated - do not use anymore, deprecated and non-functional, replaced by advanced subtitle mode
+        [PreserveSig]
+        int SetSubtitleMatchingLanguage(bool mode);
+
+        // Control wether a special "Forced Subtitles" stream will be created for PGS subs
+        [PreserveSig]
+        bool GetPGSForcedStream();
+
+        // Control wether a special "Forced Subtitles" stream will be created for PGS subs
+        [PreserveSig]
+        int SetPGSForcedStream(bool enabled);
+
+        // Get the PGS forced subs config
+        // TRUE = only forced PGS frames will be shown, FALSE = all frames will be shown
+        [PreserveSig]
+        bool GetPGSOnlyForced();
+
+        // Set the PGS forced subs config
+        // TRUE = only forced PGS frames will be shown, FALSE = all frames will be shown
+        [PreserveSig]
+        int SetPGSOnlyForced(bool forced);
+
+        // Get the VC-1 Timestamp Processing mode
+        // 0 - No Timestamp Correction, 1 - Always Timestamp Correction, 2 - Auto (Correction for Decoders that need it)
+        [PreserveSig]
+        int GetVC1TimestampMode();
+
+        // Set the VC-1 Timestamp Processing mode
+        // 0 - No Timestamp Correction, 1 - Always Timestamp Correction, 2 - Auto (Correction for Decoders that need it)
+        [PreserveSig]
+        int SetVC1TimestampMode(short enabled);
+
+        // Set whether substreams (AC3 in TrueHD, for example) should be shown as a seperate stream
+        [PreserveSig]
+        int SetSubstreamsEnabled(bool enabled);
+
+        // Check whether substreams (AC3 in TrueHD, for example) should be shown as a seperate stream
+        [PreserveSig]
+        bool GetSubstreamsEnabled();
+
+        // Set if the ffmpeg parsers should be used for video streams
+        [PreserveSig]
+        int SetVideoParsingEnabled(bool enabled);
+
+        // Query if the ffmpeg parsers are being used for video streams
+        [PreserveSig]
+        bool GetVideoParsingEnabled();
+
+        // Set if LAV Splitter should try to fix broken HD-PVR streams
+        [PreserveSig]
+        int SetFixBrokenHDPVR(bool enabled);
+
+        // Query if LAV Splitter should try to fix broken HD-PVR streams
+        [PreserveSig]
+        bool GetFixBrokenHDPVR();
+
+        // Control wether the givne format is enabled
+        [PreserveSig]
+        int SetFormatEnabled([MarshalAs(UnmanagedType.LPStr)]string strFormat, bool bEnabled);
+
+        // Check if the given format is enabled
+        [PreserveSig]
+        bool IsFormatEnabled([MarshalAs(UnmanagedType.LPStr)]string strFormat);
+
+        // Set if LAV Splitter should always completely remove the filter connected to its Audio Pin when the audio stream is changed
+        [PreserveSig]
+        int SetStreamSwitchRemoveAudio(bool enabled);
+
+        // Query if LAV Splitter should always completely remove the filter connected to its Audio Pin when the audio stream is changed
+        [PreserveSig]
+        bool GetStreamSwitchRemoveAudio();
+
+        // Advanced Subtitle configuration. Refer to the documention for details.
+        // If no advanced config exists, will be NULL.
+        // Memory for the string will be allocated, and has to be free'ed by the caller with CoTaskMemFree
+        [PreserveSig]
+        int GetAdvancedSubtitleConfig([MarshalAs(UnmanagedType.LPWStr)]out string ec);
+
+        // Advanced Subtitle configuration. Refer to the documention for details.
+        // To reset the config, pass NULL or the empty string.
+        // If no subtitle language is set, the main language preference is used.
+        [PreserveSig]
+        int SetAdvancedSubtitleConfig([MarshalAs(UnmanagedType.LPWStr)]string config);
+
+    }
+#endregion
 }

@@ -30,11 +30,14 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
 
         public AudioConfiguration AudioConfig { get; set; }
 
+        public SubtitleConfiguration SubtitleConfig { get; set; }
+
         public InternalPlayerConfiguration()
         {
             //set defaults if necessary
             VideoConfig = new VideoConfiguration();
             AudioConfig = new AudioConfiguration();
+            SubtitleConfig = new SubtitleConfiguration();
         }
     }
 
@@ -276,6 +279,25 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
                 EnabledCodecs.Add("MSPCM");
                 EnabledCodecs.Add("Truespeech");
                 EnabledCodecs.Add("TAK");
+            }
+        }
+    }
+
+    //add configuration values here as necessary
+    public class SubtitleConfiguration
+    {   
+        public List<string> ExternalExtensions { get; set; }
+
+        public SubtitleConfiguration()
+        {
+            ExternalExtensions = new List<string>();
+        }
+
+        public void SetDefaults()
+        {
+            if (ExternalExtensions.Count == 0)
+            {
+                ExternalExtensions.Add("SRT");
             }
         }
     }

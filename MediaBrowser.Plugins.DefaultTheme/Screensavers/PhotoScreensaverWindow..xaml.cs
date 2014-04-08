@@ -24,7 +24,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
     /// <summary>
     /// Screen saver factory to create Photo Screen saver
     /// </summary>
-    public class PhotoScreensaverFactory : IScreensaverFactory
+    public class PhotoScreensaverFactory // : IScreensaverFactory // turn off photoscreen save until full tested
     {
         private readonly IApplicationHost _applicationHost;
       
@@ -38,6 +38,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
 
         public IScreensaver GetScreensaver()
         {
+           
             return (IScreensaver)_applicationHost.CreateInstance(typeof(PhotoScreensaverWindow));
         }
     }

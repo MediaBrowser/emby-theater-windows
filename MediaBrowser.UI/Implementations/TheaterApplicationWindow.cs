@@ -1,4 +1,5 @@
-﻿using System.Windows.Interop;
+﻿using System.Runtime.InteropServices;
+using System.Windows.Interop;
 using MediaBrowser.Common.Events;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
@@ -341,12 +342,32 @@ namespace MediaBrowser.UI.Implementations
             }
         }
 
-       
-
         public IntPtr WindowHandle
         {
             get;
             private set;
         }
+
+        public class Interop
+        {
+            [DllImport("user32.dll")]
+            public static extern bool SetForegroundWindow(IntPtr hWnd);
+
+            [DllImport("user32.dll")]
+            public static extern IntPtr GetForegroundWindow();
+        }
+
+       
+        public void EnsureApplicationWindowHasFocus()
+        {
+            IntPtr focused = Interop.GetForegroundWindow();
+            if (WindowHandle != focused)
+            {
+                Interop.SetForegroundWindow(WindowHandle);
+            }
+        }
+
+
+       
     }
 }

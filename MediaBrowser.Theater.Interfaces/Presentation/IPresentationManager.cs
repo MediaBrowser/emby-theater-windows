@@ -168,5 +168,10 @@ namespace MediaBrowser.Theater.Interfaces.Presentation
         /// Hides the loading animation.
         /// </summary>
         void HideModalLoadingAnimation();
+
+        /// <summary>
+        /// Make sure the main application window has the focus
+        /// </summary>
+        void EnsureApplicationWindowHasFocus();
     }
 }

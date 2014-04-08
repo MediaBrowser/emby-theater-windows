@@ -16,7 +16,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
     /// <summary>
     /// Screen saver factory to create Photo Screen saver
     /// </summary>
-    public class PhotoScreensaverFactory : IScreensaverFactory
+    public class PhotoScreensaverFactory /*: IScreensaverFactory */ // dont expose photo screensaver - still under developement
     {
         private readonly IApplicationHost _applicationHost;
       
@@ -77,13 +77,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
                return;
            }
 
-            foreach (var i in items.Items)
-            {
-                var x = 
-            }
-
-
-            var images = items.Items.Select(i => new ImageViewerImage
+          var images = items.Items.Select(i => new ImageViewerImage
             {
                 Caption = i.Name,
                 Url = _apiClient.GetImageUrl(i, new ImageOptions

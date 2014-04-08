@@ -252,7 +252,8 @@ namespace MediaBrowser.UI
         {
             HiddenWindow = new HiddenForm();
             HiddenWindow.Load += HiddenWindow_Load;
-
+            HiddenWindow.Activated += HiddenWindow_Activated;
+  
             if (width.HasValue)
             {
                 HiddenWindow.Width = width.Value;
@@ -300,6 +301,13 @@ namespace MediaBrowser.UI
                 ApplicationWindow.Show();
             });
         }
+
+        private void HiddenWindow_Activated(object sender, EventArgs e)
+        {
+            _logger.Debug("HiddenWindow_Activated");
+            _appHost.PresentationManager.EnsureApplicationWindowHasFocus();
+        }
+
 
         void win_LocationChanged(object sender, EventArgs e)
         {

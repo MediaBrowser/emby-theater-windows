@@ -499,46 +499,24 @@ using MediaBrowser.Theater.Presentation.Playback;
         {
         }
 
-        public class Interop
-        {
-            [DllImport("user32.dll")]
-            public static extern bool SetForegroundWindow(IntPtr hWnd);
-
-            [DllImport("user32.dll")]
-            public static extern IntPtr GetForegroundWindow();
-
-            public static IntPtr GetWindowHandle(Window window)
-            {
-                return new WindowInteropHelper(window).Handle;
-            }
-        }
-
-        public void EnsureApplicationWindowHasFocus()
-        {
-            IntPtr window = Interop.GetWindowHandle(_presenation.Window);
-            IntPtr focused = Interop.GetForegroundWindow();
-            if (window != focused)
-            {
-                Interop.SetForegroundWindow(window);
-            }
-        }
-
+        
+        // todo - move these to _presentation
         public void FullScreen(Object sender, CommandEventArgs args)
         {
             _presenation.Window.WindowState = WindowState.Maximized;
-            EnsureApplicationWindowHasFocus();
+            _presenation.EnsureApplicationWindowHasFocus();
         }
 
         public void MinimizeScreen(Object sender, CommandEventArgs args)
         {
             _presenation.Window.WindowState = WindowState.Minimized;
-            EnsureApplicationWindowHasFocus();
+            _presenation.EnsureApplicationWindowHasFocus();
         }
 
         public void RestoreScreen(Object sender, CommandEventArgs args)
         {
             _presenation.Window.WindowState = WindowState.Normal;
-            EnsureApplicationWindowHasFocus();
+            _presenation.EnsureApplicationWindowHasFocus();
         }
 
         public void ToggleFullscreen(Object sender, CommandEventArgs args)

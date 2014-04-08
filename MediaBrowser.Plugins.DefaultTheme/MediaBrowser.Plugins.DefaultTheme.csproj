@@ -149,6 +149,9 @@
     </Compile>
     <Compile Include="Properties\SharedVersion.cs" />
     <Compile Include="DefaultTheme.cs" />
+    <Compile Include="Screensavers\PhotoScreensaverWindow..xaml.cs">
+      <DependentUpon>PhotoScreensaverWindow..xaml</DependentUpon>
+    </Compile>
     <Compile Include="Screensavers\LogoScreensaverWindow.xaml.cs">
       <DependentUpon>LogoScreensaverWindow.xaml</DependentUpon>
     </Compile>
@@ -301,6 +304,10 @@
     <Page Include="Resources\VolumeOsd.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screensavers\PhotoScreensaverWindow..xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Screensavers\LogoScreensaverWindow.xaml">
       <SubType>Designer</SubType>

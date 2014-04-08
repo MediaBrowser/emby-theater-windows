@@ -55,31 +55,27 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
 
             LoadScreensaver();
         }
-
-       
-
+        
         private  async void LoadScreensaver()
         {
             MainGrid.Children.Clear();
 
+           
             var items = await _apiClient.GetItemsAsync(new ItemQuery
             {
                 UserId = _session.CurrentUser.Id,
                 ImageTypes = new[] { ImageType.Backdrop },
                 IncludeItemTypes = new[] { "Movie", "Boxset", "Trailer", "Game", "Series", "MusicArtist" },
-                Limit = 100,
+                Limit = 1000,
                 SortBy = new[] { ItemSortBy.Random },
                 Recursive = true
-
             });
 
-            /*
             if (items.Items.Length == 0)
             {
-                MainGrid.Children.Add(new LogoScreensaver());
+                _screensaverManager.ShowScreensaver(true, "Logo");
                 return;
             }
-            */
 
             var images = items.Items.Select(i => new ImageViewerImage
             {

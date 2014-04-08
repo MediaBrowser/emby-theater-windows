@@ -1,4 +1,6 @@
-﻿using MediaBrowser.Common.Configuration;
+﻿using System.Diagnostics;
+using System.Windows.Documents;
+using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Extensions;
 using MediaBrowser.Common.IO;
 using MediaBrowser.Model.ApiClient;

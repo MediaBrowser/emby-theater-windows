@@ -4,10 +4,8 @@
         xmlns:screensavers="clr-namespace:MediaBrowser.Plugins.DefaultTheme.Screensavers"
         Title="BackdropScreensaverWindow" Height="300" Width="300"
         Style="{StaticResource ModalWindow}">
-    <Grid Background="Black" x:Name="MainGrid">
+    <Canvas Background="Black" x:Name="ScreensaverCanvas">
 
-        <Grid.LayoutTransform>
-            <ScaleTransform ScaleX="{Binding Path=ContentScale}" ScaleY="{Binding Path=ContentScale}" CenterX="0" CenterY="0" />
-        </Grid.LayoutTransform>
-    </Grid>
+        
+    </Canvas>
 </screensavers:ScreensaverWindowBase>

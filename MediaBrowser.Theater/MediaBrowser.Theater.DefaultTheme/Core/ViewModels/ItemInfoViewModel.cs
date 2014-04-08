@@ -197,7 +197,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
                     return null;
                 }
 
-                string formatStringKey = "MediaBrowser.Theater.DefaultTheme:Strings:SeriesAirTime_";
+                string formatStringKey = string.Empty;
                 var formatParameters = new List<string>();
 
                 if (_item.AirDays != null && _item.AirDays.Count > 0) {
@@ -218,7 +218,12 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
                     }
                 }
 
-                return formatStringKey.LocalizeFormat(formatParameters.ToArray());
+                if (!string.IsNullOrEmpty(formatStringKey)) {
+                    formatStringKey = "MediaBrowser.Theater.DefaultTheme:Strings:SeriesAirTime_" + formatStringKey;
+                    return formatStringKey.LocalizeFormat(formatParameters.ToArray());
+                }
+
+                return null;
             }
         }
 
@@ -236,7 +241,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
 
         public bool HasAirTime
         {
-            get { return _item.IsType("series"); }
+            get { return _item.IsType("series") && !string.IsNullOrEmpty(SeriesAirTime); }
         }
 
         public string Runtime

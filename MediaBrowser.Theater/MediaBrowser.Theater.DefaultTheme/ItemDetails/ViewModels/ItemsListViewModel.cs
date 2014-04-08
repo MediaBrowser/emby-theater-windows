@@ -35,7 +35,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
                     return new Size();
                 }
 
-                return new Size(600, 700);
+                return new Size(700, 700);
             }
         }
 

@@ -182,10 +182,6 @@
         <views5:RecommendationsView/>
     </DataTemplate>
     
-    <DataTemplate DataType="{x:Type viewModels5:ListItemViewModel}">
-        <views5:ListItemView/>
-    </DataTemplate>
-    
     <DataTemplate DataType="{x:Type viewModels5:PeopleListViewModel}">
         <views5:PeopleListView/>
     </DataTemplate>

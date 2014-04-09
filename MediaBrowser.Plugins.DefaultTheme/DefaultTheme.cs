@@ -173,15 +173,17 @@ namespace MediaBrowser.Plugins.DefaultTheme
             {
                 config.CustomItemQuery = (vm, displayPreferences) =>
                 {
+                   
                     if (item.IsType("series"))
                     {
                         return _apiClient.GetSeasonsAsync(new SeasonQuery
                         {
                             UserId = _sessionManager.CurrentUser.Id,
-                            SeriesId = item.SeriesId,
+                            SeriesId = item.Id,
                             Fields = FolderPage.QueryFields
                         });
                     }
+                 
 
                     if (item.IsType("season"))
                     {

@@ -162,8 +162,6 @@ namespace MediaBrowser.Theater.Implementations.Commands
 
         public void input_AppCommand(object sender, AppCommandEventArgs appCommandEventArgs)
         {
-            Boolean handled = false;
-            
             var appCommand = MapAppCommand(appCommandEventArgs.Cmd);
             _logger.Debug("input_AppCommand: {0} {1}", appCommandEventArgs.Cmd, appCommand == null ? "null" : appCommand.ToString());
 
@@ -172,19 +170,20 @@ namespace MediaBrowser.Theater.Implementations.Commands
                 if (IsDuplicateMediaKeyEvent(appCommand.Value))
                 {
                     _logger.Debug("input_AppCommand: IsDuplicate - cmd {0} after key {1}", appCommand, _lastKeyDown);
-                    handled = true;
+                    appCommandEventArgs.Handled = false;
                 }
                 else
                 {
                     if (_commandReceived != null)
                     { 
                         var command = _inputCommandMaps.GetMappedCommand(appCommand.Value);
-                        _commandReceived.Invoke(null, new CommandEventArgs {Command = command});
-                        handled = true;
+                        var commandEventArgs = new CommandEventArgs { Command = command, Handled = appCommandEventArgs.Handled};
+                        _commandReceived.Invoke(null, commandEventArgs);
+                        appCommandEventArgs.Handled = commandEventArgs.Handled;
                     }
                 }
-         
-                if (handled)
+
+                if (appCommandEventArgs.Handled)
                 {
                     _lastCmd = appCommand.Value;
                     _lastCmdTime = DateTime.Now;
@@ -194,8 +193,6 @@ namespace MediaBrowser.Theater.Implementations.Commands
                     _logger.Debug("input_AppCommand {0}, command not handled", appCommand);
                 }
             }
-           
-           appCommandEventArgs.Handled = handled;
         }
        
 

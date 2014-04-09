@@ -18,9 +18,9 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.Views
     /// <summary>
     /// Interaction logic for EpisodeListItemView.xaml
     /// </summary>
-    public partial class EpisodeListItemView
+    public partial class ListItemView
     {
-        public EpisodeListItemView()
+        public ListItemView()
         {
             InitializeComponent();
         }

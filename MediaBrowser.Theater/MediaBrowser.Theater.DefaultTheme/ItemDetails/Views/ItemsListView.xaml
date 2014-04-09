@@ -30,6 +30,7 @@
                                   ItemsSource="{Binding Items}"
                                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                                   ScrollViewer.VerticalScrollBarVisibility="Hidden"
+                                  KeyboardNavigation.DirectionalNavigation="Continue"
                                   HorizontalAlignment="Stretch"
                                   Focusable="False">
                 <ListBox.Style>

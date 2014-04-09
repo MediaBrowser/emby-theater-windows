@@ -125,6 +125,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Core\Views\ItemListElementView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Core\Views\ItemSpotlightView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -181,7 +185,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ItemDetails\Views\EpisodeListItemView.xaml">
+    <Page Include="ItemDetails\Views\ListItemView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -411,6 +415,9 @@
     <Compile Include="Core\Views\ItemInfoView.xaml.cs">
       <DependentUpon>ItemInfoView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Core\Views\ItemListElementView.xaml.cs">
+      <DependentUpon>ItemListElementView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Core\Views\ItemSpotlightView.xaml.cs">
       <DependentUpon>ItemSpotlightView.xaml</DependentUpon>
     </Compile>
@@ -478,8 +485,8 @@
     <Compile Include="ItemDetails\Views\ChapterView.xaml.cs">
       <DependentUpon>ChapterView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ItemDetails\Views\EpisodeListItemView.xaml.cs">
-      <DependentUpon>EpisodeListItemView.xaml</DependentUpon>
+    <Compile Include="ItemDetails\Views\ListItemView.xaml.cs">
+      <DependentUpon>ListItemView.xaml</DependentUpon>
     </Compile>
     <Compile Include="ItemDetails\Views\ItemDetailsView.xaml.cs">
       <DependentUpon>ItemDetailsView.xaml</DependentUpon>

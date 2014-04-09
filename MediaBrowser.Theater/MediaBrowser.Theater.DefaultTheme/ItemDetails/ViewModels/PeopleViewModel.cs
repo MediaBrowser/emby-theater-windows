@@ -48,7 +48,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
         public Size Size
         {
-            get { return new Size(800, 700); }
+            get { return new Size(600, 700); }
         }
 
         private void LoadItems()

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Input;
 using MediaBrowser.Model.ApiClient;
@@ -162,6 +163,16 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
             }
         }
 
+        public float CommunityRating
+        {
+            get { return _item.CommunityRating ?? 0; }
+        }
+
+        public bool HasCommunityRating
+        {
+            get { return _item.CommunityRating != null; }
+        }
+
         public ItemArtworkViewModel Image { get; private set; }
 
         public ICommand PlayCommand { get; private set; }
@@ -226,6 +237,41 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
             OnPropertyChanged("IsInProgress");
             OnPropertyChanged("PlayedPercent");
             OnPropertyChanged("ShowCaptionBar");
+        }
+    }
+
+    public class ItemListElementViewModel
+        : ItemTileViewModel 
+    {
+        public ItemListElementViewModel(IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator, BaseItemDto item) 
+            : base(apiClient, imageManager, serverEvents, navigator, item) { }
+
+        public string Detail
+        {
+            get
+            {
+                if (Item.Type == "Episode")
+                {
+                    if (Item.IndexNumber == null)
+                    {
+                        return null;
+                    }
+
+                    if (Item.IndexNumberEnd != null)
+                    {
+                        return string.Format("S{0}, E{1}-{2}", Item.ParentIndexNumber, Item.IndexNumber, Item.IndexNumberEnd);
+                    }
+
+                    return string.Format("S{0}, E{1}", Item.ParentIndexNumber, Item.IndexNumber);
+                }
+
+                if (Item.ProductionYear != null)
+                {
+                    return Item.ProductionYear.Value.ToString(CultureInfo.InvariantCulture);
+                }
+
+                return null;
+            }
         }
     }
 }

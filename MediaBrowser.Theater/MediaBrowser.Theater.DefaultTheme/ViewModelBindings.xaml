@@ -109,7 +109,11 @@
     <DataTemplate DataType="{x:Type viewModels:ItemTileViewModel}">
         <views:ItemTileView/>
     </DataTemplate>
-    
+
+    <DataTemplate DataType="{x:Type viewModels:ItemListElementViewModel}">
+        <views:ItemListElementView/>
+    </DataTemplate>
+
     <DataTemplate DataType="{x:Type viewModels3:SideMenuViewModel}">
         <views3:SideMenuView/>
     </DataTemplate>
@@ -179,7 +183,7 @@
     </DataTemplate>
     
     <DataTemplate DataType="{x:Type viewModels5:ListItemViewModel}">
-        <views5:EpisodeListItemView/>
+        <views5:ListItemView/>
     </DataTemplate>
     
     <DataTemplate DataType="{x:Type viewModels5:PeopleListViewModel}">

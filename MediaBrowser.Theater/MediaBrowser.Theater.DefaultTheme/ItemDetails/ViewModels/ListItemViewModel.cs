@@ -27,8 +27,9 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
             }
 
             Artwork = new ItemArtworkViewModel(item, apiClient, imageManager) {
-                DesiredImageHeight = 100,
-                DesiredImageWidth = 178,
+                //DesiredImageHeight = 200,
+                //DesiredImageWidth = 178,
+                DesiredImageWidth = 392,
                 PreferredImageTypes = preferredImageTypes
             };
 

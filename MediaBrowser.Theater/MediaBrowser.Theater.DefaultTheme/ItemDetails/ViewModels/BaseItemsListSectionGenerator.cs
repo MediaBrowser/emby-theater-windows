@@ -56,7 +56,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
             }
 
             if (listCondition(itemsResult)) {
-                return new ItemsListViewModel(itemsResult, _apiClient, _imageManager, _navigator);
+                return new ItemsListViewModel(itemsResult, _apiClient, _imageManager, _serverEvents, _navigator);
             }
 
             return new ItemsGridViewModel(itemsResult, _apiClient, _imageManager, _serverEvents, _navigator);

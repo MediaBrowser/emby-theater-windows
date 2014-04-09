@@ -14,7 +14,6 @@ namespace MediaBrowser.Theater.Presentation.Controls
 
         public ExtendedListBox()
         {
-            SetValue(KeyboardNavigation.DirectionalNavigationProperty, KeyboardNavigationMode.Continue);
             SelectionChanged += ExtendedListBox_SelectionChanged;
         }
 
@@ -70,6 +69,35 @@ namespace MediaBrowser.Theater.Presentation.Controls
                     FocusSelectedItem();
                     e.Handled = true;
                     return;
+                }
+            }
+
+            if ((KeyboardNavigationMode) GetValue(KeyboardNavigation.DirectionalNavigationProperty) == KeyboardNavigationMode.Contained) {
+                // navigate out of the control on left/right if horizontal scrolling is disabled
+                if (!horizontalScrollEnabled) {
+                    if (e.Key == Key.Left) {
+                        MoveFocus(new TraversalRequest(FocusNavigationDirection.Left));
+                        return;
+                    }
+
+                    if (e.Key == Key.Right) {
+                        MoveFocus(new TraversalRequest(FocusNavigationDirection.Right));
+                        return;
+                    }
+                }
+
+                // navigate out of the control on up/down if vertical scrolling is disabled
+                if (!verticalScrollEnabled) {
+                    if (e.Key == Key.Up) {
+                        MoveFocus(new TraversalRequest(FocusNavigationDirection.Up));
+                        return;
+                    }
+
+                    if (e.Key == Key.Down) {
+                        MoveFocus(new TraversalRequest(FocusNavigationDirection.Down));
+                        e.Handled = true;
+                        return;
+                    }
                 }
             }
 

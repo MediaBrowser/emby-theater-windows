@@ -3,9 +3,12 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.UserInterface;
+using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
+using MediaBrowser.Theater.DefaultTheme.Home.ViewModels;
 using MediaBrowser.Theater.Presentation;
 using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.ViewModels;
@@ -15,10 +18,14 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
     public class ItemsListViewModel
         : BaseViewModel, IItemDetailSection, IKnownSize
     {
+        private const int TileHeight = 100;
+
         private readonly ItemsResult _itemsResult;
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
+        private readonly IServerEvents _serverEvents;
         private readonly INavigator _navigator;
+        private readonly ImageType[] _preferredImageTypes;
 
         private bool _isVisible;
 
@@ -35,13 +42,13 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
                     return new Size();
                 }
 
-                return new Size(700, 700);
+                return new Size(600, 700);
             }
         }
 
         public string Title { get; set; }
 
-        public RangeObservableCollection<IViewModel> Items { get; private set; }
+        public RangeObservableCollection<ItemTileViewModel> Items { get; private set; }
 
         public bool IsVisible
         {
@@ -58,21 +65,32 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
             }
         }
 
-        public ItemsListViewModel(ItemsResult itemsResult, IApiClient apiClient, IImageManager imageManager, INavigator navigator)
+        public ItemsListViewModel(ItemsResult itemsResult, IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator)
         {
             _itemsResult = itemsResult;
             _apiClient = apiClient;
             _imageManager = imageManager;
+            _serverEvents = serverEvents;
             _navigator = navigator;
 
+            var itemType = itemsResult.Items.Length > 0 ? itemsResult.Items.First().Type : null;
+            if (itemType == "Episode") {
+                _preferredImageTypes = new[] { ImageType.Screenshot, ImageType.Thumb, ImageType.Art, ImageType.Primary };
+            } else {
+                _preferredImageTypes = new[] { ImageType.Backdrop, ImageType.Thumb, ImageType.Art };
+            }
+
             Title = SelectHeader(itemsResult.Items.Length > 0 ? itemsResult.Items.First().Type : null);
-            Items = new RangeObservableCollection<IViewModel>();
+            Items = new RangeObservableCollection<ItemTileViewModel>();
             LoadItems();
         }
 
         private void LoadItems()
         {
-            IEnumerable<IViewModel> items = _itemsResult.Items.Select(i => new ListItemViewModel(i, _apiClient, _imageManager, _navigator));
+            IEnumerable<ItemTileViewModel> items = _itemsResult.Items.Select(i => new ItemListElementViewModel(_apiClient, _imageManager, _serverEvents, _navigator, i) {
+                DesiredImageHeight = TileHeight,
+                PreferredImageTypes = _preferredImageTypes
+            });
 
             Items.Clear();
             Items.AddRange(items);

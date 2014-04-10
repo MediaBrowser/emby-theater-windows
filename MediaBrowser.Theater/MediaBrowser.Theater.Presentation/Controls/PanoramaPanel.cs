@@ -36,6 +36,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
         private readonly Dictionary<int, DateTime> _lastVisibleTimes = new Dictionary<int, DateTime>();
         private readonly TimeSpan _removalDelay = TimeSpan.FromMilliseconds(600);
         private readonly TranslateTransform _transform;
+        private readonly List<UIElement> _toBeArranged;
 
         private Size _extent;
         private int _firstVisibleItem;
@@ -45,10 +46,12 @@ namespace MediaBrowser.Theater.Presentation.Controls
         private Vector _offset;
         private int _previousFirstVisibleItem;
         private Size _viewport;
+        private Size _previousSize;
 
         public PanoramaPanel()
         {
             _transform = new TranslateTransform();
+            _toBeArranged = new List<UIElement>();
             RenderTransform = _transform;
         }
 
@@ -361,6 +364,8 @@ namespace MediaBrowser.Theater.Presentation.Controls
                 CalculateItemSizes();
             }
 
+            var sizeChanged = availableSize == _previousSize;
+
             int itemCount = _itemPositionOffsets.Length - 1;
 
             var totalSize = new Size(_itemPositionOffsets[_itemPositionOffsets.Length - 1] + EndScrollPadding, _itemOffAxisExtent);
@@ -399,12 +404,20 @@ namespace MediaBrowser.Theater.Presentation.Controls
                         }
 
                         // Measurements will depend on layout algorithm
-                        child.Measure(InfiniteSize);
+                        if (sizeChanged) {
+                            child.Measure(InfiniteSize);
+                        }
+
+                        if (newlyRealized || sizeChanged) {
+                            _toBeArranged.Add(child);
+                        }
                     }
                 }
 
                 EnqueueCleanup(firstVisibleItemIndex, lastVisibleItemIndex);
             }
+
+            _previousSize = availableSize;
 
             return new Size(Math.Min(availableSize.Width, totalSize.Width), Math.Min(availableSize.Height, totalSize.Height));
         }
@@ -494,11 +507,15 @@ namespace MediaBrowser.Theater.Presentation.Controls
 
             for (int index = 0; index < Children.Count; index++) {
                 UIElement child = Children[index];
-                int itemIndex = generator.IndexFromGeneratorPosition(new GeneratorPosition(index, 0));
 
-                ArrangeChild(itemIndex, child);
+                if (_toBeArranged.Contains(child)) {
+                    int itemIndex = generator.IndexFromGeneratorPosition(new GeneratorPosition(index, 0));
+                    ArrangeChild(itemIndex, child);
+                }
             }
 
+            _toBeArranged.Clear();
+            
             VerifyScrollData(finalSize, new Size(_itemPositionOffsets[_itemPositionOffsets.Length - 1] + EndScrollPadding, _itemOffAxisExtent));
 
             return finalSize;

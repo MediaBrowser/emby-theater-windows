@@ -292,7 +292,8 @@ namespace MediaBrowser.Theater.Implementations.UserInput
                     var mouseEventArgs = new MouseButtonEventArgs(WindowsInput.InputManager.Current.PrimaryMouseDevice,
                         0,
                         ConvertMouseButton(e.Button));
-                    _mouseMove.Invoke(null, mouseEventArgs);
+                      if(_mouseMove != null) //experienced an issue when closing the app where _mouseMove went away b/w the test above and when the async exec occured
+                        _mouseMove.Invoke(null, mouseEventArgs);
                   });
             }
         }

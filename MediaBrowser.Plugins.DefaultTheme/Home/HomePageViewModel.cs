@@ -16,7 +16,7 @@ using System.Windows;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Home
 {
-    public class HomePageViewModel : TabbedViewModel
+    public class HomePageViewModel : TabbedViewModel, IAcceptsPlayCommand
     {
         private readonly IPresentationManager _presentationManager;
         private readonly IApiClient _apiClient;
@@ -297,6 +297,27 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         private void SectionViewModel_CurrentItemChanged(BaseHomePageSectionViewModel sender, EventArgs e)
         {
             CurrentItem = sender.CurrentItem;
+        }
+
+        private void Resume(object commandParameter)
+        {
+            var item = commandParameter as ItemViewModel;
+
+            if (item != null)
+            {
+                item.Resume();
+            }
+        }
+
+        // IAcceptsPlayCommand.HandlePlayCommand
+        //
+        // If we  play the media direct from the home page
+        // resume the item if possible, not this is differnet on
+        // the detail page where we have a choice between play and resume
+        //
+        public void HandlePlayCommand()
+        {
+            Resume(CurrentItem);
         }
     }
 }

@@ -26,6 +26,12 @@ namespace MediaBrowser.Theater.Presentation.Controls
         Size Size { get; }
     }
 
+    public enum NavigationOptimizationHint
+    { 
+        None,
+        NoSubItemNavigation
+    }
+
     public class PanoramaPanel : VirtualizingPanel, IScrollInfo, IVirtualizedPanel
     {
         private const double LineSize = 16;
@@ -50,6 +56,20 @@ namespace MediaBrowser.Theater.Presentation.Controls
 
         private DateTime? _directionKeyPressed;
         private bool _allowSmoothScrolling;
+
+
+
+        public NavigationOptimizationHint NavigationOptimizationHint
+        {
+            get { return (NavigationOptimizationHint)GetValue(NavigationOptimizationHintProperty); }
+            set { SetValue(NavigationOptimizationHintProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for NavigationOptimizationHint.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty NavigationOptimizationHintProperty = 
+    DependencyProperty.Register("NavigationOptimizationHint", typeof(NavigationOptimizationHint), typeof(PanoramaPanel), new PropertyMetadata(NavigationOptimizationHint.None));
+
+
 
         public PanoramaPanel()
         {
@@ -89,59 +109,75 @@ namespace MediaBrowser.Theater.Presentation.Controls
             }
 
             if (e.Key == Key.Left || e.Key == Key.Right) {
-                var currentFocus = Keyboard.FocusedElement as FrameworkElement;
-                var generator = ItemContainerGenerator;
-
-                for (var control = currentFocus; control != null; control = VisualTreeHelper.GetParent(control) as FrameworkElement) {
-                    var childIndex = Children.IndexOf(control);
-                    int itemIndex = generator.IndexFromGeneratorPosition(new GeneratorPosition(childIndex, 0));
-                    
-                    // case where control to the left has not loaded yet
-                    if (e.Key == Key.Left && childIndex == 0 && itemIndex > 0) {
-                        e.Handled = true;
-                        break;
-                    }
-
-                    // case where control to the right has not loaded yet
-                    if (e.Key == Key.Right && childIndex == Children.Count - 1 && itemIndex < _itemPositionOffsets.Length - 1) {
-                        e.Handled = true;
-                        break;
-                    }
-
-                    // if we are at the first item, check for wrapping
-                    if (e.Key == Key.Left && childIndex == 0 && itemIndex == 0) {
-                        var nextFocus = currentFocus.PredictFocus(FocusNavigationDirection.Left) as FrameworkElement;
-                        if (nextFocus != null) {
-                            var currentPosition = currentFocus.TransformToAncestor(this).Transform(new Point(currentFocus.ActualWidth, 0));
-                            var position = nextFocus.TransformToAncestor(this).Transform(new Point(0, 0));
-                            if (position.X > currentPosition.X) {
-                                e.Handled = true;
-                            }
-                        }
-
-                        break;
-                    }
-
-                    // if we are at the last item, check for wrapping
-                    if (e.Key == Key.Right && childIndex == Children.Count - 1 && itemIndex == _itemPositionOffsets.Length - 1) {
-                        var nextFocus = currentFocus.PredictFocus(FocusNavigationDirection.Right) as FrameworkElement;
-                        if (nextFocus != null) {
-                            var currentPosition = currentFocus.TransformToAncestor(this).Transform(new Point(0, 0));
-                            var position = nextFocus.TransformToAncestor(this).Transform(new Point(nextFocus.ActualWidth, 0));
-                            if (position.X < currentPosition.X) {
-                                e.Handled = true;
-                            }
-                        }
-                    }
-
-                    if (childIndex != -1) {
-                        break;
-                    }
+                if (NavigationOptimizationHint == Controls.NavigationOptimizationHint.None) {
+                    PreventNavigationWrappingWithSubNavigation(e);
+                } else {
+                    PreventNavigationWrapping(e);
                 }
             }
 
             if (!e.Handled) {
                 base.OnKeyDown(e);
+            }
+        }
+
+        private int FindChildIndex(FrameworkElement element)
+        {
+            for (var control = element; control != null; control = VisualTreeHelper.GetParent(control) as FrameworkElement) {
+                var childIndex = Children.IndexOf(control);
+                if (childIndex != -1) {
+                    return childIndex;
+                }
+            }
+
+            return -1;
+        }
+
+        private void PreventNavigationWrappingWithSubNavigation(KeyEventArgs e)
+        {
+            var currentFocus = Keyboard.FocusedElement as FrameworkElement;
+            int childIndex = FindChildIndex(currentFocus);
+
+            if (childIndex != 0 && childIndex != Children.Count - 1) {
+                return;
+            }
+
+            if (e.Key == Key.Left && currentFocus != null) {
+                var nextFocus = currentFocus.PredictFocus(FocusNavigationDirection.Left) as FrameworkElement;
+                if (nextFocus != null) {
+                    var currentPosition = currentFocus.TransformToAncestor(this).Transform(new Point(currentFocus.ActualWidth, 0));
+                    var position = nextFocus.TransformToAncestor(this).Transform(new Point(0, 0));
+                    if (position.X > currentPosition.X) {
+                        e.Handled = true;
+                    }
+                }
+            }
+
+            if (e.Key == Key.Right && currentFocus != null) {
+                var nextFocus = currentFocus.PredictFocus(FocusNavigationDirection.Right) as FrameworkElement;
+                if (nextFocus != null) {
+                    var currentPosition = currentFocus.TransformToAncestor(this).Transform(new Point(0, 0));
+                    var position = nextFocus.TransformToAncestor(this).Transform(new Point(nextFocus.ActualWidth, 0));
+                    if (position.X < currentPosition.X) {
+                        e.Handled = true;
+                    }
+                }
+            }
+        }
+
+        private void PreventNavigationWrapping(KeyEventArgs e)
+        {
+            var currentFocus = Keyboard.FocusedElement as FrameworkElement;
+            var childIndex = FindChildIndex(currentFocus);
+
+            // case where control to the left has not loaded yet, or we are the first item
+            if (e.Key == Key.Left && childIndex == 0) {
+                e.Handled = true;
+            }
+
+            // case where control to the right has not loaded yet, or we are the last item
+            if (e.Key == Key.Right && childIndex == Children.Count - 1) {
+                e.Handled = true;
             }
         }
 

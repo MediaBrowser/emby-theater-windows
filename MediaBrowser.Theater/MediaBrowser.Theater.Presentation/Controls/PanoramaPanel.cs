@@ -48,6 +48,9 @@ namespace MediaBrowser.Theater.Presentation.Controls
         private Size _viewport;
         private Size _previousSize;
 
+        private DateTime? _directionKeyPressed;
+        private bool _allowSmoothScrolling;
+
         public PanoramaPanel()
         {
             _transform = new TranslateTransform();
@@ -55,43 +58,84 @@ namespace MediaBrowser.Theater.Presentation.Controls
             RenderTransform = _transform;
         }
 
+        private void EnableSmoothScrolling()
+        {
+            if (!_allowSmoothScrolling) {
+                _allowSmoothScrolling = true;
+
+                if (_transform.X != _offset.X) {
+                    _transform.BeginAnimation(TranslateTransform.XProperty, GetAnimation(-_offset.X), HandoffBehavior.SnapshotAndReplace);
+                }
+
+                if (_transform.Y != _offset.Y) {
+                    _transform.BeginAnimation(TranslateTransform.YProperty, GetAnimation(-_offset.Y), HandoffBehavior.SnapshotAndReplace);
+                }
+            }
+        }
+
+        private void DisableSmoothScrolling()
+        {
+            _allowSmoothScrolling = false;
+        }
+
         private DateTime _lastHandledNavigation;
 
         protected override void OnKeyDown(KeyEventArgs e)
         {
-            if (e.IsRepeat && (e.Key == Key.Left || e.Key == Key.Right)) {
-                if (DateTime.Now - _lastHandledNavigation < TimeSpan.FromMilliseconds(50)) {
-                    e.Handled = true;
-                    return;
-                }
+            if (_directionKeyPressed == null) {
+                _directionKeyPressed = DateTime.Now;
+            } else if (DateTime.Now - _directionKeyPressed > TimeSpan.FromSeconds(0.75)) {
+                DisableSmoothScrolling();
             }
 
-            _lastHandledNavigation = DateTime.Now;
-
-            if (e.Key == Key.Left) {
+            if (e.Key == Key.Left || e.Key == Key.Right) {
                 var currentFocus = Keyboard.FocusedElement as FrameworkElement;
-                if (currentFocus != null) {
-                    var nextFocus = currentFocus.PredictFocus(FocusNavigationDirection.Left) as FrameworkElement;
-                    if (nextFocus != null) {
-                        var currentPosition = currentFocus.TransformToAncestor(this).Transform(new Point(currentFocus.ActualWidth, 0));
-                        var position = nextFocus.TransformToAncestor(this).Transform(new Point(0, 0));
-                        if (position.X > currentPosition.X) {
-                            e.Handled = true;
+                var generator = ItemContainerGenerator;
+
+                for (var control = currentFocus; control != null; control = VisualTreeHelper.GetParent(control) as FrameworkElement) {
+                    var childIndex = Children.IndexOf(control);
+                    int itemIndex = generator.IndexFromGeneratorPosition(new GeneratorPosition(childIndex, 0));
+                    
+                    // case where control to the left has not loaded yet
+                    if (e.Key == Key.Left && childIndex == 0 && itemIndex > 0) {
+                        e.Handled = true;
+                        break;
+                    }
+
+                    // case where control to the right has not loaded yet
+                    if (e.Key == Key.Right && childIndex == Children.Count - 1 && itemIndex < _itemPositionOffsets.Length - 1) {
+                        e.Handled = true;
+                        break;
+                    }
+
+                    // if we are at the first item, check for wrapping
+                    if (e.Key == Key.Left && childIndex == 0 && itemIndex == 0) {
+                        var nextFocus = currentFocus.PredictFocus(FocusNavigationDirection.Left) as FrameworkElement;
+                        if (nextFocus != null) {
+                            var currentPosition = currentFocus.TransformToAncestor(this).Transform(new Point(currentFocus.ActualWidth, 0));
+                            var position = nextFocus.TransformToAncestor(this).Transform(new Point(0, 0));
+                            if (position.X > currentPosition.X) {
+                                e.Handled = true;
+                            }
+                        }
+
+                        break;
+                    }
+
+                    // if we are at the last item, check for wrapping
+                    if (e.Key == Key.Right && childIndex == Children.Count - 1 && itemIndex == _itemPositionOffsets.Length - 1) {
+                        var nextFocus = currentFocus.PredictFocus(FocusNavigationDirection.Right) as FrameworkElement;
+                        if (nextFocus != null) {
+                            var currentPosition = currentFocus.TransformToAncestor(this).Transform(new Point(0, 0));
+                            var position = nextFocus.TransformToAncestor(this).Transform(new Point(nextFocus.ActualWidth, 0));
+                            if (position.X < currentPosition.X) {
+                                e.Handled = true;
+                            }
                         }
                     }
-                }
-            }
 
-            if (e.Key == Key.Right) {
-                var currentFocus = Keyboard.FocusedElement as FrameworkElement;
-                if (currentFocus != null) {
-                    var nextFocus = currentFocus.PredictFocus(FocusNavigationDirection.Right) as FrameworkElement;
-                    if (nextFocus != null) {
-                        var currentPosition = currentFocus.TransformToAncestor(this).Transform(new Point(0, 0));
-                        var position = nextFocus.TransformToAncestor(this).Transform(new Point(nextFocus.ActualWidth, 0));
-                        if (position.X < currentPosition.X) {
-                            e.Handled = true;
-                        }
+                    if (childIndex != -1) {
+                        break;
                     }
                 }
             }
@@ -99,6 +143,17 @@ namespace MediaBrowser.Theater.Presentation.Controls
             if (!e.Handled) {
                 base.OnKeyDown(e);
             }
+        }
+
+        protected override async void OnKeyUp(KeyEventArgs e)
+        {
+            _directionKeyPressed = null;
+            EnableSmoothScrolling();
+
+            base.OnKeyUp(e);
+
+            await Task.Delay(_removalDelay).ConfigureAwait(false);
+            Dispatcher.BeginInvoke((Action) CleanUpItems, DispatcherPriority.Background);
         }
 
         public double StartScrollPadding { get; set; }
@@ -163,10 +218,10 @@ namespace MediaBrowser.Theater.Presentation.Controls
             if (offset != _offset.X) {
                 _offset.X = offset;
 
-                if (animate) {
+                if (animate && _allowSmoothScrolling) {
                     _transform.BeginAnimation(TranslateTransform.XProperty, GetAnimation(-offset), HandoffBehavior.SnapshotAndReplace);
                 } else {
-                    _transform.BeginAnimation(TranslateTransform.YProperty, new DoubleAnimation(-offset, TimeSpan.Zero), HandoffBehavior.SnapshotAndReplace);
+                    _transform.BeginAnimation(TranslateTransform.XProperty, new DoubleAnimation(-offset, TimeSpan.Zero), HandoffBehavior.SnapshotAndReplace);
                 }
 
                 InvalidateMeasure();
@@ -184,7 +239,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
             if (offset != _offset.Y) {
                 _offset.Y = offset;
 
-                if (animate) {
+                if (animate && _allowSmoothScrolling) {
                     _transform.BeginAnimation(TranslateTransform.YProperty, GetAnimation(-offset), HandoffBehavior.SnapshotAndReplace);
                 } else {
                     _transform.BeginAnimation(TranslateTransform.YProperty, new DoubleAnimation(-offset, TimeSpan.Zero), HandoffBehavior.SnapshotAndReplace);
@@ -422,7 +477,7 @@ namespace MediaBrowser.Theater.Presentation.Controls
             return new Size(Math.Min(availableSize.Width, totalSize.Width), Math.Min(availableSize.Height, totalSize.Height));
         }
 
-        private async void EnqueueCleanup(int firstVisibleItemIndex, int lastVisibleItemIndex)
+        private void EnqueueCleanup(int firstVisibleItemIndex, int lastVisibleItemIndex)
         {
             _firstVisibleItem = firstVisibleItemIndex;
             _lastVisibleItem = lastVisibleItemIndex;
@@ -433,10 +488,9 @@ namespace MediaBrowser.Theater.Presentation.Controls
                 _lastVisibleTimes[i] = now;
             }
 
-            await Task.Delay(_removalDelay).ConfigureAwait(false);
-            Dispatcher.BeginInvoke((Action)CleanUpItems, DispatcherPriority.Background);
+            CleanUpItems();
         }
-
+        
         private void CleanUpItems()
         {
             UIElementCollection children = InternalChildren;

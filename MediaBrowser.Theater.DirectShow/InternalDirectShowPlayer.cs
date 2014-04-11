@@ -15,6 +15,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Management;
+using MediaBrowser.Theater.Interfaces.UserInput;
 
 namespace MediaBrowser.Theater.DirectShow
 {
@@ -30,6 +31,7 @@ namespace MediaBrowser.Theater.DirectShow
         private readonly IPlaybackManager _playbackManager;
         private readonly ITheaterConfigurationManager _config;
         private readonly IIsoManager _isoManager;
+        private readonly IUserInputManager _inputManager;
 
         public event EventHandler<MediaChangeEventArgs> MediaChanged;
 
@@ -37,7 +39,7 @@ namespace MediaBrowser.Theater.DirectShow
 
         private List<BaseItemDto> _playlist = new List<BaseItemDto>();
 
-        public InternalDirectShowPlayer(ILogManager logManager, IHiddenWindow hiddenWindow, IPresentationManager presentation, ISessionManager sessionManager, IApiClient apiClient, IPlaybackManager playbackManager, ITheaterConfigurationManager config, IIsoManager isoManager)
+        public InternalDirectShowPlayer(ILogManager logManager, IHiddenWindow hiddenWindow, IPresentationManager presentation, ISessionManager sessionManager, IApiClient apiClient, IPlaybackManager playbackManager, ITheaterConfigurationManager config, IIsoManager isoManager, IUserInputManager inputManager)
         {
             _logger = logManager.GetLogger("InternalDirectShowPlayer");
             _hiddenWindow = hiddenWindow;
@@ -47,6 +49,7 @@ namespace MediaBrowser.Theater.DirectShow
             _playbackManager = playbackManager;
             _config = config;
             _isoManager = isoManager;
+            _inputManager = inputManager;
         }
 
         public IReadOnlyList<BaseItemDto> Playlist
@@ -177,7 +180,7 @@ namespace MediaBrowser.Theater.DirectShow
             {
                 InvokeOnPlayerThread(() =>
                 {
-                    _mediaPlayer = new DirectShowPlayer(_logger, _hiddenWindow, this, _presentation.WindowHandle, _sessionManager);
+                    _mediaPlayer = new DirectShowPlayer(_logger, _hiddenWindow, this, _presentation.WindowHandle, _sessionManager, _config, _inputManager);
 
                     //HideCursor();
                 });

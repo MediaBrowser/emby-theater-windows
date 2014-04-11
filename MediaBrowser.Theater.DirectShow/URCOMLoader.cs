@@ -40,127 +40,117 @@ namespace MediaBrowser.Theater.DirectShow
         Dictionary<string, IntPtr> _libsLoaded = new Dictionary<string, IntPtr>();
         SerializableDictionary<Guid, KnownCOMObject> _knownObjects;
 
-        private static string _searchPath = string.Empty;
-        public static string SearchPath
+        public string SearchPath
         {
-            get
-            {
-                if (string.IsNullOrWhiteSpace(_searchPath))
-                {
-                    _searchPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "COMObjects");
-                }
-                return _searchPath;
-            }
+            get;
+            private set;
         }
 
-        public URCOMLoader(KnownCOMObjectConfiguration kfs)
+        public URCOMLoader(ITheaterConfigurationManager mbtConfig)
         {
-            _knownObjects = kfs.FilterList;
+            _knownObjects = mbtConfig.Configuration.InternalPlayerConfiguration.COMConfig.FilterList;
+            SearchPath = Path.Combine(mbtConfig.CommonApplicationPaths.ProgramDataPath, "COMObjects");
         }
 
-        public object CreateObjectFromPath(string dllPath, Guid clsid)
+        public object CreateObjectFromPath(string dllPath, Guid clsid, bool comFallback)
         {
-            return CreateObjectFromPath(dllPath, clsid, false);
+            return CreateObjectFromPath(dllPath, clsid, false, comFallback);
         }
 
         //http://www.gdcl.co.uk/2011/June/UnregisteredFilters.htm
-        public object CreateObjectFromPath(string dllPath, Guid clsid, bool setSearchPath)
+        public object CreateObjectFromPath(string dllPath, Guid clsid, bool setSearchPath, bool comFallback)
         {
             object createdObject = null;
             IntPtr lib = IntPtr.Zero;
+            string fullDllPath = Path.Combine(SearchPath, dllPath);
 
-            if (_libsLoaded.ContainsKey(dllPath))
-                lib = _libsLoaded[dllPath];
-            else
+            if (File.Exists(fullDllPath))
             {
-                //some dlls have external dependancies, setting the search path to its location should assist with this
-                if (setSearchPath)
+                if (_libsLoaded.ContainsKey(dllPath))
+                    lib = _libsLoaded[dllPath];
+                else
                 {
-                    NativeMethods.SetDllDirectory(URCOMLoader.SearchPath);
-                }
-
-                lib = NativeMethods.LoadLibrary(dllPath);
-
-                if (setSearchPath)
-                {
-                    NativeMethods.SetDllDirectory(null);
-                }
-            }
-
-            if (lib != IntPtr.Zero)
-            {
-                //we need to cache the handle so the COM object will work and we can clean up later
-                _libsLoaded[dllPath] = lib;
-                IntPtr fnP = NativeMethods.GetProcAddress(lib, "DllGetClassObject");
-                if (fnP != IntPtr.Zero)
-                {
-                    DllGETCLASSOBJECTInvoker fn = Marshal.GetDelegateForFunctionPointer(fnP, typeof(DllGETCLASSOBJECTInvoker)) as DllGETCLASSOBJECTInvoker;
-
-                    object pUnk = null;
-                    int hr = fn(clsid, IID_IUnknown, out pUnk);
-                    if (hr >= 0)
+                    //some dlls have external dependancies, setting the search path to its location should assist with this
+                    if (setSearchPath)
                     {
-                        IClassFactory pCF = pUnk as IClassFactory;
-                        if (pCF != null)
+                        NativeMethods.SetDllDirectory(Path.GetDirectoryName(fullDllPath));
+                    }
+
+                    lib = NativeMethods.LoadLibrary(fullDllPath);
+
+                    if (setSearchPath)
+                    {
+                        NativeMethods.SetDllDirectory(null);
+                    }
+                }
+
+                if (lib != IntPtr.Zero)
+                {
+                    //we need to cache the handle so the COM object will work and we can clean up later
+                    _libsLoaded[dllPath] = lib;
+                    IntPtr fnP = NativeMethods.GetProcAddress(lib, "DllGetClassObject");
+                    if (fnP != IntPtr.Zero)
+                    {
+                        DllGETCLASSOBJECTInvoker fn = Marshal.GetDelegateForFunctionPointer(fnP, typeof(DllGETCLASSOBJECTInvoker)) as DllGETCLASSOBJECTInvoker;
+
+                        object pUnk = null;
+                        int hr = fn(clsid, IID_IUnknown, out pUnk);
+                        if (hr >= 0)
                         {
-                            hr = pCF.CreateInstance(null, IID_IUnknown, out createdObject);
+                            IClassFactory pCF = pUnk as IClassFactory;
+                            if (pCF != null)
+                            {
+                                hr = pCF.CreateInstance(null, IID_IUnknown, out createdObject);
+                            }
                         }
                     }
+                    else
+                    {
+                        throw new Win32Exception();
+                    }
+                }
+                else if (comFallback)
+                {
+                    Type type = Type.GetTypeFromCLSID(clsid);
+                    return Activator.CreateInstance(type);
                 }
                 else
                 {
                     throw new Win32Exception();
                 }
             }
-            else
+            else if (comFallback)
             {
-                throw new Win32Exception();
+                Type type = Type.GetTypeFromCLSID(clsid);
+                return Activator.CreateInstance(type);
             }
 
             return createdObject;
         }
 
-        public IBaseFilter LoadFilter(Guid guid, IGraphBuilder graph)
+        public object GetObject(Guid guid, bool comFallback)
         {
             if (_knownObjects.ContainsKey(guid))
-                return LoadFilter(_knownObjects[guid], graph);
+                return GetObject(_knownObjects[guid], comFallback);
             else
                 return null;
         }
 
-        public IBaseFilter LoadFilter(string filterName, IGraphBuilder graph)
+        public object GetObject(string filterName, bool comFallback)
         {
             foreach (KnownCOMObject kf in _knownObjects.Values)
             {
                 if (string.Compare(kf.ObjectName, filterName, true) == 0)
-                    return LoadFilter(kf, graph);
+                    return GetObject(kf, comFallback);
             }
             return null;
         }
 
-        public object GetObject(Guid guid)
-        {
-            if (_knownObjects.ContainsKey(guid))
-                return GetObject(_knownObjects[guid]);
-            else
-                return null;
-        }
-
-        public object GetObject(string filterName)
-        {
-            foreach (KnownCOMObject kf in _knownObjects.Values)
-            {
-                if (string.Compare(kf.ObjectName, filterName, true) == 0)
-                    return GetObject(kf);
-            }
-            return null;
-        }
-
-        public object GetObject(KnownCOMObject kf)
+        public object GetObject(KnownCOMObject kf, bool comFallback)
         {
             try
             {
-                return this.CreateObjectFromPath(kf.ObjectPath, kf.Clsid, true);
+                return this.CreateObjectFromPath(kf.ObjectPath, kf.Clsid, true, comFallback);
             }
             catch (COMException ex)
             {
@@ -171,71 +161,6 @@ namespace MediaBrowser.Theater.DirectShow
                 Console.WriteLine("Could not load {0} - {1}: {2}", kf.Clsid, kf.ObjectPath, ex.Message);
                 return null;
             }
-        }
-
-        public IBaseFilter LoadFilter(KnownCOMObject kf, IGraphBuilder graph)
-        {
-            try
-            {
-                IBaseFilter filter = this.CreateObjectFromPath(kf.ObjectPath, kf.Clsid, true) as IBaseFilter;
-                if (filter != null && graph != null)
-                {
-                    int hr = graph.AddFilter(filter, kf.ObjectName);
-                    DsError.ThrowExceptionForHR(hr);
-                }
-                return filter;
-            }
-            catch (COMException ex)
-            {
-                throw ex;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Could not load {0} - {1}: {2}", kf.Clsid, kf.ObjectPath, ex.Message);
-                return null;
-            }
-        }
-
-        public List<IBaseFilter> AddPreferredFilters(IGraphBuilder graph, string PreferredFilters)
-        {
-            List<IBaseFilter> pFilters = new List<IBaseFilter>();
-
-            foreach (string filtName in PreferredFilters.Split(new char[] { ';', ',' }, StringSplitOptions.RemoveEmptyEntries))
-            {
-                IBaseFilter filter = null;
-                try
-                {
-                    Guid filtGuid;
-
-                    if (KnownCOMObjectConfiguration.IsGuid(filtName, out filtGuid))
-                    {
-                        filter = this.LoadFilter(filtGuid, graph);
-                        
-                        if(filter == null)
-                            filter = FilterGraphTools.AddFilterFromClsid(graph, filtGuid, filtName);
-                    }
-                    else
-                    {
-                        filter = this.LoadFilter(filtName, graph);
-
-                        if (filter == null)
-                            filter = FilterGraphTools.AddFilterByName(graph, FilterCategory.LegacyAmFilterCategory, filtName);
-                    }
-
-                    if (filter != null)
-                    {
-                        Console.WriteLine("Added {0} to the graph", filtName);
-                        pFilters.Add(filter);
-                    }
-                    else
-                        Console.WriteLine("{0} not added to the graph", filtName);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Error {1} adding {0} to the graph", filtName, ex.Message);
-                }
-            }
-            return pFilters;
         }
 
         #region IDisposable Members

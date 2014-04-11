@@ -265,6 +265,49 @@ namespace DirectShowLib.Utils
             return filter;
         }
 
+        //[SecurityPermission(SecurityAction.LinkDemand, UnmanagedCode = true)]
+        //public static IAMLine21Decoder FindLine21Filter(IGraphBuilder graphBuilder)
+        //{
+        //    int hr = 0;
+        //    IAMLine21Decoder filter = null;
+        //    IEnumFilters enumFilters = null;
+
+        //    if (graphBuilder == null)
+        //        throw new ArgumentNullException("graphBuilder");
+
+        //    hr = graphBuilder.EnumFilters(out enumFilters);
+        //    if (hr == 0)
+        //    {
+        //        IBaseFilter[] filters = new IBaseFilter[1];
+
+        //        while (enumFilters.Next(filters.Length, filters, IntPtr.Zero) == 0)
+        //        {
+        //            //FilterInfo filterInfo;
+
+        //            //hr = filters[0].QueryFilterInfo(out filterInfo);
+        //            //if (hr == 0)
+        //            //{
+        //            //    if (filterInfo.pGraph != null)
+        //            //        Marshal.ReleaseComObject(filterInfo.pGraph);
+
+        //            //    if (filterInfo.achName.Equals(filterName))
+        //            //    {
+        //            //        filter = filters[0];
+        //            //        break;
+        //            //    }
+        //            //}
+        //            filter = filters[0] as IAMLine21Decoder;
+        //            if (filter != null)
+        //                break;
+                    
+        //            Marshal.ReleaseComObject(filters[0]);
+        //        }
+        //        Marshal.ReleaseComObject(enumFilters);
+        //    }
+
+        //    return filter;
+        //}
+
         [SecurityPermission(SecurityAction.LinkDemand, UnmanagedCode = true)]
         public static string GetFilterName(IBaseFilter filter)
         {
@@ -1287,6 +1330,9 @@ namespace DirectShowLib.Utils
 
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         public static extern IntPtr LoadLibrary(string lpFileName);
+
+        [DllImport("Kernel32.dll", SetLastError = true)]
+        public static extern Int32 GetLastError();
 
         [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
         public static extern bool FreeLibrary(IntPtr hModule);

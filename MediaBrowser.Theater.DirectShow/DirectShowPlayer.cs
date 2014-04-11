@@ -775,6 +775,13 @@ namespace MediaBrowser.Theater.DirectShow
             catch (Exception ex)
             {
                 _logger.ErrorException("Error adding LAV Audio filter", ex);
+                            _madvr = new MadVR();
+                                    if (smoothMotion != _dsConfig.VideoConfig.UseMadVrSmoothMotion)
+                                        msett.SetBool("smoothMotionEnabled", _dsConfig.VideoConfig.UseMadVrSmoothMotion);
+                                    if (string.Compare(msett.GetString("smoothMotionMode"), _dsConfig.VideoConfig.MadVrSmoothMotionMode, true) != 0)
+                                        bool success = msett.SetString("smoothMotionMode", _dsConfig.VideoConfig.MadVrSmoothMotionMode);
+                    if (enableXySubFilter && madVrSucceded)
+                            _xySubFilter = new XySubFilter();
             }
 
             DirectShowLib.IEnumPins pEnum;

@@ -143,14 +143,14 @@ namespace MediaBrowser.UI
          
             var hiddenWindow = new AppHiddenWIndow();
 
+            ImageManager = new ImageManager(ApiClient, ApplicationPaths, TheaterConfigurationManager);
+            RegisterSingleInstance(ImageManager);
+
             NavigationService = new NavigationService(ThemeManager, () => PlaybackManager, ApiClient, PresentationManager, TheaterConfigurationManager, () => SessionManager, this, InstallationManager, ImageManager, Logger, () => UserInputManager, ApiWebSocket, hiddenWindow);
             RegisterSingleInstance(NavigationService);
 
             UserInputManager = new UserInputManager(PresentationManager, NavigationService, hiddenWindow, LogManager);
             RegisterSingleInstance(UserInputManager);
-
-            ImageManager = new ImageManager(ApiClient, ApplicationPaths, TheaterConfigurationManager);
-            RegisterSingleInstance(ImageManager);
 
             PlaybackManager = new PlaybackManager(TheaterConfigurationManager, Logger, ApiClient, NavigationService, PresentationManager);
             RegisterSingleInstance(PlaybackManager);

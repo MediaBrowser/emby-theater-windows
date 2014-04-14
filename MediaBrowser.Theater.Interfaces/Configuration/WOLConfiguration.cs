@@ -8,10 +8,10 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
     public class WolConfiguration
     {
         /// <summary>
-        /// Gets or sets the HostName to use for the magic packet
+        /// Gets or sets the port to use for WOL and WOW
         /// </summary>
-        /// <value>The HostName.</value>
-        public string HostName { get; set; }
+        /// <value>Port</value>
+        public int Port { get; set; }
 
         /// <summary>
         /// Gets or sets the HostIpAddresses to use for the magic packets

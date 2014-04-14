@@ -47,6 +47,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Win32;
 
 namespace MediaBrowser.UI
 {
@@ -58,6 +59,7 @@ namespace MediaBrowser.UI
         public ApplicationHost(ApplicationPaths applicationPaths, ILogManager logManager)
             : base(applicationPaths, logManager)
         {
+            SystemEvents.PowerModeChanged += SystemEvents_PowerModeChanged;
         }
 
         /// <summary>
@@ -390,12 +392,18 @@ namespace MediaBrowser.UI
             Application.SetSuspendState(PowerState.Suspend, false, false);
         }
 
+        private void SystemEvents_PowerModeChanged(object sender, PowerModeChangedEventArgs e)
+        {
+            // ReSharper disable once CSharpWarnings::CS4014
+            SendWolCommand();
+        }
+
         public async Task SendWolCommand()
         {
             const int payloadSize = 102;
             var wolConfig = TheaterConfigurationManager.Configuration.WolConfiguration;
 
-            if (wolConfig == null || wolConfig.HostName == null)
+            if (wolConfig == null)
             {
                 return;
             }
@@ -416,12 +424,26 @@ namespace MediaBrowser.UI
                 for (var i = 1; i < 17; i++)
                     Buffer.BlockCopy(macBytes, 0, payload, 6 * i, 6);
 
-                //Send packet
+                //Send packet LAN
                 using (var udp = new UdpClient())
                 {
                     try
                     {
-                        udp.Connect(IPAddress.Broadcast, 9);
+                        udp.Connect(IPAddress.Broadcast, wolConfig.Port);
+                        await udp.SendAsync(payload, payloadSize);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error(String.Format("Magic packet send failed: {0}", ex.Message));
+                    }
+                }
+
+                //Send packet WAN
+                using (var udp = new UdpClient())
+                {
+                    try
+                    {
+                        udp.Connect(TheaterConfigurationManager.Configuration.ServerHostName, wolConfig.Port);
                         await udp.SendAsync(payload, payloadSize);
                     }
                     catch (Exception ex)

@@ -522,6 +522,7 @@ namespace MediaBrowser.UI
         private async Task LoadInitialPresentation()
         {
             var foundServer = false;
+            _appHost.PresentationManager.ShowModalLoadingAnimation();
 
             SystemInfo systemInfo = null;
 
@@ -548,6 +549,7 @@ namespace MediaBrowser.UI
                 {
                     _appHost.TheaterConfigurationManager.Configuration.WolConfiguration = new WolConfiguration
                     {
+                        Port = 9,
                         HostMacAddresses = new List<string>(),
                         HostIpAddresses = new List<string>(),
                         WakeAttempts = 1
@@ -559,27 +561,23 @@ namespace MediaBrowser.UI
 
                 try
                 {
-                    wolConfig.HostName = systemInfo.ServerName;
-                    var currentIpAddreses = await NetworkUtils.ResolveIpAddressesForHostName(systemInfo.ServerName);
+                    var currentIpAddresses = await NetworkUtils.ResolveIpAddressesForHostName(_appHost.TheaterConfigurationManager.Configuration.ServerHostName);
 
-                    var hasChanged = false;
-                    if (currentIpAddreses.Count != wolConfig.HostIpAddresses.Count)
-                    {
-                        hasChanged = true;
-                    }
-                    else
-                    {
-                        if (currentIpAddreses.Where((t, i) => t != wolConfig.HostIpAddresses[i]).Any())
-                        {
-                            hasChanged = true;
-                        }
-                    }
+                    var hasChanged = currentIpAddresses.Any(currentIpAddress => wolConfig.HostIpAddresses.All(x => x != currentIpAddress));
+
+                    if(!hasChanged)
+                        hasChanged = wolConfig.HostIpAddresses.Any(hostIpAddress => currentIpAddresses.All(x => x != hostIpAddress));
 
                     if (hasChanged)
                     {
                         wolConfig.HostMacAddresses =
-                            await NetworkUtils.ResolveMacAddressesForHostName(systemInfo.ServerName);
-                        wolConfig.HostIpAddresses = currentIpAddreses;
+                            await NetworkUtils.ResolveMacAddressesForHostName(_appHost.TheaterConfigurationManager.Configuration.ServerHostName);
+                        wolConfig.HostIpAddresses = currentIpAddresses;
+
+                        //Always add system info MAC address in case we are in a WAN setting
+                        if(!wolConfig.HostMacAddresses.Contains(systemInfo.MacAddress))
+                            wolConfig.HostMacAddresses.Add(systemInfo.MacAddress);
+
                         _appHost.TheaterConfigurationManager.SaveConfiguration();
                     }
                 }
@@ -631,6 +629,7 @@ namespace MediaBrowser.UI
                 }
             }
 
+            _appHost.PresentationManager.HideModalLoadingAnimation();
             var mediaFilters = _appHost.MediaFilters;
 
             if (!foundServer || !AreRequiredMediaFiltersInstalled(mediaFilters))

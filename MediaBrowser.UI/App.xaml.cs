@@ -550,7 +550,7 @@ namespace MediaBrowser.UI
                     {
                         HostMacAddresses = new List<string>(),
                         HostIpAddresses = new List<string>(),
-                        WakeAttempts = 5
+                        WakeAttempts = 1
                     };
                     _appHost.TheaterConfigurationManager.SaveConfiguration();
                 }

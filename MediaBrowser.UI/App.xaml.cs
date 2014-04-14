@@ -1,4 +1,7 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Net.Sockets;
 using MediaBrowser.ApiInteraction;
 using MediaBrowser.Common.Constants;
 using MediaBrowser.Common.Implementations.Logging;
@@ -8,6 +11,7 @@ using MediaBrowser.Model.System;
 using MediaBrowser.Theater.Implementations.Configuration;
 using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.System;
+using MediaBrowser.UI.Networking;
 using MediaBrowser.UI.StartupWizard;
 using Microsoft.Win32;
 using System;
@@ -521,15 +525,56 @@ namespace MediaBrowser.UI
 
             SystemInfo systemInfo = null;
 
+            //Try and use WOL
+            await _appHost.SendWolCommand();
+
             try
             {
                 systemInfo = await _appHost.ApiClient.GetSystemInfoAsync().ConfigureAwait(false);
 
                 foundServer = true;
+
+                //Check WOL config
+                if (_appHost.TheaterConfigurationManager.Configuration.WolConfiguration == null)
+                {
+                    _appHost.TheaterConfigurationManager.Configuration.WolConfiguration = new WolConfiguration
+                    {
+                        HostMacAddresses = new List<string>(),
+                        HostIpAddresses = new List<string>()
+                    };
+                    _appHost.TheaterConfigurationManager.SaveConfiguration();
+                }
+
+                var wolConfig = _appHost.TheaterConfigurationManager.Configuration.WolConfiguration;
+
+                wolConfig.HostName = systemInfo.ServerName;
+                var currentIpAddreses = await NetworkUtils.ResolveIpAddressesForHostName(systemInfo.ServerName);
+
+                var hasChanged = false;
+                if (currentIpAddreses.Count != wolConfig.HostIpAddresses.Count)
+                {
+                    hasChanged = true;
+                }
+                else
+                {
+                    if (currentIpAddreses.Where((t, i) => t != wolConfig.HostIpAddresses[i]).Any())
+                    {
+                        hasChanged = true;
+                    }
+                }
+
+                if (hasChanged)
+                {
+                    wolConfig.HostMacAddresses = await NetworkUtils.ResolveMacAddressesForHostName(systemInfo.ServerName);
+                    wolConfig.HostIpAddresses = currentIpAddreses;
+                    _appHost.TheaterConfigurationManager.SaveConfiguration();
+                }
             }
             catch (Exception ex)
             {
-                _logger.ErrorException("Error connecting to server using saved connection information. Host: {0}, Port {1}", ex, _appHost.ApiClient.ServerHostName, _appHost.ApiClient.ServerApiPort);
+                _logger.ErrorException(
+                    "Error connecting to server using saved connection information. Host: {0}, Port {1}", ex,
+                    _appHost.ApiClient.ServerHostName, _appHost.ApiClient.ServerApiPort);
             }
 
             if (!foundServer)

@@ -1,4 +1,7 @@
 ﻿using System.Diagnostics;
+using System.Net;
+using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using System.Windows.Forms;
 using MediaBrowser.ApiInteraction;
 using MediaBrowser.ApiInteraction.WebSocket;
@@ -385,6 +388,47 @@ namespace MediaBrowser.UI
         {
             PlaybackManager.StopAllPlayback();
             Application.SetSuspendState(PowerState.Suspend, false, false);
+        }
+
+        public async Task SendWolCommand()
+        {
+            const int payloadSize = 102;
+            var wolConfig = TheaterConfigurationManager.Configuration.WolConfiguration;
+
+            if (wolConfig == null || wolConfig.HostName == null)
+            {
+                return;
+            }
+
+            Logger.Log(LogSeverity.Info, String.Format("Sending Wake on LAN signal to {0}", TheaterConfigurationManager.Configuration.ServerHostName));
+
+            //Send magic packets to each address
+            foreach (var macAddress in wolConfig.HostMacAddresses)
+            {
+                var macBytes = PhysicalAddress.Parse("6C-62-6D-DB-47-CB").GetAddressBytes();
+
+                Logger.Log(LogSeverity.Debug, String.Format("Sending magic packet to {0}", macAddress));
+
+                //Construct magic packet
+                var payload = new byte[payloadSize];
+                Buffer.BlockCopy(new byte[] { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF }, 0, payload, 0, 6);
+
+                for (var i = 1; i < 17; i++)
+                    Buffer.BlockCopy(macBytes, 0, payload, 6 * i, 6);
+
+                //Send packet
+                using (var udp = new UdpClient())
+                {
+                    try
+                    {
+                        await udp.SendAsync(payload, payloadSize, wolConfig.HostName, 9);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error(String.Format("Magic packet send failed: {0}", ex.Message));
+                    }
+                }
+            }
         }
 
         public override string Name

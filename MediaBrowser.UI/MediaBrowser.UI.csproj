@@ -205,6 +205,7 @@
     <Compile Include="Networking\NativeMethods.cs" />
     <Compile Include="Networking\NetworkManager.cs" />
     <Compile Include="Networking\NetworkShares.cs" />
+    <Compile Include="Networking\NetworkUtils.cs" />
     <Compile Include="StartupWizard\StartupWizardFinish.xaml.cs">
       <DependentUpon>StartupWizardFinish.xaml</DependentUpon>
     </Compile>

@@ -50,6 +50,11 @@ namespace MediaBrowser.UI.Networking
 
         public static extern int NetApiBufferFree(
             IntPtr pBuf);
+
+        //Method for send ARP packets
+        [DllImport("iphlpapi.dll", ExactSpelling = true)]
+
+        public static extern int SendARP(int destIp, int srcIp, byte[] pMacAddr, ref int phyAddrLen);
     }
 
     //create a _SERVER_INFO_100 STRUCTURE

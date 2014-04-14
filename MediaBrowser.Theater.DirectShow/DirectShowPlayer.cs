@@ -1083,7 +1083,7 @@ namespace MediaBrowser.Theater.DirectShow
 
                 try
                 {
-                    if (pRenderer != null)
+                    if (pPresenter != null)
                     {
                         hr = pRenderer.InitializeRenderer(null, pPresenter);
                         if (hr > -1)

@@ -1,6 +1,6 @@
-﻿using System;
+﻿using MediaBrowser.Model.Dto;
+using System;
 using System.Collections.Generic;
-using MediaBrowser.Model.Dto;
 
 namespace MediaBrowser.Theater.Api.Playback
 {

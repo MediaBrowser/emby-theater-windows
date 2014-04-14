@@ -28,6 +28,7 @@ using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.System;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme;
+using MediaBrowser.Theater.DirectShow;
 using MediaBrowser.Theater.Networking;
 using MediaBrowser.Theater.StartupWizard;
 using MediaBrowser.Theater.StartupWizard.ViewModels;
@@ -112,6 +113,7 @@ namespace MediaBrowser.Theater
             Container.RegisterSingle(typeof (IEventAggregator), typeof (EventAggregator));
             Container.RegisterSingle(typeof (ISessionManager), typeof (SessionManager));
             Container.RegisterSingle(typeof (IImageManager), typeof (ImageManager));
+            Container.RegisterSingle(typeof (IInternalPlayerWindowManager), typeof (InternalPlayerWindowManager));
 
             // temp bindings until it is possible for the theme to bind these
             Container.RegisterSingle(typeof (IPresenter), typeof (Presenter));

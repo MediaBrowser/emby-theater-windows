@@ -155,6 +155,7 @@
     <Compile Include="Converters\UppercaseConverter.cs" />
     <Compile Include="ImageTypeExtensions.cs" />
     <Compile Include="LocalizationExtensions.cs" />
+    <Compile Include="Playback\GenericExternalPlayer.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>

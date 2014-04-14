@@ -1,11 +1,17 @@
 ﻿using System;
+using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Forms;
+using System.Windows.Interop;
+using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Api.Events;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Configuration;
 using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
+using MediaBrowser.Theater.DirectShow;
 
 namespace MediaBrowser.Theater.DefaultTheme
 {
@@ -21,13 +27,18 @@ namespace MediaBrowser.Theater.DefaultTheme
 
     public class WindowManager
     {
-        private INavigator _navigator;
+        private readonly INavigator _navigator;
+        private readonly IInternalPlayerWindowManager _internalPlayerWindowManager;
+        private readonly ILogger _logger;
+
         private MainWindow _mainWindow;
         private PopupWindow _currentPopup;
 
-        public WindowManager(INavigator navigator)
+        public WindowManager(INavigator navigator, IInternalPlayerWindowManager internalPlayerWindowManager, ILogManager logManager)
         {
             _navigator = navigator;
+            _internalPlayerWindowManager = internalPlayerWindowManager;
+            _logger = logManager.GetLogger("WindowManager");
         }
 
         public MainWindow MainWindow
@@ -88,8 +99,10 @@ namespace MediaBrowser.Theater.DefaultTheme
         public MainWindow CreateMainWindow(PluginConfiguration config, IViewModel viewModel)
         {
             var window = new MainWindow {
-                DataContext = viewModel
+                DataContext = viewModel                               
             };
+
+            System.Windows.Forms.FormStartPosition? startPosition = null;
 
             // Restore window position/size
             if (config.WindowState.HasValue) {
@@ -103,12 +116,14 @@ namespace MediaBrowser.Theater.DefaultTheme
 
                     // Set left
                     if (config.WindowLeft.HasValue) {
+                        startPosition = FormStartPosition.Manual;
                         window.WindowStartupLocation = WindowStartupLocation.Manual;
                         window.Left = left = Math.Max(config.WindowLeft.Value, 0);
                     }
 
                     // Set top
                     if (config.WindowTop.HasValue) {
+                        startPosition = FormStartPosition.Manual;
                         window.WindowStartupLocation = WindowStartupLocation.Manual;
                         window.Top = top = Math.Max(config.WindowTop.Value, 0);
                     }
@@ -126,7 +141,118 @@ namespace MediaBrowser.Theater.DefaultTheme
             }
 
             _mainWindow = window;
+
+            CreateInternalPlayerWindow(startPosition);
+
             return window;
+        }
+
+        private void CreateInternalPlayerWindow(FormStartPosition? startPosition)
+        {
+            int? formWidth = null;
+            int? formHeight = null;
+            int? formLeft = null;
+            int? formTop = null;
+
+            try
+            {
+                formWidth = Convert.ToInt32(_mainWindow.Width);
+                formHeight = Convert.ToInt32(_mainWindow.Height);
+            }
+            catch (OverflowException)
+            {
+                formWidth = null;
+                formHeight = null;
+            }
+            try
+            {
+                formTop = Convert.ToInt32(_mainWindow.Top);
+                formLeft = Convert.ToInt32(_mainWindow.Left);
+            }
+            catch (OverflowException)
+            {
+                formLeft = null;
+                formTop = null;
+            }
+
+            var state = GetWindowsFormState(_mainWindow.WindowState);
+
+            var internalPlayerWindowThreade = new Thread(() => ShowHiddenWindow(formWidth, formHeight, formTop, formLeft, startPosition, state));
+            internalPlayerWindowThreade.SetApartmentState(ApartmentState.STA);
+            internalPlayerWindowThreade.IsBackground = true;
+            internalPlayerWindowThreade.Start();
+        }
+
+        private FormWindowState GetWindowsFormState(WindowState state)
+        {
+            switch (state)
+            {
+                case WindowState.Maximized:
+                    return FormWindowState.Maximized;
+                case WindowState.Minimized:
+                    return FormWindowState.Minimized;
+            }
+
+            return FormWindowState.Normal;
+        }
+
+        private void ShowHiddenWindow(int? width, int? height, int? top, int? left, System.Windows.Forms.FormStartPosition? startPosition, System.Windows.Forms.FormWindowState windowState)
+        {
+            var playerWindow = new InternalPlayerWindow();
+            playerWindow.Load += HiddenWindow_Load;
+            playerWindow.Activated += HiddenWindow_Activated;
+
+            if (width.HasValue) {
+                playerWindow.Width = width.Value;
+            }
+            if (height.HasValue) {
+                playerWindow.Height = height.Value;
+            }
+            if (top.HasValue) {
+                playerWindow.Top = top.Value;
+            }
+            if (left.HasValue) {
+                playerWindow.Left = left.Value;
+            }
+
+            playerWindow.WindowState = windowState;
+
+            if (startPosition.HasValue) {
+                playerWindow.StartPosition = startPosition.Value;
+            }
+
+            playerWindow.Show();
+
+            System.Windows.Threading.Dispatcher.Run();
+        }
+
+        void HiddenWindow_Load(object sender, EventArgs e)
+        {
+            // Hide this from ALT-TAB
+            //var handle = HiddenWindow.Handle;
+            //var exStyle = (int)GetWindowLong(handle, (int)GetWindowLongFields.GWL_EXSTYLE);
+
+            //exStyle |= (int)ExtendedWindowStyles.WS_EX_TOOLWINDOW;
+            //SetWindowLong(handle, (int)GetWindowLongFields.GWL_EXSTYLE, (IntPtr)exStyle);
+
+            var window = sender as Form;
+            if (window == null) {
+                return;
+            }
+
+            var handle = window.Handle;
+
+            _mainWindow.Dispatcher.InvokeAsync(() =>
+            {
+                new WindowInteropHelper(_mainWindow).Owner = handle;
+                _mainWindow.Show();
+            });
+        }
+
+        private void HiddenWindow_Activated(object sender, EventArgs e)
+        {
+            _logger.Debug("HiddenWindow_Activated");
+            EnsureApplicationWindowHasFocus();
         }
 
         public void SaveWindowPosition(PluginConfiguration config)
@@ -140,6 +266,24 @@ namespace MediaBrowser.Theater.DefaultTheme
                 config.WindowHeight = _mainWindow.Height;
             }
         }
+
+        public void EnsureApplicationWindowHasFocus()
+        {
+            IntPtr focused = Interop.GetForegroundWindow();
+            IntPtr windowHandle = new WindowInteropHelper(_mainWindow).Handle;
+            if (windowHandle != focused) {
+                Interop.SetForegroundWindow(windowHandle);
+            }
+        }
+
+        public class Interop
+        {
+            [DllImport("user32.dll")]
+            public static extern bool SetForegroundWindow(IntPtr hWnd);
+
+            [DllImport("user32.dll")]
+            public static extern IntPtr GetForegroundWindow();
+        }
     }
 
     public class Presenter
@@ -149,12 +293,27 @@ namespace MediaBrowser.Theater.DefaultTheme
         private readonly IEventBus<ShowPageEvent> _showPageEvent;
 
         private readonly WindowManager _windowManager;
+        private IntPtr _mainWindowHandle;
         
         public Presenter(IEventAggregator events, WindowManager windowManager)
         {
             _showPageEvent = events.Get<ShowPageEvent>();
             _showNotificationEvent = events.Get<ShowNotificationEvent>();
             _windowManager = windowManager;
+        }
+
+        public Window MainApplicationWindow { get { return _windowManager.MainWindow; } }
+
+        public IntPtr MainApplicationWindowHandle
+        {
+            get
+            {
+                if (_mainWindowHandle == IntPtr.Zero && MainApplicationWindow != null) {
+                    _mainWindowHandle = new WindowInteropHelper(MainApplicationWindow).Handle;
+                }
+
+                return _mainWindowHandle;
+            }
         }
 
         public async Task ShowPage(IViewModel contents)

@@ -26,6 +26,11 @@ namespace MediaBrowser.Theater.Api.Configuration
         /// <value>The auto-login details.</value>
         public AutoLoginConfiguration AutoLoginConfiguration { get; set; }
 
+        /// <summary>
+        ///     Gets or sets the internal media player configuration.
+        /// </summary>
+        public InternalPlayerConfiguration InternalPlayerConfiguration { get; set; }
+
         public bool DownloadCompressedImages { get; set; }
 
         public Guid ActiveThemeGuid { get; set; }
@@ -41,6 +46,7 @@ namespace MediaBrowser.Theater.Api.Configuration
             EnableHighQualityImageScaling = true;
 
             AutoLoginConfiguration = new AutoLoginConfiguration();
+            InternalPlayerConfiguration = new InternalPlayerConfiguration();
         }
     }
 }

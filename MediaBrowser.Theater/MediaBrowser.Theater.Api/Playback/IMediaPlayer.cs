@@ -1,155 +1,161 @@
-﻿using System;
+﻿using MediaBrowser.Model.Dto;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using MediaBrowser.Model.Dto;
 
 namespace MediaBrowser.Theater.Api.Playback
 {
     /// <summary>
-    ///     Interface IMediaPlayer
+    /// Interface IMediaPlayer
     /// </summary>
     public interface IMediaPlayer
     {
         /// <summary>
-        ///     Gets the playlist.
+        /// Occurs when [play state changed].
+        /// </summary>
+        event EventHandler PlayStateChanged;
+
+        /// <summary>
+        /// Occurs when [media changed].
+        /// </summary>
+        event EventHandler<MediaChangeEventArgs> MediaChanged;
+
+        /// <summary>
+        /// Occurs when [playback completed].
+        /// </summary>
+        event EventHandler<PlaybackStopEventArgs> PlaybackCompleted;
+
+        /// <summary>
+        /// Gets the playlist.
         /// </summary>
         /// <value>The playlist.</value>
         IReadOnlyList<BaseItemDto> Playlist { get; }
 
         /// <summary>
-        ///     Gets the current play options.
+        /// Gets the current play options.
         /// </summary>
         /// <value>The current play options.</value>
         PlayOptions CurrentPlayOptions { get; }
 
         /// <summary>
-        ///     Gets the index of the current playlist.
+        /// Gets the index of the current playlist.
         /// </summary>
         /// <value>The index of the current playlist.</value>
         int CurrentPlaylistIndex { get; }
 
         /// <summary>
-        ///     Gets the current media.
+        /// Gets the current media.
         /// </summary>
         /// <value>The current media.</value>
         BaseItemDto CurrentMedia { get; }
 
         /// <summary>
-        ///     Gets a value indicating whether this instance can seek.
+        /// Gets a value indicating whether this instance can seek.
         /// </summary>
         /// <value><c>true</c> if this instance can seek; otherwise, <c>false</c>.</value>
         bool CanSeek { get; }
 
         /// <summary>
-        ///     Gets a value indicating whether this instance can pause.
+        /// Gets a value indicating whether this instance can pause.
         /// </summary>
         /// <value><c>true</c> if this instance can pause; otherwise, <c>false</c>.</value>
         bool CanPause { get; }
 
         /// <summary>
-        ///     Gets a value indicating whether this instance can queue.
+        /// Gets a value indicating whether this instance can queue.
         /// </summary>
         /// <value><c>true</c> if this instance can queue; otherwise, <c>false</c>.</value>
         bool CanQueue { get; }
 
         /// <summary>
-        ///     Gets a value indicating whether this instance can track progress.
+        /// Gets a value indicating whether this instance can track progress.
         /// </summary>
         /// <value><c>true</c> if this instance can track progress; otherwise, <c>false</c>.</value>
         bool CanTrackProgress { get; }
 
         /// <summary>
-        ///     Gets the name.
+        /// Gets the name.
         /// </summary>
         /// <value>The name.</value>
         string Name { get; }
 
         /// <summary>
-        ///     Gets a value indicating whether [supports multi file playback].
+        /// Gets a value indicating whether [supports multi file playback].
         /// </summary>
         /// <value><c>true</c> if [supports multi file playback]; otherwise, <c>false</c>.</value>
         bool SupportsMultiFilePlayback { get; }
 
         /// <summary>
-        ///     Gets the state of the play.
+        /// Gets the state of the play.
         /// </summary>
         /// <value>The state of the play.</value>
         PlayState PlayState { get; }
 
         /// <summary>
-        ///     Gets the current position ticks.
+        /// Gets the current position ticks.
         /// </summary>
         /// <value>The current position ticks.</value>
         long? CurrentPositionTicks { get; }
 
         /// <summary>
-        ///     Gets the current duration ticks.
+        /// Gets the current duration ticks.
         /// </summary>
         /// <value>The current duration ticks.</value>
         long? CurrentDurationTicks { get; }
 
         /// <summary>
-        ///     Occurs when [play state changed].
-        /// </summary>
-        event EventHandler PlayStateChanged;
-
-        /// <summary>
-        ///     Occurs when [media changed].
-        /// </summary>
-        event EventHandler<MediaChangeEventArgs> MediaChanged;
-
-        /// <summary>
-        ///     Occurs when [playback completed].
-        /// </summary>
-        event EventHandler<PlaybackStopEventArgs> PlaybackCompleted;
-
-        /// <summary>
-        ///     Determines whether this instance can play the specified item.
+        /// Determines whether this instance can play the specified item.
         /// </summary>
         /// <param name="item">The item.</param>
         /// <returns><c>true</c> if this instance can play the specified item; otherwise, <c>false</c>.</returns>
         bool CanPlayByDefault(BaseItemDto item);
 
         /// <summary>
-        ///     Determines whether this instance [can play media type] the specified media type.
+        /// Determines whether this instance [can play media type] the specified media type.
         /// </summary>
         /// <param name="mediaType">Type of the media.</param>
         /// <returns><c>true</c> if this instance [can play media type] the specified media type; otherwise, <c>false</c>.</returns>
         bool CanPlayMediaType(string mediaType);
 
         /// <summary>
-        ///     Stops this instance.
+        /// Stops this instance.
         /// </summary>
         void Stop();
 
         /// <summary>
-        ///     Plays the specified options.
+        /// Plays the specified options.
         /// </summary>
         /// <param name="options">The options.</param>
         /// <returns>Task.</returns>
         Task Play(PlayOptions options);
 
         /// <summary>
-        ///     Pauses this instance.
+        /// Pauses this instance.
         /// </summary>
         void Pause();
 
         /// <summary>
-        ///     Uns the pause.
+        /// Uns the pause.
         /// </summary>
         void UnPause();
 
         /// <summary>
-        ///     Seeks the specified position ticks.
+        /// Seeks the specified position ticks.
         /// </summary>
         /// <param name="positionTicks">The position ticks.</param>
         /// <returns>Task.</returns>
         void Seek(long positionTicks);
 
         /// <summary>
-        ///     Changes the track.
+        /// Changes the track.
         /// </summary>
         /// <param name="newIndex">The new index.</param>
         void ChangeTrack(int newIndex);
+
+        /// <summary>
+        /// Set the play rate - FF or Rewindw
+        /// </summary>
+        /// <param name="rate">The speed to play the media.</param>
+        void SetRate(Double rate);
     }
 }

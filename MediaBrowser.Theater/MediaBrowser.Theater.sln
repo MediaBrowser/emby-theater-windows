@@ -18,6 +18,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{6A82E8
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaBrowser.Theater.Api.Implementations", "MediaBrowser.Theater.Api.Implementations\MediaBrowser.Theater.Api.Implementations.csproj", "{4B8F5BCC-D1D8-4EF1-9F03-91634B233ED0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaBrowser.Theater.DirectShow", "MediaBrowser.Theater.DirectShow\MediaBrowser.Theater.DirectShow.csproj", "{04781068-D0D2-47BA-8D1C-A96274655F63}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,6 +46,10 @@ Global
 		{4B8F5BCC-D1D8-4EF1-9F03-91634B233ED0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4B8F5BCC-D1D8-4EF1-9F03-91634B233ED0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4B8F5BCC-D1D8-4EF1-9F03-91634B233ED0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{04781068-D0D2-47BA-8D1C-A96274655F63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{04781068-D0D2-47BA-8D1C-A96274655F63}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{04781068-D0D2-47BA-8D1C-A96274655F63}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{04781068-D0D2-47BA-8D1C-A96274655F63}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

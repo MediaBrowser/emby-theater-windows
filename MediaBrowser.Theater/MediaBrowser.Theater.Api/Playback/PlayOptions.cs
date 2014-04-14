@@ -1,8 +1,8 @@
-﻿using System;
+﻿using MediaBrowser.Model.Dto;
+using MediaBrowser.Theater.Api.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using MediaBrowser.Model.Dto;
-using MediaBrowser.Theater.Api.Configuration;
 
 namespace MediaBrowser.Theater.Api.Playback
 {
@@ -71,7 +71,7 @@ namespace MediaBrowser.Theater.Api.Playback
         /// Holds the time that playback was started
         /// </summary>
         /// <value>The playback start time.</value>
-        public DateTime PlaybackStartTime { get; private set; }
+        public DateTime PlaybackStartTime { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether [go full screen].

@@ -169,6 +169,10 @@
       <Project>{1b096484-b8cc-49d8-ad88-06b5ffb8f888}</Project>
       <Name>MediaBrowser.Theater.DefaultTheme</Name>
     </ProjectReference>
+    <ProjectReference Include="..\MediaBrowser.Theater.DirectShow\MediaBrowser.Theater.DirectShow.csproj">
+      <Project>{04781068-d0d2-47ba-8d1c-a96274655f63}</Project>
+      <Name>MediaBrowser.Theater.DirectShow</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MediaBrowser.Theater.Presentation\MediaBrowser.Theater.Presentation.csproj">
       <Project>{c464ffc3-0fcd-49d5-a206-21f3bb586c53}</Project>
       <Name>MediaBrowser.Theater.Presentation</Name>

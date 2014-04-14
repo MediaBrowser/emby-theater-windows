@@ -631,6 +631,10 @@
       <Project>{76a1834d-1be3-4361-bac2-711cdd74eb3f}</Project>
       <Name>MediaBrowser.Theater.Api</Name>
     </ProjectReference>
+    <ProjectReference Include="..\MediaBrowser.Theater.DirectShow\MediaBrowser.Theater.DirectShow.csproj">
+      <Project>{04781068-D0D2-47BA-8D1C-A96274655F63}</Project>
+      <Name>MediaBrowser.Theater.DirectShow</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MediaBrowser.Theater.Presentation\MediaBrowser.Theater.Presentation.csproj">
       <Project>{c464ffc3-0fcd-49d5-a206-21f3bb586c53}</Project>
       <Name>MediaBrowser.Theater.Presentation</Name>

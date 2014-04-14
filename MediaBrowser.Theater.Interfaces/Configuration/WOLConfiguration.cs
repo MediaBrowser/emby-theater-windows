@@ -24,5 +24,10 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
         /// </summary>
         /// <value>The HostMacAddresses.</value>
         public List<string> HostMacAddresses { get; set; }
+
+        /// <summary>
+        /// The number of times the system will try to connect following a WOL attempt.
+        /// </summary>
+        public int WakeAttempts { get; set; }
     }
 }

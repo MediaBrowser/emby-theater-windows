@@ -525,7 +525,7 @@ namespace MediaBrowser.UI
 
             SystemInfo systemInfo = null;
 
-            //Try and use WOL
+            //Try and send WOL now to give system time to wake
             await _appHost.SendWolCommand();
 
             try
@@ -533,42 +533,6 @@ namespace MediaBrowser.UI
                 systemInfo = await _appHost.ApiClient.GetSystemInfoAsync().ConfigureAwait(false);
 
                 foundServer = true;
-
-                //Check WOL config
-                if (_appHost.TheaterConfigurationManager.Configuration.WolConfiguration == null)
-                {
-                    _appHost.TheaterConfigurationManager.Configuration.WolConfiguration = new WolConfiguration
-                    {
-                        HostMacAddresses = new List<string>(),
-                        HostIpAddresses = new List<string>()
-                    };
-                    _appHost.TheaterConfigurationManager.SaveConfiguration();
-                }
-
-                var wolConfig = _appHost.TheaterConfigurationManager.Configuration.WolConfiguration;
-
-                wolConfig.HostName = systemInfo.ServerName;
-                var currentIpAddreses = await NetworkUtils.ResolveIpAddressesForHostName(systemInfo.ServerName);
-
-                var hasChanged = false;
-                if (currentIpAddreses.Count != wolConfig.HostIpAddresses.Count)
-                {
-                    hasChanged = true;
-                }
-                else
-                {
-                    if (currentIpAddreses.Where((t, i) => t != wolConfig.HostIpAddresses[i]).Any())
-                    {
-                        hasChanged = true;
-                    }
-                }
-
-                if (hasChanged)
-                {
-                    wolConfig.HostMacAddresses = await NetworkUtils.ResolveMacAddressesForHostName(systemInfo.ServerName);
-                    wolConfig.HostIpAddresses = currentIpAddreses;
-                    _appHost.TheaterConfigurationManager.SaveConfiguration();
-                }
             }
             catch (Exception ex)
             {
@@ -577,6 +541,76 @@ namespace MediaBrowser.UI
                     _appHost.ApiClient.ServerHostName, _appHost.ApiClient.ServerApiPort);
             }
 
+            if (foundServer)
+            {
+                //Check WOL config
+                if (_appHost.TheaterConfigurationManager.Configuration.WolConfiguration == null)
+                {
+                    _appHost.TheaterConfigurationManager.Configuration.WolConfiguration = new WolConfiguration
+                    {
+                        HostMacAddresses = new List<string>(),
+                        HostIpAddresses = new List<string>(),
+                        WakeAttempts = 5
+                    };
+                    _appHost.TheaterConfigurationManager.SaveConfiguration();
+                }
+
+                var wolConfig = _appHost.TheaterConfigurationManager.Configuration.WolConfiguration;
+
+                try
+                {
+                    wolConfig.HostName = systemInfo.ServerName;
+                    var currentIpAddreses = await NetworkUtils.ResolveIpAddressesForHostName(systemInfo.ServerName);
+
+                    var hasChanged = false;
+                    if (currentIpAddreses.Count != wolConfig.HostIpAddresses.Count)
+                    {
+                        hasChanged = true;
+                    }
+                    else
+                    {
+                        if (currentIpAddreses.Where((t, i) => t != wolConfig.HostIpAddresses[i]).Any())
+                        {
+                            hasChanged = true;
+                        }
+                    }
+
+                    if (hasChanged)
+                    {
+                        wolConfig.HostMacAddresses =
+                            await NetworkUtils.ResolveMacAddressesForHostName(systemInfo.ServerName);
+                        wolConfig.HostIpAddresses = currentIpAddreses;
+                        _appHost.TheaterConfigurationManager.SaveConfiguration();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.ErrorException("Error attempting to configure WOL.", ex);
+                }
+            }
+            
+            //Try and wait for WOL if its configured
+            if (!foundServer && _appHost.TheaterConfigurationManager.Configuration.WolConfiguration.HostMacAddresses.Count > 0)
+            {
+                for (var i = 0; i < _appHost.TheaterConfigurationManager.Configuration.WolConfiguration.WakeAttempts; i++)
+                {
+                    try
+                    {
+                        systemInfo = await _appHost.ApiClient.GetSystemInfoAsync().ConfigureAwait(false);
+                    }
+                    catch (Exception)
+                    {
+                    }
+
+                    if (systemInfo != null)
+                    {
+                        foundServer = true;
+                        break;
+                    }
+                }
+            }
+
+            //Try and find server
             if (!foundServer)
             {
                 try

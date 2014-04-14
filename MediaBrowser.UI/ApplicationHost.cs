@@ -405,7 +405,7 @@ namespace MediaBrowser.UI
             //Send magic packets to each address
             foreach (var macAddress in wolConfig.HostMacAddresses)
             {
-                var macBytes = PhysicalAddress.Parse("6C-62-6D-DB-47-CB").GetAddressBytes();
+                var macBytes = PhysicalAddress.Parse(macAddress).GetAddressBytes();
 
                 Logger.Log(LogSeverity.Debug, String.Format("Sending magic packet to {0}", macAddress));
 
@@ -421,7 +421,8 @@ namespace MediaBrowser.UI
                 {
                     try
                     {
-                        await udp.SendAsync(payload, payloadSize, wolConfig.HostName, 9);
+                        udp.Connect(IPAddress.Broadcast, 9);
+                        await udp.SendAsync(payload, payloadSize);
                     }
                     catch (Exception ex)
                     {

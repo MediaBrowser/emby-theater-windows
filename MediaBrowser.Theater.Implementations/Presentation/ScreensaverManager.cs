@@ -102,7 +102,7 @@ namespace MediaBrowser.Theater.Implementations.Presentation
 
         public bool ScreensaverIsRunning
         {
-            get { return Application.Current.Windows.OfType<IScreensaver>().Any(); }
+            get { return _presentationManager.Window.Dispatcher.Invoke(() => Application.Current.Windows.OfType<IScreensaver>().Any()); }
         }
 
         /// <summary>

@@ -92,6 +92,6 @@
             </controls:ScrollingPanel>
         </controls:ExtendedScrollViewer>
 
-        <controls1:ItemInfoFooter Grid.Row="1" Margin="90,0,0,0" VerticalContentAlignment="Center" KeyboardNavigation.IsTabStop="False" DataContext="{Binding CurrentItem}" VerticalAlignment="Bottom" HorizontalAlignment="Left" Visibility="{Binding Path=DataContext, RelativeSource={RelativeSource Self}, Converter={StaticResource NullToVisibilityConverter}}"/>
+        <controls1:ItemInfoFooter Grid.Row="1" Margin="90,0,0,40" VerticalContentAlignment="Center" KeyboardNavigation.IsTabStop="False" DataContext="{Binding CurrentItem}" VerticalAlignment="Bottom" HorizontalAlignment="Left" Visibility="{Binding Path=DataContext, RelativeSource={RelativeSource Self}, Converter={StaticResource NullToVisibilityConverter}}"/>
     </Grid>
 </pages:BasePage>

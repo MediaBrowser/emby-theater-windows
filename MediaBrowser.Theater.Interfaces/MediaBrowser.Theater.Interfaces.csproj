@@ -32,13 +32,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MediaBrowser.Common, Version=3.0.5210.41599, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.Common, Version=3.0.5217.42231, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.3.0.349\lib\net45\MediaBrowser.Common.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.352\lib\net45\MediaBrowser.Common.dll</HintPath>
     </Reference>
-    <Reference Include="MediaBrowser.Model, Version=3.0.5210.41598, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.Model, Version=3.0.5217.42230, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.3.0.349\lib\net45\MediaBrowser.Model.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.352\lib\net45\MediaBrowser.Model.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -66,6 +66,7 @@
     <Compile Include="Configuration\ApplicationConfiguration.cs" />
     <Compile Include="Configuration\UserConfigurationUpdatedEventArgs.cs" />
     <Compile Include="Configuration\UserTheaterConfiguration.cs" />
+    <Compile Include="Configuration\WOLConfiguration.cs" />
     <Compile Include="ItemEventArgs.cs" />
     <Compile Include="ITheaterApplicationHost.cs" />
     <Compile Include="Navigation\NavigationEventArgs.cs" />

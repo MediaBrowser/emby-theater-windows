@@ -1,7 +1,9 @@
-﻿using MediaBrowser.ApiInteraction.WebSocket;
+﻿using System.Collections.Generic;
+using MediaBrowser.ApiInteraction.WebSocket;
 using MediaBrowser.Common;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
+using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Model.Serialization;
@@ -65,8 +67,41 @@ namespace MediaBrowser.UI.EntryPoints
             socket.MessageCommand += socket_MessageCommand;
             socket.PlayCommand += _apiWebSocket_PlayCommand;
             socket.Closed += socket_Closed;
+            socket.Connected += socket_Connected;
 
             UpdateServerLocation();
+        }
+
+        void socket_Connected(object sender, EventArgs e)
+        {
+            ReportCapabilities(CancellationToken.None);
+        }
+
+        private async void ReportCapabilities(CancellationToken cancellationToken)
+        {
+            try
+            {
+                await _apiClient.ReportCapabilities(new ClientCapabilities
+                {
+
+                    PlayableMediaTypes = new List<string>
+                    {
+                        MediaType.Audio,
+                        MediaType.Video,
+                        MediaType.Game,
+                        MediaType.Photo,
+                        MediaType.Book
+                    },
+
+                    // MBT should be able to implement them all
+                    SupportedCommands = Enum.GetNames(typeof(GeneralCommandType)).ToList()
+
+                }, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                _logger.ErrorException("Error reporting capabilities", ex);
+            }
         }
 
         void _apiClient_ServerLocationChanged(object sender, EventArgs e)
@@ -394,6 +429,7 @@ namespace MediaBrowser.UI.EntryPoints
                 socket.MessageCommand -= socket_MessageCommand;
                 socket.PlayCommand -= _apiWebSocket_PlayCommand;
                 socket.Closed -= socket_Closed;
+                socket.Connected -= socket_Connected;
 
                 socket.Dispose();
             }

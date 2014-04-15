@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Common;
+﻿using System.Threading.Tasks;
+using MediaBrowser.Common;
 
 namespace MediaBrowser.Theater.Interfaces
 {
@@ -21,5 +22,10 @@ namespace MediaBrowser.Theater.Interfaces
         /// Sets the system to sleep.
         /// </summary>
         void SetSystemToSleep();
+
+        /// <summary>
+        /// Sends a WOL command to the server details listed in WolConfiguration.
+        /// </summary>
+        Task SendWolCommand();
     }
 }

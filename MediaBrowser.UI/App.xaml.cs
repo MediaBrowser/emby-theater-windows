@@ -1,4 +1,7 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Net.Sockets;
 using MediaBrowser.ApiInteraction;
 using MediaBrowser.Common.Constants;
 using MediaBrowser.Common.Implementations.Logging;
@@ -8,6 +11,7 @@ using MediaBrowser.Model.System;
 using MediaBrowser.Theater.Implementations.Configuration;
 using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.System;
+using MediaBrowser.UI.Networking;
 using MediaBrowser.UI.StartupWizard;
 using Microsoft.Win32;
 using System;
@@ -518,8 +522,12 @@ namespace MediaBrowser.UI
         private async Task LoadInitialPresentation()
         {
             var foundServer = false;
+            _appHost.PresentationManager.ShowModalLoadingAnimation();
 
             SystemInfo systemInfo = null;
+
+            //Try and send WOL now to give system time to wake
+            await _appHost.SendWolCommand();
 
             try
             {
@@ -529,9 +537,78 @@ namespace MediaBrowser.UI
             }
             catch (Exception ex)
             {
-                _logger.ErrorException("Error connecting to server using saved connection information. Host: {0}, Port {1}", ex, _appHost.ApiClient.ServerHostName, _appHost.ApiClient.ServerApiPort);
+                _logger.ErrorException(
+                    "Error connecting to server using saved connection information. Host: {0}, Port {1}", ex,
+                    _appHost.ApiClient.ServerHostName, _appHost.ApiClient.ServerApiPort);
             }
 
+            if (foundServer)
+            {
+                //Check WOL config
+                if (_appHost.TheaterConfigurationManager.Configuration.WolConfiguration == null)
+                {
+                    _appHost.TheaterConfigurationManager.Configuration.WolConfiguration = new WolConfiguration
+                    {
+                        Port = 9,
+                        HostMacAddresses = new List<string>(),
+                        HostIpAddresses = new List<string>(),
+                        WakeAttempts = 1
+                    };
+                    _appHost.TheaterConfigurationManager.SaveConfiguration();
+                }
+
+                var wolConfig = _appHost.TheaterConfigurationManager.Configuration.WolConfiguration;
+
+                try
+                {
+                    var currentIpAddresses = await NetworkUtils.ResolveIpAddressesForHostName(_appHost.TheaterConfigurationManager.Configuration.ServerHostName);
+
+                    var hasChanged = currentIpAddresses.Any(currentIpAddress => wolConfig.HostIpAddresses.All(x => x != currentIpAddress));
+
+                    if(!hasChanged)
+                        hasChanged = wolConfig.HostIpAddresses.Any(hostIpAddress => currentIpAddresses.All(x => x != hostIpAddress));
+
+                    if (hasChanged)
+                    {
+                        wolConfig.HostMacAddresses =
+                            await NetworkUtils.ResolveMacAddressesForHostName(_appHost.TheaterConfigurationManager.Configuration.ServerHostName);
+                        wolConfig.HostIpAddresses = currentIpAddresses;
+
+                        //Always add system info MAC address in case we are in a WAN setting
+                        if(!wolConfig.HostMacAddresses.Contains(systemInfo.MacAddress))
+                            wolConfig.HostMacAddresses.Add(systemInfo.MacAddress);
+
+                        _appHost.TheaterConfigurationManager.SaveConfiguration();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.ErrorException("Error attempting to configure WOL.", ex);
+                }
+            }
+            
+            //Try and wait for WOL if its configured
+            if (!foundServer && _appHost.TheaterConfigurationManager.Configuration.WolConfiguration.HostMacAddresses.Count > 0)
+            {
+                for (var i = 0; i < _appHost.TheaterConfigurationManager.Configuration.WolConfiguration.WakeAttempts; i++)
+                {
+                    try
+                    {
+                        systemInfo = await _appHost.ApiClient.GetSystemInfoAsync().ConfigureAwait(false);
+                    }
+                    catch (Exception)
+                    {
+                    }
+
+                    if (systemInfo != null)
+                    {
+                        foundServer = true;
+                        break;
+                    }
+                }
+            }
+
+            //Try and find server
             if (!foundServer)
             {
                 try
@@ -552,6 +629,7 @@ namespace MediaBrowser.UI
                 }
             }
 
+            _appHost.PresentationManager.HideModalLoadingAnimation();
             var mediaFilters = _appHost.MediaFilters;
 
             if (!foundServer || !AreRequiredMediaFiltersInstalled(mediaFilters))

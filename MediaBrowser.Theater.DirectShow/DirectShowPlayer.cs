@@ -5,6 +5,7 @@ using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
+using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Presentation.Playback;
 using MediaFoundation;
 using MediaFoundation.EVR;
@@ -32,6 +33,7 @@ namespace MediaBrowser.Theater.DirectShow
         private readonly ILogger _logger;
         private readonly IHiddenWindow _hiddenWindow;
         private readonly InternalDirectShowPlayer _playerWrapper;
+        private readonly ISessionManager _sessionManager;
     
         private DirectShowLib.IGraphBuilder m_graph = null;
         private DirectShowLib.FilterGraphNoThread m_filterGraph = null;
@@ -137,12 +139,13 @@ namespace MediaBrowser.Theater.DirectShow
 
         #endregion
 
-        public DirectShowPlayer(ILogger logger, IHiddenWindow hiddenWindow, InternalDirectShowPlayer playerWrapper, IntPtr applicationWindowHandle)
+        public DirectShowPlayer(ILogger logger, IHiddenWindow hiddenWindow, InternalDirectShowPlayer playerWrapper, IntPtr applicationWindowHandle, ISessionManager sessionManager)
         {
             _logger = logger;
             _hiddenWindow = hiddenWindow;
             _playerWrapper = playerWrapper;
             _applicationWindowHandle = applicationWindowHandle;
+            _sessionManager = sessionManager;
         }
 
         private IntPtr VideoWindowHandle
@@ -238,6 +241,8 @@ namespace MediaBrowser.Theater.DirectShow
             _currentPlaybackRate = 1.0;
 
             _streams = GetStreams();
+
+            LoadActiveExternalSubtitles();
         }
 
         private void InitializeGraph(bool isDvd)
@@ -913,37 +918,32 @@ namespace MediaBrowser.Theater.DirectShow
             }
         }
 
-        public void LoadExternalSubs(string subtitleFile)
+        public void LoadExternalSubtitles(string subtitleFile)
         {
-            int hr = 0;
-
             IBaseFilter subtitleFilter = _xySubFilter != null ? _xySubFilter as IBaseFilter : _xyVsFilter as IBaseFilter;
 
             if (subtitleFilter != null)
             {
-                IDirectVobSub extSubSource = subtitleFilter as IDirectVobSub;
+                var extSubSource = subtitleFilter as IDirectVobSub;
                 if (extSubSource != null)
                 {
-                    //IntPtr sbSubSource = Marshal.AllocCoTaskMem(260);
-                    //try
-                    //{
-                    //hr = extSubSource.get_FileName(sbSubSource);
-                    //DsError.ThrowExceptionForHR(hr);
-
-                    //string subSource = Marshal.PtrToStringAuto(sbSubSource);
-                    hr = extSubSource.put_FileName(subtitleFile);
+                    var hr = extSubSource.put_FileName(subtitleFile);
                     DsError.ThrowExceptionForHR(hr);
+                }
+            }
+        }
 
-                    //    hr = extSubSource.get_FileName(sbSubSource);
-                    //    DsError.ThrowExceptionForHR(hr);
+        public void ToggleHideSubtitles(bool hide)
+        {
+            IBaseFilter subtitleFilter = _xySubFilter != null ? _xySubFilter as IBaseFilter : _xyVsFilter as IBaseFilter;
 
-                    //    subSource = Marshal.PtrToStringAuto(sbSubSource);
-                    //}
-                    //finally
-                    //{
-                    //    if (sbSubSource != IntPtr.Zero)
-                    //        Marshal.FreeCoTaskMem(sbSubSource);
-                    //}
+            if (subtitleFilter != null)
+            {
+                var extSubSource = subtitleFilter as IDirectVobSub;
+                if (extSubSource != null)
+                {
+                    var hr = extSubSource.put_HideSubtitles(hide);
+                    DsError.ThrowExceptionForHR(hr);
                 }
             }
         }
@@ -1893,7 +1893,7 @@ namespace MediaBrowser.Theater.DirectShow
         private Guid _vobsubSelector = Guid.Empty;
         private Guid _grp2Selector = Guid.Empty;
 
-        private List<SelectableMediaStream> GetStreams()
+        private List<SelectableMediaStream> GetInternalStreams()
         {
             var streams = new List<SelectableMediaStream>();
 
@@ -2027,26 +2027,166 @@ namespace MediaBrowser.Theater.DirectShow
             return streams;
         }
 
+        private List<SelectableMediaStream> GetExternalSubtitleStreams(List<SelectableMediaStream> internalStreams)
+        {
+            var externalSubtitleStreams = new List<SelectableMediaStream>();
+            var startIndex = internalStreams != null ? internalStreams.Last().Index + 1 : 0;
+            var index = startIndex;
+            var hasActiveInternalSubtitleStream = (internalStreams != null ? internalStreams.FirstOrDefault(i => i.Type == MediaStreamType.Subtitle && i.IsActive) : null) != null;
+            var activeSubtitlePreference = (hasActiveInternalSubtitleStream || _sessionManager.CurrentUser.Configuration.UseForcedSubtitlesOnly) ? String.Empty : _sessionManager.CurrentUser.Configuration.SubtitleLanguagePreference;
+           
+            if (_item != null)
+            {
+                // each external subtitle (srt file) will be a stream
+                foreach (var s in _item.MediaStreams.Where(i=>i.Type == MediaStreamType.Subtitle && i.IsExternal))
+                {
+                        externalSubtitleStreams.Add(new SelectableMediaStream
+                        {
+                            Index = index,
+                            Name = s.Language ?? "Unknown",
+                            Path = s.Path,
+                            Type = MediaStreamType.Subtitle,
+                            Identifier = "external",
+                            IsActive = (!String.IsNullOrEmpty(s.Language)) && (s.Language == activeSubtitlePreference) // make the subtitle  active by default
+                        });
+                        index++;
+               }
+            }
+
+            if (externalSubtitleStreams.Any() && (internalStreams == null||! internalStreams.Any(i=>i.Type == MediaStreamType.Subtitle)))
+            {
+                // have to add a nosubtitle stream, so the user can turn sub title off
+                externalSubtitleStreams.Add(new SelectableMediaStream
+                                        {
+                                            Index = index,
+                                            Name = "No Subtitles",
+                                            Type = MediaStreamType.Subtitle,
+                                            Identifier = "external",
+                                            IsActive = ! (hasActiveInternalSubtitleStream || externalSubtitleStreams.Any(i => i.IsActive))
+                                         });
+            }
+
+
+            return externalSubtitleStreams;
+        }
+
+        private List<SelectableMediaStream> GetStreams()
+        {
+            var streams = GetInternalStreams();
+            var externalSubtitleStreams = GetExternalSubtitleStreams(streams);
+            if (externalSubtitleStreams != null && externalSubtitleStreams.Any())
+            {
+                streams = streams.Concat(externalSubtitleStreams).ToList();
+            }
+            return streams;
+        }
+
+
         public void SetAudioTrack(SelectableMediaStream stream)
         {
-            SetStream(stream);
+            SetInternalStream(stream);
         }
 
-        public void SetAudioTrackIndex(int streamIndex)
+        private void LoadActiveExternalSubtitles()
+        {
+            var stream = _streams.FirstOrDefault(i => i.Type == MediaStreamType.Subtitle && i.Identifier == "external" && i.IsActive);
+            if (stream != null)
+            {
+                SetExternalSubtitleStream(stream);
+            }
+        }
+
+        public void SetAudioTrackIndex(int audioStreamIndex)
         {
             var audioStreams = _streams.Where(i => i.Type == MediaStreamType.Audio).ToArray();
-            if (audioStreams.Any() && streamIndex < audioStreams.Count())
-                SetStream(audioStreams[streamIndex]);
+            if (audioStreams.Any() && audioStreamIndex < audioStreams.Count())
+            {
+                SetInternalStream(audioStreams[audioStreamIndex]);
+            }
+            else
+            {
+                throw new ApplicationException(String.Format("Invalid audioStreamIndex {0}", audioStreamIndex));
+            }
+
         }
 
-        public void SetSubtitleTrackIndex(int  streamIndex)
+        public void SeSubtitleTrackIndex(int subtitleStreamIndex)
         {
-            var audioStreams = _streams.Where(i => i.Type == MediaStreamType.Subtitle).ToArray();
-            if (audioStreams.Any() && streamIndex < audioStreams.Count())
-                SetStream(audioStreams[streamIndex]);
+            var subtitleStreams = _streams.Where(i => i.Type == MediaStreamType.Subtitle).ToArray();
+            if (subtitleStreams.Any() && subtitleStreamIndex < subtitleStreams.Count())
+            {
+                SetInternalStream(subtitleStreams[subtitleStreamIndex]);
+            }
+            else
+            {
+                throw new ApplicationException(String.Format("Invalid audioStreamIndex {0}", subtitleStreamIndex));
+            }
         }
 
-        private void SetStream(SelectableMediaStream stream)
+        public void SetSubtitleTrack(SelectableMediaStream stream)
+        {
+            if (stream.Identifier == "external" || stream.Name.ToLower().Contains("no subtitles"))  // external subtitle track 
+            {
+                SetExternalSubtitleStream(stream);
+            }
+          
+            if (stream.Identifier != "external")
+            {
+                SetInternalStream(stream);
+            }
+
+            if (stream.Name.ToLower().Contains("no subtitles"))
+            {
+                ToggleHideSubtitles(true);
+            }
+            else
+            {
+                ToggleHideSubtitles(false); 
+            }
+        }
+       
+
+        private void SetExternalSubtitleStream(SelectableMediaStream stream)
+        {
+            if (stream.Name.ToLower().Contains("no subtitles"))
+            {
+                ToggleHideSubtitles(true);
+                UpdateStreamsAsInActive(stream.Type); // display all streams as inactive
+            }
+            else
+            {
+                try
+                {
+                    // see if we can load from path, i.e path that we have direct file access to (i.e windows share)
+                    LoadExternalSubtitles(stream.Path);
+                }
+                catch (Exception)
+                {
+                    // can't load it directly, ask the server to copy or stream it
+                    // todo - api call to create external subtitle url - Issue #52 Support external subtitles
+                    throw;
+                }
+                UpdateStreamActiveSetting(stream.Index, stream.Type);             // display this  streams as active
+            }
+        }
+
+        private void UpdateStreamActiveSetting(int index, MediaStreamType streamType)
+        {
+            foreach (var i in GetSelectableStreams().Where(s => s.Type == streamType))
+            {
+                i.IsActive = i.Index == index;
+            }
+        }
+
+        private void UpdateStreamsAsInActive(MediaStreamType streamType)
+        {
+            foreach (var i in GetSelectableStreams().Where(s => s.Type == streamType))
+            {
+                i.IsActive = false;
+            }
+        }
+
+        private void SetInternalStream(SelectableMediaStream stream)
         {
             IEnumFilters enumFilters;
             var hr = m_graph.EnumFilters(out enumFilters);
@@ -2094,10 +2234,7 @@ namespace MediaBrowser.Theater.DirectShow
 
             Marshal.ReleaseComObject(enumFilters);
 
-            foreach (var i in GetSelectableStreams().Where(s => s.Type == stream.Type))
-            {
-                i.IsActive = i.Index == stream.Index;
-            }
+            UpdateStreamActiveSetting(stream.Index, stream.Type);
         }
 
         public void Dispose()

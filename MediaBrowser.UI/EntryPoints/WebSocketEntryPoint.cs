@@ -174,10 +174,10 @@ namespace MediaBrowser.UI.EntryPoints
                         ExecuteSetVolumeCommand(sender, e);
                         break;
                     case GeneralCommandType.SetAudioStreamIndex:
-                        ExecuteSetAudioStreamIndex(sender, e);
+                       // ExecuteSetAudioStreamIndex(sender, e);
                         break;
                     case GeneralCommandType.SetSubtitleStreamIndex:
-                        ExecuteSetSubtitleStreamInded(sender, e);
+                      //  ExecuteSetSubtitleStreamInded(sender, e);
                         break;
                     default:
                         _logger.Warn("Unrecognized command: " + e.KnownCommandType.Value);

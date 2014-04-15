@@ -48,5 +48,11 @@ namespace MediaBrowser.Theater.Interfaces.Playback
         /// </summary>
         /// <value>The identifier.</value>
         public string Identifier { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Path.
+        /// </summary>
+        /// <value>The Path - used for external subtitles .</value>
+        public string Path { get; set; }
     }
 }

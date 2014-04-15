@@ -62,6 +62,25 @@ namespace MediaBrowser.Theater.Interfaces.Playback
         bool CanPause { get; }
 
         /// <summary>
+        /// Gets a value indicating whether this instance can set which audio stream to play
+        /// </summary>
+        /// <value><c>true</c> if this instance can set the audio stream index; otherwise, <c>false</c>.</value>
+        bool CanSetAudioStreamIndex { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether this instance can set which subtitle stream to play
+        /// </summary>
+        /// <value><c>true</c> if this instance can set the subtitle stream index; otherwise, <c>false</c>.</value>
+        bool CanSetSubtitleStreamIndex { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether this instance accepts navigation commands 
+        /// Up, down, left, right, pageup, pagedown, goHome, goSettings
+        /// </summary>
+        /// <value><c>true</c> if this instance can set the subtitle stream index; otherwise, <c>false</c>.</value>
+        bool CanAcceptNavigationCommands { get; }
+
+        /// <summary>
         /// Gets a value indicating whether this instance can queue.
         /// </summary>
         /// <value><c>true</c> if this instance can queue; otherwise, <c>false</c>.</value>
@@ -157,5 +176,17 @@ namespace MediaBrowser.Theater.Interfaces.Playback
         /// </summary>
         /// <param name="rate">The speed to play the media.</param>
         void SetRate(Double rate);
+
+        /// <summary>
+        /// Set subtitle by subtitleStreamIndex
+        /// </summary>
+        /// <param name="subtitleStreamIndex">Index of desired subtitle.</param>
+        void SetSubtitleStreamIndex(int subtitleStreamIndex);
+
+        /// <summary>
+        /// Set subtitle by subtitleStreamIndex
+        /// </summary>
+        /// <param name="audioStreamIndex">Index of desired audio stream.</param>
+        void SetAudioStreamIndex(int audioStreamIndex);
     }
 }

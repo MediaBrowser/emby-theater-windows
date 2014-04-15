@@ -2096,7 +2096,7 @@ namespace MediaBrowser.Theater.DirectShow
             }
         }
 
-        public void SetAudioTrackIndex(int audioStreamIndex)
+        public void SetAudioStreamIndex(int audioStreamIndex)
         {
             var audioStreams = _streams.Where(i => i.Type == MediaStreamType.Audio).ToArray();
             if (audioStreams.Any() && audioStreamIndex < audioStreams.Count())
@@ -2110,7 +2110,7 @@ namespace MediaBrowser.Theater.DirectShow
 
         }
 
-        public void SeSubtitleTrackIndex(int subtitleStreamIndex)
+        public void SetSubtitleStreamIndex(int subtitleStreamIndex)
         {
             var subtitleStreams = _streams.Where(i => i.Type == MediaStreamType.Subtitle).ToArray();
             if (subtitleStreams.Any() && subtitleStreamIndex < subtitleStreams.Count())
@@ -2123,7 +2123,7 @@ namespace MediaBrowser.Theater.DirectShow
             }
         }
 
-        public void SetSubtitleTrack(SelectableMediaStream stream)
+        public void SetSubtitleStream(SelectableMediaStream stream)
         {
             if (stream.Identifier == "external" || stream.Name.ToLower().Contains("no subtitles"))  // external subtitle track 
             {

@@ -127,8 +127,38 @@ namespace MediaBrowser.UI.EntryPoints
         {
             try
             {
-                float volume = (float) Convert.ToDouble(e.Command.Arguments.First());
+                var volume = (float) Convert.ToDouble(e.Command.Arguments.First());
+                if (volume < 0.0 || volume  > 100.0)
+                {
+                    throw new ApplicationException(string.Format("Invalid Volume {0}. Volume range is 0..1", volume));
+                }
                 _playbackManager.SetVolume(volume);
+            }
+            catch (Exception)
+            {
+                // logger at lower level
+            }
+        }
+
+        void ExecuteSetAudioStreamIndex(object sender, GeneralCommandEventArgs e)
+        {
+            try
+            {
+                var index = (float)Convert.ToDouble(e.Command.Arguments.First());
+                _playbackManager.SetVolume(index);
+            }
+            catch (Exception)
+            {
+                // logger at lower level
+            }
+        }
+
+        void ExecuteSetSubtitleStreamIndex(object sender, GeneralCommandEventArgs e)
+        {
+            try
+            {
+                var index = (float)Convert.ToDouble(e.Command.Arguments.First());
+                _playbackManager.SetSubtitleStreamIndex(index);
             }
             catch (Exception)
             {
@@ -174,10 +204,10 @@ namespace MediaBrowser.UI.EntryPoints
                         ExecuteSetVolumeCommand(sender, e);
                         break;
                     case GeneralCommandType.SetAudioStreamIndex:
-                       // ExecuteSetAudioStreamIndex(sender, e);
+                        ExecuteSetAudioStreamIndex(sender, e);
                         break;
                     case GeneralCommandType.SetSubtitleStreamIndex:
-                      //  ExecuteSetSubtitleStreamInded(sender, e);
+                        ExecuteSetSubtitleStreamIndex(sender, e);
                         break;
                     default:
                         _logger.Warn("Unrecognized command: " + e.KnownCommandType.Value);

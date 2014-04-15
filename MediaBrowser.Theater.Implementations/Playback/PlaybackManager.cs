@@ -591,6 +591,26 @@ namespace MediaBrowser.Theater.Implementations.Playback
             }
         }
 
+        public void SetAudioStreamIndex(int audioStreamIndex)
+        {
+            var players = MediaPlayers.Where(p => (p.PlayState == PlayState.Playing || p.PlayState == PlayState.Paused) && p.CanSetAudioStreamIndex).ToList();
+            foreach(var p in players)
+            {
+                p.SetSubtitleStreamIndex(audioStreamIndex);
+            }
+
+        }
+
+        public void SetSubtitleStreamIndex(int subtitleStreamIndex)
+        {
+            var players = MediaPlayers.Where(p => (p.PlayState == PlayState.Playing || p.PlayState == PlayState.Paused) && p.CanSetSubtitleStreamIndex).ToList();
+            foreach (var p in players)
+            {
+                p.SetSubtitleStreamIndex(subtitleStreamIndex);
+            }
+
+        }
+
         /// <summary>
         /// Determines whether this instance can play the specified item.
         /// </summary>

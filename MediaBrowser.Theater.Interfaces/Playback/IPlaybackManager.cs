@@ -64,6 +64,18 @@ namespace MediaBrowser.Theater.Interfaces.Playback
         void VolumeStepDown();
 
         /// <summary>
+        /// Set subtitle by subtitleStreamIndex
+        /// </summary>
+        /// <param name="subtitleStreamIndex">Index of desired subtitle.</param>
+        void SetSubtitleStreamIndex(int subtitleStreamIndex);
+
+        /// <summary>
+        /// Set subtitle by subtitleStreamIndex
+        /// </summary>
+        /// <param name="audioStreamIndex">Index of desired audio stream.</param>
+        void SetAudioStreamIndex(int audioStreamIndex);
+
+        /// <summary>
         /// Occurs when [playback started].
         /// </summary>
         event EventHandler<PlaybackStartEventArgs> PlaybackStarted;

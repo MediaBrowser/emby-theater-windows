@@ -25,7 +25,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
     /// <summary>
     /// Screen saver factory to create Photo Screen saver
     /// </summary>
-    public class PhotoScreensaverFactory : IScreensaverFactory
+    public class PhotoScreensaverFactory // : IScreensaverFactory not ready for public comsumption
     {
         private readonly IApplicationHost _applicationHost;
 

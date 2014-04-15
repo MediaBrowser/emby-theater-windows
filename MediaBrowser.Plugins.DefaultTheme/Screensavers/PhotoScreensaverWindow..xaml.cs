@@ -21,13 +21,14 @@ using Image = System.Windows.Controls.Image;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
 {
+
     /// <summary>
     /// Screen saver factory to create Photo Screen saver
     /// </summary>
-    public class PhotoScreensaverFactory // : IScreensaverFactory // turn off photoscreen save until full tested
+    public class PhotoScreensaverFactory : IScreensaverFactory
     {
         private readonly IApplicationHost _applicationHost;
-      
+
 
         public PhotoScreensaverFactory(IApplicationHost applicationHost)
         {
@@ -38,11 +39,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
 
         public IScreensaver GetScreensaver()
         {
-           
             return (IScreensaver)_applicationHost.CreateInstance(typeof(PhotoScreensaverWindow));
         }
     }
-   
+
     /// <summary>
     /// Interaction logic for ScreensaverWindow.xaml
     /// </summary>
@@ -55,18 +55,20 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
 
         // gloabl behaviour parameters
         private const int MaxPhotos = 50;
-        private const double MaxDownloadWidth = 100;      // in photo pixels
+        private const double MaxDownloadWidth = 100;        // in photo pixels
         private const double MaxDownloadHeight = 100;
-        private const double MaxPhotoScaleFactorWidth = 4; // how many maxwidth photos should fixt across the screen
+        private const double MaxPhotoScaleFactorWidth = 4;  // how many maxwidth photos should fixt across the screen
         private const double MaxPhotoScaleFactorHeight = 2; // how many maxwidth photos should fixt across the screen
-        private const double PhotoScaleFactor = 3.5; // photo sizes  are rand-omly scaled by max b  1.0..4.0
-        private const int NumLanes =  8;
-        private const int MinAnimateTimeSecs = 4;
-        private const int MaxAnimateTimeSecs = 15;
+        private const double PhotoScaleFactor = 3.5;        // photo sizes  are rand-omly scaled by max b  1.0..4.0
+        private const int NumAnimations = 8;
+        private const int MinAnimateTimeSecs = 6;
+        private const int MaxAnimateTimeSecs = 30;
 
-        private readonly DoubleAnimation[] _animations = new DoubleAnimation[NumLanes];
+        private readonly DoubleAnimation[] _animations = new DoubleAnimation[NumAnimations];
+        private readonly Image[] _animatedImages = new Image[NumAnimations];
         private ImageViewerImage[] _photos;
         private readonly Random _random = new Random();
+        private readonly GaussianRandom _gaussianRandom = new GaussianRandom();
 
         private readonly ISessionManager _session;
         private readonly IApiClient _apiClient;
@@ -80,24 +82,15 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
             _imageManager = imageManager;
             InitializeComponent();
 
-            //Timeline.DesiredFrameRateProperty.OverrideMetadata(
-            //  typeof(Timeline),
-            //  new FrameworkPropertyMetadata { DefaultValue = 40 });
-
-            for (var i = 0; i < _animations.Length; i++)
-            {
-                _animations[i] = new DoubleAnimation();
-               
-            }
-
             DataContext = this;
             ScreensaverCanvas.LayoutUpdated += ScreensaverCanvas_LayoutUpdated;
 
             this.Loaded += PhotoScreensaverWindow_Loaded;
+            this.Unloaded += PhotoScreensaverWindow_Unloaded;
+
         }
 
-       
-        private void ScreensaverCanvas_LayoutUpdated(object sender, EventArgs e)
+        void ScreensaverCanvas_LayoutUpdated(object sender, EventArgs e)
         {
             _canvasWidth = (int)ScreensaverCanvas.ActualWidth;
             _canvasHeight = (int)ScreensaverCanvas.ActualHeight;
@@ -116,7 +109,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
             LoadScreensaver();
         }
 
-       
+
+        private void PhotoScreensaverWindow_Unloaded(object sender, RoutedEventArgs e)
+        {
+            UnLoadScreensaver();
+        }
+
         private double MaxDownloadWidthAR(double aspectRatio)
         {
             double maxWidth;
@@ -156,23 +154,23 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
         //
         private async Task<bool> GetPhotoData()
         {
-            var items =  await _apiClient.GetItemsAsync(new ItemQuery
+            var items = await _apiClient.GetItemsAsync(new ItemQuery
             {
                 UserId = _session.CurrentUser.Id,
                 ImageTypes = new[] { ImageType.Primary },
                 IncludeItemTypes = new[] { "Photo" },
                 Fields = new[] { ItemFields.PrimaryImageAspectRatio },
-                Limit = 2, //MaxPhotos,
-               // SortBy = new[] { ItemSortBy.Random },
+                Limit = 20, //MaxPhotos,
+                // SortBy = new[] { ItemSortBy.Random },
                 Recursive = true,
             });
 
             var ars = items.Items.Select(i => i.PrimaryImageAspectRatio).ToArray();
 
-            _photos  = items.Items.Select(i => new ImageViewerImage
+            _photos = items.Items.Select(i => new ImageViewerImage
             {
                 Caption = i.Name,
-                AspectRatio = i.OriginalPrimaryImageAspectRatio??1.0,
+                AspectRatio = i.OriginalPrimaryImageAspectRatio ?? 1.0,
                 Url = _apiClient.GetImageUrl(i, new ImageOptions
                 {
                     ImageType = ImageType.Primary,
@@ -185,7 +183,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
             return true;
         }
 
-   
+
         private async Task<Image> GetNextPhoto(string url)
         {
             CurrentIndex++;
@@ -204,17 +202,19 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
         // return a range 1..PhotoScaleFactor
         private double RadomPhotoScale()
         {
-            var sf = 1 + (_random.NextDouble()*(PhotoScaleFactor - 1));
+            //var sf = 1 + (_random.NextDouble() * (PhotoScaleFactor - 1));
+            var sf = 1 + _gaussianRandom.NextGaussian(2);
+            _logger.Debug("Gaussian {0}", sf);
             return sf;
         }
 
-        private  async Task<BitmapImage> GetNextPhotoBitmap()
+        private async Task<BitmapImage> GetNextPhotoBitmap()
         {
             CurrentIndex++;
             var url = _photos[CurrentIndex].Url;
             var aspectRatio = _photos[CurrentIndex].AspectRatio;
             var cancellationToken = new CancellationToken();
-            var httpStream =  await GetBitmapStream(url);
+            var httpStream = await GetBitmapStream(url);
             cancellationToken.ThrowIfCancellationRequested();
 
 
@@ -222,8 +222,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
             int widthPixels, heightPixels;
             if (aspectRatio >= 1.0)
             {
-                widthPixels = (int) (_maxRenderWidth / RadomPhotoScale());
-                heightPixels = (int) (widthPixels/aspectRatio);
+                widthPixels = (int)(_maxRenderWidth / RadomPhotoScale());
+                heightPixels = (int)(widthPixels / aspectRatio);
             }
             else
             {
@@ -242,19 +242,20 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
             return bitmap;
         }
 
-        private async Task<DoubleAnimation> StartNextPhotoAnimation(DoubleAnimation animation, bool completionFlag = false)
+        private async Task<DoubleAnimation> StartNextPhotoAnimation(DoubleAnimation animation, Image animatedImage, bool completionFlag = false)
         {
             var photoindex = CurrentIndex;
-            
-            var photo = new Image { Source = await GetNextPhotoBitmap() };
-           
-            var bi = photo.Source as BitmapImage;
+
+            animatedImage.Source = await GetNextPhotoBitmap();
+            //var photo = new Image { Source = await GetNextPhotoBitmap() };
+
+            var bi = animatedImage.Source as BitmapImage;
             Debug.Assert(bi != null);
             var photoWidth = bi.Width;
             var photoHeight = bi.Height;
-            
+
             animation.Duration = new Duration(TimeSpan.FromSeconds(_random.Next(MinAnimateTimeSecs, MaxAnimateTimeSecs)));
-            animation.From = - photoHeight;                // y start
+            animation.From = -photoHeight;                // y start
             animation.To = _canvasHeight + photoHeight;    // y finish
 
             // Completion handler - remove the image, start the next handler
@@ -262,25 +263,21 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
             handler = async (s, e) =>
             {
                 animation.Completed -= handler;
-                ScreensaverCanvas.Children.Remove(photo);
-                await StartNextPhotoAnimation(animation, true);
+                ScreensaverCanvas.Children.Remove(animatedImage);
+                await StartNextPhotoAnimation(animation, animatedImage, true);
             };
             animation.Completed += handler;
 
-            //var r = _random.Next(0, NumLanes - 1);
+            double xStart = _random.Next(0, (int)_canvasWidth - (int)photoWidth); ;
 
-            //double xStart = ((_canvasWidth - photoWidth)  / (NumLanes - 1)) * r; // and xfinish, stays in one lane
-            var r = _random.Next(0, (int)_canvasWidth - (int) photoWidth);
-            double xStart = r;
-           
-            _logger.Debug("{0} Dur {1} ({2},{3}) From {4} - {5}  xStart {6} r {7} Canvas({8}, {9}) {10}", photoindex, animation.Duration, (int)photoWidth, (int)photoHeight, (int)animation.From, (int)animation.To, (int)xStart, r, (int) _canvasWidth, (int) _canvasHeight, completionFlag);
-            Canvas.SetLeft(photo, xStart);
+            _logger.Debug("{0} Dur {1} ({2},{3}) From {4} - {5}  xStart {6} Canvas({7}, {8}) {9}", photoindex, animation.Duration, (int)photoWidth, (int)photoHeight, (int)animation.From, (int)animation.To, (int)xStart, (int)_canvasWidth, (int)_canvasHeight, completionFlag);
+            Canvas.SetLeft(animatedImage, xStart);
 
-           // photo.Stretch = Stretch.UniformToFill;
-            photo.Name = "Photo" + CurrentIndex;
+            // photo.Stretch = Stretch.UniformToFill;
+            //animatedImage.Name = "Photo" + CurrentIndex;
 
-            ScreensaverCanvas.Children.Add(photo);
-            photo.BeginAnimation(Canvas.TopProperty, animation, HandoffBehavior.SnapshotAndReplace);
+            ScreensaverCanvas.Children.Add(animatedImage);
+            animatedImage.BeginAnimation(Canvas.TopProperty, animation, HandoffBehavior.SnapshotAndReplace);
 
             return animation;
         }
@@ -290,22 +287,92 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
             ScreensaverCanvas.Children.Clear();
 
             await GetPhotoData();
-         
+
             if (_photos.Length == 0)
             {
                 _screensaverManager.ShowScreensaver(true, "Logo");
                 return;
             }
 
+            //Timeline.DesiredFrameRateProperty.OverrideMetadata(
+            //  typeof(Timeline),
+            //  new FrameworkPropertyMetadata { DefaultValue = 40 });
+
             CurrentIndex = -1;
-            for (var i = 0; i < NumLanes; i++)
+            for (var i = 0; i < _animations.Length; i++)
             {
                 if (i >= _photos.Length)
                     continue;
-              
-                await StartNextPhotoAnimation(_animations[i]);
+
+                _animations[i] = new DoubleAnimation();
+                _animatedImages[i] = new Image();
+                await StartNextPhotoAnimation(_animations[i], _animatedImages[i]);
             }
         }
-      
-   }
+
+        private async void UnLoadScreensaver()
+        {
+            for (var i = 0; i < _animations.Length; i++)
+            {
+                if (_animatedImages[i] != null)
+                {
+                    _animatedImages[i].BeginAnimation(Canvas.TopProperty, null);
+                    _animatedImages[i] = null;
+                    _animations[i] = null;
+                }
+            }
+        }
+
+    }
+
+    public sealed class GaussianRandom
+    {
+        private bool _hasDeviate;
+        private double _storedDeviate;
+        private readonly Random _random;
+
+        public GaussianRandom(Random random = null)
+        {
+            _random = random ?? new Random();
+        }
+
+        /// <summary>
+        /// Obtains normally (Gaussian) distributed random numbers, using the Box-Muller
+        /// transformation.  This transformation takes two uniformly distributed deviates
+        /// within the unit circle, and transforms them into two independently
+        /// distributed normal deviates.
+        /// </summary>
+        /// <param name="mu">The mean of the distribution.  Default is zero.</param>
+        /// <param name="sigma">The standard deviation of the distribution.  Default is one.</param>
+        /// <returns></returns>
+        public double NextGaussian(double mu = 0, double sigma = 1)
+        {
+            if (sigma <= 0)
+                throw new ArgumentOutOfRangeException("sigma", "Must be greater than zero.");
+
+            if (_hasDeviate)
+            {
+                _hasDeviate = false;
+                return _storedDeviate * sigma + mu;
+            }
+
+            double v1, v2, rSquared;
+            do
+            {
+                // two random values between -1.0 and 1.0
+                v1 = 2 * _random.NextDouble() - 1;
+                v2 = 2 * _random.NextDouble() - 1;
+                rSquared = v1 * v1 + v2 * v2;
+                // ensure within the unit circle
+            } while (rSquared >= 1 || rSquared == 0);
+
+            // calculate polar tranformation for each deviate
+            var polar = Math.Sqrt(-2 * Math.Log(rSquared) / rSquared);
+            // store first deviate
+            _storedDeviate = v2 * polar;
+            _hasDeviate = true;
+            // return second deviate
+            return v1 * polar * sigma + mu;
+        }
+    }
 }

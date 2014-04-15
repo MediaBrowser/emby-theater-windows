@@ -2032,9 +2032,18 @@ namespace MediaBrowser.Theater.DirectShow
             SetStream(stream);
         }
 
-        public void SetSubtitleTrack(SelectableMediaStream stream)
+        public void SetAudioTrackIndex(int streamIndex)
         {
-            SetStream(stream);
+            var audioStreams = _streams.Where(i => i.Type == MediaStreamType.Audio).ToArray();
+            if (audioStreams.Any() && streamIndex < audioStreams.Count())
+                SetStream(audioStreams[streamIndex]);
+        }
+
+        public void SetSubtitleTrackIndex(int  streamIndex)
+        {
+            var audioStreams = _streams.Where(i => i.Type == MediaStreamType.Subtitle).ToArray();
+            if (audioStreams.Any() && streamIndex < audioStreams.Count())
+                SetStream(audioStreams[streamIndex]);
         }
 
         private void SetStream(SelectableMediaStream stream)

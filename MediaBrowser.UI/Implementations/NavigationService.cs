@@ -131,7 +131,17 @@ namespace MediaBrowser.UI.Implementations
         /// <returns>DispatcherOperation.</returns>
         public Task NavigateToSettingsPage()
         {
-            return Navigate(new SettingsPage(_presentationManager, this, _sessionFactory(), _appHost, _installationManager));
+            var task = new TaskCompletionSource<bool>();
+
+            App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(async () =>
+           {
+
+               await Navigate(new SettingsPage(_presentationManager, this, _sessionFactory(), _appHost, _installationManager));
+
+               task.TrySetResult(true);
+           });
+
+            return task.Task;
         }
 
         /// <summary>
@@ -209,33 +219,40 @@ namespace MediaBrowser.UI.Implementations
         /// Navigates to home page.
         /// </summary>
         /// <returns>DispatcherOperation.</returns>
-        public async Task NavigateToHomePage()
+        public Task NavigateToHomePage()
         {
-            _presentationManager.ShowLoadingAnimation();
+             var task = new TaskCompletionSource<bool>();
 
-            try
-            {
-                var userId = _sessionFactory().CurrentUser.Id;
+             App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(async () =>
+             {
+                 _presentationManager.ShowLoadingAnimation();
+                 try
+                 {
+                     var userId = _sessionFactory().CurrentUser.Id;
 
-                var userConfig = _config.GetUserTheaterConfiguration(userId);
+                     var userConfig = _config.GetUserTheaterConfiguration(userId);
 
-                var homePages = _presentationManager.HomePages.ToList();
+                     var homePages = _presentationManager.HomePages.ToList();
 
-                var homePage = homePages.FirstOrDefault(i => string.Equals(i.Name, userConfig.HomePage)) ??
-                                     homePages.FirstOrDefault(i => string.Equals(i.Name, "Default")) ??
-                                     homePages.First();
+                     var homePage = homePages.FirstOrDefault(i => string.Equals(i.Name, userConfig.HomePage)) ??
+                                          homePages.FirstOrDefault(i => string.Equals(i.Name, "Default")) ??
+                                          homePages.First();
 
-                var rootItem = await _apiClient.GetRootFolderAsync(userId);
+                     var rootItem = await _apiClient.GetRootFolderAsync(userId);
 
-                await Navigate(homePage.GetHomePage(rootItem));
+                     await Navigate(homePage.GetHomePage(rootItem));
 
-                //Clear history on home page navigate so that backspace on home page can lead to system options
-                ClearHistory();
-            }
-            finally
-            {
-                _presentationManager.HideLoadingAnimation();
-            }
+                     //Clear history on home page navigate so that backspace on home page can lead to system options
+                     ClearHistory();
+                 }
+                 finally
+                 {
+                     _presentationManager.HideLoadingAnimation();
+                     task.TrySetResult(true);
+                 }
+             });
+
+             return task.Task;
         }
 
         /// <summary>

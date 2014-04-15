@@ -123,6 +123,19 @@ namespace MediaBrowser.UI.EntryPoints
             });
         }
 
+        void ExecuteSetVolumeCommand(object sender, GeneralCommandEventArgs e)
+        {
+            try
+            {
+                float volume = (float) Convert.ToDouble(e.Command.Arguments.First());
+                _playbackManager.SetVolume(volume);
+            }
+            catch (Exception)
+            {
+                // logger at lower level
+            }
+        }
+
         void socket_GeneralCommand(object sender, GeneralCommandEventArgs e)
         {
             if (e.KnownCommandType.HasValue)
@@ -134,6 +147,12 @@ namespace MediaBrowser.UI.EntryPoints
                         break;
                     case GeneralCommandType.GoToSettings:
                         _nav.NavigateToSettingsPage();
+                        break;
+                    case GeneralCommandType.VolumeDown:
+                        _playbackManager.VolumeStepDown();
+                        break;
+                    case GeneralCommandType.VolumeUp:
+                        _playbackManager.VolumeStepUp();
                         break;
                     case GeneralCommandType.Mute:
                         _playbackManager.Mute();
@@ -151,11 +170,14 @@ namespace MediaBrowser.UI.EntryPoints
                             _playbackManager.Mute();
                         }
                         break;
-                    case GeneralCommandType.VolumeDown:
-                        _playbackManager.VolumeStepDown();
+                    case GeneralCommandType.SetVolume:
+                        ExecuteSetVolumeCommand(sender, e);
                         break;
-                    case GeneralCommandType.VolumeUp:
-                        _playbackManager.VolumeStepUp();
+                    case GeneralCommandType.SetAudioStreamIndex:
+                        ExecuteSetAudioStreamIndex(sender, e);
+                        break;
+                    case GeneralCommandType.SetSubtitleStreamIndex:
+                        ExecuteSetSubtitleStreamInded(sender, e);
                         break;
                     default:
                         _logger.Warn("Unrecognized command: " + e.KnownCommandType.Value);

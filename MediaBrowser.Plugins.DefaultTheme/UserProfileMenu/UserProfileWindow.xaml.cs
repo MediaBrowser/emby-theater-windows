@@ -207,7 +207,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.UserProfileMenu
 
         void closeModalStoryboard_Completed(object sender, EventArgs e)
         {
-            if (_displayPreferencesViewModel.DisplayPreferences != null && (bool)CheckBoxSortRemember.IsChecked)
+            if (_displayPreferencesViewModel.DisplayPreferences != null /* && (bool)CheckBoxSortRemember.IsChecked */)
             {
                 _displayPreferencesViewModel.Save();
             }

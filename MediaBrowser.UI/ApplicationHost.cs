@@ -1,4 +1,7 @@
 ﻿using System.Diagnostics;
+using System.Net;
+using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using System.Windows.Forms;
 using MediaBrowser.ApiInteraction;
 using MediaBrowser.ApiInteraction.WebSocket;
@@ -44,6 +47,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Win32;
 
 namespace MediaBrowser.UI
 {
@@ -55,6 +59,7 @@ namespace MediaBrowser.UI
         public ApplicationHost(ApplicationPaths applicationPaths, ILogManager logManager)
             : base(applicationPaths, logManager)
         {
+            SystemEvents.PowerModeChanged += SystemEvents_PowerModeChanged;
         }
 
         /// <summary>
@@ -385,6 +390,68 @@ namespace MediaBrowser.UI
         {
             PlaybackManager.StopAllPlayback();
             Application.SetSuspendState(PowerState.Suspend, false, false);
+        }
+
+        private void SystemEvents_PowerModeChanged(object sender, PowerModeChangedEventArgs e)
+        {
+            // ReSharper disable once CSharpWarnings::CS4014
+            SendWolCommand();
+        }
+
+        public async Task SendWolCommand()
+        {
+            const int payloadSize = 102;
+            var wolConfig = TheaterConfigurationManager.Configuration.WolConfiguration;
+
+            if (wolConfig == null)
+            {
+                return;
+            }
+
+            Logger.Log(LogSeverity.Info, String.Format("Sending Wake on LAN signal to {0}", TheaterConfigurationManager.Configuration.ServerHostName));
+
+            //Send magic packets to each address
+            foreach (var macAddress in wolConfig.HostMacAddresses)
+            {
+                var macBytes = PhysicalAddress.Parse(macAddress).GetAddressBytes();
+
+                Logger.Log(LogSeverity.Debug, String.Format("Sending magic packet to {0}", macAddress));
+
+                //Construct magic packet
+                var payload = new byte[payloadSize];
+                Buffer.BlockCopy(new byte[] { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF }, 0, payload, 0, 6);
+
+                for (var i = 1; i < 17; i++)
+                    Buffer.BlockCopy(macBytes, 0, payload, 6 * i, 6);
+
+                //Send packet LAN
+                using (var udp = new UdpClient())
+                {
+                    try
+                    {
+                        udp.Connect(IPAddress.Broadcast, wolConfig.Port);
+                        await udp.SendAsync(payload, payloadSize);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error(String.Format("Magic packet send failed: {0}", ex.Message));
+                    }
+                }
+
+                //Send packet WAN
+                using (var udp = new UdpClient())
+                {
+                    try
+                    {
+                        udp.Connect(TheaterConfigurationManager.Configuration.ServerHostName, wolConfig.Port);
+                        await udp.SendAsync(payload, payloadSize);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error(String.Format("Magic packet send failed: {0}", ex.Message));
+                    }
+                }
+            }
         }
 
         public override string Name

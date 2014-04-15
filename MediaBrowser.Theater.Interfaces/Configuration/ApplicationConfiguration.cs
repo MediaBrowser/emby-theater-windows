@@ -27,6 +27,12 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
         public AutoLoginConfiguration AutoLoginConfiguration { get; set; }
 
         /// <summary>
+        /// Gets or Sets the WOL configuration
+        /// </summary>
+        /// <value>The WOL Configuration.</value>
+        public WolConfiguration WolConfiguration { get; set; }
+
+        /// <summary>
         /// Gets or sets the player configurations.
         /// </summary>
         /// <value>The player configurations.</value>

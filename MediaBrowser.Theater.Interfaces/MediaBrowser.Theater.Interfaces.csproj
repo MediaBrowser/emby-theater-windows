@@ -66,6 +66,7 @@
     <Compile Include="Configuration\ApplicationConfiguration.cs" />
     <Compile Include="Configuration\UserConfigurationUpdatedEventArgs.cs" />
     <Compile Include="Configuration\UserTheaterConfiguration.cs" />
+    <Compile Include="Configuration\WOLConfiguration.cs" />
     <Compile Include="ItemEventArgs.cs" />
     <Compile Include="ITheaterApplicationHost.cs" />
     <Compile Include="Navigation\NavigationEventArgs.cs" />

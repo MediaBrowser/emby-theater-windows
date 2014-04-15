@@ -179,8 +179,8 @@ namespace MediaBrowser.UI.EntryPoints
         {
             try
             {
-                var index = (float)Convert.ToDouble(e.Command.Arguments.First());
-                _playbackManager.SetVolume(index);
+                var index = Convert.ToInt32(e.Command.Arguments.First());
+                _playbackManager.SetAudioStreamIndex(index);
             }
             catch (Exception)
             {
@@ -192,7 +192,7 @@ namespace MediaBrowser.UI.EntryPoints
         {
             try
             {
-                var index = (float)Convert.ToDouble(e.Command.Arguments.First());
+                var index = Convert.ToInt32(e.Command.Arguments.First());
                 _playbackManager.SetSubtitleStreamIndex(index);
             }
             catch (Exception)

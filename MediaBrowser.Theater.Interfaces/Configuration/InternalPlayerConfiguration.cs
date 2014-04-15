@@ -28,6 +28,8 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
         /// <value><c>true</c> if [enable xy sub filter]; otherwise, <c>false</c>.</value>
         public bool EnableXySubFilter { get; set; }
 
+        public bool UsePrivateObjects { get; set; }
+
         public VideoConfiguration VideoConfig { get; set; }
 
         public AudioConfiguration AudioConfig { get; set; }
@@ -43,6 +45,7 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
             AudioConfig = new AudioConfiguration();
             SubtitleConfig = new SubtitleConfiguration();
             COMConfig = new KnownCOMObjectConfiguration();
+            UsePrivateObjects = true;
         }
     }
     

@@ -224,7 +224,6 @@ namespace MediaBrowser.Theater.DirectShow
                     long pos;
 
                     int hr = _mediaSeeking.GetDuration(out pos);
-
                     return pos;
                 }
 

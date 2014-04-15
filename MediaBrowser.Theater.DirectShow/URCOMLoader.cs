@@ -10,6 +10,9 @@ using DirectShowLib.Utils;
 using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces;
 using System.Reflection;
+using System.Net;
+using System.Threading;
+using MediaBrowser.Common.Implementations.Archiving;
 
 namespace MediaBrowser.Theater.DirectShow
 {
@@ -33,12 +36,138 @@ namespace MediaBrowser.Theater.DirectShow
 
     public class URCOMLoader : IDisposable
     {
+        const string OJB_FOLDER = "COMObjects";
+        const string LAST_CHECKED = "LastChecked.txt";
         delegate int DllGETCLASSOBJECTInvoker([MarshalAs(UnmanagedType.LPStruct)]Guid clsid, [MarshalAs(UnmanagedType.LPStruct)]Guid iid, [MarshalAs(UnmanagedType.IUnknown)] out object ppv);
         static Guid IID_IUnknown = new Guid("00000000-0000-0000-C000-000000000046");
 
         bool _disposed = false;
         Dictionary<string, IntPtr> _libsLoaded = new Dictionary<string, IntPtr>();
         SerializableDictionary<Guid, KnownCOMObject> _knownObjects;
+        bool _preferURObjects = true;
+
+        public static void EnsureObjects(ITheaterConfigurationManager mbtConfig, bool block)
+        {
+            try
+            {
+                string objPath = Path.Combine(mbtConfig.CommonApplicationPaths.ProgramDataPath, OJB_FOLDER);
+                string lastCheckedPath = Path.Combine(objPath, LAST_CHECKED);
+                bool needsCheck = true;
+
+                if (!Directory.Exists(objPath))
+                {
+                    Directory.CreateDirectory(objPath);
+                }
+
+                DateTime lastCheckDate = ReadTextDate(lastCheckedPath);
+                if (lastCheckDate.AddDays(7) > DateTime.Now)
+                    needsCheck = false;
+
+                if (needsCheck)
+                {
+                    if (block)
+                        CheckObjects(objPath);
+                    else
+                        ThreadPool.QueueUserWorkItem(new WaitCallback(CheckObjects), objPath);
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+
+        private static DateTime ReadTextDate(string filePath)
+        {
+            DateTime textDate = DateTime.MinValue;
+
+            try
+            {
+                if (File.Exists(filePath))
+                {
+                    using (StreamReader sr = new StreamReader(filePath))
+                    {
+                        string firstLine = sr.ReadLine();
+                        if (!DateTime.TryParse(firstLine, out textDate))
+                        {
+                            textDate = DateTime.MinValue; //should be unecessary, but...
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+            }
+
+            return textDate;
+        }
+
+        private static void WriteTextDate(string filePath, DateTime theDate)
+        {
+            try
+            {
+                using (StreamWriter sw = new StreamWriter(filePath))
+                {
+                    sw.WriteLine(theDate);
+                }
+            }
+            catch (Exception ex)
+            {
+            }
+        }
+
+        private static void CheckObjects(object objDlPath)
+        {
+            try
+            {
+                Uri objManifest = new Uri(Path.Combine(System.Configuration.ConfigurationSettings.AppSettings["PrivateObjectsManifest"], "manifest.txt"));
+                string dlPath = objDlPath.ToString();
+                string lastCheckedPath = Path.Combine(dlPath, LAST_CHECKED);
+
+                using (WebClient mwc = new WebClient())
+                {
+                    string dlList = mwc.DownloadString(objManifest);
+                    if (!string.IsNullOrWhiteSpace(dlList))
+                    {
+                        ZipClient zc = new ZipClient();
+                        string[] objToCheck = dlList.Split(new string[]{System.Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries);
+                        foreach (string toCheck in objToCheck)
+                        {
+                            string txtPath = Path.Combine(dlPath, Path.ChangeExtension(toCheck, "txt"));
+                            DateTime lastUpdateDate = ReadTextDate(txtPath);
+                            Uri comPath = new Uri(Path.Combine(Path.Combine(System.Configuration.ConfigurationSettings.AppSettings["PrivateObjectsManifest"], toCheck)));
+                            WebRequest request = WebRequest.Create(comPath);
+                            request.Method = "HEAD";
+                            using(WebResponse wr = request.GetResponse())
+                            {                                
+                                DateTime lmDate;
+                                if (DateTime.TryParse(wr.Headers[HttpResponseHeader.LastModified], out lmDate))
+                                {
+                                    if (lmDate > lastUpdateDate)
+                                    {
+                                        //download the updated component
+                                        byte[] comBin = mwc.DownloadData(comPath);
+                                        if (comBin.Length > 0)
+                                        {
+                                            using (MemoryStream ms = new MemoryStream(comBin))
+                                            {
+                                                zc.ExtractAll(ms, dlPath, true);
+                                            }
+                                        }
+                                        WriteTextDate(txtPath, lmDate);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                WriteTextDate(lastCheckedPath, DateTime.Now);
+            }
+            catch (Exception ex)
+            {
+            }
+        }
 
         public string SearchPath
         {
@@ -48,8 +177,12 @@ namespace MediaBrowser.Theater.DirectShow
 
         public URCOMLoader(ITheaterConfigurationManager mbtConfig)
         {
+            //this should be called on app load, but this will make sure it gets done.
+            URCOMLoader.EnsureObjects(mbtConfig, true);
+
             _knownObjects = mbtConfig.Configuration.InternalPlayerConfiguration.COMConfig.FilterList;
-            SearchPath = Path.Combine(mbtConfig.CommonApplicationPaths.ProgramDataPath, "COMObjects");
+            SearchPath = Path.Combine(mbtConfig.CommonApplicationPaths.ProgramDataPath, OJB_FOLDER);
+            _preferURObjects = mbtConfig.Configuration.InternalPlayerConfiguration.UsePrivateObjects;
         }
 
         public object CreateObjectFromPath(string dllPath, Guid clsid, bool comFallback)
@@ -64,7 +197,7 @@ namespace MediaBrowser.Theater.DirectShow
             IntPtr lib = IntPtr.Zero;
             string fullDllPath = Path.Combine(SearchPath, dllPath);
 
-            if (File.Exists(fullDllPath))
+            if (File.Exists(fullDllPath) && (_preferURObjects || !comFallback))
             {
                 if (_libsLoaded.ContainsKey(dllPath))
                     lib = _libsLoaded[dllPath];

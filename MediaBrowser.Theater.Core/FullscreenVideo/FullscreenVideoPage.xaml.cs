@@ -79,13 +79,13 @@ namespace MediaBrowser.Theater.Core.FullscreenVideo
                     }
                     else
                     {
-                        Dispatcher.InvokeAsync(ShowOnScreenDisplay, DispatcherPriority.Background);
+                        Dispatcher.InvokeAsync(ShowOsd, DispatcherPriority.Background);
                     }
                 }
             }
         }
 
-        public void ShowOnScreenDisplay()
+        public void ShowOsd()
         {
             Dispatcher.InvokeAsync(ShowOnScreenDisplayInternal, DispatcherPriority.Background);
         }
@@ -128,23 +128,35 @@ namespace MediaBrowser.Theater.Core.FullscreenVideo
                 }
             }
 
+            if (IsMouseIdle)
+            {
+                HideOsd();
+            }
+            else
+            {
+                ShowOsd();
+            }
+        }
+
+        public void HideOsd()
+        {
             Dispatcher.InvokeAsync(() =>
             {
-                if (IsMouseIdle)
-                {
-                    HideOsd();
-                }
-                else
-                {
-                    ShowOnScreenDisplayInternal();
-                }
-
+                Osd.Visibility = Visibility.Collapsed;
             }, DispatcherPriority.Background);
         }
 
-        private void HideOsd()
+        public void ToggleOsd()
         {
-            Osd.Visibility = Visibility.Collapsed;
+            if (Osd.Visibility == Visibility.Visible)
+            {
+                HideOsd();
+            }
+            else
+            {
+                ShowOsd();
+                
+            }
         }
 
         private InfoWindow _infoWindow;
@@ -174,14 +186,8 @@ namespace MediaBrowser.Theater.Core.FullscreenVideo
             }, DispatcherPriority.Background);
         }
 
-        public void ToggleInfoPanel()
+        public void HideInfoPanel()
         {
-            if (_infoWindow == null)
-            {
-                ShowInfoPanel();
-                return;
-            }
-
             Dispatcher.InvokeAsync(() =>
             {
                 if (_infoWindow != null)
@@ -191,6 +197,19 @@ namespace MediaBrowser.Theater.Core.FullscreenVideo
 
             }, DispatcherPriority.Background);
         }
+       
+        public void ToggleInfoPanel()
+        {
+            if (_infoWindow == null)
+            {
+                ShowInfoPanel();
+            }
+            else
+            {
+                HideInfoPanel();
+            }
+        }
+
 
         protected override void OnInitialized(EventArgs e)
         {

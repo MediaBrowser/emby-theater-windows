@@ -228,6 +228,13 @@ namespace MediaBrowser.Theater.Implementations.Commands
         {
             return Keyboard.IsKeyDown(WindowsInput.Key.LeftCtrl) || Keyboard.IsKeyDown(WindowsInput.Key.RightCtrl);
         }
+
+        public bool SendCommand(Command command, Object args)
+        {
+            var commandEventArgs = new CommandEventArgs { Command = command, Handled = false };
+            _commandReceived.Invoke(null, commandEventArgs);
+            return commandEventArgs.Handled;
+        }
     }
 }
 

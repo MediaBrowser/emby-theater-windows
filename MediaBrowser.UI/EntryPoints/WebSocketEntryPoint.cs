@@ -1,4 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Media;
+using System.Windows.Input;
+using System.Windows.Interop;
+using System.Windows.Media;
+using System.Windows.Threading;
 using MediaBrowser.ApiInteraction.WebSocket;
 using MediaBrowser.Common;
 using MediaBrowser.Model.ApiClient;
@@ -8,6 +13,7 @@ using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Model.Serialization;
 using MediaBrowser.Model.Session;
+using MediaBrowser.Theater.Interfaces.Commands;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
@@ -31,6 +37,7 @@ namespace MediaBrowser.UI.EntryPoints
         private readonly INavigationService _nav;
         private readonly IPlaybackManager _playbackManager;
         private readonly IPresentationManager _presentation;
+        private readonly ICommandManager _commandManager;
 
         private bool _isDisposed;
 
@@ -39,7 +46,7 @@ namespace MediaBrowser.UI.EntryPoints
             get { return _appHost.ApiWebSocket; }
         }
 
-        public WebSocketEntryPoint(ISessionManager session, IApiClient apiClient, IJsonSerializer json, ILogManager logManager, IApplicationHost appHost, INavigationService nav, IPlaybackManager playbackManager, IPresentationManager presentation)
+        public WebSocketEntryPoint(ISessionManager session, IApiClient apiClient, IJsonSerializer json, ILogManager logManager, IApplicationHost appHost, INavigationService nav, IPlaybackManager playbackManager, IPresentationManager presentation, ICommandManager commandManager)
         {
             _session = session;
             _apiClient = apiClient;
@@ -49,6 +56,7 @@ namespace MediaBrowser.UI.EntryPoints
             _nav = nav;
             _playbackManager = playbackManager;
             _presentation = presentation;
+            _commandManager = commandManager;
         }
 
         public void Run()
@@ -201,12 +209,91 @@ namespace MediaBrowser.UI.EntryPoints
             }
         }
 
+        //
+        // see http://stackoverflow.com/questions/1645815/how-can-i-programmatically-generate-keypress-events-in-c
+        // Send a Key to currently active element, 
+        //      1. the element will in receive a KeyDown event which will 
+        //      2. The elemen will implement the actions - i.e move 
+        //      3. The Keydown will be picked up by the input manager and the generate a Command matching the key
+        //
+        void SendKeyDownEventToFocusedElement(System.Windows.Input.Key key)
+        {
+            _logger.Debug("SendKeyDownEventToFocusedElement {0}", key);
+              _presentation.Window.Dispatcher.Invoke(() =>
+              {
+                 _presentation.EnsureApplicationWindowHasFocus(); // todo - need this when testing and running on the same display and input, proably not in prod env
+                var source = (HwndSource)PresentationSource.FromVisual(_presentation.Window);
+                var keyEventArgs = new KeyEventArgs
+                                    (
+                                        Keyboard.PrimaryDevice,
+                                        source,
+                                        0,
+                                        key
+                                    ) { RoutedEvent = Keyboard.KeyDownEvent };
+
+                InputManager.Current.ProcessInput(keyEventArgs);
+             });
+        }
+
         void socket_GeneralCommand(object sender, GeneralCommandEventArgs e)
         {
             if (e.KnownCommandType.HasValue)
             {
                 switch (e.KnownCommandType.Value)
                 {
+                    case GeneralCommandType.MoveUp:
+                        SendKeyDownEventToFocusedElement(Key.Up);
+                        break;
+
+                    case GeneralCommandType.MoveDown:
+                        SendKeyDownEventToFocusedElement(Key.Down);
+                        break;
+
+                    case GeneralCommandType.MoveLeft:
+                         SendKeyDownEventToFocusedElement(Key.Left);
+                        break;
+
+                    case GeneralCommandType.MoveRight:
+                         SendKeyDownEventToFocusedElement(Key.Right);
+                        break;
+
+                    case GeneralCommandType.PageUp:
+                        SendKeyDownEventToFocusedElement(Key.PageUp);
+                        break;
+
+                    case GeneralCommandType.PreviousLetter:
+                        _commandManager.SendCommand(Command.Null, null); //todo
+                        break;
+
+                    case GeneralCommandType.ToggleOsd:
+                        _commandManager.SendCommand(Command.ToggleOsd, null); 
+                        break;
+
+                    case GeneralCommandType.ToggleContextMenu:
+                        _commandManager.SendCommand(Command.Null, null);        // todo
+                        break;
+
+                    case GeneralCommandType.Select:
+                        _commandManager.SendCommand(Command.Select, null);      // todo
+                        break;
+
+                    case GeneralCommandType.Back:
+                        _nav.NavigateBack();
+                        break;
+
+                    case GeneralCommandType.TakeScreenshot:
+                        _commandManager.SendCommand(Command.Null, null);        // todo
+                        break;
+
+                    case GeneralCommandType.SendKey:
+                        SendKeyDownEventToFocusedElement(Key.PageUp);        // todo
+                        break;
+
+
+                    case GeneralCommandType.SendString:
+                        _commandManager.SendCommand(Command.Null, null);        // todo
+                        break;
+
                     case GeneralCommandType.GoHome:
                         _nav.NavigateToHomePage();
                         break;

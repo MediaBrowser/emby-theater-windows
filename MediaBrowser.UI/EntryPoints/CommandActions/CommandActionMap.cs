@@ -102,7 +102,7 @@ using MediaBrowser.Theater.Presentation.Playback;
                 new CommandActionMapping( Command.GotoSearch,      GotoSearch),
                 new CommandActionMapping( Command.GotoSettings,    GotoSettings),
                 new CommandActionMapping( Command.GotoPage,        NullAction),
-                new CommandActionMapping( Command.Info,            Info),
+                new CommandActionMapping( Command.Info,            ShowInfoPanel),
                 new CommandActionMapping( Command.SkipNext,        SkipForward,        60),    // skip forward 60  seconds, boxed arguments
                 new CommandActionMapping( Command.SkipPrevious,    SkipBackward,       60),
                 new CommandActionMapping( Command.Step,            SkipForward,        60),     
@@ -125,7 +125,12 @@ using MediaBrowser.Theater.Presentation.Playback;
                 new CommandActionMapping( Command.Subtitles,       NullAction),
                 new CommandActionMapping( Command.NextSubtitle,    NullAction),
                 new CommandActionMapping( Command.AspectRatio,     NullAction),
-                new CommandActionMapping( Command.OSD,             OSD),
+                new CommandActionMapping( Command.ShowOsd,         ShowOsd),
+                new CommandActionMapping( Command.HideOsd,         HideOSd),
+                new CommandActionMapping( Command.ToggleOsd,       ToggleOsd),
+                new CommandActionMapping( Command.ShowInfoPanel,   ShowInfoPanel),
+                new CommandActionMapping( Command.HideinfoPanel,   HideInfoPanel),
+                new CommandActionMapping( Command.ToggleInfoPanel, ToggleInfoPanel),
                 new CommandActionMapping( Command.ShowScreensaver, ShowScreensaver),
 
             };
@@ -187,7 +192,7 @@ using MediaBrowser.Theater.Presentation.Playback;
                     activePlayer.UnPause();
                 }
 
-                ShowFullscreenVideoOsd();
+                ShowOsd(sender, args);
             }
             else
             {
@@ -211,7 +216,7 @@ using MediaBrowser.Theater.Presentation.Playback;
                     activePlayer.Pause();
                 }
 
-                ShowFullscreenVideoOsd();
+                ShowOsd(sender, args);
             }
             else
             {
@@ -227,7 +232,7 @@ using MediaBrowser.Theater.Presentation.Playback;
             if (activePlayer != null && activePlayer.PlayState != PlayState.Paused)
             {
                 activePlayer.Pause();
-                ShowFullscreenVideoOsd();
+                ShowOsd(sender, args);
             }
             args.Handled = true;
         }
@@ -247,7 +252,7 @@ using MediaBrowser.Theater.Presentation.Playback;
                     activePlayer.Pause();
                 }
 
-                ShowFullscreenVideoOsd();
+                ShowOsd(sender, args);
             }
             args.Handled = true;
         }
@@ -270,7 +275,7 @@ using MediaBrowser.Theater.Presentation.Playback;
                 {
                     activePlayer.SkipBackward();
                 }
-                ShowFullscreenVideoOsd();
+                ShowOsd(sender, args);
             }
             args.Handled = true;
         }
@@ -289,7 +294,7 @@ using MediaBrowser.Theater.Presentation.Playback;
                 {
                     activePlayer.SkipForward();
                 }
-                ShowFullscreenVideoOsd();
+                ShowOsd(sender, args);
             }
             args.Handled = true;
         }
@@ -337,7 +342,7 @@ using MediaBrowser.Theater.Presentation.Playback;
             if (activePlayer != null)
             {
                 activePlayer.GoToNextChapter();
-                ShowFullscreenVideoOsd();
+                ShowOsd(sender, args);
             }
             args.Handled = true;
         }
@@ -349,7 +354,7 @@ using MediaBrowser.Theater.Presentation.Playback;
             if (activePlayer != null)
             {
                 activePlayer.GoToPreviousChapter();
-                ShowFullscreenVideoOsd();
+                ShowOsd(sender, args);
             }
             args.Handled = true;
         }
@@ -412,58 +417,105 @@ using MediaBrowser.Theater.Presentation.Playback;
             args.Handled = true;
         }
 
-        private void OSD(Object sender, CommandEventArgs args)
-        {
-            var activePlayer = GetActiveInternalMediaPlayer();
 
-            if (activePlayer != null)
+        private void ShowOsd(Object sender, CommandEventArgs args)
+        {
+            if (GetActiveInternalMediaPlayer() != null)
             {
-                ShowFullscreenVideoOsd();
-            }
-            args.Handled = true;
-        }
+                _presenation.Window.Dispatcher.InvokeAsync(() =>
+                {
+                    var page = _navigation.CurrentPage as IFullscreenVideoPage;
 
-        private void ShowFullscreenVideoOsd()
-        {
-            _presenation.Window.Dispatcher.InvokeAsync(ShowFullscreenVideoOsdInternal);
-        }
-
-        private void ShowFullscreenVideoOsdInternal()
-        {
-            var page = _navigation.CurrentPage as IFullscreenVideoPage;
-
-            if (page != null)
-            {
-                page.ShowOnScreenDisplay();
+                    if (page != null)
+                    {
+                        page.ShowOsd();
+                    }
+               });
             }
         }
 
-        private void Info(Object sender, CommandEventArgs args)
-        {
-            var activePlayer = GetActiveInternalMediaPlayer();
 
-            if (activePlayer != null)
+        private void HideOSd(Object sender, CommandEventArgs args)
+        {
+            if (GetActiveInternalMediaPlayer() != null)
             {
-                ToggleInfoPanel();
-            }
-            args.Handled = true;
+                _presenation.Window.Dispatcher.InvokeAsync(() =>
+                {
+                    var page = _navigation.CurrentPage as IFullscreenVideoPage;
 
-        }
-
-        private void ToggleInfoPanel()
-        {
-            _presenation.Window.Dispatcher.InvokeAsync(ShowInfoPanelInternal);
-        }
-
-        private void ShowInfoPanelInternal()
-        {
-            var page = _navigation.CurrentPage as IFullscreenVideoPage;
-
-            if (page != null)
-            {
-                page.ToggleInfoPanel();
+                    if (page != null)
+                    {
+                        page.HideOsd();
+                    }
+               });
             }
         }
+
+        private void ToggleOsd(Object sender, CommandEventArgs args)
+        {
+            if (GetActiveInternalMediaPlayer() != null)
+            {
+                _presenation.Window.Dispatcher.InvokeAsync(() =>
+                {
+                    var page = _navigation.CurrentPage as IFullscreenVideoPage;
+
+                    if (page != null)
+                    {
+                        page.ToggleOsd();
+                    }
+                });
+            }
+        }
+
+        private void ShowInfoPanel(Object sender, CommandEventArgs args)
+        {
+            if (GetActiveInternalMediaPlayer() != null)
+            {
+                _presenation.Window.Dispatcher.InvokeAsync(() =>
+                {
+                    var page = _navigation.CurrentPage as IFullscreenVideoPage;
+
+                    if (page != null)
+                    {
+                        page.ShowInfoPanel();
+                    }
+                });
+            }
+        }
+
+
+        private void HideInfoPanel(Object sender, CommandEventArgs args)
+        {
+            if (GetActiveInternalMediaPlayer() != null)
+            {
+                _presenation.Window.Dispatcher.InvokeAsync(() =>
+                {
+                    var page = _navigation.CurrentPage as IFullscreenVideoPage;
+
+                    if (page != null)
+                    {
+                        page.HideInfoPanel();
+                    }
+                });
+            }
+        }
+
+        private void ToggleInfoPanel(Object sender, CommandEventArgs args)
+        {
+            if (GetActiveInternalMediaPlayer() != null)
+            {
+                _presenation.Window.Dispatcher.InvokeAsync(() =>
+                {
+                    var page = _navigation.CurrentPage as IFullscreenVideoPage;
+
+                    if (page != null)
+                    {
+                        page.ToggleInfoPanel();
+                    }
+                });
+            }
+        }
+      
 
         private void GotoHome(Object sender, CommandEventArgs args)
         {

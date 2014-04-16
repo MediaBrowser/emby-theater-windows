@@ -56,7 +56,12 @@
         Subtitles,         // Toggle subtitles
         NextSubtitle,      // sequence through subtitles
         AspectRatio,       // sequence through AspectRatios
-        OSD,               // On Screen Display
+        ShowOsd,           // Show On Screen Display
+        HideOsd,           // Hides On Screen Display
+        ToggleInfoPanel,   // Toggles info panel
+        ShowInfoPanel,     // Show info panel
+        HideinfoPanel,     // Hides info panel
+        ToggleOsd,         // Toggles On Screen Display
         Close,             // close the app
         RestartMbt,        // restart this app
         RestartSystem,     // Restart the computer

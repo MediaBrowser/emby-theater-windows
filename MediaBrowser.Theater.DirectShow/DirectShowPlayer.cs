@@ -1,6 +1,9 @@
-﻿using System.Drawing;
+﻿using System.Diagnostics;
+using System.Drawing;
 using DirectShowLib;
 using DirectShowLib.Dvd;
+using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Interfaces.Playback;
@@ -16,10 +19,8 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-//using DirectShowLib.Utils;
-using System.Diagnostics;
 using MediaBrowser.Theater.Interfaces.Configuration;
-using System.Text;
+
 
 namespace MediaBrowser.Theater.DirectShow
 {
@@ -34,6 +35,7 @@ namespace MediaBrowser.Theater.DirectShow
         private readonly IHiddenWindow _hiddenWindow;
         private readonly InternalDirectShowPlayer _playerWrapper;
         private readonly ISessionManager _sessionManager;
+        private readonly IApiClient _apiClient;
     
         private DirectShowLib.IGraphBuilder m_graph = null;
         private DirectShowLib.FilterGraphNoThread m_filterGraph = null;
@@ -139,13 +141,14 @@ namespace MediaBrowser.Theater.DirectShow
 
         #endregion
 
-        public DirectShowPlayer(ILogger logger, IHiddenWindow hiddenWindow, InternalDirectShowPlayer playerWrapper, IntPtr applicationWindowHandle, ISessionManager sessionManager)
+        public DirectShowPlayer(ILogger logger, IHiddenWindow hiddenWindow, InternalDirectShowPlayer playerWrapper, IntPtr applicationWindowHandle, ISessionManager sessionManager, IApiClient apiClient)
         {
             _logger = logger;
             _hiddenWindow = hiddenWindow;
             _playerWrapper = playerWrapper;
             _applicationWindowHandle = applicationWindowHandle;
             _sessionManager = sessionManager;
+            _apiClient = apiClient;
         }
 
         private IntPtr VideoWindowHandle
@@ -2098,6 +2101,7 @@ namespace MediaBrowser.Theater.DirectShow
 
         public void SetAudioStreamIndex(int audioStreamIndex)
         {
+            _logger.Debug("SetAudioStreamIndex {0}", audioStreamIndex);
             var audioStreams = _streams.Where(i => i.Type == MediaStreamType.Audio).ToArray();
             if (audioStreams.Any() && audioStreamIndex < audioStreams.Count())
             {
@@ -2112,6 +2116,7 @@ namespace MediaBrowser.Theater.DirectShow
 
         public void SetSubtitleStreamIndex(int subtitleStreamIndex)
         {
+            _logger.Debug("SetSubtitleStreamIndex {0}", subtitleStreamIndex);
             var subtitleStreams = _streams.Where(i => i.Type == MediaStreamType.Subtitle).ToArray();
             if (subtitleStreams.Any() && subtitleStreamIndex < subtitleStreams.Count())
             {
@@ -2119,13 +2124,14 @@ namespace MediaBrowser.Theater.DirectShow
             }
             else
             {
-                throw new ApplicationException(String.Format("Invalid audioStreamIndex {0}", subtitleStreamIndex));
+                throw new ApplicationException(String.Format("Invalid subtitleStreamIndex {0}", subtitleStreamIndex));
             }
         }
 
         public void SetSubtitleStream(SelectableMediaStream stream)
         {
-            if (stream.Identifier == "external" || stream.Name.ToLower().Contains("no subtitles"))  // external subtitle track 
+            _logger.Debug("SetSubtitleStream {0} {1} {2} {3}", stream.Index, stream.Type, stream.Name, stream.Identifier);
+            if (stream.Identifier == "external" || stream.Name.ToLower().Contains("no subtitles")) 
             {
                 SetExternalSubtitleStream(stream);
             }
@@ -2135,14 +2141,7 @@ namespace MediaBrowser.Theater.DirectShow
                 SetInternalStream(stream);
             }
 
-            if (stream.Name.ToLower().Contains("no subtitles"))
-            {
-                ToggleHideSubtitles(true);
-            }
-            else
-            {
-                ToggleHideSubtitles(false); 
-            }
+            ToggleHideSubtitles(stream.Name.ToLower().Contains("no subtitles"));
         }
        
 
@@ -2157,8 +2156,14 @@ namespace MediaBrowser.Theater.DirectShow
             {
                 try
                 {
-                    // see if we can load from path, i.e path that we have direct file access to (i.e windows share)
-                    LoadExternalSubtitles(stream.Path);
+                    var url = _apiClient.GetSubtitleUrl(new SubtitleOptions
+                    {
+                        ItemId = _item.OriginalItem.Id,
+                        StreamIndex = stream.Index
+                    });
+
+                    _logger.Debug("SetExternalSubtitleStream {0} {1} {2}", stream.Index, stream.Type, url);
+                    LoadExternalSubtitles(url);
                 }
                 catch (Exception)
                 {
@@ -2188,6 +2193,8 @@ namespace MediaBrowser.Theater.DirectShow
 
         private void SetInternalStream(SelectableMediaStream stream)
         {
+            _logger.Debug("SetInternalStream {0} {1} {2}", stream.Index, stream.Type, stream.Name);
+
             IEnumFilters enumFilters;
             var hr = m_graph.EnumFilters(out enumFilters);
 

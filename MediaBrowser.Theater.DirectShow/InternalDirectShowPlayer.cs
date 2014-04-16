@@ -30,7 +30,7 @@ namespace MediaBrowser.Theater.DirectShow
         private readonly IPlaybackManager _playbackManager;
         private readonly ITheaterConfigurationManager _config;
         private readonly IIsoManager _isoManager;
-
+   
         public event EventHandler<MediaChangeEventArgs> MediaChanged;
 
         public event EventHandler<PlaybackStopEventArgs> PlaybackCompleted;
@@ -194,7 +194,7 @@ namespace MediaBrowser.Theater.DirectShow
             {
                 InvokeOnPlayerThread(() =>
                 {
-                    _mediaPlayer = new DirectShowPlayer(_logger, _hiddenWindow, this, _presentation.WindowHandle, _sessionManager);
+                    _mediaPlayer = new DirectShowPlayer(_logger, _hiddenWindow, this, _presentation.WindowHandle, _sessionManager, _apiClient);
 
                     //HideCursor();
                 });

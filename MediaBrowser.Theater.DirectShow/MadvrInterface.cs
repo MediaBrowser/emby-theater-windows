@@ -276,7 +276,7 @@ namespace MediaBrowser.Theater.DirectShow
             }
         }
 
-        public MadVRSettings(MadVR madVR)
+        public MadVRSettings(object madVR)
         {
             _madVR = madVR as IMadVRSettings;
         }
@@ -585,7 +585,7 @@ namespace MediaBrowser.Theater.DirectShow
         //    }
         //}
 
-        public static void EnableExclusiveMode(bool enable, MadVR madvr)
+        public static void EnableExclusiveMode(bool enable, object madvr)
         {
             var eModeControl = madvr as IMadVRExclusiveModeControl;
 

@@ -1,5 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.Media;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Interop;
@@ -26,6 +29,7 @@ using System.Threading;
 using System.Windows;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using MessageBoxIcon = MediaBrowser.Theater.Interfaces.Theming.MessageBoxIcon;
+using System.Configuration;
 
 namespace MediaBrowser.UI.EntryPoints
 {
@@ -339,8 +343,7 @@ namespace MediaBrowser.UI.EntryPoints
                throw new ArgumentException(String.Format("ExecuteSendStringCommand: Argument '{0}' must be a Single Char or a Windows Key literial (i.e Key.A)  or the Integer value for Key literial", input));
            }
        }
-
-
+     
 
         void socket_GeneralCommand(object sender, GeneralCommandEventArgs e)
         {
@@ -393,7 +396,7 @@ namespace MediaBrowser.UI.EntryPoints
                         break;
 
                     case GeneralCommandType.TakeScreenshot:
-                        _commandManager.SendCommand(Command.Null, null);        // todo
+                        _commandManager.SendCommand(Command.ScreenDump, null); 
                         break;
 
                     case GeneralCommandType.SendKey:

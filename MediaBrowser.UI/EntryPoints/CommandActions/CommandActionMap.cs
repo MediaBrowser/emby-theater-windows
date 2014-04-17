@@ -12,7 +12,7 @@ using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Presentation.Playback;
 
 
- namespace MediaBrowser.UI.EntryPoints
+ namespace MediaBrowser.UI.EntryPoints.CommandActions
 {
 
     internal delegate void ActionDelagate(Object sender, CommandEventArgs args);
@@ -132,6 +132,7 @@ using MediaBrowser.Theater.Presentation.Playback;
                 new CommandActionMapping( Command.HideinfoPanel,   HideInfoPanel),
                 new CommandActionMapping( Command.ToggleInfoPanel, ToggleInfoPanel),
                 new CommandActionMapping( Command.ShowScreensaver, ShowScreensaver),
+                new CommandActionMapping( Command.ScreenDump,      ScreenDump),
 
             };
         }
@@ -586,6 +587,11 @@ using MediaBrowser.Theater.Presentation.Playback;
         public void ShowScreensaver(Object sender, CommandEventArgs args)
         {
             _screensaverManager.ShowScreensaver(true);
+        }
+
+        private void ScreenDump(Object sender, CommandEventArgs args)
+        {
+            MBTScreenDump.GetAndSaveWindowsImage(_presenation.WindowHandle);
         }
     }
 }

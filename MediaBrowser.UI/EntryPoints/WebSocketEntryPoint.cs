@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Media;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
@@ -18,12 +19,13 @@ using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
-using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Presentation.Playback;
 using System;
 using System.Linq;
 using System.Threading;
 using System.Windows;
+using KeyEventArgs = System.Windows.Input.KeyEventArgs;
+using MessageBoxIcon = MediaBrowser.Theater.Interfaces.Theming.MessageBoxIcon;
 
 namespace MediaBrowser.UI.EntryPoints
 {
@@ -168,45 +170,72 @@ namespace MediaBrowser.UI.EntryPoints
 
         void ExecuteSetVolumeCommand(object sender, GeneralCommandEventArgs e)
         {
+            _logger.Debug("ExecuteSetVolumeCommand {0}", e.Command.Arguments != null && e.Command.Arguments.Count > 0 ? e.Command.Arguments.First().Value : null);
+
+            float volume;
+
+            if (e.Command.Arguments == null || e.Command.Arguments.Count() != 1)
+                throw new ArgumentException("ExecuteSetVolumeCommand: expecting a single float 0..100 argurment for ExecuteSetVolumeCommand");
+
             try
             {
-                var volume = (float) Convert.ToDouble(e.Command.Arguments.First());
-                if (volume < 0.0 || volume  > 100.0)
-                {
-                    throw new ApplicationException(string.Format("Invalid Volume {0}. Volume range is 0..1", volume));
-                }
-                _playbackManager.SetVolume(volume);
+                volume = (float) Convert.ToDouble(e.Command.Arguments.First().Value);
             }
-            catch (Exception)
+            catch (FormatException)
             {
-                // logger at lower level
+                throw new ArgumentException("ExecuteSetVolumeCommand: Invalid format, expecting a single float 0..100 argurment for ExecuteSetVolumeCommand");
             }
+
+            if (volume < 0.0 || volume  > 100.0)
+            {
+                throw new ArgumentException(string.Format("ExecuteSetVolumeCommand: Invalid Volume {0}. Volume range is 0..100", volume));
+            }
+            
+            _playbackManager.SetVolume(volume);
         }
 
         void ExecuteSetAudioStreamIndex(object sender, GeneralCommandEventArgs e)
         {
+            _logger.Debug("ExecuteSetAudioStreamIndex {0}", e.Command.Arguments != null && e.Command.Arguments.Count > 0 ? e.Command.Arguments.First().Value : null);
+
+            int index;
+
+            if (e.Command.Arguments == null || e.Command.Arguments.Count() != 1)
+                throw new ArgumentException("ExecuteSetAudioStreamIndex: expecting a single integer argurment for AudiostreamIndex");
+
             try
             {
-                var index = Convert.ToInt32(e.Command.Arguments.First());
-                _playbackManager.SetAudioStreamIndex(index);
+                index = Convert.ToInt32(e.Command.Arguments.First().Value);
             }
-            catch (Exception)
+            catch (FormatException)
             {
-                // logger at lower level
+                throw new ArgumentException("ExecuteSetAudioStreamIndex: Invalid format, expecting a single integer argurment for AudiostreamIndex");
             }
+            
+
+            _playbackManager.SetAudioStreamIndex(index);
         }
 
         void ExecuteSetSubtitleStreamIndex(object sender, GeneralCommandEventArgs e)
         {
+            _logger.Debug("ExecuteSetSubtitleStreamIndex {0}", e.Command.Arguments != null && e.Command.Arguments.Count > 0 ? e.Command.Arguments.First().Value : null);
+
+            int index;
+
+            if (e.Command.Arguments == null || e.Command.Arguments.Count() != 1)
+                throw new ArgumentException("ExecuteSetSubtitleStreamIndex: expecting a single integer argurment for SubtitleStreamIndex");
+
             try
             {
-                var index = Convert.ToInt32(e.Command.Arguments.First());
-                _playbackManager.SetSubtitleStreamIndex(index);
+                index = Convert.ToInt32(e.Command.Arguments.First().Value);
             }
-            catch (Exception)
+            catch (FormatException)
             {
-                // logger at lower level
+                throw new ArgumentException("ExecuteSetSubtitleStreamIndex: Invalid format, expecting a single integer argurment for SubtitleStreamIndex");
             }
+            
+          _playbackManager.SetSubtitleStreamIndex(index);
+          
         }
 
         //
@@ -221,7 +250,7 @@ namespace MediaBrowser.UI.EntryPoints
             _logger.Debug("SendKeyDownEventToFocusedElement {0}", key);
               _presentation.Window.Dispatcher.Invoke(() =>
               {
-                 _presentation.EnsureApplicationWindowHasFocus(); // todo - need this when testing and running on the same display and input, proably not in prod env
+                // _presentation.EnsureApplicationWindowHasFocus(); // todo - need this when testing and running on the same display and input, proably not in prod env
                 var source = (HwndSource)PresentationSource.FromVisual(_presentation.Window);
                 var keyEventArgs = new KeyEventArgs
                                     (
@@ -234,6 +263,84 @@ namespace MediaBrowser.UI.EntryPoints
                 InputManager.Current.ProcessInput(keyEventArgs);
              });
         }
+
+        //
+        //
+        // Send a text string to currently active element, 
+        //
+        void SendTextInputToFocusedElement(string inputText)
+        {
+            _logger.Debug("SendTextInputToFocusedElement {0}", inputText);
+            SendKeys.SendWait(inputText);
+        }
+
+        void ExecuteSendStringCommand(object sender, GeneralCommandEventArgs e)
+        {
+            _logger.Debug("ExecuteSendStringCommand {0}", e.Command.Arguments != null && e.Command.Arguments.Count > 0 ? e.Command.Arguments.First().Value : null);
+            if (e.Command.Arguments == null || e.Command.Arguments.Count() != 1)
+                throw new ArgumentException("ExecuteSendStringCommand: expecting a single string argurment for send string");
+
+          
+             string inputText = e.Command.Arguments.First().Value;
+
+             SendTextInputToFocusedElement(inputText);
+        }
+
+       private bool IsWindowsKeyEnum(int input, out System.Windows.Input.Key key)
+       {
+           key = (System.Windows.Input.Key) input;
+           return System.Enum.IsDefined(typeof(System.Windows.Input.Key), key);
+       }
+
+       void ExecuteSendSendKeyCommand(object sender, GeneralCommandEventArgs e)
+       {
+           _logger.Debug("ExecuteSendStringCommand {0}", e.Command.Arguments != null && e.Command.Arguments.Count > 0 ? e.Command.Arguments.First().Value : null);
+           if (e.Command.Arguments == null || e.Command.Arguments.Count() != 1)
+               throw new ArgumentException("ExecuteSendStringCommand: expecting a single string argurment for send Key");
+
+           var input = e.Command.Arguments.First().Value;
+
+           // now the key can be
+           // 1. An integer value of the  System.Windows.Input.Key enum, 0 to 172
+           // 2. The text representation of System.Windows.Input.Key ie. Key.None..Key.DeadCharProcessed
+           // 3. A single Char value
+
+           // try int first
+           int intVal;
+           if (int.TryParse(input, out intVal))
+           {
+               System.Windows.Input.Key key;
+
+               if (!IsWindowsKeyEnum(intVal, out key))
+                   throw new ArgumentException(String.Format("ExecuteSendStringCommand: integer argument {0} does not map to  System.Windows.Input.Key", intVal));
+
+               SendKeyDownEventToFocusedElement(key);
+           }
+           else if (input.StartsWith("Key."))  // check if the string maps to a enum element name i.e Key.A
+           {
+               System.Windows.Input.Key key;
+               try
+               {
+                   key  = (System.Windows.Input.Key) System.Enum.Parse(typeof(System.Windows.Input.Key), input);
+               }
+               catch (Exception)
+               {
+                   throw new ArgumentException(String.Format("ExecuteSendStringCommand: Argument '{0}' must be a Single Char or a Windows Key literial (i.e Key.A)  or the Integer value for Key literial", input));
+               }
+               
+               SendKeyDownEventToFocusedElement(key);
+           }
+           else if (input.Length == 1)
+           {
+               SendTextInputToFocusedElement(input);
+           }
+           else
+           {
+               throw new ArgumentException(String.Format("ExecuteSendStringCommand: Argument '{0}' must be a Single Char or a Windows Key literial (i.e Key.A)  or the Integer value for Key literial", input));
+           }
+       }
+
+
 
         void socket_GeneralCommand(object sender, GeneralCommandEventArgs e)
         {
@@ -265,6 +372,10 @@ namespace MediaBrowser.UI.EntryPoints
                         _commandManager.SendCommand(Command.Null, null); //todo
                         break;
 
+                    case GeneralCommandType.NextLetter:
+                        _commandManager.SendCommand(Command.Null, null); //todo
+                        break;
+
                     case GeneralCommandType.ToggleOsd:
                         _commandManager.SendCommand(Command.ToggleOsd, null); 
                         break;
@@ -274,7 +385,7 @@ namespace MediaBrowser.UI.EntryPoints
                         break;
 
                     case GeneralCommandType.Select:
-                        _commandManager.SendCommand(Command.Select, null);      // todo
+                        SendKeyDownEventToFocusedElement(Key.Enter);
                         break;
 
                     case GeneralCommandType.Back:
@@ -286,12 +397,12 @@ namespace MediaBrowser.UI.EntryPoints
                         break;
 
                     case GeneralCommandType.SendKey:
-                        SendKeyDownEventToFocusedElement(Key.PageUp);        // todo
+                        ExecuteSendSendKeyCommand(sender, e);  
                         break;
 
 
                     case GeneralCommandType.SendString:
-                        _commandManager.SendCommand(Command.Null, null);        // todo
+                        ExecuteSendStringCommand(sender, e);
                         break;
 
                     case GeneralCommandType.GoHome:

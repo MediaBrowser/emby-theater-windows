@@ -6,6 +6,7 @@ using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Theater.Api.Navigation;
+using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
 
@@ -19,14 +20,16 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
         private readonly IImageManager _imageManager;
         private readonly INavigator _navigator;
         private readonly IServerEvents _serverEvents;
+        private readonly IPlaybackManager _playbackManager;
 
-        protected BaseItemsListSectionGenerator(IApiClient apiClient, ISessionManager sessionManager, IImageManager imageManager, INavigator navigator, IServerEvents serverEvents)
+        protected BaseItemsListSectionGenerator(IApiClient apiClient, ISessionManager sessionManager, IImageManager imageManager, INavigator navigator, IServerEvents serverEvents, IPlaybackManager playbackManager)
         {
             _apiClient = apiClient;
             _sessionManager = sessionManager;
             _imageManager = imageManager;
             _navigator = navigator;
             _serverEvents = serverEvents;
+            _playbackManager = playbackManager;
 
             ListThreshold = 8;
         }
@@ -56,10 +59,10 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
             }
 
             if (listCondition(itemsResult)) {
-                return new ItemsListViewModel(itemsResult, _apiClient, _imageManager, _serverEvents, _navigator);
+                return new ItemsListViewModel(itemsResult, _apiClient, _imageManager, _serverEvents, _navigator, _playbackManager);
             }
 
-            return new ItemsGridViewModel(itemsResult, _apiClient, _imageManager, _serverEvents, _navigator);
+            return new ItemsGridViewModel(itemsResult, _apiClient, _imageManager, _serverEvents, _navigator, _playbackManager);
         }
     }
 }

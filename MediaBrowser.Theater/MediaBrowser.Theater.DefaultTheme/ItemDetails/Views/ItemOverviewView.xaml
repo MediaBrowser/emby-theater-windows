@@ -25,7 +25,7 @@
             <controls:ExtendedContentControl Content="{Binding Info}" Margin="10"/>
             
             <StackPanel Grid.Row="1" Margin="10,5,10,5">
-                <Button HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Margin="0,5,0,5">
+                <Button Command="{Binding PlayCommand}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Margin="0,5,0,5">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
                             <Style.Triggers>
@@ -39,11 +39,11 @@
                     <TextBlock Text="Play" Margin="10,0,10,0" VerticalAlignment="Center" Style="{StaticResource SmallTextBlockStyle}"/>
                 </Button>
 
-                <Button HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Margin="0,5,0,5" Visibility="{Binding Info.IsFolder, Converter={StaticResource BooleanToVisibility}}">
+                <Button Command="{Binding PlayAllCommand}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Margin="0,5,0,5" Visibility="{Binding Info.IsFolder, Converter={StaticResource BooleanToVisibility}}">
                     <TextBlock Text="Play All" Margin="10,0,10,0" VerticalAlignment="Center" Style="{StaticResource SmallTextBlockStyle}"/>
                 </Button>
 
-                <Button HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Margin="0,5,0,5" Padding="0" Visibility="{Binding Info.IsInProgress, Converter={StaticResource BooleanToVisibility}}">
+                <Button Command="{Binding ResumeCommand}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Margin="0,5,0,5" Padding="0" Visibility="{Binding Info.IsInProgress, Converter={StaticResource BooleanToVisibility}}">
                     <Grid HorizontalAlignment="Stretch">
                         <ProgressBar Minimum="0" Maximum="100" Value="{Binding Info.PlayedPercentage, Mode=OneWay}" BorderThickness="0" Background="Transparent" Foreground="{StaticResource ForegroundBrush}" Opacity="0.1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                         <TextBlock Text="Resume" Margin="16,3,16,5" VerticalAlignment="Center" HorizontalAlignment="Center" Style="{StaticResource SmallTextBlockStyle}"/>

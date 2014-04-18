@@ -6,6 +6,7 @@ using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Theater.Api.Navigation;
+using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Home.ViewModels;
@@ -20,16 +21,16 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
         private readonly IImageManager _imageManager;
         private readonly INavigator _navigator;
         private BaseItemDto _item;
-        //private readonly IPlaybackManager _playbackManager;
+        private readonly IPlaybackManager _playbackManager;
 
         private bool? _showDisplayName;
 
         public ItemTileViewModel(IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents,
-                                 INavigator navigator, /*IPlaybackManager playbackManager,*/ BaseItemDto item)
+                                 INavigator navigator, IPlaybackManager playbackManager, BaseItemDto item)
         {
             _imageManager = imageManager;
             _navigator = navigator;
-            //_playbackManager = playbackManager;
+            _playbackManager = playbackManager;
             _item = item;
 
             Image = new ItemArtworkViewModel(item, apiClient, imageManager);
@@ -44,6 +45,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
 
             DisplayNameGenerator = GetDisplayNameWithAiredSpecial;
             GoToDetailsCommand = new RelayCommand(async o => navigator.Navigate(Go.To.Item(Item)));
+            PlayCommand = new RelayCommand(o => _playbackManager.Play(new PlayOptions(Item) { GoFullScreen = true, EnableCustomPlayers = true, Resume = true }));
 
             serverEvents.UserDataChanged += serverEvents_UserDataChanged;
         }
@@ -243,8 +245,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
     public class ItemListElementViewModel
         : ItemTileViewModel 
     {
-        public ItemListElementViewModel(IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator, BaseItemDto item) 
-            : base(apiClient, imageManager, serverEvents, navigator, item) { }
+        public ItemListElementViewModel(IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator, IPlaybackManager playbackManager, BaseItemDto item) 
+            : base(apiClient, imageManager, serverEvents, navigator, playbackManager, item) { }
 
         public string Detail
         {

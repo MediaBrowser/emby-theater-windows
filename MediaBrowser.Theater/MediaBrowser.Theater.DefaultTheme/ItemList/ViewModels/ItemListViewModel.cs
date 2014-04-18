@@ -7,6 +7,7 @@ using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Theater.Api.Navigation;
+using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
@@ -25,11 +26,12 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
         private readonly IImageManager _imageManager;
         private readonly INavigator _navigator;
         private readonly ISessionManager _sessionManager;
+        private readonly IPlaybackManager _playbackManager;
         private readonly IServerEvents _serverEvents;
         private ItemTileViewModel _selectedItem;
         private ItemInfoViewModel _selectedItemDetails;
 
-        public ItemListViewModel(Task<ItemsResult> items, string title, IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator, ISessionManager sessionManager)
+        public ItemListViewModel(Task<ItemsResult> items, string title, IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator, ISessionManager sessionManager, IPlaybackManager playbackManager)
         {
             _items = items;
             _title = title;
@@ -38,6 +40,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
             _serverEvents = serverEvents;
             _navigator = navigator;
             _sessionManager = sessionManager;
+            _playbackManager = playbackManager;
             Items = new RangeObservableCollection<ItemTileViewModel>();
         }
 
@@ -110,7 +113,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
         private async Task LoadItems(Task<ItemsResult> itemsTask)
         {
             ItemsResult result = await itemsTask;
-            IEnumerable<ItemTileViewModel> viewModels = result.Items.Select(dto => new ItemTileViewModel(_apiClient, _imageManager, _serverEvents, _navigator, dto) {
+            IEnumerable<ItemTileViewModel> viewModels = result.Items.Select(dto => new ItemTileViewModel(_apiClient, _imageManager, _serverEvents, _navigator, _playbackManager, dto) {
                 DesiredImageHeight = ItemHeight
             });
 

@@ -7,6 +7,7 @@ using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Theater.Api.Navigation;
+using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
@@ -26,17 +27,19 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
         private readonly IImageManager _imageManager;
         private readonly INavigator _navigator;
         private readonly ISessionManager _sessionManager;
+        private readonly IPlaybackManager _playbackManager;
         private readonly IServerEvents _serverEvents;
 
         private bool _isVisible;
 
-        public LatestMoviesViewModel(Task<MoviesView> moviesViewTask, IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator, ISessionManager sessionManager)
+        public LatestMoviesViewModel(Task<MoviesView> moviesViewTask, IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator, ISessionManager sessionManager, IPlaybackManager playbackManager)
         {
             _apiClient = apiClient;
             _imageManager = imageManager;
             _serverEvents = serverEvents;
             _navigator = navigator;
             _sessionManager = sessionManager;
+            _playbackManager = playbackManager;
 
             Movies = new RangeObservableCollection<ItemTileViewModel>();
             for (int i = 0; i < 8; i++) {
@@ -114,7 +117,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
 
         private ItemTileViewModel CreateMovieItem()
         {
-            return new ItemTileViewModel(_apiClient, _imageManager, _serverEvents, _navigator, /*_playbackManager,*/ null) {
+            return new ItemTileViewModel(_apiClient, _imageManager, _serverEvents, _navigator, _playbackManager, null) {
                 DesiredImageWidth = PosterWidth,
                 DesiredImageHeight = PosterHeight,
                 ShowDisplayName = false,

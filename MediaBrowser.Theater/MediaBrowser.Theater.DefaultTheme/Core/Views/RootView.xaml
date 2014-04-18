@@ -13,12 +13,14 @@
              d:DataContext="{d:DesignInstance viewModels:RootViewModel}"
              d:DesignHeight="480" d:DesignWidth="720"
              IsTabStop="False">
-    <Border Background="{StaticResource BackgroundBrush}">
+    <Border>
         <Border.Style>
             <Style TargetType="{x:Type Border}">
+                <Setter Property="Background" Value="{StaticResource BackgroundBrush}"/>
+                
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding IsInternalMediaPlaying}" Value="True">
-                        <Setter Property="Background" Value="{x:Null}"/>
+                        <Setter Property="Background" Value="Transparent"/>
                     </DataTrigger>
                 </Style.Triggers>
             </Style>

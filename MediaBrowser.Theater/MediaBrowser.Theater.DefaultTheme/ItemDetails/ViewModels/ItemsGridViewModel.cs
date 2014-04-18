@@ -6,6 +6,7 @@ using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Theater.Api.Navigation;
+using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
 using MediaBrowser.Theater.DefaultTheme.Home.ViewModels;
@@ -24,6 +25,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
         private readonly IImageManager _imageManager;
         private readonly IServerEvents _serverEvents;
         private readonly INavigator _navigator;
+        private readonly IPlaybackManager _playbackManager;
         private readonly ImageType[] _preferredImageTypes;
 
         private bool _isVisible;
@@ -32,13 +34,14 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
         public RangeObservableCollection<ItemTileViewModel> Items { get; private set; }
 
-        public ItemsGridViewModel(ItemsResult itemsResult, IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator)
+        public ItemsGridViewModel(ItemsResult itemsResult, IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator, IPlaybackManager playbackManager)
         {
             _itemsResult = itemsResult;
             _apiClient = apiClient;
             _imageManager = imageManager;
             _serverEvents = serverEvents;
             _navigator = navigator;
+            _playbackManager = playbackManager;
 
             var itemType = itemsResult.Items.Length > 0 ? itemsResult.Items.First().Type : null;
 
@@ -108,7 +111,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
         private ItemTileViewModel CreateItem()
         {
-            return new ItemTileViewModel(_apiClient, _imageManager, _serverEvents, _navigator, /*_playbackManager,*/ null)
+            return new ItemTileViewModel(_apiClient, _imageManager, _serverEvents, _navigator, _playbackManager, null)
             {
                 DesiredImageHeight = PosterHeight,
                 PreferredImageTypes = _preferredImageTypes

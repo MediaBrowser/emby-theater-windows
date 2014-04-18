@@ -380,7 +380,7 @@ namespace MediaBrowser.Theater.DefaultTheme
             get
             {
                 if (_mainWindowHandle == IntPtr.Zero && MainApplicationWindow != null) {
-                    _mainWindowHandle = new WindowInteropHelper(MainApplicationWindow).Handle;
+                    MainApplicationWindow.Dispatcher.Invoke(() => _mainWindowHandle = new WindowInteropHelper(MainApplicationWindow).Handle);
                 }
 
                 return _mainWindowHandle;

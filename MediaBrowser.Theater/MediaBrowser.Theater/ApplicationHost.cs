@@ -24,12 +24,14 @@ using MediaBrowser.Theater.Api;
 using MediaBrowser.Theater.Api.Configuration;
 using MediaBrowser.Theater.Api.Events;
 using MediaBrowser.Theater.Api.Navigation;
+using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.System;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme;
 using MediaBrowser.Theater.DirectShow;
 using MediaBrowser.Theater.Networking;
+using MediaBrowser.Theater.Presentation.Playback;
 using MediaBrowser.Theater.StartupWizard;
 using MediaBrowser.Theater.StartupWizard.ViewModels;
 using SimpleInjector;
@@ -114,6 +116,7 @@ namespace MediaBrowser.Theater
             Container.RegisterSingle(typeof (ISessionManager), typeof (SessionManager));
             Container.RegisterSingle(typeof (IImageManager), typeof (ImageManager));
             Container.RegisterSingle(typeof (IInternalPlayerWindowManager), typeof (InternalPlayerWindowManager));
+            Container.RegisterSingle(typeof (IPlaybackManager), typeof (PlaybackManager));
 
             // temp bindings until it is possible for the theme to bind these
             Container.RegisterSingle(typeof (IPresenter), typeof (Presenter));
@@ -125,6 +128,7 @@ namespace MediaBrowser.Theater
         {
             Theme = Resolve<ITheme>();
             Plugins = LoadPlugins();
+            Resolve<IPlaybackManager>().AddParts(GetExports<IMediaPlayer>());
         }
 
         private Type FindTheme()
@@ -219,6 +223,12 @@ namespace MediaBrowser.Theater
 
             // Common implementations
             yield return typeof (TaskManager).Assembly;
+
+            // DirectShow assembly
+            yield return typeof (InternalDirectShowPlayer).Assembly;
+            
+            // Presentation assembly
+            yield return typeof (GenericExternalPlayer).Assembly;
 
             // Default theme
             yield return typeof (Theme).Assembly;

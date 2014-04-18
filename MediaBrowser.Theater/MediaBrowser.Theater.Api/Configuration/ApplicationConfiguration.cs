@@ -53,6 +53,7 @@ namespace MediaBrowser.Theater.Api.Configuration
 
             AutoLoginConfiguration = new AutoLoginConfiguration();
             InternalPlayerConfiguration = new InternalPlayerConfiguration();
+            MediaPlayers = new PlayerConfiguration[0];
         }
     }
 }

@@ -2,6 +2,7 @@
 using MediaBrowser.Common;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Theater.Api.Navigation;
+using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels;
@@ -16,11 +17,14 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList
         private readonly INavigator _navigator;
         private readonly IPresenter _presenter;
         private readonly ISessionManager _sessionManager;
+        private readonly IPlaybackManager _playbackManager;
         private readonly IServerEvents _serverEvents;
 
         private ItemListViewModel _viewModel;
 
-        public ItemListContext(IApplicationHost appHost, IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator, IPresenter presenter, ISessionManager sessionManager) : base(appHost)
+        public ItemListContext(IApplicationHost appHost, IApiClient apiClient, IImageManager imageManager,
+                               IServerEvents serverEvents, INavigator navigator, IPresenter presenter,
+                               ISessionManager sessionManager, IPlaybackManager playbackManager) : base(appHost)
         {
             _apiClient = apiClient;
             _imageManager = imageManager;
@@ -28,6 +32,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList
             _navigator = navigator;
             _presenter = presenter;
             _sessionManager = sessionManager;
+            _playbackManager = playbackManager;
         }
 
         public ItemListParameters Parameters { get; set; }
@@ -35,7 +40,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList
         public override async Task Activate()
         {
             if (_viewModel == null || !_viewModel.IsActive) {
-                _viewModel = new ItemListViewModel(Parameters.Items, Parameters.Title, _apiClient, _imageManager, _serverEvents, _navigator, _sessionManager);
+                _viewModel = new ItemListViewModel(Parameters.Items, Parameters.Title, _apiClient, _imageManager, _serverEvents, _navigator, _sessionManager, _playbackManager);
             }
 
             await _presenter.ShowPage(_viewModel);

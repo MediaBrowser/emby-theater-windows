@@ -7,6 +7,7 @@ using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Theater.Api.Navigation;
+using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
@@ -23,17 +24,19 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
         private readonly IImageManager _imageManager;
         private readonly INavigator _navigator;
         private readonly ISessionManager _sessionManager;
+        private readonly IPlaybackManager _playbackManager;
         private readonly IServerEvents _serverEvents;
 
         private bool _isVisible;
 
-        public LatestEpisodesViewModel(Task<TvView> tvViewTask, IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator, ISessionManager sessionManager)
+        public LatestEpisodesViewModel(Task<TvView> tvViewTask, IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator, ISessionManager sessionManager, IPlaybackManager playbackManager)
         {
             _apiClient = apiClient;
             _imageManager = imageManager;
             _serverEvents = serverEvents;
             _navigator = navigator;
             _sessionManager = sessionManager;
+            _playbackManager = playbackManager;
 
             Episodes = new RangeObservableCollection<ItemTileViewModel>();
             for (int i = 0; i < 9; i++) {
@@ -111,7 +114,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
 
         private ItemTileViewModel CreateEpisodeItem()
         {
-            return new ItemTileViewModel(_apiClient, _imageManager, _serverEvents, _navigator, /*_playbackManager,*/ null) {
+            return new ItemTileViewModel(_apiClient, _imageManager, _serverEvents, _navigator, _playbackManager, null) {
                 DesiredImageWidth = HomeViewModel.TileWidth,
                 DesiredImageHeight = HomeViewModel.TileHeight,
                 PreferredImageTypes = new[] { ImageType.Primary, ImageType.Screenshot, ImageType.Thumb, ImageType.Backdrop },

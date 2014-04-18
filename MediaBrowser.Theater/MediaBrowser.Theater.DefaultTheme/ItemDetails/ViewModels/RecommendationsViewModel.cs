@@ -9,6 +9,7 @@ using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Theater.Api.Navigation;
+using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
@@ -29,6 +30,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
         private readonly IServerEvents _serverEvents;
         private readonly INavigator _navigator;
         private readonly ISessionManager _sessionManager;
+        private readonly IPlaybackManager _playbackManager;
 
         private bool _isVisible;
 
@@ -36,7 +38,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
         public RangeObservableCollection<ItemTileViewModel> Items { get; private set; }
 
-        public RecommendationsViewModel(BaseItemDto item, IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator, ISessionManager sessionManager)
+        public RecommendationsViewModel(BaseItemDto item, IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator, ISessionManager sessionManager, IPlaybackManager playbackManager)
         {
             _item = item;
             _apiClient = apiClient;
@@ -44,6 +46,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
             _serverEvents = serverEvents;
             _navigator = navigator;
             _sessionManager = sessionManager;
+            _playbackManager = playbackManager;
 
             Items = new RangeObservableCollection<ItemTileViewModel>();
             for (int i = 0; i < 6; i++) {
@@ -145,7 +148,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
         private ItemTileViewModel CreateItem()
         {
-            return new ItemTileViewModel(_apiClient, _imageManager, _serverEvents, _navigator, /*_playbackManager,*/ null)
+            return new ItemTileViewModel(_apiClient, _imageManager, _serverEvents, _navigator, _playbackManager, null)
             {
                 DesiredImageHeight = PosterHeight,
                 PreferredImageTypes = new[] { ImageType.Primary, ImageType.Backdrop, ImageType.Thumb }
@@ -161,14 +164,16 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
         private readonly IServerEvents _serverEvents;
         private readonly INavigator _navigator;
         private readonly ISessionManager _sessionManager;
+        private readonly IPlaybackManager _playbackManager;
 
-        public RecommendationsSectionGenerator(IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator, ISessionManager sessionManager)
+        public RecommendationsSectionGenerator(IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator, ISessionManager sessionManager, IPlaybackManager playbackManager)
         {
             _apiClient = apiClient;
             _imageManager = imageManager;
             _serverEvents = serverEvents;
             _navigator = navigator;
             _sessionManager = sessionManager;
+            _playbackManager = playbackManager;
         }
 
         public bool HasSection(BaseItemDto item)
@@ -178,7 +183,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
         public Task<IEnumerable<IItemDetailSection>> GetSections(BaseItemDto item)
         {
-            IItemDetailSection section = new RecommendationsViewModel(item, _apiClient, _imageManager, _serverEvents, _navigator, _sessionManager);
+            IItemDetailSection section = new RecommendationsViewModel(item, _apiClient, _imageManager, _serverEvents, _navigator, _sessionManager, _playbackManager);
             return Task.FromResult<IEnumerable<IItemDetailSection>>(new[] { section });
         }
     }

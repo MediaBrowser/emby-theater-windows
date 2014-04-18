@@ -6,6 +6,7 @@ using System.Windows.Input;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
+using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
 using MediaBrowser.Theater.Presentation.Controls;
@@ -41,7 +42,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
             get { return (!_item.IsFolder && _item.Type != "Person") || !string.IsNullOrEmpty(_item.Overview); }
         }
 
-        public ItemOverviewViewModel(BaseItemDto item, IApiClient apiClient, IImageManager imageManager)
+        public ItemOverviewViewModel(BaseItemDto item, IApiClient apiClient, IImageManager imageManager, IPlaybackManager playbackManager)
         {
             _item = item;
 
@@ -56,6 +57,13 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
                     OnPropertyChanged("Size");
                 }
             };
+
+            PlayCommand = new RelayCommand(o => playbackManager.Play(new PlayOptions(item) { GoFullScreen = true, EnableCustomPlayers = true, Resume = false }));
+            ResumeCommand = new RelayCommand(o => playbackManager.Play(new PlayOptions(item) { GoFullScreen = true, EnableCustomPlayers = true, Resume = true }));
+            PlayAllCommand = new RelayCommand(async o => {
+                var items = await apiClient.GetItemsAsync(new Model.Querying.ItemQuery { ParentId = item.Id });
+                await playbackManager.Play(new PlayOptions(items.Items) { EnableCustomPlayers = true, GoFullScreen = true });
+            });
         }
 
         public Size Size
@@ -77,11 +85,13 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
     {
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
+        private readonly IPlaybackManager _playbackManager;
 
-        public ItemOverviewSectionGenerator(IApiClient apiClient, IImageManager imageManager)
+        public ItemOverviewSectionGenerator(IApiClient apiClient, IImageManager imageManager, IPlaybackManager playbackManager)
         {
             _apiClient = apiClient;
             _imageManager = imageManager;
+            _playbackManager = playbackManager;
         }
 
         public bool HasSection(BaseItemDto item)
@@ -91,7 +101,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
         public Task<IEnumerable<IItemDetailSection>> GetSections(BaseItemDto item)
         {
-            IItemDetailSection section = new ItemOverviewViewModel(item, _apiClient, _imageManager);
+            IItemDetailSection section = new ItemOverviewViewModel(item, _apiClient, _imageManager, _playbackManager);
             return Task.FromResult<IEnumerable<IItemDetailSection>>(new[] { section });
         }
     }

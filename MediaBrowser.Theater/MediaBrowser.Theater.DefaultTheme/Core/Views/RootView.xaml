@@ -14,6 +14,16 @@
              d:DesignHeight="480" d:DesignWidth="720"
              IsTabStop="False">
     <Border Background="{StaticResource BackgroundBrush}">
+        <Border.Style>
+            <Style TargetType="{x:Type Border}">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsInternalMediaPlaying}" Value="True">
+                        <Setter Property="Background" Value="{x:Null}"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Border.Style>
+        
         <Grid>
             <VisualStateManager.VisualStateGroups>
                 <VisualStateGroup Name="VisibilityStates">

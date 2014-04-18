@@ -88,9 +88,6 @@
     <Compile Include="InternalPlayerWindow.Designer.cs">
       <DependentUpon>InternalPlayerWindow.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="InternalPlayerWindow.resx">
-      <DependentUpon>InternalPlayerWindow.cs</DependentUpon>
-    </EmbeddedResource>
     <Compile Include="LavInterfaces.cs" />
     <Compile Include="MadvrInterface.cs" />
     <Compile Include="PlayablePathBuilder.cs" />
@@ -110,6 +107,11 @@
       <Project>{c464ffc3-0fcd-49d5-a206-21f3bb586c53}</Project>
       <Name>MediaBrowser.Theater.Presentation</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="InternalPlayerWindow.resx">
+      <DependentUpon>InternalPlayerWindow.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

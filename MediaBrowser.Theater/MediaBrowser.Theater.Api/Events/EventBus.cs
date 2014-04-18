@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using MediaBrowser.Theater.Api.UserInterface;
 
 namespace MediaBrowser.Theater.Api.Events
@@ -22,7 +23,7 @@ namespace MediaBrowser.Theater.Api.Events
             }
         }
 
-        public void Publish(T message)
+        public Task Publish(T message)
         {
             var handlers = new List<Action<T>>();
 
@@ -43,7 +44,7 @@ namespace MediaBrowser.Theater.Api.Events
                 }
             };
 
-            publishAction.OnUiThread();
+            return publishAction.OnUiThreadAsync();
         }
     }
 }

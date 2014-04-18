@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using MediaBrowser.Theater.Api;
 using MediaBrowser.Theater.Api.Events;
 using MediaBrowser.Theater.Api.Navigation;
+using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.Presentation.ViewModels;
 
@@ -19,6 +20,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
         private NotificationTrayViewModel _notifications;
         private CommandBarViewModel _commands;
         private ClockViewModel _clock;
+        private bool _isInternalMediaPlaying;
 
         public RootViewModel(IEventAggregator events, INavigator navigator, ITheaterApplicationHost appHost, RootContext rootContext)
         {
@@ -30,6 +32,25 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
             IsInFocus = true;
 
             events.Get<ShowPageEvent>().Subscribe(message => ActivePage = message.ViewModel);
+            events.Get<PlaybackStopEventArgs>().Subscribe(message => IsInternalMediaPlaying = false);
+            events.Get<PlaybackStartEventArgs>().Subscribe(message => {
+                if (message.Player is IInternalMediaPlayer && message.Player is IVideoPlayer && message.Options.Items[0].IsVideo) {
+                    IsInternalMediaPlaying = true;
+                }
+            });
+        }
+
+        public bool IsInternalMediaPlaying
+        {
+            get { return _isInternalMediaPlaying; }
+            private set
+            {
+                if (value.Equals(_isInternalMediaPlaying)) {
+                    return;
+                }
+                _isInternalMediaPlaying = value;
+                OnPropertyChanged();
+            }
         }
 
         public IViewModel ActivePage

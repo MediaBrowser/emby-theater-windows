@@ -31,6 +31,12 @@ namespace MediaBrowser.Theater.Api.Configuration
         /// </summary>
         public InternalPlayerConfiguration InternalPlayerConfiguration { get; set; }
 
+        /// <summary>
+        /// Gets or sets the player configurations.
+        /// </summary>
+        /// <value>The player configurations.</value>
+        public PlayerConfiguration[] MediaPlayers { get; set; }
+
         public bool DownloadCompressedImages { get; set; }
 
         public Guid ActiveThemeGuid { get; set; }

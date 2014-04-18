@@ -32,6 +32,7 @@ namespace MediaBrowser.Theater.DefaultTheme
         private readonly ILogger _logger;
 
         private MainWindow _mainWindow;
+        private IntPtr _mainWindowHandle;
         private PopupWindow _currentPopup;
 
         public WindowManager(INavigator navigator, IInternalPlayerWindowManager internalPlayerWindowManager, ILogManager logManager)
@@ -99,10 +100,10 @@ namespace MediaBrowser.Theater.DefaultTheme
         public MainWindow CreateMainWindow(PluginConfiguration config, IViewModel viewModel)
         {
             var window = new MainWindow {
-                DataContext = viewModel                               
+                DataContext = viewModel,
             };
 
-            System.Windows.Forms.FormStartPosition? startPosition = null;
+            FormStartPosition? startPosition = null;
 
             // Restore window position/size
             if (config.WindowState.HasValue) {
@@ -140,7 +141,10 @@ namespace MediaBrowser.Theater.DefaultTheme
                 }
             }
 
+            window.ShowInTaskbar = window.WindowState == WindowState.Minimized;
+
             _mainWindow = window;
+            _mainWindowHandle = new WindowInteropHelper(_mainWindow).Handle;
 
             CreateInternalPlayerWindow(startPosition);
 
@@ -196,7 +200,7 @@ namespace MediaBrowser.Theater.DefaultTheme
             return FormWindowState.Normal;
         }
 
-        private void ShowHiddenWindow(int? width, int? height, int? top, int? left, System.Windows.Forms.FormStartPosition? startPosition, System.Windows.Forms.FormWindowState windowState)
+        private void ShowHiddenWindow(int? width, int? height, int? top, int? left, FormStartPosition? startPosition, FormWindowState windowState)
         {
             var playerWindow = new InternalPlayerWindow();
             playerWindow.Load += HiddenWindow_Load;
@@ -221,9 +225,77 @@ namespace MediaBrowser.Theater.DefaultTheme
                 playerWindow.StartPosition = startPosition.Value;
             }
 
+            _mainWindow.LocationChanged += (s, e) => MovePlayerWindow(playerWindow);
+            _mainWindow.StateChanged += (s, e) => UpdatePlayerWindowState(playerWindow);
+            _mainWindow.SizeChanged += (s, e) => UpdatePlayerWindowSize(playerWindow);
+            _mainWindow.Closing += (s, e) => ClosePlayerWindow(playerWindow);
+
+            _internalPlayerWindowManager.Window = playerWindow;
+
             playerWindow.Show();
 
             System.Windows.Threading.Dispatcher.Run();
+        }
+
+        private void MovePlayerWindow(InternalPlayerWindow playerWindow)
+        {
+            var top = _mainWindow.Top;
+            var left = _mainWindow.Left;
+
+            if (double.IsNaN(top) || double.IsNaN(left)) {
+                return;
+            }
+
+            InvokeOnWindow(playerWindow, () => {
+                playerWindow.Top = Convert.ToInt32(top);
+                playerWindow.Left = Convert.ToInt32(left);
+            });
+        }
+
+        private void UpdatePlayerWindowState(InternalPlayerWindow playerWindow)
+        {
+            var state = GetWindowsFormState(_mainWindow.WindowState);
+
+            _mainWindow.ShowInTaskbar = state == FormWindowState.Minimized;
+
+            InvokeOnWindow(playerWindow, () => {
+                if (state == FormWindowState.Minimized) {
+                    playerWindow.Hide();
+                } else {
+                    playerWindow.Show();
+                    playerWindow.WindowState = state;
+                }
+            });
+        }
+
+        private void UpdatePlayerWindowSize(InternalPlayerWindow playerWindow)
+        {
+            var width = _mainWindow.Width;
+            var height = _mainWindow.Height;
+
+            if (double.IsNaN(width) || double.IsNaN(height))
+            {
+                return;
+            }
+
+            InvokeOnWindow(playerWindow, () => {
+                playerWindow.Width = Convert.ToInt32(width);
+                playerWindow.Height = Convert.ToInt32(height);
+            });
+        }
+
+        private void ClosePlayerWindow(InternalPlayerWindow playerWindow)
+        {
+            InvokeOnWindow(playerWindow, playerWindow.Close);
+        }
+
+        private void InvokeOnWindow(Form form, Action action)
+        {
+            if (form.InvokeRequired) {
+                form.Invoke(action);
+            } else {
+                action();
+            }
         }
 
         void HiddenWindow_Load(object sender, EventArgs e)
@@ -270,9 +342,8 @@ namespace MediaBrowser.Theater.DefaultTheme
         public void EnsureApplicationWindowHasFocus()
         {
             IntPtr focused = Interop.GetForegroundWindow();
-            IntPtr windowHandle = new WindowInteropHelper(_mainWindow).Handle;
-            if (windowHandle != focused) {
-                Interop.SetForegroundWindow(windowHandle);
+            if (_mainWindowHandle != focused) {
+                Interop.SetForegroundWindow(_mainWindowHandle);
             }
         }
 
@@ -319,7 +390,7 @@ namespace MediaBrowser.Theater.DefaultTheme
         public async Task ShowPage(IViewModel contents)
         {
             await _windowManager.ClosePopup();
-            _showPageEvent.Publish(new ShowPageEvent { ViewModel = contents });
+            await _showPageEvent.Publish(new ShowPageEvent { ViewModel = contents });
         }
 
         public Task ShowPopup(IViewModel contents)
@@ -329,8 +400,7 @@ namespace MediaBrowser.Theater.DefaultTheme
 
         public Task ShowNotification(IViewModel contents)
         {
-            _showNotificationEvent.Publish(new ShowNotificationEvent { ViewModel = contents });
-            return Task.FromResult(0);
+            return _showNotificationEvent.Publish(new ShowNotificationEvent { ViewModel = contents });
         }
     }
 }

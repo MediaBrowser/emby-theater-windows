@@ -64,15 +64,6 @@ namespace MediaBrowser.Theater.Api.Playback
         void VolumeStepDown();
 
         /// <summary>
-        /// Occurs when [playback started].
-        /// </summary>
-        event EventHandler<PlaybackStartEventArgs> PlaybackStarted;
-        /// <summary>
-        /// Occurs when [playback completed].
-        /// </summary>
-        event EventHandler<PlaybackStopEventArgs> PlaybackCompleted;
-
-        /// <summary>
         /// Adds the parts.
         /// </summary>
         /// <param name="mediaPlayers">The media players.</param>
@@ -106,7 +97,7 @@ namespace MediaBrowser.Theater.Api.Playback
         /// <summary>
         /// Reports the playback completed.
         /// </summary>
-        /// <param name="eventArgs">The <see cref="PlaybackStopEventArgs" /> instance containing the event data.</param>
-        void ReportPlaybackCompleted(PlaybackStopEventArgs eventArgs);
+        /// <param name="eventArgsArgs">The <see cref="PlaybackStopEventArgs" /> instance containing the event data.</param>
+        void ReportPlaybackCompleted(PlaybackStopEventArgs eventArgsArgs);
     }
 }

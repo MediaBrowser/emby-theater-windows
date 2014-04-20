@@ -96,6 +96,7 @@
     <Compile Include="Reflection\ChainingPropertyDescriptor.cs" />
     <Compile Include="Reflection\HyperTypeDescriptionProvider.cs" />
     <Compile Include="Reflection\HyperTypeDescriptor.cs" />
+    <Compile Include="SerializableDictionary.cs" />
     <Compile Include="Session\ISessionManager.cs" />
     <Compile Include="Navigation\INavigationService.cs" />
     <Compile Include="Playback\IExternalMediaPlayer.cs" />

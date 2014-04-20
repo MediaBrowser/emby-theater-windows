@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
+using System.Windows.Media.Animation;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Interfaces.Commands;
 using MediaBrowser.Theater.Interfaces.Navigation;
@@ -37,35 +38,35 @@ using MediaBrowser.Theater.Presentation.Playback;
 
     internal class DefaultCommandActionMap
     {
-        private readonly IPresentationManager _presenation;
-        private readonly IPlaybackManager _playback;
-        private readonly INavigationService _navigation;
+        private readonly IPresentationManager _presentationManager;
+        private readonly IPlaybackManager _playbackManager;
+        private readonly INavigationService _navigationService;
         private readonly IScreensaverManager _screensaverManager;
         private readonly ILogger _logger;
         private readonly CommandActionMapping _nullCommandActionMapping;
         private readonly CommandActionMap _globalCommandActionMap;
         private double _currentPlaybackRate = 1.0; // Todo - move to reportable property of IPlaybackManager
 
-        public DefaultCommandActionMap(IPresentationManager presenation, IPlaybackManager playback, INavigationService navigation, IScreensaverManager screensaverManager, ILogManager logManager)
+        public DefaultCommandActionMap(IPresentationManager presentationManager, IPlaybackManager playbackManager, INavigationService navigationService, IScreensaverManager screensaverManager, ILogManager logManager)
         {
-            _presenation = presenation;
-            _playback = playback;
+            _presentationManager = presentationManager;
+            _playbackManager = playbackManager;
             _screensaverManager = screensaverManager;
-            _navigation = navigation;
+            _navigationService = navigationService;
             _logger = logManager.GetLogger(GetType().Name);
             _globalCommandActionMap = CreateGlobalCommandActionMap();
             _nullCommandActionMapping = new CommandActionMapping(Command.Null, NullAction);
 
-            _playback.PlaybackStarted += Playback_PlaybackStarted;
-            _playback.PlaybackCompleted+=_playback_PlaybackCompleted;
+            _playbackManager.PlaybackStarted += PlaybackManagerPlaybackManagerStarted;
+            _playbackManager.PlaybackCompleted+=PlaybackManagerPlaybackManagerCompleted;
         }
 
-        private void Playback_PlaybackStarted(object sender, PlaybackStartEventArgs playbackStartEventArgs)
+        private void PlaybackManagerPlaybackManagerStarted(object sender, PlaybackStartEventArgs playbackStartEventArgs)
         {
             _currentPlaybackRate = 1.0;
         }
 
-        private void _playback_PlaybackCompleted(object sender, PlaybackStopEventArgs e)
+        private void PlaybackManagerPlaybackManagerCompleted(object sender, PlaybackStopEventArgs e)
         {
             _currentPlaybackRate = 1.0;
         }
@@ -78,6 +79,7 @@ using MediaBrowser.Theater.Presentation.Playback;
                 new CommandActionMapping( Command.Play,            Play),
                 new CommandActionMapping( Command.PlayPause,       PlayPause),
                 new CommandActionMapping( Command.Pause,           Pause),
+                new CommandActionMapping( Command.UnPause,         UnPause),
                 new CommandActionMapping( Command.Stop,            Stop),
                 new CommandActionMapping( Command.TogglePause,     TogglePause),
                 new CommandActionMapping( Command.Queue,           NullAction),
@@ -86,6 +88,7 @@ using MediaBrowser.Theater.Presentation.Playback;
                 new CommandActionMapping( Command.PlaySpeedRatio,  NullAction),
                 new CommandActionMapping( Command.NextTrack,       NextTrackOrChapter),
                 new CommandActionMapping( Command.PrevisousTrack,  PreviousTrackOrChapter),
+                new CommandActionMapping( Command.Seek,            Seek),
                 new CommandActionMapping( Command.Left,            NullAction),
                 new CommandActionMapping( Command.Right,           NullAction),
                 new CommandActionMapping( Command.Up,              NullAction),
@@ -96,13 +99,13 @@ using MediaBrowser.Theater.Presentation.Playback;
                 new CommandActionMapping( Command.PlaySpeedRatio,  NullAction),
                 new CommandActionMapping( Command.LastPage,        NullAction),
                 new CommandActionMapping( Command.Select,          NullAction),
-                new CommandActionMapping( Command.Back,            NullAction),
-                new CommandActionMapping( Command.Forward,         NullAction),
-                new CommandActionMapping( Command.GotoHome,        GotoHome),
-                new CommandActionMapping( Command.GotoSearch,      GotoSearch),
-                new CommandActionMapping( Command.GotoSettings,    GotoSettings),
+                new CommandActionMapping( Command.Back,            (s, a) => _navigationService.NavigateBack()),
+                new CommandActionMapping( Command.Forward,         (s, a) => _navigationService.NavigateForward()),
+                new CommandActionMapping( Command.GotoHome,        (s, a) => _navigationService.NavigateToHomePage()),
+                new CommandActionMapping( Command.GotoSearch,      (s, a) => _navigationService.NavigateToSearchPage()),
+                new CommandActionMapping( Command.GotoSettings,    (s, a) => _navigationService.NavigateToSettingsPage()),
                 new CommandActionMapping( Command.GotoPage,        NullAction),
-                new CommandActionMapping( Command.Info,            ShowInfoPanel),
+                new CommandActionMapping( Command.Info,            ToggleInfoPanel),
                 new CommandActionMapping( Command.SkipNext,        SkipForward,        60),    // skip forward 60  seconds, boxed arguments
                 new CommandActionMapping( Command.SkipPrevious,    SkipBackward,       60),
                 new CommandActionMapping( Command.Step,            SkipForward,        60),     
@@ -112,27 +115,29 @@ using MediaBrowser.Theater.Presentation.Playback;
                 new CommandActionMapping( Command.StepBack,        SkipBackward,       60),
                 new CommandActionMapping( Command.BigStepForward,  SkipForward,        300),
                 new CommandActionMapping( Command.BigStepBack,     SkipBackward,       300),
-                new CommandActionMapping( Command.FullScreen,      FullScreen),
-                new CommandActionMapping( Command.MinimizeScreen,  MinimizeScreen),
-                new CommandActionMapping( Command.RestoreScreen,   RestoreScreen),
-                new CommandActionMapping( Command.ToggleFullScreen,ToggleFullscreen),
-                new CommandActionMapping( Command.Volume,          NullAction),
-                new CommandActionMapping( Command.VolumeUp,        NullAction),
-                new CommandActionMapping( Command.VolumeDown,      NullAction),
-                new CommandActionMapping( Command.VolumneOn,       NullAction),
-                new CommandActionMapping( Command.VolumeOff,       NullAction),
-                new CommandActionMapping( Command.VolumeMute,      NullAction),
-                new CommandActionMapping( Command.Subtitles,       NullAction),
-                new CommandActionMapping( Command.NextSubtitle,    NullAction),
-                new CommandActionMapping( Command.AspectRatio,     NullAction),
-                new CommandActionMapping( Command.ShowOsd,         ShowOsd),
-                new CommandActionMapping( Command.HideOsd,         HideOSd),
-                new CommandActionMapping( Command.ToggleOsd,       ToggleOsd),
-                new CommandActionMapping( Command.ShowInfoPanel,   ShowInfoPanel),
-                new CommandActionMapping( Command.HideinfoPanel,   HideInfoPanel),
-                new CommandActionMapping( Command.ToggleInfoPanel, ToggleInfoPanel),
-                new CommandActionMapping( Command.ShowScreensaver, ShowScreensaver),
-                new CommandActionMapping( Command.ScreenDump,      ScreenDump),
+                new CommandActionMapping( Command.FullScreen,               (s,a) => _presentationManager.FullScreen()),
+                new CommandActionMapping( Command.MinimizeScreen,           (s,a) => _presentationManager.MinimizeScreen()),
+                new CommandActionMapping( Command.RestoreScreen,            (s,a) => _presentationManager.RestoreScreen()),
+                new CommandActionMapping( Command.ToggleFullScreen,         (s,a) => _presentationManager.ToggleFullscreen()),
+                new CommandActionMapping( Command.SetVolume,                SetVolume),
+                new CommandActionMapping( Command.VolumeUp,                 (s,e) => _playbackManager.VolumeStepUp()),
+                new CommandActionMapping( Command.VolumeDown,               (s,e) => _playbackManager.VolumeStepDown()),
+                new CommandActionMapping( Command.Mute,                     (s,e) => _playbackManager.Mute()),
+                new CommandActionMapping( Command.UnMute,                   (s,e) => _playbackManager.UnMute()),
+                new CommandActionMapping( Command.ToggleMute,               (s,e) => _playbackManager.ToggleMute()),
+                new CommandActionMapping( Command.SetSubtitleStreamIndex,   SetSubtitleStreamIndex),
+                new CommandActionMapping( Command.NextSubtitleStream,       (s, a) => _playbackManager.NextSubtitleStream()),
+                new CommandActionMapping( Command.SetAudioStreamIndex,      SetAudioStreamIndex),
+                new CommandActionMapping( Command.NextAudioStream,          (s, a) => _playbackManager.NextAudioStream()),
+                new CommandActionMapping( Command.AspectRatio,              NullAction), // ToDo
+                new CommandActionMapping( Command.ShowOsd,                  ShowOsd),
+                new CommandActionMapping( Command.HideOsd,                  HideOSd),
+                new CommandActionMapping( Command.ToggleOsd,                ToggleOsd),
+                new CommandActionMapping( Command.ShowInfoPanel,            ShowInfoPanel),
+                new CommandActionMapping( Command.HideinfoPanel,            HideInfoPanel),
+                new CommandActionMapping( Command.ToggleInfoPanel,          ToggleInfoPanel),
+                new CommandActionMapping( Command.ShowScreensaver,          (s, a) => _screensaverManager.ShowScreensaver(true)),
+                new CommandActionMapping( Command.ScreenDump,               (s, a) => MBTScreenDump.GetAndSaveWindowsImage(_presentationManager.WindowHandle)),
 
             };
         }
@@ -179,7 +184,7 @@ using MediaBrowser.Theater.Presentation.Playback;
 
         private IInternalMediaPlayer GetActiveInternalMediaPlayer()
         {
-            return _playback.MediaPlayers.OfType<IInternalMediaPlayer>().FirstOrDefault(i => i.PlayState != PlayState.Idle);
+            return _playbackManager.MediaPlayers.OfType<IInternalMediaPlayer>().FirstOrDefault(i => i.PlayState != PlayState.Idle);
         }
 
         private void Play(Object sender, CommandEventArgs args)
@@ -233,6 +238,18 @@ using MediaBrowser.Theater.Presentation.Playback;
             if (activePlayer != null && activePlayer.PlayState != PlayState.Paused)
             {
                 activePlayer.Pause();
+                ShowOsd(sender, args);
+            }
+            args.Handled = true;
+        }
+
+        private void UnPause(Object sender, CommandEventArgs args)
+        {
+            var activePlayer = GetActiveInternalMediaPlayer();
+
+            if (activePlayer != null && activePlayer.PlayState == PlayState.Paused)
+            {
+                activePlayer.UnPause();
                 ShowOsd(sender, args);
             }
             args.Handled = true;
@@ -302,9 +319,9 @@ using MediaBrowser.Theater.Presentation.Playback;
 
         private void SendPlayCommandToPresentation()
         {
-            _presenation.Window.Dispatcher.InvokeAsync(() =>
+            _presentationManager.Window.Dispatcher.InvokeAsync(() =>
             {
-                var currentPage = _navigation.CurrentPage;
+                var currentPage = _navigationService.CurrentPage;
 
                 var accepts = currentPage.DataContext as IAcceptsPlayCommand;
 
@@ -377,7 +394,7 @@ using MediaBrowser.Theater.Presentation.Playback;
 
         private void PreviousTrackOrChapter(Object sender, CommandEventArgs args)
         {
-            var activePlayer = _playback.MediaPlayers
+            var activePlayer = _playbackManager.MediaPlayers
                 .OfType<IInternalMediaPlayer>()
                 .FirstOrDefault(i => i.PlayState != PlayState.Idle);
 
@@ -418,14 +435,42 @@ using MediaBrowser.Theater.Presentation.Playback;
             args.Handled = true;
         }
 
+        void Seek(Object sender, CommandEventArgs args)
+        {
+            _logger.Debug("Seek  {0}", args);
+
+            long position;
+
+            if (args == null)
+                throw new ArgumentException("sender: expecting a single long argument");
+
+            try
+            {
+                position = (long)Convert.ToUInt64(args);
+            }
+            catch (FormatException)
+            {
+                throw new ArgumentException("Seek: Invalid format, expecting a single float 0..100 argurment for SetVolume");
+            }
+
+
+            var player = GetActiveInternalMediaPlayer();
+
+            if (player != null)
+            {
+                player.Seek(position);
+            }
+          
+        }
+
 
         private void ShowOsd(Object sender, CommandEventArgs args)
         {
             if (GetActiveInternalMediaPlayer() != null)
             {
-                _presenation.Window.Dispatcher.InvokeAsync(() =>
+                _presentationManager.Window.Dispatcher.InvokeAsync(() =>
                 {
-                    var page = _navigation.CurrentPage as IFullscreenVideoPage;
+                    var page = _navigationService.CurrentPage as IFullscreenVideoPage;
 
                     if (page != null)
                     {
@@ -440,9 +485,9 @@ using MediaBrowser.Theater.Presentation.Playback;
         {
             if (GetActiveInternalMediaPlayer() != null)
             {
-                _presenation.Window.Dispatcher.InvokeAsync(() =>
+                _presentationManager.Window.Dispatcher.InvokeAsync(() =>
                 {
-                    var page = _navigation.CurrentPage as IFullscreenVideoPage;
+                    var page = _navigationService.CurrentPage as IFullscreenVideoPage;
 
                     if (page != null)
                     {
@@ -456,9 +501,9 @@ using MediaBrowser.Theater.Presentation.Playback;
         {
             if (GetActiveInternalMediaPlayer() != null)
             {
-                _presenation.Window.Dispatcher.InvokeAsync(() =>
+                _presentationManager.Window.Dispatcher.InvokeAsync(() =>
                 {
-                    var page = _navigation.CurrentPage as IFullscreenVideoPage;
+                    var page = _navigationService.CurrentPage as IFullscreenVideoPage;
 
                     if (page != null)
                     {
@@ -472,9 +517,9 @@ using MediaBrowser.Theater.Presentation.Playback;
         {
             if (GetActiveInternalMediaPlayer() != null)
             {
-                _presenation.Window.Dispatcher.InvokeAsync(() =>
+                _presentationManager.Window.Dispatcher.InvokeAsync(() =>
                 {
-                    var page = _navigation.CurrentPage as IFullscreenVideoPage;
+                    var page = _navigationService.CurrentPage as IFullscreenVideoPage;
 
                     if (page != null)
                     {
@@ -489,9 +534,9 @@ using MediaBrowser.Theater.Presentation.Playback;
         {
             if (GetActiveInternalMediaPlayer() != null)
             {
-                _presenation.Window.Dispatcher.InvokeAsync(() =>
+                _presentationManager.Window.Dispatcher.InvokeAsync(() =>
                 {
-                    var page = _navigation.CurrentPage as IFullscreenVideoPage;
+                    var page = _navigationService.CurrentPage as IFullscreenVideoPage;
 
                     if (page != null)
                     {
@@ -505,9 +550,9 @@ using MediaBrowser.Theater.Presentation.Playback;
         {
             if (GetActiveInternalMediaPlayer() != null)
             {
-                _presenation.Window.Dispatcher.InvokeAsync(() =>
+                _presentationManager.Window.Dispatcher.InvokeAsync(() =>
                 {
-                    var page = _navigation.CurrentPage as IFullscreenVideoPage;
+                    var page = _navigationService.CurrentPage as IFullscreenVideoPage;
 
                     if (page != null)
                     {
@@ -517,81 +562,93 @@ using MediaBrowser.Theater.Presentation.Playback;
             }
         }
       
-
         private void GotoHome(Object sender, CommandEventArgs args)
         {
-            _navigation.NavigateToHomePage();
+            _navigationService.NavigateToHomePage();
             args.Handled = true;
         }
 
         private void GotoSettings(Object sender, CommandEventArgs args)
         {
-            _navigation.NavigateToSettingsPage();
+            _navigationService.NavigateToSettingsPage();
             args.Handled = true;
         }
 
         private void GotoSearch(Object sender, CommandEventArgs args)
         {
-            _navigation.NavigateToSearchPage();
+            _navigationService.NavigateToSearchPage();
             args.Handled = true;
         }
 
-        private void YellowButton()
+       
+        void SetVolume(Object sender, CommandEventArgs args)
         {
-        }
+            _logger.Debug("SetVolume  {0}", args);
 
-        private void BlueButton()
-        {
-        }
+            float volume;
 
-        private void RedButton()
-        {
-        }
+            if (args == null )
+                throw new ArgumentException("SetVolume: expecting a single float 0..100 argurment for SetVolume");
 
-        private void GreenButton()
-        {
-        }
-
-        
-        // todo - move these to _presentation
-        public void FullScreen(Object sender, CommandEventArgs args)
-        {
-            _presenation.Window.WindowState = WindowState.Maximized;
-            _presenation.EnsureApplicationWindowHasFocus();
-        }
-
-        public void MinimizeScreen(Object sender, CommandEventArgs args)
-        {
-            _presenation.Window.WindowState = WindowState.Minimized;
-            _presenation.EnsureApplicationWindowHasFocus();
-        }
-
-        public void RestoreScreen(Object sender, CommandEventArgs args)
-        {
-            _presenation.Window.WindowState = WindowState.Normal;
-            _presenation.EnsureApplicationWindowHasFocus();
-        }
-
-        public void ToggleFullscreen(Object sender, CommandEventArgs args)
-        {
-            if (_presenation.Window.WindowState == WindowState.Maximized)
+            try
             {
-                RestoreScreen(sender, args);
+                volume = (float)Convert.ToDouble(args);
             }
-            else
+            catch (FormatException)
             {
-                FullScreen(sender, args);
+                throw new ArgumentException("SetVolume: Invalid format, expecting a single float 0..100 argurment for SetVolume");
             }
+
+            if (volume < 0.0 || volume > 100.0)
+            {
+                throw new ArgumentException(string.Format("SetVolume: Invalid Volume {0}. Volume range is 0..100", volume));
+            }
+
+            _playbackManager.SetVolume(volume);
         }
 
-        public void ShowScreensaver(Object sender, CommandEventArgs args)
+        void SetAudioStreamIndex(Object sender, CommandEventArgs args)
         {
-            _screensaverManager.ShowScreensaver(true);
+            _logger.Debug("SetAudioStreamIndex {0}", args);
+
+            int index;
+
+            if (args == null )
+                throw new ArgumentException("SetAudioStreamIndex: expecting a single integer argurment for AudiostreamIndex");
+
+            try
+            {
+                index = Convert.ToInt32(args);
+            }
+            catch (FormatException)
+            {
+                throw new ArgumentException("SetAudioStreamIndex: Invalid format, expecting a single integer argurment for AudiostreamIndex");
+            }
+
+
+            _playbackManager.SetAudioStreamIndex(index);
         }
 
-        private void ScreenDump(Object sender, CommandEventArgs args)
+        void SetSubtitleStreamIndex(object sender, CommandEventArgs args)
         {
-            MBTScreenDump.GetAndSaveWindowsImage(_presenation.WindowHandle);
+            _logger.Debug("SetSubtitleStreamIndex {0}", args);
+
+            int index;
+
+            if (args == null)
+                throw new ArgumentException("SetSubtitleStreamIndex: expecting a single integer argurment for SubtitleStreamIndex");
+
+            try
+            {
+                index = Convert.ToInt32(args);
+            }
+            catch (FormatException)
+            {
+                throw new ArgumentException("SetSubtitleStreamIndex: Invalid format, expecting a single integer argurment for SubtitleStreamIndex");
+            }
+
+            _playbackManager.SetSubtitleStreamIndex(index);
+
         }
     }
 }

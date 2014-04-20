@@ -532,6 +532,18 @@ namespace MediaBrowser.Theater.Implementations.Playback
             }
         }
 
+        public void ToggleMute()
+        {
+            if (IsMuted)
+            {
+                UnMute();
+            }
+            else
+            {
+                Mute();
+            }
+        }
+
         public float Volume
         {
             get
@@ -593,20 +605,40 @@ namespace MediaBrowser.Theater.Implementations.Playback
 
         public void SetAudioStreamIndex(int audioStreamIndex)
         {
-            var players = MediaPlayers.Where(p => (p.PlayState == PlayState.Playing || p.PlayState == PlayState.Paused) && p.CanSetAudioStreamIndex).ToList();
-            foreach(var p in players)
+            var player  =MediaPlayers.Where(p =>(p.PlayState == PlayState.Playing || p.PlayState == PlayState.Paused) &&p.CanSetAudioStreamIndex).FirstOrDefault();
+            if (player != null)
             {
-                p.SetSubtitleStreamIndex(audioStreamIndex);
+                player.SetAudioStreamIndex(audioStreamIndex);
             }
 
         }
 
-        public void SetSubtitleStreamIndex(int subtitleStreamIndex)
+        public void NextAudioStream()
         {
-            var players = MediaPlayers.Where(p => (p.PlayState == PlayState.Playing || p.PlayState == PlayState.Paused) && p.CanSetSubtitleStreamIndex).ToList();
-            foreach (var p in players)
+            var player = MediaPlayers.Where(p => (p.PlayState == PlayState.Playing || p.PlayState == PlayState.Paused) && p.CanSetAudioStreamIndex).FirstOrDefault();
+            if (player != null)
             {
-                p.SetSubtitleStreamIndex(subtitleStreamIndex);
+                player.NextAudioStream();
+            }
+
+        }
+
+        public void SetSubtitleStreamIndex(int subitleStreamIndex)
+        {
+            var player = MediaPlayers.Where(p => (p.PlayState == PlayState.Playing || p.PlayState == PlayState.Paused) && p.CanSetAudioStreamIndex).FirstOrDefault();
+            if (player != null)
+            {
+                player.SetSubtitleStreamIndex(subitleStreamIndex);
+            }
+
+        }
+
+        public void NextSubtitleStream()
+        {
+            var player = MediaPlayers.Where(p =>(p.PlayState == PlayState.Playing || p.PlayState == PlayState.Paused) && p.CanSetSubtitleStreamIndex).FirstOrDefault();
+            if (player != null)
+            {
+                player.NextSubtitleStream();
             }
 
         }

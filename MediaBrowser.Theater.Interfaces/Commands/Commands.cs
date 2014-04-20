@@ -5,8 +5,9 @@
         // Global commands
         Null,               // does nothing, use for playholder
         Play,               // plays an item, arg is item, is none, plays the current item
-        PlayPause,          // toggle play & pausethe current item
+        PlayPause,          // toggle play/pause the current item
         Pause,              // pause laying the current item
+        UnPause,            // play the current item if it is paused
         TogglePause,        //
         Stop,               // stop playing the current item
         Queue,              // args, queue the args 
@@ -15,6 +16,7 @@
         PlaySpeedRatio,     // set play speed ratio , double, negative is rewind, positive is forward
         NextTrack,          // Next Media Track - chapter for video, track for audio
         PrevisousTrack,     // Previous Meda Track - - chapter for video, track for 
+        Seek,
         Left,
         Right,
         Up,
@@ -45,16 +47,18 @@
         MinimizeScreen,    // Minimize screen
         RestoreScreen,     // restore screen to non full screen size, if not fullscreen, does nothing
         ToggleFullScreen,  // toggle fullscreen betweeen Fullscreen and windowed size
-        Volume,            // arg 0.0 .. 100.0 %
+        SetVolume,         // arg 0.0 .. 100.0 %
         VolumeUp,          // volume up an inc
         VolumeDown,        // volumme an inc
-        VolumneOn,         // turn sound on
-        VolumeOff,         // tunr sound off
-        VolumeMute,        // toggle mute
+        Mute,              // turn sound off
+        UnMute,            // turn sound on
+        ToggleMute,        // toggle sound on/off
         Alpha,             // arg is character - Alpha & puncs => build in command, does not need mapping
         Number,            // args is 0-9 => build in commond, does not need mapping
-        Subtitles,         // Toggle subtitles
-        NextSubtitle,      // sequence through subtitles
+        SetSubtitleStreamIndex,         // Toggle subtitles
+        NextSubtitleStream,             // sequence through subtitles
+        SetAudioStreamIndex,
+        NextAudioStream,
         AspectRatio,       // sequence through AspectRatios
         ShowOsd,           // Show On Screen Display
         HideOsd,           // Hides On Screen Display

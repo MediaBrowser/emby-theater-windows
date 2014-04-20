@@ -27,6 +27,6 @@ namespace MediaBrowser.Theater.Interfaces.Commands
         ///  </summary>
         /// <param name="command">The command to send</param>
         /// <param name="args">The command arguments</param>
-        bool SendCommand(Command command, Object args);
+        bool ExecuteCommand(Command command, Object args);
     }
 }

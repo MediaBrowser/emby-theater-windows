@@ -35,14 +35,13 @@ namespace MediaBrowser.UI.EntryPoints
 {
     public class WebSocketEntryPoint : IStartupEntryPoint, IDisposable
     {
-        private readonly ISessionManager _session;
+        private readonly ISessionManager _sessionManager;
         private readonly IApiClient _apiClient;
         private readonly ILogger _logger;
-        private readonly IJsonSerializer _json;
         private readonly ApplicationHost _appHost;
         private readonly INavigationService _nav;
         private readonly IPlaybackManager _playbackManager;
-        private readonly IPresentationManager _presentation;
+        private readonly IPresentationManager _presentationManager;
         private readonly ICommandManager _commandManager;
 
         private bool _isDisposed;
@@ -52,22 +51,21 @@ namespace MediaBrowser.UI.EntryPoints
             get { return _appHost.ApiWebSocket; }
         }
 
-        public WebSocketEntryPoint(ISessionManager session, IApiClient apiClient, IJsonSerializer json, ILogManager logManager, IApplicationHost appHost, INavigationService nav, IPlaybackManager playbackManager, IPresentationManager presentation, ICommandManager commandManager)
+        public WebSocketEntryPoint(ISessionManager sessionManagerManager, IApiClient apiClient, ILogManager logManager, IApplicationHost appHost, INavigationService nav, IPlaybackManager playbackManager, IPresentationManager presentationManager, ICommandManager commandManager)
         {
-            _session = session;
+            _sessionManager = sessionManagerManager;
             _apiClient = apiClient;
-            _json = json;
             _logger = logManager.GetLogger(GetType().Name);
             _appHost = (ApplicationHost)appHost;
             _nav = nav;
             _playbackManager = playbackManager;
-            _presentation = presentation;
+            _presentationManager = presentationManager;
             _commandManager = commandManager;
         }
 
         public void Run()
         {
-            _session.UserLoggedIn += _session_UserLoggedIn;
+            _sessionManager.UserLoggedIn += SessionManagerUserLoggedIn;
             _apiClient.ServerLocationChanged += _apiClient_ServerLocationChanged;
             _nav.Navigated += _nav_Navigated;
 
@@ -141,7 +139,7 @@ namespace MediaBrowser.UI.EntryPoints
             }
         }
 
-        void _session_UserLoggedIn(object sender, EventArgs e)
+        void SessionManagerUserLoggedIn(object sender, EventArgs e)
         {
             if (_isDisposed)
             {
@@ -163,7 +161,7 @@ namespace MediaBrowser.UI.EntryPoints
 
         void socket_MessageCommand(object sender, MessageCommandEventArgs e)
         {
-            _presentation.ShowMessage(new MessageBoxInfo
+            _presentationManager.ShowMessage(new MessageBoxInfo
             {
                 Button = MessageBoxButton.OK,
                 Caption = e.Request.Header,
@@ -252,10 +250,10 @@ namespace MediaBrowser.UI.EntryPoints
         void SendKeyDownEventToFocusedElement(System.Windows.Input.Key key)
         {
             _logger.Debug("SendKeyDownEventToFocusedElement {0}", key);
-              _presentation.Window.Dispatcher.Invoke(() =>
+              _presentationManager.Window.Dispatcher.Invoke(() =>
               {
                 // _presentation.EnsureApplicationWindowHasFocus(); // todo - need this when testing and running on the same display and input, proably not in prod env
-                var source = (HwndSource)PresentationSource.FromVisual(_presentation.Window);
+                var source = (HwndSource)PresentationSource.FromVisual(_presentationManager.Window);
                 var keyEventArgs = new KeyEventArgs
                                     (
                                         Keyboard.PrimaryDevice,
@@ -347,6 +345,8 @@ namespace MediaBrowser.UI.EntryPoints
 
         void socket_GeneralCommand(object sender, GeneralCommandEventArgs e)
         {
+            _logger.Debug("socket_GeneralCommand {0} {1}", e.KnownCommandType, e.Command.Arguments);
+
             if (e.KnownCommandType.HasValue)
             {
                 switch (e.KnownCommandType.Value)
@@ -372,19 +372,19 @@ namespace MediaBrowser.UI.EntryPoints
                         break;
 
                     case GeneralCommandType.PreviousLetter:
-                        _commandManager.SendCommand(Command.Null, null); //todo
+                        _commandManager.ExecuteCommand(Command.Null, null); //todo
                         break;
 
                     case GeneralCommandType.NextLetter:
-                        _commandManager.SendCommand(Command.Null, null); //todo
+                        _commandManager.ExecuteCommand(Command.Null, null); //todo
                         break;
 
                     case GeneralCommandType.ToggleOsd:
-                        _commandManager.SendCommand(Command.ToggleOsd, null); 
+                        _commandManager.ExecuteCommand(Command.ToggleOsd, null); 
                         break;
 
                     case GeneralCommandType.ToggleContextMenu:
-                        _commandManager.SendCommand(Command.Null, null);        // todo
+                        _commandManager.ExecuteCommand(Command.Null, null);        // todo
                         break;
 
                     case GeneralCommandType.Select:
@@ -396,7 +396,7 @@ namespace MediaBrowser.UI.EntryPoints
                         break;
 
                     case GeneralCommandType.TakeScreenshot:
-                        _commandManager.SendCommand(Command.ScreenDump, null); 
+                        _commandManager.ExecuteCommand(Command.ScreenDump, null); 
                         break;
 
                     case GeneralCommandType.SendKey:
@@ -409,41 +409,50 @@ namespace MediaBrowser.UI.EntryPoints
                         break;
 
                     case GeneralCommandType.GoHome:
-                        _nav.NavigateToHomePage();
+                        _commandManager.ExecuteCommand(Command.GotoHome, null); 
                         break;
+
                     case GeneralCommandType.GoToSettings:
-                        _nav.NavigateToSettingsPage();
+                        _commandManager.ExecuteCommand(Command.GotoSettings, null); 
                         break;
+
                     case GeneralCommandType.VolumeDown:
-                        _playbackManager.VolumeStepDown();
+                        _commandManager.ExecuteCommand(Command.VolumeDown, null);
                         break;
+
                     case GeneralCommandType.VolumeUp:
-                        _playbackManager.VolumeStepUp();
+                        _commandManager.ExecuteCommand(Command.VolumeUp, null);
                         break;
+
                     case GeneralCommandType.Mute:
-                        _playbackManager.Mute();
+                        _commandManager.ExecuteCommand(Command.Mute, null); 
                         break;
+
                     case GeneralCommandType.Unmute:
-                        _playbackManager.UnMute();
+                        _commandManager.ExecuteCommand(Command.UnMute, null); 
                         break;
+
                     case GeneralCommandType.ToggleMute:
-                        if (_playbackManager.IsMuted)
-                        {
-                            _playbackManager.UnMute();
-                        }
-                        else
-                        {
-                            _playbackManager.Mute();
-                        }
+                        _commandManager.ExecuteCommand(Command.ToggleMute, null);
                         break;
+
                     case GeneralCommandType.SetVolume:
                         ExecuteSetVolumeCommand(sender, e);
                         break;
+
                     case GeneralCommandType.SetAudioStreamIndex:
                         ExecuteSetAudioStreamIndex(sender, e);
                         break;
                     case GeneralCommandType.SetSubtitleStreamIndex:
                         ExecuteSetSubtitleStreamIndex(sender, e);
+                        break;
+
+                    case GeneralCommandType.ToggleFullscreen:
+                          _commandManager.ExecuteCommand(Command.ToggleFullScreen, null);
+                        break;
+
+                    case GeneralCommandType.DisplayContent:
+                          _commandManager.ExecuteCommand(Command.Null, null); //todo
                         break;
                     default:
                         _logger.Warn("Unrecognized command: " + e.KnownCommandType.Value);
@@ -454,7 +463,8 @@ namespace MediaBrowser.UI.EntryPoints
 
         async void _apiWebSocket_PlayCommand(object sender, PlayRequestEventArgs e)
         {
-            if (_session.CurrentUser == null)
+            _logger.Debug("_apiWebSocket_PlayCommand {0} {1}", e.Request.ItemIds, e.Request.StartPositionTicks);
+            if (_sessionManager.CurrentUser == null)
             {
                 OnAnonymousRemoteControlCommand();
                 return;
@@ -465,7 +475,7 @@ namespace MediaBrowser.UI.EntryPoints
                 var result = await _apiClient.GetItemsAsync(new ItemQuery
                 {
                     Ids = e.Request.ItemIds,
-                    UserId = _session.CurrentUser.Id,
+                    UserId = _sessionManager.CurrentUser.Id,
 
                     Fields = new[]
                     {
@@ -492,14 +502,15 @@ namespace MediaBrowser.UI.EntryPoints
 
         void _apiWebSocket_PlaystateCommand(object sender, PlaystateRequestEventArgs e)
         {
-            if (_session.CurrentUser == null)
+            _logger.Debug("_apiWebSocket_PlaystateCommand {0} {1}", e.Request.Command, e.Request.SeekPositionTicks);
+
+            if (_sessionManager.CurrentUser == null)
             {
                 OnAnonymousRemoteControlCommand();
                 return;
             }
 
-            var player = _playbackManager.MediaPlayers
-              .FirstOrDefault(i => i.PlayState != PlayState.Idle);
+            var player = _playbackManager.MediaPlayers.FirstOrDefault(i => i.PlayState != PlayState.Idle);
 
             if (player == null)
             {
@@ -511,27 +522,40 @@ namespace MediaBrowser.UI.EntryPoints
             switch (request.Command)
             {
                 case PlaystateCommand.Pause:
-                    player.Pause();
+                    _commandManager.ExecuteCommand(Command.Pause, null); 
                     break;
                 case PlaystateCommand.Stop:
-                    player.Stop();
+                    _commandManager.ExecuteCommand(Command.Stop, null); 
                     break;
                 case PlaystateCommand.Unpause:
-                    player.UnPause();
+                    _commandManager.ExecuteCommand(Command.UnPause, null); 
                     break;
                 case PlaystateCommand.Seek:
-                    player.Seek(e.Request.SeekPositionTicks ?? 0);
+                    _commandManager.ExecuteCommand(Command.Seek, e.Request.SeekPositionTicks ?? 0)
+                    ;
+                    /* player.Seek(e.Request.SeekPositionTicks ?? 0); */
                     break;
+
                 case PlaystateCommand.PreviousTrack:
+                    _commandManager.ExecuteCommand(Command.PrevisousTrack, null);
+                    break;
+
+                    /*
                     {
                         player.GoToPreviousTrack();
                         break;
                     }
+                    */
                 case PlaystateCommand.NextTrack:
+                    _commandManager.ExecuteCommand(Command.NextTrack, null);
+                    break;
+
+                    /*
                     {
                         player.GoToNextTrack();
                         break;
                     }
+                    */
             }
         }
 
@@ -541,15 +565,15 @@ namespace MediaBrowser.UI.EntryPoints
 
         async void _apiWebSocket_UserDeleted(object sender, UserDeletedEventArgs e)
         {
-            if (_session.CurrentUser != null && string.Equals(e.Id, _session.CurrentUser.Id))
+            if (_sessionManager.CurrentUser != null && string.Equals(e.Id, _sessionManager.CurrentUser.Id))
             {
-                await _session.Logout();
+                await _sessionManager.Logout();
             }
         }
 
         async void _apiWebSocket_BrowseCommand(object sender, BrowseRequestEventArgs e)
         {
-            if (_session.CurrentUser == null)
+            if (_sessionManager.CurrentUser == null)
             {
                 OnAnonymousRemoteControlCommand();
                 return;
@@ -581,7 +605,7 @@ namespace MediaBrowser.UI.EntryPoints
         private void OnAnonymousRemoteControlCommand()
         {
             _logger.Error("Cannot process remote control command without a logged in user.");
-            _presentation.ShowMessage(new MessageBoxInfo
+            _presentationManager.ShowMessage(new MessageBoxInfo
             {
                 Button = MessageBoxButton.OK,
                 Caption = "Error",
@@ -612,7 +636,7 @@ namespace MediaBrowser.UI.EntryPoints
         public void Dispose()
         {
             _isDisposed = true;
-            _session.UserLoggedIn -= _session_UserLoggedIn;
+            _sessionManager.UserLoggedIn -= SessionManagerUserLoggedIn;
             DisposeSocket();
         }
 

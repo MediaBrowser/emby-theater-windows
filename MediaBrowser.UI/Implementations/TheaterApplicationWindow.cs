@@ -367,6 +367,36 @@ namespace MediaBrowser.UI.Implementations
             }
         }
 
+        public void FullScreen()
+        {
+           Window.WindowState = WindowState.Maximized;
+           EnsureApplicationWindowHasFocus();
+        }
+
+        public void MinimizeScreen()
+        {
+            Window.WindowState = WindowState.Minimized;
+            EnsureApplicationWindowHasFocus();
+        }
+
+        public void RestoreScreen()
+        {
+            Window.WindowState = WindowState.Normal;
+            EnsureApplicationWindowHasFocus();
+        }
+
+        public void ToggleFullscreen()
+        {
+            if (Window.WindowState == WindowState.Maximized)
+            {
+                RestoreScreen();
+            }
+            else
+            {
+                FullScreen();
+            }
+        }
+
 
        
     }

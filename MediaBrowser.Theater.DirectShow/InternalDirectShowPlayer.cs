@@ -485,10 +485,19 @@ namespace MediaBrowser.Theater.DirectShow
             InvokeOnPlayerThread(() => _mediaPlayer.SetSubtitleStreamIndex(subtitleStreamIndex));
         }
 
+        public void NextSubtitleStream()
+        {
+            InvokeOnPlayerThread(() => _mediaPlayer.NextSubtitleStream());
+        }
       
         public void SetAudioStreamIndex(int audioStreamIndex)
         {
             InvokeOnPlayerThread(() => _mediaPlayer.SetAudioStreamIndex(audioStreamIndex));
+        }
+
+        public void NextAudioStream()
+        {
+            InvokeOnPlayerThread(() => _mediaPlayer.NextAudioStream());
         }
 
         public void ChangeSubtitleStream(SelectableMediaStream track)

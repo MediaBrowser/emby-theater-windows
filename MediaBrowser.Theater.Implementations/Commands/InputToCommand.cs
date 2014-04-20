@@ -213,7 +213,7 @@ namespace MediaBrowser.Theater.Implementations.Commands
             new InputCommandMapping( Key.BrowserStop,    Command.Stop),
             new InputCommandMapping( Key.BrowserSearch,  Command.GotoSearch),
             new InputCommandMapping( Key.BrowserHome,    Command.GotoHome),
-            new InputCommandMapping( Key.VolumeMute,     Command.VolumeMute),
+            new InputCommandMapping( Key.VolumeMute,     Command.ToggleMute),
             new InputCommandMapping( Key.VolumeDown,     Command.VolumeDown),
             new InputCommandMapping( Key.VolumeUp,       Command.VolumeUp),
             new InputCommandMapping( Key.MediaNextTrack, Command.NextTrack),
@@ -235,7 +235,7 @@ namespace MediaBrowser.Theater.Implementations.Commands
             new InputCommandMapping( Key.D,              Command.Info,              controlKey:true, shiftKey:false),
             new InputCommandMapping( Key.F10,            Command.VolumeUp),
             new InputCommandMapping( Key.F9,             Command.VolumeDown),
-            new InputCommandMapping( Key.F8,             Command.VolumeMute),
+            new InputCommandMapping( Key.F8,             Command.ToggleMute),
             new InputCommandMapping( Key.G,              Command.ToggleOsd,               controlKey:true, shiftKey:false),
 
             // APP_COMMANDS
@@ -260,6 +260,7 @@ namespace MediaBrowser.Theater.Implementations.Commands
             // MBT specific & Test
             new InputCommandMapping( Key.S,  Command.GotoSearch,           controlKey:true, shiftKey:false),
             new InputCommandMapping( Key.E,  Command.ShowScreensaver,      controlKey:true, shiftKey:true),
+            new InputCommandMapping( Key.F3,  Command.NextSubtitleStream,      controlKey:true, shiftKey:false),
         };
 
         private readonly InputCommandMapGroup _inputCommandMapGroup;

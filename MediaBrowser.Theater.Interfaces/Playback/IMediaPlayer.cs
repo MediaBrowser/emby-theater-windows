@@ -182,11 +182,21 @@ namespace MediaBrowser.Theater.Interfaces.Playback
         /// </summary>
         /// <param name="subtitleStreamIndex">Index of desired subtitle.</param>
         void SetSubtitleStreamIndex(int subtitleStreamIndex);
+        
+        /// <summary>
+        /// Advances to teh next subtitle stream, Wraps at the end
+        /// </summary>
+        void NextSubtitleStream();
 
         /// <summary>
         /// Set subtitle by subtitleStreamIndex
         /// </summary>
         /// <param name="audioStreamIndex">Index of desired audio stream.</param>
         void SetAudioStreamIndex(int audioStreamIndex);
+
+        /// <summary>
+        /// Advances to the next Audio Stream, Wraps at the end
+        /// </summary>
+        void NextAudioStream();
     }
 }

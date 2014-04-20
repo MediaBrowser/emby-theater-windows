@@ -31,14 +31,18 @@ namespace MediaBrowser.Theater.Interfaces.Playback
         /// <summary>
         /// Mutes this instance.
         /// </summary>
-        /// <returns>Task.</returns>
-        void Mute();
+       void Mute();
+
+        /// <summary>
+        /// Unmutes the instance.
+        /// </summary>
+        void UnMute();
 
         /// <summary>
         /// Uns the mute.
         /// </summary>
         /// <returns>Task.</returns>
-        void UnMute();
+        void ToggleMute();
 
         /// <summary>
         /// Gets the volume.
@@ -70,10 +74,20 @@ namespace MediaBrowser.Theater.Interfaces.Playback
         void SetSubtitleStreamIndex(int subtitleStreamIndex);
 
         /// <summary>
+        /// Advances to teh next subtitle stream, Wraps at the end
+        /// </summary>
+        void NextSubtitleStream();
+
+        /// <summary>
         /// Set subtitle by subtitleStreamIndex
         /// </summary>
         /// <param name="audioStreamIndex">Index of desired audio stream.</param>
         void SetAudioStreamIndex(int audioStreamIndex);
+
+        /// <summary>
+        /// Advances to the next Audio Stream, Wraps at the end
+        /// </summary>
+        void NextAudioStream();
 
         /// <summary>
         /// Occurs when [playback started].

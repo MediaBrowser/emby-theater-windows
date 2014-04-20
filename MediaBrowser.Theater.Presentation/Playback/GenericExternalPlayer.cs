@@ -463,7 +463,18 @@ namespace MediaBrowser.Theater.Presentation.Playback
             throw new NotImplementedException();
         }
 
+        public void NextSubtitleStream()
+        {
+            throw new NotImplementedException(); ;
+        }
+
+
         public void SetAudioStreamIndex(int subtitleStreamIndex)
+        {
+            throw new NotImplementedException();
+        }
+       
+        public void NextAudioStream()
         {
             throw new NotImplementedException();
         }

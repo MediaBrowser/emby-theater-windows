@@ -213,6 +213,7 @@ namespace MediaBrowser.Theater.DirectShow
             }
         }
 
+      
         public void Play(PlayableItem item, bool enableReclock, bool enableMadvr, bool enableMadvrExclusiveMode, bool enableXySubFilter, VideoConfiguration videoConfig, AudioConfiguration audioConfig, SubtitleConfiguration subtitleConfig)
         {
             _logger.Info("Playing {0}. Reclock: {1}, Madvr: {2}, xySubFilter: {3}", item.OriginalItem.Name, enableReclock, enableMadvr, enableXySubFilter);
@@ -2037,8 +2038,8 @@ namespace MediaBrowser.Theater.DirectShow
             var index = startIndex;
             var hasActiveInternalSubtitleStream = (internalStreams != null ? internalStreams.FirstOrDefault(i => i.Type == MediaStreamType.Subtitle && i.IsActive) : null) != null;
             var activeSubtitlePreference = (hasActiveInternalSubtitleStream || _sessionManager.CurrentUser.Configuration.UseForcedSubtitlesOnly) ? String.Empty : _sessionManager.CurrentUser.Configuration.SubtitleLanguagePreference;
-           
-            if (_item != null)
+
+            if (_item != null && _item.MediaStreams != null)
             {
                 // each external subtitle (srt file) will be a stream
                 foreach (var s in _item.MediaStreams.Where(i=>i.Type == MediaStreamType.Subtitle && i.IsExternal))
@@ -2114,18 +2115,48 @@ namespace MediaBrowser.Theater.DirectShow
 
         }
 
+        public void NextAudioStream()
+        {
+            _logger.Debug("SetSubtitleStreamIndex");
+
+
+            var audioStreams = _streams.Where(i => i.Type == MediaStreamType.Audio).ToList();
+            var nextAudioStream = audioStreams.SkipWhile(i => !i.IsActive).Skip(1).FirstOrDefault() ?? audioStreams.FirstOrDefault();
+
+            if (nextAudioStream != null)
+            {
+                SetInternalStream(nextAudioStream);
+            }
+
+        }
+
         public void SetSubtitleStreamIndex(int subtitleStreamIndex)
         {
             _logger.Debug("SetSubtitleStreamIndex {0}", subtitleStreamIndex);
             var subtitleStreams = _streams.Where(i => i.Type == MediaStreamType.Subtitle).ToArray();
             if (subtitleStreams.Any() && subtitleStreamIndex < subtitleStreams.Count())
             {
-                SetInternalStream(subtitleStreams[subtitleStreamIndex]);
+                SetSubtitleStream(subtitleStreams[subtitleStreamIndex]);
             }
             else
             {
                 throw new ApplicationException(String.Format("Invalid subtitleStreamIndex {0}", subtitleStreamIndex));
             }
+        }
+
+        public void NextSubtitleStream()
+        {
+            _logger.Debug("SetSubtitleStreamIndex");
+
+
+            var subtitleStreams = _streams.Where(i => i.Type == MediaStreamType.Subtitle).ToList();
+            var nextSubtitleStream = subtitleStreams.SkipWhile(i => ! i.IsActive).Skip(1).FirstOrDefault() ?? subtitleStreams.FirstOrDefault();
+
+            if (nextSubtitleStream != null)
+            {
+                SetSubtitleStream(nextSubtitleStream);
+            }
+           
         }
 
         public void SetSubtitleStream(SelectableMediaStream stream)

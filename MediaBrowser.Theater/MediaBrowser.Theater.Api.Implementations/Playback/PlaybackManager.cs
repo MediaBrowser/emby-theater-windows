@@ -135,16 +135,17 @@ namespace MediaBrowser.Theater.Api.Playback
 
                     options.Configuration = configuration;
 
-                    await player.Play(options);
+                    var playTask = player.Play(options);
 
                     if (player is IInternalMediaPlayer && player is IVideoPlayer && firstItem.IsVideo)
                     {
                         if (options.GoFullScreen)
                         {
-                            //todo go to internal playback page
+                            await _nav.Navigate(Go.To.FullScreenPlayback());
                         }
                     }
 
+                    await playTask;
                     OnPlaybackStarted(player, options);
                 }
                 finally

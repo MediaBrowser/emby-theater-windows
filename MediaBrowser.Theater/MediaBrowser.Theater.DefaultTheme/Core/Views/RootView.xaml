@@ -69,6 +69,8 @@
 
             <controls:ExtendedContentControl Focusable="False" Content="{Binding BackgroundMedia}" />
 
+            <controls:ExtendedContentControl Focusable="False" Content="{Binding FullScreenActivePage}" />
+
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto" />
@@ -167,91 +169,8 @@
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,0,30,0" HorizontalAlignment="Right" >
-                    <controls:ExtendedContentControl x:Name="CommandBar" Margin="0,0,20,0" VerticalAlignment="Center" Content="{Binding Commands}" IsTabStop="False">
-                        <controls:ExtendedContentControl.RenderTransform>
-                            <TranslateTransform x:Name="CommandBarTransform" />
-                        </controls:ExtendedContentControl.RenderTransform>
-
-                        <VisualStateManager.VisualStateGroups>
-                            <VisualStateGroup>
-                                <VisualState x:Name="CommandsVisible">
-                                    <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="CommandBar"
-                                                         Storyboard.TargetProperty="RenderTransform.(TranslateTransform.X)"
-                                                         From="20" To="0" FillBehavior="HoldEnd" Duration="0:0:0.2"
-                                                         DecelerationRatio="0.5" />
-                                        <DoubleAnimation Storyboard.TargetName="CommandBar"
-                                                         Storyboard.TargetProperty="Opacity" To="1" FillBehavior="HoldEnd"
-                                                         Duration="0:0:0.2" DecelerationRatio="0.5" />
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="CommandBar" Storyboard.TargetProperty="Visibilty">
-                                            <DiscreteObjectKeyFrame Value="Visible"/>
-                                        </ObjectAnimationUsingKeyFrames>
-                                    </Storyboard>
-                                </VisualState>
-                                <VisualState x:Name="CommandsHidden">
-                                    <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="CommandBar"
-                                                         Storyboard.TargetProperty="RenderTransform.(TranslateTransform.X)"
-                                                         From="0" To="20" FillBehavior="HoldEnd" Duration="0:0:0.2"
-                                                         AccelerationRatio="0.5" />
-                                        <DoubleAnimation Storyboard.TargetName="CommandBar"
-                                                         Storyboard.TargetProperty="Opacity" To="0" FillBehavior="HoldEnd"
-                                                         Duration="0:0:0.2" DecelerationRatio="0.5" />
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="CommandBar" Storyboard.TargetProperty="Visibilty">
-                                            <DiscreteObjectKeyFrame KeyTime="0:0:0.2" Value="Collapsed"/>
-                                        </ObjectAnimationUsingKeyFrames>
-                                    </Storyboard>
-                                </VisualState>
-                            </VisualStateGroup>
-                        </VisualStateManager.VisualStateGroups>
-
-                        <i:Interaction.Behaviors>
-                            <ei:DataStateBehavior Binding="{Binding DisplayCommandBar}"
-                                                  Value="True"
-                                                  TrueState="CommandsVisible"
-                                                  FalseState="CommandsHidden" />
-                        </i:Interaction.Behaviors>
-                    </controls:ExtendedContentControl>
-
-                    <controls:ExtendedContentControl x:Name="Clock" VerticalAlignment="Center" Content="{Binding Clock}" IsTabStop="False">
-                        <controls:ExtendedContentControl.RenderTransform>
-                            <TranslateTransform x:Name="ClockTransform" />
-                        </controls:ExtendedContentControl.RenderTransform>
-
-                        <VisualStateManager.VisualStateGroups>
-                            <VisualStateGroup>
-                                <VisualState x:Name="ClockVisible">
-                                    <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="Clock"
-                                                         Storyboard.TargetProperty="RenderTransform.(TranslateTransform.X)"
-                                                         From="20" To="0" FillBehavior="HoldEnd" Duration="0:0:0.2"
-                                                         DecelerationRatio="0.5" />
-                                        <DoubleAnimation Storyboard.TargetName="Clock"
-                                                         Storyboard.TargetProperty="Opacity" To="1" FillBehavior="HoldEnd"
-                                                         Duration="0:0:0.2" DecelerationRatio="0.5" />
-                                    </Storyboard>
-                                </VisualState>
-                                <VisualState x:Name="ClockHidden">
-                                    <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="Clock"
-                                                         Storyboard.TargetProperty="RenderTransform.(TranslateTransform.X)"
-                                                         From="0" To="20" FillBehavior="HoldEnd" Duration="0:0:0.2"
-                                                         AccelerationRatio="0.5" />
-                                        <DoubleAnimation Storyboard.TargetName="Clock"
-                                                         Storyboard.TargetProperty="Opacity" To="0" FillBehavior="HoldEnd"
-                                                         Duration="0:0:0.2" DecelerationRatio="0.5" />
-                                    </Storyboard>
-                                </VisualState>
-                            </VisualStateGroup>
-                        </VisualStateManager.VisualStateGroups>
-
-                        <i:Interaction.Behaviors>
-                            <ei:DataStateBehavior Binding="{Binding DisplayClock}"
-                                                  Value="True"
-                                                  TrueState="ClockVisible"
-                                                  FalseState="ClockHidden" />
-                        </i:Interaction.Behaviors>
-                    </controls:ExtendedContentControl>
+                    <controls:ExtendedContentControl x:Name="CommandBar" Margin="0,0,20,0" VerticalAlignment="Center" Content="{Binding Commands}" IsTabStop="False" Visibility="{Binding DisplayCommandBar, Converter={StaticResource BooleanToVisibility}}"/>
+                    <controls:ExtendedContentControl x:Name="Clock" VerticalAlignment="Center" Content="{Binding Clock}" IsTabStop="False" Visibility="{Binding DisplayClock, Converter={StaticResource BooleanToVisibility}}"/>
                 </StackPanel>
 
                 <controls:ExtendedContentControl Grid.Row="2" Content="{Binding ActivePage}" IsTabStop="False">

@@ -4,6 +4,7 @@ using DirectShowLib.Dvd;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Api.Playback;
+using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.Presentation.Playback;
 using MediaFoundation;
 using MediaFoundation.EVR;
@@ -160,7 +161,8 @@ namespace MediaBrowser.Theater.DirectShow
             {
                 _playstate = value;
 
-                _playerWrapper.OnPlayStateChanged();
+                Action action = () => _playerWrapper.OnPlayStateChanged();
+                action.OnUiThreadAsync();
             }
         }
 

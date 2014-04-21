@@ -7,15 +7,18 @@ using MediaBrowser.Theater.Presentation.ViewModels;
 namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 {
     public class ItemDetailsViewModel
-        : BaseViewModel, IRootPresentationOptions
+        : BaseViewModel, IHasRootPresentationOptions
     {
-        private readonly BaseItemDto _item;
         private readonly IEnumerable<IItemDetailSection> _sections;
 
         public ItemDetailsViewModel(BaseItemDto item, IEnumerable<IItemDetailSection> sections)
         {
-            _item = item;
             _sections = sections.ToList();
+
+            PresentationOptions = new RootPresentationOptions {
+                ShowMediaBrowserLogo = false,
+                Title = ItemTileViewModel.GetDisplayNameWithAiredSpecial(item)
+            };
         }
 
         public IEnumerable<IItemDetailSection> Sections
@@ -23,24 +26,6 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
             get { return _sections; }
         }
 
-        public bool ShowMediaBrowserLogo
-        {
-            get { return false; }
-        }
-
-        public bool ShowCommandBar
-        {
-            get { return true; }
-        }
-
-        public bool ShowClock
-        {
-            get { return true; }
-        }
-
-        public string Title
-        {
-            get { return ItemTileViewModel.GetDisplayNameWithAiredSpecial(_item); }
-        }
+        public RootPresentationOptions PresentationOptions { get; private set; }
     }
 }

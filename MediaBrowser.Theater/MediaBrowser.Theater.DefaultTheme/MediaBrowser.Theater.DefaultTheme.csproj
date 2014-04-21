@@ -229,6 +229,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Osd\Views\OsdView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="PopupWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -300,6 +304,10 @@
     <Page Include="Resources\Styles\TextBox.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resources\Styles\TransportOsd.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Resources\Styles\VirtualKeyboard.xaml">
       <SubType>Designer</SubType>
@@ -520,6 +528,11 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Core\RootContext.cs" />
+    <Compile Include="Osd\FullScreenPlaybackContext.cs" />
+    <Compile Include="Osd\ViewModels\OsdViewModel.cs" />
+    <Compile Include="Osd\Views\OsdView.xaml.cs">
+      <DependentUpon>OsdView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="PopupWindow.xaml.cs">
       <DependentUpon>PopupWindow.xaml</DependentUpon>
     </Compile>

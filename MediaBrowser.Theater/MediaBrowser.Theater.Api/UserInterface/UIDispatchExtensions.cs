@@ -27,8 +27,13 @@ namespace MediaBrowser.Theater.Api.UserInterface
         {
             if (Dispatcher == null || Dispatcher.CheckAccess())
                 action();
-            else
-                Dispatcher.Invoke(action);
+            else {
+                try {
+                    Dispatcher.Invoke(action);
+                }
+                catch (TaskCanceledException) {
+                }
+            }
         }
 
         /// <summary>

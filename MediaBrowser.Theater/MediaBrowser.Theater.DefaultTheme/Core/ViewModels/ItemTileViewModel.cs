@@ -203,6 +203,10 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
 
         public static string GetDisplayNameWithAiredSpecial(BaseItemDto item)
         {
+            if (item == null) {
+                return string.Empty;
+            }
+
             if (item.IsType("episode") && item.ParentIndexNumber.HasValue && item.ParentIndexNumber.Value == 0) {
                 return "Special - " + item.Name;
             }

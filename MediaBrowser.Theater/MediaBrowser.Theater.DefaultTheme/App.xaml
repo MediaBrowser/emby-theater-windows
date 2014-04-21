@@ -23,11 +23,13 @@
                 <ResourceDictionary Source="Resources/Styles/TextBox.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/VirtualKeyboard.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/Panorama.xaml"/>
+                <ResourceDictionary Source="Resources/Styles/TransportOsd.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             
             <converters:BooleanInverter x:Key="BooleanInverter"/>
             <BooleanToVisibilityConverter x:Key="BooleanToVisibility"/>
             <converters:UppercaseConverter x:Key="UppercaseConverter"/>
+            <converters:LowercaseConverter x:Key="LowercaseConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

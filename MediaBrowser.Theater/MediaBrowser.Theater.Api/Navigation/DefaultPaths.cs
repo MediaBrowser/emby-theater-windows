@@ -39,6 +39,11 @@ namespace MediaBrowser.Theater.Api.Navigation
     /// </summary>
     public class SearchPath : NavigationPath { }
 
+    /// <summary>
+    ///     The path to the full screen playback page.
+    /// </summary>
+    public class FullScreenPlaybackPath : NavigationPath { }
+
     #region Fluent Interface
 
     /// <summary>
@@ -105,6 +110,16 @@ namespace MediaBrowser.Theater.Api.Navigation
         public static SearchPath Search(this Go go)
         {
             return new SearchPath();
+        }
+
+        /// <summary>
+        ///     Gets a path to the full screen playback page.
+        /// </summary>
+        /// <param name="go"></param>
+        /// <returns>A path to the full screen playback page.</returns>
+        public static FullScreenPlaybackPath FullScreenPlayback(this Go go)
+        {
+            return new FullScreenPlaybackPath();
         }
     }
 

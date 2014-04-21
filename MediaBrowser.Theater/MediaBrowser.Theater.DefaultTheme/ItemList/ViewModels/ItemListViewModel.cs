@@ -4,7 +4,6 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using MediaBrowser.Model.ApiClient;
-using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Playback;
@@ -16,25 +15,23 @@ using MediaBrowser.Theater.Presentation.ViewModels;
 namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
 {
     public class ItemListViewModel
-        : BaseViewModel, IRootPresentationOptions
+        : BaseViewModel, IHasRootPresentationOptions
     {
         public const double ItemHeight = 500;
 
-        private readonly Task<ItemsResult> _items;
-        private readonly string _title;
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
+        private readonly Task<ItemsResult> _items;
         private readonly INavigator _navigator;
-        private readonly ISessionManager _sessionManager;
         private readonly IPlaybackManager _playbackManager;
         private readonly IServerEvents _serverEvents;
+        private readonly ISessionManager _sessionManager;
         private ItemTileViewModel _selectedItem;
         private ItemInfoViewModel _selectedItemDetails;
 
         public ItemListViewModel(Task<ItemsResult> items, string title, IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator, ISessionManager sessionManager, IPlaybackManager playbackManager)
         {
             _items = items;
-            _title = title;
             _apiClient = apiClient;
             _imageManager = imageManager;
             _serverEvents = serverEvents;
@@ -42,12 +39,11 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
             _sessionManager = sessionManager;
             _playbackManager = playbackManager;
             Items = new RangeObservableCollection<ItemTileViewModel>();
-        }
 
-        public override async Task Initialize()
-        {
-            await LoadItems(_items);
-            await base.Initialize();
+            PresentationOptions = new RootPresentationOptions {
+                ShowMediaBrowserLogo = false,
+                Title = title
+            };
         }
 
         public RangeObservableCollection<ItemTileViewModel> Items { get; private set; }
@@ -101,6 +97,14 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
             }
         }
 
+        public RootPresentationOptions PresentationOptions { get; private set; }
+
+        public override async Task Initialize()
+        {
+            await LoadItems(_items);
+            await base.Initialize();
+        }
+
         private static object GetSortKey(ItemTileViewModel viewModel)
         {
             string name = viewModel.Item.SortName ?? viewModel.Item.Name;
@@ -119,10 +123,5 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
 
             Items.AddRange(viewModels.OrderBy(GetSortKey));
         }
-
-        public bool ShowMediaBrowserLogo { get { return false; } }
-        public bool ShowCommandBar { get { return true; } }
-        public bool ShowClock { get { return true; } }
-        public string Title { get { return _title; } }
     }
 }

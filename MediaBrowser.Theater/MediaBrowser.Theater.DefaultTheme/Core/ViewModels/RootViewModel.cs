@@ -55,7 +55,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
 
         public IViewModel ActivePage
         {
-            get { return _activePage; }
+            get { return _activePage == null || GetPresentationOptions().IsFullScreenPage ? null : _activePage; }
             set
             {
                 if (Equals(value, _activePage)) {
@@ -73,11 +73,18 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
                 }
 
                 OnPropertyChanged();
+                OnPropertyChanged("FullScreenActivePage");
                 OnPropertyChanged("DisplayLogo");
                 OnPropertyChanged("DisplayCommandBar");
+                OnPropertyChanged("DisplayClock");
                 OnPropertyChanged("DisplayTitle");
                 OnPropertyChanged("Title");
             }
+        }
+
+        public IViewModel FullScreenActivePage
+        {
+            get { return _activePage != null && GetPresentationOptions().IsFullScreenPage ? _activePage : null; }
         }
 
         public NotificationTrayViewModel Notifications
@@ -149,64 +156,46 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
 
         public bool DisplayLogo
         {
-            get
-            {
-                var options = ActivePage as IRootPresentationOptions;
-                return options == null || options.ShowMediaBrowserLogo;
-            }
+            get { return GetPresentationOptions().ShowMediaBrowserLogo; }
         }
 
         public bool DisplayCommandBar
         {
-            get
-            {
-                var options = ActivePage as IRootPresentationOptions;
-                return options == null || options.ShowCommandBar;
-            }
+            get { return GetPresentationOptions().ShowCommandBar; }
         }
 
         public bool DisplayClock
         {
-            get
-            {
-                var options = ActivePage as IRootPresentationOptions;
-                return options == null || options.ShowClock;
-            }
+            get { return GetPresentationOptions().ShowClock; }
         }
 
         public bool DisplayTitle
         {
-            get
-            {
-                var options = ActivePage as IRootPresentationOptions;
-                return options != null && !string.IsNullOrEmpty(options.Title);
-            }
+            get { return !string.IsNullOrEmpty(GetPresentationOptions().Title); }
         }
 
         public string Title
         {
-            get
-            {
-                var options = ActivePage as IRootPresentationOptions;
-                return options != null ? options.Title : null;
+            get { return GetPresentationOptions().Title; }
+        }
+
+        private RootPresentationOptions GetPresentationOptions()
+        {
+            var hasOptions = _activePage as IHasRootPresentationOptions;
+            if (hasOptions == null || hasOptions.PresentationOptions == null) {
+                return new RootPresentationOptions();
             }
+
+            return hasOptions.PresentationOptions;
         }
 
         private void ActivePagePropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == "ShowMediaBrowserLogo") {
+            if (e.PropertyName == "PresentationOptions") {
+                OnPropertyChanged("FullScreenActivePage");
                 OnPropertyChanged("DisplayLogo");
-            }
-
-            if (e.PropertyName == "ShowCommandBar") {
                 OnPropertyChanged("DisplayCommandBar");
-            }
-
-            if (e.PropertyName == "ShowClock") {
                 OnPropertyChanged("DisplayClock");
-            }
-
-            if (e.PropertyName == "Title") {
                 OnPropertyChanged("DisplayTitle");
                 OnPropertyChanged("Title");
             }

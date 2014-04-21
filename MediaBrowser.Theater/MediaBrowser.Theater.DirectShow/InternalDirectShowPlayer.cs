@@ -177,7 +177,7 @@ namespace MediaBrowser.Theater.DirectShow
 
             try
             {
-                InvokeOnPlayerThread(() =>
+                await InvokeOnPlayerThreadAsync(() =>
                 {
                     _mediaPlayer = new DirectShowPlayer(_logger, _windowManager, this, _presentation.MainApplicationWindowHandle);
 
@@ -484,6 +484,16 @@ namespace MediaBrowser.Theater.DirectShow
             {
                 action();
             }
+        }
+
+        private Task InvokeOnPlayerThreadAsync(Action action)
+        {
+            if (_hiddenWindow.Form.InvokeRequired) {
+                return Task.Factory.FromAsync(_hiddenWindow.Form.BeginInvoke(action), (Action<IAsyncResult>)(result => _hiddenWindow.Form.EndInvoke(result)));
+            }
+            
+            action();
+            return Task.FromResult(0);
         }
     }
 

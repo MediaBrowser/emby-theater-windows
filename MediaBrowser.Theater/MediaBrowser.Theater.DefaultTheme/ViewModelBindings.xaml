@@ -20,7 +20,9 @@
                     xmlns:viewModels4="clr-namespace:MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels"
                     xmlns:views4="clr-namespace:MediaBrowser.Theater.DefaultTheme.ItemList.Views"
                     xmlns:viewModels5="clr-namespace:MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels"
-                    xmlns:views5="clr-namespace:MediaBrowser.Theater.DefaultTheme.ItemDetails.Views">
+                    xmlns:views5="clr-namespace:MediaBrowser.Theater.DefaultTheme.ItemDetails.Views"
+                    xmlns:viewModels6="clr-namespace:MediaBrowser.Theater.DefaultTheme.Osd.ViewModels"
+                    xmlns:views6="clr-namespace:MediaBrowser.Theater.DefaultTheme.Osd.Views">
     
     <DataTemplate DataType="{x:Type viewModels:RootViewModel}">
         <views:RootView/>
@@ -204,6 +206,10 @@
     
     <DataTemplate DataType="{x:Type viewModels5:ChapterViewModel}">
         <views5:ChapterView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels6:OsdViewModel}">
+        <views6:OsdView/>
     </DataTemplate>
     
 </ResourceDictionary>

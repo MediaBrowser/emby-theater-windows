@@ -4,6 +4,7 @@ using MediaBrowser.Theater.Api;
 using MediaBrowser.Theater.Api.Events;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Playback;
+using MediaBrowser.Theater.Api.System;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.Presentation.ViewModels;
 
@@ -13,6 +14,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
         : BaseViewModel
     {
         private readonly INavigator _navigator;
+        private readonly IServerConnectionManager _serverManager;
         private readonly RootContext _rootContext;
         private IViewModel _activePage;
         private IViewModel _backgroundMedia;
@@ -22,9 +24,10 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
         private ClockViewModel _clock;
         private bool _isInternalMediaPlaying;
 
-        public RootViewModel(IEventAggregator events, INavigator navigator, ITheaterApplicationHost appHost, RootContext rootContext)
+        public RootViewModel(IEventAggregator events, INavigator navigator, ITheaterApplicationHost appHost, IServerConnectionManager serverManager, RootContext rootContext)
         {
             _navigator = navigator;
+            _serverManager = serverManager;
             _rootContext = rootContext;
             Notifications = new NotificationTrayViewModel(events);
             Commands = new CommandBarViewModel(appHost, navigator);
@@ -205,6 +208,11 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
         {
             await _navigator.Initialize(_rootContext);
             await base.Initialize();
+
+            bool serverFound = await _serverManager.AttemptServerConnection();
+            if (!serverFound) {
+                // todo show server connection error to user, and give the option to go to the server settings page to resolve
+            }
         }
     }
 }

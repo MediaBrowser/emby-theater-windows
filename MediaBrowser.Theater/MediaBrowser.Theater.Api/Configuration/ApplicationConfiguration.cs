@@ -27,6 +27,12 @@ namespace MediaBrowser.Theater.Api.Configuration
         public AutoLoginConfiguration AutoLoginConfiguration { get; set; }
 
         /// <summary>
+        ///     Gets or sets the WOL (Wake On LAN) configuration.
+        /// </summary>
+        /// <value>The WOL configuration.</value>
+        public WolConfiguration WakeOnLanConfiguration { get; set; }
+
+        /// <summary>
         ///     Gets or sets the internal media player configuration.
         /// </summary>
         public InternalPlayerConfiguration InternalPlayerConfiguration { get; set; }
@@ -52,6 +58,7 @@ namespace MediaBrowser.Theater.Api.Configuration
             EnableHighQualityImageScaling = true;
 
             AutoLoginConfiguration = new AutoLoginConfiguration();
+            WakeOnLanConfiguration = new WolConfiguration();
             InternalPlayerConfiguration = new InternalPlayerConfiguration();
             MediaPlayers = new PlayerConfiguration[0];
         }

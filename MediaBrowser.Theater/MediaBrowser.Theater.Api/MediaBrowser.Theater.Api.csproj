@@ -62,6 +62,7 @@
     <Compile Include="Configuration\ITheaterApplicationPaths.cs" />
     <Compile Include="Configuration\ITheaterConfigurationManager.cs" />
     <Compile Include="Configuration\PlayerConfiguration.cs" />
+    <Compile Include="Configuration\WolConfiguration.cs" />
     <Compile Include="Events\EventAggregator.cs" />
     <Compile Include="Events\EventBus.cs" />
     <Compile Include="Events\IEventAggregator.cs" />
@@ -93,6 +94,7 @@
     <Compile Include="Navigation\PathBinder.cs" />
     <Compile Include="Navigation\PathResolution.cs" />
     <Compile Include="Commands\IGlobalMenuCommand.cs" />
+    <Compile Include="System\IServerConnectionManager.cs" />
     <Compile Include="UserInterface\IImageManager.cs" />
     <Compile Include="UserInterface\UIDispatchExtensions.cs" />
     <Compile Include="UserInterface\ITheme.cs" />

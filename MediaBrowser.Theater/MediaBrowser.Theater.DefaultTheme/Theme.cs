@@ -8,6 +8,7 @@ using MediaBrowser.Model.Serialization;
 using MediaBrowser.Theater.Api;
 using MediaBrowser.Theater.Api.Events;
 using MediaBrowser.Theater.Api.Navigation;
+using MediaBrowser.Theater.Api.System;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Configuration;
 using MediaBrowser.Theater.DefaultTheme.Core;
@@ -23,12 +24,13 @@ namespace MediaBrowser.Theater.DefaultTheme
         private readonly WindowManager _windowManager;
         private readonly IEventAggregator _events;
         private readonly INavigator _navigator;
+        private readonly IServerConnectionManager _serverManager;
         private readonly RootContext _rootContext;
         private App _application;
 
         public static Theme Instance { get; private set; }
 
-        public Theme(ITheaterApplicationHost appHost, IApplicationPaths applicationPaths, IXmlSerializer xmlSerializer, WindowManager windowManager, IEventAggregator events, INavigator navigator, RootContext rootContext)
+        public Theme(ITheaterApplicationHost appHost, IApplicationPaths applicationPaths, IXmlSerializer xmlSerializer, WindowManager windowManager, IEventAggregator events, INavigator navigator, IServerConnectionManager serverManager, RootContext rootContext)
             : base(applicationPaths, xmlSerializer)
         {
             _running = new TaskCompletionSource<object>();
@@ -36,6 +38,7 @@ namespace MediaBrowser.Theater.DefaultTheme
             _windowManager = windowManager;
             _events = events;
             _navigator = navigator;
+            _serverManager = serverManager;
             _rootContext = rootContext;
 
             Instance = this;
@@ -53,7 +56,7 @@ namespace MediaBrowser.Theater.DefaultTheme
 
             UIDispatchExtensions.ResetDispatcher();
 
-            MainWindow mainWindow = _windowManager.CreateMainWindow(Configuration, new RootViewModel(_events, _navigator, _appHost, _rootContext));
+            MainWindow mainWindow = _windowManager.CreateMainWindow(Configuration, new RootViewModel(_events, _navigator, _appHost, _serverManager, _rootContext));
             _application.Run(mainWindow);
 
             Cleanup();

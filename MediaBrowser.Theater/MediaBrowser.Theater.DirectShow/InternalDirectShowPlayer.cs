@@ -6,14 +6,15 @@ using MediaBrowser.Model.IO;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Api.Configuration;
 using MediaBrowser.Theater.Api.Playback;
-using MediaBrowser.Theater.Api.Playback;
+using MediaBrowser.Theater.Api.Session;
+using MediaBrowser.Theater.Api.UserInterface;
+using MediaBrowser.Theater.Presentation.Playback;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Management;
-using MediaBrowser.Theater.Api.UserInterface;
 
 namespace MediaBrowser.Theater.DirectShow
 {
@@ -22,12 +23,14 @@ namespace MediaBrowser.Theater.DirectShow
         private DirectShowPlayer _mediaPlayer;
 
         private readonly ILogger _logger;
-        private readonly IPresenter _presentation;
         private readonly IInternalPlayerWindowManager _windowManager;
+        private readonly IPresenter _presentation;
+        private readonly ISessionManager _sessionManager;
         private readonly IApiClient _apiClient;
         private readonly IPlaybackManager _playbackManager;
         private readonly ITheaterConfigurationManager _config;
         private readonly IIsoManager _isoManager;
+//        private readonly IUserInputManager _inputManager;
 
         private IInternalPlayerWindow _hiddenWindow;
 
@@ -37,16 +40,18 @@ namespace MediaBrowser.Theater.DirectShow
 
         private List<BaseItemDto> _playlist = new List<BaseItemDto>();
 
-        public InternalDirectShowPlayer(ILogManager logManager, IInternalPlayerWindowManager windowManager, IPresenter presentation, IApiClient apiClient, IPlaybackManager playbackManager, ITheaterConfigurationManager config, IIsoManager isoManager)
+        public InternalDirectShowPlayer(ILogManager logManager, IInternalPlayerWindowManager windowManager, IPresenter presentation, ISessionManager sessionManager, IApiClient apiClient, IPlaybackManager playbackManager, ITheaterConfigurationManager config, IIsoManager isoManager/*, IUserInputManager inputManager*/)
         {
             _logger = logManager.GetLogger("InternalDirectShowPlayer");
             _windowManager = windowManager;
             _hiddenWindow = windowManager.Window;
             _presentation = presentation;
+            _sessionManager = sessionManager;
             _apiClient = apiClient;
             _playbackManager = playbackManager;
             _config = config;
             _isoManager = isoManager;
+//            _inputManager = inputManager;
 
             windowManager.WindowLoaded += window => _hiddenWindow = window;
         }
@@ -179,7 +184,7 @@ namespace MediaBrowser.Theater.DirectShow
             {
                 await InvokeOnPlayerThreadAsync(() =>
                 {
-                    _mediaPlayer = new DirectShowPlayer(_logger, _windowManager, this, _presentation.MainApplicationWindowHandle);
+                    _mediaPlayer = new DirectShowPlayer(_logger, _windowManager, this, _presentation.MainApplicationWindowHandle, _sessionManager, _config/*, _inputManager*/);
 
                     //HideCursor();
                 });
@@ -211,7 +216,7 @@ namespace MediaBrowser.Theater.DirectShow
                 var enableMadVr = EnableMadvr(options);
                 var enableReclock = EnableReclock(options);
 
-                InvokeOnPlayerThread(() => _mediaPlayer.Play(playableItem, enableReclock, enableMadVr, false, _config.Configuration.InternalPlayerConfiguration.EnableXySubFilter, _config.Configuration.InternalPlayerConfiguration.VideoConfig, _config.Configuration.InternalPlayerConfiguration.AudioConfig, _config.Configuration.InternalPlayerConfiguration.SubtitleConfig));
+                InvokeOnPlayerThread(() => _mediaPlayer.Play(playableItem, enableReclock, enableMadVr, false));
             }
             catch
             {
@@ -488,10 +493,11 @@ namespace MediaBrowser.Theater.DirectShow
 
         private Task InvokeOnPlayerThreadAsync(Action action)
         {
-            if (_hiddenWindow.Form.InvokeRequired) {
+            if (_hiddenWindow.Form.InvokeRequired)
+            {
                 return Task.Factory.FromAsync(_hiddenWindow.Form.BeginInvoke(action), (Action<IAsyncResult>)(result => _hiddenWindow.Form.EndInvoke(result)));
             }
-            
+
             action();
             return Task.FromResult(0);
         }

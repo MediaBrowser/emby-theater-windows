@@ -36,15 +36,19 @@ namespace MediaBrowser.Theater.DirectShow
             }
         }
 
-        public static int GetHwaMode(VideoConfiguration config)
+        public static LAVHWAccel GetHwaMode(VideoConfiguration config, bool preferDXVA2)
         {
             if (config.HwaMode > -1)
-                return config.HwaMode;
-
-            if (GpuModel.IndexOf("Intel") > -1)
-                return 2; //LAVHWAccel.QuickSync;
+                return (LAVHWAccel)config.HwaMode;
+            else if (preferDXVA2)
+                return LAVHWAccel.DXVA2Native;
             else
-                return 3; // LAVHWAccel.DXVA2CopyBack;
+            {
+                if (GpuModel.IndexOf("Intel") > -1)
+                    return LAVHWAccel.QuickSync;
+                else
+                    return LAVHWAccel.DXVA2CopyBack;
+            }
         }
 
         public static int GetHwaResolutions(VideoConfiguration config)

@@ -25,10 +25,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 using System;
 using System.Collections;
 using System.Text;
+using System.Drawing;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Security;
 
+using MediaFoundation.Misc;
 using MediaFoundation.Transform;
 
 namespace MediaFoundation.Misc

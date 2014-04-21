@@ -1,13 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
-using System.Security;
-using MediaFoundation.EVR;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace MediaBrowser.Theater.DirectShow.InterfaceOverride
 {
-    [ComImport, SuppressUnmanagedCodeSecurity,
-     InterfaceType(ComInterfaceType.InterfaceIsIUnknown),
-     Guid("6AB0000C-FECE-4d1f-A2AC-A9573530656E")]
+    [ComImport, System.Security.SuppressUnmanagedCodeSecurity,
+    InterfaceType(ComInterfaceType.InterfaceIsIUnknown),
+    Guid("6AB0000C-FECE-4d1f-A2AC-A9573530656E")]
     public interface IMFVideoProcessor
     {
         int GetAvailableVideoProcessorModes(
@@ -16,7 +18,7 @@ namespace MediaBrowser.Theater.DirectShow.InterfaceOverride
 
         int GetVideoProcessorCaps(
             [In] Guid lpVideoProcessorMode,
-            out DXVA2VideoProcessorCaps lpVideoProcessorCaps);
+            out MediaFoundation.EVR.DXVA2VideoProcessorCaps lpVideoProcessorCaps);
 
         int GetVideoProcessorMode(
             out Guid lpMode);
@@ -26,26 +28,26 @@ namespace MediaBrowser.Theater.DirectShow.InterfaceOverride
 
         int GetProcAmpRange(
             int dwProperty,
-            out DXVA2ValueRange pPropRange);
+            out MediaFoundation.EVR.DXVA2ValueRange pPropRange);
 
         int GetProcAmpValues(
-            DXVA2ProcAmp dwFlags,
-            out DXVA2ProcAmpValues Values);
+            MediaFoundation.EVR.DXVA2ProcAmp dwFlags,
+            out MediaFoundation.EVR.DXVA2ProcAmpValues Values);
 
         int SetProcAmpValues(
-            DXVA2ProcAmp dwFlags,
-            [In] DXVA2ProcAmpValues pValues);
+            MediaFoundation.EVR.DXVA2ProcAmp dwFlags,
+            [In] MediaFoundation.EVR.DXVA2ProcAmpValues pValues);
 
         int GetFilteringRange(
-            DXVA2Filters dwProperty,
-            out DXVA2ValueRange pPropRange);
+            MediaFoundation.EVR.DXVA2Filters dwProperty,
+            out MediaFoundation.EVR.DXVA2ValueRange pPropRange);
 
         int GetFilteringValue(
-            DXVA2Filters dwProperty,
+            MediaFoundation.EVR.DXVA2Filters dwProperty,
             out int pValue);
 
         int SetFilteringValue(
-            DXVA2Filters dwProperty,
+            MediaFoundation.EVR.DXVA2Filters dwProperty,
             [In] int pValue);
 
         int GetBackgroundColor(

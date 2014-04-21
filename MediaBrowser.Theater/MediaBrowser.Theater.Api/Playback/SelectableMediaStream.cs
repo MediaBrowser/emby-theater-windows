@@ -14,6 +14,7 @@ namespace MediaBrowser.Theater.Api.Playback
         private string _name;
         private MediaStreamType _type;
         private string _identifier;
+        private string _path;
 
         /// <summary>
         /// Gets or sets the index.
@@ -101,6 +102,24 @@ namespace MediaBrowser.Theater.Api.Playback
                 }
 
                 _identifier = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the Path.
+        /// </summary>
+        /// <value>The Path - used for external subtitles .</value>
+        public string Path
+        {
+            get { return _path; }
+            set
+            {
+                if (Equals(_path, value)) {
+                    return;
+                }
+                
+                _path = value;
                 OnPropertyChanged();
             }
         }

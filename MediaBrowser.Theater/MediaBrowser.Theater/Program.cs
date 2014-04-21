@@ -59,8 +59,9 @@ namespace MediaBrowser.Theater
             if (File.Exists(updateArchive)) {
                 // Update is there - execute update
                 try {
-//                    new ApplicationUpdater().UpdateApplication(MBApplication.MBTheater, appPaths, updateArchive,
-//                                                               logManager.GetLogger("ApplicationUpdater"), string.Empty);
+                    new ApplicationUpdater().UpdateApplication(
+                        appPaths, updateArchive,
+                        logManager.GetLogger("ApplicationUpdater"), string.Empty);
 
                     // And just let the app exit so it can update
                     return true;

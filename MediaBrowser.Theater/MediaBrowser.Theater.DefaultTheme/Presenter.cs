@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Interop;
 using MediaBrowser.Model.Logging;
+using MediaBrowser.Theater.Api;
 using MediaBrowser.Theater.Api.Events;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.UserInterface;
@@ -29,16 +30,28 @@ namespace MediaBrowser.Theater.DefaultTheme
     {
         private readonly INavigator _navigator;
         private readonly IInternalPlayerWindowManager _internalPlayerWindowManager;
+        private readonly ITheaterApplicationHost _appHost;
         private readonly ILogger _logger;
 
         private MainWindow _mainWindow;
         private IntPtr _mainWindowHandle;
         private PopupWindow _currentPopup;
 
-        public WindowManager(INavigator navigator, IInternalPlayerWindowManager internalPlayerWindowManager, ILogManager logManager)
+        public event Action<Window> MainWindowLoaded;
+
+        protected virtual void OnMainWindowLoaded(Window obj)
+        {
+            Action<Window> handler = MainWindowLoaded;
+            if (handler != null) {
+                handler(obj);
+            }
+        }
+
+        public WindowManager(INavigator navigator, IInternalPlayerWindowManager internalPlayerWindowManager, ILogManager logManager, ITheaterApplicationHost appHost)
         {
             _navigator = navigator;
             _internalPlayerWindowManager = internalPlayerWindowManager;
+            _appHost = appHost;
             _logger = logManager.GetLogger("WindowManager");
         }
 
@@ -94,7 +107,7 @@ namespace MediaBrowser.Theater.DefaultTheme
 
             UnfocusMainWindow();
 
-            _currentPopup.ShowModal(_mainWindow);
+            _currentPopup.ShowModal(_mainWindow, _appHost.UserInputManager);
         }
 
         public MainWindow CreateMainWindow(PluginConfiguration config, IViewModel viewModel)
@@ -147,6 +160,8 @@ namespace MediaBrowser.Theater.DefaultTheme
             _mainWindowHandle = new WindowInteropHelper(_mainWindow).Handle;
 
             CreateInternalPlayerWindow(startPosition);
+
+            OnMainWindowLoaded(window);
 
             return window;
         }
@@ -366,6 +381,12 @@ namespace MediaBrowser.Theater.DefaultTheme
 
         private readonly WindowManager _windowManager;
         private IntPtr _mainWindowHandle;
+
+        public event Action<Window> MainWindowLoaded
+        {
+            add { _windowManager.MainWindowLoaded += value; }
+            remove { _windowManager.MainWindowLoaded -= value; }
+        }
         
         public Presenter(IEventAggregator events, WindowManager windowManager)
         {
@@ -388,6 +409,11 @@ namespace MediaBrowser.Theater.DefaultTheme
             }
         }
 
+        public void EnsureApplicationWindowHasFocus()
+        {
+            _windowManager.EnsureApplicationWindowHasFocus();
+        }
+
         public async Task ShowPage(IViewModel contents)
         {
             await _windowManager.ClosePopup();
@@ -402,6 +428,11 @@ namespace MediaBrowser.Theater.DefaultTheme
         public Task ShowNotification(IViewModel contents)
         {
             return _showNotificationEvent.Publish(new ShowNotificationEvent { ViewModel = contents });
+        }
+
+        public void ShowMessage(MessageBoxInfo messageBoxInfo)
+        {
+            //todo message box
         }
     }
 }

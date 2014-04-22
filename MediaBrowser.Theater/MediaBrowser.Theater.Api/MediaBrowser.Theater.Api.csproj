@@ -45,6 +45,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Management" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -55,6 +56,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AsyncLock.cs" />
+    <Compile Include="Commands\Commands.cs" />
+    <Compile Include="Commands\ICommandManager.cs" />
     <Compile Include="Commands\IMenuCommand.cs" />
     <Compile Include="Configuration\ApplicationConfiguration.cs" />
     <Compile Include="Configuration\AutoLoginConfiguration.cs" />
@@ -95,7 +98,11 @@
     <Compile Include="Navigation\PathResolution.cs" />
     <Compile Include="Commands\IGlobalMenuCommand.cs" />
     <Compile Include="System\IServerConnectionManager.cs" />
+    <Compile Include="System\IStartupEntryPoint.cs" />
+    <Compile Include="UserInput\IUserInputManager.cs" />
     <Compile Include="UserInterface\IImageManager.cs" />
+    <Compile Include="UserInterface\MessageBoxIcon.cs" />
+    <Compile Include="UserInterface\MessageBoxInfo.cs" />
     <Compile Include="UserInterface\UIDispatchExtensions.cs" />
     <Compile Include="UserInterface\ITheme.cs" />
     <Compile Include="Navigation\DefaultPaths.cs" />

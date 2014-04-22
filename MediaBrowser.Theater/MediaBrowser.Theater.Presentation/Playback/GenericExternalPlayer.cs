@@ -12,6 +12,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MediaBrowser.Theater.Api.UserInput;
 
 namespace MediaBrowser.Theater.Presentation.Playback
 {
@@ -20,7 +21,7 @@ namespace MediaBrowser.Theater.Presentation.Playback
     /// </summary>
     public class GenericExternalPlayer : IExternalMediaPlayer, IConfigurableMediaPlayer
     {
-        //private readonly IUserInputManager _userInput;
+        private readonly IUserInputManager _userInput;
 
         /// <summary>
         /// The _logger
@@ -204,11 +205,11 @@ namespace MediaBrowser.Theater.Presentation.Playback
         /// <param name="playbackManager">The playback manager.</param>
         /// <param name="logger">The logger.</param>
         /// <param name="userInput">The user input.</param>
-        public GenericExternalPlayer(IPlaybackManager playbackManager, ILogger logger, /*IUserInputManager userInput,*/ IIsoManager isoManager)
+        public GenericExternalPlayer(IPlaybackManager playbackManager, ILogger logger, IUserInputManager userInput, IIsoManager isoManager)
         {
             _playbackManager = playbackManager;
             Logger = logger;
-            //_userInput = userInput;
+            _userInput = userInput;
             _isoManager = isoManager;
         }
 
@@ -277,7 +278,7 @@ namespace MediaBrowser.Theater.Presentation.Playback
 
             if (options.Configuration.CloseOnStopButton && !CanCloseAutomaticallyOnStopButton)
             {
-                //_userInput.GlobalKeyDown += KeyboardListener_KeyDown;
+                _userInput.GlobalKeyDown += KeyboardListener_KeyDown;
             }
 
             process.Exited += CurrentProcess_Exited;
@@ -338,7 +339,7 @@ namespace MediaBrowser.Theater.Presentation.Playback
         {
             _currentProcess = null;
 
-            //_userInput.GlobalKeyDown -= KeyboardListener_KeyDown;
+            _userInput.GlobalKeyDown -= KeyboardListener_KeyDown;
 
             var process = (Process)sender;
 

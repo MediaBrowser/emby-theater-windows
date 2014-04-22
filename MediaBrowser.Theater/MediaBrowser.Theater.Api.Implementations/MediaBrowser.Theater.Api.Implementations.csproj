@@ -73,6 +73,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -85,6 +86,8 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\CommandManager.cs" />
+    <Compile Include="Commands\InputToCommand.cs" />
     <Compile Include="Configuration\ApplicationPaths.cs" />
     <Compile Include="Configuration\ConfigurationManager.cs" />
     <Compile Include="Playback\PlaybackManager.cs" />
@@ -95,6 +98,15 @@
     <Compile Include="System\NativeNetworkMethods.cs" />
     <Compile Include="System\NetworkUtils.cs" />
     <Compile Include="System\ServerConnectionManager.cs" />
+    <Compile Include="UserInput\GlobalEventProvider.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UserInput\HookManager.Callbacks.cs" />
+    <Compile Include="UserInput\HookManager.cs" />
+    <Compile Include="UserInput\HookManager.Structures.cs" />
+    <Compile Include="UserInput\HookManager.Windows.cs" />
+    <Compile Include="UserInput\MouseEventExtArgs.cs" />
+    <Compile Include="UserInput\UserInputManager.cs" />
     <Compile Include="UserInterface\ImageManager.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -105,6 +117,10 @@
     <ProjectReference Include="..\MediaBrowser.Theater.Api\MediaBrowser.Theater.Api.csproj">
       <Project>{76a1834d-1be3-4361-bac2-711cdd74eb3f}</Project>
       <Name>MediaBrowser.Theater.Api</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MediaBrowser.Theater.DirectShow\MediaBrowser.Theater.DirectShow.csproj">
+      <Project>{04781068-d0d2-47ba-8d1c-a96274655f63}</Project>
+      <Name>MediaBrowser.Theater.DirectShow</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

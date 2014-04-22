@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Forms;
 using MediaBrowser.ApiInteraction;
 using MediaBrowser.ApiInteraction.WebSocket;
@@ -21,12 +22,14 @@ using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.System;
 using MediaBrowser.Model.Updates;
 using MediaBrowser.Theater.Api;
+using MediaBrowser.Theater.Api.Commands;
 using MediaBrowser.Theater.Api.Configuration;
 using MediaBrowser.Theater.Api.Events;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.System;
+using MediaBrowser.Theater.Api.UserInput;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme;
 using MediaBrowser.Theater.DirectShow;
@@ -56,6 +59,10 @@ namespace MediaBrowser.Theater
         {
             get { return (ConfigurationManager) ConfigurationManager; }
         }
+
+        public INavigator Navigator { get; private set; }
+        public IPresenter Presenter { get; private set; }
+        public IUserInputManager UserInputManager { get; private set; }
 
         public override bool CanSelfRestart
         {
@@ -92,6 +99,14 @@ namespace MediaBrowser.Theater
             await base.Init(progress).ConfigureAwait(false);
             await RunStartupTasks().ConfigureAwait(false);
 
+            Action<Window> mainWindowLoaded = null;
+            mainWindowLoaded = w => {
+                StartEntryPoints();
+                Presenter.MainWindowLoaded -= mainWindowLoaded;
+            };
+
+            Presenter.MainWindowLoaded += mainWindowLoaded;
+
             Logger.Info("Core startup complete");
         }
 
@@ -118,6 +133,8 @@ namespace MediaBrowser.Theater
             Container.RegisterSingle(typeof (IInternalPlayerWindowManager), typeof (InternalPlayerWindowManager));
             Container.RegisterSingle(typeof (IPlaybackManager), typeof (PlaybackManager));
             Container.RegisterSingle(typeof (IServerConnectionManager), typeof (ServerConnectionManager));
+            Container.RegisterSingle(typeof (IUserInputManager), typeof (UserInputManager));
+            Container.RegisterSingle(typeof (ICommandManager), typeof (CommandManager));
 
             // temp bindings until it is possible for the theme to bind these
             Container.RegisterSingle(typeof (IPresenter), typeof (Presenter));
@@ -130,6 +147,25 @@ namespace MediaBrowser.Theater
             Theme = Resolve<ITheme>();
             Plugins = LoadPlugins();
             Resolve<IPlaybackManager>().AddParts(GetExports<IMediaPlayer>());
+
+            Navigator = Resolve<INavigator>();
+            Presenter = Resolve<IPresenter>();
+            UserInputManager = Resolve<IUserInputManager>();
+        }
+
+        public void StartEntryPoints()
+        {
+            Parallel.ForEach(GetExports<IStartupEntryPoint>(), entryPoint =>
+            {
+                try
+                {
+                    entryPoint.Run();
+                }
+                catch (Exception ex)
+                {
+                    Logger.ErrorException("Error in {0}", ex, entryPoint.GetType().Name);
+                }
+            });
         }
 
         private Type FindTheme()

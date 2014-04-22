@@ -1,5 +1,8 @@
 ﻿using MediaBrowser.Common;
 using MediaBrowser.Theater.Api.Configuration;
+using MediaBrowser.Theater.Api.Navigation;
+using MediaBrowser.Theater.Api.UserInput;
+using MediaBrowser.Theater.Api.UserInterface;
 
 namespace MediaBrowser.Theater.Api
 {
@@ -7,5 +10,9 @@ namespace MediaBrowser.Theater.Api
         : IApplicationHost
     {
         ITheaterConfigurationManager TheaterConfigurationManager { get; }
+
+        INavigator Navigator { get; }
+        IPresenter Presenter { get; }
+        IUserInputManager UserInputManager { get; }
     }
 }

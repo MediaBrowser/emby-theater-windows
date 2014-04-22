@@ -3,11 +3,14 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Media;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
+using System.Windows.Navigation;
 using System.Windows.Threading;
+using MediaBrowser.ApiInteraction;
 using MediaBrowser.ApiInteraction.WebSocket;
 using MediaBrowser.Common;
 using MediaBrowser.Model.ApiClient;
@@ -17,6 +20,8 @@ using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Model.Serialization;
 using MediaBrowser.Model.Session;
+using MediaBrowser.Plugins.DefaultTheme.Home;
+using MediaBrowser.Plugins.DefaultTheme.ListPage;
 using MediaBrowser.Theater.Interfaces.Commands;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
@@ -27,9 +32,11 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Windows;
+using MediaBrowser.Theater.Presentation.ViewModels;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using MessageBoxIcon = MediaBrowser.Theater.Interfaces.Theming.MessageBoxIcon;
 using System.Configuration;
+using NavigationEventArgs = MediaBrowser.Theater.Interfaces.Navigation.NavigationEventArgs;
 
 namespace MediaBrowser.UI.EntryPoints
 {
@@ -39,10 +46,12 @@ namespace MediaBrowser.UI.EntryPoints
         private readonly IApiClient _apiClient;
         private readonly ILogger _logger;
         private readonly ApplicationHost _appHost;
-        private readonly INavigationService _nav;
+        private readonly IImageManager _imageManager;
+        private readonly INavigationService _navigationService;
         private readonly IPlaybackManager _playbackManager;
         private readonly IPresentationManager _presentationManager;
         private readonly ICommandManager _commandManager;
+        private readonly IServerEvents _serverEvents;
 
         private bool _isDisposed;
 
@@ -51,23 +60,25 @@ namespace MediaBrowser.UI.EntryPoints
             get { return _appHost.ApiWebSocket; }
         }
 
-        public WebSocketEntryPoint(ISessionManager sessionManagerManager, IApiClient apiClient, ILogManager logManager, IApplicationHost appHost, INavigationService nav, IPlaybackManager playbackManager, IPresentationManager presentationManager, ICommandManager commandManager)
+        public WebSocketEntryPoint(ISessionManager sessionManagerManager, IApiClient apiClient, ILogManager logManager, IApplicationHost appHost, IImageManager imageManager, INavigationService navigationService, IPlaybackManager playbackManager, IPresentationManager presentationManager, ICommandManager commandManager, IServerEvents serverEvents)
         {
             _sessionManager = sessionManagerManager;
             _apiClient = apiClient;
             _logger = logManager.GetLogger(GetType().Name);
             _appHost = (ApplicationHost)appHost;
-            _nav = nav;
+            _imageManager = imageManager;
+            _navigationService = navigationService;
             _playbackManager = playbackManager;
             _presentationManager = presentationManager;
             _commandManager = commandManager;
+            _serverEvents = serverEvents;
         }
 
         public void Run()
         {
             _sessionManager.UserLoggedIn += SessionManagerUserLoggedIn;
             _apiClient.ServerLocationChanged += _apiClient_ServerLocationChanged;
-            _nav.Navigated += _nav_Navigated;
+            _navigationService.Navigated += NavigationServiceNavigated;
 
             var socket = ApiWebSocket;
 
@@ -342,6 +353,137 @@ namespace MediaBrowser.UI.EntryPoints
            }
        }
      
+        private string DictTpString(Dictionary<String, String> dict)
+       {
+           return string.Join(";", dict.Select(i => String.Format("{0}={1}", i.Key , i.Value)));
+       }
+
+        private ViewType MapContextToNavigateViewType(string context)
+        {
+            switch (context)
+            {
+                case "movies": 
+                    return ViewType.Movies;
+                    break;
+
+                case "tv":
+                    return ViewType.Tv;
+                    break;
+
+                case "music":
+                    return ViewType.Music;
+
+                case "folders":
+                    return ViewType.Folders;
+                    break;
+
+                case "games":
+                    return ViewType.Games;
+                    break;
+
+
+                default:
+                    return ViewType.Home;
+                    break;
+            }
+        }
+
+        private Task<ItemsResult> GetMoviesByGenre(ItemListViewModel viewModel, DisplayPreferences displayPreferences)
+        {
+            var query = new ItemQuery
+            {
+                Fields = FolderPage.QueryFields,
+
+                UserId = _sessionManager.CurrentUser.Id,
+
+                IncludeItemTypes = new[] { "Movie" },
+
+                SortBy = !String.IsNullOrEmpty(displayPreferences.SortBy)
+                             ? new[] { displayPreferences.SortBy }
+                             : new[] { ItemSortBy.SortName },
+
+                SortOrder = displayPreferences.SortOrder,
+
+                Recursive = true
+            };
+
+            var indexOption = viewModel.CurrentIndexOption;
+
+            if (indexOption != null)
+            {
+                query.Genres = new[] { indexOption.Name };
+            }
+
+            return _apiClient.GetItemsAsync(query);
+        }
+
+        
+        protected async Task<BaseItemDto> GetRootFolder()
+        {
+            return await _apiClient.GetRootFolderAsync(_apiClient.CurrentUserId);
+        }
+
+        private async Task NavigateToGenres(string itemType,  string pageTotle, Func<ItemListViewModel, DisplayPreferences, Task<ItemsResult>> query, string selectedGenre)
+        {
+            var item = await GetRootFolder();
+
+            var displayPreferences = await _presentationManager.GetDisplayPreferences("MovieGenres", CancellationToken.None);
+
+            var genres = await _apiClient.GetGenresAsync(new ItemsByNameQuery
+            {
+                IncludeItemTypes = new[] { itemType },
+                SortBy = new[] { ItemSortBy.SortName },
+                Recursive = true,
+                UserId = _sessionManager.CurrentUser.Id
+            });
+
+            var indexOptions = genres.Items.Select(i => new TabItem
+            {
+                Name = i.Name,
+                DisplayName = i.Name
+            });
+
+            var options = new ListPageConfig
+            {
+                IndexOptions = indexOptions.ToList(),
+                IndexValue = selectedGenre,
+                PageTitle = itemType,
+                CustomItemQuery = query
+            };
+
+            options.DefaultViewType = ListViewTypes.PosterStrip;
+
+            var page = new FolderPage(item, displayPreferences, _apiClient, _imageManager, _presentationManager, _navigationService, _playbackManager, _logger, _serverEvents, options)
+            {
+                ViewType = ViewType.Movies
+            };
+
+            await _navigationService.Navigate(page);
+        }
+     
+
+        private async void ExecuteDisplayContent(Dictionary<string, string> args)
+        {
+             _logger.Debug("ExecuteDisplayContent {0}", DictTpString(args));
+            var itemId = args["ItemId"];
+            if (! String.IsNullOrEmpty(itemId))
+            {
+                ViewType viewType = ViewType.Home;
+               
+                if (args.ContainsKey("Context"))
+                {
+                    viewType = MapContextToNavigateViewType(args["Context"]);
+                }
+               
+                if (args.ContainsKey("ItemType") && args["ItemType"] == "Genre")
+                {
+                    var selectedGenre = args.ContainsKey("ItemName") ? args["ItemName"] : null;
+                    await _presentationManager.Window.Dispatcher.Invoke(() => NavigateToGenres("Movie", "Movies", GetMoviesByGenre, selectedGenre));
+                }
+                else
+                    await _navigationService.NavigateToItem(new BaseItemDto { Id = itemId }, viewType);
+            }
+        }
 
         void socket_GeneralCommand(object sender, GeneralCommandEventArgs e)
         {
@@ -392,7 +534,7 @@ namespace MediaBrowser.UI.EntryPoints
                         break;
 
                     case GeneralCommandType.Back:
-                        _nav.NavigateBack();
+                        _navigationService.NavigateBack();
                         break;
 
                     case GeneralCommandType.TakeScreenshot:
@@ -452,7 +594,7 @@ namespace MediaBrowser.UI.EntryPoints
                         break;
 
                     case GeneralCommandType.DisplayContent:
-                          _commandManager.ExecuteCommand(Command.Null, null); //todo
+                          ExecuteDisplayContent(e.Command.Arguments);
                         break;
                     default:
                         _logger.Warn("Unrecognized command: " + e.KnownCommandType.Value);
@@ -531,31 +673,18 @@ namespace MediaBrowser.UI.EntryPoints
                     _commandManager.ExecuteCommand(Command.UnPause, null); 
                     break;
                 case PlaystateCommand.Seek:
-                    _commandManager.ExecuteCommand(Command.Seek, e.Request.SeekPositionTicks ?? 0)
-                    ;
-                    /* player.Seek(e.Request.SeekPositionTicks ?? 0); */
+                    _commandManager.ExecuteCommand(Command.Seek, e.Request.SeekPositionTicks ?? 0);
+                   
                     break;
 
                 case PlaystateCommand.PreviousTrack:
                     _commandManager.ExecuteCommand(Command.PrevisousTrack, null);
                     break;
 
-                    /*
-                    {
-                        player.GoToPreviousTrack();
-                        break;
-                    }
-                    */
                 case PlaystateCommand.NextTrack:
                     _commandManager.ExecuteCommand(Command.NextTrack, null);
                     break;
 
-                    /*
-                    {
-                        player.GoToNextTrack();
-                        break;
-                    }
-                    */
             }
         }
 
@@ -594,7 +723,7 @@ namespace MediaBrowser.UI.EntryPoints
                 {
                     Enum.TryParse(e.Request.Context, true, out viewType);
                 }
-                await _nav.NavigateToItem(dto, viewType);
+                await _navigationService.NavigateToItem(dto, viewType);
             }
             catch (Exception ex)
             {
@@ -614,7 +743,7 @@ namespace MediaBrowser.UI.EntryPoints
             });
         }
 
-        async void _nav_Navigated(object sender, NavigationEventArgs e)
+        async void NavigationServiceNavigated(object sender, NavigationEventArgs e)
         {
             var itemPage = e.NewPage as IItemPage;
 

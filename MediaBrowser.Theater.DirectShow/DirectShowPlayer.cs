@@ -1297,6 +1297,7 @@ namespace MediaBrowser.Theater.DirectShow
 
         private void SetVideoWindow(bool enableMadVrExclusiveMode)
         {
+            int hr = 0;
             _isInExclusiveMode = _madvr != null && enableMadVrExclusiveMode;
 
             if (!enableMadVrExclusiveMode)
@@ -1324,18 +1325,17 @@ namespace MediaBrowser.Theater.DirectShow
                 _videoWindow.put_AutoShow(OABool.True);
                 _videoWindow.put_WindowState(WindowState.Show);
 
-                var hr = _videoWindow.SetWindowForeground(OABool.True);
+                hr = _videoWindow.SetWindowForeground(OABool.True);
                 DsError.ThrowExceptionForHR(hr);
 
                 if (enableMadVrExclusiveMode)
                 {
                     //_videoWindow.put_FullScreenMode(OABool.True);
                 }
-
                 else
                 {
-                    // hr = _videoWindow.put_MessageDrain(VideoWindowHandle); XXX
-                    hr = _videoWindow.put_MessageDrain(_applicationWindowHandle);
+                    hr = _videoWindow.put_MessageDrain(VideoWindowHandle); //XXX
+                    //hr = _videoWindow.put_MessageDrain(_applicationWindowHandle);
                     DsError.ThrowExceptionForHR(hr);
                 }
             }

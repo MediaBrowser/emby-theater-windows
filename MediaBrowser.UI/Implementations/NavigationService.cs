@@ -5,6 +5,8 @@ using MediaBrowser.Model.Configuration;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
+using MediaBrowser.Model.Querying;
+using MediaBrowser.Plugins.DefaultTheme.ListPage;
 using MediaBrowser.Theater.Core.FullscreenVideo;
 using MediaBrowser.Theater.Core.ImageViewer;
 using MediaBrowser.Theater.Core.Login;
@@ -24,6 +26,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using MediaBrowser.Theater.Presentation.ViewModels;
+using TabItem = MediaBrowser.Theater.Presentation.ViewModels.TabItem;
 
 namespace MediaBrowser.UI.Implementations
 {
@@ -334,6 +338,140 @@ namespace MediaBrowser.UI.Implementations
             var item = await _apiClient.GetPersonAsync(name, _sessionFactory().CurrentUser.Id);
 
             await App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(async () => await Navigate(_themeManager.CurrentTheme.GetPersonPage(item, context, mediaItemId)));
+        }
+
+        private Task<ItemsResult> GetMoviesByGenre(ItemListViewModel viewModel, DisplayPreferences displayPreferences)
+        {
+            var query = new ItemQuery
+            {
+                Fields = FolderPage.QueryFields,
+
+                UserId = _sessionFactory().CurrentUser.Id,
+
+                IncludeItemTypes = new[] { "Movie" },
+
+                SortBy = !String.IsNullOrEmpty(displayPreferences.SortBy)
+                             ? new[] { displayPreferences.SortBy }
+                             : new[] { ItemSortBy.SortName },
+
+                SortOrder = displayPreferences.SortOrder,
+
+                Recursive = true
+            };
+
+            var indexOption = viewModel.CurrentIndexOption;
+
+            if (indexOption != null)
+            {
+                query.Genres = new[] { indexOption.Name };
+            }
+
+            return _apiClient.GetItemsAsync(query);
+        }
+
+        private Task<ItemsResult> GetSeriesByGenre(ItemListViewModel viewModel, DisplayPreferences displayPreferences)
+        {
+            var query = new ItemQuery
+            {
+                Fields = FolderPage.QueryFields,
+
+                UserId = _sessionFactory().CurrentUser.Id,
+
+                IncludeItemTypes = new[] { "Series" },
+
+                SortBy = !String.IsNullOrEmpty(displayPreferences.SortBy)
+                             ? new[] { displayPreferences.SortBy }
+                             : new[] { ItemSortBy.SortName },
+
+                SortOrder = displayPreferences.SortOrder,
+
+                Recursive = true
+            };
+
+            var indexOption = viewModel.CurrentIndexOption;
+
+            if (indexOption != null)
+            {
+                query.Genres = new[] { indexOption.Name };
+            }
+
+            return _apiClient.GetItemsAsync(query);
+        }
+
+        private async Task NavigateToGenreInternal(string itemType, string includeItemType, string pageTitle, Func<ItemListViewModel, DisplayPreferences, Task<ItemsResult>> query, string selectedGenre)
+        {
+            var root = await _apiClient.GetRootFolderAsync(_apiClient.CurrentUserId);
+
+            var displayPreferences = await _presentationManager.GetDisplayPreferences(itemType + "Genres", CancellationToken.None);
+
+            var genres = await _apiClient.GetGenresAsync(new ItemsByNameQuery
+            {
+                IncludeItemTypes = new[] { includeItemType },
+                SortBy = new[] { ItemSortBy.SortName },
+                Recursive = true,
+                UserId = _sessionFactory().CurrentUser.Id
+            });
+
+            var indexOptions = genres.Items.Select(i => new TabItem
+            {
+                Name = i.Name,
+                DisplayName = i.Name
+            });
+
+            var options = new ListPageConfig
+            {
+                IndexOptions = indexOptions.ToList(),
+                IndexValue = selectedGenre,
+                PageTitle = pageTitle,
+                CustomItemQuery = query
+            };
+
+            options.DefaultViewType = ListViewTypes.PosterStrip;
+
+            var page = new FolderPage(root, displayPreferences, _apiClient, _imageManager, _presentationManager, this, _playbackManagerFactory(), _logger, _serverEvents, options)
+            {
+                ViewType = ViewType.Movies
+            };
+
+            await Navigate(page);
+        }
+
+        /// <summary>
+        /// Navigates to Genre in either a Move, Tv or Game view.
+        /// </summary>
+        /// <param name="genre">The Genre.</param>
+        /// <param name="context">The context - Move, TV or Game</param>
+        /// <returns>Task.</returns>
+        /// 
+        public async Task NavigateToGenre(string genre, ViewType context)
+        {
+            _presentationManager.ShowLoadingAnimation();
+            try
+            {
+                switch (context)
+                {
+                    case ViewType.Movies:
+                        await
+                            App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(async () => await NavigateToGenreInternal("Movie", "Movie", "Movies", GetMoviesByGenre, genre));
+                        break;
+
+                    case ViewType.Tv:
+                        App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(async () => await NavigateToGenreInternal("TV", "Series", "TV", GetSeriesByGenre, genre));
+                        break;
+
+                    case ViewType.Games:
+                        //  App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(async () => await await NavigateToGenreInternal("Game", "Game", "Games", GetGamesByGenre, genre));
+                        break;
+
+                    default:
+                        // does not make sense, do nothing
+                        break;
+                }
+            }
+            finally
+            {
+                _presentationManager.HideLoadingAnimation();
+            }
         }
 
         public async Task NavigateToSearchPage()

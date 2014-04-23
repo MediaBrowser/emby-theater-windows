@@ -27,6 +27,7 @@ using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
+using MediaBrowser.Theater.Interfaces.UserInput;
 using MediaBrowser.Theater.Presentation.Playback;
 using System;
 using System.Linq;
@@ -52,6 +53,7 @@ namespace MediaBrowser.UI.EntryPoints
         private readonly IPresentationManager _presentationManager;
         private readonly ICommandManager _commandManager;
         private readonly IServerEvents _serverEvents;
+        private readonly IUserInputManager _userInputManager;
 
         private bool _isDisposed;
 
@@ -60,7 +62,7 @@ namespace MediaBrowser.UI.EntryPoints
             get { return _appHost.ApiWebSocket; }
         }
 
-        public WebSocketEntryPoint(ISessionManager sessionManagerManager, IApiClient apiClient, ILogManager logManager, IApplicationHost appHost, IImageManager imageManager, INavigationService navigationService, IPlaybackManager playbackManager, IPresentationManager presentationManager, ICommandManager commandManager, IServerEvents serverEvents)
+        public WebSocketEntryPoint(ISessionManager sessionManagerManager, IApiClient apiClient, ILogManager logManager, IApplicationHost appHost, IImageManager imageManager, INavigationService navigationService, IPlaybackManager playbackManager, IPresentationManager presentationManager, ICommandManager commandManager, IServerEvents serverEvents, IUserInputManager userInputManager)
         {
             _sessionManager = sessionManagerManager;
             _apiClient = apiClient;
@@ -71,6 +73,7 @@ namespace MediaBrowser.UI.EntryPoints
             _playbackManager = playbackManager;
             _presentationManager = presentationManager;
             _commandManager = commandManager;
+            _userInputManager = userInputManager;
             _serverEvents = serverEvents;
         }
 
@@ -251,42 +254,6 @@ namespace MediaBrowser.UI.EntryPoints
           
         }
 
-        //
-        // see http://stackoverflow.com/questions/1645815/how-can-i-programmatically-generate-keypress-events-in-c
-        // Send a Key to currently active element, 
-        //      1. the element will in receive a KeyDown event which will 
-        //      2. The elemen will implement the actions - i.e move 
-        //      3. The Keydown will be picked up by the input manager and the generate a Command matching the key
-        //
-        void SendKeyDownEventToFocusedElement(System.Windows.Input.Key key)
-        {
-            _logger.Debug("SendKeyDownEventToFocusedElement {0}", key);
-              _presentationManager.Window.Dispatcher.Invoke(() =>
-              {
-                // _presentation.EnsureApplicationWindowHasFocus(); // todo - need this when testing and running on the same display and input, proably not in prod env
-                var source = (HwndSource)PresentationSource.FromVisual(_presentationManager.Window);
-                var keyEventArgs = new KeyEventArgs
-                                    (
-                                        Keyboard.PrimaryDevice,
-                                        source,
-                                        0,
-                                        key
-                                    ) { RoutedEvent = Keyboard.KeyDownEvent };
-
-                InputManager.Current.ProcessInput(keyEventArgs);
-             });
-        }
-
-        //
-        //
-        // Send a text string to currently active element, 
-        //
-        void SendTextInputToFocusedElement(string inputText)
-        {
-            _logger.Debug("SendTextInputToFocusedElement {0}", inputText);
-            SendKeys.SendWait(inputText);
-        }
-
         void ExecuteSendStringCommand(object sender, GeneralCommandEventArgs e)
         {
             _logger.Debug("ExecuteSendStringCommand {0}", e.Command.Arguments != null && e.Command.Arguments.Count > 0 ? e.Command.Arguments.First().Value : null);
@@ -296,7 +263,7 @@ namespace MediaBrowser.UI.EntryPoints
           
              string inputText = e.Command.Arguments.First().Value;
 
-             SendTextInputToFocusedElement(inputText);
+             _userInputManager.SendTextInputToFocusedElement(inputText);
         }
 
        private bool IsWindowsKeyEnum(int input, out System.Windows.Input.Key key)
@@ -327,7 +294,7 @@ namespace MediaBrowser.UI.EntryPoints
                if (!IsWindowsKeyEnum(intVal, out key))
                    throw new ArgumentException(String.Format("ExecuteSendStringCommand: integer argument {0} does not map to  System.Windows.Input.Key", intVal));
 
-               SendKeyDownEventToFocusedElement(key);
+               _userInputManager.SendKeyDownEventToFocusedElement(key);
            }
            else if (input.StartsWith("Key."))  // check if the string maps to a enum element name i.e Key.A
            {
@@ -340,12 +307,12 @@ namespace MediaBrowser.UI.EntryPoints
                {
                    throw new ArgumentException(String.Format("ExecuteSendStringCommand: Argument '{0}' must be a Single Char or a Windows Key literial (i.e Key.A)  or the Integer value for Key literial", input));
                }
-               
-               SendKeyDownEventToFocusedElement(key);
+
+               _userInputManager.SendKeyDownEventToFocusedElement(key);
            }
            else if (input.Length == 1)
            {
-               SendTextInputToFocusedElement(input);
+               _userInputManager.SendTextInputToFocusedElement(input);
            }
            else
            {
@@ -353,11 +320,6 @@ namespace MediaBrowser.UI.EntryPoints
            }
        }
      
-        private string DictTpString(Dictionary<String, String> dict)
-       {
-           return string.Join(";", dict.Select(i => String.Format("{0}={1}", i.Key , i.Value)));
-       }
-
         private ViewType MapContextToNavigateViewType(string context)
         {
             switch (context)
@@ -388,83 +350,14 @@ namespace MediaBrowser.UI.EntryPoints
             }
         }
 
-        private Task<ItemsResult> GetMoviesByGenre(ItemListViewModel viewModel, DisplayPreferences displayPreferences)
+        private string DictToString(Dictionary<String, String> dict)
         {
-            var query = new ItemQuery
-            {
-                Fields = FolderPage.QueryFields,
-
-                UserId = _sessionManager.CurrentUser.Id,
-
-                IncludeItemTypes = new[] { "Movie" },
-
-                SortBy = !String.IsNullOrEmpty(displayPreferences.SortBy)
-                             ? new[] { displayPreferences.SortBy }
-                             : new[] { ItemSortBy.SortName },
-
-                SortOrder = displayPreferences.SortOrder,
-
-                Recursive = true
-            };
-
-            var indexOption = viewModel.CurrentIndexOption;
-
-            if (indexOption != null)
-            {
-                query.Genres = new[] { indexOption.Name };
-            }
-
-            return _apiClient.GetItemsAsync(query);
+            return string.Join(";", dict.Select(i => String.Format("{0}={1}", i.Key, i.Value)));
         }
-
-        
-        protected async Task<BaseItemDto> GetRootFolder()
-        {
-            return await _apiClient.GetRootFolderAsync(_apiClient.CurrentUserId);
-        }
-
-        private async Task NavigateToGenres(string itemType,  string pageTotle, Func<ItemListViewModel, DisplayPreferences, Task<ItemsResult>> query, string selectedGenre)
-        {
-            var item = await GetRootFolder();
-
-            var displayPreferences = await _presentationManager.GetDisplayPreferences("MovieGenres", CancellationToken.None);
-
-            var genres = await _apiClient.GetGenresAsync(new ItemsByNameQuery
-            {
-                IncludeItemTypes = new[] { itemType },
-                SortBy = new[] { ItemSortBy.SortName },
-                Recursive = true,
-                UserId = _sessionManager.CurrentUser.Id
-            });
-
-            var indexOptions = genres.Items.Select(i => new TabItem
-            {
-                Name = i.Name,
-                DisplayName = i.Name
-            });
-
-            var options = new ListPageConfig
-            {
-                IndexOptions = indexOptions.ToList(),
-                IndexValue = selectedGenre,
-                PageTitle = itemType,
-                CustomItemQuery = query
-            };
-
-            options.DefaultViewType = ListViewTypes.PosterStrip;
-
-            var page = new FolderPage(item, displayPreferences, _apiClient, _imageManager, _presentationManager, _navigationService, _playbackManager, _logger, _serverEvents, options)
-            {
-                ViewType = ViewType.Movies
-            };
-
-            await _navigationService.Navigate(page);
-        }
-     
 
         private async void ExecuteDisplayContent(Dictionary<string, string> args)
         {
-             _logger.Debug("ExecuteDisplayContent {0}", DictTpString(args));
+             _logger.Debug("ExecuteDisplayContent {0}", DictToString(args));
             var itemId = args["ItemId"];
             if (! String.IsNullOrEmpty(itemId))
             {
@@ -474,14 +367,27 @@ namespace MediaBrowser.UI.EntryPoints
                 {
                     viewType = MapContextToNavigateViewType(args["Context"]);
                 }
-               
-                if (args.ContainsKey("ItemType") && args["ItemType"] == "Genre")
+
+                if (args.ContainsKey("ItemType"))
                 {
-                    var selectedGenre = args.ContainsKey("ItemName") ? args["ItemName"] : null;
-                    await _presentationManager.Window.Dispatcher.Invoke(() => NavigateToGenres("Movie", "Movies", GetMoviesByGenre, selectedGenre));
+                    var itemType = args["ItemType"];
+                    // special case for genres and people items as they contain child items
+                    if (String.Equals(itemType, "Genre"))
+                    {
+                        var selectedGenre = args.ContainsKey("ItemName") ? args["ItemName"] : null;
+                        await _navigationService.NavigateToGenre(selectedGenre, viewType);
+                       return;
+                    }
+                    else if (String.Equals(itemType, "Person"))
+                    {
+                         var selectedPerson = args.ContainsKey("ItemName") ? args["ItemName"] : null;
+                        await _navigationService.NavigateToPerson(selectedPerson, viewType);
+                        return;
+                    }
                 }
-                else
-                    await _navigationService.NavigateToItem(new BaseItemDto { Id = itemId }, viewType);
+              
+                await _navigationService.NavigateToItem(new BaseItemDto { Id = itemId }, viewType);
+                
             }
         }
 
@@ -494,23 +400,23 @@ namespace MediaBrowser.UI.EntryPoints
                 switch (e.KnownCommandType.Value)
                 {
                     case GeneralCommandType.MoveUp:
-                        SendKeyDownEventToFocusedElement(Key.Up);
+                        _userInputManager.SendKeyDownEventToFocusedElement(Key.Up);
                         break;
 
                     case GeneralCommandType.MoveDown:
-                        SendKeyDownEventToFocusedElement(Key.Down);
+                        _userInputManager.SendKeyDownEventToFocusedElement(Key.Down);
                         break;
 
                     case GeneralCommandType.MoveLeft:
-                         SendKeyDownEventToFocusedElement(Key.Left);
+                        _userInputManager.SendKeyDownEventToFocusedElement(Key.Left);
                         break;
 
                     case GeneralCommandType.MoveRight:
-                         SendKeyDownEventToFocusedElement(Key.Right);
+                        _userInputManager.SendKeyDownEventToFocusedElement(Key.Right);
                         break;
 
                     case GeneralCommandType.PageUp:
-                        SendKeyDownEventToFocusedElement(Key.PageUp);
+                        _userInputManager.SendKeyDownEventToFocusedElement(Key.PageUp);
                         break;
 
                     case GeneralCommandType.PreviousLetter:
@@ -530,7 +436,7 @@ namespace MediaBrowser.UI.EntryPoints
                         break;
 
                     case GeneralCommandType.Select:
-                        SendKeyDownEventToFocusedElement(Key.Enter);
+                        _userInputManager.SendKeyDownEventToFocusedElement(Key.Enter);
                         break;
 
                     case GeneralCommandType.Back:

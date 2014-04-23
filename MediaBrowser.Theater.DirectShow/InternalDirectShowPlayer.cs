@@ -92,6 +92,23 @@ namespace MediaBrowser.Theater.DirectShow
             get { return true; }
         }
 
+
+        public bool CanSetAudioStreamIndex
+        {
+            get { return true; }
+        }
+
+
+        public bool CanSetSubtitleStreamIndex
+        {
+            get { return true; }
+        }
+
+        public bool CanAcceptNavigationCommands
+        {
+            get { return true; }
+        }
+
         public string Name
         {
             get { return "Internal Player"; }
@@ -180,7 +197,7 @@ namespace MediaBrowser.Theater.DirectShow
             {
                 InvokeOnPlayerThread(() =>
                 {
-                    _mediaPlayer = new DirectShowPlayer(_logger, _hiddenWindow, this, _presentation.WindowHandle, _sessionManager, _config, _inputManager);
+                    _mediaPlayer = new DirectShowPlayer(_logger, _hiddenWindow, this, _presentation.WindowHandle, _sessionManager, _config, _inputManager, _apiClient);
 
                     //HideCursor();
                 });
@@ -465,9 +482,30 @@ namespace MediaBrowser.Theater.DirectShow
             InvokeOnPlayerThread(() => _mediaPlayer.SetAudioTrack(track));
         }
 
+      
+        public void SetSubtitleStreamIndex(int subtitleStreamIndex)
+        {
+            InvokeOnPlayerThread(() => _mediaPlayer.SetSubtitleStreamIndex(subtitleStreamIndex));
+        }
+
+        public void NextSubtitleStream()
+        {
+            InvokeOnPlayerThread(() => _mediaPlayer.NextSubtitleStream());
+        }
+      
+        public void SetAudioStreamIndex(int audioStreamIndex)
+        {
+            InvokeOnPlayerThread(() => _mediaPlayer.SetAudioStreamIndex(audioStreamIndex));
+        }
+
+        public void NextAudioStream()
+        {
+            InvokeOnPlayerThread(() => _mediaPlayer.NextAudioStream());
+        }
+
         public void ChangeSubtitleStream(SelectableMediaStream track)
         {
-            InvokeOnPlayerThread(() => _mediaPlayer.SetSubtitleTrack(track));
+            InvokeOnPlayerThread(() => _mediaPlayer.SetSubtitleStream(track));
         }
 
         public void RemoveSubtitles()

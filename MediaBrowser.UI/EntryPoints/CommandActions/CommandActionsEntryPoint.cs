@@ -13,7 +13,7 @@ using WindowsInput = System.Windows.Input;
     public class CommandActionsEntryPoint :  IStartupEntryPoint, IDisposable
     {
         private readonly ILogger _logger;
-        private ICommandManager _commandManager;
+        private readonly ICommandManager _commandManager;
         private readonly DefaultCommandActionMap _defaultCommandActionMap;
 
 

@@ -170,8 +170,29 @@ namespace MediaBrowser.Theater.Interfaces.Presentation
         void HideModalLoadingAnimation();
 
         /// <summary>
+        /// set main application to full screen
+        /// </summary>
+        void FullScreen();
+
+        /// <summary>
+        /// Minimize the main application to an icon
+        /// </summary>
+        void MinimizeScreen();
+
+        /// <summary>
+        /// Restore the main application screen
+        /// </summary>
+        void RestoreScreen();
+
+        /// <summary>
+        /// Toggle the screen state
+        /// </summary>
+        void ToggleFullscreen();
+
+        /// <summary>
         /// Make sure the main application window has the focus
         /// </summary>
         void EnsureApplicationWindowHasFocus();
+
     }
 }

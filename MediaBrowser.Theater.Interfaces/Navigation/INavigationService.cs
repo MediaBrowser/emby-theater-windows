@@ -65,6 +65,14 @@ namespace MediaBrowser.Theater.Interfaces.Navigation
         Task NavigateToPerson(string name, ViewType context = ViewType.Folders, string mediaItemId = null);
 
         /// <summary>
+        /// Navigates to Genre in either a Move, Tv or Game view.
+        /// </summary>
+        /// <param name="genre">The Genre.</param>
+        /// <param name="context">The context - Move, TV or Game</param>
+        /// <returns>Task.</returns>
+        Task NavigateToGenre(string genre, ViewType context);
+      
+        /// <summary>
         /// Navigates to the search page
         /// </summary>
         Task NavigateToSearchPage();

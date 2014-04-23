@@ -129,24 +129,24 @@ namespace MediaBrowser.Theater.Implementations.UserInput
         }
 
 
-        private readonly IPresentationManager _presenationManager;
+        private readonly IPresentationManager _presentationManager;
         private readonly ILogger _logger;
         private readonly INavigationService _navigationService;
         private readonly IHiddenWindow _hiddenWindow;
 
-        public UserInputManager(IPresentationManager presenationManager, INavigationService navigationService, IHiddenWindow hiddenWindow, ILogManager logManager)
+        public UserInputManager(IPresentationManager presentationManager, INavigationService navigationService, IHiddenWindow hiddenWindow, ILogManager logManager)
         {
-            _presenationManager = presenationManager;
+            _presentationManager = presentationManager;
             _navigationService = navigationService;
             _hiddenWindow = hiddenWindow;
 
-            _presenationManager.WindowLoaded += MainWindowLoaded;
+            _presentationManager.WindowLoaded += MainWindowLoaded;
             _logger = logManager.GetLogger(GetType().Name);
         }
 
         internal void MainWindowLoaded(object sender, EventArgs eventArgs)
         {
-            var window = _presenationManager.Window;
+            var window = _presentationManager.Window;
 
             window.Dispatcher.InvokeAsync(() =>
             {
@@ -158,8 +158,8 @@ namespace MediaBrowser.Theater.Implementations.UserInput
             _navigationService.Navigated += _nav_Navigated;
             // subscribe and manager key down events from the application window
             // note, the hiddenform will also route keydown and mousemove event though here
-            _presenationManager.Window.KeyDown += Window_KeyDown;
-            _presenationManager.Window.MouseMove += Window_MouseMove;
+            _presentationManager.Window.KeyDown += Window_KeyDown;
+            _presentationManager.Window.MouseMove += Window_MouseMove;
         }
 
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
@@ -259,12 +259,11 @@ namespace MediaBrowser.Theater.Implementations.UserInput
             if (_keyDown != null)
             {
                 _logger.Debug("directPlayWindow_KeyDown {0}", e.KeyCode);
-                // map from System.Windows.Forms to System.Windows.Input key event
-                var window = _presenationManager.Window;
-                
-                window.Dispatcher.InvokeAsync(() =>
+               
+
+                _presentationManager.Window.Dispatcher.InvokeAsync(() =>
                 {
-                    var source = (HwndSource)PresentationSource.FromVisual(window);
+                    var source = (HwndSource)PresentationSource.FromVisual(_presentationManager.Window);
                     if (source != null)
                     {
                         var key = KeyInterop.KeyFromVirtualKey((int)e.KeyCode);
@@ -287,7 +286,7 @@ namespace MediaBrowser.Theater.Implementations.UserInput
             {
                 //_logger.Debug("directPlayWindow_MouseMove");
                 // map from System.Windows.Forms to System.Windows.Input mouse move event
-                  var window = _presenationManager.Window.Dispatcher.InvokeAsync(() =>
+                  var window = _presentationManager.Window.Dispatcher.InvokeAsync(() =>
                   {
                     var mouseEventArgs = new MouseButtonEventArgs(WindowsInput.InputManager.Current.PrimaryMouseDevice,
                         0,
@@ -319,6 +318,41 @@ namespace MediaBrowser.Theater.Implementations.UserInput
                     return WindowsInput.MouseButton.XButton2; 
             }
             throw new InvalidOperationException();
+        }
+
+        // <summary>
+        // Send a Key to currently active element, 
+        //      1. the element will in receive a KeyDown event which will 
+        //      2. The elemen will implement the actions - i.e move 
+        //      3. The Keydown will be picked up by the input manager and the generate a Command matching the key
+        // see http://stackoverflow.com/questions/1645815/how-can-i-programmatically-generate-keypress-events-in-c
+        // </summary>
+        public void SendKeyDownEventToFocusedElement(WindowsInput.Key key)
+        {
+            _logger.Debug("SendKeyDownEventToFocusedElement {0}", key);
+            _presentationManager.Window.Dispatcher.Invoke(() =>
+            {
+                // _presentation.EnsureApplicationWindowHasFocus(); // need this when testing and running on the same display and input, proably not in prod env
+                var source = (HwndSource)PresentationSource.FromVisual(_presentationManager.Window);
+                var keyEventArgs = new KeyEventArgs
+                                    (
+                                        Keyboard.PrimaryDevice,
+                                        source,
+                                        0,
+                                        key
+                                    ) { RoutedEvent = Keyboard.KeyDownEvent };
+
+                InputManager.Current.ProcessInput(keyEventArgs);
+            });
+        }
+
+        // <summary>
+        // Send a text string to currently active element, 
+        // </summary>
+        public void SendTextInputToFocusedElement(string inputText)
+        {
+            _logger.Debug("SendTextInputToFocusedElement {0}", inputText);
+            WindowsForms.SendKeys.SendWait(inputText);
         }
     }
 }

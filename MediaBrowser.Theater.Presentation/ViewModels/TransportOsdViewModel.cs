@@ -411,7 +411,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         public SelectableMediaStreamListViewModel CreateAudioStreamsViewModel()
         {
-            return new SelectableMediaStreamListViewModel(PlaybackManager)
+            return new SelectableMediaStreamListViewModel(PresentationManager, PlaybackManager)
             {
                 Type = MediaStreamType.Audio
             };
@@ -419,7 +419,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         public SelectableMediaStreamListViewModel CreateSubtitleStreamsViewModel()
         {
-            return new SelectableMediaStreamListViewModel(PlaybackManager)
+            return new SelectableMediaStreamListViewModel(PresentationManager, PlaybackManager)
             {
                 Type = MediaStreamType.Subtitle
             };

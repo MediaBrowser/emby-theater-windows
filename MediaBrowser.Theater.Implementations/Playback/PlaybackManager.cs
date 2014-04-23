@@ -532,6 +532,18 @@ namespace MediaBrowser.Theater.Implementations.Playback
             }
         }
 
+        public void ToggleMute()
+        {
+            if (IsMuted)
+            {
+                UnMute();
+            }
+            else
+            {
+                Mute();
+            }
+        }
+
         public float Volume
         {
             get
@@ -589,6 +601,46 @@ namespace MediaBrowser.Theater.Implementations.Playback
             {
                 audioDevice.AudioEndpointVolume.VolumeStepDown();
             }
+        }
+
+        public void SetAudioStreamIndex(int audioStreamIndex)
+        {
+            var player  =MediaPlayers.Where(p =>(p.PlayState == PlayState.Playing || p.PlayState == PlayState.Paused) &&p.CanSetAudioStreamIndex).FirstOrDefault();
+            if (player != null)
+            {
+                player.SetAudioStreamIndex(audioStreamIndex);
+            }
+
+        }
+
+        public void NextAudioStream()
+        {
+            var player = MediaPlayers.Where(p => (p.PlayState == PlayState.Playing || p.PlayState == PlayState.Paused) && p.CanSetAudioStreamIndex).FirstOrDefault();
+            if (player != null)
+            {
+                player.NextAudioStream();
+            }
+
+        }
+
+        public void SetSubtitleStreamIndex(int subitleStreamIndex)
+        {
+            var player = MediaPlayers.Where(p => (p.PlayState == PlayState.Playing || p.PlayState == PlayState.Paused) && p.CanSetAudioStreamIndex).FirstOrDefault();
+            if (player != null)
+            {
+                player.SetSubtitleStreamIndex(subitleStreamIndex);
+            }
+
+        }
+
+        public void NextSubtitleStream()
+        {
+            var player = MediaPlayers.Where(p =>(p.PlayState == PlayState.Playing || p.PlayState == PlayState.Paused) && p.CanSetSubtitleStreamIndex).FirstOrDefault();
+            if (player != null)
+            {
+                player.NextSubtitleStream();
+            }
+
         }
 
         /// <summary>

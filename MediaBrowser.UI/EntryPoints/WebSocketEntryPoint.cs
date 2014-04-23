@@ -1,4 +1,16 @@
 ﻿using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.Media;
+using System.Runtime.InteropServices;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Windows.Input;
+using System.Windows.Interop;
+using System.Windows.Media;
+using System.Windows.Navigation;
+using System.Windows.Threading;
+using MediaBrowser.ApiInteraction;
 using MediaBrowser.ApiInteraction.WebSocket;
 using MediaBrowser.Common;
 using MediaBrowser.Model.ApiClient;
@@ -8,29 +20,40 @@ using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Model.Serialization;
 using MediaBrowser.Model.Session;
+using MediaBrowser.Plugins.DefaultTheme.Home;
+using MediaBrowser.Plugins.DefaultTheme.ListPage;
+using MediaBrowser.Theater.Interfaces.Commands;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
-using MediaBrowser.Theater.Interfaces.Theming;
+using MediaBrowser.Theater.Interfaces.UserInput;
 using MediaBrowser.Theater.Presentation.Playback;
 using System;
 using System.Linq;
 using System.Threading;
 using System.Windows;
+using MediaBrowser.Theater.Presentation.ViewModels;
+using KeyEventArgs = System.Windows.Input.KeyEventArgs;
+using MessageBoxIcon = MediaBrowser.Theater.Interfaces.Theming.MessageBoxIcon;
+using System.Configuration;
+using NavigationEventArgs = MediaBrowser.Theater.Interfaces.Navigation.NavigationEventArgs;
 
 namespace MediaBrowser.UI.EntryPoints
 {
     public class WebSocketEntryPoint : IStartupEntryPoint, IDisposable
     {
-        private readonly ISessionManager _session;
+        private readonly ISessionManager _sessionManager;
         private readonly IApiClient _apiClient;
         private readonly ILogger _logger;
-        private readonly IJsonSerializer _json;
         private readonly ApplicationHost _appHost;
-        private readonly INavigationService _nav;
+        private readonly IImageManager _imageManager;
+        private readonly INavigationService _navigationService;
         private readonly IPlaybackManager _playbackManager;
-        private readonly IPresentationManager _presentation;
+        private readonly IPresentationManager _presentationManager;
+        private readonly ICommandManager _commandManager;
+        private readonly IServerEvents _serverEvents;
+        private readonly IUserInputManager _userInputManager;
 
         private bool _isDisposed;
 
@@ -39,23 +62,26 @@ namespace MediaBrowser.UI.EntryPoints
             get { return _appHost.ApiWebSocket; }
         }
 
-        public WebSocketEntryPoint(ISessionManager session, IApiClient apiClient, IJsonSerializer json, ILogManager logManager, IApplicationHost appHost, INavigationService nav, IPlaybackManager playbackManager, IPresentationManager presentation)
+        public WebSocketEntryPoint(ISessionManager sessionManagerManager, IApiClient apiClient, ILogManager logManager, IApplicationHost appHost, IImageManager imageManager, INavigationService navigationService, IPlaybackManager playbackManager, IPresentationManager presentationManager, ICommandManager commandManager, IServerEvents serverEvents, IUserInputManager userInputManager)
         {
-            _session = session;
+            _sessionManager = sessionManagerManager;
             _apiClient = apiClient;
-            _json = json;
             _logger = logManager.GetLogger(GetType().Name);
             _appHost = (ApplicationHost)appHost;
-            _nav = nav;
+            _imageManager = imageManager;
+            _navigationService = navigationService;
             _playbackManager = playbackManager;
-            _presentation = presentation;
+            _presentationManager = presentationManager;
+            _commandManager = commandManager;
+            _userInputManager = userInputManager;
+            _serverEvents = serverEvents;
         }
 
         public void Run()
         {
-            _session.UserLoggedIn += _session_UserLoggedIn;
+            _sessionManager.UserLoggedIn += SessionManagerUserLoggedIn;
             _apiClient.ServerLocationChanged += _apiClient_ServerLocationChanged;
-            _nav.Navigated += _nav_Navigated;
+            _navigationService.Navigated += NavigationServiceNavigated;
 
             var socket = ApiWebSocket;
 
@@ -127,7 +153,7 @@ namespace MediaBrowser.UI.EntryPoints
             }
         }
 
-        void _session_UserLoggedIn(object sender, EventArgs e)
+        void SessionManagerUserLoggedIn(object sender, EventArgs e)
         {
             if (_isDisposed)
             {
@@ -149,7 +175,7 @@ namespace MediaBrowser.UI.EntryPoints
 
         void socket_MessageCommand(object sender, MessageCommandEventArgs e)
         {
-            _presentation.ShowMessage(new MessageBoxInfo
+            _presentationManager.ShowMessage(new MessageBoxInfo
             {
                 Button = MessageBoxButton.OK,
                 Caption = e.Request.Header,
@@ -158,39 +184,323 @@ namespace MediaBrowser.UI.EntryPoints
             });
         }
 
+        void ExecuteSetVolumeCommand(object sender, GeneralCommandEventArgs e)
+        {
+            _logger.Debug("ExecuteSetVolumeCommand {0}", e.Command.Arguments != null && e.Command.Arguments.Count > 0 ? e.Command.Arguments.First().Value : null);
+
+            float volume;
+
+            if (e.Command.Arguments == null || e.Command.Arguments.Count() != 1)
+                throw new ArgumentException("ExecuteSetVolumeCommand: expecting a single float 0..100 argurment for ExecuteSetVolumeCommand");
+
+            try
+            {
+                volume = (float) Convert.ToDouble(e.Command.Arguments.First().Value);
+            }
+            catch (FormatException)
+            {
+                throw new ArgumentException("ExecuteSetVolumeCommand: Invalid format, expecting a single float 0..100 argurment for ExecuteSetVolumeCommand");
+            }
+
+            if (volume < 0.0 || volume  > 100.0)
+            {
+                throw new ArgumentException(string.Format("ExecuteSetVolumeCommand: Invalid Volume {0}. Volume range is 0..100", volume));
+            }
+            
+            _playbackManager.SetVolume(volume);
+        }
+
+        void ExecuteSetAudioStreamIndex(object sender, GeneralCommandEventArgs e)
+        {
+            _logger.Debug("ExecuteSetAudioStreamIndex {0}", e.Command.Arguments != null && e.Command.Arguments.Count > 0 ? e.Command.Arguments.First().Value : null);
+
+            int index;
+
+            if (e.Command.Arguments == null || e.Command.Arguments.Count() != 1)
+                throw new ArgumentException("ExecuteSetAudioStreamIndex: expecting a single integer argurment for AudiostreamIndex");
+
+            try
+            {
+                index = Convert.ToInt32(e.Command.Arguments.First().Value);
+            }
+            catch (FormatException)
+            {
+                throw new ArgumentException("ExecuteSetAudioStreamIndex: Invalid format, expecting a single integer argurment for AudiostreamIndex");
+            }
+            
+
+            _playbackManager.SetAudioStreamIndex(index);
+        }
+
+        void ExecuteSetSubtitleStreamIndex(object sender, GeneralCommandEventArgs e)
+        {
+            _logger.Debug("ExecuteSetSubtitleStreamIndex {0}", e.Command.Arguments != null && e.Command.Arguments.Count > 0 ? e.Command.Arguments.First().Value : null);
+
+            int index;
+
+            if (e.Command.Arguments == null || e.Command.Arguments.Count() != 1)
+                throw new ArgumentException("ExecuteSetSubtitleStreamIndex: expecting a single integer argurment for SubtitleStreamIndex");
+
+            try
+            {
+                index = Convert.ToInt32(e.Command.Arguments.First().Value);
+            }
+            catch (FormatException)
+            {
+                throw new ArgumentException("ExecuteSetSubtitleStreamIndex: Invalid format, expecting a single integer argurment for SubtitleStreamIndex");
+            }
+            
+          _playbackManager.SetSubtitleStreamIndex(index);
+          
+        }
+
+        void ExecuteSendStringCommand(object sender, GeneralCommandEventArgs e)
+        {
+            _logger.Debug("ExecuteSendStringCommand {0}", e.Command.Arguments != null && e.Command.Arguments.Count > 0 ? e.Command.Arguments.First().Value : null);
+            if (e.Command.Arguments == null || e.Command.Arguments.Count() != 1)
+                throw new ArgumentException("ExecuteSendStringCommand: expecting a single string argurment for send string");
+
+          
+             string inputText = e.Command.Arguments.First().Value;
+
+             _userInputManager.SendTextInputToFocusedElement(inputText);
+        }
+
+       private bool IsWindowsKeyEnum(int input, out System.Windows.Input.Key key)
+       {
+           key = (System.Windows.Input.Key) input;
+           return System.Enum.IsDefined(typeof(System.Windows.Input.Key), key);
+       }
+
+       void ExecuteSendSendKeyCommand(object sender, GeneralCommandEventArgs e)
+       {
+           _logger.Debug("ExecuteSendStringCommand {0}", e.Command.Arguments != null && e.Command.Arguments.Count > 0 ? e.Command.Arguments.First().Value : null);
+           if (e.Command.Arguments == null || e.Command.Arguments.Count() != 1)
+               throw new ArgumentException("ExecuteSendStringCommand: expecting a single string argurment for send Key");
+
+           var input = e.Command.Arguments.First().Value;
+
+           // now the key can be
+           // 1. An integer value of the  System.Windows.Input.Key enum, 0 to 172
+           // 2. The text representation of System.Windows.Input.Key ie. Key.None..Key.DeadCharProcessed
+           // 3. A single Char value
+
+           // try int first
+           int intVal;
+           if (int.TryParse(input, out intVal))
+           {
+               System.Windows.Input.Key key;
+
+               if (!IsWindowsKeyEnum(intVal, out key))
+                   throw new ArgumentException(String.Format("ExecuteSendStringCommand: integer argument {0} does not map to  System.Windows.Input.Key", intVal));
+
+               _userInputManager.SendKeyDownEventToFocusedElement(key);
+           }
+           else if (input.StartsWith("Key."))  // check if the string maps to a enum element name i.e Key.A
+           {
+               System.Windows.Input.Key key;
+               try
+               {
+                   key  = (System.Windows.Input.Key) System.Enum.Parse(typeof(System.Windows.Input.Key), input);
+               }
+               catch (Exception)
+               {
+                   throw new ArgumentException(String.Format("ExecuteSendStringCommand: Argument '{0}' must be a Single Char or a Windows Key literial (i.e Key.A)  or the Integer value for Key literial", input));
+               }
+
+               _userInputManager.SendKeyDownEventToFocusedElement(key);
+           }
+           else if (input.Length == 1)
+           {
+               _userInputManager.SendTextInputToFocusedElement(input);
+           }
+           else
+           {
+               throw new ArgumentException(String.Format("ExecuteSendStringCommand: Argument '{0}' must be a Single Char or a Windows Key literial (i.e Key.A)  or the Integer value for Key literial", input));
+           }
+       }
+     
+        private ViewType MapContextToNavigateViewType(string context)
+        {
+            switch (context)
+            {
+                case "movies": 
+                    return ViewType.Movies;
+                    break;
+
+                case "tv":
+                    return ViewType.Tv;
+                    break;
+
+                case "music":
+                    return ViewType.Music;
+
+                case "folders":
+                    return ViewType.Folders;
+                    break;
+
+                case "games":
+                    return ViewType.Games;
+                    break;
+
+
+                default:
+                    return ViewType.Home;
+                    break;
+            }
+        }
+
+        private string DictToString(Dictionary<String, String> dict)
+        {
+            return string.Join(";", dict.Select(i => String.Format("{0}={1}", i.Key, i.Value)));
+        }
+
+        private async void ExecuteDisplayContent(Dictionary<string, string> args)
+        {
+             _logger.Debug("ExecuteDisplayContent {0}", DictToString(args));
+            var itemId = args["ItemId"];
+            if (! String.IsNullOrEmpty(itemId))
+            {
+                ViewType viewType = ViewType.Home;
+               
+                if (args.ContainsKey("Context"))
+                {
+                    viewType = MapContextToNavigateViewType(args["Context"]);
+                }
+
+                if (args.ContainsKey("ItemType"))
+                {
+                    var itemType = args["ItemType"];
+                    // special case for genres and people items as they contain child items
+                    if (String.Equals(itemType, "Genre"))
+                    {
+                        var selectedGenre = args.ContainsKey("ItemName") ? args["ItemName"] : null;
+                        await _navigationService.NavigateToGenre(selectedGenre, viewType);
+                       return;
+                    }
+                    else if (String.Equals(itemType, "Person"))
+                    {
+                         var selectedPerson = args.ContainsKey("ItemName") ? args["ItemName"] : null;
+                        await _navigationService.NavigateToPerson(selectedPerson, viewType);
+                        return;
+                    }
+                }
+              
+                await _navigationService.NavigateToItem(new BaseItemDto { Id = itemId }, viewType);
+                
+            }
+        }
+
         void socket_GeneralCommand(object sender, GeneralCommandEventArgs e)
         {
+            _logger.Debug("socket_GeneralCommand {0} {1}", e.KnownCommandType, e.Command.Arguments);
+
             if (e.KnownCommandType.HasValue)
             {
                 switch (e.KnownCommandType.Value)
                 {
+                    case GeneralCommandType.MoveUp:
+                        _userInputManager.SendKeyDownEventToFocusedElement(Key.Up);
+                        break;
+
+                    case GeneralCommandType.MoveDown:
+                        _userInputManager.SendKeyDownEventToFocusedElement(Key.Down);
+                        break;
+
+                    case GeneralCommandType.MoveLeft:
+                        _userInputManager.SendKeyDownEventToFocusedElement(Key.Left);
+                        break;
+
+                    case GeneralCommandType.MoveRight:
+                        _userInputManager.SendKeyDownEventToFocusedElement(Key.Right);
+                        break;
+
+                    case GeneralCommandType.PageUp:
+                        _userInputManager.SendKeyDownEventToFocusedElement(Key.PageUp);
+                        break;
+
+                    case GeneralCommandType.PreviousLetter:
+                        _commandManager.ExecuteCommand(Command.Null, null); //todo
+                        break;
+
+                    case GeneralCommandType.NextLetter:
+                        _commandManager.ExecuteCommand(Command.Null, null); //todo
+                        break;
+
+                    case GeneralCommandType.ToggleOsd:
+                        _commandManager.ExecuteCommand(Command.ToggleOsd, null); 
+                        break;
+
+                    case GeneralCommandType.ToggleContextMenu:
+                        _commandManager.ExecuteCommand(Command.Null, null);        // todo
+                        break;
+
+                    case GeneralCommandType.Select:
+                        _userInputManager.SendKeyDownEventToFocusedElement(Key.Enter);
+                        break;
+
+                    case GeneralCommandType.Back:
+                        _navigationService.NavigateBack();
+                        break;
+
+                    case GeneralCommandType.TakeScreenshot:
+                        _commandManager.ExecuteCommand(Command.ScreenDump, null); 
+                        break;
+
+                    case GeneralCommandType.SendKey:
+                        ExecuteSendSendKeyCommand(sender, e);  
+                        break;
+
+
+                    case GeneralCommandType.SendString:
+                        ExecuteSendStringCommand(sender, e);
+                        break;
+
                     case GeneralCommandType.GoHome:
-                        _nav.NavigateToHomePage();
+                        _commandManager.ExecuteCommand(Command.GotoHome, null); 
                         break;
+
                     case GeneralCommandType.GoToSettings:
-                        _nav.NavigateToSettingsPage();
+                        _commandManager.ExecuteCommand(Command.GotoSettings, null); 
                         break;
-                    case GeneralCommandType.Mute:
-                        _playbackManager.Mute();
-                        break;
-                    case GeneralCommandType.Unmute:
-                        _playbackManager.UnMute();
-                        break;
-                    case GeneralCommandType.ToggleMute:
-                        if (_playbackManager.IsMuted)
-                        {
-                            _playbackManager.UnMute();
-                        }
-                        else
-                        {
-                            _playbackManager.Mute();
-                        }
-                        break;
+
                     case GeneralCommandType.VolumeDown:
-                        _playbackManager.VolumeStepDown();
+                        _commandManager.ExecuteCommand(Command.VolumeDown, null);
                         break;
+
                     case GeneralCommandType.VolumeUp:
-                        _playbackManager.VolumeStepUp();
+                        _commandManager.ExecuteCommand(Command.VolumeUp, null);
+                        break;
+
+                    case GeneralCommandType.Mute:
+                        _commandManager.ExecuteCommand(Command.Mute, null); 
+                        break;
+
+                    case GeneralCommandType.Unmute:
+                        _commandManager.ExecuteCommand(Command.UnMute, null); 
+                        break;
+
+                    case GeneralCommandType.ToggleMute:
+                        _commandManager.ExecuteCommand(Command.ToggleMute, null);
+                        break;
+
+                    case GeneralCommandType.SetVolume:
+                        ExecuteSetVolumeCommand(sender, e);
+                        break;
+
+                    case GeneralCommandType.SetAudioStreamIndex:
+                        ExecuteSetAudioStreamIndex(sender, e);
+                        break;
+                    case GeneralCommandType.SetSubtitleStreamIndex:
+                        ExecuteSetSubtitleStreamIndex(sender, e);
+                        break;
+
+                    case GeneralCommandType.ToggleFullscreen:
+                          _commandManager.ExecuteCommand(Command.ToggleFullScreen, null);
+                        break;
+
+                    case GeneralCommandType.DisplayContent:
+                          ExecuteDisplayContent(e.Command.Arguments);
                         break;
                     default:
                         _logger.Warn("Unrecognized command: " + e.KnownCommandType.Value);
@@ -201,7 +511,8 @@ namespace MediaBrowser.UI.EntryPoints
 
         async void _apiWebSocket_PlayCommand(object sender, PlayRequestEventArgs e)
         {
-            if (_session.CurrentUser == null)
+            _logger.Debug("_apiWebSocket_PlayCommand {0} {1}", e.Request.ItemIds, e.Request.StartPositionTicks);
+            if (_sessionManager.CurrentUser == null)
             {
                 OnAnonymousRemoteControlCommand();
                 return;
@@ -212,7 +523,7 @@ namespace MediaBrowser.UI.EntryPoints
                 var result = await _apiClient.GetItemsAsync(new ItemQuery
                 {
                     Ids = e.Request.ItemIds,
-                    UserId = _session.CurrentUser.Id,
+                    UserId = _sessionManager.CurrentUser.Id,
 
                     Fields = new[]
                     {
@@ -239,14 +550,15 @@ namespace MediaBrowser.UI.EntryPoints
 
         void _apiWebSocket_PlaystateCommand(object sender, PlaystateRequestEventArgs e)
         {
-            if (_session.CurrentUser == null)
+            _logger.Debug("_apiWebSocket_PlaystateCommand {0} {1}", e.Request.Command, e.Request.SeekPositionTicks);
+
+            if (_sessionManager.CurrentUser == null)
             {
                 OnAnonymousRemoteControlCommand();
                 return;
             }
 
-            var player = _playbackManager.MediaPlayers
-              .FirstOrDefault(i => i.PlayState != PlayState.Idle);
+            var player = _playbackManager.MediaPlayers.FirstOrDefault(i => i.PlayState != PlayState.Idle);
 
             if (player == null)
             {
@@ -258,27 +570,27 @@ namespace MediaBrowser.UI.EntryPoints
             switch (request.Command)
             {
                 case PlaystateCommand.Pause:
-                    player.Pause();
+                    _commandManager.ExecuteCommand(Command.Pause, null); 
                     break;
                 case PlaystateCommand.Stop:
-                    player.Stop();
+                    _commandManager.ExecuteCommand(Command.Stop, null); 
                     break;
                 case PlaystateCommand.Unpause:
-                    player.UnPause();
+                    _commandManager.ExecuteCommand(Command.UnPause, null); 
                     break;
                 case PlaystateCommand.Seek:
-                    player.Seek(e.Request.SeekPositionTicks ?? 0);
+                    _commandManager.ExecuteCommand(Command.Seek, e.Request.SeekPositionTicks ?? 0);
+                   
                     break;
+
                 case PlaystateCommand.PreviousTrack:
-                    {
-                        player.GoToPreviousTrack();
-                        break;
-                    }
+                    _commandManager.ExecuteCommand(Command.PrevisousTrack, null);
+                    break;
+
                 case PlaystateCommand.NextTrack:
-                    {
-                        player.GoToNextTrack();
-                        break;
-                    }
+                    _commandManager.ExecuteCommand(Command.NextTrack, null);
+                    break;
+
             }
         }
 
@@ -288,15 +600,15 @@ namespace MediaBrowser.UI.EntryPoints
 
         async void _apiWebSocket_UserDeleted(object sender, UserDeletedEventArgs e)
         {
-            if (_session.CurrentUser != null && string.Equals(e.Id, _session.CurrentUser.Id))
+            if (_sessionManager.CurrentUser != null && string.Equals(e.Id, _sessionManager.CurrentUser.Id))
             {
-                await _session.Logout();
+                await _sessionManager.Logout();
             }
         }
 
         async void _apiWebSocket_BrowseCommand(object sender, BrowseRequestEventArgs e)
         {
-            if (_session.CurrentUser == null)
+            if (_sessionManager.CurrentUser == null)
             {
                 OnAnonymousRemoteControlCommand();
                 return;
@@ -317,7 +629,7 @@ namespace MediaBrowser.UI.EntryPoints
                 {
                     Enum.TryParse(e.Request.Context, true, out viewType);
                 }
-                await _nav.NavigateToItem(dto, viewType);
+                await _navigationService.NavigateToItem(dto, viewType);
             }
             catch (Exception ex)
             {
@@ -328,7 +640,7 @@ namespace MediaBrowser.UI.EntryPoints
         private void OnAnonymousRemoteControlCommand()
         {
             _logger.Error("Cannot process remote control command without a logged in user.");
-            _presentation.ShowMessage(new MessageBoxInfo
+            _presentationManager.ShowMessage(new MessageBoxInfo
             {
                 Button = MessageBoxButton.OK,
                 Caption = "Error",
@@ -337,7 +649,7 @@ namespace MediaBrowser.UI.EntryPoints
             });
         }
 
-        async void _nav_Navigated(object sender, NavigationEventArgs e)
+        async void NavigationServiceNavigated(object sender, NavigationEventArgs e)
         {
             var itemPage = e.NewPage as IItemPage;
 
@@ -359,7 +671,7 @@ namespace MediaBrowser.UI.EntryPoints
         public void Dispose()
         {
             _isDisposed = true;
-            _session.UserLoggedIn -= _session_UserLoggedIn;
+            _sessionManager.UserLoggedIn -= SessionManagerUserLoggedIn;
             DisposeSocket();
         }
 

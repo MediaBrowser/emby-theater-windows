@@ -350,20 +350,75 @@ namespace MediaBrowser.UI.Implementations
 
         public class Interop
         {
-            [DllImport("user32.dll")]
+            [DllImport("user32.dll", SetLastError = true)]
             public static extern bool SetForegroundWindow(IntPtr hWnd);
 
-            [DllImport("user32.dll")]
+            [DllImport("user32.dll", SetLastError = true)]
             public static extern IntPtr GetForegroundWindow();
+
+            [DllImport("user32.dll", SetLastError = true)]
+            public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+
+            [DllImport("user32.dll", SetLastError = true)]
+            public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
+
+            [DllImport("kernel32.dll", SetLastError = true)]
+            public static extern uint GetCurrentThreadId();
+
+            [DllImport("user32.dll", SetLastError = true)]
+            public static extern bool AttachThreadInput(uint idAttach,
+                uint idAttachTo, bool fAttach);
+
+            [DllImport("user32.dll", SetLastError = true)]
+            public static extern bool BringWindowToTop(IntPtr hWnd);
+
+            [DllImport("user32.dll", SetLastError = true)]
+            public static extern bool BringWindowToTop(HandleRef hWnd);
+
+            [DllImport("user32.dll", SetLastError = true)]
+            public static extern bool ShowWindow(IntPtr hWnd, uint nCmdShow);
         }
 
        
         public void EnsureApplicationWindowHasFocus()
         {
-            IntPtr focused = Interop.GetForegroundWindow();
-            if (WindowHandle != focused)
+            if (WindowHandle != IntPtr.Zero)
             {
-                Interop.SetForegroundWindow(WindowHandle);
+                IntPtr focused = Interop.GetForegroundWindow();
+                if (WindowHandle != focused)
+                {
+                    bool ret = Interop.SetForegroundWindow(WindowHandle);
+                    //if (!ret)
+                    //{
+                    //    ForceForegroundWindow(WindowHandle);
+                    //}
+                }
+            }
+        }
+
+        private void ForceForegroundWindow(IntPtr hWnd)
+        {
+            if (WindowHandle != IntPtr.Zero)
+            {
+                uint lpdwProcessId;
+                uint foreThread = Interop.GetWindowThreadProcessId(Interop.GetForegroundWindow(), out lpdwProcessId);
+
+                uint appThread = Interop.GetCurrentThreadId();
+
+                const uint SW_SHOW = 5;
+
+                if (foreThread != appThread)
+                {
+                    Interop.AttachThreadInput(foreThread, appThread, true);
+                    Interop.BringWindowToTop(hWnd);
+                    Interop.ShowWindow(hWnd, SW_SHOW);
+                    Interop.AttachThreadInput(foreThread, appThread, false);
+                }
+                else
+                {
+                    Interop.BringWindowToTop(hWnd);
+                    Interop.ShowWindow(hWnd, SW_SHOW);
+                }
             }
         }
 

@@ -138,6 +138,7 @@ namespace MediaBrowser.Theater.DirectShow
                             Uri comPath = new Uri(Path.Combine(Path.Combine(System.Configuration.ConfigurationSettings.AppSettings["PrivateObjectsManifest"], toCheck)));
                             WebRequest request = WebRequest.Create(comPath);
                             request.Method = "HEAD";
+                           
                             using(WebResponse wr = request.GetResponse())
                             {                                
                                 DateTime lmDate;
@@ -146,15 +147,20 @@ namespace MediaBrowser.Theater.DirectShow
                                     if (lmDate > lastUpdateDate)
                                     {
                                         //download the updated component
-                                        byte[] comBin = mwc.DownloadData(comPath);
-                                        if (comBin.Length > 0)
+                                        using (WebClient fd = new WebClient())
                                         {
-                                            using (MemoryStream ms = new MemoryStream(comBin))
+                                            fd.DownloadProgressChanged += fd_DownloadProgressChanged;
+                                            byte[] comBin = fd.DownloadData(comPath);
+                                            if (comBin.Length > 0)
                                             {
-                                                zc.ExtractAll(ms, dlPath, true);
+                                                using (MemoryStream ms = new MemoryStream(comBin))
+                                                {
+                                                    zc.ExtractAll(ms, dlPath, true);
+                                                }
+
+                                                WriteTextDate(txtPath, lmDate);
                                             }
                                         }
-                                        WriteTextDate(txtPath, lmDate);
                                     }
                                 }
                             }
@@ -167,6 +173,11 @@ namespace MediaBrowser.Theater.DirectShow
             catch (Exception ex)
             {
             }
+        }
+
+        static void fd_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
+        {
+            //pump status upward
         }
 
         public string SearchPath

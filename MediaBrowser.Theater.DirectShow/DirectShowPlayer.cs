@@ -2476,26 +2476,18 @@ namespace MediaBrowser.Theater.DirectShow
             {
                 ToggleHideSubtitles(true);
                 UpdateStreamsAsInActive(stream.Type); // display all streams as inactive
+                stream.IsActive = true; // set no subtitles stream active
             }
             else
             {
-                try
+                var url = _apiClient.GetSubtitleUrl(new SubtitleOptions
                 {
-                    var url = _apiClient.GetSubtitleUrl(new SubtitleOptions
-                    {
-                        ItemId = _item.OriginalItem.Id,
-                        StreamIndex = stream.Index
-                    });
+                    ItemId = _item.OriginalItem.Id,
+                    StreamIndex = stream.Index
+                });
 
-                    _logger.Debug("SetExternalSubtitleStream {0} {1} {2}", stream.Index, stream.Type, url);
-                    LoadExternalSubtitles(url);
-                }
-                catch (Exception)
-                {
-                    // can't load it directly, ask the server to copy or stream it
-                    // todo - api call to create external subtitle url - Issue #52 Support external subtitles
-                    throw;
-                }
+                _logger.Debug("SetExternalSubtitleStream {0} {1} {2}", stream.Index, stream.Type, url);
+                LoadExternalSubtitles(url);
                 UpdateStreamActiveSetting(stream.Index, stream.Type); // display this  streams as active
             }
         }

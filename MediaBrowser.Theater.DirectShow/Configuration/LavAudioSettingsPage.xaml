@@ -6,7 +6,7 @@
       mc:Ignorable="d" 
       xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
       d:DesignHeight="1000" d:DesignWidth="1450"
-	Title="LavAudioSettings">
+	Title="Audio Settings">
 
     <Grid Width="1450">
         <Grid.ColumnDefinitions>
@@ -64,6 +64,10 @@
         <StackPanel Orientation="Horizontal" Margin="0 50 0 0" Grid.Column="0" Grid.Row="7" >
             <TextBlock Style="{StaticResource TextBlockStyle}" Margin="0 0 0 0">Mixing Setting:</TextBlock>
             <controls:SelectList x:Name="SelectMixingSetting" Margin="40 0 0 0"></controls:SelectList>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="0 50 0 0" Grid.Column="1" Grid.Row="7" >
+            <TextBlock Style="{StaticResource TextBlockStyle}" Margin="0 0 0 0">Audio Device (WASAPI):</TextBlock>
+            <controls:SelectList x:Name="SelectAudioDevice" Margin="40 0 0 0"></controls:SelectList>
         </StackPanel>
         <CheckBox x:Name="ChkShowTrayIcon" Margin="0 30 0 0" VerticalAlignment="Center" Grid.Column="0" Grid.Row="8" >
             <TextBlock Style="{StaticResource TextBlockStyle}">ShowTrayIcon</TextBlock>

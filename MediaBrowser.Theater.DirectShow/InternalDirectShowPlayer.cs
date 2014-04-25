@@ -227,9 +227,9 @@ namespace MediaBrowser.Theater.DirectShow
             try
             {
                 var enableMadVr = EnableMadvr(options);
-                var enableReclock = EnableReclock(options);
+                //var enableReclock = EnableReclock(options);
 
-                InvokeOnPlayerThread(() => _mediaPlayer.Play(playableItem, enableReclock, enableMadVr, false));
+                InvokeOnPlayerThread(() => _mediaPlayer.Play(playableItem, enableMadVr, false));
             }
             catch
             {
@@ -302,7 +302,7 @@ namespace MediaBrowser.Theater.DirectShow
                 return false;
             }
 
-            if (!_config.Configuration.InternalPlayerConfiguration.EnableMadvr)
+            if (!_config.Configuration.InternalPlayerConfiguration.VideoConfig.EnableMadvr)
             {
                 return false;
             }
@@ -320,27 +320,27 @@ namespace MediaBrowser.Theater.DirectShow
         /// </summary>
         /// <param name="options">The options.</param>
         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise</returns>
-        private bool EnableReclock(PlayOptions options)
-        {
-            var video = options.Items.First();
+        //private bool EnableReclock(PlayOptions options)
+        //{
+        //    var video = options.Items.First();
 
-            if (!video.IsVideo)
-            {
-                return false;
-            }
+        //    if (!video.IsVideo)
+        //    {
+        //        return false;
+        //    }
 
-            if (!_config.Configuration.InternalPlayerConfiguration.EnableReclock)
-            {
-                return false;
-            }
+        //    if (!_config.Configuration.InternalPlayerConfiguration.EnableReclock)
+        //    {
+        //        return false;
+        //    }
 
-            if (!options.GoFullScreen)
-            {
-                return false;
-            }
+        //    if (!options.GoFullScreen)
+        //    {
+        //        return false;
+        //    }
             
-            return true;
-        }
+        //    return true;
+        //}
 
         private void DisposePlayer()
         {

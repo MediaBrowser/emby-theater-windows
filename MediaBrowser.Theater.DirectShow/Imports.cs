@@ -33,6 +33,11 @@ namespace MediaBrowser.Theater.DirectShow
     {
     }
 
+    [ComImport, Guid("EC9ED6FC-7B03-4CB6-8C01-4EABE109F26B")]
+    internal class MPAudioFilter
+    {
+    }
+
     [ComImport, Guid("93A22E7A-5091-45EF-BA61-6DA26156A5D0")]
     internal class XYVSFilter
     {

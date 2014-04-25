@@ -25,6 +25,7 @@ using System.Text;
 using MediaBrowser.Theater.Interfaces.UserInput;
 using DirectShowLib.Utils;
 using System.Windows.Input;
+using CoreAudioApi;
 
 namespace MediaBrowser.Theater.DirectShow
 {
@@ -69,6 +70,7 @@ namespace MediaBrowser.Theater.DirectShow
 
         private DefaultAudioRenderer _defaultAudioRenderer = null;
         private ReclockAudioRenderer _reclockAudioRenderer = null;
+        private object _wasapiAR = null;
 
         // Caps bits for IMediaSeeking
         private AMSeekingSeekingCapabilities _mSeekCaps;
@@ -94,6 +96,7 @@ namespace MediaBrowser.Theater.DirectShow
         private string _filePath = string.Empty;
         private bool _customEvrPresenterLoaded = false;
         private IUserInputManager _input = null;
+        private MMDevice _audioDevice = null;
 
         #region LAVConfigurationValues
 
@@ -171,6 +174,25 @@ namespace MediaBrowser.Theater.DirectShow
                 _urCom = new URCOMLoader(_mbtConfig);
         }
 
+        private IBaseFilter AudioRenderer
+        {
+            get
+            {
+                if (_reclockAudioRenderer != null)
+                {
+                    return _reclockAudioRenderer as IBaseFilter;
+                }                    
+                else if(_wasapiAR != null)
+                {
+                    return _wasapiAR as IBaseFilter;
+                }
+                else
+                {
+                    return _defaultAudioRenderer as IBaseFilter;
+                }
+            }
+        }
+
         private void _input_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
             //throw new NotImplementedException();
@@ -238,10 +260,10 @@ namespace MediaBrowser.Theater.DirectShow
             }
         }
 
-        public void Play(PlayableItem item, bool enableReclock, bool enableMadvr, bool enableMadvrExclusiveMode)
+        public void Play(PlayableItem item, bool enableMadvr, bool enableMadvrExclusiveMode)
         {
-            _logger.Info("Playing {0}. Reclock: {1}, Madvr: {2}, xySubFilter: {3}", item.OriginalItem.Name,
-                enableReclock, enableMadvr, _mbtConfig.Configuration.InternalPlayerConfiguration.EnableXySubFilter);
+            _logger.Info("Playing {0}. Audio Renderer: {1}, Madvr: {2}, xySubFilter: {3}", item.OriginalItem.Name,
+                _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.Renderer, enableMadvr, _mbtConfig.Configuration.InternalPlayerConfiguration.SubtitleConfig.EnableXySubFilter);
             _logger.Info("Playing Path {0}", item.PlayablePath);
 
             _item = item;
@@ -251,8 +273,8 @@ namespace MediaBrowser.Theater.DirectShow
                          (item.OriginalItem.IsoType ?? IsoType.BluRay) == IsoType.Dvd) &&
                         item.PlayablePath.IndexOf("http://", StringComparison.OrdinalIgnoreCase) == -1;
 
-            Initialize(item.PlayablePath, enableReclock, enableMadvr, enableMadvrExclusiveMode,
-                _mbtConfig.Configuration.InternalPlayerConfiguration.EnableXySubFilter, isDvd);
+            Initialize(item.PlayablePath, enableMadvr, enableMadvrExclusiveMode,
+                _mbtConfig.Configuration.InternalPlayerConfiguration.SubtitleConfig.EnableXySubFilter, isDvd);
 
             _hiddenWindow.OnWMGRAPHNOTIFY = HandleGraphEvent;
             _hiddenWindow.OnDVDEVENT = HandleDvdEvent;
@@ -298,7 +320,7 @@ namespace MediaBrowser.Theater.DirectShow
             m_dsRot = new DsROTEntry(m_graph as IFilterGraph);
         }
 
-        private void Initialize(string path, bool enableReclock, bool enableMadvr, bool enableMadvrExclusiveMode,
+        private void Initialize(string path, bool enableMadvr, bool enableMadvrExclusiveMode,
             bool enableXySubFilter, bool isDvd)
         {
             _filePath = path;
@@ -317,7 +339,7 @@ namespace MediaBrowser.Theater.DirectShow
                 InitializeDvd(path);
 
                 // Try to render the streams.
-                RenderStreams(_sourceFilter, enableReclock, enableMadvr, enableMadvrExclusiveMode, false);
+                RenderStreams(_sourceFilter, enableMadvr, enableMadvrExclusiveMode, false);
                     //we don't need XySubFilter for DVD 
             }
             else
@@ -354,7 +376,7 @@ namespace MediaBrowser.Theater.DirectShow
                     DsError.ThrowExceptionForHR(hr);
                 }
                 // Try to render the streams.
-                RenderStreams(_sourceFilter, enableReclock, enableMadvr, enableMadvrExclusiveMode, enableXySubFilter);
+                RenderStreams(_sourceFilter, enableMadvr, enableMadvrExclusiveMode, enableXySubFilter);
             }
 
             // Get the seeking capabilities.
@@ -405,7 +427,7 @@ namespace MediaBrowser.Theater.DirectShow
             //int sY = dta.VideoAttributes.sourceResolutionY;
         }
 
-        private void RenderStreams(DirectShowLib.IBaseFilter pSource, bool enableReclock, bool enableMadvr,
+        private void RenderStreams(DirectShowLib.IBaseFilter pSource, bool enableMadvr,
             bool enableMadvrExclusiveMode, bool enableXySubFilter)
         {
             int hr;
@@ -419,23 +441,54 @@ namespace MediaBrowser.Theater.DirectShow
             // Add audio renderer
             var useDefaultRenderer = true;
 
-            if (enableReclock)
+            switch (_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.Renderer)
             {
-                try
-                {
-                    _reclockAudioRenderer = new ReclockAudioRenderer();
-                    var aRenderer = _reclockAudioRenderer as DirectShowLib.IBaseFilter;
-                    if (aRenderer != null)
+                case AudioRendererChoice.Reclock:
+                    try
                     {
-                        hr = m_graph.AddFilter(aRenderer, "Reclock Audio Renderer");
-                        DsError.ThrowExceptionForHR(hr);
-                        useDefaultRenderer = false;
+                        _reclockAudioRenderer = new ReclockAudioRenderer();
+                        var aRenderer = _reclockAudioRenderer as DirectShowLib.IBaseFilter;
+                        if (aRenderer != null)
+                        {
+                            hr = m_graph.AddFilter(aRenderer, "Reclock Audio Renderer");
+                            DsError.ThrowExceptionForHR(hr);
+                            useDefaultRenderer = false;
+                        }
                     }
-                }
-                catch (Exception ex)
-                {
-                    _logger.ErrorException("Error adding reclock filter", ex);
-                }
+                    catch (Exception ex)
+                    {
+                        _logger.ErrorException("Error adding reclock filter", ex);
+                    }
+                    break;
+                case AudioRendererChoice.WASAPI:
+                    try
+                    {
+                        _wasapiAR = _urCom.GetObject(typeof(MPAudioFilter).GUID, true);
+                        var aRenderer = _wasapiAR as DirectShowLib.IBaseFilter;
+                        if (aRenderer != null)
+                        {
+                            hr = m_graph.AddFilter(aRenderer, "WASAPI Audio Renderer");
+                            DsError.ThrowExceptionForHR(hr);
+                            useDefaultRenderer = false;
+
+                            //the MP audio renderer doesn't domn mix so until that's fixed we should have LAV do it
+                            _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.EnablePCMMixing = true;
+
+                            IMPAudioSettings audSett = aRenderer as IMPAudioSettings;
+                            if (audSett != null)
+                            {
+                                //audSett.SetSpeakerConfig(SpeakerConfig.Stereo);
+                                audSett.SetWASAPIMode(AUDCLNT_SHAREMODE.EXCLUSIVE);
+                                audSett.SetUseWASAPIEventMode(true);
+                                audSett.SetAudioDeviceById(_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.AudioDevice);
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.ErrorException("Error adding WASAPI audio filter", ex);
+                    }
+                    break;
             }
 
             if (useDefaultRenderer)
@@ -939,17 +992,8 @@ namespace MediaBrowser.Theater.DirectShow
                                 decOut = DsFindPin.ByDirection((DirectShowLib.IBaseFilter) _lavaudio,
                                     PinDirection.Output, 0);
 
-                                if (_reclockAudioRenderer != null)
-                                {
-                                    rendIn = DsFindPin.ByDirection((DirectShowLib.IBaseFilter) _reclockAudioRenderer,
-                                        PinDirection.Input, 0);
-                                }
-                                else
-                                {
-                                    rendIn = DsFindPin.ByDirection((DirectShowLib.IBaseFilter) _defaultAudioRenderer,
-                                        PinDirection.Input, 0);
-                                }
-
+                                rendIn = DsFindPin.ByDirection(AudioRenderer, PinDirection.Input, 0);
+                                
                                 if (decOut != null && rendIn != null)
                                 {
                                     hr = _filterGraph.ConnectDirect(decOut, rendIn, null);
@@ -1608,83 +1652,110 @@ namespace MediaBrowser.Theater.DirectShow
 
         private void SetupGraphForRateChange(double rate, IBaseFilter audioRenderer)
         {
-            IPin arIn = null;
-            int hr = 0;
-
-            try
+            if (_wasapiAR != null)
             {
-                if (audioRenderer != null)
+                if (_audioDevice == null)
                 {
-                    if (rate > Math.Abs(4) && m_adecOut == null)
-                    {
-                        //grab the audio decoder's output pin
-                        arIn = DsFindPin.ByDirection(audioRenderer, PinDirection.Input, 0);
-                        hr = arIn.ConnectedTo(out m_adecOut);
-                        DsError.ThrowExceptionForHR(hr);
+                    MMDeviceEnumerator DevEnum = new MMDeviceEnumerator();
+                    if (!string.IsNullOrWhiteSpace(_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.AudioDevice))
+                        _audioDevice = DevEnum.GetDevice(_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.AudioDevice);
 
-                        //stop the graph
-                        hr = _mediaControl.Stop();
-                        DsError.ThrowExceptionForHR(hr);
-
-                        //remove it
-                        hr = _filterGraph.RemoveFilter(audioRenderer);
-                        DsError.ThrowExceptionForHR(hr);
-
-                        //start the graph again
-                        hr = _mediaControl.Run();
-                        DsError.ThrowExceptionForHR(hr);
-                    }
-                    else if (rate <= Math.Abs(4) && m_adecOut != null)
-                    {
-                        //stop the graph
-                        hr = _mediaControl.Stop();
-                        DsError.ThrowExceptionForHR(hr);
-
-                        //add the audio renderer back into the graph
-                        hr = _filterGraph.AddFilter(audioRenderer, "Audio Renderer");
-                        DsError.ThrowExceptionForHR(hr);
-
-                        //connect it to the decoder pin
-                        arIn = DsFindPin.ByDirection(audioRenderer, PinDirection.Input, 0);
-                        hr = _filterGraph.ConnectDirect(m_adecOut, arIn, null);
-                        DsError.ThrowExceptionForHR(hr);
-
-                        Marshal.ReleaseComObject(m_adecOut);
-                        m_adecOut = null;
-
-                        //start the graph again
-                        hr = _mediaControl.Run();
-                        DsError.ThrowExceptionForHR(hr);
-                    }
+                    if (_audioDevice == null)
+                        _audioDevice = DevEnum.GetDefaultAudioEndpoint(EDataFlow.eRender, ERole.eMultimedia);
                 }
 
                 if (Math.Abs(rate) <= 4)
                 {
-                    IBasicAudio ba = _filterGraph as IBasicAudio;
-                    if (ba != null)
+                    if (rate > Math.Abs(1.5))
                     {
-                        int orgVol = 0;
-                        hr = ba.get_Volume(out orgVol);
-                        DsError.ThrowExceptionForHR(hr);
-
-                        if (rate > Math.Abs(1.5))
-                        {
-
-                            hr = ba.put_Volume(-10000); //turn off the volume so we can ffwd
-                            DsError.ThrowExceptionForHR(hr);
-                        }
-                        else if (rate <= Math.Abs(1.5))
-                        {
-                            hr = ba.put_Volume(0); //set the volume back to full
-                            DsError.ThrowExceptionForHR(hr);
-                        }
+                        _audioDevice.AudioEndpointVolume.Mute = true;
+                    }
+                    else if (rate <= Math.Abs(1.5))
+                    {                        
+                        _audioDevice.AudioEndpointVolume.Mute = false;
                     }
                 }
             }
-            finally
+            else
             {
-                if (arIn != null)
-                    Marshal.ReleaseComObject(arIn);
+                IPin arIn = null;
+                int hr = 0;
+
+                try
+                {
+                    if (audioRenderer != null)
+                    {
+                        if (rate > Math.Abs(4) && m_adecOut == null)
+                        {
+                            //grab the audio decoder's output pin
+                            arIn = DsFindPin.ByDirection(audioRenderer, PinDirection.Input, 0);
+                            hr = arIn.ConnectedTo(out m_adecOut);
+                            DsError.ThrowExceptionForHR(hr);
+
+                            //stop the graph
+                            hr = _mediaControl.Stop();
+                            DsError.ThrowExceptionForHR(hr);
+
+                            //remove it
+                            hr = _filterGraph.RemoveFilter(audioRenderer);
+                            DsError.ThrowExceptionForHR(hr);
+
+                            //start the graph again
+                            hr = _mediaControl.Run();
+                            DsError.ThrowExceptionForHR(hr);
+                        }
+                        else if (rate <= Math.Abs(4) && m_adecOut != null)
+                        {
+                            //stop the graph
+                            hr = _mediaControl.Stop();
+                            DsError.ThrowExceptionForHR(hr);
+
+                            //add the audio renderer back into the graph
+                            hr = _filterGraph.AddFilter(audioRenderer, "Audio Renderer");
+                            DsError.ThrowExceptionForHR(hr);
+
+                            //connect it to the decoder pin
+                            arIn = DsFindPin.ByDirection(audioRenderer, PinDirection.Input, 0);
+                            hr = _filterGraph.ConnectDirect(m_adecOut, arIn, null);
+                            DsError.ThrowExceptionForHR(hr);
+
+                            Marshal.ReleaseComObject(m_adecOut);
+                            m_adecOut = null;
+
+                            //start the graph again
+                            hr = _mediaControl.Run();
+                            DsError.ThrowExceptionForHR(hr);
+                        }
+                    }
+
+                    if (Math.Abs(rate) <= 4)
+                    {
+                        IBasicAudio ba = _filterGraph as IBasicAudio;
+                        if (ba != null)
+                        {
+                            int orgVol = 0;
+                            hr = ba.get_Volume(out orgVol);
+                            DsError.ThrowExceptionForHR(hr);
+
+                            if (rate > Math.Abs(1.5))
+                            {
+
+                                hr = ba.put_Volume(-10000); //turn off the volume so we can ffwd
+                                DsError.ThrowExceptionForHR(hr);
+                            }
+                            else if (rate <= Math.Abs(1.5))
+                            {
+                                hr = ba.put_Volume(0); //set the volume back to full
+                                DsError.ThrowExceptionForHR(hr);
+                            }
+                        }
+                    }
+                }
+                finally
+                {
+                    if (arIn != null)
+                        Marshal.ReleaseComObject(arIn);
+                }
             }
         }
 
@@ -1692,10 +1763,7 @@ namespace MediaBrowser.Theater.DirectShow
         {
             int hr = 0;
             //_currentPlaybackRate = rate;
-            SetupGraphForRateChange(rate,
-                (_defaultAudioRenderer != null
-                    ? _defaultAudioRenderer as IBaseFilter
-                    : _reclockAudioRenderer as IBaseFilter));
+            SetupGraphForRateChange(rate, AudioRenderer);
 
             if (_mDvdControl != null)
             {
@@ -1979,6 +2047,14 @@ namespace MediaBrowser.Theater.DirectShow
 
                 CleanUpInterface(_reclockAudioRenderer);
                 _reclockAudioRenderer = null;
+            }
+
+            if (_wasapiAR != null)
+            {
+                m_graph.RemoveFilter(_wasapiAR as DirectShowLib.IBaseFilter);
+
+                CleanUpInterface(_wasapiAR);
+                _wasapiAR = null;
             }
 
             if (_lavaudio != null)

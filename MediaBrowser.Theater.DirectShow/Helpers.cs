@@ -1,6 +1,8 @@
 ﻿using MediaBrowser.Theater.Interfaces.Configuration;
 using System;
 using System.Management;
+using System.Collections.Generic;
+using CoreAudioApi;
 
 namespace MediaBrowser.Theater.DirectShow
 {
@@ -60,6 +62,25 @@ namespace MediaBrowser.Theater.DirectShow
                 return 7; // SD + HD + UHD
             else
                 return 3; // SD + HD;
+        }
+    }
+
+    public static class AudioConfigurationUtils
+    {
+        public static Dictionary<string, string> GetAudioDevices()
+        {
+            Dictionary<string, string> audioDevices = new Dictionary<string, string>();
+
+            audioDevices["Default Device"] = string.Empty;
+
+            MMDeviceEnumerator DevEnum = new MMDeviceEnumerator();
+            MMDeviceCollection dc = DevEnum.EnumerateAudioEndPoints(EDataFlow.eRender, EDeviceState.DEVICE_STATE_ACTIVE);
+            for (int i = 0; i < dc.Count; i++)
+            {
+                audioDevices[dc[i].FriendlyName] = dc[i].ID;
+            }
+
+            return audioDevices;
         }
     }
 }

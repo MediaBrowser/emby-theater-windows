@@ -47,13 +47,19 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
                  new SelectListItem{ Text = "DXVA2CopyBack", Value="3"}
             };
 
-            SelectudioBitstreamingMode.Options = new List<SelectListItem>();
+            SelectAudioBitstreamingMode.Options = new List<SelectListItem>();
 
             foreach (string bsOption in Enum.GetNames(typeof(BitstreamChoice)))
             {
-                SelectudioBitstreamingMode.Options.Add(new SelectListItem { Text = bsOption, Value = bsOption });
+                SelectAudioBitstreamingMode.Options.Add(new SelectListItem { Text = bsOption, Value = bsOption });
             }
 
+            SelectAudioRenderer.Options = new List<SelectListItem>();
+
+            foreach (string bsOption in Enum.GetNames(typeof(AudioRendererChoice)))
+            {
+                SelectAudioRenderer.Options.Add(new SelectListItem { Text = bsOption, Value = bsOption });
+            }
         }
 
         void BtnConfigureSubtitles_Click(object sender, RoutedEventArgs e)
@@ -85,22 +91,24 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
         {
             var config = _config.Configuration.InternalPlayerConfiguration;
 
-            ChkEnableReclock.IsChecked = config.EnableReclock;
-            ChkEnableMadvr.IsChecked = config.EnableMadvr;
-            ChkEnableXySubFilter.IsChecked = config.EnableXySubFilter;
-            SelectudioBitstreamingMode.SelectedValue = config.AudioConfig.AudioBitstreaming.ToString();
+            //ChkEnableReclock.IsChecked = config.EnableReclock;
+            ChkEnableMadvr.IsChecked = config.VideoConfig.EnableMadvr;
+            ChkEnableXySubFilter.IsChecked = config.SubtitleConfig.EnableXySubFilter;
+            SelectAudioBitstreamingMode.SelectedValue = config.AudioConfig.AudioBitstreaming.ToString();
             SelectHwaMode.SelectedValue = config.VideoConfig.HwaMode.ToString();
+            SelectAudioRenderer.SelectedValue = config.AudioConfig.Renderer.ToString();            
         }
 
         void GeneralSettingsPage_Unloaded(object sender, RoutedEventArgs e)
         {
             var config = _config.Configuration.InternalPlayerConfiguration;
 
-            config.EnableReclock = ChkEnableReclock.IsChecked ?? false;
-            config.EnableMadvr = ChkEnableMadvr.IsChecked ?? false;
-            config.EnableXySubFilter = ChkEnableXySubFilter.IsChecked ?? false;
+            //config.EnableReclock = ChkEnableReclock.IsChecked ?? false;
+            config.VideoConfig.EnableMadvr = ChkEnableMadvr.IsChecked ?? false;
+            config.SubtitleConfig.EnableXySubFilter = ChkEnableXySubFilter.IsChecked ?? false;
 
-            config.AudioConfig.AudioBitstreaming = (BitstreamChoice)Enum.Parse(typeof(BitstreamChoice), SelectudioBitstreamingMode.SelectedValue);
+            config.AudioConfig.AudioBitstreaming = (BitstreamChoice)Enum.Parse(typeof(BitstreamChoice), SelectAudioBitstreamingMode.SelectedValue);
+            config.AudioConfig.Renderer = (AudioRendererChoice)Enum.Parse(typeof(AudioRendererChoice), SelectAudioRenderer.SelectedValue);
 
             config.VideoConfig.HwaMode = int.Parse(SelectHwaMode.SelectedValue);
 

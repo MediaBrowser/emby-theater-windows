@@ -69,6 +69,13 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
                  new SelectListItem{ Text = "Normalize Matrix", Value="2"},
                  new SelectListItem{ Text = "Clip Protection", Value="4"}
             };
+
+            SelectAudioDevice.Options = new List<SelectListItem>();
+            Dictionary<string, string> audioDevices = AudioConfigurationUtils.GetAudioDevices();
+            foreach (string bsOption in audioDevices.Keys)
+            {
+                SelectAudioDevice.Options.Add(new SelectListItem { Text = bsOption, Value = audioDevices[bsOption] });
+            }
         }
 
         void GeneralSettingsPage_Loaded(object sender, RoutedEventArgs e)
@@ -88,6 +95,7 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
             SelectMixingEncoding.SelectedValue = config.AudioConfig.MixingEncoding;
             SelectMixingLayout.SelectedValue = config.AudioConfig.MixingLayout;
             SelectMixingSetting.SelectedValue = config.AudioConfig.MixingSetting.ToString();
+            SelectAudioDevice.SelectedValue = config.AudioConfig.AudioDevice;
 
             SldDRCLevel.Value = config.AudioConfig.DRCLevel;
 
@@ -128,6 +136,7 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
             config.AudioConfig.MixingEncoding = SelectMixingEncoding.SelectedValue;
             config.AudioConfig.MixingLayout = SelectMixingLayout.SelectedValue;
             config.AudioConfig.MixingSetting = int.Parse(SelectMixingSetting.SelectedValue);
+            config.AudioConfig.AudioDevice = SelectAudioDevice.SelectedValue;
 
             config.AudioConfig.DRCLevel = (int)SldDRCLevel.Value;
             config.AudioConfig.EnabledCodecs.Clear();

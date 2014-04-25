@@ -62,7 +62,7 @@
         </CheckBox>
 
         <CheckBox x:Name="ChkShowExternalDiscApp" Margin="0 30 0 0" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center">
-            <TextBlock Style="{StaticResource TextBlockStyle}">Show External Disk App</TextBlock>
+            <TextBlock Style="{StaticResource TextBlockStyle}">Show External Disc App</TextBlock>
         </CheckBox>
 
         <Button x:Name="BtnApply" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Margin="0 60 0 0">

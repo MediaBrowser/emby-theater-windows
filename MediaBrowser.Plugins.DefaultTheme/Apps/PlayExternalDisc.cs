@@ -53,7 +53,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Apps
     }
 
     /// <summary>
-    /// Plays a external DVD or Blueray disk
+    /// Plays a external DVD or Blueray disc
     /// </summary>
     class PlayExternalDiscApp : IApp
     {
@@ -72,7 +72,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Apps
 
         public Task Launch()
         {
-            return Task.Run(() => _playbackManager.PlayExternalDisk(false));
+            return Task.Run(() => _playbackManager.PlayExternalDisc(false));
         }
 
         public static Uri GetThumbUri()

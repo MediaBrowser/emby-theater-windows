@@ -6,11 +6,13 @@
         public string HomePage { get; set; }
         public string Screensaver { get; set;  }
         public bool ShowBackButton { get; set; }
+        public bool ShowExternalDiscApp { get; set; }
 
         public UserTheaterConfiguration()
         {
             ShowBackButton = true;
-            Screensaver = "None";
+            ShowExternalDiscApp = true;
+            Screensaver = "Backdrop";
         }
     }
 }

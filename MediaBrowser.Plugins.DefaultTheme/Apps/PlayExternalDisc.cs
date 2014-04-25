@@ -8,32 +8,43 @@ using System.Windows.Controls;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
+using MediaBrowser.Theater.Interfaces.Configuration;
+using MediaBrowser.Theater.Interfaces.Session;
 
 
 namespace MediaBrowser.Plugins.DefaultTheme.Apps
 {
     /// <summary>
-    /// Factory to create our IAPP
+    /// Factory to create our external disc app
     /// </summary>
     class PlayExternalDiscAppFactory : IAppFactory
     {
         private readonly IPlaybackManager _playbackManager;
+        private readonly ISessionManager _sessionManager;
         private readonly IImageManager _imageManager;
+        private readonly ITheaterConfigurationManager _theaterConfigurationManager;
         private readonly ILogManager _logManager;
 
 
-        public PlayExternalDiscAppFactory(IPlaybackManager playbackManager, IImageManager imageManager, ILogManager logManager)
+        public PlayExternalDiscAppFactory(ISessionManager sessionManager, IPlaybackManager playbackManager, ITheaterConfigurationManager theaterConfigurationManager, IImageManager imageManager, ILogManager logManager)
         {
             _playbackManager = playbackManager;
+            _sessionManager = sessionManager;
             _imageManager = imageManager;
+            _theaterConfigurationManager = theaterConfigurationManager;
             _logManager = logManager;
         }
 
         public IEnumerable<IApp> GetApps()
         {
-            // dont return an app if we dont have a cdrom dive
-            return new [] { SystemHasCdRom() ?  new PlayExternalDiscApp(_playbackManager, _imageManager, _logManager)  : null };
-        }
+            // dont return an app if we dont have a cdrom dive or if we are configured not to show
+            var conf = _theaterConfigurationManager.GetUserTheaterConfiguration(_sessionManager.CurrentUser.Id);
+
+            if (conf.ShowExternalDiscApp && SystemHasCdRom())
+                return new List<IApp> { new PlayExternalDiscApp(_playbackManager, _imageManager, _logManager) };
+            else
+                return new List<IApp>();
+       }
 
         private Boolean SystemHasCdRom()
         {

@@ -163,6 +163,8 @@ namespace MediaBrowser.Theater.Core.Appearance
             SelectSreensaver.SelectedValue = screensaverOption.Value;
 
             ChkShowBackButton.IsChecked = userConfig.ShowBackButton;
+
+            ChkShowExternalDiscApp.IsChecked = userConfig.ShowExternalDiscApp;
         }
 
         private async Task SaveConfiguration()
@@ -173,6 +175,7 @@ namespace MediaBrowser.Theater.Core.Appearance
             userConfig.Theme = SelectTheme.SelectedValue;
             userConfig.Screensaver = SelectSreensaver.SelectedValue;
             userConfig.ShowBackButton = ChkShowBackButton.IsChecked ?? false;
+            userConfig.ShowExternalDiscApp = ChkShowExternalDiscApp.IsChecked ?? false;
 
             await _config.UpdateUserTheaterConfiguration(_session.CurrentUser.Id, userConfig);
         }

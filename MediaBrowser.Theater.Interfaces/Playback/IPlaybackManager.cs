@@ -121,7 +121,7 @@ namespace MediaBrowser.Theater.Interfaces.Playback
         /// Plays a DVD or Blueray disc in an external disk drive
         /// will ask for the disc to be inserted if it is not ready
         /// </summary>
-        Task PlayExternalDisk(bool forceAskToInsertDisc);
+        Task PlayExternalDisc(bool forceAskToInsertDisc);
 
         /// <summary>
         /// Stops all playback.

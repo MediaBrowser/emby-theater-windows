@@ -588,7 +588,8 @@ namespace MediaBrowser.UI
             }
             
             //Try and wait for WOL if its configured
-            if (!foundServer && _appHost.TheaterConfigurationManager.Configuration.WolConfiguration.HostMacAddresses.Count > 0)
+            if (!foundServer && _appHost.TheaterConfigurationManager.Configuration.WolConfiguration != null
+                && _appHost.TheaterConfigurationManager.Configuration.WolConfiguration.HostMacAddresses.Count > 0)
             {
                 for (var i = 0; i < _appHost.TheaterConfigurationManager.Configuration.WolConfiguration.WakeAttempts; i++)
                 {

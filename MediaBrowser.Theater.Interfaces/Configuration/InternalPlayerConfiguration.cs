@@ -265,8 +265,8 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
             EnablePCMMixing = false;
             EnableAutoSync = true;
             ConvertToStandardLayout = true;
-            Expand61 = false;
-            ExpandMono = false;
+            Expand61 = true;
+            ExpandMono = true;
             EnableDRC = false;
             DRCLevel = 100;
             LfeMixingLevel = 0;

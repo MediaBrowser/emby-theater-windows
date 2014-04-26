@@ -515,9 +515,10 @@ namespace MediaBrowser.Theater.DirectShow
                                 audSett.SetWASAPIMode(AUDCLNT_SHAREMODE.EXCLUSIVE);
                                 audSett.SetUseWASAPIEventMode(true);
                                 audSett.SetAudioDeviceById(_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.AudioDevice);
-                                SpeakerConfig sc;
-                                audSett.GetSpeakerConfig(out sc);
-                                audSett.SetSpeakerConfig(SpeakerConfig.SevenDotOneSurround);
+                                //SpeakerConfig sc;
+                                //audSett.GetSpeakerConfig(out sc);
+                                //audSett.SetSpeakerConfig(SpeakerConfig.SevenDotOneSurround);
+                                audSett.SetSpeakerMatchOutput(true);
                             }
                         }
                     }

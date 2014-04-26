@@ -125,15 +125,14 @@ namespace MediaBrowser.Theater.DirectShow
         int SetResamplingQuality(int setting);
 
         [PreserveSig]
-        int GetAvailableAudioDevices(
-            /*[Out, MarshalAs(UnmanagedType.LPArray)]
-            out DeviceDefinition[]*/
-            out IntPtr devices,
-            out int count); //doesn't work
-        [PreserveSig]
         int SetAudioDevice(int setting);
         [PreserveSig]
         int SetAudioDeviceById([In, MarshalAs(UnmanagedType.LPWStr)] string setting);
+
+        [PreserveSig]
+        int GetSpeakerMatchOutput(out bool setting);
+        [PreserveSig]
+        int SetSpeakerMatchOutput(bool setting);
     }
 
     #endregion

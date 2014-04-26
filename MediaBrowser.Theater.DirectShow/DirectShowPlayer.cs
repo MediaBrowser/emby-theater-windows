@@ -470,10 +470,7 @@ namespace MediaBrowser.Theater.DirectShow
                             hr = m_graph.AddFilter(aRenderer, "WASAPI Audio Renderer");
                             DsError.ThrowExceptionForHR(hr);
                             useDefaultRenderer = false;
-
-                            //the MP audio renderer doesn't domn mix so until that's fixed we should have LAV do it
-                            _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.EnablePCMMixing = true;
-
+                                                        
                             IMPAudioSettings audSett = aRenderer as IMPAudioSettings;
                             if (audSett != null)
                             {
@@ -481,6 +478,9 @@ namespace MediaBrowser.Theater.DirectShow
                                 audSett.SetWASAPIMode(AUDCLNT_SHAREMODE.EXCLUSIVE);
                                 audSett.SetUseWASAPIEventMode(true);
                                 audSett.SetAudioDeviceById(_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.AudioDevice);
+                                SpeakerConfig sc;
+                                audSett.GetSpeakerConfig(out sc);
+                                audSett.SetSpeakerConfig(SpeakerConfig.SevenDotOneSurround);
                             }
                         }
                     }
@@ -2311,49 +2311,55 @@ namespace MediaBrowser.Theater.DirectShow
         private List<SelectableMediaStream> GetExternalSubtitleStreams(List<SelectableMediaStream> internalStreams)
         {
             var externalSubtitleStreams = new List<SelectableMediaStream>();
-            var startIndex = internalStreams != null ? internalStreams.Last().Index + 1 : 0;
-            var index = startIndex;
-            var hasActiveInternalSubtitleStream = (internalStreams != null
-                ? internalStreams.FirstOrDefault(i => i.Type == MediaStreamType.Subtitle && i.IsActive)
-                : null) != null;
-            var activeSubtitlePreference = (hasActiveInternalSubtitleStream ||
-                                            _sessionManager.CurrentUser.Configuration.UseForcedSubtitlesOnly)
-                ? String.Empty
-                : _sessionManager.CurrentUser.Configuration.SubtitleLanguagePreference;
-
-            if (_item != null && _item.MediaStreams != null)
+            try
             {
-                // each external subtitle (srt file) will be a stream
-                foreach (var s in _item.MediaStreams.Where(i => i.Type == MediaStreamType.Subtitle && i.IsExternal))
+                var startIndex = internalStreams != null ? internalStreams.Last().Index + 1 : 0;
+                var index = startIndex;
+                var hasActiveInternalSubtitleStream = (internalStreams != null
+                    ? internalStreams.FirstOrDefault(i => i.Type == MediaStreamType.Subtitle && i.IsActive)
+                    : null) != null;
+                var activeSubtitlePreference = (hasActiveInternalSubtitleStream ||
+                                                _sessionManager.CurrentUser.Configuration.UseForcedSubtitlesOnly)
+                    ? String.Empty
+                    : _sessionManager.CurrentUser.Configuration.SubtitleLanguagePreference;
+
+                if (_item != null && _item.MediaStreams != null)
                 {
+                    // each external subtitle (srt file) will be a stream
+                    foreach (var s in _item.MediaStreams.Where(i => i.Type == MediaStreamType.Subtitle && i.IsExternal))
+                    {
+                        externalSubtitleStreams.Add(new SelectableMediaStream
+                        {
+                            Index = index,
+                            Name = s.Language ?? "Unknown",
+                            Path = s.Path,
+                            Type = MediaStreamType.Subtitle,
+                            Identifier = "external",
+                            IsActive = (!String.IsNullOrEmpty(s.Language)) && (s.Language == activeSubtitlePreference)
+                            // make the subtitle  active by default
+                        });
+                        index++;
+                    }
+                }
+
+                if (externalSubtitleStreams.Any() &&
+                    (internalStreams == null || !internalStreams.Any(i => i.Type == MediaStreamType.Subtitle)))
+                {
+                    // have to add a nosubtitle stream, so the user can turn sub title off
                     externalSubtitleStreams.Add(new SelectableMediaStream
                     {
                         Index = index,
-                        Name = s.Language ?? "Unknown",
-                        Path = s.Path,
+                        Name = "No Subtitles",
                         Type = MediaStreamType.Subtitle,
                         Identifier = "external",
-                        IsActive = (!String.IsNullOrEmpty(s.Language)) && (s.Language == activeSubtitlePreference)
-                        // make the subtitle  active by default
+                        IsActive = !(hasActiveInternalSubtitleStream || externalSubtitleStreams.Any(i => i.IsActive))
                     });
-                    index++;
                 }
             }
-
-            if (externalSubtitleStreams.Any() &&
-                (internalStreams == null || ! internalStreams.Any(i => i.Type == MediaStreamType.Subtitle)))
+            catch (Exception ex)
             {
-                // have to add a nosubtitle stream, so the user can turn sub title off
-                externalSubtitleStreams.Add(new SelectableMediaStream
-                {
-                    Index = index,
-                    Name = "No Subtitles",
-                    Type = MediaStreamType.Subtitle,
-                    Identifier = "external",
-                    IsActive = ! (hasActiveInternalSubtitleStream || externalSubtitleStreams.Any(i => i.IsActive))
-                });
+                _logger.ErrorException("GetExternalSubtitleStreams", ex);
             }
-
 
             return externalSubtitleStreams;
         }

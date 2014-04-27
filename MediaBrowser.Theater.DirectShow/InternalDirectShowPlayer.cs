@@ -41,7 +41,7 @@ namespace MediaBrowser.Theater.DirectShow
 
         private List<BaseItemDto> _playlist = new List<BaseItemDto>();
 
-        public InternalDirectShowPlayer(ILogManager logManager, IHiddenWindow hiddenWindow, IPresentationManager presentation, ISessionManager sessionManager, IApiClient apiClient, IPlaybackManager playbackManager, ITheaterConfigurationManager config, IIsoManager isoManager, IUserInputManager inputManager, , IZipClient zipClient, HttpClient httpClient)
+        public InternalDirectShowPlayer(ILogManager logManager, IHiddenWindow hiddenWindow, IPresentationManager presentation, ISessionManager sessionManager, IApiClient apiClient, IPlaybackManager playbackManager, ITheaterConfigurationManager config, IIsoManager isoManager, IUserInputManager inputManager, IZipClient zipClient, IHttpClient httpClient)
         {
             _logger = logManager.GetLogger("InternalDirectShowPlayer");
             _hiddenWindow = hiddenWindow;

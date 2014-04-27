@@ -156,7 +156,7 @@ namespace MediaBrowser.UI.Implementations
         {
             var systemConfig = await _apiClient.GetServerConfigurationAsync();
 
-            if (systemConfig.ManualLoginClients.Contains(ManualLoginCategory.MediaBrowserTheater))
+            if (systemConfig.RequireManualLoginForOtherApps)
             {
                 await NavigateToManualLoginPage();
             }

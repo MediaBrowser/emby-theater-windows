@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.ApiClient;
+﻿using System.Linq;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Session;
 using MediaBrowser.Theater.Interfaces.Playback;
@@ -55,9 +56,11 @@ namespace MediaBrowser.Theater.Implementations.Playback
                 var info = new PlaybackStartInfo
                 {
                     ItemId = item.Id,
-                    UserId = _apiClient.CurrentUserId,
-                    IsSeekable = _mediaPlayer.CanSeek,
-                    QueueableMediaTypes = queueTypes.ToArray()
+                    CanSeek = _mediaPlayer.CanSeek,
+                    QueueableMediaTypes = queueTypes.ToList(),
+
+                    // TODO: Remove this hardcoding
+                    PlayMethod = PlayMethod.DirectPlay
                 };
 
                 await _apiClient.ReportPlaybackStartAsync(info);
@@ -99,7 +102,6 @@ namespace MediaBrowser.Theater.Implementations.Playback
                 var info = new PlaybackStopInfo
                 {
                     ItemId = e.EndingMedia.Id,
-                    UserId = _apiClient.CurrentUserId,
                     PositionTicks = e.EndingPositionTicks
                 };
 
@@ -126,7 +128,6 @@ namespace MediaBrowser.Theater.Implementations.Playback
                 var info = new PlaybackStopInfo
                 {
                     ItemId = e.PreviousMedia.Id,
-                    UserId = _apiClient.CurrentUserId,
                     PositionTicks = e.EndingPositionTicks
                 };
 
@@ -151,9 +152,12 @@ namespace MediaBrowser.Theater.Implementations.Playback
                     var info = new PlaybackStartInfo
                     {
                         ItemId = e.NewMedia.Id,
-                        UserId = _apiClient.CurrentUserId,
-                        IsSeekable = _mediaPlayer.CanSeek,
-                        QueueableMediaTypes = queueTypes.ToArray()
+
+                        CanSeek = _mediaPlayer.CanSeek,
+                        QueueableMediaTypes = queueTypes.ToList(),
+
+                        // TODO: Remove this hardcoding
+                        PlayMethod = PlayMethod.DirectPlay
                     };
 
                     await _apiClient.ReportPlaybackStartAsync(info);
@@ -181,7 +185,6 @@ namespace MediaBrowser.Theater.Implementations.Playback
             var info = new PlaybackProgressInfo
             {
                 ItemId = item.Id,
-                UserId = _apiClient.CurrentUserId,
                 IsMuted = _playback.IsMuted,
                 IsPaused = _mediaPlayer.PlayState == PlayState.Paused,
                 PositionTicks = _mediaPlayer.CurrentPositionTicks

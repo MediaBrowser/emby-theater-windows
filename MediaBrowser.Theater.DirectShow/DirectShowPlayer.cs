@@ -5,6 +5,7 @@ using MediaBrowser.Common.Net;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
+using MediaBrowser.Model.IO;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
@@ -154,7 +155,7 @@ namespace MediaBrowser.Theater.DirectShow
 
         public DirectShowPlayer(ILogger logger, IHiddenWindow hiddenWindow, InternalDirectShowPlayer playerWrapper,
             IntPtr applicationWindowHandle, ISessionManager sessionManager, ITheaterConfigurationManager mbtConfig,
-            IUserInputManager input, IApiClient apiClient, IHttpClient httpClient)
+            IUserInputManager input, IApiClient apiClient,  IZipClient zipClient, IHttpClient httpClient)
         {
             _logger = logger;
             _hiddenWindow = hiddenWindow;
@@ -175,7 +176,7 @@ namespace MediaBrowser.Theater.DirectShow
 
             //use a static object so we keep the libraries in the same place. Doesn't usually matter, but the EVR Presenter does some COM hooking that has problems if we change the lib address.
             if (_urCom == null)
-                _urCom = new URCOMLoader(_mbtConfig);
+                _urCom = new URCOMLoader(_mbtConfig, zipClient);
         }
 
         private IBaseFilter AudioRenderer
@@ -2349,7 +2350,7 @@ namespace MediaBrowser.Theater.DirectShow
                     // have to add a nosubtitle stream, so the user can turn sub title off
                     externalSubtitleStreams.Add(new SelectableMediaStream
                     {
-                         Name = "No Subtitles",
+                        Name = "No Subtitles",
                         Type = MediaStreamType.Subtitle,
                         Identifier = "external",
                         IsActive = !(hasActiveInternalSubtitleStream || externalSubtitleStreams.Any(i => i.IsActive))
@@ -2479,7 +2480,7 @@ namespace MediaBrowser.Theater.DirectShow
             _logger.Debug("SetSubtitleStream {0} {1} {2} {3}", stream.Index, stream.Type, stream.Name, stream.Identifier);
             if (stream.Identifier == "external" || stream.Name.ToLower().Contains("no subtitles"))
             {
-                 SetExternalSubtitleStream(stream);
+                SetExternalSubtitleStream(stream);
             }
 
             if (stream.Identifier != "external")

@@ -1,6 +1,7 @@
 ﻿using System.Drawing;
 using DirectShowLib;
 using DirectShowLib.Dvd;
+using MediaBrowser.Common.Net;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
@@ -13,6 +14,7 @@ using MediaFoundation;
 using MediaFoundation.EVR;
 using MediaFoundation.Misc;
 using System;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -41,6 +43,7 @@ namespace MediaBrowser.Theater.DirectShow
         private readonly InternalDirectShowPlayer _playerWrapper;
         private readonly ISessionManager _sessionManager;
         private readonly IApiClient _apiClient;
+        private readonly IHttpClient _httpClient;
 
         private DirectShowLib.IGraphBuilder m_graph = null;
         private DirectShowLib.FilterGraphNoThread m_filterGraph = null;
@@ -151,13 +154,14 @@ namespace MediaBrowser.Theater.DirectShow
 
         public DirectShowPlayer(ILogger logger, IHiddenWindow hiddenWindow, InternalDirectShowPlayer playerWrapper,
             IntPtr applicationWindowHandle, ISessionManager sessionManager, ITheaterConfigurationManager mbtConfig,
-            IUserInputManager input, IApiClient apiClient)
+            IUserInputManager input, IApiClient apiClient, IHttpClient httpClient)
         {
             _logger = logger;
             _hiddenWindow = hiddenWindow;
             _playerWrapper = playerWrapper;
             _applicationWindowHandle = applicationWindowHandle;
             _sessionManager = sessionManager;
+            _httpClient = httpClient;
             _input = input;
             _input.KeyDown += HiddenForm_KeyDown;
             //_input.
@@ -1065,8 +1069,9 @@ namespace MediaBrowser.Theater.DirectShow
             }
         }
 
-        public void LoadExternalSubtitles(string subtitleFile)
+        public void LoadExternalSubtitle(string subtitleFile)
         {
+            _logger.Debug("LoadExternalSubtitle {0}", subtitleFile);
             IBaseFilter subtitleFilter = _xySubFilter != null ? _xySubFilter as IBaseFilter : _xyVsFilter as IBaseFilter;
 
             if (subtitleFilter != null)
@@ -2313,8 +2318,6 @@ namespace MediaBrowser.Theater.DirectShow
             var externalSubtitleStreams = new List<SelectableMediaStream>();
             try
             {
-                var startIndex = internalStreams != null ? internalStreams.Last().Index + 1 : 0;
-                var index = startIndex;
                 var hasActiveInternalSubtitleStream = (internalStreams != null
                     ? internalStreams.FirstOrDefault(i => i.Type == MediaStreamType.Subtitle && i.IsActive)
                     : null) != null;
@@ -2330,7 +2333,7 @@ namespace MediaBrowser.Theater.DirectShow
                     {
                         externalSubtitleStreams.Add(new SelectableMediaStream
                         {
-                            Index = index,
+                            Index = s.Index,
                             Name = s.Language ?? "Unknown",
                             Path = s.Path,
                             Type = MediaStreamType.Subtitle,
@@ -2338,18 +2341,15 @@ namespace MediaBrowser.Theater.DirectShow
                             IsActive = (!String.IsNullOrEmpty(s.Language)) && (s.Language == activeSubtitlePreference)
                             // make the subtitle  active by default
                         });
-                        index++;
                     }
                 }
 
-                if (externalSubtitleStreams.Any() &&
-                    (internalStreams == null || !internalStreams.Any(i => i.Type == MediaStreamType.Subtitle)))
+                if (externalSubtitleStreams.Any() && (internalStreams == null || ! internalStreams.Any(i => i.Type == MediaStreamType.Subtitle)))
                 {
                     // have to add a nosubtitle stream, so the user can turn sub title off
                     externalSubtitleStreams.Add(new SelectableMediaStream
                     {
-                        Index = index,
-                        Name = "No Subtitles",
+                         Name = "No Subtitles",
                         Type = MediaStreamType.Subtitle,
                         Identifier = "external",
                         IsActive = !(hasActiveInternalSubtitleStream || externalSubtitleStreams.Any(i => i.IsActive))
@@ -2364,6 +2364,25 @@ namespace MediaBrowser.Theater.DirectShow
             return externalSubtitleStreams;
         }
 
+        private List<SelectableMediaStream> OrderStreams(List<SelectableMediaStream> streamsIn)
+        {
+            var streamsOut = streamsIn.Where(i => i.Type != MediaStreamType.Subtitle).ToList();
+            var noSubtitleStream =  streamsIn.Where(i => i.Type == MediaStreamType.Subtitle && i.Name.ToLower().Contains("no subtitles")).FirstOrDefault();
+            if (noSubtitleStream != null)
+            {
+                streamsOut.Add(noSubtitleStream);
+
+            }
+            var subtitleStreams = streamsIn.Where(i => i.Type == MediaStreamType.Subtitle && ! i.Name.ToLower().Contains("no subtitles"));
+            foreach(var subStream in subtitleStreams)
+            {
+                streamsOut.Add(subStream);
+            }
+
+           
+            return streamsOut;
+        }
+
         private List<SelectableMediaStream> GetStreams()
         {
             var streams = GetInternalStreams();
@@ -2372,7 +2391,9 @@ namespace MediaBrowser.Theater.DirectShow
             {
                 streams = streams.Concat(externalSubtitleStreams).ToList();
             }
-            return streams;
+
+            // modify the subtitle stream so the "No Subtitles" subtitle selection  is at the front of subtitles list
+            return OrderStreams(streams);
         }
 
 
@@ -2453,12 +2474,12 @@ namespace MediaBrowser.Theater.DirectShow
 
         }
 
-        public void SetSubtitleStream(SelectableMediaStream stream)
+        public async void SetSubtitleStream(SelectableMediaStream stream)
         {
             _logger.Debug("SetSubtitleStream {0} {1} {2} {3}", stream.Index, stream.Type, stream.Name, stream.Identifier);
             if (stream.Identifier == "external" || stream.Name.ToLower().Contains("no subtitles"))
             {
-                SetExternalSubtitleStream(stream);
+                 SetExternalSubtitleStream(stream);
             }
 
             if (stream.Identifier != "external")
@@ -2469,8 +2490,38 @@ namespace MediaBrowser.Theater.DirectShow
             ToggleHideSubtitles(stream.Name.ToLower().Contains("no subtitles"));
         }
 
+        
+        [DllImport("shlwapi.dll", CharSet = CharSet.Unicode)]
+        //[ResourceExposure(ResourceScope.None)]
+        [return: MarshalAsAttribute(UnmanagedType.Bool)]
+        internal static extern bool PathIsUNC([MarshalAsAttribute(UnmanagedType.LPWStr), In] string pszPath);
 
-        private void SetExternalSubtitleStream(SelectableMediaStream stream)
+        public async void loadExternalSubtitleFromStream(SelectableMediaStream stream)
+        {
+            // get a url for the stream
+            var url = _apiClient.GetSubtitleUrl(new SubtitleOptions
+            {
+                ItemId = _item.OriginalItem.Id,
+                StreamIndex = stream.Index
+            });
+
+            // as xvfilter throw's an error for a stream, we copy the stream to
+            // a local temp file and change it ext to 'srt'
+            var tempFile =  await _httpClient.GetTempFile(new HttpRequestOptions
+            {
+                Url = url,
+                Progress = new Progress<double>()
+            });
+
+            Debug.WriteLine("**** TempFile = " + tempFile);
+            var srtPath = Path.ChangeExtension(tempFile, ".srt");
+            File.Move(tempFile, srtPath);
+
+            _logger.Debug("loadExternalSubtitleFromStream {0} {1} {2} {3}", stream.Index, stream.Type, url, tempFile);
+            LoadExternalSubtitle(srtPath);
+        }
+
+        private async void SetExternalSubtitleStream(SelectableMediaStream stream)
         {
             if (stream.Name.ToLower().Contains("no subtitles"))
             {
@@ -2480,22 +2531,26 @@ namespace MediaBrowser.Theater.DirectShow
             }
             else
             {
-                var url = _apiClient.GetSubtitleUrl(new SubtitleOptions
+                if (PathIsUNC(stream.Path))
                 {
-                    ItemId = _item.OriginalItem.Id,
-                    StreamIndex = stream.Index
-                });
+                    LoadExternalSubtitle(stream.Path);
+                }
+                else
+                {
+                     loadExternalSubtitleFromStream(stream);
+                }
 
-                _logger.Debug("SetExternalSubtitleStream {0} {1} {2}", stream.Index, stream.Type, url);
-                LoadExternalSubtitles(url);
                 UpdateStreamActiveSetting(stream.Index, stream.Type); // display this  streams as active
             }
         }
 
         private void UpdateStreamActiveSetting(int index, MediaStreamType streamType)
         {
+            Debug.WriteLine(String.Format("*****UpdateStreamActiveSetting index = {0}", index));
+            
             foreach (var i in GetSelectableStreams().Where(s => s.Type == streamType))
             {
+                Debug.WriteLine(String.Format("{0}.IsActive = {1} .Index {2} index {3} {4}", i.Name, i.IsActive, i.Index, index, i.Index == index));
                 i.IsActive = i.Index == index;
             }
         }
@@ -2551,6 +2606,7 @@ namespace MediaBrowser.Theater.DirectShow
 
                 var iss = filters[0] as IAMStreamSelect;
 
+               
                 iss.Enable(stream.Index, AMStreamSelectEnableFlags.Enable);
 
                 Marshal.ReleaseComObject(filters[0]);

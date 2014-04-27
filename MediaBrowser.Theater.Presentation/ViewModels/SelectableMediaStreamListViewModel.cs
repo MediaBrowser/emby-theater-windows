@@ -8,6 +8,7 @@ using MediaBrowser.Theater.Interfaces.ViewModels;
 using System.Linq;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Diagnostics;
 
 namespace MediaBrowser.Theater.Presentation.ViewModels
 {
@@ -63,8 +64,9 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         private void EnsureActiveStreamIsVisible()
         {
-             var activeItemIndex = _listItems.IndexOf(_listItems.FirstOrDefault(i => i.IsActive));
-
+            var xxx = _listItems.FirstOrDefault(i => i.IsActive);
+            var activeItemIndex = _listItems.IndexOf(_listItems.FirstOrDefault(i => i.IsActive));
+            Debug.WriteLine(String.Format("Ensure Active Stream is Visible {0} {1}", xxx.Name, activeItemIndex));
              _presentationManager.Window.Dispatcher.InvokeAsync(() => ListCollectionView.MoveCurrentToPosition(activeItemIndex));
         }
 

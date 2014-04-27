@@ -7,12 +7,12 @@ using System.IO;
 using DirectShowLib;
 using System.Text.RegularExpressions;
 using DirectShowLib.Utils;
+using MediaBrowser.Model.IO;
 using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces;
 using System.Reflection;
 using System.Net;
 using System.Threading;
-using MediaBrowser.Common.Implementations.Archiving;
 
 namespace MediaBrowser.Theater.DirectShow
 {
@@ -46,7 +46,7 @@ namespace MediaBrowser.Theater.DirectShow
         SerializableDictionary<Guid, KnownCOMObject> _knownObjects;
         bool _preferURObjects = true;
 
-        public static void EnsureObjects(ITheaterConfigurationManager mbtConfig, bool block)
+        public static void EnsureObjects(ITheaterConfigurationManager mbtConfig, bool block, IZipClient zipClient)
         {
             try
             {
@@ -66,9 +66,9 @@ namespace MediaBrowser.Theater.DirectShow
                 if (needsCheck)
                 {
                     if (block)
-                        CheckObjects(objPath);
+                        CheckObjects(objPath, zipClient);
                     else
-                        ThreadPool.QueueUserWorkItem(new WaitCallback(CheckObjects), objPath);
+                        ThreadPool.QueueUserWorkItem(o => CheckObjects(o, zipClient), objPath);
                 }
             }
             catch (Exception ex)
@@ -116,7 +116,7 @@ namespace MediaBrowser.Theater.DirectShow
             }
         }
 
-        private static void CheckObjects(object objDlPath)
+        private static void CheckObjects(object objDlPath, IZipClient zipClient)
         {
             try
             {
@@ -129,7 +129,6 @@ namespace MediaBrowser.Theater.DirectShow
                     string dlList = mwc.DownloadString(objManifest);
                     if (!string.IsNullOrWhiteSpace(dlList))
                     {
-                        ZipClient zc = new ZipClient();
                         string[] objToCheck = dlList.Split(new string[]{System.Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries);
                         foreach (string toCheck in objToCheck)
                         {
@@ -155,7 +154,7 @@ namespace MediaBrowser.Theater.DirectShow
                                             {
                                                 using (MemoryStream ms = new MemoryStream(comBin))
                                                 {
-                                                    zc.ExtractAll(ms, dlPath, true);
+                                                    zipClient.ExtractAll(ms, dlPath, true);
                                                 }
 
                                                 WriteTextDate(txtPath, lmDate);
@@ -186,10 +185,10 @@ namespace MediaBrowser.Theater.DirectShow
             private set;
         }
 
-        public URCOMLoader(ITheaterConfigurationManager mbtConfig)
+        public URCOMLoader(ITheaterConfigurationManager mbtConfig, IZipClient zipClient)
         {
             //this should be called on app load, but this will make sure it gets done.
-            URCOMLoader.EnsureObjects(mbtConfig, true);
+            URCOMLoader.EnsureObjects(mbtConfig, true, zipClient);
 
             _knownObjects = mbtConfig.Configuration.InternalPlayerConfiguration.COMConfig.FilterList;
             SearchPath = Path.Combine(mbtConfig.CommonApplicationPaths.ProgramDataPath, OJB_FOLDER);

@@ -8,14 +8,13 @@ using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
+using MediaBrowser.Theater.Interfaces.UserInput;
 using MediaBrowser.Theater.Presentation.Playback;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Management;
-using MediaBrowser.Theater.Interfaces.UserInput;
 
 namespace MediaBrowser.Theater.DirectShow
 {
@@ -32,6 +31,7 @@ namespace MediaBrowser.Theater.DirectShow
         private readonly ITheaterConfigurationManager _config;
         private readonly IIsoManager _isoManager;
         private readonly IUserInputManager _inputManager;
+        private readonly IZipClient _zipClient;
 
         public event EventHandler<MediaChangeEventArgs> MediaChanged;
 
@@ -39,7 +39,7 @@ namespace MediaBrowser.Theater.DirectShow
 
         private List<BaseItemDto> _playlist = new List<BaseItemDto>();
 
-        public InternalDirectShowPlayer(ILogManager logManager, IHiddenWindow hiddenWindow, IPresentationManager presentation, ISessionManager sessionManager, IApiClient apiClient, IPlaybackManager playbackManager, ITheaterConfigurationManager config, IIsoManager isoManager, IUserInputManager inputManager)
+        public InternalDirectShowPlayer(ILogManager logManager, IHiddenWindow hiddenWindow, IPresentationManager presentation, ISessionManager sessionManager, IApiClient apiClient, IPlaybackManager playbackManager, ITheaterConfigurationManager config, IIsoManager isoManager, IUserInputManager inputManager, IZipClient zipClient)
         {
             _logger = logManager.GetLogger("InternalDirectShowPlayer");
             _hiddenWindow = hiddenWindow;
@@ -50,6 +50,7 @@ namespace MediaBrowser.Theater.DirectShow
             _config = config;
             _isoManager = isoManager;
             _inputManager = inputManager;
+            _zipClient = zipClient;
         }
 
         public IReadOnlyList<BaseItemDto> Playlist
@@ -197,7 +198,7 @@ namespace MediaBrowser.Theater.DirectShow
             {
                 InvokeOnPlayerThread(() =>
                 {
-                    _mediaPlayer = new DirectShowPlayer(_logger, _hiddenWindow, this, _presentation.WindowHandle, _sessionManager, _config, _inputManager, _apiClient);
+                    _mediaPlayer = new DirectShowPlayer(_logger, _hiddenWindow, this, _presentation.WindowHandle, _sessionManager, _config, _inputManager, _apiClient, _zipClient);
 
                     //HideCursor();
                 });

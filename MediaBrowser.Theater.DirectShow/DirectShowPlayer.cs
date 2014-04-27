@@ -4,6 +4,7 @@ using DirectShowLib.Dvd;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
+using MediaBrowser.Model.IO;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
@@ -151,7 +152,7 @@ namespace MediaBrowser.Theater.DirectShow
 
         public DirectShowPlayer(ILogger logger, IHiddenWindow hiddenWindow, InternalDirectShowPlayer playerWrapper,
             IntPtr applicationWindowHandle, ISessionManager sessionManager, ITheaterConfigurationManager mbtConfig,
-            IUserInputManager input, IApiClient apiClient)
+            IUserInputManager input, IApiClient apiClient, IZipClient zipClient)
         {
             _logger = logger;
             _hiddenWindow = hiddenWindow;
@@ -171,7 +172,7 @@ namespace MediaBrowser.Theater.DirectShow
 
             //use a static object so we keep the libraries in the same place. Doesn't usually matter, but the EVR Presenter does some COM hooking that has problems if we change the lib address.
             if (_urCom == null)
-                _urCom = new URCOMLoader(_mbtConfig);
+                _urCom = new URCOMLoader(_mbtConfig, zipClient);
         }
 
         private IBaseFilter AudioRenderer

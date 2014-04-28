@@ -2365,7 +2365,7 @@ namespace MediaBrowser.Theater.DirectShow
         private void ClearExternalSubtitles()
         {
             _logger.Debug("ClearExternalSubtitles");
-            ToggleHideSubtitles(true);
+            LoadExternalSubtitle("");
         }
 
         public void ToggleHideSubtitles(bool hide)

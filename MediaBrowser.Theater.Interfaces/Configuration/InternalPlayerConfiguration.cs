@@ -248,6 +248,8 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
         public bool ShowTrayIcon { get; set; }
         public AudioRendererChoice Renderer { get; set; }
         public string AudioDevice { get; set; }
+        public string SpeakerLayout { get; set; }
+        public bool ReleaseDeviceOnStop { get; set; }
 
         /// <summary>
         /// Gets or sets audio codecs that will be enabled. 
@@ -274,6 +276,8 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
             SurroundMixingLevel = 0.7071;
             Renderer = AudioRendererChoice.Default;
             AudioDevice = string.Empty;
+            SpeakerLayout = "Stereo";
+            ReleaseDeviceOnStop = false;
         }
 
         public void SetDefaults()

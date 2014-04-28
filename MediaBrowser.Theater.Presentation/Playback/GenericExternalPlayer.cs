@@ -448,6 +448,22 @@ namespace MediaBrowser.Theater.Presentation.Playback
             throw new NotImplementedException();
         }
 
+        // <summary>
+        // Changes to the next track.
+        // <summary>
+        public void NextTrack()
+        {
+            throw new NotImplementedException();
+        }
+
+        // <summary>
+        // Changes to the previous track.
+        // </summary>
+        public void PreviousTrack()
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Sets the playback speed
         /// </summary>

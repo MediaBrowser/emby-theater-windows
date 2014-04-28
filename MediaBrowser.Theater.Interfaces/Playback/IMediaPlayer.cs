@@ -171,6 +171,17 @@ namespace MediaBrowser.Theater.Interfaces.Playback
         /// <param name="newIndex">The new index.</param>
         void ChangeTrack(int newIndex);
 
+        // <summary>
+        // Changes to the next track.
+        // <summary>
+        void NextTrack();
+
+        // <summary>
+        // Changes to the previous track.
+        // </summary>
+        void PreviousTrack();
+
+
         /// <summary>
         /// Set the play rate - FF or Rewindw
         /// </summary>

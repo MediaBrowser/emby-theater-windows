@@ -2,8 +2,6 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
-using MediaBrowser.Model.ApiClient;
-using MediaBrowser.UI.EntryPoints;
 
 namespace MediaBrowser.UI.EntryPoints.CommandActions
 {

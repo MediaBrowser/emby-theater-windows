@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Windows;
-using System.Windows.Interop;
-using System.Windows.Media.Animation;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Interfaces.Commands;
 using MediaBrowser.Theater.Interfaces.Navigation;
@@ -86,8 +82,10 @@ using MediaBrowser.Theater.Presentation.Playback;
                 new CommandActionMapping( Command.FastForward,     FastForward),
                 new CommandActionMapping( Command.Rewind,          Rewind),
                 new CommandActionMapping( Command.PlaySpeedRatio,  NullAction),
-                new CommandActionMapping( Command.NextTrack,       NextTrackOrChapter),
-                new CommandActionMapping( Command.PrevisousTrack,  PreviousTrackOrChapter),
+                new CommandActionMapping( Command.NextChapter,     NextChapter),
+                new CommandActionMapping( Command.PreviousChapter, PreviousChapter),
+                new CommandActionMapping( Command.NextTrack,       NextTrack),
+                new CommandActionMapping( Command.PreviousTrack,  PreviousTrack),
                 new CommandActionMapping( Command.Seek,            Seek),
                 new CommandActionMapping( Command.Left,            NullAction),
                 new CommandActionMapping( Command.Right,           NullAction),
@@ -345,12 +343,26 @@ using MediaBrowser.Theater.Presentation.Playback;
 
         private void NextTrack(Object sender, CommandEventArgs args)
         {
-            // TODO - NextTrack Audio
+            var activePlayer = GetActiveInternalMediaPlayer();
+
+            if (activePlayer != null)
+            {
+                activePlayer.NextTrack();
+                ShowOsd(sender, args);
+            }
+            args.Handled = true;
         }
 
         private void PreviousTrack(Object sender, CommandEventArgs args)
         {
-            // TODO - NextTrack Audio
+            var activePlayer = GetActiveInternalMediaPlayer();
+
+            if (activePlayer != null)
+            {
+                activePlayer.PreviousTrack();
+                ShowOsd(sender, args);
+            }
+            args.Handled = true;
         }
 
         private void NextChapter(Object sender, CommandEventArgs args)
@@ -377,37 +389,7 @@ using MediaBrowser.Theater.Presentation.Playback;
             args.Handled = true;
         }
 
-        private void NextTrackOrChapter(Object sender, CommandEventArgs args)
-        {
-            var activePlayer = GetActiveInternalMediaPlayer();
-
-            if (activePlayer != null && activePlayer.CurrentMedia != null && activePlayer.CurrentMedia.IsVideo)
-            {
-                NextChapter(sender, args);
-            }
-            else
-            {
-                NextTrack(sender, args);
-            }
-            args.Handled = true;
-        }
-
-        private void PreviousTrackOrChapter(Object sender, CommandEventArgs args)
-        {
-            var activePlayer = _playbackManager.MediaPlayers
-                .OfType<IInternalMediaPlayer>()
-                .FirstOrDefault(i => i.PlayState != PlayState.Idle);
-
-            if (activePlayer != null && activePlayer.CurrentMedia != null && activePlayer.CurrentMedia.IsVideo)
-            {
-                PreviousChapter(sender, args);
-            }
-            else
-            {
-                PreviousTrack(sender, args);
-            }
-            args.Handled = true;
-        }
+      
 
         // todo - fastforwad doubles the forward speed, also need an inc that increments it by 1
         private void FastForward(Object sender, CommandEventArgs args)

@@ -67,7 +67,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
 
                 if (_mediaPlayer.CanTrackProgress)
                 {
-                    _timer = new Timer(TimerCallback, null, 1000, 1000);
+                    _timer = new Timer(TimerCallback, null, 100, 900);
                 }
 
                 _mediaPlayer.MediaChanged += _mediaPlayer_MediaChanged;

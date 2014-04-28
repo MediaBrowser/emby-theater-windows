@@ -1,6 +1,8 @@
 ﻿using System.Drawing;
+using System.Windows.Annotations;
 using DirectShowLib;
 using DirectShowLib.Dvd;
+using MediaBrowser.Common.Net;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
@@ -14,12 +16,11 @@ using MediaFoundation;
 using MediaFoundation.EVR;
 using MediaFoundation.Misc;
 using System;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-//using System.Windows.Forms;
-//using DirectShowLib.Utils;
 using System.Diagnostics;
 using MediaBrowser.Theater.Interfaces.Configuration;
 using System.Text;
@@ -42,6 +43,7 @@ namespace MediaBrowser.Theater.DirectShow
         private readonly InternalDirectShowPlayer _playerWrapper;
         private readonly ISessionManager _sessionManager;
         private readonly IApiClient _apiClient;
+        private readonly IHttpClient _httpClient;
 
         private DirectShowLib.IGraphBuilder m_graph = null;
         private DirectShowLib.FilterGraphNoThread m_filterGraph = null;
@@ -152,13 +154,14 @@ namespace MediaBrowser.Theater.DirectShow
 
         public DirectShowPlayer(ILogger logger, IHiddenWindow hiddenWindow, InternalDirectShowPlayer playerWrapper,
             IntPtr applicationWindowHandle, ISessionManager sessionManager, ITheaterConfigurationManager mbtConfig,
-            IUserInputManager input, IApiClient apiClient, IZipClient zipClient)
+            IUserInputManager input, IApiClient apiClient,  IZipClient zipClient, IHttpClient httpClient)
         {
             _logger = logger;
             _hiddenWindow = hiddenWindow;
             _playerWrapper = playerWrapper;
             _applicationWindowHandle = applicationWindowHandle;
             _sessionManager = sessionManager;
+            _httpClient = httpClient;
             _input = input;
             _input.KeyDown += HiddenForm_KeyDown;
             //_input.
@@ -1066,53 +1069,7 @@ namespace MediaBrowser.Theater.DirectShow
             }
         }
 
-        public void LoadExternalSubtitles(string subtitleFile)
-        {
-            IBaseFilter subtitleFilter = _xySubFilter != null ? _xySubFilter as IBaseFilter : _xyVsFilter as IBaseFilter;
-
-            if (subtitleFilter != null)
-            {
-                var extSubSource = subtitleFilter as IDirectVobSub;
-                if (extSubSource != null)
-                {
-                    var hr = extSubSource.put_FileName(subtitleFile);
-                    DsError.ThrowExceptionForHR(hr);
-                }
-            }
-        }
-
-        public void ToggleHideSubtitles(bool hide)
-        {
-            IBaseFilter subtitleFilter = _xySubFilter != null ? _xySubFilter as IBaseFilter : _xyVsFilter as IBaseFilter;
-
-            if (subtitleFilter != null)
-            {
-                var extSubSource = subtitleFilter as IDirectVobSub;
-                if (extSubSource != null)
-                {
-                    var hr = extSubSource.put_HideSubtitles(hide);
-                    DsError.ThrowExceptionForHR(hr);
-                }
-            }
-        }
-
-        public void ToggleSubs(bool hideSubs)
-        {
-            int hr = 0;
-
-            IBaseFilter subtitleFilter = _xySubFilter != null ? _xySubFilter as IBaseFilter : _xyVsFilter as IBaseFilter;
-
-            if (subtitleFilter != null)
-            {
-                IDirectVobSub extSubSource = subtitleFilter as IDirectVobSub;
-                if (extSubSource != null)
-                {
-                    hr = extSubSource.put_HideSubtitles(hideSubs);
-                    DsError.ThrowExceptionForHR(hr);
-                }
-            }
-        }
-
+       
         public bool ShowDvdMenu(DvdMenuId menu)
         {
             IDvdCmd icmd;
@@ -2308,14 +2265,11 @@ namespace MediaBrowser.Theater.DirectShow
             return streams;
         }
 
-
         private List<SelectableMediaStream> GetExternalSubtitleStreams(List<SelectableMediaStream> internalStreams)
         {
             var externalSubtitleStreams = new List<SelectableMediaStream>();
             try
             {
-                var startIndex = internalStreams != null ? internalStreams.Last().Index + 1 : 0;
-                var index = startIndex;
                 var hasActiveInternalSubtitleStream = (internalStreams != null
                     ? internalStreams.FirstOrDefault(i => i.Type == MediaStreamType.Subtitle && i.IsActive)
                     : null) != null;
@@ -2326,30 +2280,25 @@ namespace MediaBrowser.Theater.DirectShow
 
                 if (_item != null && _item.MediaStreams != null)
                 {
-                    // each external subtitle (srt file) will be a stream
                     foreach (var s in _item.MediaStreams.Where(i => i.Type == MediaStreamType.Subtitle && i.IsExternal))
                     {
                         externalSubtitleStreams.Add(new SelectableMediaStream
                         {
-                            Index = index,
+                            Index = s.Index,
                             Name = s.Language ?? "Unknown",
                             Path = s.Path,
                             Type = MediaStreamType.Subtitle,
                             Identifier = "external",
                             IsActive = (!String.IsNullOrEmpty(s.Language)) && (s.Language == activeSubtitlePreference)
-                            // make the subtitle  active by default
                         });
-                        index++;
                     }
                 }
 
-                if (externalSubtitleStreams.Any() &&
-                    (internalStreams == null || !internalStreams.Any(i => i.Type == MediaStreamType.Subtitle)))
+                if (externalSubtitleStreams.Any() && (internalStreams == null || ! internalStreams.Any(i => i.Type == MediaStreamType.Subtitle)))
                 {
-                    // have to add a nosubtitle stream, so the user can turn sub title off
+                    // have to add a nosubtitle stream, so the user can turn subS  off
                     externalSubtitleStreams.Add(new SelectableMediaStream
                     {
-                        Index = index,
                         Name = "No Subtitles",
                         Type = MediaStreamType.Subtitle,
                         Identifier = "external",
@@ -2365,6 +2314,25 @@ namespace MediaBrowser.Theater.DirectShow
             return externalSubtitleStreams;
         }
 
+        private List<SelectableMediaStream> OrderStreams(List<SelectableMediaStream> streamsIn)
+        {
+            var streamsOut = streamsIn.Where(i => i.Type != MediaStreamType.Subtitle).ToList();
+            var noSubtitleStream =  streamsIn.FirstOrDefault(i => i.Type == MediaStreamType.Subtitle && i.Name.ToLower().Contains("no subtitles"));
+            if (noSubtitleStream != null)
+            {
+                streamsOut.Add(noSubtitleStream);
+
+            }
+            var subtitleStreams = streamsIn.Where(i => i.Type == MediaStreamType.Subtitle && ! i.Name.ToLower().Contains("no subtitles"));
+            foreach(var subStream in subtitleStreams)
+            {
+                streamsOut.Add(subStream);
+            }
+
+           
+            return streamsOut;
+        }
+
         private List<SelectableMediaStream> GetStreams()
         {
             var streams = GetInternalStreams();
@@ -2373,15 +2341,49 @@ namespace MediaBrowser.Theater.DirectShow
             {
                 streams = streams.Concat(externalSubtitleStreams).ToList();
             }
-            return streams;
+
+            // modify the subtitle stream so the "No Subtitles" subtitle selection  is at the front of subtitles list
+            return OrderStreams(streams);
         }
 
-
-        public void SetAudioTrack(SelectableMediaStream stream)
+        public void LoadExternalSubtitle(string subtitleFile)
         {
-            SetInternalStream(stream);
+            _logger.Debug("LoadExternalSubtitle {0}", subtitleFile);
+            IBaseFilter subtitleFilter = _xySubFilter != null ? _xySubFilter as IBaseFilter : _xyVsFilter as IBaseFilter;
+
+            if (subtitleFilter != null)
+            {
+                var extSubSource = subtitleFilter as IDirectVobSub;
+                if (extSubSource != null)
+                {
+                    var hr = extSubSource.put_FileName(subtitleFile);
+                    DsError.ThrowExceptionForHR(hr);
+                }
+            }
         }
 
+        private void ClearExternalSubtitles()
+        {
+            _logger.Debug("ClearExternalSubtitles");
+            ToggleHideSubtitles(true);
+        }
+
+        public void ToggleHideSubtitles(bool hide)
+        {
+            _logger.Debug("ToggleHideSubtitles {0}", hide);
+            IBaseFilter subtitleFilter = _xySubFilter != null ? _xySubFilter as IBaseFilter : _xyVsFilter as IBaseFilter;
+
+            if (subtitleFilter != null)
+            {
+                var extSubSource = subtitleFilter as IDirectVobSub;
+                if (extSubSource != null)
+                {
+                    var hr = extSubSource.put_HideSubtitles(hide);
+                    DsError.ThrowExceptionForHR(hr);
+                }
+            }
+        }
+      
         private void LoadActiveExternalSubtitles()
         {
             var stream =
@@ -2393,37 +2395,11 @@ namespace MediaBrowser.Theater.DirectShow
             }
         }
 
-        public void SetAudioStreamIndex(int audioStreamIndex)
+        public void SetAudioTrack(SelectableMediaStream stream)
         {
-            _logger.Debug("SetAudioStreamIndex {0}", audioStreamIndex);
-            var audioStreams = _streams.Where(i => i.Type == MediaStreamType.Audio).ToArray();
-            if (audioStreams.Any() && audioStreamIndex < audioStreams.Count())
-            {
-                SetInternalStream(audioStreams[audioStreamIndex]);
-            }
-            else
-            {
-                throw new ApplicationException(String.Format("Invalid audioStreamIndex {0}", audioStreamIndex));
-            }
-
+            SetInternalStream(stream);
         }
-
-        public void NextAudioStream()
-        {
-            _logger.Debug("SetSubtitleStreamIndex");
-
-
-            var audioStreams = _streams.Where(i => i.Type == MediaStreamType.Audio).ToList();
-            var nextAudioStream = audioStreams.SkipWhile(i => !i.IsActive).Skip(1).FirstOrDefault() ??
-                                  audioStreams.FirstOrDefault();
-
-            if (nextAudioStream != null)
-            {
-                SetInternalStream(nextAudioStream);
-            }
-
-        }
-
+        
         public void SetSubtitleStreamIndex(int subtitleStreamIndex)
         {
             _logger.Debug("SetSubtitleStreamIndex {0}", subtitleStreamIndex);
@@ -2440,8 +2416,7 @@ namespace MediaBrowser.Theater.DirectShow
 
         public void NextSubtitleStream()
         {
-            _logger.Debug("SetSubtitleStreamIndex");
-
+            _logger.Debug("NextSubtitleStream");
 
             var subtitleStreams = _streams.Where(i => i.Type == MediaStreamType.Subtitle).ToList();
             var nextSubtitleStream = subtitleStreams.SkipWhile(i => ! i.IsActive).Skip(1).FirstOrDefault() ??
@@ -2454,7 +2429,7 @@ namespace MediaBrowser.Theater.DirectShow
 
         }
 
-        public void SetSubtitleStream(SelectableMediaStream stream)
+        public async void SetSubtitleStream(SelectableMediaStream stream)
         {
             _logger.Debug("SetSubtitleStream {0} {1} {2} {3}", stream.Index, stream.Type, stream.Name, stream.Identifier);
             if (stream.Identifier == "external" || stream.Name.ToLower().Contains("no subtitles"))
@@ -2470,38 +2445,72 @@ namespace MediaBrowser.Theater.DirectShow
             ToggleHideSubtitles(stream.Name.ToLower().Contains("no subtitles"));
         }
 
+        
+        [DllImport("shlwapi.dll", CharSet = CharSet.Unicode)]
+        [return: MarshalAsAttribute(UnmanagedType.Bool)]
+        internal static extern bool PathIsUNC([MarshalAsAttribute(UnmanagedType.LPWStr), In] string pszPath);
 
-        private void SetExternalSubtitleStream(SelectableMediaStream stream)
+        private async void LoadExternalSubtitleFromStream(SelectableMediaStream stream)
+        {
+            // get a url for the stream
+            var url = _apiClient.GetSubtitleUrl(new SubtitleOptions
+            {
+                ItemId = _item.OriginalItem.Id,
+                StreamIndex = stream.Index
+            });
+
+            // as xvfilter throw's an error for a stream, we copy the stream to
+            // a local temp file and change it ext to 'srt'
+            var tempFile =  await _httpClient.GetTempFile(new HttpRequestOptions
+            {
+                Url = url,
+                Progress = new Progress<double>()
+            });
+
+            
+            var srtPath = Path.ChangeExtension(tempFile, ".srt");
+            File.Move(tempFile, srtPath);
+
+            _logger.Debug("loadExternalSubtitleFromStream {0} {1} {2} {3}", stream.Index, stream.Type, url, tempFile);
+            LoadExternalSubtitle(srtPath);
+        }
+        
+        private async void SetExternalSubtitleStream(SelectableMediaStream stream)
         {
             if (stream.Name.ToLower().Contains("no subtitles"))
             {
                 ToggleHideSubtitles(true);
-                UpdateStreamsAsInActive(stream.Type); // display all streams as inactive
+                UpdateStreamsAsInactive(stream.Type); // display all streams as inactive
                 stream.IsActive = true; // set no subtitles stream active
             }
             else
             {
-                var url = _apiClient.GetSubtitleUrl(new SubtitleOptions
+                if (PathIsUNC(stream.Path))
                 {
-                    ItemId = _item.OriginalItem.Id,
-                    StreamIndex = stream.Index
-                });
+                    // if it is unc path, we can stream it directly
+                    LoadExternalSubtitle(stream.Path);
+                }
+                else
+                {
+                     // if not, we need to copy the stream to the local system and play form there (xyfilter issue)
+                     LoadExternalSubtitleFromStream(stream);
+                }
 
-                _logger.Debug("SetExternalSubtitleStream {0} {1} {2}", stream.Index, stream.Type, url);
-                LoadExternalSubtitles(url);
-                UpdateStreamActiveSetting(stream.Index, stream.Type); // display this  streams as active
+                UpdateStreamActiveSetting(stream.Name, stream.Type); // display this  streams as active
             }
         }
 
-        private void UpdateStreamActiveSetting(int index, MediaStreamType streamType)
+        private void UpdateStreamActiveSetting(string streamName, MediaStreamType streamType)
         {
+            _logger.Debug(String.Format("UpdateStreamActiveSetting name = '{0}'", streamName));
+            
             foreach (var i in GetSelectableStreams().Where(s => s.Type == streamType))
             {
-                i.IsActive = i.Index == index;
+                i.IsActive = i.Name == streamName;
             }
         }
 
-        private void UpdateStreamsAsInActive(MediaStreamType streamType)
+        private void UpdateStreamsAsInactive(MediaStreamType streamType)
         {
             foreach (var i in GetSelectableStreams().Where(s => s.Type == streamType))
             {
@@ -2509,9 +2518,22 @@ namespace MediaBrowser.Theater.DirectShow
             }
         }
 
+        private SelectableMediaStream GetActiveExternalSubtitleStream()
+        {
+            return _streams.FirstOrDefault(i => i.Type == MediaStreamType.Subtitle && i.IsActive == true && i.Identifier == "external");
+        }
+
         private void SetInternalStream(SelectableMediaStream stream)
         {
             _logger.Debug("SetInternalStream {0} {1} {2}", stream.Index, stream.Type, stream.Name);
+
+            // if we are already playing an external subtitle, we have to clear it first or
+            // we wont be able to swicth subtitles
+            var activeExternalSub = GetActiveExternalSubtitleStream();
+            if (activeExternalSub != null)
+            {
+                ClearExternalSubtitles();
+            }
 
             IEnumFilters enumFilters;
             var hr = m_graph.EnumFilters(out enumFilters);
@@ -2552,6 +2574,7 @@ namespace MediaBrowser.Theater.DirectShow
 
                 var iss = filters[0] as IAMStreamSelect;
 
+               
                 iss.Enable(stream.Index, AMStreamSelectEnableFlags.Enable);
 
                 Marshal.ReleaseComObject(filters[0]);
@@ -2559,7 +2582,35 @@ namespace MediaBrowser.Theater.DirectShow
 
             Marshal.ReleaseComObject(enumFilters);
 
-            UpdateStreamActiveSetting(stream.Index, stream.Type);
+            UpdateStreamActiveSetting(stream.Name, stream.Type);
+        }
+
+        public void SetAudioStreamIndex(int audioStreamIndex)
+        {
+            _logger.Debug("SetAudioStreamIndex {0}", audioStreamIndex);
+            var audioStreams = _streams.Where(i => i.Type == MediaStreamType.Audio).ToArray();
+            if (audioStreams.Any() && audioStreamIndex < audioStreams.Count())
+            {
+                SetInternalStream(audioStreams[audioStreamIndex]);
+            }
+            else
+            {
+                throw new ApplicationException(String.Format("Invalid audioStreamIndex {0}", audioStreamIndex));
+            }
+        }
+
+        public void NextAudioStream()
+        {
+            _logger.Debug("NextAudioStream");
+
+            var audioStreams = _streams.Where(i => i.Type == MediaStreamType.Audio).ToList();
+            var nextAudioStream = audioStreams.SkipWhile(i => !i.IsActive).Skip(1).FirstOrDefault() ??
+                                  audioStreams.FirstOrDefault();
+
+            if (nextAudioStream != null)
+            {
+                SetInternalStream(nextAudioStream);
+            }
         }
 
         public void Dispose()

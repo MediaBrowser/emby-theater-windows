@@ -14,10 +14,12 @@
         FastForward,        // sequence through 1x, 2x, 4x, 8x, 16, 32x forward
         Rewind,             // sequence through  1x, 2x, 4x, 8x, 16, 32x in reverse
         PlaySpeedRatio,     // set play speed ratio , double, negative is rewind, positive is forward
-        NextChapter,        // Next Media Chapter - next chapter for video, Next track for audio
-        PreviousChapter,   // Prev Media Chapter - Prev chapter for video, Prevt track for audio
+        NextChapter,        // Next Media Chapter
+        PreviousChapter,    // Prev Media Chapter
         NextTrack,          // Next track or media item in a multi item list
-        PreviousTrack,     // Previous track or media item in a multi item list
+        PreviousTrack,      // Previous track or media item in a multi item list
+        NextTrackOrChapter,       // Next Media Chapter - next chapter for video, Next track for audio
+        PreviousTrackOrChapter,   // Prev Media Chapter - Prev chapter for video, Prevt track for audio
         Seek,
         Left,
         Right,

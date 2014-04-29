@@ -85,7 +85,9 @@ using MediaBrowser.Theater.Presentation.Playback;
                 new CommandActionMapping( Command.NextChapter,     NextChapter),
                 new CommandActionMapping( Command.PreviousChapter, PreviousChapter),
                 new CommandActionMapping( Command.NextTrack,       NextTrack),
-                new CommandActionMapping( Command.PreviousTrack,  PreviousTrack),
+                new CommandActionMapping( Command.PreviousTrack,   PreviousTrack),
+                new CommandActionMapping( Command.NextTrackOrChapter,       NextTrackOrChapter),
+                new CommandActionMapping( Command.PreviousTrackOrChapter,   PreviousTrackOrChapter),
                 new CommandActionMapping( Command.Seek,            Seek),
                 new CommandActionMapping( Command.Left,            NullAction),
                 new CommandActionMapping( Command.Right,           NullAction),
@@ -389,7 +391,35 @@ using MediaBrowser.Theater.Presentation.Playback;
             args.Handled = true;
         }
 
-      
+        private void NextTrackOrChapter(Object sender, CommandEventArgs args)
+        {
+            var activePlayer = GetActiveInternalMediaPlayer();
+
+            if (activePlayer != null && activePlayer.CurrentMedia != null && activePlayer.CurrentMedia.IsVideo)
+            {
+                NextChapter(sender, args);
+            }
+            else
+            {
+                NextTrack(sender, args);
+            }
+            args.Handled = true;
+        }
+
+        private void PreviousTrackOrChapter(Object sender, CommandEventArgs args)
+        {
+            var activePlayer = GetActiveInternalMediaPlayer();
+
+            if (activePlayer != null && activePlayer.CurrentMedia != null && activePlayer.CurrentMedia.IsVideo)
+            {
+                PreviousChapter(sender, args);
+            }
+            else
+            {
+                PreviousTrack(sender, args);
+            }
+            args.Handled = true;
+        }
 
         // todo - fastforwad doubles the forward speed, also need an inc that increments it by 1
         private void FastForward(Object sender, CommandEventArgs args)

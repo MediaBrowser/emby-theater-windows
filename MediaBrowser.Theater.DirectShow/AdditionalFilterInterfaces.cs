@@ -162,6 +162,11 @@ namespace MediaBrowser.Theater.DirectShow
         int SetSpeakerMatchOutput(bool setting);
 
         [PreserveSig]
+        int GetUseFilters(out bool setting);
+        [PreserveSig]
+        int SetUseFilters(bool setting);
+
+        [PreserveSig]
         int GetReleaseDeviceOnStop(out bool setting);
         [PreserveSig]
         int SetReleaseDeviceOnStop(bool setting);

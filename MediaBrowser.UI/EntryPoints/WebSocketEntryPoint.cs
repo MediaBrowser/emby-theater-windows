@@ -418,7 +418,8 @@ namespace MediaBrowser.UI.EntryPoints
                         break;
 
                     case GeneralCommandType.Select:
-                        _userInputManager.SendKeyDownEventToFocusedElement(Key.Enter);
+                        _userInputManager.SendKeyDownEventToFocusedElement(Key.Enter); 
+                        _userInputManager.SendKeyUpEventToFocusedElement(Key.Enter); 
                         break;
 
                     case GeneralCommandType.Back:

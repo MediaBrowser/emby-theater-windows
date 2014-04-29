@@ -418,7 +418,8 @@ namespace MediaBrowser.UI.EntryPoints
                         break;
 
                     case GeneralCommandType.Select:
-                        _userInputManager.SendKeyDownEventToFocusedElement(Key.Enter);
+                        _userInputManager.SendKeyDownEventToFocusedElement(Key.Enter); 
+                        _userInputManager.SendKeyUpEventToFocusedElement(Key.Enter); 
                         break;
 
                     case GeneralCommandType.Back:
@@ -566,11 +567,11 @@ namespace MediaBrowser.UI.EntryPoints
                     break;
 
                 case PlaystateCommand.PreviousTrack:
-                    _commandManager.ExecuteCommand(Command.PreviousTrack, null);
+                    _commandManager.ExecuteCommand(Command.PreviousTrackOrChapter, null);
                     break;
 
                 case PlaystateCommand.NextTrack:
-                    _commandManager.ExecuteCommand(Command.NextTrack, null);
+                    _commandManager.ExecuteCommand(Command.NextTrackOrChapter, null);
                     break;
 
             }

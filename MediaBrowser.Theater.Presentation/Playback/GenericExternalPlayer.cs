@@ -212,6 +212,18 @@ namespace MediaBrowser.Theater.Presentation.Playback
         public long? CurrentDurationTicks { get; protected set; }
 
         /// <summary>
+        /// Get the current subtitle index.
+        /// </summary>
+        /// <value>The current subtitle index.</value>
+        public int? CurrentSubtitleStreamIndex { get { return null; } }
+
+        /// <summary>
+        /// Get the current audio index.
+        /// </summary>
+        /// <value>The current audio index.</value>
+        public int? CurrentAudioStreamIndex { get { return null; } }
+
+        /// <summary>
         /// Determines whether this instance can play the specified item.
         /// </summary>
         /// <param name="item">The item.</param>

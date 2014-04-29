@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Windows.Forms.VisualStyles;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Session;
@@ -7,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using MediaBrowser.Theater.Interfaces.Session;
 
 namespace MediaBrowser.Theater.Implementations.Playback
 {
@@ -19,7 +21,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
 
         private Timer _timer;
 
-        public PlaybackProgressReporter(IApiClient apiClient, IMediaPlayer mediaPlayer, ILogger logger, IPlaybackManager playback)
+        public PlaybackProgressReporter(IApiClient apiClient, IMediaPlayer mediaPlayer, ILogger logger,  IPlaybackManager playback)
         {
             _apiClient = apiClient;
             _mediaPlayer = mediaPlayer;
@@ -184,10 +186,18 @@ namespace MediaBrowser.Theater.Implementations.Playback
 
             var info = new PlaybackProgressInfo
             {
+                //SessionId = _sessionManager
+                //Item = item,
                 ItemId = item.Id,
+                //MediaSourceId = string.Empty,
                 IsMuted = _playback.IsMuted,
                 IsPaused = _mediaPlayer.PlayState == PlayState.Paused,
-                PositionTicks = _mediaPlayer.CurrentPositionTicks
+                PositionTicks = _mediaPlayer.CurrentPositionTicks,
+                CanSeek = _mediaPlayer.CanSeek,
+                AudioStreamIndex = _mediaPlayer.CurrentAudioStreamIndex,
+                SubtitleStreamIndex = _mediaPlayer.CurrentSubtitleStreamIndex,
+                VolumeLevel = (_mediaPlayer.PlayState != PlayState.Idle) ? (int?) _playback.Volume : null,
+                PlayMethod = PlayMethod.DirectPlay, // todo remove hard coding
             };
 
             try

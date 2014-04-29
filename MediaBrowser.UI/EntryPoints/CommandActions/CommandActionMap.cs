@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Windows;
-using System.Windows.Interop;
-using System.Windows.Media.Animation;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Interfaces.Commands;
 using MediaBrowser.Theater.Interfaces.Navigation;
@@ -86,8 +82,12 @@ using MediaBrowser.Theater.Presentation.Playback;
                 new CommandActionMapping( Command.FastForward,     FastForward),
                 new CommandActionMapping( Command.Rewind,          Rewind),
                 new CommandActionMapping( Command.PlaySpeedRatio,  NullAction),
-                new CommandActionMapping( Command.NextTrack,       NextTrackOrChapter),
-                new CommandActionMapping( Command.PrevisousTrack,  PreviousTrackOrChapter),
+                new CommandActionMapping( Command.NextChapter,     NextChapter),
+                new CommandActionMapping( Command.PreviousChapter, PreviousChapter),
+                new CommandActionMapping( Command.NextTrack,       NextTrack),
+                new CommandActionMapping( Command.PreviousTrack,   PreviousTrack),
+                new CommandActionMapping( Command.NextTrackOrChapter,       NextTrackOrChapter),
+                new CommandActionMapping( Command.PreviousTrackOrChapter,   PreviousTrackOrChapter),
                 new CommandActionMapping( Command.Seek,            Seek),
                 new CommandActionMapping( Command.Left,            NullAction),
                 new CommandActionMapping( Command.Right,           NullAction),
@@ -118,7 +118,7 @@ using MediaBrowser.Theater.Presentation.Playback;
                 new CommandActionMapping( Command.FullScreen,               (s,a) => _presentationManager.FullScreen()),
                 new CommandActionMapping( Command.MinimizeScreen,           (s,a) => _presentationManager.MinimizeScreen()),
                 new CommandActionMapping( Command.RestoreScreen,            (s,a) => _presentationManager.RestoreScreen()),
-                new CommandActionMapping( Command.ToggleFullScreen,         (s,a) => _presentationManager.ToggleFullscreen()),
+                new CommandActionMapping( Command.ToggleFullScreen,         (s,a) =>  _presentationManager.Window.Dispatcher.InvokeAsync(() => _presentationManager.ToggleFullscreen())),
                 new CommandActionMapping( Command.SetVolume,                SetVolume),
                 new CommandActionMapping( Command.VolumeUp,                 (s,e) => _playbackManager.VolumeStepUp()),
                 new CommandActionMapping( Command.VolumeDown,               (s,e) => _playbackManager.VolumeStepDown()),
@@ -147,13 +147,13 @@ using MediaBrowser.Theater.Presentation.Playback;
             return _globalCommandActionMap.FirstOrDefault(a => a.Command == command) ?? _nullCommandActionMapping;
         }
 
-        public Boolean ExecuteCommand(Command command)
+        public Boolean ExecuteCommand(Command command, Object args)
         {
             var commandAction = MapCommand(command);
-            return ExecuteCommandAction(commandAction);
+            return ExecuteCommandAction(commandAction, args);
         }
 
-        private Boolean ExecuteCommandAction(CommandActionMapping commandActionMapping)
+        private Boolean ExecuteCommandAction(CommandActionMapping commandActionMapping, Object args)
         {
             _logger.Debug("ExecuteCommandAction {0} {1}", commandActionMapping.Command, commandActionMapping.Args);
             var handled = false;
@@ -162,7 +162,7 @@ using MediaBrowser.Theater.Presentation.Playback;
             {
                 var commandEventArgs = new CommandEventArgs()
                 {
-                    Args = commandActionMapping.Args,
+                    Args = args??commandActionMapping.Args,
                     Command = commandActionMapping.Command,
                     Handled = false
                 };
@@ -345,12 +345,26 @@ using MediaBrowser.Theater.Presentation.Playback;
 
         private void NextTrack(Object sender, CommandEventArgs args)
         {
-            // TODO - NextTrack Audio
+            var activePlayer = GetActiveInternalMediaPlayer();
+
+            if (activePlayer != null)
+            {
+                activePlayer.NextTrack();
+                ShowOsd(sender, args);
+            }
+            args.Handled = true;
         }
 
         private void PreviousTrack(Object sender, CommandEventArgs args)
         {
-            // TODO - NextTrack Audio
+            var activePlayer = GetActiveInternalMediaPlayer();
+
+            if (activePlayer != null)
+            {
+                activePlayer.PreviousTrack();
+                ShowOsd(sender, args);
+            }
+            args.Handled = true;
         }
 
         private void NextChapter(Object sender, CommandEventArgs args)
@@ -394,9 +408,7 @@ using MediaBrowser.Theater.Presentation.Playback;
 
         private void PreviousTrackOrChapter(Object sender, CommandEventArgs args)
         {
-            var activePlayer = _playbackManager.MediaPlayers
-                .OfType<IInternalMediaPlayer>()
-                .FirstOrDefault(i => i.PlayState != PlayState.Idle);
+            var activePlayer = GetActiveInternalMediaPlayer();
 
             if (activePlayer != null && activePlayer.CurrentMedia != null && activePlayer.CurrentMedia.IsVideo)
             {
@@ -437,7 +449,7 @@ using MediaBrowser.Theater.Presentation.Playback;
 
         void Seek(Object sender, CommandEventArgs args)
         {
-            _logger.Debug("Seek  {0}", args);
+            _logger.Debug("Seek  {0}", args.Args);
 
             long position;
 
@@ -446,7 +458,7 @@ using MediaBrowser.Theater.Presentation.Playback;
 
             try
             {
-                position = (long)Convert.ToUInt64(args);
+                position = (long)Convert.ToUInt64(args.Args);
             }
             catch (FormatException)
             {

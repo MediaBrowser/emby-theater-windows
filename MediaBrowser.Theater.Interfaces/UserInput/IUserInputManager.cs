@@ -65,9 +65,14 @@ namespace MediaBrowser.Theater.Interfaces.UserInput
         void OnMouseMove(WindowsInput.MouseEventArgs e);
 
         // <summary>
-        // Send a Key to currently active element, 
+        // Send a Key as a KeyDown to currently active element, 
         // </summary>
         void SendKeyDownEventToFocusedElement(WindowsInput.Key key);
+
+        // <summary>
+        // Send a Key as a KeyDown to currently active element, 
+        // </summary>
+        void SendKeyUpEventToFocusedElement(WindowsInput.Key key);
 
         // <summary>
         // Send a text string to currently active element, 

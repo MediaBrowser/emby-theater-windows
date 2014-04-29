@@ -205,8 +205,8 @@ namespace MediaBrowser.Theater.Implementations.Commands
             new InputCommandMapping( Key.End,            Command.LastPage),
             // Multi Media Keys
             new InputCommandMapping( Key.Play,              Command.Play),
-            new InputCommandMapping( Key.MediaNextTrack,     Command.NextTrack),
-            new InputCommandMapping( Key.MediaPreviousTrack, Command.PrevisousTrack),
+            new InputCommandMapping( Key.MediaNextTrack,     Command.NextChapter),
+            new InputCommandMapping( Key.MediaPreviousTrack, Command.PreviousChapter),
             new InputCommandMapping( Key.BrowserBack,    Command.Back),
             new InputCommandMapping( Key.BrowserForward, Command.Forward),
             new InputCommandMapping( Key.BrowserRefresh, Command.Null),
@@ -216,8 +216,6 @@ namespace MediaBrowser.Theater.Implementations.Commands
             new InputCommandMapping( Key.VolumeMute,     Command.ToggleMute),
             new InputCommandMapping( Key.VolumeDown,     Command.VolumeDown),
             new InputCommandMapping( Key.VolumeUp,       Command.VolumeUp),
-            new InputCommandMapping( Key.MediaNextTrack, Command.NextTrack),
-            new InputCommandMapping( Key.MediaPreviousTrack,    Command.PrevisousTrack),
             new InputCommandMapping( Key.MediaStop,      Command.Stop),
             new InputCommandMapping( Key.MediaPlayPause, Command.PlayPause),
             // MS Media Center keyboard shortcuts sent by MCE remote -  http://msdn.microsoft.com/en-us/library/bb189249.aspx //
@@ -243,8 +241,8 @@ namespace MediaBrowser.Theater.Implementations.Commands
             new InputCommandMapping( AppCommand.APPCOMMAND_BROWSER_HOME,         Command.GotoHome),
             new InputCommandMapping( AppCommand.APPCOMMAND_MEDIA_PLAY_PAUSE,     Command.PlayPause),
             new InputCommandMapping( AppCommand.APPCOMMAND_MEDIA_STOP,           Command.Stop),
-            new InputCommandMapping( AppCommand.APPCOMMAND_MEDIA_NEXTTRACK,      Command.NextTrack),
-            new InputCommandMapping( AppCommand.APPCOMMAND_MEDIA_PREVIOUSTRACK,  Command.PrevisousTrack),
+            new InputCommandMapping( AppCommand.APPCOMMAND_MEDIA_NEXTTRACK,      Command.NextChapter),
+            new InputCommandMapping( AppCommand.APPCOMMAND_MEDIA_PREVIOUSTRACK,  Command.PreviousChapter),
             new InputCommandMapping( AppCommand.APPCOMMAND_MEDIA_REWIND,         Command.SmallStepBack),
             new InputCommandMapping( AppCommand.APPCOMMAND_MEDIA_REWIND_2,       Command.SmallStepBack),
             new InputCommandMapping( AppCommand.APPCOMMAND_MEDIA_FAST_FORWARD,   Command.SmallStepForward),
@@ -258,9 +256,12 @@ namespace MediaBrowser.Theater.Implementations.Commands
             new InputCommandMapping( AppCommand.APPCOMMAND_BROWSER_SEARCH,       Command.GotoSearch),
 
             // MBT specific & Test
-            new InputCommandMapping( Key.S,  Command.GotoSearch,           controlKey:true, shiftKey:false),
-            new InputCommandMapping( Key.E,  Command.ShowScreensaver,      controlKey:true, shiftKey:true),
-            new InputCommandMapping( Key.F3,  Command.NextSubtitleStream,      controlKey:true, shiftKey:false),
+            new InputCommandMapping( Key.S,  Command.GotoSearch,                controlKey:true, shiftKey:false),
+            new InputCommandMapping( Key.E,  Command.ShowScreensaver,           controlKey:true, shiftKey:true),
+            new InputCommandMapping( Key.F3,  Command.NextSubtitleStream,       controlKey:true, shiftKey:false),
+            new InputCommandMapping( Key.OemPeriod,  Command.NextTrack,                 controlKey:true, shiftKey:false),
+            new InputCommandMapping( Key.OemComma,  Command.PreviousTrack,             controlKey:true, shiftKey:false),
+
         };
 
         private readonly InputCommandMapGroup _inputCommandMapGroup;

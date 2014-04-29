@@ -207,8 +207,6 @@ namespace MediaBrowser.Theater.Implementations.Playback
             catch (Exception ex)
             {
                 _logger.ErrorException("Error sending playback progress checking for {0}", ex, item.Name);
-
-                throw; //why is this thrown?
             }
         }
     }

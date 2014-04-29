@@ -1,6 +1,8 @@
 ﻿using MediaBrowser.Model.Entities;
+using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Reflection;
+using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.ViewModels;
 using System.ComponentModel;
 using System.Threading;
@@ -15,16 +17,22 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         public DisplayPreferences DisplayPreferences { get; private set; }
 
         private readonly IPresentationManager _presentation;
+        private readonly ISessionManager _sessionManager;
+        private readonly ITheaterConfigurationManager _configurationManager;
+        private readonly UserTheaterConfiguration _userConfig;
 
         public ICommand SaveCommand { get; private set; }
         public ICommand IncreaseImageSizeCommand { get; private set; }
         public ICommand DecreaseImageSizeCommand { get; private set; }
         public ICommand ToggleScrollDirectionCommand { get; private set; }
 
-        public DisplayPreferencesViewModel(DisplayPreferences displayPreferences, IPresentationManager presentation)
+        public DisplayPreferencesViewModel(DisplayPreferences displayPreferences, IPresentationManager presentation, ITheaterConfigurationManager configurationManager, ISessionManager sessionManager)
         {
             DisplayPreferences = displayPreferences;
             _presentation = presentation;
+            _configurationManager = configurationManager;
+            _sessionManager = sessionManager;
+            _userConfig = configurationManager.GetUserTheaterConfiguration(sessionManager.CurrentUser.Id);
 
             SaveCommand = new RelayCommand(obj => Save());
             IncreaseImageSizeCommand = new RelayCommand(obj => IncreaseImageSize());
@@ -98,22 +106,11 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         public bool RememberSorting
         {
-            get
-            {
-                if (DisplayPreferences != null)
-                {
-                    return DisplayPreferences.RememberSorting;
-                }
-                else
-                {
-                    return false;
-                }
-            }
+            get { return DisplayPreferences != null && _userConfig.RememberSortOrder; }
             set
             {
-                var changed = DisplayPreferences.RememberSorting != value;
-
-                DisplayPreferences.RememberSorting = value;
+                var changed = _userConfig.RememberSortOrder != value;
+                _userConfig.RememberSortOrder = value;
 
                 if (changed)
                 {
@@ -158,7 +155,13 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         {
             try
             {
-                await _presentation.UpdateDisplayPreferences(DisplayPreferences, CancellationToken.None);
+                if (DisplayPreferences != null)
+                {
+                    DisplayPreferences.RememberSorting = false;
+
+                    await _configurationManager.UpdateUserTheaterConfiguration(_sessionManager.CurrentUser.Id, _userConfig);
+                    await _presentation.UpdateDisplayPreferences(DisplayPreferences, CancellationToken.None);
+                }    
             }
             catch
             {

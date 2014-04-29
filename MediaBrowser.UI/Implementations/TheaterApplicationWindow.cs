@@ -8,6 +8,7 @@ using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Core.Loading;
 using MediaBrowser.Theater.Core.Modals;
 using MediaBrowser.Theater.Interfaces;
+using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.Theming;
@@ -34,18 +35,24 @@ namespace MediaBrowser.UI.Implementations
         private readonly IThemeManager _themeManager;
         private readonly IApiClient _apiClient;
         private readonly Func<ISessionManager> _sessionFactory;
+        private readonly ITheaterConfigurationManager _configurationManager;
+
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TheaterApplicationWindow" /> class.
+        /// Initializes a new instance of the <see cref="TheaterApplicationWindow"/> class.
         /// </summary>
         /// <param name="logger">The logger.</param>
         /// <param name="themeManager">The theme manager.</param>
-        public TheaterApplicationWindow(ILogger logger, IThemeManager themeManager, IApiClient apiClient, Func<ISessionManager> sessionFactory)
+        /// <param name="apiClient">The API client.</param>
+        /// <param name="sessionFactory">The session factory.</param>
+        /// <param name="configurationManager">The configuration manager.</param>
+        public TheaterApplicationWindow(ILogger logger, IThemeManager themeManager, IApiClient apiClient, Func<ISessionManager> sessionFactory, ITheaterConfigurationManager configurationManager)
         {
             _logger = logger;
             _themeManager = themeManager;
             _apiClient = apiClient;
             _sessionFactory = sessionFactory;
+            _configurationManager = configurationManager;
 
             _themeManager.ThemeUnloaded += _themeManager_ThemeUnloaded;
             _themeManager.ThemeLoaded += _themeManager_ThemeLoaded;
@@ -280,9 +287,19 @@ namespace MediaBrowser.UI.Implementations
             }
         }
 
-        public Task<DisplayPreferences> GetDisplayPreferences(string displayPreferencesId, CancellationToken cancellationToken)
+        public async Task<DisplayPreferences> GetDisplayPreferences(string displayPreferencesId, CancellationToken cancellationToken)
         {
-            return _apiClient.GetDisplayPreferencesAsync(displayPreferencesId, _sessionFactory().CurrentUser.Id, "MBT-" + _themeManager.CurrentTheme.Name, cancellationToken);
+            var displayPreferences = await _apiClient.GetDisplayPreferencesAsync(displayPreferencesId, _sessionFactory().CurrentUser.Id, "MBT-" + _themeManager.CurrentTheme.Name, cancellationToken);
+            var userConfig = _configurationManager.GetUserTheaterConfiguration(_sessionFactory().CurrentUser.Id);
+
+            //Reset to name ascending if config option is turned off
+            if (!userConfig.RememberSortOrder)
+            {
+                displayPreferences.SortOrder = SortOrder.Ascending;
+                displayPreferences.SortBy = "SortName";
+            }
+
+            return displayPreferences;
         }
 
         public Task UpdateDisplayPreferences(DisplayPreferences displayPreferences, CancellationToken cancellationToken)

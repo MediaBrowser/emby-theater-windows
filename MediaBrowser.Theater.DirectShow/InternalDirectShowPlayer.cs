@@ -283,7 +283,7 @@ namespace MediaBrowser.Theater.DirectShow
                 InvokeOnPlayerThread(() => _mediaPlayer.Seek(startPositionTicks.Value));
             }
 
-            if (previousMedia != null)
+            if (previousMedia != null && MediaChanged != null)
             {
                 var args = new MediaChangeEventArgs
                 {
@@ -294,11 +294,13 @@ namespace MediaBrowser.Theater.DirectShow
                     PreviousPlaylistIndex = previousIndex,
                     EndingPositionTicks = endingTicks
                 };
-                
-                _presentation.Window.Dispatcher.Invoke
-                (
-                    () => EventHelper.FireEventIfNotNull(MediaChanged, this, args, _logger)
-                );
+
+               
+               _presentation.Window.Dispatcher.Invoke
+               (
+                    () => MediaChanged(this, args)
+               );
+               
             }
         }
 
@@ -506,8 +508,7 @@ namespace MediaBrowser.Theater.DirectShow
 
         public void ChangeTrack(int newIndex)
         {
-            //_mediaPlayer.Stop(TrackCompletionReason.ChangeTrack, newIndex);
-            InvokeOnPlayerThread(() => _mediaPlayer.Stop(TrackCompletionReason.ChangeTrack, newIndex));
+            _mediaPlayer.Stop(TrackCompletionReason.ChangeTrack, newIndex); // don't invoke on player thread
         }
 
         public void NextTrack()

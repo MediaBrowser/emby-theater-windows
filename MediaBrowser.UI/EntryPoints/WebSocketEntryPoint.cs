@@ -373,6 +373,8 @@ namespace MediaBrowser.UI.EntryPoints
             }
         }
 
+       
+
         void socket_GeneralCommand(object sender, GeneralCommandEventArgs e)
         {
             _logger.Debug("socket_GeneralCommand {0} {1}", e.KnownCommandType, e.Command.Arguments);
@@ -414,7 +416,7 @@ namespace MediaBrowser.UI.EntryPoints
                         break;
 
                     case GeneralCommandType.ToggleContextMenu:
-                        _commandManager.ExecuteCommand(Command.Null, null);        // todo
+                        _commandManager.ExecuteCommand(Command.ToggleInfoPanel, null);        // todo generalise - make work not just for meida playing
                         break;
 
                     case GeneralCommandType.Select:

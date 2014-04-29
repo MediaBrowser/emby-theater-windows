@@ -115,13 +115,25 @@ namespace MediaBrowser.Theater.Interfaces.Playback
         /// </summary>
         /// <value>The current position ticks.</value>
         long? CurrentPositionTicks { get; }
-
+        
         /// <summary>
         /// Gets the current duration ticks.
         /// </summary>
         /// <value>The current duration ticks.</value>
         long? CurrentDurationTicks { get; }
 
+        /// <summary>
+        /// Get the current subtitle index.
+        /// </summary>
+        /// <value>The current subtitle index.</value>
+        int? CurrentSubtitleStreamIndex { get; }
+
+        /// <summary>
+        /// Get the current audio index.
+        /// </summary>
+        /// <value>The current audio index.</value>
+        int? CurrentAudioStreamIndex { get; }
+      
         /// <summary>
         /// Determines whether this instance can play the specified item.
         /// </summary>

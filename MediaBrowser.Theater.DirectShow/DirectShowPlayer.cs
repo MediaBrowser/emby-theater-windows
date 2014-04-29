@@ -220,6 +220,39 @@ namespace MediaBrowser.Theater.DirectShow
             }
         }
 
+
+        public int? CurrentSubtitleStreamIndex
+        {
+            get
+            {
+                if (PlayState != PlayState.Idle)
+                {
+
+                    var stream = _streams.FirstOrDefault(i => i.Type == MediaStreamType.Subtitle && i.IsActive == true);
+                    return stream != null ? (int?) stream.Index : null;
+                }
+
+                return null;
+            }
+        }
+
+       
+        public int? CurrentAudioStreamIndex
+        {
+            get
+            {
+                if (PlayState != PlayState.Idle)
+                {
+
+                    var stream = _streams.FirstOrDefault(i => i.Type == MediaStreamType.Audio && i.IsActive == true);
+                    return stream != null ? (int?)stream.Index : null;
+                }
+
+
+                return null;
+            }
+        }
+
         public long? CurrentPositionTicks
         {
             get
@@ -2518,6 +2551,7 @@ namespace MediaBrowser.Theater.DirectShow
             }
         }
 
+     
         private SelectableMediaStream GetActiveExternalSubtitleStream()
         {
             return _streams.FirstOrDefault(i => i.Type == MediaStreamType.Subtitle && i.IsActive == true && i.Identifier == "external");

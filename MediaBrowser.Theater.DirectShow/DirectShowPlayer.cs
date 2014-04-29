@@ -2171,7 +2171,7 @@ namespace MediaBrowser.Theater.DirectShow
             GC.Collect();
         }
 
-        private List<SelectableMediaStream> _streams;
+        private List<SelectableMediaStream> _streams = new List<SelectableMediaStream>();
 
         public IReadOnlyList<SelectableMediaStream> GetSelectableStreams()
         {

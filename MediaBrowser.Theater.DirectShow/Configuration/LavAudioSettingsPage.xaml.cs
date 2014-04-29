@@ -76,6 +76,15 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
             {
                 SelectAudioDevice.Options.Add(new SelectListItem { Text = bsOption, Value = audioDevices[bsOption] });
             }
+
+            SelectSpeakerLayout.Options = new List<SelectListItem>
+            {
+                 new SelectListItem{ Text = "Stereo", Value="Stereo"},
+                 new SelectListItem{ Text = "Quadraphonic", Value="Quad"},
+                 new SelectListItem{ Text = "Surround", Value="Surround"},
+                 new SelectListItem{ Text = "5.1", Value="FiveDotOneSurround"},
+                 new SelectListItem{ Text = "7.1", Value="SevenDotOneSurround"}
+            };
         }
 
         void GeneralSettingsPage_Loaded(object sender, RoutedEventArgs e)
@@ -96,6 +105,7 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
             SelectMixingLayout.SelectedValue = config.AudioConfig.MixingLayout;
             SelectMixingSetting.SelectedValue = config.AudioConfig.MixingSetting.ToString();
             SelectAudioDevice.SelectedValue = config.AudioConfig.AudioDevice;
+            SelectSpeakerLayout.SelectedValue = config.AudioConfig.SpeakerLayout;
 
             SldDRCLevel.Value = config.AudioConfig.DRCLevel;
 
@@ -137,6 +147,7 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
             config.AudioConfig.MixingLayout = SelectMixingLayout.SelectedValue;
             config.AudioConfig.MixingSetting = int.Parse(SelectMixingSetting.SelectedValue);
             config.AudioConfig.AudioDevice = SelectAudioDevice.SelectedValue;
+            config.AudioConfig.SpeakerLayout = SelectSpeakerLayout.SelectedValue;
 
             config.AudioConfig.DRCLevel = (int)SldDRCLevel.Value;
             config.AudioConfig.EnabledCodecs.Clear();

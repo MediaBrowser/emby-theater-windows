@@ -511,13 +511,15 @@ namespace MediaBrowser.Theater.DirectShow
                             IMPAudioSettings audSett = aRenderer as IMPAudioSettings;
                             if (audSett != null)
                             {
-                                //audSett.SetSpeakerConfig(SpeakerConfig.Stereo);
                                 audSett.SetWASAPIMode(AUDCLNT_SHAREMODE.EXCLUSIVE);
                                 audSett.SetUseWASAPIEventMode(true);
                                 audSett.SetAudioDeviceById(_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.AudioDevice);
-                                SpeakerConfig sc;
-                                audSett.GetSpeakerConfig(out sc);
-                                audSett.SetSpeakerConfig(SpeakerConfig.SevenDotOneSurround);
+                                SpeakerConfig sc = SpeakerConfig.Stereo; //use stereo for maxium compat
+                                Enum.TryParse<SpeakerConfig>(_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.SpeakerLayout, out sc);
+                                audSett.SetSpeakerConfig(sc);
+                                //audSett.SetSpeakerMatchOutput(true);
+                                audSett.SetReleaseDeviceOnStop(_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.ReleaseDeviceOnStop);
+                                
                             }
                         }
                     }
@@ -1643,34 +1645,50 @@ namespace MediaBrowser.Theater.DirectShow
 
         private void SetupGraphForRateChange(double rate, IBaseFilter audioRenderer)
         {
+            int hr = 0;
+
             if (_wasapiAR != null)
             {
-                if (_audioDevice == null)
-                {
-                    MMDeviceEnumerator DevEnum = new MMDeviceEnumerator();
-                    if (!string.IsNullOrWhiteSpace(_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.AudioDevice))
-                        _audioDevice = DevEnum.GetDevice(_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.AudioDevice);
+                //if (_audioDevice == null)
+                //{
+                //    MMDeviceEnumerator DevEnum = new MMDeviceEnumerator();
+                //    if (!string.IsNullOrWhiteSpace(_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.AudioDevice))
+                //        _audioDevice = DevEnum.GetDevice(_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.AudioDevice);
 
-                    if (_audioDevice == null)
-                        _audioDevice = DevEnum.GetDefaultAudioEndpoint(EDataFlow.eRender, ERole.eMultimedia);
-                }
+                //    if (_audioDevice == null)
+                //        _audioDevice = DevEnum.GetDefaultAudioEndpoint(EDataFlow.eRender, ERole.eMultimedia);
+                //}
 
-                if (Math.Abs(rate) <= 4)
+                //    if (rate > Math.Abs(1.5))
+                //    {
+                //        _audioDevice.AudioEndpointVolume.Mute = true;
+                //    }
+                //    else if (rate <= Math.Abs(1.5))
+                //    {                        
+                //        _audioDevice.AudioEndpointVolume.Mute = false;
+                //    }
+                IBasicAudio ba = _filterGraph as IBasicAudio;
+                if (ba != null)
                 {
+                    int orgVol = 0;
+                    hr = ba.get_Volume(out orgVol);
+                    DsError.ThrowExceptionForHR(hr);
+
                     if (rate > Math.Abs(1.5))
                     {
-                        _audioDevice.AudioEndpointVolume.Mute = true;
+                        hr = ba.put_Volume(-10000); //turn off the volume so we can ffwd
+                        DsError.ThrowExceptionForHR(hr);
                     }
                     else if (rate <= Math.Abs(1.5))
-                    {                        
-                        _audioDevice.AudioEndpointVolume.Mute = false;
+                    {
+                        hr = ba.put_Volume(0); //set the volume back to full
+                        DsError.ThrowExceptionForHR(hr);
                     }
                 }
             }
             else
             {
                 IPin arIn = null;
-                int hr = 0;
 
                 try
                 {
@@ -2153,7 +2171,7 @@ namespace MediaBrowser.Theater.DirectShow
             GC.Collect();
         }
 
-        private List<SelectableMediaStream> _streams;
+        private List<SelectableMediaStream> _streams = new List<SelectableMediaStream>();
 
         public IReadOnlyList<SelectableMediaStream> GetSelectableStreams()
         {

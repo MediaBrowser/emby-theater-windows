@@ -233,12 +233,12 @@ namespace MediaBrowser.Theater.DirectShow
 
             try
             {
-                InvokeOnPlayerThread(() =>
-                {
-                    _mediaPlayer = new DirectShowPlayer(_logger, _hiddenWindow, this, _presentation.WindowHandle, _sessionManager, _config, _inputManager, _apiClient, _zipClient, _httpClient);
+                //InvokeOnPlayerThread(() =>
+                //{
+                //    _mediaPlayer = new DirectShowPlayer(_logger, _hiddenWindow, this, _presentation.WindowHandle, _sessionManager, _config, _inputManager, _apiClient, _zipClient, _httpClient);
 
-                    //HideCursor();
-                });
+                //    //HideCursor();
+                //});
 
                 await PlayTrack(0, options.StartPositionTicks);
             }
@@ -267,7 +267,13 @@ namespace MediaBrowser.Theater.DirectShow
                 var enableMadVr = EnableMadvr(options);
                 //var enableReclock = EnableReclock(options);
 
-                InvokeOnPlayerThread(() => _mediaPlayer.Play(playableItem, enableMadVr, false));
+                InvokeOnPlayerThread(() =>
+                {
+                    //create a fresh DS Player everytime we want one
+                    DisposePlayer();
+                    _mediaPlayer = new DirectShowPlayer(_logger, _hiddenWindow, this, _presentation.WindowHandle, _sessionManager, _config, _inputManager, _apiClient, _zipClient, _httpClient);
+                    _mediaPlayer.Play(playableItem, enableMadVr, false);
+                });
             }
             catch
             {
@@ -294,7 +300,7 @@ namespace MediaBrowser.Theater.DirectShow
                     PreviousPlaylistIndex = previousIndex,
                     EndingPositionTicks = endingTicks
                 };
-                
+
                 _presentation.Window.Dispatcher.Invoke
                 (
                     () => EventHelper.FireEventIfNotNull(MediaChanged, this, args, _logger)
@@ -571,13 +577,20 @@ namespace MediaBrowser.Theater.DirectShow
 
         private void InvokeOnPlayerThread(Action action)
         {
-            if (_hiddenWindow.Form.InvokeRequired)
+            try
             {
-                _hiddenWindow.Form.Invoke(action);
+                if (_hiddenWindow.Form.InvokeRequired)
+                {
+                    _hiddenWindow.Form.Invoke(action);
+                }
+                else
+                {
+                    action();
+                }
             }
-            else
+            catch (Exception ex)
             {
-                action();
+                _logger.ErrorException("InvokeOnPlayerThread", ex);
             }
         }
     }

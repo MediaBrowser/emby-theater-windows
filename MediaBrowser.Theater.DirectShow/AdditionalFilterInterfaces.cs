@@ -32,16 +32,43 @@ namespace MediaBrowser.Theater.DirectShow
         SHARED,
         EXCLUSIVE
     }
+    public enum SpeakerPosition
+    {
+        FRONT_LEFT = 0x1,
+        FRONT_RIGHT = 0x2,
+        FRONT_CENTER = 0x4,
+        LOW_FREQUENCY = 0x8,
+        BACK_LEFT = 0x10,
+        BACK_RIGHT = 0x20,
+        FRONT_LEFT_OF_CENTER = 0x40,
+        FRONT_RIGHT_OF_CENTER = 0x80,
+        BACK_CENTER = 0x100,
+        SIDE_LEFT = 0x200,
+        SIDE_RIGHT = 0x400,
+        TOP_CENTER = 0x800,
+        TOP_FRONT_LEFT = 0x1000,
+        TOP_FRONT_CENTER = 0x2000,
+        TOP_FRONT_RIGHT = 0x4000,
+        TOP_BACK_LEFT = 0x8000,
+        TOP_BACK_CENTER = 0x10000,
+        TOP_BACK_RIGHT = 0x20000,
+
+        // Bit mask locations reserved for future use
+        RESERVED = 0x7FFC0000,
+
+        // Used to specify that any possible permutation of speaker configurations
+        //ALL = 0x80000000
+    }
 
     public enum SpeakerConfig
     {
-        Mono = 4,
-        Stereo = 3,
-        Quad = 51,
-        Surround = 263,
-        FiveDotOne = 63,
-        FiveDotOneSurround = 1551,
-        SevenDotOneSurround = 1599
+        Mono = SpeakerPosition.FRONT_CENTER,
+        Stereo = SpeakerPosition.FRONT_LEFT | SpeakerPosition.FRONT_RIGHT,
+        Quad = SpeakerPosition.FRONT_LEFT | SpeakerPosition.FRONT_RIGHT | SpeakerPosition.BACK_LEFT  | SpeakerPosition.BACK_RIGHT,
+        Surround = SpeakerPosition.FRONT_LEFT | SpeakerPosition.FRONT_RIGHT | SpeakerPosition.FRONT_CENTER | SpeakerPosition.BACK_CENTER,
+        //FiveDotOne = SpeakerPosition.FRONT_LEFT | SpeakerPosition.FRONT_RIGHT | SpeakerPosition.FRONT_CENTER | SpeakerPosition.LOW_FREQUENCY | SpeakerPosition.BACK_LEFT  | SpeakerPosition.BACK_RIGHT, //obsolete
+        FiveDotOneSurround = SpeakerPosition.FRONT_LEFT | SpeakerPosition.FRONT_RIGHT | SpeakerPosition.FRONT_CENTER | SpeakerPosition.LOW_FREQUENCY | SpeakerPosition.SIDE_LEFT  | SpeakerPosition.SIDE_RIGHT,
+        SevenDotOneSurround = SpeakerPosition.FRONT_LEFT | SpeakerPosition.FRONT_RIGHT | SpeakerPosition.FRONT_CENTER | SpeakerPosition.LOW_FREQUENCY | SpeakerPosition.BACK_LEFT | SpeakerPosition.BACK_RIGHT | SpeakerPosition.SIDE_LEFT | SpeakerPosition.SIDE_RIGHT
     }
 
     [ComImport, System.Security.SuppressUnmanagedCodeSecurity,
@@ -125,15 +152,24 @@ namespace MediaBrowser.Theater.DirectShow
         int SetResamplingQuality(int setting);
 
         [PreserveSig]
-        int GetAvailableAudioDevices(
-            /*[Out, MarshalAs(UnmanagedType.LPArray)]
-            out DeviceDefinition[]*/
-            out IntPtr devices,
-            out int count); //doesn't work
-        [PreserveSig]
         int SetAudioDevice(int setting);
         [PreserveSig]
         int SetAudioDeviceById([In, MarshalAs(UnmanagedType.LPWStr)] string setting);
+
+        [PreserveSig]
+        int GetSpeakerMatchOutput(out bool setting);
+        [PreserveSig]
+        int SetSpeakerMatchOutput(bool setting);
+
+        [PreserveSig]
+        int GetUseFilters(out bool setting);
+        [PreserveSig]
+        int SetUseFilters(bool setting);
+
+        [PreserveSig]
+        int GetReleaseDeviceOnStop(out bool setting);
+        [PreserveSig]
+        int SetReleaseDeviceOnStop(bool setting);
     }
 
     #endregion

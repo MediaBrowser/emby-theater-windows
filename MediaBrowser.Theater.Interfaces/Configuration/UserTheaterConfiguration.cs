@@ -7,12 +7,14 @@
         public string Screensaver { get; set;  }
         public bool ShowBackButton { get; set; }
         public bool ShowExternalDiscApp { get; set; }
+        public bool RememberSortOrder { get; set; }
 
         public UserTheaterConfiguration()
         {
             ShowBackButton = true;
             ShowExternalDiscApp = true;
             Screensaver = "Backdrop";
+            RememberSortOrder = true;
         }
     }
 }

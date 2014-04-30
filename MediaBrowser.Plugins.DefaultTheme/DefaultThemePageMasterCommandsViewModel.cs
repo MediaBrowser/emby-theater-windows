@@ -8,6 +8,7 @@ using MediaBrowser.Model.Logging;
 using MediaBrowser.Plugins.DefaultTheme.ListPage;
 using MediaBrowser.Plugins.DefaultTheme.UserProfileMenu;
 using MediaBrowser.Theater.Interfaces;
+using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.ViewModels;
 using MediaBrowser.Theater.Interfaces.Navigation;
@@ -20,6 +21,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
     public class DefaultThemePageMasterCommandsViewModel : MasterCommandsViewModel
     {
         protected readonly IImageManager ImageManager;
+        protected readonly ITheaterConfigurationManager ConfigurationManager;
 
         public ICommand UserCommand { get; private set; }
         public ICommand LogoutCommand { get; private set; }
@@ -75,10 +77,12 @@ namespace MediaBrowser.Plugins.DefaultTheme
             }
         }
 
-        public DefaultThemePageMasterCommandsViewModel(INavigationService navigationService, ISessionManager sessionManager, IPresentationManager presentationManager, IApiClient apiClient, ILogger logger, ITheaterApplicationHost appHost, IServerEvents serverEvents, IImageManager imageManager) 
+        public DefaultThemePageMasterCommandsViewModel(INavigationService navigationService, ISessionManager sessionManager, IPresentationManager presentationManager, 
+            IApiClient apiClient, ILogger logger, ITheaterApplicationHost appHost, IServerEvents serverEvents, IImageManager imageManager, ITheaterConfigurationManager configurationManager) 
             : base(navigationService, sessionManager, presentationManager, apiClient, logger, appHost, serverEvents)
         {
             ImageManager = imageManager;
+            ConfigurationManager = configurationManager;
 
             UserCommand = new RelayCommand(i => ShowUserMenu());
             LogoutCommand = new RelayCommand(i => Logout());
@@ -106,7 +110,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
             }
 
             var userProfileWindow = new UserProfileWindow(this, SessionManager, PresentationManager, ImageManager,
-                ApiClient, displayPreferences, options);
+                ApiClient, ConfigurationManager, displayPreferences, options);
             userProfileWindow.Closed += userProfileWindow_Closed;
 
             userProfileWindow.ShowModal(PresentationManager.Window);

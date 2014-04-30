@@ -72,6 +72,10 @@
         <CheckBox x:Name="ChkShowTrayIcon" Margin="0 30 0 0" VerticalAlignment="Center" Grid.Column="0" Grid.Row="8" >
             <TextBlock Style="{StaticResource TextBlockStyle}">ShowTrayIcon</TextBlock>
         </CheckBox>
+        <StackPanel Orientation="Horizontal" Margin="0 50 0 0" Grid.Column="1" Grid.Row="8" >
+            <TextBlock Style="{StaticResource TextBlockStyle}" Margin="0 0 0 0">Speaker Layout:</TextBlock>
+            <controls:SelectList x:Name="SelectSpeakerLayout" Margin="40 0 0 0"></controls:SelectList>
+        </StackPanel>
         <StackPanel x:Name="PanelAudioCodecs" Margin="0 20 0 0"  Grid.Column="0" Grid.Row="9" Grid.ColumnSpan="2">
 
             <TextBlock Style="{StaticResource TextBlockStyle}">Audio Codecs:</TextBlock>

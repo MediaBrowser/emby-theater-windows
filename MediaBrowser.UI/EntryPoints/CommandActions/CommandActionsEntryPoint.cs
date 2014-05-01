@@ -1,5 +1,4 @@
-﻿using System.Windows.Input;
-using MediaBrowser.Model.Logging;
+﻿using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Interfaces.Commands;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
@@ -33,7 +32,7 @@ using WindowsInput = System.Windows.Input;
         private void commandManager_CommandReceived(object sender, CommandEventArgs commandEventArgs)
         {
             _logger.Debug("commandManager_CommandReceived {0} {1}", commandEventArgs.Command, commandEventArgs.Args);
-            commandEventArgs.Handled = _defaultCommandActionMap.ExecuteCommand(commandEventArgs.Command);
+            commandEventArgs.Handled = _defaultCommandActionMap.ExecuteCommand(commandEventArgs.Command, commandEventArgs.Args);
         }
 
         public void Dispose()

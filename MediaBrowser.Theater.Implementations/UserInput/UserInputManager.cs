@@ -321,15 +321,37 @@ namespace MediaBrowser.Theater.Implementations.UserInput
         }
 
         // <summary>
+        // Send a KeyUp to currently active element, 
+        // </summary>
+        public void SendKeyDownEventToFocusedElement(WindowsInput.Key key)
+        {
+            SendKeyEventToFocusedElement(key, Keyboard.KeyDownEvent);
+        }
+
+        // <summary>
+        // Send a KeyUp to currently active element, 
+        // </summary>
+        public void SendKeyUpEventToFocusedElement(WindowsInput.Key key)
+        {
+            SendKeyEventToFocusedElement(key, Keyboard.KeyUpEvent);
+        }
+
+        // <summary>
         // Send a Key to currently active element, 
         //      1. the element will in receive a KeyDown event which will 
         //      2. The elemen will implement the actions - i.e move 
         //      3. The Keydown will be picked up by the input manager and the generate a Command matching the key
         // see http://stackoverflow.com/questions/1645815/how-can-i-programmatically-generate-keypress-events-in-c
         // </summary>
-        public void SendKeyDownEventToFocusedElement(WindowsInput.Key key)
+        public void SendKeyEventToFocusedElement(WindowsInput.Key key, RoutedEvent keyUpOrKeyDownEvent)
         {
-            _logger.Debug("SendKeyDownEventToFocusedElement {0}", key);
+            _logger.Debug("SendKeyEventToFocusedElement {0} {1}", keyUpOrKeyDownEvent, key);
+            
+            if (keyUpOrKeyDownEvent != Keyboard.KeyDownEvent &&  keyUpOrKeyDownEvent != Keyboard.KeyUpEvent)
+            {
+                throw new ArgumentException(String.Format("SendKeyEventToFocusedElement: Invlaid Argument {0}. Only Keyboard.KeyDownEvent or Keyboard.KeyUpEvent is valid", keyUpOrKeyDownEvent));
+            }
+
             _presentationManager.Window.Dispatcher.Invoke(() =>
             {
                 // _presentation.EnsureApplicationWindowHasFocus(); // need this when testing and running on the same display and input, proably not in prod env
@@ -340,11 +362,12 @@ namespace MediaBrowser.Theater.Implementations.UserInput
                                         source,
                                         0,
                                         key
-                                    ) { RoutedEvent = Keyboard.KeyDownEvent };
+                                    ) { RoutedEvent = keyUpOrKeyDownEvent };
 
                 InputManager.Current.ProcessInput(keyEventArgs);
             });
         }
+
 
         // <summary>
         // Send a text string to currently active element, 

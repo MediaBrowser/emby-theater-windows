@@ -4,6 +4,7 @@ using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Plugins.DefaultTheme.ListPage;
 using MediaBrowser.Plugins.DefaultTheme.Models;
+using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Presentation.Controls;
@@ -14,9 +15,6 @@ using MediaBrowser.Theater.Presentation.ViewModels;
 
 namespace MediaBrowser.Plugins.DefaultTheme.UserProfileMenu
 {
-    /// <summary>
-    /// Interaction logic for UserProfileWindow.xaml
-    /// </summary>
     public partial class UserProfileWindow : BaseModalWindow
     {
         private readonly ISessionManager _session;
@@ -27,11 +25,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.UserProfileMenu
         private bool _isSortPreferencesOpen;
         private string _previousFocus;
 
-        public UserProfileWindow(DefaultThemePageMasterCommandsViewModel masterCommands, ISessionManager session, IPresentationManager presentationManager, IImageManager imageManager, IApiClient apiClient, DisplayPreferences displayPreferences, ListPageConfig options)
+        public UserProfileWindow(DefaultThemePageMasterCommandsViewModel masterCommands, ISessionManager session, IPresentationManager presentationManager, 
+            IImageManager imageManager, IApiClient apiClient, ITheaterConfigurationManager configurationManager, DisplayPreferences displayPreferences, ListPageConfig options)
         {
             _session = session;
             _options = options;
-            _displayPreferencesViewModel = new DisplayPreferencesViewModel(displayPreferences, presentationManager);
+            _displayPreferencesViewModel = new DisplayPreferencesViewModel(displayPreferences, presentationManager, configurationManager, session);
             _previousFocus = "";
 
             InitializeComponent();
@@ -80,12 +79,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.UserProfileMenu
 
             MainGrid.DataContext = this;
             CheckBoxSortRemember.DataContext = _displayPreferencesViewModel;
-
-            if (displayPreferences != null)
-            {
-                //Always set to false to begin with in case the user is just doing a quick sort and doesn't want it saved.
-                _displayPreferencesViewModel.RememberSorting = false;
-            }
         }
 
         protected override void CloseModal()
@@ -121,9 +114,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.UserProfileMenu
             {
                 var optionValue = _options.SortOptions[option];
 
-                var radio = new RadioButton { GroupName = "Options" };
-
-                radio.Margin = new Thickness(0, 25, 0, 0);
+                var radio = new RadioButton {GroupName = "Options", Margin = new Thickness(0, 25, 0, 0)};
 
                 var textblock = new TextBlock { Text = option };
 
@@ -156,7 +147,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.UserProfileMenu
         {
             _isViewPreferencesOpen = true;
             sender.PopoutModeEnabled = true;
-            ViewGrid.SetValue(Grid.VisibilityProperty, Visibility.Visible);
+            ViewGrid.SetValue(VisibilityProperty, Visibility.Visible);
             var sb = FindResource("OpeningViewGridStoryboard") as Storyboard;
             if (sb != null) sb.Begin();
         }
@@ -165,7 +156,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.UserProfileMenu
         {
             _isViewPreferencesOpen = false;
             sender.PopoutModeEnabled = false;
-            ViewGrid.SetValue(Grid.VisibilityProperty, Visibility.Collapsed);
+            ViewGrid.SetValue(VisibilityProperty, Visibility.Collapsed);
             var sb = FindResource("ClosingViewGridStoryboard") as Storyboard;
             if (sb != null) sb.Begin();
         }
@@ -174,7 +165,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.UserProfileMenu
         {
             _isSortPreferencesOpen = true;
             sender.PopoutModeEnabled = true;
-            SortGrid.SetValue(Grid.VisibilityProperty, Visibility.Visible);
+            SortGrid.SetValue(VisibilityProperty, Visibility.Visible);
             var sb = FindResource("OpeningSortGridStoryboard") as Storyboard;
             if (sb != null) sb.Begin();
         }
@@ -183,7 +174,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.UserProfileMenu
         {
             _isSortPreferencesOpen = false;
             sender.PopoutModeEnabled = false;
-            SortGrid.SetValue(Grid.VisibilityProperty, Visibility.Collapsed);
+            SortGrid.SetValue(VisibilityProperty, Visibility.Collapsed);
             var sb = FindResource("ClosingSortGridStoryboard") as Storyboard;
             if (sb != null) sb.Begin();
         }
@@ -205,11 +196,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.UserProfileMenu
             }
         }
 
-        void closeModalStoryboard_Completed(object sender, EventArgs e)
+        async void closeModalStoryboard_Completed(object sender, EventArgs e)
         {
-            if (_displayPreferencesViewModel.DisplayPreferences != null /* && (bool)CheckBoxSortRemember.IsChecked */)
+            if (_displayPreferencesViewModel.DisplayPreferences != null)
             {
-                _displayPreferencesViewModel.Save();
+                await _displayPreferencesViewModel.Save();
             }
 
             base.CloseModal();
@@ -306,6 +297,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.UserProfileMenu
         private void Button_IsKeyboardFocusedChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             var listItem = sender as FrameworkElement;
+            if (listItem == null) return;
             var name = listItem.Name;
 
             if ((bool) e.NewValue)

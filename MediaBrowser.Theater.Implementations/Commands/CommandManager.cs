@@ -232,7 +232,7 @@ namespace MediaBrowser.Theater.Implementations.Commands
         public bool ExecuteCommand(Command command, Object args)
         {
             _logger.Debug("ExecuteCommand {0} {1}", command, args);
-            var commandEventArgs = new CommandEventArgs { Command = command, Handled = false };
+            var commandEventArgs = new CommandEventArgs { Command = command, Args = args, Handled = false };
             _commandReceived.Invoke(null, commandEventArgs);
             return commandEventArgs.Handled;
         }

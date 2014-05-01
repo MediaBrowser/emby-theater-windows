@@ -180,6 +180,40 @@ namespace MediaBrowser.Theater.DirectShow
             }
         }
 
+         /// <summary>
+        /// Get the current subtitle index.
+        /// </summary>
+        /// <value>The current subtitle index.</value>
+        public int? CurrentSubtitleStreamIndex
+        {
+            get
+            {
+                if (_mediaPlayer != null)
+                {
+                    return _mediaPlayer.CurrentSubtitleStreamIndex;
+                }
+
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Get the current audio index.
+        /// </summary>
+        /// <value>The current audio index.</value>
+        public int? CurrentAudioStreamIndex
+        {
+            get
+            {
+                if (_mediaPlayer != null)
+                {
+                    return _mediaPlayer.CurrentAudioStreamIndex;
+                }
+
+                return null;
+            }
+        }
+
         public bool CanPlayByDefault(BaseItemDto item)
         {
             return item.IsVideo || item.IsAudio;
@@ -199,12 +233,12 @@ namespace MediaBrowser.Theater.DirectShow
 
             try
             {
-                InvokeOnPlayerThread(() =>
-                {
-                    _mediaPlayer = new DirectShowPlayer(_logger, _hiddenWindow, this, _presentation.WindowHandle, _sessionManager, _config, _inputManager, _apiClient, _zipClient, _httpClient);
+                //InvokeOnPlayerThread(() =>
+                //{
+                //    _mediaPlayer = new DirectShowPlayer(_logger, _hiddenWindow, this, _presentation.WindowHandle, _sessionManager, _config, _inputManager, _apiClient, _zipClient, _httpClient);
 
-                    //HideCursor();
-                });
+                //    //HideCursor();
+                //});
 
                 await PlayTrack(0, options.StartPositionTicks);
             }
@@ -233,7 +267,13 @@ namespace MediaBrowser.Theater.DirectShow
                 var enableMadVr = EnableMadvr(options);
                 //var enableReclock = EnableReclock(options);
 
-                InvokeOnPlayerThread(() => _mediaPlayer.Play(playableItem, enableMadVr, false));
+                InvokeOnPlayerThread(() =>
+                {
+                    //create a fresh DS Player everytime we want one
+                    DisposePlayer();
+                    _mediaPlayer = new DirectShowPlayer(_logger, _hiddenWindow, this, _presentation.WindowHandle, _sessionManager, _config, _inputManager, _apiClient, _zipClient, _httpClient);
+                    _mediaPlayer.Play(playableItem, enableMadVr, false);
+                });
             }
             catch
             {
@@ -249,7 +289,7 @@ namespace MediaBrowser.Theater.DirectShow
                 InvokeOnPlayerThread(() => _mediaPlayer.Seek(startPositionTicks.Value));
             }
 
-            if (previousMedia != null)
+            if (previousMedia != null && MediaChanged != null)
             {
                 var args = new MediaChangeEventArgs
                 {
@@ -260,11 +300,13 @@ namespace MediaBrowser.Theater.DirectShow
                     PreviousPlaylistIndex = previousIndex,
                     EndingPositionTicks = endingTicks
                 };
-                // can't InvokeOnPlayerThread because InvokeRequired returns false
-                 _presentation.Window.Dispatcher.Invoke
+                
+               
+                _presentation.Window.Dispatcher.Invoke
                 (
-                    () => EventHelper.FireEventIfNotNull(MediaChanged, this, args, _logger)
+                    () => MediaChanged(this, args)
                 );
+               
             }
         }
 
@@ -472,8 +514,25 @@ namespace MediaBrowser.Theater.DirectShow
 
         public void ChangeTrack(int newIndex)
         {
-            _mediaPlayer.Stop(TrackCompletionReason.ChangeTrack, newIndex);
-            InvokeOnPlayerThread(() => _mediaPlayer.Stop(TrackCompletionReason.ChangeTrack, newIndex));
+            _mediaPlayer.Stop(TrackCompletionReason.ChangeTrack, newIndex); // don't invoke on player thread
+        }
+
+        public void NextTrack()
+        {
+             var nextIndex = CurrentPlaylistIndex + 1;
+             if (nextIndex < CurrentPlayOptions.Items.Count)
+             {
+                 ChangeTrack(nextIndex);
+             }
+        }
+
+        public void PreviousTrack()
+        {
+            var previousIndex = CurrentPlaylistIndex - 1;
+            if (previousIndex >= 0 && previousIndex <= CurrentPlayOptions.Items.Count)
+            {
+                ChangeTrack(previousIndex);
+            }
         }
 
         public IReadOnlyList<SelectableMediaStream> SelectableStreams
@@ -519,6 +578,8 @@ namespace MediaBrowser.Theater.DirectShow
 
         private void InvokeOnPlayerThread(Action action)
         {
+            try
+            {
             if (_hiddenWindow.Form.InvokeRequired)
             {
                 _hiddenWindow.Form.Invoke(action);
@@ -526,6 +587,11 @@ namespace MediaBrowser.Theater.DirectShow
             else
             {
                 action();
+            }
+        }
+            catch (Exception ex)
+            {
+                _logger.ErrorException("InvokeOnPlayerThread", ex);
             }
         }
     }

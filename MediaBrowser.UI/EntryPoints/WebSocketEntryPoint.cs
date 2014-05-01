@@ -1,16 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Media;
-using System.Runtime.InteropServices;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using System.Windows.Input;
-using System.Windows.Interop;
-using System.Windows.Media;
-using System.Windows.Navigation;
-using System.Windows.Threading;
-using MediaBrowser.ApiInteraction;
 using MediaBrowser.ApiInteraction.WebSocket;
 using MediaBrowser.Common;
 using MediaBrowser.Model.ApiClient;
@@ -18,25 +7,18 @@ using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Querying;
-using MediaBrowser.Model.Serialization;
 using MediaBrowser.Model.Session;
-using MediaBrowser.Plugins.DefaultTheme.Home;
-using MediaBrowser.Plugins.DefaultTheme.ListPage;
 using MediaBrowser.Theater.Interfaces.Commands;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.UserInput;
-using MediaBrowser.Theater.Presentation.Playback;
 using System;
 using System.Linq;
 using System.Threading;
 using System.Windows;
-using MediaBrowser.Theater.Presentation.ViewModels;
-using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using MessageBoxIcon = MediaBrowser.Theater.Interfaces.Theming.MessageBoxIcon;
-using System.Configuration;
 using NavigationEventArgs = MediaBrowser.Theater.Interfaces.Navigation.NavigationEventArgs;
 
 namespace MediaBrowser.UI.EntryPoints
@@ -391,6 +373,8 @@ namespace MediaBrowser.UI.EntryPoints
             }
         }
 
+       
+
         void socket_GeneralCommand(object sender, GeneralCommandEventArgs e)
         {
             _logger.Debug("socket_GeneralCommand {0} {1}", e.KnownCommandType, e.Command.Arguments);
@@ -432,11 +416,12 @@ namespace MediaBrowser.UI.EntryPoints
                         break;
 
                     case GeneralCommandType.ToggleContextMenu:
-                        _commandManager.ExecuteCommand(Command.Null, null);        // todo
+                        _commandManager.ExecuteCommand(Command.ToggleInfoPanel, null);        // todo generalise - make work not just for meida playing
                         break;
 
                     case GeneralCommandType.Select:
-                        _userInputManager.SendKeyDownEventToFocusedElement(Key.Enter);
+                        _userInputManager.SendKeyDownEventToFocusedElement(Key.Enter); 
+                        _userInputManager.SendKeyUpEventToFocusedElement(Key.Enter); 
                         break;
 
                     case GeneralCommandType.Back:
@@ -584,11 +569,11 @@ namespace MediaBrowser.UI.EntryPoints
                     break;
 
                 case PlaystateCommand.PreviousTrack:
-                    _commandManager.ExecuteCommand(Command.PrevisousTrack, null);
+                    _commandManager.ExecuteCommand(Command.PreviousTrackOrChapter, null);
                     break;
 
                 case PlaystateCommand.NextTrack:
-                    _commandManager.ExecuteCommand(Command.NextTrack, null);
+                    _commandManager.ExecuteCommand(Command.NextTrackOrChapter, null);
                     break;
 
             }

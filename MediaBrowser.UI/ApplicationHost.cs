@@ -355,7 +355,7 @@ namespace MediaBrowser.UI
         {
             await InstallationManager.InstallPackage(package, progress, cancellationToken).ConfigureAwait(false);
 
-            OnApplicationUpdated(package.version);
+            OnApplicationUpdated(package);
         }
 
         protected override void ConfigureAutoRunAtStartup(bool autorun)

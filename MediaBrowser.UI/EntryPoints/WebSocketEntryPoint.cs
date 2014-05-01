@@ -623,13 +623,7 @@ namespace MediaBrowser.UI.EntryPoints
                     Id = e.Request.ItemId
                 };
 
-                var viewType = ViewType.Folders;
-
-                if (!string.IsNullOrEmpty(e.Request.Context))
-                {
-                    Enum.TryParse(e.Request.Context, true, out viewType);
-                }
-                await _navigationService.NavigateToItem(dto, viewType);
+                await _navigationService.NavigateToItem(dto);
             }
             catch (Exception ex)
             {

@@ -354,7 +354,8 @@ namespace MediaBrowser.Theater.DirectShow
                 hr = _mediaEventEx.SetNotifyWindow(VideoWindowHandle, WM_GRAPHNOTIFY, IntPtr.Zero);
             DsError.ThrowExceptionForHR(hr);
 
-            m_dsRot = new DsROTEntry(m_graph as IFilterGraph);
+            if(_mbtConfig.Configuration.InternalPlayerConfiguration.PublishGraph)
+                m_dsRot = new DsROTEntry(m_graph as IFilterGraph);
         }
 
         private void Initialize(string path, bool enableMadvr, bool enableMadvrExclusiveMode,
@@ -579,6 +580,21 @@ namespace MediaBrowser.Theater.DirectShow
                                         _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig
                                             .MadVrSmoothMotionMode);
                                 }
+                                MFNominalRange levels = (MFNominalRange)_mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig.NominalRange;
+                                string madVrLevelInitial = msett.GetString("levels");
+                                switch (levels)
+                                {
+                                    case MFNominalRange.MFNominalRange_0_255:
+                                        msett.SetString("levels", "PC Levels");
+                                        break;
+                                    case MFNominalRange.MFNominalRange_16_235:
+                                        msett.SetString("levels", "TV Levels");
+                                        break;
+                                }
+                                string madVrLevel = msett.GetString("levels");
+
+                                if (string.Compare(madVrLevel, madVrLevelInitial, false) != 0)
+                                    _logger.Debug("Changed madVR levels from {0} to {1}", madVrLevelInitial, madVrLevel);
                             }
                             catch (Exception ex)
                             {
@@ -1215,7 +1231,15 @@ namespace MediaBrowser.Theater.DirectShow
                     {
                         hr = pRenderer.InitializeRenderer(null, pPresenter);
                         if (hr > -1)
+                        {
                             _customEvrPresenterLoaded = true;
+                            IEVRCPSettings cp = pPresenter as IEVRCPSettings;
+                            if (cp != null)
+                            {
+                                hr = cp.SetNominalRange((MFNominalRange)_mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig.NominalRange);
+                                DsError.ThrowExceptionForHR(hr);
+                            }
+                        }
                     }
                 }
                 finally

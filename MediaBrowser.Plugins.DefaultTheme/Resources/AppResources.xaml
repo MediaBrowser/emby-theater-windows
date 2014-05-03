@@ -743,7 +743,16 @@
                 <Setter Property="ItemsPanel">
                     <Setter.Value>
                         <ItemsPanelTemplate>
-                            <VirtualizingStackPanel Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            <VirtualizingStackPanel  Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                <VirtualizingStackPanel.ContextMenu >
+                                    <ContextMenu  >
+                                        <MenuItem Header="Play" Command="{Binding PlayCommand}"/>
+                                        <MenuItem Header="Play All" Command="{Binding PlayAllCommand}" />
+                                        <MenuItem Header="Play All From Here" Command="{Binding PlayAllFromHereCommand}" />
+                                        <MenuItem Header="Shuffle All" Command="{Binding ShuffleAllCommand}" />
+                                        <MenuItem Header="Queue" Command="{Binding QueueCommand}" />
+                                    </ContextMenu>
+                                </VirtualizingStackPanel.ContextMenu>
                             </VirtualizingStackPanel>
                         </ItemsPanelTemplate>
                     </Setter.Value>
@@ -828,7 +837,7 @@
                     <Setter.Value>
                         <ItemsPanelTemplate>
                             <VirtualizingStackPanel Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                            </VirtualizingStackPanel>
+                               </VirtualizingStackPanel>
                         </ItemsPanelTemplate>
                     </Setter.Value>
                 </Setter>

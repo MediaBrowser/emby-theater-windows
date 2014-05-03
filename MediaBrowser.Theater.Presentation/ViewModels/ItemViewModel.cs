@@ -1241,6 +1241,36 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
+        public async void Queue()
+        {
+            try
+            {
+                var item = _item;
+
+                if (!_playbackManager.CanPlay(item))
+                    return;
+
+                if (item.IsVideo && (item.Chapters == null || item.MediaStreams == null))
+                {
+                    item = await _apiClient.GetItemAsync(item.Id, _apiClient.CurrentUserId);
+                }
+                else if (item.IsAudio && (item.MediaStreams == null))
+                {
+                    item = await _apiClient.GetItemAsync(item.Id, _apiClient.CurrentUserId);
+                }
+                else if (string.IsNullOrEmpty(item.Path))
+                {
+                    item = await _apiClient.GetItemAsync(item.Id, _apiClient.CurrentUserId);
+                }
+
+                await _playbackManager.Queue(new PlayOptions(item));
+            }
+            catch (Exception)
+            {
+                _presentation.ShowDefaultErrorMessage();
+            }
+        }
+
         public void HandlePlayCommand()
         {
             Play();

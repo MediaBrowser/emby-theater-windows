@@ -118,6 +118,13 @@ namespace MediaBrowser.Theater.Interfaces.Playback
         Task Play(PlayOptions options);
 
         /// <summary>
+        /// Queue the items to be played options.
+        /// </summary>
+        /// <param name="options">The options.</param>
+        /// <returns>Task.</returns>
+        Task Queue(PlayOptions options);
+
+        /// <summary>
         /// Plays a DVD or Blueray disc in an external disk drive
         /// will ask for the disc to be inserted if it is not ready
         /// </summary>

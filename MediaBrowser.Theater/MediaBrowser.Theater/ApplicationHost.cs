@@ -37,7 +37,6 @@ using MediaBrowser.Theater.Networking;
 using MediaBrowser.Theater.Presentation.Playback;
 using MediaBrowser.Theater.StartupWizard;
 using MediaBrowser.Theater.StartupWizard.ViewModels;
-using SimpleInjector;
 using Application = System.Windows.Application;
 
 namespace MediaBrowser.Theater

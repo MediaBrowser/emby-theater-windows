@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
 using MediaBrowser.Model.Logging;
+using MediaBrowser.Theater.Api;
 using MediaBrowser.Theater.Api.Commands;
 using MediaBrowser.Theater.Api.Events;
 using MediaBrowser.Theater.Api.Navigation;
@@ -38,6 +39,7 @@ using MediaBrowser.Theater.Presentation.Playback;
 
     internal class DefaultCommandActionMap
     {
+        private readonly ITheaterApplicationHost _appHost;
         private readonly IPresenter _presenation;
         private readonly IPlaybackManager _playback;
         private readonly INavigator _navigation;
@@ -47,8 +49,9 @@ using MediaBrowser.Theater.Presentation.Playback;
         private readonly CommandActionMap _globalCommandActionMap;
         private double _currentPlaybackRate = 1.0; // Todo - move to reportable property of IPlaybackManager
 
-        public DefaultCommandActionMap(IPresenter presenation, IPlaybackManager playback, INavigator navigation, /*IScreensaverManager screensaverManager,*/ ILogManager logManager, IEventAggregator events)
+        public DefaultCommandActionMap(ITheaterApplicationHost appHost, IPresenter presenation, IPlaybackManager playback, INavigator navigation, /*IScreensaverManager screensaverManager,*/ ILogManager logManager, IEventAggregator events)
         {
+            _appHost = appHost;
             _presenation = presenation;
             _playback = playback;
 //            _screensaverManager = screensaverManager;
@@ -87,8 +90,8 @@ using MediaBrowser.Theater.Presentation.Playback;
                 new CommandActionMapping( Command.PlaySpeedRatio,  NullAction),
                 new CommandActionMapping( Command.LastPage,        NullAction),
                 new CommandActionMapping( Command.Select,          NullAction),
-                new CommandActionMapping( Command.Back,            NullAction),
-                new CommandActionMapping( Command.Forward,         NullAction),
+                new CommandActionMapping( Command.Back,            NavigateBack),
+                new CommandActionMapping( Command.Forward,         NavigateForward),
                 new CommandActionMapping( Command.GotoHome,        GotoHome),
                 new CommandActionMapping( Command.GotoSearch,      GotoSearch),
                 new CommandActionMapping( Command.GotoSettings,    GotoSettings),
@@ -160,6 +163,16 @@ using MediaBrowser.Theater.Presentation.Playback;
         private void NullAction(Object sender, CommandEventArgs args)
         {
             // do nothing
+        }
+
+        private void NavigateBack(Object sender, CommandEventArgs args)
+        {
+            _navigation.Back();
+        }
+
+        private void NavigateForward(Object sender, CommandEventArgs args)
+        {
+            _navigation.Forward();
         }
 
         private IInternalMediaPlayer GetActiveInternalMediaPlayer()
@@ -239,7 +252,7 @@ using MediaBrowser.Theater.Presentation.Playback;
 
         private void Close()
         {
-            // ToDo - close application gracefully
+            _appHost.Shutdown();
         }
 
         private void SkipBackward(Object sender, CommandEventArgs args)

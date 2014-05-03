@@ -13,6 +13,7 @@ using MediaBrowser.Model.Querying;
 using MediaBrowser.Model.Serialization;
 using MediaBrowser.Model.Session;
 using MediaBrowser.Model.System;
+using MediaBrowser.Theater.Api.Events;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.Session;
@@ -30,11 +31,12 @@ namespace MediaBrowser.Theater.EntryPoints
         private readonly INavigator _nav;
         private readonly IPlaybackManager _playbackManager;
         private readonly IPresenter _presentation;
+        private readonly IEventAggregator _events;
         private readonly ISessionManager _session;
 
         private bool _isDisposed;
 
-        public WebSocketEntryPoint(ISessionManager session, IApiClient apiClient, IJsonSerializer json, ILogManager logManager, IApplicationHost appHost, INavigator nav, IPlaybackManager playbackManager, IPresenter presentation)
+        public WebSocketEntryPoint(ISessionManager session, IApiClient apiClient, IJsonSerializer json, ILogManager logManager, IApplicationHost appHost, INavigator nav, IPlaybackManager playbackManager, IPresenter presentation, IEventAggregator events)
         {
             _session = session;
             _apiClient = apiClient;
@@ -44,6 +46,7 @@ namespace MediaBrowser.Theater.EntryPoints
             _nav = nav;
             _playbackManager = playbackManager;
             _presentation = presentation;
+            _events = events;
         }
 
         private ApiWebSocket ApiWebSocket
@@ -62,9 +65,8 @@ namespace MediaBrowser.Theater.EntryPoints
         {
             _session.UserLoggedIn += _session_UserLoggedIn;
             _apiClient.ServerLocationChanged += _apiClient_ServerLocationChanged;
-
-            // todo navigation events which pass the page view model
-            //_nav.Navigated += _nav_Navigated;
+            
+            _events.Get<PageLoadedEvent>().Subscribe(PageLoaded);
 
             ApiWebSocket socket = ApiWebSocket;
 
@@ -300,24 +302,24 @@ namespace MediaBrowser.Theater.EntryPoints
             });
         }
 
-//        async void _nav_Navigated(object sender, NavigationEventArgs e)
-//        {
-//            var itemPage = e.NewPage as IItemPage;
-//
-//            if (itemPage != null)
-//            {
-//                var item = itemPage.PageItem;
-//
-//                try
-//                {
-//                    await ApiWebSocket.SendContextMessageAsync(item.Type, item.Id, item.Name, itemPage.ViewType.ToString(), CancellationToken.None).ConfigureAwait(false);
-//                }
-//                catch (Exception ex)
-//                {
-//                    _logger.ErrorException("Error sending context message", ex);
-//                }
-//            }
-//        }
+        async void PageLoaded(PageLoadedEvent e)
+        {
+            var itemPage = e.ViewModel as IItemDetailsViewModel;
+
+            if (itemPage != null)
+            {
+                var item = itemPage.Item;
+
+                try
+                {
+                    await ApiWebSocket.SendContextMessageAsync(item.Type, item.Id, item.Name, "Folder", CancellationToken.None).ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    _logger.ErrorException("Error sending context message", ex);
+                }
+            }
+        }
 
         private void DisposeSocket()
         {

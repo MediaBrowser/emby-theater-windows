@@ -238,14 +238,13 @@ namespace MediaBrowser.Theater.Api.Playback
             var msgResult = MessageBoxResult.OK;
             while ((!drive.IsReady && msgResult != MessageBoxResult.Cancel) || forceAskToInsertDisc)
             {
-                //todo presentor message boxes
-//                msgResult = _presentationManager.ShowMessage(new MessageBoxInfo
-//                {
-//                    Button = MessageBoxButton.OKCancel,
-//                    Caption = "Insert disc",
-//                    Icon = MessageBoxIcon.Warning,
-//                    Text = "Insert a disk into the cd/dvd player and hit ok when ready "
-//                });
+                msgResult = _presentationManager.ShowMessage(new MessageBoxInfo
+                {
+                    Button = MessageBoxButton.OKCancel,
+                    Caption = "Insert disc",
+                    Icon = MessageBoxIcon.Warning,
+                    Text = "Insert a disk into the cd/dvd player and hit ok when ready "
+                });
                 forceAskToInsertDisc = false;
             }
 

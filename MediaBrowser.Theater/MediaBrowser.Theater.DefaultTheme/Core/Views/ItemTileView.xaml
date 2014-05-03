@@ -6,6 +6,7 @@
              xmlns:viewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.Core.ViewModels"
              xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
              xmlns:viewModels1="clr-namespace:MediaBrowser.Theater.DefaultTheme.Home.ViewModels"
+             xmlns:commands="clr-namespace:MediaBrowser.Theater.Api.Commands;assembly=MediaBrowser.Theater.Api"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModels:ItemTileViewModel}"
              d:DesignHeight="300" d:DesignWidth="300">

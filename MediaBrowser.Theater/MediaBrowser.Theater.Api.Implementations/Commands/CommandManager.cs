@@ -1,4 +1,5 @@
-﻿using System.Windows.Input;
+﻿using System.Windows;
+using System.Windows.Input;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Api.Commands;
 using MediaBrowser.Theater.Api.Navigation;
@@ -14,6 +15,7 @@ namespace MediaBrowser.Theater.Api.Commands
     public class CommandManager : ICommandManager
     {
         private readonly ILogger _logger;
+        private readonly IPresenter _presentationManager;
         private readonly IUserInputManager _userInputManager;
         private readonly InputCommandMaps _inputCommandMaps;
 
@@ -26,6 +28,7 @@ namespace MediaBrowser.Theater.Api.Commands
 
         public CommandManager(IPresenter presentationManager, IPlaybackManager playbackManager, INavigator navigationService, IUserInputManager userInputManager, ILogManager logManager)
         {
+            _presentationManager = presentationManager;
             _userInputManager = userInputManager;
             _inputCommandMaps = new InputCommandMaps();
 
@@ -35,16 +38,13 @@ namespace MediaBrowser.Theater.Api.Commands
             _logger = logManager.GetLogger(GetType().Name);
         }
 
-        private event CommandEventHandler _commandReceived;
-        public event CommandEventHandler CommandReceived
+        public event CommandEventHandler CommandReceived;
+
+        protected virtual void OnCommandReceived(CommandEventArgs commandeventargs)
         {
-            add
-            {
-                _commandReceived += value;
-            }
-            remove
-            {
-                _commandReceived -= value;
+            CommandEventHandler handler = CommandReceived;
+            if (handler != null) {
+                handler(this, commandeventargs);
             }
         }
 
@@ -172,15 +172,10 @@ namespace MediaBrowser.Theater.Api.Commands
                     _logger.Debug("input_AppCommand: IsDuplicate - cmd {0} after key {1}", appCommand, _lastKeyDown);
                     appCommandEventArgs.Handled = false;
                 }
-                else
+                else if (!appCommandEventArgs.Handled) 
                 {
-                    if (_commandReceived != null)
-                    { 
-                        var command = _inputCommandMaps.GetMappedCommand(appCommand.Value);
-                        var commandEventArgs = new CommandEventArgs { Command = command, Handled = appCommandEventArgs.Handled};
-                        _commandReceived.Invoke(null, commandEventArgs);
-                        appCommandEventArgs.Handled = commandEventArgs.Handled;
-                    }
+                    var command = _inputCommandMaps.GetMappedCommand(appCommand.Value);
+                    appCommandEventArgs.Handled = SendCommandEvents(command, null);
                 }
 
                 if (appCommandEventArgs.Handled)
@@ -195,7 +190,6 @@ namespace MediaBrowser.Theater.Api.Commands
             }
         }
        
-
         /// <summary>
         /// Responds to key down in application
         /// </summary>
@@ -208,11 +202,8 @@ namespace MediaBrowser.Theater.Api.Commands
             }
             else
             {
-                if (_commandReceived != null)
-                {
-                    var command = _inputCommandMaps.GetMappedCommand(e.Key, IsControlKeyDown(), IsShiftKeyDown());
-                    _commandReceived.Invoke(null, new CommandEventArgs {Command = command});
-                }
+                var command = _inputCommandMaps.GetMappedCommand(e.Key, IsControlKeyDown(), IsShiftKeyDown());
+                SendCommandEvents(command, null);
             }
 
            _lastKeyDown = e.Key;
@@ -227,6 +218,53 @@ namespace MediaBrowser.Theater.Api.Commands
         private bool IsControlKeyDown()
         {
             return Keyboard.IsKeyDown(WindowsInput.Key.LeftCtrl) || Keyboard.IsKeyDown(WindowsInput.Key.RightCtrl);
+        }
+
+        private bool SendCommandEvents(Command command, object args)
+        {
+            var target = _presentationManager.GetFocusedElement();
+
+            // send to GUI handlers
+            if (target != null) {
+                if (SendTunneledEvent(target, command, args)) {
+                    return true;
+                }
+
+                if (SendBubbledEvent(target, command, args)) {
+                    return true;
+                }
+            }
+
+            // send to global handlers
+            var eventArgs = new CommandEventArgs { Command = command, Args = args };
+            OnCommandReceived(eventArgs);
+            return eventArgs.Handled;
+        }
+
+        private bool SendTunneledEvent(FrameworkElement target, Command command, object args)
+        {
+            var routedEvent = new CommandRoutedEventArgs(InputCommands.PreviewCommandSentEvent, _presentationManager.ActiveWindow)
+            {
+                Command = command,
+                Args = args
+            };
+
+            target.RaiseEvent(routedEvent);
+
+            return routedEvent.Handled;
+        }
+
+        private bool SendBubbledEvent(FrameworkElement target, Command command, object args)
+        {
+            var routedEvent = new CommandRoutedEventArgs(InputCommands.CommandSentEvent, _presentationManager.ActiveWindow)
+            {
+                Command = command,
+                Args = args
+            };
+
+            target.RaiseEvent(routedEvent);
+
+            return routedEvent.Handled;
         }
     }
 }

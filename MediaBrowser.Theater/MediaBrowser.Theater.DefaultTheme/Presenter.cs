@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
+using System.Windows.Input;
 using System.Windows.Interop;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Api;
@@ -38,7 +39,7 @@ namespace MediaBrowser.Theater.DefaultTheme
         private PopupWindow _currentPopup;
 
         public event Action<Window> MainWindowLoaded;
-
+        
         protected virtual void OnMainWindowLoaded(Window obj)
         {
             Action<Window> handler = MainWindowLoaded;
@@ -58,6 +59,11 @@ namespace MediaBrowser.Theater.DefaultTheme
         public MainWindow MainWindow
         {
             get { return _mainWindow; }
+        }
+
+        public FrameworkElement ActiveWindow
+        {
+            get { return _currentPopup as FrameworkElement ?? _mainWindow; }
         }
 
         private void FocusMainWindow()
@@ -378,6 +384,7 @@ namespace MediaBrowser.Theater.DefaultTheme
     {
         private readonly IEventBus<ShowNotificationEvent> _showNotificationEvent;
         private readonly IEventBus<ShowPageEvent> _showPageEvent;
+        private readonly IEventBus<PageLoadedEvent> _pageLoadedEvent;
 
         private readonly WindowManager _windowManager;
         private IntPtr _mainWindowHandle;
@@ -392,10 +399,13 @@ namespace MediaBrowser.Theater.DefaultTheme
         {
             _showPageEvent = events.Get<ShowPageEvent>();
             _showNotificationEvent = events.Get<ShowNotificationEvent>();
+            _pageLoadedEvent = events.Get<PageLoadedEvent>();
             _windowManager = windowManager;
         }
 
         public Window MainApplicationWindow { get { return _windowManager.MainWindow; } }
+
+        public Window ActiveWindow { get { return _windowManager.ActiveWindow as Window; }}
 
         public IntPtr MainApplicationWindowHandle
         {
@@ -414,15 +424,22 @@ namespace MediaBrowser.Theater.DefaultTheme
             _windowManager.EnsureApplicationWindowHasFocus();
         }
 
+        public FrameworkElement GetFocusedElement()
+        {
+            return Keyboard.FocusedElement as FrameworkElement ?? FocusManager.GetFocusedElement(_windowManager.ActiveWindow) as FrameworkElement;
+        }
+
         public async Task ShowPage(IViewModel contents)
         {
             await _windowManager.ClosePopup();
             await _showPageEvent.Publish(new ShowPageEvent { ViewModel = contents });
+            await _pageLoadedEvent.Publish(new PageLoadedEvent { ViewModel = contents });
         }
 
-        public Task ShowPopup(IViewModel contents)
+        public async Task ShowPopup(IViewModel contents)
         {
-            return _windowManager.ShowPopup(contents);
+            await _windowManager.ShowPopup(contents);
+            await _pageLoadedEvent.Publish(new PageLoadedEvent { ViewModel = contents });
         }
 
         public Task ShowNotification(IViewModel contents)
@@ -430,9 +447,10 @@ namespace MediaBrowser.Theater.DefaultTheme
             return _showNotificationEvent.Publish(new ShowNotificationEvent { ViewModel = contents });
         }
 
-        public void ShowMessage(MessageBoxInfo messageBoxInfo)
+        public MessageBoxResult ShowMessage(MessageBoxInfo messageBoxInfo)
         {
             //todo message box
+            return MessageBoxResult.Cancel;
         }
     }
 }

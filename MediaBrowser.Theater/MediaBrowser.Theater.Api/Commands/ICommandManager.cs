@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Windows;
+using System.Windows.Input;
 
 namespace MediaBrowser.Theater.Api.Commands
 {
@@ -16,5 +18,42 @@ namespace MediaBrowser.Theater.Api.Commands
     public interface ICommandManager
     {
         event CommandEventHandler CommandReceived;
+    }
+
+    public class CommandRoutedEventArgs : RoutedEventArgs
+    {
+        public Command Command { get;set;}
+        public object Args { get; set; }
+
+        public CommandRoutedEventArgs(RoutedEvent routedEvent, object source) : base(routedEvent, source) { }
+    }
+
+    public delegate void CommandRoutedEventHandler(object sender, CommandRoutedEventArgs e);
+
+    public class InputCommands
+    {
+        public static readonly RoutedEvent PreviewCommandSentEvent = EventManager.RegisterRoutedEvent("PreviewCommandSent", RoutingStrategy.Tunnel,
+                                                                                               typeof(RoutedEventHandler), typeof(InputCommands));
+
+        public static readonly RoutedEvent CommandSentEvent = EventManager.RegisterRoutedEvent("CommandSent", RoutingStrategy.Bubble,
+                                                                                               typeof(RoutedEventHandler), typeof(InputCommands));
+
+        public static void AddCommandSentEventHandler(DependencyObject d, RoutedEventHandler handler)
+        {
+            var uie = d as UIElement;
+            if (uie != null)
+            {
+                uie.AddHandler(CommandSentEvent, handler);
+            }
+        }
+
+        public static void RemoveCommandSentEventHandler(DependencyObject d, RoutedEventHandler handler)
+        {
+            var uie = d as UIElement;
+            if (uie != null)
+            {
+                uie.RemoveHandler(CommandSentEvent, handler);
+            }
+        }
     }
 }

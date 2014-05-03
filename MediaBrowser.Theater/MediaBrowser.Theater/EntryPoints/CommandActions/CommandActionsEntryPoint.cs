@@ -1,5 +1,6 @@
 ﻿using System.Windows.Input;
 using MediaBrowser.Model.Logging;
+using MediaBrowser.Theater.Api;
 using MediaBrowser.Theater.Api.Commands;
 using MediaBrowser.Theater.Api.Events;
 using MediaBrowser.Theater.Api.Navigation;
@@ -15,14 +16,14 @@ using WindowsInput = System.Windows.Input;
     public class CommandActionsEntryPoint :  IStartupEntryPoint, IDisposable
     {
         private readonly ILogger _logger;
-        private ICommandManager _commandManager;
+        private readonly ICommandManager _commandManager;
         private readonly DefaultCommandActionMap _defaultCommandActionMap;
 
 
-        public CommandActionsEntryPoint(ICommandManager commandManager, IPresenter presentationManager, IPlaybackManager playbackManager, INavigator navigationService, /*IScreensaverManager screensaverManager,*/ ILogManager logManager, IEventAggregator events)
+        public CommandActionsEntryPoint(ICommandManager commandManager, ITheaterApplicationHost appHost, IPresenter presentationManager, IPlaybackManager playbackManager, INavigator navigationService, /*IScreensaverManager screensaverManager,*/ ILogManager logManager, IEventAggregator events)
         {
             _commandManager = commandManager;
-            _defaultCommandActionMap = new DefaultCommandActionMap(presentationManager, playbackManager, navigationService, /*screensaverManager,*/ logManager, events);
+            _defaultCommandActionMap = new DefaultCommandActionMap(appHost, presentationManager, playbackManager, navigationService, /*screensaverManager,*/ logManager, events);
         
             _logger = logManager.GetLogger(GetType().Name);
         }

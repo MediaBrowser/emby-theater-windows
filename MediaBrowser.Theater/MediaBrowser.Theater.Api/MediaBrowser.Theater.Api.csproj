@@ -101,6 +101,7 @@
     <Compile Include="System\IStartupEntryPoint.cs" />
     <Compile Include="UserInput\IUserInputManager.cs" />
     <Compile Include="UserInterface\IImageManager.cs" />
+    <Compile Include="UserInterface\IItemDetailsViewModel.cs" />
     <Compile Include="UserInterface\MessageBoxIcon.cs" />
     <Compile Include="UserInterface\MessageBoxInfo.cs" />
     <Compile Include="UserInterface\UIDispatchExtensions.cs" />

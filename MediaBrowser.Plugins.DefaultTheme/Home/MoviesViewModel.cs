@@ -124,6 +124,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             config.PosterStripImageWidth = PosterStripWidth;
         }
 
+
+        public  Task<MoviesView> GetMovieView(CancellationToken cancellationToken)
+        {
+            
+        }
+
         private async void LoadViewModels()
         {
             PresentationManager.ShowLoadingAnimation();

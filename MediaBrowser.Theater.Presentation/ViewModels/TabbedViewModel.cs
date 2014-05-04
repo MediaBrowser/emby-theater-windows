@@ -101,6 +101,26 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
+        private string _currentSectionTabType;
+        public string CurrentSectionTabType
+        {
+            get
+            {
+                return _currentSectionTabType;
+            }
+            set
+            {
+                var changed = !string.Equals(_currentSectionTabType, value);
+
+                _currentSectionTabType = value;
+
+                if (changed)
+                {
+                    OnPropertyChanged("CurrentSectionTabType");
+                }
+            }
+        }
+
         protected virtual void DisposePreviousSection(object old)
         {
             var disposable = old as IDisposable;
@@ -166,6 +186,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
             CurrentSection = tab == null ? null : tab.Name;
             CurrentSectionDisplayName = tab == null ? null : tab.DisplayName;
+            CurrentSectionTabType = tab == null ? null : tab.TabType;
 
             Task.Run(() =>
             {

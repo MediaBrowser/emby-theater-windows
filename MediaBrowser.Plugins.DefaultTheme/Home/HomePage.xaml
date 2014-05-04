@@ -27,28 +27,28 @@
                         <Style TargetType="{x:Type ContentControl}">
 
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding CurrentSection}" Value="movies">
+                                <DataTrigger Binding="{Binding CurrentSectionTabType}" Value="movies">
                                     <Setter Property="Content">
                                         <Setter.Value>
                                             <ContentControl Content="{Binding ContentViewModel}" ContentTemplate="{StaticResource MoviesViewTemplate}"></ContentControl>
                                         </Setter.Value>
                                     </Setter>
                                 </DataTrigger>
-                                <DataTrigger Binding="{Binding CurrentSection}" Value="tv">
+                                <DataTrigger Binding="{Binding CurrentSectionTabType}" Value="tvshows">
                                     <Setter Property="Content">
                                         <Setter.Value>
                                             <ContentControl Content="{Binding ContentViewModel}" ContentTemplate="{StaticResource TvViewTemplate}"></ContentControl>
                                         </Setter.Value>
                                     </Setter>
                                 </DataTrigger>
-                                <DataTrigger Binding="{Binding CurrentSection}" Value="music">
+                                <DataTrigger Binding="{Binding CurrentSectionTabType}" Value="music">
                                     <Setter Property="Content">
                                         <Setter.Value>
                                             <Grid></Grid>
                                         </Setter.Value>
                                     </Setter>
                                 </DataTrigger>
-                                <DataTrigger Binding="{Binding CurrentSection}" Value="apps">
+                                <DataTrigger Binding="{Binding CurrentSectionTabType}" Value="apps">
                                     <Setter Property="Content">
                                         <Setter.Value>
                                             <Grid>
@@ -63,7 +63,7 @@
                                         </Setter.Value>
                                     </Setter>
                                 </DataTrigger>
-                                <DataTrigger Binding="{Binding CurrentSection}" Value="media collections">
+                                <DataTrigger Binding="{Binding CurrentSectionTabType}" Value="media collections">
                                     <Setter Property="Content">
                                         <Setter.Value>
                                             <Grid>
@@ -78,7 +78,7 @@
                                         </Setter.Value>
                                     </Setter>
                                 </DataTrigger>
-                                <DataTrigger Binding="{Binding CurrentSection}" Value="games">
+                                <DataTrigger Binding="{Binding CurrentSectionTabType}" Value="games">
                                     <Setter Property="Content">
                                         <Setter.Value>
                                             <ContentControl Content="{Binding ContentViewModel}" ContentTemplate="{StaticResource GamesViewTemplate}"></ContentControl>

@@ -26,6 +26,8 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
 
         public KnownCOMObjectConfiguration COMConfig { get; set; }
 
+        public bool PublishGraph { get; set; }
+
         public InternalPlayerConfiguration()
         {
             //set defaults if necessary
@@ -34,6 +36,7 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
             SubtitleConfig = new SubtitleConfiguration();
             COMConfig = new KnownCOMObjectConfiguration();
             UsePrivateObjects = true;
+            PublishGraph = false;
         }
     }
 
@@ -107,6 +110,7 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
         public bool ShowTrayIcon { get; set; }
 
         public bool UseCustomPresenter { get; set; }
+        public int NominalRange { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether [enable madvr].
@@ -126,6 +130,7 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
             HwaMode = -1;
 
             UseCustomPresenter = true;
+            NominalRange = 2; //MFNominalRange_16_235
         }
 
         public void SetDefaults()

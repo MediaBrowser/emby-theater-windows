@@ -152,6 +152,22 @@ namespace MediaBrowser.Theater.DirectShow
 
         #endregion
 
+        public bool IsFullScreen
+        {
+            get
+            {
+                bool isFS = false;
+
+                Rectangle scrRect = System.Windows.Forms.Screen.GetBounds(_hiddenWindow.Form);
+                if (_hiddenWindow.ContentPixelSize.Height == scrRect.Bottom && _hiddenWindow.ContentPixelSize.Width == scrRect.Right)
+                    isFS = true;
+
+                _logger.Debug("IsFullScreen: W: {0} H: {1} Top: {2} Bottom: {3} Left: {4} Right: {5}", _hiddenWindow.ContentPixelSize.Height, _hiddenWindow.ContentPixelSize.Width, scrRect.Top, scrRect.Bottom, scrRect.Left, scrRect.Right);
+
+                return isFS;
+            }
+        }
+
         public DirectShowPlayer(ILogger logger, IHiddenWindow hiddenWindow, InternalDirectShowPlayer playerWrapper,
             IntPtr applicationWindowHandle, ISessionManager sessionManager, ITheaterConfigurationManager mbtConfig,
             IUserInputManager input, IApiClient apiClient,  IZipClient zipClient, IHttpClient httpClient)
@@ -491,6 +507,8 @@ namespace MediaBrowser.Theater.DirectShow
                             hr = m_graph.AddFilter(aRenderer, "Reclock Audio Renderer");
                             DsError.ThrowExceptionForHR(hr);
                             useDefaultRenderer = false;
+
+                            _logger.Debug("Added reclock audio renderer");
                         }
                     }
                     catch (Exception ex)
@@ -508,6 +526,7 @@ namespace MediaBrowser.Theater.DirectShow
                             hr = m_graph.AddFilter(aRenderer, "WASAPI Audio Renderer");
                             DsError.ThrowExceptionForHR(hr);
                             useDefaultRenderer = false;
+                            _logger.Debug("Added WASAPI audio renderer");
                                                         
                             IMPAudioSettings audSett = aRenderer as IMPAudioSettings;
                             if (audSett != null)
@@ -515,12 +534,14 @@ namespace MediaBrowser.Theater.DirectShow
                                 audSett.SetWASAPIMode(AUDCLNT_SHAREMODE.EXCLUSIVE);
                                 audSett.SetUseWASAPIEventMode(true);
                                 audSett.SetAudioDeviceById(_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.AudioDevice);
+                                _logger.Debug("Set WASAPI audio device: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.AudioDevice);
                                 SpeakerConfig sc = SpeakerConfig.Stereo; //use stereo for maxium compat
                                 Enum.TryParse<SpeakerConfig>(_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.SpeakerLayout, out sc);
                                 audSett.SetSpeakerConfig(sc);
+                                _logger.Debug("Set WASAPI speaker config: {0}", sc);
                                 //audSett.SetSpeakerMatchOutput(true);
                                 audSett.SetReleaseDeviceOnStop(_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.ReleaseDeviceOnStop);
-                                
+                                _logger.Debug("Set WASAPI release on stop: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.ReleaseDeviceOnStop);                              
                             }
                         }
                     }
@@ -533,12 +554,7 @@ namespace MediaBrowser.Theater.DirectShow
 
             if (useDefaultRenderer)
             {
-                _defaultAudioRenderer = new DefaultAudioRenderer();
-                var aRenderer = _defaultAudioRenderer as DirectShowLib.IBaseFilter;
-                if (aRenderer != null)
-                {
-                    m_graph.AddFilter(aRenderer, "Default Audio Renderer");
-                }
+                AddDefaultAudioRenderer();
             }
 
             if (_item.IsVideo)
@@ -1120,6 +1136,17 @@ namespace MediaBrowser.Theater.DirectShow
             }
         }
 
+        private void AddDefaultAudioRenderer()
+        {
+            _defaultAudioRenderer = new DefaultAudioRenderer();
+            var aRenderer = _defaultAudioRenderer as DirectShowLib.IBaseFilter;
+            if (aRenderer != null)
+            {
+                m_graph.AddFilter(aRenderer, "Default Audio Renderer");
+                _logger.Debug("Added default audio renderer");
+            }
+        }
+
        
         public bool ShowDvdMenu(DvdMenuId menu)
         {
@@ -1399,6 +1426,7 @@ namespace MediaBrowser.Theater.DirectShow
                     //hr = _videoWindow.put_MessageDrain(_applicationWindowHandle);
                     DsError.ThrowExceptionForHR(hr);
                 }
+                    
             }
 
             SetAspectRatio();

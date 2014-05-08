@@ -53,7 +53,9 @@ namespace MediaBrowser.Theater.DirectShow
             {
                 if (string.IsNullOrWhiteSpace(_exeVersion))
                 {
-                    _exeVersion = Assembly.GetEntryAssembly().GetName().Version.ToString();
+                    //build a shorter version # so we don't check every time the exe is rebuilt
+                    Version appVer = Assembly.GetEntryAssembly().GetName().Version;
+                    _exeVersion = string.Format("{0}.{1}.{2}", appVer.Major, appVer.Minor, appVer.Build);
                 }
                 return _exeVersion;
             }

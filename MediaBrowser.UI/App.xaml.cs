@@ -188,6 +188,19 @@ namespace MediaBrowser.UI
                 // Set window state
                 win.WindowState = config.WindowState.Value;
             }
+            else
+            {
+                //set these so we don't generate exceptions later on
+                if (double.IsNaN(win.Width))
+                    win.Width = System.Windows.SystemParameters.WorkArea.Width;
+                if (double.IsNaN(win.Height)) 
+                    win.Height = System.Windows.SystemParameters.WorkArea.Height;
+
+                if (double.IsNaN(win.Top))
+                    win.Top = 0;
+                if (double.IsNaN(win.Left))
+                    win.Left = 0;
+            }
 
             ApplicationWindow = win;
 
@@ -226,7 +239,7 @@ namespace MediaBrowser.UI
             var state = GetWindowsFormState(ApplicationWindow.WindowState);
 
             _hiddenWindowThread = new Thread(() => ShowHiddenWindow(formWidth, formHeight, formTop, formLeft, startPosition, state));
-            _hiddenWindowThread.SetApartmentState(ApartmentState.STA);
+            _hiddenWindowThread.SetApartmentState(ApartmentState.STA); 
             _hiddenWindowThread.IsBackground = true;
             _hiddenWindowThread.Start();
         }

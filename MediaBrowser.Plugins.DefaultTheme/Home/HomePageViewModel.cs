@@ -1,4 +1,6 @@
-﻿using MediaBrowser.Model.ApiClient;
+﻿using System.Data.Odbc;
+using System.Windows.Markup;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
@@ -44,76 +46,21 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         protected override async Task<IEnumerable<TabItem>> GetSections()
         {
-            var views = new List<TabItem>
-                {
-                    //_sessionManager.CurrentUser.Name.ToLower()
-                };
-
-            try
-            {
-                var itemCounts = await _apiClient.GetItemCountsAsync(new ItemCountsQuery
-                {
-                    UserId = _sessionManager.CurrentUser.Id
-                });
-
-                if (itemCounts.MovieCount > 0)
-                {
-                    views.Add(new TabItem
-                    {
-                        Name = "movies",
-                        DisplayName = "Movies"
-                    });
-                }
-
-                if (itemCounts.SeriesCount > 0 || itemCounts.EpisodeCount > 0)
-                {
-                    views.Add(new TabItem
-                    {
-                        Name = "tv",
-                        DisplayName = "TV"
-                    });
-                }
-
-                //if (itemCounts.SongCount > 0)
-                //{
-                //    views.Add("music");
-                //}
-                if (itemCounts.GameCount > 0)
-                {
-                    views.Add(new TabItem
-                    {
-                        Name = "games",
-                        DisplayName = "Games"
-                    });
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.ErrorException("Error getting item counts", ex);
-            }
-
-            //views.Add(new TabItem
-            //{
-            //    Name = "favorites",
-            //    DisplayName = "Favorites"
-            //});
+            var itemResult = await GetMediaCollectionsAsync(null);
+            var folders = itemResult.Items.Select(i => new TabItem {Name = i.Name, DisplayName = i.Name, TabType = i.CollectionType}).ToList();
 
             if (_presentationManager.GetApps(_sessionManager.CurrentUser).Any())
             {
-                views.Add(new TabItem
+                folders.Add(new TabItem
                 {
                     Name = "apps",
-                    DisplayName = "Apps"
+                    DisplayName = "Apps",
+                    TabType = "apps"
                 });
             }
 
-            views.Add(new TabItem
-            {
-                Name = "media collections",
-                DisplayName = "Folders"
-            });
-
-            return views;
+            return folders;
+       
         }
 
         public void EnableActivePresentation()
@@ -155,47 +102,42 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         protected override object GetContentViewModel(string section)
         {
-            CurrentItem = null;
-
-            if (string.Equals(section, "apps"))
+           // note - we are using internal knowledge of TabbViewModel. Sections.CurrentItem will set before GetContentViewModel
+           // is called. ToDo - change GetContentViewModel to pass the TabItem rather than just the section name
+          
+            var tab = Sections.CurrentItem as TabItem;
+            if (tab != null)
             {
-                return new AppListViewModel(_presentationManager, _sessionManager, _logger);
-            }
-            if (string.Equals(section, "media collections"))
-            {
-                var vm = new ItemListViewModel(GetMediaCollectionsAsync, _presentationManager, _imageManager, _apiClient, _nav, _playbackManager, _logger, _serverEvents)
+                switch (tab.TabType)
                 {
-                    ImageDisplayWidth = 480,
-                    ImageDisplayHeightGenerator = v => 270,
-                    DisplayNameGenerator = GetDisplayName,
+                    case "apps":
+                        return new AppListViewModel(_presentationManager, _sessionManager, _logger);
+                        break;
 
-                    OnItemCreated = v =>
-                    {
-                        v.DisplayNameVisibility = Visibility.Visible;
-                    }
-                };
+                    case "games":
+                        return new GamesViewModel(_presentationManager, _imageManager, _apiClient, _sessionManager, _nav, _playbackManager, _logger, TileWidth, TileHeight, _serverEvents);
+                        break;
 
-                return vm;
+                    case "movies":
+                        var moviesViewModel = GetMoviesViewModel();
+                        moviesViewModel.CurrentItemChanged += SectionViewModel_CurrentItemChanged;
+                        return moviesViewModel;
+                        break;
 
-            }
-            if (string.Equals(section, "games"))
-            {
-                return new GamesViewModel(_presentationManager, _imageManager, _apiClient, _sessionManager, _nav,
-                                       _playbackManager, _logger, TileWidth, TileHeight, _serverEvents);
-            }
-            if (string.Equals(section, "tv"))
-            {
-                var tvViewModel = GetTvViewModel();
-                tvViewModel.CurrentItemChanged += SectionViewModel_CurrentItemChanged;
-                return tvViewModel;
-            }
-            if (string.Equals(section, "movies"))
-            {
-                var moviesViewModel = GetMoviesViewModel();
-                moviesViewModel.CurrentItemChanged += SectionViewModel_CurrentItemChanged;
-                return moviesViewModel;
-            }
+                    case "tvshows":
+                         var tvViewModel = GetTvViewModel();
+                         tvViewModel.CurrentItemChanged += SectionViewModel_CurrentItemChanged;
+                         return tvViewModel;
 
+                    case "Photos":
+                         return null;
+
+                   
+                    Default:
+                         // ToDo create template view for default - like folder page
+                        return null;
+                }
+            }
             return null;
         }
 
@@ -210,7 +152,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                                        _playbackManager, _logger, TileWidth, TileHeight, _serverEvents);
         }
 
-        private Task<ItemsResult> GetMediaCollectionsAsync(ItemListViewModel viewModel)
+        private Task<ItemsResult> GetMediaCollectionsAsync(ItemListViewModel views)
         {
             var query = new ItemQuery
             {
@@ -245,6 +187,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             }
         }
 
+        /*
         protected override void OnTabCommmand(TabItem tab)
         {
             if (tab != null)
@@ -283,6 +226,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             return vm.NavigateToMovies();
         }
+        */
 
         private ItemViewModel _currentItem;
         public ItemViewModel CurrentItem

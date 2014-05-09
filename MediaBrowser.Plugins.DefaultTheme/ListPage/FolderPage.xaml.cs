@@ -82,6 +82,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
         void FolderPage_Loaded(object sender, RoutedEventArgs e)
         {
             SetPageTitle(_parentItem);
+
+            // if the parent is a Seaons, set the focus to the first unplayed item
+
         }
 
         private void SetDefaults(DisplayPreferences displayPreferences)

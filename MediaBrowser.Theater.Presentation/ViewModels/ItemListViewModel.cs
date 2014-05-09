@@ -44,6 +44,11 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         public ICommand NavigateCommand { get; private set; }
         public ICommand PlayCommand { get; private set; }
+        public ICommand PlayAllCommand { get; private set; }
+        public ICommand PlayAllFromHereCommand { get; private set; }
+        public ICommand ShuffleAllCommand { get; private set; }
+        public ICommand QueueCommand { get; private set; }
+
 
         public bool EnableBackdropsForCurrentItem { get; set; }
         public bool AutoSelectFirstItem { get; set; }
@@ -73,8 +78,12 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
             NavigateCommand = new RelayCommand(Navigate);
             PlayCommand = new RelayCommand(Play);
+            PlayAllCommand = new RelayCommand(PlayAll);
+            PlayAllFromHereCommand = new RelayCommand(PlayAllFromHere);
+            ShuffleAllCommand = new RelayCommand(ShuffelAll);
+            QueueCommand = new RelayCommand(Queue);
         }
-
+        
         public string ListType { get; set; }
 
         public Func<BaseItemDto, string> DisplayNameGenerator { get; set; }
@@ -672,14 +681,77 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
+     
+        public async void PlayItems(IEnumerable<ItemViewModel> itemViews)
+        {
+            var items = new List<BaseItemDto>();
+
+            foreach (var i in itemViews)
+            {
+                var vm = i as ItemViewModel;
+                var item = vm.Item;
+
+                if (!_playbackManager.CanPlay(item))
+                    continue;
+
+                if (item.IsVideo && (item.Chapters == null || item.MediaStreams == null))
+                {
+                    item = await _apiClient.GetItemAsync(item.Id, _apiClient.CurrentUserId);
+                }
+                else if (item.IsAudio && (item.MediaStreams == null))
+                {
+                    item = await _apiClient.GetItemAsync(item.Id, _apiClient.CurrentUserId);
+                }
+                else if (string.IsNullOrEmpty(item.Path))
+                {
+                    item = await _apiClient.GetItemAsync(item.Id, _apiClient.CurrentUserId);
+                }
+
+                items.Add(item);
+            }
+
+            await _playbackManager.Play(new PlayOptions(items));
+        }
+
         private void Play(object commandParameter)
         {
-            var item = commandParameter as ItemViewModel;
+            var item = commandParameter as ItemViewModel ?? CurrentItem;
 
             if (item != null)
             {
                 item.Play();
             }
+        }
+
+        private void Queue(object commandParameter)
+        {
+            var item = commandParameter as ItemViewModel ?? CurrentItem;
+
+            if (item != null)
+            {
+                item.Queue();
+            }
+        }
+
+        public void PlayAll(object commandParameter)
+        {
+            PlayItems(_listItems);
+        }
+
+        public void PlayAllFromHere(object commandParameter)
+        {
+            var item = commandParameter as ItemViewModel ?? CurrentItem;
+
+            var listItemsRemaining = _listItems.SkipWhile(i => i != item);
+            PlayItems(listItemsRemaining);
+        }
+
+        public void ShuffelAll(object commandParameter)
+        {
+            var random = new Random();
+            var randomizedList = _listItems.OrderBy(i => random.Next());
+            PlayItems(randomizedList);
+
         }
 
         private readonly object _indexSyncLock = new object();

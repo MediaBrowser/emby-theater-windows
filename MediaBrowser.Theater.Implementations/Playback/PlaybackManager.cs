@@ -92,6 +92,23 @@ namespace MediaBrowser.Theater.Implementations.Playback
         }
 
         /// <summary>
+        /// Queues  the specified options.
+        /// </summary>
+        /// <param name="options">The options.</param>
+        /// <returns>Task.</returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// options
+        /// or
+        /// options
+        /// </exception>
+        /// <exception cref="System.InvalidOperationException">There are no available players.</exception>
+        public async Task Queue(PlayOptions options)
+        {
+            // Todo
+        }
+
+
+        /// <summary>
         /// Plays the specified player.
         /// </summary>
         /// <param name="player">The player.</param>

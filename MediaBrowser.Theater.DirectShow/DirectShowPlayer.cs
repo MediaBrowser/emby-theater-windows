@@ -532,7 +532,8 @@ namespace MediaBrowser.Theater.DirectShow
                             if (audSett != null)
                             {
                                 audSett.SetWASAPIMode(AUDCLNT_SHAREMODE.EXCLUSIVE);
-                                audSett.SetUseWASAPIEventMode(true);
+                                audSett.SetUseWASAPIEventMode(_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.UseWasapiEventMode);
+                                _logger.Debug("Set WASAPI use event mode: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.UseWasapiEventMode);
                                 audSett.SetAudioDeviceById(_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.AudioDevice);
                                 _logger.Debug("Set WASAPI audio device: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.AudioDevice);
                                 SpeakerConfig sc = SpeakerConfig.Stereo; //use stereo for maxium compat
@@ -540,8 +541,15 @@ namespace MediaBrowser.Theater.DirectShow
                                 audSett.SetSpeakerConfig(sc);
                                 _logger.Debug("Set WASAPI speaker config: {0}", sc);
                                 //audSett.SetSpeakerMatchOutput(true);
-                                audSett.SetReleaseDeviceOnStop(_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.ReleaseDeviceOnStop);
-                                _logger.Debug("Set WASAPI release on stop: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.ReleaseDeviceOnStop);                              
+                                audSett.SetAllowBitStreaming(true);
+                                audSett.SetUseFilters(_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.WasapiARFilters);
+                                _logger.Debug("Set WASAPI filter config: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.WasapiARFilters);
+                                audSett.SetAllowBitStreaming(true);
+                                AC3Encoding a3 = (AC3Encoding)_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.WasapiARFilters;
+                                audSett.SetAC3EncodingMode(a3);
+                                _logger.Debug("Set WASAPI AC3 encoding: {0}", a3);
+                                audSett.SetUseTimeStretching(_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.EnableTimeStretching);
+                                _logger.Debug("Set WASAPI use time stretching: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.EnableTimeStretching);                            
                             }
                         }
                     }
@@ -1699,26 +1707,10 @@ namespace MediaBrowser.Theater.DirectShow
         {
             int hr = 0;
 
+            _logger.Debug("SetupGraphForRateChange: {0}", rate);
+
             if (_wasapiAR != null)
             {
-                //if (_audioDevice == null)
-                //{
-                //    MMDeviceEnumerator DevEnum = new MMDeviceEnumerator();
-                //    if (!string.IsNullOrWhiteSpace(_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.AudioDevice))
-                //        _audioDevice = DevEnum.GetDevice(_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.AudioDevice);
-
-                //    if (_audioDevice == null)
-                //        _audioDevice = DevEnum.GetDefaultAudioEndpoint(EDataFlow.eRender, ERole.eMultimedia);
-                //}
-
-                //    if (rate > Math.Abs(1.5))
-                //    {
-                //        _audioDevice.AudioEndpointVolume.Mute = true;
-                //    }
-                //    else if (rate <= Math.Abs(1.5))
-                //    {                        
-                //        _audioDevice.AudioEndpointVolume.Mute = false;
-                //    }
                 IBasicAudio ba = _filterGraph as IBasicAudio;
                 if (ba != null)
                 {
@@ -1726,15 +1718,19 @@ namespace MediaBrowser.Theater.DirectShow
                     hr = ba.get_Volume(out orgVol);
                     DsError.ThrowExceptionForHR(hr);
 
-                    if (rate > Math.Abs(1.5))
+                    _logger.Debug("SetupGraphForRateChange: Current Volume: {0}", orgVol);
+
+                    if (Math.Abs(rate) > 1.5)
                     {
                         hr = ba.put_Volume(-10000); //turn off the volume so we can ffwd
                         DsError.ThrowExceptionForHR(hr);
+                        _logger.Debug("SetupGraphForRateChange: mute");
                     }
-                    else if (rate <= Math.Abs(1.5))
+                    else if (Math.Abs(rate) <= 1.5)
                     {
                         hr = ba.put_Volume(0); //set the volume back to full
                         DsError.ThrowExceptionForHR(hr);
+                        _logger.Debug("SetupGraphForRateChange: enable volume");
                     }
                 }
             }
@@ -1746,8 +1742,10 @@ namespace MediaBrowser.Theater.DirectShow
                 {
                     if (audioRenderer != null)
                     {
-                        if (rate > Math.Abs(4) && m_adecOut == null)
+                        if (Math.Abs(rate) > 4 && m_adecOut == null)
                         {
+                            _logger.Debug("SetupGraphForRateChange: remove audio renderer");
+
                             //grab the audio decoder's output pin
                             arIn = DsFindPin.ByDirection(audioRenderer, PinDirection.Input, 0);
                             hr = arIn.ConnectedTo(out m_adecOut);
@@ -1765,8 +1763,10 @@ namespace MediaBrowser.Theater.DirectShow
                             hr = _mediaControl.Run();
                             DsError.ThrowExceptionForHR(hr);
                         }
-                        else if (rate <= Math.Abs(4) && m_adecOut != null)
+                        else if (Math.Abs(rate) <= 4 && m_adecOut != null)
                         {
+                            _logger.Debug("SetupGraphForRateChange: add the audio renderer back");
+
                             //stop the graph
                             hr = _mediaControl.Stop();
                             DsError.ThrowExceptionForHR(hr);
@@ -1797,17 +1797,19 @@ namespace MediaBrowser.Theater.DirectShow
                             int orgVol = 0;
                             hr = ba.get_Volume(out orgVol);
                             DsError.ThrowExceptionForHR(hr);
+                            _logger.Debug("SetupGraphForRateChange: Current Volume: {0}", orgVol);
 
-                            if (rate > Math.Abs(1.5))
+                            if (Math.Abs(rate) > 1.5)
                             {
-
                                 hr = ba.put_Volume(-10000); //turn off the volume so we can ffwd
                                 DsError.ThrowExceptionForHR(hr);
+                                _logger.Debug("SetupGraphForRateChange: mute");
                             }
-                            else if (rate <= Math.Abs(1.5))
+                            else if (Math.Abs(rate) <= 1.5)
                             {
                                 hr = ba.put_Volume(0); //set the volume back to full
                                 DsError.ThrowExceptionForHR(hr);
+                                _logger.Debug("SetupGraphForRateChange: enable volume");
                             }
                         }
                     }
@@ -1857,6 +1859,15 @@ namespace MediaBrowser.Theater.DirectShow
                 if (hr >= 0)
                 {
                     _currentPlaybackRate = rate;
+                }
+                else
+                {
+                    _logger.Debug("SetRate: changing rate failed");
+                    hr = _mediaSeeking.GetRate(out _currentPlaybackRate);
+                    if (hr >= 0)
+                    {
+                        SetupGraphForRateChange(_currentPlaybackRate, AudioRenderer);
+                    }
                 }
             }
         }

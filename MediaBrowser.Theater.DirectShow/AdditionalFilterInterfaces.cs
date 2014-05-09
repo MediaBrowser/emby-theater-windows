@@ -27,6 +27,13 @@ namespace MediaBrowser.Theater.DirectShow
 
     #region WASAPI Audio Renderer
 
+    public enum AC3Encoding
+    {
+        DISABLED = 0,
+        AUTO,
+        FORCED
+    }
+
     public enum AUDCLNT_SHAREMODE
     {
         SHARED,
@@ -71,15 +78,29 @@ namespace MediaBrowser.Theater.DirectShow
         SevenDotOneSurround = SpeakerPosition.FRONT_LEFT | SpeakerPosition.FRONT_RIGHT | SpeakerPosition.FRONT_CENTER | SpeakerPosition.LOW_FREQUENCY | SpeakerPosition.BACK_LEFT | SpeakerPosition.BACK_RIGHT | SpeakerPosition.SIDE_LEFT | SpeakerPosition.SIDE_RIGHT
     }
 
+    public enum MPARUseFilters
+    {
+        WASAPI = 0,
+        AC3ENCODER = 1,
+        BIT_DEPTH_IN = 2,
+        BIT_DEPTH_OUT = 4,
+        TIME_STRETCH = 8,
+        SAMPLE_RATE_CONVERTER = 16,
+        CHANNEL_MIXER = 32,
+        COMPAT = WASAPI | CHANNEL_MIXER | BIT_DEPTH_OUT | BIT_DEPTH_IN | SAMPLE_RATE_CONVERTER,
+        MID = WASAPI | BIT_DEPTH_IN | BIT_DEPTH_OUT | TIME_STRETCH | SAMPLE_RATE_CONVERTER | CHANNEL_MIXER,
+        ALL = WASAPI | AC3ENCODER | BIT_DEPTH_IN | BIT_DEPTH_OUT | TIME_STRETCH | SAMPLE_RATE_CONVERTER | CHANNEL_MIXER
+    }
+
     [ComImport, System.Security.SuppressUnmanagedCodeSecurity,
     Guid("CA0CDCD8-D26B-4F8F-B23C-D8D949B14297"),
     InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public interface IMPAudioSettings
     {
         [PreserveSig]
-        int GetAC3EncodingMode(out int setting);
+        int GetAC3EncodingMode(out AC3Encoding setting);
         [PreserveSig]
-        int SetAC3EncodingMode(int setting);
+        int SetAC3EncodingMode(AC3Encoding setting);
 
         [PreserveSig]
         int GetLogSampleTimes(out bool setting);
@@ -162,14 +183,14 @@ namespace MediaBrowser.Theater.DirectShow
         int SetSpeakerMatchOutput(bool setting);
 
         [PreserveSig]
-        int GetUseFilters(out bool setting);
+        int GetUseFilters(out int setting);
         [PreserveSig]
-        int SetUseFilters(bool setting);
+        int SetUseFilters(int setting);
 
         [PreserveSig]
-        int GetReleaseDeviceOnStop(out bool setting);
+        int GetAllowBitStreaming(out bool setting);
         [PreserveSig]
-        int SetReleaseDeviceOnStop(bool setting);
+        int SetAllowBitStreaming(bool setting);
     }
 
     #endregion

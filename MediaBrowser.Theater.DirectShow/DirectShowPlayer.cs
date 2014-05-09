@@ -545,7 +545,7 @@ namespace MediaBrowser.Theater.DirectShow
                                 audSett.SetUseFilters(_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.WasapiARFilters);
                                 _logger.Debug("Set WASAPI filter config: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.WasapiARFilters);
                                 audSett.SetAllowBitStreaming(true);
-                                AC3Encoding a3 = (AC3Encoding)_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.WasapiARFilters;
+                                AC3Encoding a3 = (AC3Encoding)_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.Ac3EncodingMode;
                                 audSett.SetAC3EncodingMode(a3);
                                 _logger.Debug("Set WASAPI AC3 encoding: {0}", a3);
                                 audSett.SetUseTimeStretching(_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.EnableTimeStretching);

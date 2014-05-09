@@ -98,7 +98,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                     }
                 }
 
-                if (item.Item.ParentThumbImageTag.HasValue)
+                if (item.Item.ParentThumbImageTag != null)
                 {
                     try
                     {
@@ -119,7 +119,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
             else if (string.Equals(ImageType, "Art"))
             {
-                if (item.Item.HasArtImage || item.Item.ParentArtImageTag.HasValue)
+                if (item.Item.HasArtImage || item.Item.ParentArtImageTag != null)
                 {
                     try
                     {

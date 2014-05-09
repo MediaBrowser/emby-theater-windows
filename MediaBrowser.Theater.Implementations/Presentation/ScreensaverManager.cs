@@ -1,10 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
-using System.Windows.Media;
-using MediaBrowser.Common.Configuration;
-using MediaBrowser.Model.ApiClient;
+﻿using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Events;
 using MediaBrowser.Model.Logging;
-using MediaBrowser.Theater.Implementations.Session;
+using MediaBrowser.Model.Session;
 using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
@@ -12,6 +9,8 @@ using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.UserInput;
 using Microsoft.Win32;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -124,22 +123,22 @@ namespace MediaBrowser.Theater.Implementations.Presentation
             _presentationManager.Window.Dispatcher.InvokeAsync(OnRemoteControlCommand, DispatcherPriority.Background);
         }
 
-        void _serverEvents_PlaystateCommand(object sender, PlaystateRequestEventArgs e)
+        void _serverEvents_PlaystateCommand(object sender, GenericEventArgs<PlaystateRequest> e)
         {
             _presentationManager.Window.Dispatcher.InvokeAsync(OnRemoteControlCommand, DispatcherPriority.Background);
         }
 
-        void _serverEvents_PlayCommand(object sender, PlayRequestEventArgs e)
+        void _serverEvents_PlayCommand(object sender, GenericEventArgs<PlayRequest> e)
         {
             _presentationManager.Window.Dispatcher.InvokeAsync(OnRemoteControlCommand, DispatcherPriority.Background);
         }
 
-        void _serverEvents_MessageCommand(object sender, MessageCommandEventArgs e)
+        void _serverEvents_MessageCommand(object sender, GenericEventArgs<MessageCommand> e)
         {
             _presentationManager.Window.Dispatcher.InvokeAsync(OnRemoteControlCommand, DispatcherPriority.Background);
         }
 
-        void _serverEvents_BrowseCommand(object sender, BrowseRequestEventArgs e)
+        void _serverEvents_BrowseCommand(object sender, GenericEventArgs<BrowseRequest> e)
         {
             _presentationManager.Window.Dispatcher.InvokeAsync(OnRemoteControlCommand, DispatcherPriority.Background);
         }

@@ -67,7 +67,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
         private async void UpdateLogo(ItemViewModel item)
         {
-            if (item.Item.HasLogo || item.Item.ParentLogoImageTag.HasValue)
+            if (item.Item.HasLogo || item.Item.ParentLogoImageTag != null)
             {
                 try
                 {

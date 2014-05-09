@@ -2,7 +2,9 @@
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
+using MediaBrowser.Model.Events;
 using MediaBrowser.Model.Logging;
+using MediaBrowser.Model.Session;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Reflection;
@@ -66,13 +68,13 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             _item = item;
         }
 
-        void _serverEvents_UserDataChanged(object sender, UserDataChangedEventArgs e)
+        void _serverEvents_UserDataChanged(object sender, GenericEventArgs<UserDataChangeInfo> e)
         {
             var key = _item.UserData == null ? string.Empty : _item.UserData.Key;
 
             if (!string.IsNullOrEmpty(key))
             {
-                var data = e.ChangeInfo.UserDataList.FirstOrDefault(i => string.Equals(key, i.Key, StringComparison.OrdinalIgnoreCase));
+                var data = e.Argument.UserDataList.FirstOrDefault(i => string.Equals(key, i.Key, StringComparison.OrdinalIgnoreCase));
 
                 if (data != null)
                 {
@@ -1129,7 +1131,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 }
                 else if (imageType == ImageType.Thumb)
                 {
-                    if (!item.ImageTags.ContainsKey(imageType) && !item.ParentThumbImageTag.HasValue && !item.SeriesThumbImageTag.HasValue)
+                    if (!item.ImageTags.ContainsKey(imageType) && item.ParentThumbImageTag == null && item.SeriesThumbImageTag == null)
                     {
                         continue;
                     }

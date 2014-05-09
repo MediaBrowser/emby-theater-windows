@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Windows.Input;
-using MediaBrowser.ApiInteraction.WebSocket;
+﻿using MediaBrowser.ApiInteraction.WebSocket;
 using MediaBrowser.Common;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
+using MediaBrowser.Model.Events;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Model.Session;
@@ -15,9 +14,11 @@ using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.UserInput;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Windows;
+using System.Windows.Input;
 using MessageBoxIcon = MediaBrowser.Theater.Interfaces.Theming.MessageBoxIcon;
 using NavigationEventArgs = MediaBrowser.Theater.Interfaces.Navigation.NavigationEventArgs;
 
@@ -74,10 +75,35 @@ namespace MediaBrowser.UI.EntryPoints
             socket.GeneralCommand += socket_GeneralCommand;
             socket.MessageCommand += socket_MessageCommand;
             socket.PlayCommand += _apiWebSocket_PlayCommand;
+            socket.SendStringCommand += socket_SendStringCommand;
+            socket.SetAudioStreamIndexCommand += socket_SetAudioStreamIndexCommand;
+            socket.SetSubtitleStreamIndexCommand += socket_SetSubtitleStreamIndexCommand;
+            socket.SetVolumeCommand += socket_SetVolumeCommand;
+            
             socket.Closed += socket_Closed;
             socket.Connected += socket_Connected;
 
             UpdateServerLocation();
+        }
+
+        void socket_SetVolumeCommand(object sender, GenericEventArgs<int> e)
+        {
+            _playbackManager.SetVolume(e.Argument);
+        }
+
+        void socket_SetSubtitleStreamIndexCommand(object sender, GenericEventArgs<int> e)
+        {
+            _playbackManager.SetSubtitleStreamIndex(e.Argument);
+        }
+
+        void socket_SetAudioStreamIndexCommand(object sender, GenericEventArgs<int> e)
+        {
+            _playbackManager.SetAudioStreamIndex(e.Argument);
+        }
+
+        void socket_SendStringCommand(object sender, GenericEventArgs<string> e)
+        {
+            _userInputManager.SendTextInputToFocusedElement(e.Argument);
         }
 
         void socket_Connected(object sender, EventArgs e)
@@ -155,97 +181,15 @@ namespace MediaBrowser.UI.EntryPoints
             EnsureWebSocket();
         }
 
-        void socket_MessageCommand(object sender, MessageCommandEventArgs e)
+        void socket_MessageCommand(object sender, GenericEventArgs<MessageCommand> e)
         {
             _presentationManager.ShowMessage(new MessageBoxInfo
             {
                 Button = MessageBoxButton.OK,
-                Caption = e.Request.Header,
-                Text = e.Request.Text,
-                TimeoutMs = Convert.ToInt32(e.Request.TimeoutMs ?? 0)
+                Caption = e.Argument.Header,
+                Text = e.Argument.Text,
+                TimeoutMs = Convert.ToInt32(e.Argument.TimeoutMs ?? 0)
             });
-        }
-
-        void ExecuteSetVolumeCommand(object sender, GeneralCommandEventArgs e)
-        {
-            _logger.Debug("ExecuteSetVolumeCommand {0}", e.Command.Arguments != null && e.Command.Arguments.Count > 0 ? e.Command.Arguments.First().Value : null);
-
-            float volume;
-
-            if (e.Command.Arguments == null || e.Command.Arguments.Count() != 1)
-                throw new ArgumentException("ExecuteSetVolumeCommand: expecting a single float 0..100 argurment for ExecuteSetVolumeCommand");
-
-            try
-            {
-                volume = (float) Convert.ToDouble(e.Command.Arguments.First().Value);
-            }
-            catch (FormatException)
-            {
-                throw new ArgumentException("ExecuteSetVolumeCommand: Invalid format, expecting a single float 0..100 argurment for ExecuteSetVolumeCommand");
-            }
-
-            if (volume < 0.0 || volume  > 100.0)
-            {
-                throw new ArgumentException(string.Format("ExecuteSetVolumeCommand: Invalid Volume {0}. Volume range is 0..100", volume));
-            }
-            
-            _playbackManager.SetVolume(volume);
-        }
-
-        void ExecuteSetAudioStreamIndex(object sender, GeneralCommandEventArgs e)
-        {
-            _logger.Debug("ExecuteSetAudioStreamIndex {0}", e.Command.Arguments != null && e.Command.Arguments.Count > 0 ? e.Command.Arguments.First().Value : null);
-
-            int index;
-
-            if (e.Command.Arguments == null || e.Command.Arguments.Count() != 1)
-                throw new ArgumentException("ExecuteSetAudioStreamIndex: expecting a single integer argurment for AudiostreamIndex");
-
-            try
-            {
-                index = Convert.ToInt32(e.Command.Arguments.First().Value);
-            }
-            catch (FormatException)
-            {
-                throw new ArgumentException("ExecuteSetAudioStreamIndex: Invalid format, expecting a single integer argurment for AudiostreamIndex");
-            }
-            
-
-            _playbackManager.SetAudioStreamIndex(index);
-        }
-
-        void ExecuteSetSubtitleStreamIndex(object sender, GeneralCommandEventArgs e)
-        {
-            _logger.Debug("ExecuteSetSubtitleStreamIndex {0}", e.Command.Arguments != null && e.Command.Arguments.Count > 0 ? e.Command.Arguments.First().Value : null);
-
-            int index;
-
-            if (e.Command.Arguments == null || e.Command.Arguments.Count() != 1)
-                throw new ArgumentException("ExecuteSetSubtitleStreamIndex: expecting a single integer argurment for SubtitleStreamIndex");
-
-            try
-            {
-                index = Convert.ToInt32(e.Command.Arguments.First().Value);
-            }
-            catch (FormatException)
-            {
-                throw new ArgumentException("ExecuteSetSubtitleStreamIndex: Invalid format, expecting a single integer argurment for SubtitleStreamIndex");
-            }
-            
-          _playbackManager.SetSubtitleStreamIndex(index);
-          
-        }
-
-        void ExecuteSendStringCommand(object sender, GeneralCommandEventArgs e)
-        {
-            _logger.Debug("ExecuteSendStringCommand {0}", e.Command.Arguments != null && e.Command.Arguments.Count > 0 ? e.Command.Arguments.First().Value : null);
-            if (e.Command.Arguments == null || e.Command.Arguments.Count() != 1)
-                throw new ArgumentException("ExecuteSendStringCommand: expecting a single string argurment for send string");
-
-          
-             string inputText = e.Command.Arguments.First().Value;
-
-             _userInputManager.SendTextInputToFocusedElement(inputText);
         }
 
        private bool IsWindowsKeyEnum(int input, out System.Windows.Input.Key key)
@@ -436,11 +380,6 @@ namespace MediaBrowser.UI.EntryPoints
                         ExecuteSendSendKeyCommand(sender, e);  
                         break;
 
-
-                    case GeneralCommandType.SendString:
-                        ExecuteSendStringCommand(sender, e);
-                        break;
-
                     case GeneralCommandType.GoHome:
                         _commandManager.ExecuteCommand(Command.GotoHome, null); 
                         break;
@@ -469,17 +408,6 @@ namespace MediaBrowser.UI.EntryPoints
                         _commandManager.ExecuteCommand(Command.ToggleMute, null);
                         break;
 
-                    case GeneralCommandType.SetVolume:
-                        ExecuteSetVolumeCommand(sender, e);
-                        break;
-
-                    case GeneralCommandType.SetAudioStreamIndex:
-                        ExecuteSetAudioStreamIndex(sender, e);
-                        break;
-                    case GeneralCommandType.SetSubtitleStreamIndex:
-                        ExecuteSetSubtitleStreamIndex(sender, e);
-                        break;
-
                     case GeneralCommandType.ToggleFullscreen:
                           _commandManager.ExecuteCommand(Command.ToggleFullScreen, null);
                         break;
@@ -494,9 +422,9 @@ namespace MediaBrowser.UI.EntryPoints
             }
         }
 
-        async void _apiWebSocket_PlayCommand(object sender, PlayRequestEventArgs e)
+        async void _apiWebSocket_PlayCommand(object sender, GenericEventArgs<PlayRequest> e)
         {
-            _logger.Debug("_apiWebSocket_PlayCommand {0} {1}", e.Request.ItemIds, e.Request.StartPositionTicks);
+            _logger.Debug("_apiWebSocket_PlayCommand {0} {1}", e.Argument.ItemIds, e.Argument.StartPositionTicks);
             if (_sessionManager.CurrentUser == null)
             {
                 OnAnonymousRemoteControlCommand();
@@ -507,7 +435,7 @@ namespace MediaBrowser.UI.EntryPoints
             {
                 var result = await _apiClient.GetItemsAsync(new ItemQuery
                 {
-                    Ids = e.Request.ItemIds,
+                    Ids = e.Argument.ItemIds,
                     UserId = _sessionManager.CurrentUser.Id,
 
                     Fields = new[]
@@ -522,7 +450,7 @@ namespace MediaBrowser.UI.EntryPoints
 
                 await _playbackManager.Play(new PlayOptions
                 {
-                    StartPositionTicks = e.Request.StartPositionTicks ?? 0,
+                    StartPositionTicks = e.Argument.StartPositionTicks ?? 0,
                     GoFullScreen = true,
                     Items = result.Items.ToList()
                 });
@@ -533,9 +461,11 @@ namespace MediaBrowser.UI.EntryPoints
             }
         }
 
-        void _apiWebSocket_PlaystateCommand(object sender, PlaystateRequestEventArgs e)
+        void _apiWebSocket_PlaystateCommand(object sender, GenericEventArgs<PlaystateRequest> e)
         {
-            _logger.Debug("_apiWebSocket_PlaystateCommand {0} {1}", e.Request.Command, e.Request.SeekPositionTicks);
+            var request = e.Argument;
+
+            _logger.Debug("_apiWebSocket_PlaystateCommand {0} {1}", request.Command, request.SeekPositionTicks);
 
             if (_sessionManager.CurrentUser == null)
             {
@@ -550,8 +480,6 @@ namespace MediaBrowser.UI.EntryPoints
                 return;
             }
 
-            var request = e.Request;
-
             switch (request.Command)
             {
                 case PlaystateCommand.Pause:
@@ -564,7 +492,7 @@ namespace MediaBrowser.UI.EntryPoints
                     _commandManager.ExecuteCommand(Command.UnPause, null); 
                     break;
                 case PlaystateCommand.Seek:
-                    _commandManager.ExecuteCommand(Command.Seek, e.Request.SeekPositionTicks ?? 0);
+                    _commandManager.ExecuteCommand(Command.Seek, e.Argument.SeekPositionTicks ?? 0);
                    
                     break;
 
@@ -579,19 +507,19 @@ namespace MediaBrowser.UI.EntryPoints
             }
         }
 
-        void _apiWebSocket_UserUpdated(object sender, UserUpdatedEventArgs e)
+        void _apiWebSocket_UserUpdated(object sender, GenericEventArgs<UserDto> e)
         {
         }
 
-        async void _apiWebSocket_UserDeleted(object sender, UserDeletedEventArgs e)
+        async void _apiWebSocket_UserDeleted(object sender, GenericEventArgs<string> e)
         {
-            if (_sessionManager.CurrentUser != null && string.Equals(e.Id, _sessionManager.CurrentUser.Id))
+            if (_sessionManager.CurrentUser != null && string.Equals(e.Argument, _sessionManager.CurrentUser.Id))
             {
                 await _sessionManager.Logout();
             }
         }
 
-        async void _apiWebSocket_BrowseCommand(object sender, BrowseRequestEventArgs e)
+        async void _apiWebSocket_BrowseCommand(object sender, GenericEventArgs<BrowseRequest> e)
         {
             if (_sessionManager.CurrentUser == null)
             {
@@ -603,9 +531,9 @@ namespace MediaBrowser.UI.EntryPoints
             {
                 var dto = new BaseItemDto
                 {
-                    Name = e.Request.ItemName,
-                    Type = e.Request.ItemType,
-                    Id = e.Request.ItemId
+                    Name = e.Argument.ItemName,
+                    Type = e.Argument.ItemType,
+                    Id = e.Argument.ItemId
                 };
 
                 await _navigationService.NavigateToItem(dto);

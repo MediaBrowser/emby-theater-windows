@@ -69,7 +69,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Osd
 
             if (media != null)
             {
-                if (media.SeriesPrimaryImageTag.HasValue)
+                if (media.SeriesPrimaryImageTag != null)
                 {
                     try
                     {

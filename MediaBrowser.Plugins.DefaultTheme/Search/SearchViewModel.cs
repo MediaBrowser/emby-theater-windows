@@ -84,8 +84,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Search
 
                 OnItemCreated = vm =>
                 {
-                    vm.DisplayNameVisibility = vm.Item.HasThumb || vm.Item.ParentThumbImageTag.HasValue ||
-                                               vm.Item.SeriesThumbImageTag.HasValue
+                    vm.DisplayNameVisibility = vm.Item.HasThumb || vm.Item.ParentThumbImageTag != null ||
+                                               vm.Item.SeriesThumbImageTag != null
                         ? Visibility.Collapsed
                         : Visibility.Visible;
                 }

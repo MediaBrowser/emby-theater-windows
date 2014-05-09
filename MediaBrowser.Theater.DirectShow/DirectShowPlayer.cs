@@ -2528,7 +2528,7 @@ namespace MediaBrowser.Theater.DirectShow
         private async void LoadExternalSubtitleFromStream(SelectableMediaStream stream)
         {
             // get a url for the stream
-            var url = _apiClient.GetSubtitleUrl(new SubtitleOptions
+            var url = _apiClient.GetSubtitleUrl(new SubtitleDownloadOptions
             {
                 ItemId = _item.OriginalItem.Id,
                 StreamIndex = stream.Index

@@ -312,7 +312,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                 var isStripView = string.Equals(_viewModel.ViewType, ListViewTypes.Thumbstrip) ||
                                   string.Equals(_viewModel.ViewType, ListViewTypes.PosterStrip);
 
-                if (isStripView && item != null && (item.HasArtImage || item.ParentArtImageTag.HasValue))
+                if (isStripView && item != null && (item.HasArtImage || item.ParentArtImageTag != null))
                 {
                     SetLogo(_apiClient.GetArtImageUrl(item, new ImageOptions
                     {
@@ -321,7 +321,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                     ImgLogo.MaxHeight = 160;
                     ImgLogo.Margin = new Thickness(0, 0, 40, 0);
                 }
-                else if (isStripView && item != null && (item.HasLogo || item.ParentLogoImageTag.HasValue))
+                else if (isStripView && item != null && (item.HasLogo || item.ParentLogoImageTag != null))
                 {
                     SetLogo(_apiClient.GetLogoImageUrl(item, new ImageOptions
                     {
@@ -339,7 +339,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
                     ImgLogo.MaxHeight = 80;
                     ImgLogo.Margin = new Thickness(0, 0, 40, 0);
                 }
-                else if (item != null && (item.HasArtImage || item.ParentArtImageTag.HasValue))
+                else if (item != null && (item.HasArtImage || item.ParentArtImageTag != null))
                 {
                     SetLogo(_apiClient.GetArtImageUrl(item, new ImageOptions
                     {

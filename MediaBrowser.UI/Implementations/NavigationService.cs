@@ -301,7 +301,10 @@ namespace MediaBrowser.UI.Implementations
                 catch
                 {
                     // Already logged at lower levels
-                    displayPreferences = new DisplayPreferences() { Id = new Guid(item.DisplayPreferencesId) };
+                    displayPreferences = new DisplayPreferences
+                    {
+                        Id = item.DisplayPreferencesId
+                    };
                 }
 
                 await App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(async () => await Navigate(_themeManager.CurrentTheme.GetFolderPage(item, context, displayPreferences)));

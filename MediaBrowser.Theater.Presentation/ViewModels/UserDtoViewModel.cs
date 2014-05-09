@@ -160,7 +160,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         {
             _imageCancellationTokenSource = new CancellationTokenSource();
 
-            if (User.PrimaryImageTag.HasValue)
+            if (User.PrimaryImageTag != null)
             {
                 try
                 {

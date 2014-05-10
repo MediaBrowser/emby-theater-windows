@@ -190,16 +190,18 @@ namespace MediaBrowser.UI
             }
             else
             {
-                //set these so we don't generate exceptions later on
+                //Set these so we don't generate exceptions later on. This also fixes the issue where the first run hidden window size problem.
                 if (double.IsNaN(win.Width))
-                    win.Width = System.Windows.SystemParameters.WorkArea.Width;
-                if (double.IsNaN(win.Height)) 
-                    win.Height = System.Windows.SystemParameters.WorkArea.Height;
+                    win.Width = System.Windows.SystemParameters.VirtualScreenWidth * .75;
+                if (double.IsNaN(win.Height))
+                    win.Height = System.Windows.SystemParameters.VirtualScreenHeight * .75;
 
                 if (double.IsNaN(win.Top))
                     win.Top = 0;
                 if (double.IsNaN(win.Left))
                     win.Left = 0;
+
+                win.WindowState = WindowState.Normal;
             }
 
             ApplicationWindow = win;

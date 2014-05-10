@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
+using System;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Osd
 {
@@ -120,24 +121,32 @@ namespace MediaBrowser.Plugins.DefaultTheme.Osd
 
         public static string GetName(BaseItemDto item)
         {
-            var name = item.Name;
-
-            if (item.IsType("episode") && item.ParentIndexNumber.HasValue && item.ParentIndexNumber.Value == 0)
+            try
             {
-                return string.Format("Special - {0}", name);
-            }
+                var name = item.Name;
 
-            if (item.IndexNumber.HasValue)
+                if (item.IsType("episode") && item.ParentIndexNumber.HasValue && item.ParentIndexNumber.Value == 0)
+                {
+                    return string.Format("Special - {0}", name);
+                }
+
+                if (item.IndexNumber.HasValue)
+                {
+                    name = string.Format("Ep. {0} - {1}", item.IndexNumber.Value, name);
+                }
+
+                if (item.ParentIndexNumber.HasValue)
+                {
+                    name = string.Format("Season {0}, {1}", item.ParentIndexNumber.Value, name);
+                }
+
+                return name;
+            }
+            catch (Exception ex)
             {
-                name = string.Format("Ep. {0} - {1}", item.IndexNumber.Value, name);
+                //how do I get a _logger here?
+                return string.Format("Error in NowPlayingInfo.GetName(): {0}", ex.Message);
             }
-
-            if (item.ParentIndexNumber.HasValue)
-            {
-                name = string.Format("Season {0}, {1}", item.ParentIndexNumber.Value, name);
-            }
-
-            return name;
         }
     }
 }

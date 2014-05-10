@@ -188,6 +188,21 @@ namespace MediaBrowser.UI
                 // Set window state
                 win.WindowState = config.WindowState.Value;
             }
+            else
+            {
+                //Set these so we don't generate exceptions later on. This also fixes the issue where the first run hidden window size problem.
+                if (double.IsNaN(win.Width))
+                    win.Width = System.Windows.SystemParameters.VirtualScreenWidth * .75;
+                if (double.IsNaN(win.Height))
+                    win.Height = System.Windows.SystemParameters.VirtualScreenHeight * .75;
+
+                if (double.IsNaN(win.Top))
+                    win.Top = 0;
+                if (double.IsNaN(win.Left))
+                    win.Left = 0;
+
+                win.WindowState = WindowState.Normal;
+            }
 
             ApplicationWindow = win;
 
@@ -226,7 +241,7 @@ namespace MediaBrowser.UI
             var state = GetWindowsFormState(ApplicationWindow.WindowState);
 
             _hiddenWindowThread = new Thread(() => ShowHiddenWindow(formWidth, formHeight, formTop, formLeft, startPosition, state));
-            _hiddenWindowThread.SetApartmentState(ApartmentState.STA);
+            _hiddenWindowThread.SetApartmentState(ApartmentState.STA); 
             _hiddenWindowThread.IsBackground = true;
             _hiddenWindowThread.Start();
         }

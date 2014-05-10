@@ -254,7 +254,10 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
         public AudioRendererChoice Renderer { get; set; }
         public string AudioDevice { get; set; }
         public string SpeakerLayout { get; set; }
-        public bool ReleaseDeviceOnStop { get; set; }
+        public int WasapiARFilters { get; set; }
+        public bool EnableTimeStretching { get; set; }
+        public bool UseWasapiEventMode { get; set; }
+        public int Ac3EncodingMode { get; set; }
 
         /// <summary>
         /// Gets or sets audio codecs that will be enabled. 
@@ -282,7 +285,10 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
             Renderer = AudioRendererChoice.Default;
             AudioDevice = string.Empty;
             SpeakerLayout = "Stereo";
-            ReleaseDeviceOnStop = false;
+            WasapiARFilters = 63; //all
+            EnableTimeStretching = false;
+            Ac3EncodingMode = 0; //disabled
+            UseWasapiEventMode = true;
         }
 
         public void SetDefaults()

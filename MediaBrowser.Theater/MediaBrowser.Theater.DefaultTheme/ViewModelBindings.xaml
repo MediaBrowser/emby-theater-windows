@@ -1,0 +1,215 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:viewModelsPresentation="clr-namespace:MediaBrowser.Theater.Presentation.ViewModels;assembly=MediaBrowser.Theater.Presentation"
+                    xmlns:viewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.Core.ViewModels"
+                    xmlns:views="clr-namespace:MediaBrowser.Theater.DefaultTheme.Core.Views"
+                    xmlns:loginViewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.Login.ViewModels"
+                    xmlns:loginViews="clr-namespace:MediaBrowser.Theater.DefaultTheme.Login.Views"
+                    xmlns:viewModels1="clr-namespace:MediaBrowser.Theater.DefaultTheme.Search.ViewModels"
+                    xmlns:views1="clr-namespace:MediaBrowser.Theater.DefaultTheme.Search.Views"
+                    xmlns:viewModels2="clr-namespace:MediaBrowser.Theater.DefaultTheme.Home.ViewModels"
+                    xmlns:views2="clr-namespace:MediaBrowser.Theater.DefaultTheme.Home.Views"
+                    xmlns:tv="clr-namespace:MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV"
+                    xmlns:tv1="clr-namespace:MediaBrowser.Theater.DefaultTheme.Home.Views.TV"
+                    xmlns:movies="clr-namespace:MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies"
+                    xmlns:movies1="clr-namespace:MediaBrowser.Theater.DefaultTheme.Home.Views.Movies"
+                    xmlns:viewModels3="clr-namespace:MediaBrowser.Theater.DefaultTheme.SideMenu.ViewModels"
+                    xmlns:views3="clr-namespace:MediaBrowser.Theater.DefaultTheme.SideMenu.Views"
+                    xmlns:commands="clr-namespace:MediaBrowser.Theater.DefaultTheme.SideMenu.Commands"
+                    xmlns:commands1="clr-namespace:MediaBrowser.Theater.DefaultTheme.Core.Commands"
+                    xmlns:viewModels4="clr-namespace:MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels"
+                    xmlns:views4="clr-namespace:MediaBrowser.Theater.DefaultTheme.ItemList.Views"
+                    xmlns:viewModels5="clr-namespace:MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels"
+                    xmlns:views5="clr-namespace:MediaBrowser.Theater.DefaultTheme.ItemDetails.Views"
+                    xmlns:viewModels6="clr-namespace:MediaBrowser.Theater.DefaultTheme.Osd.ViewModels"
+                    xmlns:views6="clr-namespace:MediaBrowser.Theater.DefaultTheme.Osd.Views">
+    
+    <DataTemplate DataType="{x:Type viewModels:RootViewModel}">
+        <views:RootView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels:ClockViewModel}">
+        <views:ClockView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels:HelloWorldViewModel}">
+        <views:HelloWorldView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type commands1:HomeCommandIconViewModel}">
+        <views:HomeCommandIconView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModelsPresentation:NotificationViewModel}">
+        <views:NotificationView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type viewModels:NotificationTrayViewModel}">
+        <views:NotificationTrayView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type viewModels:CommandBarViewModel}">
+        <views:CommandBarView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels:GlobalCommandViewModel}">
+        <views:GlobalCommandView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels1:SearchCommandIconViewModel}">
+        <views1:SearchCommandIconView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type loginViewModels:LoginViewModel}">
+        <loginViews:LoginView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type loginViewModels:UserLoginViewModel}">
+        <loginViews:UserLoginView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels2:HomeViewModel}">
+        <views2:HomeView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type tv:TvSpotlightViewModel}">
+        <tv1:TvSpotlightView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type tv:LatestEpisodesViewModel}">
+        <tv1:LatestEpisodesView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type tv:ResumeEpisodesViewModel}">
+        <tv1:ResumeEpisodesView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type movies:MovieSpotlightViewModel}">
+        <movies1:MovieSpotlightView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type movies:LatestMoviesViewModel}">
+        <movies1:LatestMoviesView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type movies:LatestTrailersViewModel}">
+        <movies1:LatestTrailersView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels:ImageViewerViewModel}">
+        <views:ImageViewerView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels:ImageSlideshowViewModel}">
+        <views:ImageSlideshowView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels:ItemSpotlightViewModel}">
+        <views:ItemSpotlightView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels:ItemTileViewModel}">
+        <views:ItemTileView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type viewModels:ItemListElementViewModel}">
+        <views:ItemListElementView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type viewModels3:SideMenuViewModel}">
+        <views3:SideMenuView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type commands:OpenSideMenuCommandViewModel}">
+        <views3:OpenSideMenuCommandView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type viewModels3:SideMenuUsersViewModel}">
+        <views3:SideMenuUsersView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels3:SideMenuGroupViewModel}">
+        <views3:SideMenuGroupView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels3:SideMenuButtonViewModel}">
+        <views3:SideMenuButtonView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type commands:LogoutMenuCommandIconViewModel}">
+        <views3:LogoutMenuCommandIconView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type commands:AddUserCommandIconViewModel}">
+        <views3:AddUserCommandIconView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type commands1:ShutdownMenuCommandIconViewModel}">
+        <views:ShutdownMenuCommandIconView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type commands1:SleepMenuCommandIconViewModel}">
+        <views:SleepMenuCommandIconView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type commands1:RestartMenuCommandIconViewModel}">
+        <views:RestartMenuCommandIconView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type commands1:ExitMenuCommandIconViewModel}">
+        <views:ExitMenuCommandIconView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels4:ItemListViewModel}">
+        <views4:ItemListView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels:ItemInfoViewModel}">
+        <views:ItemInfoView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels:ItemArtworkViewModel}">
+        <views:ItemArtworkView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels5:ItemDetailsViewModel}">
+        <views5:ItemDetailsView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels5:ItemOverviewViewModel}">
+        <views5:ItemOverviewView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels5:RecommendationsViewModel}">
+        <views5:RecommendationsView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels5:PeopleListViewModel}">
+        <views5:PeopleListView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels5:PersonListItemViewModel}">
+        <views5:PersonListItemView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels5:ItemsListViewModel}">
+        <views5:ItemsListView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels5:ItemsGridViewModel}">
+        <views5:ItemsGridView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels5:ChaptersViewModel}">
+        <views5:ChaptersView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels5:ChapterViewModel}">
+        <views5:ChapterView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels6:OsdViewModel}">
+        <views6:OsdView/>
+    </DataTemplate>
+    
+</ResourceDictionary>

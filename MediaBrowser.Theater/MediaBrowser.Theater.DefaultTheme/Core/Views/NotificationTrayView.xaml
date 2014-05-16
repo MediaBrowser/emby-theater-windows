@@ -1,0 +1,31 @@
+﻿<UserControl x:Class="MediaBrowser.Theater.DefaultTheme.Core.Views.NotificationTrayView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
+             xmlns:viewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.Core.ViewModels"
+             mc:Ignorable="d" 
+             MaxHeight="100"
+             d:DataContext="{d:DesignInstance viewModels:NotificationTrayViewModel}"
+             d:DesignHeight="100" d:DesignWidth="300">
+    
+    <ItemsControl ItemsSource="{Binding Notifications}" Focusable="False">
+        <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+                <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft">
+                    <i:Interaction.Behaviors>
+                        <ei:FluidMoveBehavior AppliesTo="Children" Duration="0:0:0.5">
+                            <ei:FluidMoveBehavior.EaseX>
+                                <ExponentialEase EasingMode="EaseOut"/>
+                            </ei:FluidMoveBehavior.EaseX>
+                        </ei:FluidMoveBehavior>
+                    </i:Interaction.Behaviors>
+                </StackPanel>
+            </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+    </ItemsControl>
+    
+</UserControl>

@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{76A1834D-1BE3-4361-BAC2-711CDD74EB3F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MediaBrowser.Theater.Api</RootNamespace>
+    <AssemblyName>MediaBrowser.Theater.Api</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="MediaBrowser.Common, Version=3.0.5217.42231, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.352\lib\net45\MediaBrowser.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="MediaBrowser.Model, Version=3.0.5217.42230, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.352\lib\net45\MediaBrowser.Model.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AsyncLock.cs" />
+    <Compile Include="Commands\Commands.cs" />
+    <Compile Include="Commands\ICommandManager.cs" />
+    <Compile Include="Commands\IMenuCommand.cs" />
+    <Compile Include="Configuration\ApplicationConfiguration.cs" />
+    <Compile Include="Configuration\AutoLoginConfiguration.cs" />
+    <Compile Include="Configuration\InternalPlayerConfiguration.cs" />
+    <Compile Include="Configuration\ITheaterApplicationPaths.cs" />
+    <Compile Include="Configuration\ITheaterConfigurationManager.cs" />
+    <Compile Include="Configuration\PlayerConfiguration.cs" />
+    <Compile Include="Configuration\WolConfiguration.cs" />
+    <Compile Include="Events\EventAggregator.cs" />
+    <Compile Include="Events\EventBus.cs" />
+    <Compile Include="Events\IEventAggregator.cs" />
+    <Compile Include="Events\IEventBus.cs" />
+    <Compile Include="ITheaterApplicationHost.cs" />
+    <Compile Include="Playback\IAcceptsPlayCommand.cs" />
+    <Compile Include="Playback\IConfigurableMediaPlayer.cs" />
+    <Compile Include="Playback\IExternalMediaPlayer.cs" />
+    <Compile Include="Playback\IInternalMediaPlayer.cs" />
+    <Compile Include="Playback\IMediaPlayer.cs" />
+    <Compile Include="Playback\IPlaybackManager.cs" />
+    <Compile Include="Playback\IVideoPlayer.cs" />
+    <Compile Include="Playback\MediaChangeEventArgs.cs" />
+    <Compile Include="Playback\PlayableItem.cs" />
+    <Compile Include="Playback\PlaybackExtensions.cs" />
+    <Compile Include="Playback\PlaybackStartEventArgs.cs" />
+    <Compile Include="Playback\PlaybackStopEventArgs.cs" />
+    <Compile Include="Playback\PlayOptions.cs" />
+    <Compile Include="Playback\PlayState.cs" />
+    <Compile Include="Playback\SelectableMediaStream.cs" />
+    <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SerializableDictionary.cs" />
+    <Compile Include="Session\ISessionManager.cs" />
+    <Compile Include="System\IMediaFilters.cs" />
+    <Compile Include="Navigation\INavigationContext.cs" />
+    <Compile Include="Navigation\NavigationContext.cs" />
+    <Compile Include="Navigation\Navigator.cs" />
+    <Compile Include="Navigation\PathBinder.cs" />
+    <Compile Include="Navigation\PathResolution.cs" />
+    <Compile Include="Commands\IGlobalMenuCommand.cs" />
+    <Compile Include="System\IServerConnectionManager.cs" />
+    <Compile Include="System\IStartupEntryPoint.cs" />
+    <Compile Include="UserInput\IUserInputManager.cs" />
+    <Compile Include="UserInterface\IImageManager.cs" />
+    <Compile Include="UserInterface\IItemDetailsViewModel.cs" />
+    <Compile Include="UserInterface\MessageBoxIcon.cs" />
+    <Compile Include="UserInterface\MessageBoxInfo.cs" />
+    <Compile Include="UserInterface\UIDispatchExtensions.cs" />
+    <Compile Include="UserInterface\ITheme.cs" />
+    <Compile Include="Navigation\DefaultPaths.cs" />
+    <Compile Include="Navigation\Go.cs" />
+    <Compile Include="Navigation\INavigator.cs" />
+    <Compile Include="UserInterface\IPresenter.cs" />
+    <Compile Include="Navigation\NavigationPaths.cs" />
+    <Compile Include="UserInterface\IRequiresInitialization.cs" />
+    <Compile Include="UserInterface\IViewModel.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

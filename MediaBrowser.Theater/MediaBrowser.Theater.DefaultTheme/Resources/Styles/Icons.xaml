@@ -1,0 +1,58 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    
+    <Style x:Key="DefaultUserIcon" TargetType="{x:Type Path}">
+        <Setter Property="Fill" Value="White"/>
+        <Setter Property="Stretch" Value="Uniform"/>
+        <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+        <Setter Property="Data" Value="M15.930851,36.710608C22.14356,36.647291 30.005098,41.570198 30.005098,41.570198 38.080673,46.45562 45.657448,38.281082 45.657448,38.281082 48.847534,35.288968 53.432121,42.865801 53.432121,42.865801 59.214702,51.040343 59.414001,64.000004 59.414001,64.000004L0,64.000004C2.092523,41.669198 12.360659,37.482978 12.360659,37.482978 13.423015,36.951675 14.64142,36.723749 15.930851,36.710608z M33.0965,0C42.015587,0 49.245998,7.8997269 49.245998,17.644449 49.245998,27.390621 42.015587,35.288998 33.0965,35.288999 24.177311,35.288998 16.947,27.390621 16.947,17.644449 16.947,7.8997269 24.177311,0 33.0965,0z"/>
+    </Style>
+
+    <Style TargetType="Border" x:Key="MediaInfoTextBorder">
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="CornerRadius" Value="3" />
+        <Setter Property="Padding" Value="9 3 9 3" />
+
+        <Setter Property="Background">
+            <Setter.Value>
+                <LinearGradientBrush SpreadMethod="Reflect" ColorInterpolationMode="SRgbLinearInterpolation" StartPoint="0,0" EndPoint="0,1" >
+                    <GradientStop Color="#d6484848" Offset="0" />
+                    <GradientStop Color="#a6222222" Offset="1" />
+                </LinearGradientBrush>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="Image" x:Key="CommunityRatingImage">
+        <Setter Property="Stretch" Value="Uniform"/>
+        <Setter Property="Height" Value="24" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <Style TargetType="Image" x:Key="CommunityRatingImageFull" BasedOn="{StaticResource CommunityRatingImage}">
+        <Setter Property="Source" Value="/MediaBrowser.Theater.DefaultTheme;component/Resources\Images\starFull.png" />
+    </Style>
+    <Style TargetType="Image" x:Key="CommunityRatingImageHalf" BasedOn="{StaticResource CommunityRatingImage}">
+        <Setter Property="Source" Value="/MediaBrowser.Theater.DefaultTheme;component/Resources\Images\starHalf.png" />
+    </Style>
+    <Style TargetType="Image" x:Key="CommunityRatingImageEmpty" BasedOn="{StaticResource CommunityRatingImage}">
+        <Setter Property="Source" Value="/MediaBrowser.Theater.DefaultTheme;component/Resources\Images\starEmpty.png" />
+    </Style>
+    <Style TargetType="Image" x:Key="LikeImage" BasedOn="{StaticResource CommunityRatingImage}">
+        <Setter Property="Source" Value="/MediaBrowser.Theater.DefaultTheme;component/Resources\Images\like.png" />
+    </Style>
+    <Style TargetType="Image" x:Key="DislikeImage" BasedOn="{StaticResource CommunityRatingImage}">
+        <Setter Property="Source" Value="/MediaBrowser.Theater.DefaultTheme;component/Resources\Images\dislike.png" />
+    </Style>
+    <Style TargetType="Image" x:Key="FavoriteImage" BasedOn="{StaticResource CommunityRatingImage}">
+        <Setter Property="Source" Value="/MediaBrowser.Theater.DefaultTheme;component/Resources\Images\favorite.png" />
+    </Style>
+    <Style TargetType="Image" x:Key="RottenImage" BasedOn="{StaticResource CommunityRatingImage}">
+        <Setter Property="Source" Value="/MediaBrowser.Theater.DefaultTheme;component/Resources\Images\rotten.png" />
+    </Style>
+    <Style TargetType="Image" x:Key="FreshImage" BasedOn="{StaticResource CommunityRatingImage}">
+        <Setter Property="Source" Value="/MediaBrowser.Theater.DefaultTheme;component/Resources/Images/fresh.png" />
+    </Style>
+
+</ResourceDictionary>

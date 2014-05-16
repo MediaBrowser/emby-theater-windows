@@ -1,0 +1,29 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <SolidColorBrush x:Key="AccentBrush" Color="{DynamicResource AccentColor}"/>
+    <SolidColorBrush x:Key="ForegroundBrush" Color="{DynamicResource ForegroundColor}"/>
+    <SolidColorBrush x:Key="BackgroundBrush" Color="{DynamicResource BackgroundColor}"/>
+    <SolidColorBrush x:Key="BackgroundBrush2" Color="{DynamicResource BackgroundColor2}"/>
+    <SolidColorBrush x:Key="BackgroundBrush3" Color="{DynamicResource BackgroundColor3}"/>
+
+    <SolidColorBrush x:Key="TextBackgroundBrush" Color="{DynamicResource TextBackgroundColor}"/>
+    <SolidColorBrush x:Key="ImageOverlayBackgroundBrush" Color="#A6000000"/>
+
+    <SolidColorBrush x:Key="InputHighlightBrush" Color="{DynamicResource InputHighlightColor}"/>
+    <SolidColorBrush x:Key="InputBackground" Color="{DynamicResource InputBackgroundColor}" />
+    <SolidColorBrush x:Key="InputBackgroundHover" Color="{DynamicResource InputBackgroundHoverColor}" />
+    <SolidColorBrush x:Key="InputBorder" Color="{DynamicResource InputBorderColor}" />
+    <SolidColorBrush x:Key="InputBorderHover" Color="{DynamicResource InputBorderHoverColor}" />
+    <SolidColorBrush x:Key="InputText" Color="{DynamicResource ForegroundColor}" />
+    <SolidColorBrush x:Key="InputTextHover" Color="{DynamicResource ForegroundColor}" />
+    <SolidColorBrush x:Key="InputTextDisabled" Color="{DynamicResource InputForegroundDisabledColor}" />
+
+    <SolidColorBrush x:Key="ButtonBackground" Color="{DynamicResource ButtonBackgroundColor}" />
+    <SolidColorBrush x:Key="ButtonBackgroundHover" Color="{DynamicResource ButtonBackgroundHoverColor}" />
+    <SolidColorBrush x:Key="ButtonBackgroundPressed" Color="{DynamicResource ButtonBackgroundPressedColor}" />
+    <SolidColorBrush x:Key="ButtonBorder" Color="{DynamicResource ButtonBorderColor}" />
+    <SolidColorBrush x:Key="ButtonBorderHover" Color="{DynamicResource ButtonBorderHoverColor}" />
+    <SolidColorBrush x:Key="ButtonBorderPressed" Color="{DynamicResource ButtonBorderPressedColor}" />
+
+</ResourceDictionary>

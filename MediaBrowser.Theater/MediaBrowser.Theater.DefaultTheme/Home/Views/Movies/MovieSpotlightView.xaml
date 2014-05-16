@@ -1,0 +1,80 @@
+﻿<UserControl x:Class="MediaBrowser.Theater.DefaultTheme.Home.Views.Movies.MovieSpotlightView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:lex="http://wpflocalizeextension.codeplex.com"
+             xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
+             xmlns:movies="clr-namespace:MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies"
+             xmlns:viewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.Home.ViewModels"
+             lex:LocalizeDictionary.DesignCulture="en"
+             lex:ResxLocalizationProvider.DefaultAssembly="MediaBrowser.Theater.DefaultTheme"
+             lex:ResxLocalizationProvider.DefaultDictionary="Strings"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance movies:MovieSpotlightViewModel}"
+             Focusable="False"
+             d:DesignHeight="750" d:DesignWidth="1000">
+
+    <StackPanel Orientation="Vertical" Margin="50,0,0,0">
+        <TextBlock Text="{Binding Title, Converter={StaticResource UppercaseConverter}}" Margin="2,0,0,0" Style="{StaticResource PanoramaTitleTextBlockStyle}" />
+
+        <StackPanel Orientation="Horizontal">
+            <StackPanel Orientation="Vertical">
+
+                <Button Style="{StaticResource BaseItemButtonStyle}"
+                        Width="{Binding SpotlightWidth}" Height="{Binding SpotlightHeight}"
+                        Command="{Binding SpotlightViewModel.ItemSelectedCommand}"
+                        Margin="{x:Static viewModels:HomeViewModel.TileMarginThickness}"
+                        HorizontalAlignment="Center" VerticalAlignment="Top">
+                    <controls:ExtendedContentControl Content="{Binding SpotlightViewModel}"
+                                                     Width="{Binding SpotlightWidth}"
+                                                     Height="{Binding SpotlightHeight}" />
+                </Button>
+
+                <WrapPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top"
+                           Margin="0 0 0 0">
+
+                    <Button Style="{StaticResource BaseItemButtonStyle}" Command="{Binding BrowseMoviesCommand}"
+                            Width="{Binding LowerSpotlightWidth}" Height="{Binding LowerSpotlightHeight}"
+                            Margin="{x:Static viewModels:HomeViewModel.TileMarginThickness}">
+                        <Grid>
+                            <controls:ExtendedContentControl Content="{Binding AllMoviesImagesViewModel}"
+                                                             HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+
+                            <Border HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
+                                    Background="{DynamicResource TextBackgroundBrush}" Margin="0 0 0 -1">
+                                <TextBlock Text="Browse All Movies" Style="{StaticResource SmallTextBlockStyle}"
+                                           Margin="10 5 15 10" />
+                            </Border>
+                        </Grid>
+                    </Button>
+
+                    <Button Style="{StaticResource BaseItemButtonStyle}" Command="{Binding TrailersCommand}"
+                            Width="{Binding LowerSpotlightWidth}" Height="{Binding LowerSpotlightHeight}"
+                            Margin="{x:Static viewModels:HomeViewModel.TileMarginThickness}">
+                        <Grid>
+                            <Image Source="/MediaBrowser.Theater.DefaultTheme;component/Resources/Images/trailer.png"
+                                   Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Top" />
+
+                            <Border HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
+                                    Background="{DynamicResource TextBackgroundBrush}" Margin="0 0 0 -1">
+                                <TextBlock Text="Trailers" Style="{StaticResource SmallTextBlockStyle}"
+                                           Margin="10 5 15 10" />
+                            </Border>
+                        </Grid>
+                    </Button>
+
+                </WrapPanel>
+            </StackPanel>
+
+            <controls:ExtendedItemsControl ItemsSource="{Binding MiniSpotlightItems}">
+                <controls:ExtendedItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Vertical" />
+                    </ItemsPanelTemplate>
+                </controls:ExtendedItemsControl.ItemsPanel>
+            </controls:ExtendedItemsControl>
+        </StackPanel>
+
+    </StackPanel>
+</UserControl>

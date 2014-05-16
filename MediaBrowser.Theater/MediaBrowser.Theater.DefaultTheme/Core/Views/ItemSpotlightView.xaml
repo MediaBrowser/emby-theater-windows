@@ -1,0 +1,20 @@
+﻿<UserControl x:Class="MediaBrowser.Theater.DefaultTheme.Core.Views.ItemSpotlightView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
+             xmlns:viewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.Core.ViewModels"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance viewModels:ItemSpotlightViewModel}"
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid>
+        <controls:ExtendedContentControl Content="{Binding Images}" />
+
+        <Border HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                Visibility="{Binding HasCaption, Converter={StaticResource BooleanToVisibility}}"
+                Background="{StaticResource TextBackgroundBrush}" Margin="0 0 0 -1">
+            <TextBlock Text="{Binding CurrentCaption}" Style="{StaticResource TextBlockStyle}" Margin="15 5 20 10" />
+        </Border>
+    </Grid>
+</UserControl>

@@ -1,0 +1,1 @@
+The core Media Browser Theater API library.

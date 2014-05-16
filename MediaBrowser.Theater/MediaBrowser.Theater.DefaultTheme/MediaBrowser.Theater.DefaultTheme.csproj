@@ -1,0 +1,686 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{1B096484-B8CC-49D8-AD88-06B5FFB8F888}</ProjectGuid>
+    <OutputType>library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MediaBrowser.Theater.DefaultTheme</RootNamespace>
+    <AssemblyName>MediaBrowser.Theater.DefaultTheme</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="MediaBrowser.Common, Version=3.0.5217.42231, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.352\lib\net45\MediaBrowser.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="MediaBrowser.Model, Version=3.0.5217.42230, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.352\lib\net45\MediaBrowser.Model.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Expression.Effects, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\ThirdParty\Expression\Microsoft.Expression.Effects.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Expression.Interactions, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\ThirdParty\Expression\Microsoft.Expression.Interactions.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\ThirdParty\Expression\System.Windows.Interactivity.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="WPFLocalizeExtension">
+      <HintPath>..\packages\WpfLocalizeExtension.2.2.0\lib\net35\WPFLocalizeExtension.dll</HintPath>
+    </Reference>
+    <Reference Include="XAMLMarkupExtensions">
+      <HintPath>..\packages\XAMLMarkupExtensions.1.1.6.3\lib\net40\XAMLMarkupExtensions.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="App.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\StarRating.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Core\Views\ClockView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Core\Views\CommandBarView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Core\Views\ExitMenuCommandIconView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Core\Views\GlobalCommandView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Core\Views\HomeCommandIconView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Core\Views\ImageSlideshowView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Core\Views\ImageViewerView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Core\Views\ItemArtworkView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Core\Views\ItemFooterView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Core\Views\ItemInfoView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Core\Views\ItemListElementView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Core\Views\ItemSpotlightView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Core\Views\ItemTileView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Core\Views\RestartMenuCommandIconView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Core\Views\ShutdownMenuCommandIconView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Core\Views\SleepMenuCommandIconView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Home\Views\HomeView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Home\Views\Movies\LatestMoviesView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Home\Views\Movies\LatestTrailersView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Home\Views\Movies\MovieSpotlightView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Home\Views\TV\LatestEpisodesView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Home\Views\TV\ResumeEpisodesView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Home\Views\TV\TvSpotlightView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ItemDetails\Views\ChaptersView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ItemDetails\Views\ChapterView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ItemDetails\Views\ItemDetailsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ItemDetails\Views\ItemsGridView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ItemDetails\Views\ItemsListView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ItemDetails\Views\ItemOverviewView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ItemDetails\Views\PeopleListView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ItemDetails\Views\PersonListItemView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ItemDetails\Views\RecommendationsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ItemList\Views\ItemListView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Login\Views\LoginView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Login\Views\UserLoginView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MainWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Osd\Views\OsdView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="PopupWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\Styles\Brushes.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\Styles\Buttons.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resources\Styles\Checkbox.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resources\Styles\Controls.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resources\Styles\DarkColors.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\Styles\Icons.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\Styles\LightColors.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\Styles\Fonts.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\Styles\ListBox.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resources\Styles\ListBoxItems.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resources\Styles\ListBoxItemsHighQuality.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resources\Styles\MainWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\Styles\Panorama.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\Styles\RadioButton.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resources\Styles\Slider.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resources\Styles\TextBlocks.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\Styles\TextBox.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resources\Styles\TransportOsd.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\Styles\VirtualKeyboard.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Search\Views\SearchCommandIconView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SideMenu\Views\AddUserCommandIconView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SideMenu\Views\LogoutMenuCommandIconView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SideMenu\Views\OpenSideMenuCommandView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SideMenu\Views\SideMenuButtonView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SideMenu\Views\SideMenuGroupView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SideMenu\Views\SideMenuUsersView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SideMenu\Views\SideMenuView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Core\Views\HelloWorldView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Core\Views\NotificationTrayView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Core\Views\NotificationView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Core\Views\RootView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ViewModelBindings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Configuration\ColorPalette.cs" />
+    <Compile Include="Configuration\PluginConfiguration.cs" />
+    <Compile Include="Controls\StarRating.xaml.cs">
+      <DependentUpon>StarRating.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Commands\ExitMenuCommand.cs" />
+    <Compile Include="Core\Commands\HomeCommand.cs" />
+    <Compile Include="Core\Commands\RestartMenuCommand.cs" />
+    <Compile Include="Core\Commands\ShutdownMenuCommand.cs" />
+    <Compile Include="Core\Commands\SleepMenuCommand.cs" />
+    <Compile Include="Core\ViewModels\ClockViewModel.cs" />
+    <Compile Include="Core\ViewModels\CommandBarViewModel.cs" />
+    <Compile Include="Core\ViewModels\ImageSlideshowViewModel.cs" />
+    <Compile Include="Core\ViewModels\ImageViewerViewModel.cs" />
+    <Compile Include="Core\ViewModels\IRootPresentationOptions.cs" />
+    <Compile Include="Core\ViewModels\ItemArtworkViewModel.cs" />
+    <Compile Include="Core\ViewModels\ItemInfoViewModel.cs" />
+    <Compile Include="Core\ViewModels\ItemSpotlightViewModel.cs" />
+    <Compile Include="Core\ViewModels\ItemTileViewModel.cs" />
+    <Compile Include="Core\Views\ClockView.xaml.cs">
+      <DependentUpon>ClockView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Views\CommandBarView.xaml.cs">
+      <DependentUpon>CommandBarView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Views\ExitMenuCommandIconView.xaml.cs">
+      <DependentUpon>ExitMenuCommandIconView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Views\GlobalCommandView.xaml.cs">
+      <DependentUpon>GlobalCommandView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Views\HomeCommandIconView.xaml.cs">
+      <DependentUpon>HomeCommandIconView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Views\ImageSlideshowView.xaml.cs">
+      <DependentUpon>ImageSlideshowView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Views\ImageViewerView.xaml.cs">
+      <DependentUpon>ImageViewerView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Views\ItemArtworkView.xaml.cs">
+      <DependentUpon>ItemArtworkView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Views\ItemFooterView.xaml.cs">
+      <DependentUpon>ItemFooterView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Views\ItemInfoView.xaml.cs">
+      <DependentUpon>ItemInfoView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Views\ItemListElementView.xaml.cs">
+      <DependentUpon>ItemListElementView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Views\ItemSpotlightView.xaml.cs">
+      <DependentUpon>ItemSpotlightView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Views\ItemTileView.xaml.cs">
+      <DependentUpon>ItemTileView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Views\RestartMenuCommandIconView.xaml.cs">
+      <DependentUpon>RestartMenuCommandIconView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Views\ShutdownMenuCommandIconView.xaml.cs">
+      <DependentUpon>ShutdownMenuCommandIconView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Views\SleepMenuCommandIconView.xaml.cs">
+      <DependentUpon>SleepMenuCommandIconView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DependencyModule.cs" />
+    <Compile Include="Home\Api.cs" />
+    <Compile Include="Home\HomeContext.cs" />
+    <Compile Include="Home\ViewModels\HomeViewModel.cs" />
+    <Compile Include="Home\ViewModels\IHomePageGenerator.cs" />
+    <Compile Include="Home\ViewModels\Movies\LatestMoviesViewModel.cs" />
+    <Compile Include="Home\ViewModels\Movies\LatestTrailersViewModel.cs" />
+    <Compile Include="Home\ViewModels\Movies\MovieHomePageGenerator.cs" />
+    <Compile Include="Home\ViewModels\Movies\MovieSpotlightViewModel.cs" />
+    <Compile Include="Home\ViewModels\TV\LatestEpisodesViewModel.cs" />
+    <Compile Include="Home\ViewModels\TV\ResumeEpisodesViewModel.cs" />
+    <Compile Include="Home\ViewModels\TV\TvHomePageGenerator.cs" />
+    <Compile Include="Home\ViewModels\TV\TvSpotlightViewModel.cs" />
+    <Compile Include="Home\Views\HomeView.xaml.cs">
+      <DependentUpon>HomeView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Home\Views\Movies\LatestMoviesView.xaml.cs">
+      <DependentUpon>LatestMoviesView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Home\Views\Movies\LatestTrailersView.xaml.cs">
+      <DependentUpon>LatestTrailersView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Home\Views\Movies\MovieSpotlightView.xaml.cs">
+      <DependentUpon>MovieSpotlightView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Home\Views\TV\LatestEpisodesView.xaml.cs">
+      <DependentUpon>LatestEpisodesView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Home\Views\TV\ResumeEpisodesView.xaml.cs">
+      <DependentUpon>ResumeEpisodesView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Home\Views\TV\TvSpotlightView.xaml.cs">
+      <DependentUpon>TvSpotlightView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ItemDetails\ItemDetailsContext.cs" />
+    <Compile Include="ItemDetails\ViewModels\BaseItemsListSectionGenerator.cs" />
+    <Compile Include="ItemDetails\ViewModels\ChaptersViewModel.cs" />
+    <Compile Include="ItemDetails\ViewModels\ItemChildrenSectionGenerator.cs" />
+    <Compile Include="ItemDetails\ViewModels\ItemDetailsViewModel.cs" />
+    <Compile Include="ItemDetails\ViewModels\ItemsListViewModel.cs" />
+    <Compile Include="ItemDetails\ViewModels\ItemOverviewViewModel.cs" />
+    <Compile Include="ItemDetails\ViewModels\ItemsGridViewModel.cs" />
+    <Compile Include="ItemDetails\ViewModels\PeopleViewModel.cs" />
+    <Compile Include="ItemDetails\ViewModels\PersonWorkSectionGenerator.cs" />
+    <Compile Include="ItemDetails\ViewModels\RecommendationsViewModel.cs" />
+    <Compile Include="ItemDetails\Views\ChaptersView.xaml.cs">
+      <DependentUpon>ChaptersView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ItemDetails\Views\ChapterView.xaml.cs">
+      <DependentUpon>ChapterView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ItemDetails\Views\ItemDetailsView.xaml.cs">
+      <DependentUpon>ItemDetailsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ItemDetails\Views\ItemsGridView.xaml.cs">
+      <DependentUpon>ItemsGridView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ItemDetails\Views\ItemsListView.xaml.cs">
+      <DependentUpon>ItemsListView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ItemDetails\Views\ItemOverviewView.xaml.cs">
+      <DependentUpon>ItemOverviewView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ItemDetails\Views\PeopleListView.xaml.cs">
+      <DependentUpon>PeopleListView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ItemDetails\Views\PersonListItemView.xaml.cs">
+      <DependentUpon>PersonListItemView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ItemDetails\Views\RecommendationsView.xaml.cs">
+      <DependentUpon>RecommendationsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ItemList\ItemListContext.cs" />
+    <Compile Include="ItemList\ItemListPath.cs" />
+    <Compile Include="ItemList\ViewModels\ItemListViewModel.cs" />
+    <Compile Include="ItemList\Views\ItemListView.xaml.cs">
+      <DependentUpon>ItemListView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Login\LoginContext.cs" />
+    <Compile Include="Login\ViewModels\LoginViewModel.cs" />
+    <Compile Include="Login\ViewModels\UserLoginViewModel.cs" />
+    <Compile Include="Login\Views\LoginView.xaml.cs">
+      <DependentUpon>LoginView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Login\Views\UserLoginView.xaml.cs">
+      <DependentUpon>UserLoginView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\RootContext.cs" />
+    <Compile Include="Osd\FullScreenPlaybackContext.cs" />
+    <Compile Include="Osd\ViewModels\OsdViewModel.cs" />
+    <Compile Include="Osd\Views\OsdView.xaml.cs">
+      <DependentUpon>OsdView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PopupWindow.xaml.cs">
+      <DependentUpon>PopupWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Presenter.cs" />
+    <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="Resources\Localization\Strings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Strings.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Search\SearchContext.cs" />
+    <Compile Include="Search\ViewModels\SearchCommand.cs" />
+    <Compile Include="Search\Views\SearchCommandIconView.xaml.cs">
+      <DependentUpon>SearchCommandIconView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SideMenu\SideMenuContext.cs" />
+    <Compile Include="SideMenu\Commands\AddUserMenuCommand.cs" />
+    <Compile Include="SideMenu\Commands\LogoutMenuCommand.cs" />
+    <Compile Include="SideMenu\Commands\OpenSideMenuCommand.cs" />
+    <Compile Include="SideMenu\ViewModels\SideMenuPaths.cs" />
+    <Compile Include="SideMenu\ViewModels\SideMenuUsersViewModel.cs" />
+    <Compile Include="SideMenu\ViewModels\SideMenuViewModel.cs" />
+    <Compile Include="SideMenu\Views\AddUserCommandIconView.xaml.cs">
+      <DependentUpon>AddUserCommandIconView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SideMenu\Views\LogoutMenuCommandIconView.xaml.cs">
+      <DependentUpon>LogoutMenuCommandIconView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SideMenu\Views\OpenSideMenuCommandView.xaml.cs">
+      <DependentUpon>OpenSideMenuCommandView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SideMenu\Views\SideMenuButtonView.xaml.cs">
+      <DependentUpon>SideMenuButtonView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SideMenu\Views\SideMenuGroupView.xaml.cs">
+      <DependentUpon>SideMenuGroupView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SideMenu\Views\SideMenuUsersView.xaml.cs">
+      <DependentUpon>SideMenuUsersView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SideMenu\Views\SideMenuView.xaml.cs">
+      <DependentUpon>SideMenuView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Theme.cs" />
+    <Compile Include="Core\ViewModels\HelloWorldViewModel.cs" />
+    <Compile Include="Core\ViewModels\NotificationTrayViewModel.cs" />
+    <Compile Include="Core\ViewModels\RootViewModel.cs" />
+    <Compile Include="Core\Views\HelloWorldView.xaml.cs">
+      <DependentUpon>HelloWorldView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Views\NotificationTrayView.xaml.cs">
+      <DependentUpon>NotificationTrayView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Views\NotificationView.xaml.cs">
+      <DependentUpon>NotificationView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Views\RootView.xaml.cs">
+      <DependentUpon>RootView.xaml</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Localization\Strings.en.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>Strings.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Localization\Strings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <AppDesigner Include="Properties\" />
+    <Resource Include="Resources\Fonts\Gotham-Book.otf" />
+    <Resource Include="Resources\Fonts\ClearSans-Light.ttf" />
+    <Resource Include="Resources\Fonts\ClearSans-Regular.ttf" />
+    <Resource Include="Resources\Fonts\ClearSans-Thin.ttf" />
+    <Resource Include="Resources\Fonts\OpenSans-Light.ttf" />
+    <Resource Include="Resources\Fonts\OpenSans-Regular.ttf" />
+    <Resource Include="Resources\Fonts\OpenSans-Semibold.ttf" />
+    <Resource Include="Resources\Fonts\ProximaNova-Light.ttf" />
+    <Resource Include="Resources\Fonts\ProximaNova-Regular.ttf" />
+    <Resource Include="Resources\Fonts\ProximaNova-Semibold.ttf" />
+    <Resource Include="Resources\Fonts\SourceSansPro-ExtraLight.ttf" />
+    <Resource Include="Resources\Fonts\SourceSansPro-Light.ttf" />
+    <Resource Include="Resources\Fonts\SourceSansPro-Regular.ttf" />
+    <Resource Include="Resources\Fonts\SourceSansPro-Semibold.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MediaBrowser.Theater.Api\MediaBrowser.Theater.Api.csproj">
+      <Project>{76a1834d-1be3-4361-bac2-711cdd74eb3f}</Project>
+      <Name>MediaBrowser.Theater.Api</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MediaBrowser.Theater.DirectShow\MediaBrowser.Theater.DirectShow.csproj">
+      <Project>{04781068-D0D2-47BA-8D1C-A96274655F63}</Project>
+      <Name>MediaBrowser.Theater.DirectShow</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MediaBrowser.Theater.Presentation\MediaBrowser.Theater.Presentation.csproj">
+      <Project>{c464ffc3-0fcd-49d5-a206-21f3bb586c53}</Project>
+      <Name>MediaBrowser.Theater.Presentation</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Resources\Images\Icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\dislike.png" />
+    <Resource Include="Resources\Images\favorite.png" />
+    <Resource Include="Resources\Images\fresh.png" />
+    <Resource Include="Resources\Images\gamegenres.jpg" />
+    <Resource Include="Resources\Images\gametimeline.jpg" />
+    <Resource Include="Resources\Images\like.png" />
+    <Resource Include="Resources\Images\moviegenres.jpg" />
+    <Resource Include="Resources\Images\movietimeline.jpg" />
+    <Resource Include="Resources\Images\rotten.png" />
+    <Resource Include="Resources\Images\starEmpty.png" />
+    <Resource Include="Resources\Images\starFull.png" />
+    <Resource Include="Resources\Images\starHalf.png" />
+    <Resource Include="Resources\Images\trailer.png" />
+    <Resource Include="Resources\Images\tvgenres.jpg" />
+    <Resource Include="Resources\Images\upcomingtv.jpg" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

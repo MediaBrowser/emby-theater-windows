@@ -1,0 +1,31 @@
+﻿<UserControl x:Class="MediaBrowser.Theater.DefaultTheme.Home.Views.TV.ResumeEpisodesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:lex="http://wpflocalizeextension.codeplex.com"
+             xmlns:tv="clr-namespace:MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV"
+             xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
+             lex:LocalizeDictionary.DesignCulture="en"
+             lex:ResxLocalizationProvider.DefaultAssembly="MediaBrowser.Theater.DefaultTheme"
+             lex:ResxLocalizationProvider.DefaultDictionary="Strings"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance tv:ResumeEpisodesViewModel}"
+             Focusable="False"
+             d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.CacheMode>
+        <BitmapCache EnableClearType="True" RenderAtScale="1"/>
+    </UserControl.CacheMode>
+
+    <StackPanel Visibility="{Binding IsVisible, Converter={StaticResource BooleanToVisibility}}" Margin="50,0,0,0">
+        <TextBlock Text="{Binding Title, Converter={StaticResource UppercaseConverter}}" Margin="2,0,0,0" Style="{StaticResource PanoramaTitleTextBlockStyle}" />
+        
+        <controls:ExtendedItemsControl ItemsSource="{Binding Episodes}">
+            <controls:ExtendedItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel Orientation="Vertical" />
+                </ItemsPanelTemplate>
+            </controls:ExtendedItemsControl.ItemsPanel>
+        </controls:ExtendedItemsControl>
+    </StackPanel>
+</UserControl>

@@ -1,0 +1,64 @@
+﻿<UserControl x:Class="MediaBrowser.Theater.StartupWizard.Views.PrerequisitesInstallationView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:viewModels="clr-namespace:MediaBrowser.Theater.StartupWizard.ViewModels"
+             xmlns:views="clr-namespace:MediaBrowser.Theater.StartupWizard.Views"
+             xmlns:lex="http://wpflocalizeextension.codeplex.com"
+             lex:LocalizeDictionary.DesignCulture="en"
+             lex:ResxLocalizationProvider.DefaultAssembly="MediaBrowser.Theater"
+             lex:ResxLocalizationProvider.DefaultDictionary="Strings"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel>
+            <TextBlock TextWrapping="Wrap" FontWeight="Bold" FontSize="16" Text="{lex:Loc SetupWizard_PrerequisitesInstallation_Title}"/>
+        </StackPanel>
+
+        <ListView Grid.Row="1" ItemsSource="{Binding Prerequisites}" Margin="0,14,0,0" HorizontalContentAlignment="Stretch">
+            <ListView.ItemTemplate>
+                <DataTemplate DataType="{x:Type viewModels:PrerequisiteInstallationViewModel}">
+                    <Grid HorizontalAlignment="Stretch" MinHeight="24">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="200"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
+
+                        <Grid Grid.Column="1" Visibility="{Binding IsInstalled, Converter={StaticResource BooleanToVisibility}}">
+                            <TextBlock Foreground="#27a436" Text="{lex:Loc SetupWizard_PrerequisitesInstallation_Installed}"/>
+                        </Grid>
+
+                        <StackPanel Grid.Column="1" Visibility="{Binding InstallationFailed, Converter={StaticResource BooleanToVisibility}}">
+                            <TextBlock Foreground="#FF2419" Text="{lex:Loc SetupWizard_PrerequisitesInstallation_Failed}"/>
+                            <TextBlock Foreground="#FF2419">
+                                <Hyperlink NavigateUri="{Binding DownloadUrl}" views:HyperlinkExtensions.IsExternal="True">
+                                    <TextBlock Text="{lex:Loc SetupWizard_PrerequisitesInstallation_ManualRequired}"/>
+                                </Hyperlink>
+                            </TextBlock>
+                        </StackPanel>
+
+                        <Grid Grid.Column="1" Visibility="{Binding IsInstalling, Converter={StaticResource BooleanToVisibility}}">
+                            <ProgressBar Value="{Binding InstallationProgress}" Minimum="0" Maximum="100"/>
+                        </Grid>
+
+                        <Grid Grid.Column="1" Visibility="{Binding RequiresManualInstallation, Converter={StaticResource BooleanToVisibility}}">
+                            <TextBlock Foreground="#FF2419">
+                                <Hyperlink NavigateUri="{Binding DownloadUrl}" views:HyperlinkExtensions.IsExternal="True">
+                                    <TextBlock Text="{lex:Loc SetupWizard_PrerequisitesInstallation_ManualRequired}"/>
+                                </Hyperlink>
+                            </TextBlock>
+                        </Grid>
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </Grid>
+</UserControl>

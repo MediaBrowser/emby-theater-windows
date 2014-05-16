@@ -1,0 +1,45 @@
+﻿<UserControl x:Class="MediaBrowser.Theater.DefaultTheme.Login.Views.LoginView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:viewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.Login.ViewModels"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:behaviors="clr-namespace:MediaBrowser.Theater.Presentation.Behaviors;assembly=MediaBrowser.Theater.Presentation"
+             xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
+             xmlns:lex="http://wpflocalizeextension.codeplex.com"
+             lex:LocalizeDictionary.DesignCulture="en"
+             lex:ResxLocalizationProvider.DefaultAssembly="MediaBrowser.Theater.DefaultTheme"
+             lex:ResxLocalizationProvider.DefaultDictionary="Strings"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance viewModels:LoginViewModel}"
+             d:DesignHeight="1080" d:DesignWidth="1920"
+             IsTabStop="False">
+
+    <i:Interaction.Behaviors>
+        <behaviors:FocusChildOnLoaded />
+    </i:Interaction.Behaviors>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="800" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="{lex:Loc Login_Title}" Style="{StaticResource Heading1TextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+
+        <controls:ExtendedScrollViewer x:Name="ScrollViewer" Grid.Row="1" IgnoreAllDirectionKeys="True" IsTabStop="False" Focusable="False" CanContentScroll="True" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" VerticalAlignment="Top">
+            <controls:ScrollingPanel CanHorizontallyScroll="True" CanVerticallyScroll="False">
+                <ItemsControl ItemsSource="{Binding Users}" VerticalAlignment="Center"
+                              HorizontalAlignment="Center" VerticalContentAlignment="Top"
+                              IsTabStop="False">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+            </controls:ScrollingPanel>
+        </controls:ExtendedScrollViewer>
+    </Grid>
+</UserControl>

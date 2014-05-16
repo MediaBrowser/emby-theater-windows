@@ -1,0 +1,30 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Color x:Key="AccentColor">#52B54B</Color>
+    <Color x:Key="ForegroundColor">#000000</Color>
+    <Color x:Key="BackgroundColor">#FFFFFF</Color>
+    <Color x:Key="BackgroundColor2">#F6F6F6</Color>
+    <Color x:Key="BackgroundColor3">#EFEFF2</Color>
+
+    <Color x:Key="TextBackgroundColor">#70FFFFFF</Color>
+
+    <Color x:Key="InputHighlightColor">SkyBlue</Color>
+    <Color x:Key="InputBackgroundColor">#E5E5E5</Color>
+    <Color x:Key="InputBackgroundHoverColor">#D8D8D8</Color>
+    <Color x:Key="InputBorderColor">#D8D8D8</Color>
+    <Color x:Key="InputBorderHoverColor">#D8D8D8</Color>
+    <Color x:Key="InputForegroundDisabledColor">LightGray</Color>
+
+    <Color x:Key="ButtonBackgroundColor">#D8D8D8</Color>
+    <Color x:Key="ButtonBackgroundHoverColor">#C6C6C6</Color>
+    <Color x:Key="ButtonBackgroundPressedColor">SkyBlue</Color>
+    <Color x:Key="ButtonBorderColor">#C6C6C6</Color>
+    <Color x:Key="ButtonBorderHoverColor">#C6C6C6</Color>
+    <Color x:Key="ButtonBorderPressedColor">SkyBlue</Color>
+
+    <SolidColorBrush x:Key="SelectionBorderBrush" Color="{StaticResource ForegroundColor}"/>
+    <Thickness x:Key="SelectionBorderMargin">-3</Thickness>
+    <Thickness x:Key="SelectionBorderThickness">2</Thickness>
+
+</ResourceDictionary>

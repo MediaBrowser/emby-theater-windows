@@ -1,0 +1,10 @@
+﻿<UserControl x:Class="MediaBrowser.Theater.DefaultTheme.SideMenu.Views.LogoutMenuCommandIconView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d">
+    <Grid Width="50" Height="50">
+        <Path Margin="4,0,0,0" Width="24" Height="30" VerticalAlignment="Center" HorizontalAlignment="Center" Stretch="Fill" Fill="{StaticResource ForegroundBrush}" Data="F1 M 51.0071,19.0027L 51.0071,27.0038L 48.0067,27.0038L 48.0067,22.0031L 25.0035,22.0031L 25.0035,54.0075L 48.0067,54.0075L 48.0067,49.0068L 51.0071,49.0068L 51.0071,57.008L 22.1698,57.008L 22.0031,19.0027L 51.0071,19.0027 Z M 30.0042,35.0049L 45.2563,35.0049L 37.005,28.0039L 47.0066,28.0039L 58.5082,38.0053L 47.0066,48.0067L 37.005,48.0067L 45.2563,41.0057L 30.0042,41.0057L 30.0042,35.0049 Z "/>
+    </Grid>
+</UserControl>

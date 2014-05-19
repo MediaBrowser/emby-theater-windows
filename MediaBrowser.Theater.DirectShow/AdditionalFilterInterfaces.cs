@@ -193,5 +193,46 @@ namespace MediaBrowser.Theater.DirectShow
         int SetAllowBitStreaming(bool setting);
     }
 
+
+    public enum MPARSetting
+    {
+        AC3_ENCODING_MODE = 0,
+        AC3_BITRATE,
+        LOG_SAMPLE_TIMES,
+        ENABLE_SYNC_ADJUSTMENT,
+        WASAPI_MODE,
+        ENABLE_WASAPI_EVENT_MODE,
+        ENABLE_TIME_STRETCHING,
+        EXPAND_MONO,
+        SPEAKER_CONFIG,
+        FORCE_CHANNEL_MIXING,
+        AUDIO_DELAY,
+        OUTPUT_BUFFER,
+        SAMPLE_RATE,
+        BIT_DEPTH,
+        RESAMPLING_QUALITY,
+        AUDIO_DEVICE,
+        USE_FILTERS,
+        ENABLE_BITSTREAMING
+    }
+
+    [ComImport, System.Security.SuppressUnmanagedCodeSecurity,
+    Guid("18A64A41-872F-40A9-874E-51EB3D63406A"),
+    InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    public interface IMPAudioRendererConfig
+    {
+        [PreserveSig]
+        int GetInt(MPARSetting setting, out int value);
+        [PreserveSig]
+        int SetInt(MPARSetting setting, int value);
+        [PreserveSig]
+        int GetBool(MPARSetting setting, out bool value);
+        [PreserveSig]
+        int SetBool(MPARSetting setting, bool value);
+        [PreserveSig]
+        int GetString(MPARSetting setting, [Out, MarshalAs(UnmanagedType.LPWStr)] StringBuilder value);
+        [PreserveSig]
+        int SetString(MPARSetting setting, [In, MarshalAs(UnmanagedType.LPWStr)] string value);
+    }
     #endregion
 }

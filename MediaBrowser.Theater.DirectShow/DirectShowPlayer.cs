@@ -528,27 +528,52 @@ namespace MediaBrowser.Theater.DirectShow
                             useDefaultRenderer = false;
                             _logger.Debug("Added WASAPI audio renderer");
                                                         
-                            IMPAudioSettings audSett = aRenderer as IMPAudioSettings;
-                            if (audSett != null)
+                            IMPAudioRendererConfig arSett = aRenderer as IMPAudioRendererConfig;
+                            if (arSett != null)
                             {
-                                audSett.SetWASAPIMode(AUDCLNT_SHAREMODE.EXCLUSIVE);
-                                audSett.SetUseWASAPIEventMode(_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.UseWasapiEventMode);
+                                arSett.SetInt(MPARSetting.WASAPI_MODE, (int)AUDCLNT_SHAREMODE.EXCLUSIVE);
+                                arSett.SetBool(MPARSetting.ENABLE_WASAPI_EVENT_MODE, _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.UseWasapiEventMode);
                                 _logger.Debug("Set WASAPI use event mode: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.UseWasapiEventMode);
-                                audSett.SetAudioDeviceById(_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.AudioDevice);
+                                arSett.SetString(MPARSetting.AUDIO_DEVICE, _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.AudioDevice);
                                 _logger.Debug("Set WASAPI audio device: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.AudioDevice);
                                 SpeakerConfig sc = SpeakerConfig.Stereo; //use stereo for maxium compat
                                 Enum.TryParse<SpeakerConfig>(_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.SpeakerLayout, out sc);
-                                audSett.SetSpeakerConfig(sc);
+                                arSett.SetInt(MPARSetting.SPEAKER_CONFIG, (int)sc);
                                 _logger.Debug("Set WASAPI speaker config: {0}", sc);
                                 //audSett.SetSpeakerMatchOutput(true);
-                                audSett.SetAllowBitStreaming(true);
-                                audSett.SetUseFilters(_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.WasapiARFilters);
+                                arSett.SetBool(MPARSetting.ENABLE_BITSTREAMING, true);
+                                arSett.SetInt(MPARSetting.USE_FILTERS, _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.WasapiARFilters);
                                 _logger.Debug("Set WASAPI filter config: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.WasapiARFilters);
                                 AC3Encoding a3 = (AC3Encoding)_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.Ac3EncodingMode;
-                                audSett.SetAC3EncodingMode(a3);
+                                arSett.SetInt(MPARSetting.AC3_ENCODING_MODE, (int)a3);
                                 _logger.Debug("Set WASAPI AC3 encoding: {0}", a3);
-                                audSett.SetUseTimeStretching(_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.EnableTimeStretching);
-                                _logger.Debug("Set WASAPI use time stretching: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.EnableTimeStretching);                            
+                                arSett.SetBool(MPARSetting.ENABLE_TIME_STRETCHING, _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.EnableTimeStretching);
+                                _logger.Debug("Set WASAPI use time stretching: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.EnableTimeStretching);
+                            }
+                            else
+                            {   //try the old way
+                                IMPAudioSettings audSett = aRenderer as IMPAudioSettings;
+                                if (audSett != null)
+                                {
+                                    audSett.SetWASAPIMode(AUDCLNT_SHAREMODE.EXCLUSIVE);
+                                    audSett.SetUseWASAPIEventMode(_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.UseWasapiEventMode);
+                                    _logger.Debug("Set WASAPI use event mode: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.UseWasapiEventMode);
+                                    audSett.SetAudioDeviceById(_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.AudioDevice);
+                                    _logger.Debug("Set WASAPI audio device: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.AudioDevice);
+                                    SpeakerConfig sc = SpeakerConfig.Stereo; //use stereo for maxium compat
+                                    Enum.TryParse<SpeakerConfig>(_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.SpeakerLayout, out sc);
+                                    audSett.SetSpeakerConfig(sc);
+                                    _logger.Debug("Set WASAPI speaker config: {0}", sc);
+                                    //audSett.SetSpeakerMatchOutput(true);
+                                    audSett.SetAllowBitStreaming(true);
+                                    audSett.SetUseFilters(_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.WasapiARFilters);
+                                    _logger.Debug("Set WASAPI filter config: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.WasapiARFilters);
+                                    AC3Encoding a3 = (AC3Encoding)_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.Ac3EncodingMode;
+                                    audSett.SetAC3EncodingMode(a3);
+                                    _logger.Debug("Set WASAPI AC3 encoding: {0}", a3);
+                                    audSett.SetUseTimeStretching(_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.EnableTimeStretching);
+                                    _logger.Debug("Set WASAPI use time stretching: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.EnableTimeStretching);
+                                }
                             }
                         }
                     }

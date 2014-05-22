@@ -258,6 +258,8 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
         public bool EnableTimeStretching { get; set; }
         public bool UseWasapiEventMode { get; set; }
         public int Ac3EncodingMode { get; set; }
+        public int OutputBufferSize { get; set; }
+        public bool BlockInDeliver { get; set; }
 
         /// <summary>
         /// Gets or sets audio codecs that will be enabled. 
@@ -289,6 +291,8 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
             EnableTimeStretching = false;
             Ac3EncodingMode = 0; //disabled
             UseWasapiEventMode = true;
+            OutputBufferSize = 500;
+            BlockInDeliver = false;
         }
 
         public void SetDefaults()

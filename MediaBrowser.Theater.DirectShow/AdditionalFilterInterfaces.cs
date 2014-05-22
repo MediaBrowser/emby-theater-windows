@@ -213,7 +213,8 @@ namespace MediaBrowser.Theater.DirectShow
         RESAMPLING_QUALITY,
         AUDIO_DEVICE,
         USE_FILTERS,
-        ENABLE_BITSTREAMING
+        ENABLE_BITSTREAMING,
+        BLOCK_IN_DELIVER
     }
 
     [ComImport, System.Security.SuppressUnmanagedCodeSecurity,

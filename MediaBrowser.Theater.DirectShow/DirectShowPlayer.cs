@@ -549,6 +549,10 @@ namespace MediaBrowser.Theater.DirectShow
                                 _logger.Debug("Set WASAPI AC3 encoding: {0}", a3);
                                 arSett.SetBool(MPARSetting.ENABLE_TIME_STRETCHING, _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.EnableTimeStretching);
                                 _logger.Debug("Set WASAPI use time stretching: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.EnableTimeStretching);
+                                arSett.SetInt(MPARSetting.OUTPUT_BUFFER, _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.OutputBufferSize);
+                                _logger.Debug("Set WASAPI buffer: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.OutputBufferSize);
+                                arSett.SetBool(MPARSetting.BLOCK_IN_DELIVER, _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.BlockInDeliver);
+                                _logger.Debug("Set WASAPI block in deliver: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.BlockInDeliver);
                             }
                             else
                             {   //try the old way
@@ -573,6 +577,8 @@ namespace MediaBrowser.Theater.DirectShow
                                     _logger.Debug("Set WASAPI AC3 encoding: {0}", a3);
                                     audSett.SetUseTimeStretching(_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.EnableTimeStretching);
                                     _logger.Debug("Set WASAPI use time stretching: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.EnableTimeStretching);
+                                    audSett.SetOutputBuffer(_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.OutputBufferSize);
+                                    _logger.Debug("Set WASAPI buffer: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.OutputBufferSize);
                                 }
                             }
                         }

@@ -126,38 +126,35 @@ namespace MediaBrowser.Theater.DefaultTheme
 
             // Restore window position/size
             if (config.WindowState.HasValue) {
-                // Set window state
-                window.WindowState = config.WindowState.Value;
+                double left = 0;
+                double top = 0;
 
-                // Set position if not maximized
-                if (config.WindowState.Value != WindowState.Maximized) {
-                    double left = 0;
-                    double top = 0;
-
-                    // Set left
-                    if (config.WindowLeft.HasValue) {
-                        startPosition = FormStartPosition.Manual;
-                        window.WindowStartupLocation = WindowStartupLocation.Manual;
-                        window.Left = left = Math.Max(config.WindowLeft.Value, 0);
-                    }
-
-                    // Set top
-                    if (config.WindowTop.HasValue) {
-                        startPosition = FormStartPosition.Manual;
-                        window.WindowStartupLocation = WindowStartupLocation.Manual;
-                        window.Top = top = Math.Max(config.WindowTop.Value, 0);
-                    }
-
-                    // Set width
-                    if (config.WindowWidth.HasValue) {
-                        window.Width = Math.Min(config.WindowWidth.Value, SystemParameters.VirtualScreenWidth - left);
-                    }
-
-                    // Set height
-                    if (config.WindowHeight.HasValue) {
-                        window.Height = Math.Min(config.WindowHeight.Value, SystemParameters.VirtualScreenHeight - top);
-                    }
+                // Set left
+                if (config.WindowLeft.HasValue) {
+                    startPosition = FormStartPosition.Manual;
+                    window.WindowStartupLocation = WindowStartupLocation.Manual;
+                    window.Left = left = Math.Max(config.WindowLeft.Value, 0);
                 }
+
+                // Set top
+                if (config.WindowTop.HasValue) {
+                    startPosition = FormStartPosition.Manual;
+                    window.WindowStartupLocation = WindowStartupLocation.Manual;
+                    window.Top = top = Math.Max(config.WindowTop.Value, 0);
+                }
+
+                // Set width
+                if (config.WindowWidth.HasValue) {
+                    window.Width = Math.Min(config.WindowWidth.Value, SystemParameters.VirtualScreenWidth - left);
+                }
+
+                // Set height
+                if (config.WindowHeight.HasValue) {
+                    window.Height = Math.Min(config.WindowHeight.Value, SystemParameters.VirtualScreenHeight - top);
+                }
+
+                // set window state
+                window.WindowState = config.WindowState.Value;
             }
 
             window.ShowInTaskbar = window.WindowState == WindowState.Minimized;

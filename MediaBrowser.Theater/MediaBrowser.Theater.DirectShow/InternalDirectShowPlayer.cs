@@ -361,58 +361,41 @@ namespace MediaBrowser.Theater.DirectShow
 
         public void Pause()
         {
-            lock (_commandLock)
+            if (_mediaPlayer != null)
             {
-                if (_mediaPlayer != null)
-                {
-                    InvokeOnPlayerThread(_mediaPlayer.Pause);
-                }
+                InvokeOnPlayerThreadAsync(_mediaPlayer.Pause);
             }
         }
 
         public void UnPause()
         {
-            lock (_commandLock)
+            if (_mediaPlayer != null)
             {
-                if (_mediaPlayer != null)
-                {
-                    InvokeOnPlayerThread(_mediaPlayer.Unpause);
-                }
+                InvokeOnPlayerThreadAsync(_mediaPlayer.Unpause);
             }
         }
-
-        private readonly object _commandLock = new object();
-
+        
         public void Stop()
         {
-            lock (_commandLock)
+            if (_mediaPlayer != null)
             {
-                if (_mediaPlayer != null)
-                {
-                    InvokeOnPlayerThread(() => _mediaPlayer.Stop(TrackCompletionReason.Stop, null));
-                }
+                InvokeOnPlayerThreadAsync(() => _mediaPlayer.Stop(TrackCompletionReason.Stop, null));
             }
         }
 
         public void Seek(long positionTicks)
         {
-            lock (_commandLock)
+            if (_mediaPlayer != null)
             {
-                if (_mediaPlayer != null)
-                {
-                    InvokeOnPlayerThread(() => _mediaPlayer.Seek(positionTicks));
-                }
+                InvokeOnPlayerThreadAsync(() => _mediaPlayer.Seek(positionTicks));
             }
         }
 
         public void SetRate(double rate)
         {
-            lock (_commandLock)
+            if (_mediaPlayer != null)
             {
-                if (_mediaPlayer != null)
-                {
-                    InvokeOnPlayerThread(() => _mediaPlayer.SetRate(rate));
-                }
+                InvokeOnPlayerThreadAsync(() => _mediaPlayer.SetRate(rate));
             }
         }
 

@@ -30,6 +30,8 @@ namespace MediaBrowser.Theater.DirectShow
 {
     public class DirectShowPlayer : IDisposable
     {
+        private readonly object _commandLock = new object();
+
         private const int WM_APP = 0x8000;
         private const int WM_GRAPHNOTIFY = WM_APP + 1;
         private const int WM_KEYDOWN = 0x0100;
@@ -1596,35 +1598,44 @@ namespace MediaBrowser.Theater.DirectShow
 
         public void Pause()
         {
-            if (_mediaControl == null)
-                return;
+            lock (_commandLock) 
+            {
+                if (_mediaControl == null)
+                    return;
 
-            if (_mediaControl.Pause() >= 0)
-                PlayState = PlayState.Paused;
+                if (_mediaControl.Pause() >= 0)
+                    PlayState = PlayState.Paused;
+            }
         }
 
         public void Unpause()
         {
-            if (_mediaControl == null)
-                return;
+            lock (_commandLock) 
+            {
+                if (_mediaControl == null)
+                    return;
 
-            if (_mediaControl.Run() >= 0)
-                PlayState = PlayState.Playing;
+                if (_mediaControl.Run() >= 0)
+                    PlayState = PlayState.Playing;
+            }
         }
 
         public void Stop(TrackCompletionReason reason, int? newTrackIndex)
         {
-            var hr = 0;
+            lock (_commandLock)
+            {
+                var hr = 0;
 
-            var pos = CurrentPositionTicks;
+                var pos = CurrentPositionTicks;
 
-            // Stop media playback
-            if (_mediaControl != null)
-                hr = _mediaControl.Stop();
+                // Stop media playback
+                if (_mediaControl != null)
+                    hr = _mediaControl.Stop();
 
-            DsError.ThrowExceptionForHR(hr);
+                DsError.ThrowExceptionForHR(hr);
 
-            OnStopped(reason, pos, newTrackIndex);
+                OnStopped(reason, pos, newTrackIndex);
+            }
         }
 
         private void ModifyRate(double dRateAdjust)
@@ -1763,73 +1774,82 @@ namespace MediaBrowser.Theater.DirectShow
 
         public void SetRate(double rate)
         {
-            int hr = 0;
-            //_currentPlaybackRate = rate;
-            SetupGraphForRateChange(rate, AudioRenderer);
-
-            if (_mDvdControl != null)
+            lock (_commandLock) 
             {
-                if (rate < 0)
-                    hr = _mDvdControl.PlayBackwards(Math.Abs(rate), DvdCmdFlags.SendEvents, out _mDvdCmdOption);
-                else
-                    hr = _mDvdControl.PlayForwards(rate, DvdCmdFlags.SendEvents, out _mDvdCmdOption);
-                //DsError.ThrowExceptionForHR(hr);
-                if (hr >= 0)
+                int hr = 0;
+                //_currentPlaybackRate = rate;
+                SetupGraphForRateChange(rate, AudioRenderer);
+
+                if (_mDvdControl != null) 
                 {
-                    _currentPlaybackRate = rate;
-                    if (_mDvdCmdOption != null)
+                    if (rate < 0)
+                        hr = _mDvdControl.PlayBackwards(Math.Abs(rate), DvdCmdFlags.SendEvents, out _mDvdCmdOption);
+                    else
+                        hr = _mDvdControl.PlayForwards(rate, DvdCmdFlags.SendEvents, out _mDvdCmdOption);
+                    //DsError.ThrowExceptionForHR(hr);
+                    if (hr >= 0) 
                     {
-                        _pendingDvdCmd = true;
+                        _currentPlaybackRate = rate;
+                        if (_mDvdCmdOption != null) 
+                        {
+                            _pendingDvdCmd = true;
+                        }
                     }
-                }
 
-                //hr = _mDvdControl.PlayForwards(rate, DvdCmdFlags.SendEvents, out _mDvdCmdOption);
-                //DsError.ThrowExceptionForHR(hr);
+                    //hr = _mDvdControl.PlayForwards(rate, DvdCmdFlags.SendEvents, out _mDvdCmdOption);
+                    //DsError.ThrowExceptionForHR(hr);
 
-                //if (_mDvdCmdOption != null)
-                //{
-                //    _pendingDvdCmd = true;
-                //}
-            }
-            else if (_mediaSeeking != null)
-            {
-                hr = _mediaSeeking.SetRate(rate);
-                //DsError.ThrowExceptionForHR(hr);
-                if (hr >= 0)
+                    //if (_mDvdCmdOption != null)
+                    //{
+                    //    _pendingDvdCmd = true;
+                    //}
+                } 
+                else if (_mediaSeeking != null) 
                 {
-                    _currentPlaybackRate = rate;
+                    hr = _mediaSeeking.SetRate(rate);
+                    //DsError.ThrowExceptionForHR(hr);
+                    if (hr >= 0) 
+                    {
+                        _currentPlaybackRate = rate;
+                    }
                 }
             }
         }
 
         public void Seek(long ticks)
         {
-            if (_mediaSeeking != null)
+            lock (_commandLock)
             {
-                long duration;
+                if (_mediaSeeking != null)
+                {
+                    long duration;
 
-                var hr = _mediaSeeking.GetDuration(out duration);
+                    var hr = _mediaSeeking.GetDuration(out duration);
 
-                if (ticks < 0)
-                    ticks = 0;
-                else if (ticks > duration)
-                    ticks = duration;
+                    if (ticks < 0)
+                        ticks = 0;
+                    else if (ticks > duration)
+                        ticks = duration;
 
-                // Seek to the position
-                hr = _mediaSeeking.SetPositions(new DsLong(ticks), AMSeekingSeekingFlags.AbsolutePositioning,
-                    new DsLong(duration), AMSeekingSeekingFlags.AbsolutePositioning);
+                    // Seek to the position
+                    hr = _mediaSeeking.SetPositions(new DsLong(ticks), AMSeekingSeekingFlags.AbsolutePositioning,
+                        new DsLong(duration), AMSeekingSeekingFlags.AbsolutePositioning);
+                }
             }
         }
 
         public void SeekRelative(long ticks)
         {
-            if (_mediaSeeking != null)
+            lock (_commandLock)
             {
-                long position;
+                if (_mediaSeeking != null)
+                {
+                    long position;
 
-                var hr = _mediaSeeking.GetCurrentPosition(out position);
-                position += ticks;
-                Seek(position);
+                    var hr = _mediaSeeking.GetCurrentPosition(out position);
+                    position += ticks;
+                    Seek(position);
+                }
             }
         }
 

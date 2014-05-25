@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -198,7 +199,7 @@ namespace MediaBrowser.Theater.DefaultTheme
             }
 
             var state = GetWindowsFormState(_mainWindow.WindowState);
-
+            
             var internalPlayerWindowThread = new Thread(() => ShowHiddenWindow(formWidth, formHeight, formTop, formLeft, startPosition, state));
             internalPlayerWindowThread.Name = "Internal Player Window";
             internalPlayerWindowThread.SetApartmentState(ApartmentState.STA);
@@ -243,6 +244,12 @@ namespace MediaBrowser.Theater.DefaultTheme
             if (startPosition.HasValue) {
                 playerWindow.StartPosition = startPosition.Value;
             }
+
+            _mainWindow.Loaded += (s, e) => {
+                MovePlayerWindow(playerWindow);
+                UpdatePlayerWindowSize(playerWindow);
+                UpdatePlayerWindowState(playerWindow);
+            };
 
             _mainWindow.LocationChanged += (s, e) => MovePlayerWindow(playerWindow);
             _mainWindow.StateChanged += (s, e) => UpdatePlayerWindowState(playerWindow);

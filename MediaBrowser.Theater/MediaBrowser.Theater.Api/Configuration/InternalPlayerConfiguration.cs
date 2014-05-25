@@ -14,19 +14,7 @@ namespace MediaBrowser.Theater.Api.Configuration
         /// Gets or sets a value indicating whether [enable reclock].
         /// </summary>
         /// <value><c>true</c> if [enable reclock]; otherwise, <c>false</c>.</value>
-        public bool EnableReclock { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether [enable madvr].
-        /// </summary>
-        /// <value><c>true</c> if [enable madvr]; otherwise, <c>false</c>.</value>
-        public bool EnableMadvr { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether [enable xy sub filter].
-        /// </summary>
-        /// <value><c>true</c> if [enable xy sub filter]; otherwise, <c>false</c>.</value>
-        public bool EnableXySubFilter { get; set; }
+        //public bool EnableReclock { get; set; }
 
         public bool UsePrivateObjects { get; set; }
 
@@ -48,6 +36,8 @@ namespace MediaBrowser.Theater.Api.Configuration
             UsePrivateObjects = true;
         }
     }
+
+    #region VideoConfig
 
     //add configuration values here as necessary
     public class VideoConfiguration
@@ -117,6 +107,12 @@ namespace MediaBrowser.Theater.Api.Configuration
         public bool ShowTrayIcon { get; set; }
 
         public bool UseCustomPresenter { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether [enable madvr].
+        /// </summary>
+        /// <value><c>true</c> if [enable madvr]; otherwise, <c>false</c>.</value>
+        public bool EnableMadvr { get; set; }
 
         public VideoConfiguration()
         {
@@ -207,11 +203,22 @@ namespace MediaBrowser.Theater.Api.Configuration
         }
     }
 
+    #endregion
+
+    #region AudioConfig
+
     public enum BitstreamChoice
     {
         None = 0,
         SPDIF = 1,
         HDMI = 3
+    }
+
+    public enum AudioRendererChoice
+    {
+        Default,
+        Reclock,
+        WASAPI
     }
 
     //add configuration values here as necessary
@@ -239,6 +246,8 @@ namespace MediaBrowser.Theater.Api.Configuration
         public double CenterMixingLevel { get; set; }
         public double SurroundMixingLevel { get; set; }
         public bool ShowTrayIcon { get; set; }
+        public AudioRendererChoice Renderer { get; set; }
+        public string AudioDevice { get; set; }
 
         /// <summary>
         /// Gets or sets audio codecs that will be enabled. 
@@ -263,6 +272,8 @@ namespace MediaBrowser.Theater.Api.Configuration
             LfeMixingLevel = 0;
             CenterMixingLevel = 0.7071;
             SurroundMixingLevel = 0.7071;
+            Renderer = AudioRendererChoice.Default;
+            AudioDevice = string.Empty;
         }
 
         public void SetDefaults()
@@ -295,14 +306,25 @@ namespace MediaBrowser.Theater.Api.Configuration
         }
     }
 
+    #endregion
+
+    #region SubtitleConfig
+
     //add configuration values here as necessary
     public class SubtitleConfiguration
     {
         public List<string> ExternalExtensions { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether [enable xy sub filter].
+        /// </summary>
+        /// <value><c>true</c> if [enable xy sub filter]; otherwise, <c>false</c>.</value>
+        public bool EnableXySubFilter { get; set; }
+
         public SubtitleConfiguration()
         {
             ExternalExtensions = new List<string>();
+            EnableXySubFilter = true;
         }
 
         public void SetDefaults()
@@ -313,6 +335,10 @@ namespace MediaBrowser.Theater.Api.Configuration
             }
         }
     }
+
+    #endregion
+
+    #region KnownCOMObjects
 
     public class KnownCOMObjectConfiguration
     {
@@ -327,17 +353,17 @@ namespace MediaBrowser.Theater.Api.Configuration
 
         public void SetDefaults()
         {
-            if (FilterList.Count == 0)
-            {
-                //FilterList[new Guid("")] = new KnownFilter("", "", new Guid(""));
-                FilterList[new Guid("{171252A0-8820-4AFE-9DF8-5C92B2D66B04}")] = new KnownCOMObject("LAV Splitter", "LAV\\LAVSplitter.ax", new Guid("{171252A0-8820-4AFE-9DF8-5C92B2D66B04}"));
-                FilterList[new Guid("{B98D13E7-55DB-4385-A33D-09FD1BA26338}")] = new KnownCOMObject("LAV Splitter Source", "LAV\\LAVSplitter.ax", new Guid("{B98D13E7-55DB-4385-A33D-09FD1BA26338}"));
-                FilterList[new Guid("{E8E73B6B-4CB3-44A4-BE99-4F7BCB96E491}")] = new KnownCOMObject("LAV Audio Decoder", "LAV\\LAVAudio.ax", new Guid("{E8E73B6B-4CB3-44A4-BE99-4F7BCB96E491}"));
-                FilterList[new Guid("{EE30215D-164F-4A92-A4EB-9D4C13390F9F}")] = new KnownCOMObject("LAV Video Decoder", "LAV\\LAVVideo.ax", new Guid("{EE30215D-164F-4A92-A4EB-9D4C13390F9F}"));
-                FilterList[new Guid("{E1A8B82A-32CE-4B0D-BE0D-AA68C772E423}")] = new KnownCOMObject("madVR", "madVR\\madVR.ax", new Guid("{E1A8B82A-32CE-4B0D-BE0D-AA68C772E423}"));
-                FilterList[new Guid("{2DFCB782-EC20-4A7C-B530-4577ADB33F21}")] = new KnownCOMObject("XySubFilter", "XySubFilter\\XySubFilter.dll", new Guid("{2DFCB782-EC20-4A7C-B530-4577ADB33F21}"));
-                FilterList[new Guid("{5325DF1C-6F10-4292-B8FB-BE855F99F88A}")] = new KnownCOMObject("EVR Presenter (babgvant)", "babgvant\\EVRPresenter.dll", new Guid("{5325DF1C-6F10-4292-B8FB-BE855F99F88A}"));
-            }
+            FilterList.Clear();
+
+            //FilterList[new Guid("")] = new KnownCOMObject("", "", new Guid(""));
+            FilterList[new Guid("{171252A0-8820-4AFE-9DF8-5C92B2D66B04}")] = new KnownCOMObject("LAV Splitter", "LAV\\LAVSplitter.ax", new Guid("{171252A0-8820-4AFE-9DF8-5C92B2D66B04}"));
+            FilterList[new Guid("{B98D13E7-55DB-4385-A33D-09FD1BA26338}")] = new KnownCOMObject("LAV Splitter Source", "LAV\\LAVSplitter.ax", new Guid("{B98D13E7-55DB-4385-A33D-09FD1BA26338}"));
+            FilterList[new Guid("{E8E73B6B-4CB3-44A4-BE99-4F7BCB96E491}")] = new KnownCOMObject("LAV Audio Decoder", "LAV\\LAVAudio.ax", new Guid("{E8E73B6B-4CB3-44A4-BE99-4F7BCB96E491}"));
+            FilterList[new Guid("{EE30215D-164F-4A92-A4EB-9D4C13390F9F}")] = new KnownCOMObject("LAV Video Decoder", "LAV\\LAVVideo.ax", new Guid("{EE30215D-164F-4A92-A4EB-9D4C13390F9F}"));
+            FilterList[new Guid("{E1A8B82A-32CE-4B0D-BE0D-AA68C772E423}")] = new KnownCOMObject("madVR", "madVR\\madVR.ax", new Guid("{E1A8B82A-32CE-4B0D-BE0D-AA68C772E423}"));
+            FilterList[new Guid("{2DFCB782-EC20-4A7C-B530-4577ADB33F21}")] = new KnownCOMObject("XySubFilter", "XySubFilter\\XySubFilter.dll", new Guid("{2DFCB782-EC20-4A7C-B530-4577ADB33F21}"));
+            FilterList[new Guid("{5325DF1C-6F10-4292-B8FB-BE855F99F88A}")] = new KnownCOMObject("EVR Presenter (babgvant)", "babgvant\\EVRPresenter.dll", new Guid("{5325DF1C-6F10-4292-B8FB-BE855F99F88A}"));
+            FilterList[new Guid("{EC9ED6FC-7B03-4CB6-8C01-4EABE109F26B}")] = new KnownCOMObject("MP Audio Renderer", "mpaudio\\mpaudiorenderer.ax", new Guid("{EC9ED6FC-7B03-4CB6-8C01-4EABE109F26B}"));
         }
 
         public static bool IsGuid(string candidate, out Guid output)
@@ -377,4 +403,6 @@ namespace MediaBrowser.Theater.Api.Configuration
 
 
     }
+
+    #endregion
 }

@@ -15,6 +15,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Management;
+using MediaBrowser.Theater.Api.UserInput;
 
 namespace MediaBrowser.Theater.DirectShow
 {
@@ -23,14 +24,14 @@ namespace MediaBrowser.Theater.DirectShow
         private DirectShowPlayer _mediaPlayer;
 
         private readonly ILogger _logger;
-        private readonly IInternalPlayerWindowManager _windowManager;
-        private readonly IPresenter _presentation;
         private readonly ISessionManager _sessionManager;
         private readonly IApiClient _apiClient;
         private readonly IPlaybackManager _playbackManager;
         private readonly ITheaterConfigurationManager _config;
         private readonly IIsoManager _isoManager;
-//        private readonly IUserInputManager _inputManager;
+        private readonly IUserInputManager _inputManager;
+        private readonly IInternalPlayerWindowManager _windowManager;
+        private readonly IPresenter _presentation;
 
         private IInternalPlayerWindow _hiddenWindow;
 
@@ -40,7 +41,7 @@ namespace MediaBrowser.Theater.DirectShow
 
         private List<BaseItemDto> _playlist = new List<BaseItemDto>();
 
-        public InternalDirectShowPlayer(ILogManager logManager, IInternalPlayerWindowManager windowManager, IPresenter presentation, ISessionManager sessionManager, IApiClient apiClient, IPlaybackManager playbackManager, ITheaterConfigurationManager config, IIsoManager isoManager/*, IUserInputManager inputManager*/)
+        public InternalDirectShowPlayer(ILogManager logManager, IInternalPlayerWindowManager windowManager, IPresenter presentation, ISessionManager sessionManager, IApiClient apiClient, IPlaybackManager playbackManager, ITheaterConfigurationManager config, IIsoManager isoManager, IUserInputManager inputManager)
         {
             _logger = logManager.GetLogger("InternalDirectShowPlayer");
             _windowManager = windowManager;
@@ -51,7 +52,7 @@ namespace MediaBrowser.Theater.DirectShow
             _playbackManager = playbackManager;
             _config = config;
             _isoManager = isoManager;
-//            _inputManager = inputManager;
+            _inputManager = inputManager;
 
             windowManager.WindowLoaded += window => _hiddenWindow = window;
         }
@@ -92,6 +93,23 @@ namespace MediaBrowser.Theater.DirectShow
         }
 
         public bool CanTrackProgress
+        {
+            get { return true; }
+        }
+
+
+        public bool CanSetAudioStreamIndex
+        {
+            get { return true; }
+        }
+
+
+        public bool CanSetSubtitleStreamIndex
+        {
+            get { return true; }
+        }
+
+        public bool CanAcceptNavigationCommands
         {
             get { return true; }
         }
@@ -182,9 +200,9 @@ namespace MediaBrowser.Theater.DirectShow
 
             try
             {
-                await InvokeOnPlayerThreadAsync(() =>
+                InvokeOnPlayerThreadAsync(() =>
                 {
-                    _mediaPlayer = new DirectShowPlayer(_logger, _windowManager, this, _presentation.MainApplicationWindowHandle, _sessionManager, _config/*, _inputManager*/);
+                    _mediaPlayer = new DirectShowPlayer(_logger, _windowManager, this, _presentation.MainApplicationWindowHandle, _sessionManager, _config, _inputManager, _apiClient);
 
                     //HideCursor();
                 });
@@ -214,9 +232,9 @@ namespace MediaBrowser.Theater.DirectShow
             try
             {
                 var enableMadVr = EnableMadvr(options);
-                var enableReclock = EnableReclock(options);
+                //var enableReclock = EnableReclock(options);
 
-                InvokeOnPlayerThread(() => _mediaPlayer.Play(playableItem, enableReclock, enableMadVr, false));
+                InvokeOnPlayerThread(() => _mediaPlayer.Play(playableItem, enableMadVr, false));
             }
             catch
             {
@@ -244,10 +262,10 @@ namespace MediaBrowser.Theater.DirectShow
                     EndingPositionTicks = endingTicks
                 };
                 // can't InvokeOnPlayerThread because InvokeRequired returns false
-                 _presentation.MainApplicationWindow.Dispatcher.Invoke
-                (
-                    () => EventHelper.FireEventIfNotNull(MediaChanged, this, args, _logger)
-                );
+                _presentation.MainApplicationWindow.Dispatcher.Invoke
+               (
+                   () => EventHelper.FireEventIfNotNull(MediaChanged, this, args, _logger)
+               );
             }
         }
 
@@ -289,7 +307,7 @@ namespace MediaBrowser.Theater.DirectShow
                 return false;
             }
 
-            if (!_config.Configuration.InternalPlayerConfiguration.EnableMadvr)
+            if (!_config.Configuration.InternalPlayerConfiguration.VideoConfig.EnableMadvr)
             {
                 return false;
             }
@@ -307,33 +325,34 @@ namespace MediaBrowser.Theater.DirectShow
         /// </summary>
         /// <param name="options">The options.</param>
         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise</returns>
-        private bool EnableReclock(PlayOptions options)
-        {
-            var video = options.Items.First();
+        //private bool EnableReclock(PlayOptions options)
+        //{
+        //    var video = options.Items.First();
 
-            if (!video.IsVideo)
-            {
-                return false;
-            }
+        //    if (!video.IsVideo)
+        //    {
+        //        return false;
+        //    }
 
-            if (!_config.Configuration.InternalPlayerConfiguration.EnableReclock)
-            {
-                return false;
-            }
+        //    if (!_config.Configuration.InternalPlayerConfiguration.EnableReclock)
+        //    {
+        //        return false;
+        //    }
 
-            if (!options.GoFullScreen)
-            {
-                return false;
-            }
-            
-            return true;
-        }
+        //    if (!options.GoFullScreen)
+        //    {
+        //        return false;
+        //    }
+
+        //    return true;
+        //}
 
         private void DisposePlayer()
         {
             if (_mediaPlayer != null)
             {
-                InvokeOnPlayerThread(() => {
+                InvokeOnPlayerThread(() =>
+                {
                     _mediaPlayer.Dispose();
                     _mediaPlayer = null; //force the object to get cleaned up
                 });
@@ -342,58 +361,41 @@ namespace MediaBrowser.Theater.DirectShow
 
         public void Pause()
         {
-            lock (_commandLock)
+            if (_mediaPlayer != null)
             {
-                if (_mediaPlayer != null)
-                {
-                    InvokeOnPlayerThread(_mediaPlayer.Pause);
-                }
+                InvokeOnPlayerThreadAsync(_mediaPlayer.Pause);
             }
         }
 
         public void UnPause()
         {
-            lock (_commandLock)
+            if (_mediaPlayer != null)
             {
-                if (_mediaPlayer != null)
-                {
-                    InvokeOnPlayerThread(_mediaPlayer.Unpause);
-                }
+                InvokeOnPlayerThreadAsync(_mediaPlayer.Unpause);
             }
         }
-
-        private readonly object _commandLock = new object();
-
+        
         public void Stop()
         {
-            lock (_commandLock)
+            if (_mediaPlayer != null)
             {
-                if (_mediaPlayer != null)
-                {
-                    InvokeOnPlayerThread(() => _mediaPlayer.Stop(TrackCompletionReason.Stop, null));
-                }
+                InvokeOnPlayerThreadAsync(() => _mediaPlayer.Stop(TrackCompletionReason.Stop, null));
             }
         }
 
         public void Seek(long positionTicks)
         {
-            lock (_commandLock)
+            if (_mediaPlayer != null)
             {
-                if (_mediaPlayer != null)
-                {
-                    InvokeOnPlayerThread(() => _mediaPlayer.Seek(positionTicks));
-                }
+                InvokeOnPlayerThreadAsync(() => _mediaPlayer.Seek(positionTicks));
             }
         }
 
         public void SetRate(double rate)
         {
-            lock (_commandLock)
+            if (_mediaPlayer != null)
             {
-                if (_mediaPlayer != null)
-                {
-                    InvokeOnPlayerThread(() => _mediaPlayer.SetRate(rate));
-                }
+                InvokeOnPlayerThreadAsync(() => _mediaPlayer.SetRate(rate));
             }
         }
 
@@ -469,9 +471,30 @@ namespace MediaBrowser.Theater.DirectShow
             InvokeOnPlayerThread(() => _mediaPlayer.SetAudioTrack(track));
         }
 
+
+        public void SetSubtitleStreamIndex(int subtitleStreamIndex)
+        {
+            InvokeOnPlayerThread(() => _mediaPlayer.SetSubtitleStreamIndex(subtitleStreamIndex));
+        }
+
+        public void NextSubtitleStream()
+        {
+            InvokeOnPlayerThread(() => _mediaPlayer.NextSubtitleStream());
+        }
+
+        public void SetAudioStreamIndex(int audioStreamIndex)
+        {
+            InvokeOnPlayerThread(() => _mediaPlayer.SetAudioStreamIndex(audioStreamIndex));
+        }
+
+        public void NextAudioStream()
+        {
+            InvokeOnPlayerThread(() => _mediaPlayer.NextAudioStream());
+        }
+
         public void ChangeSubtitleStream(SelectableMediaStream track)
         {
-            InvokeOnPlayerThread(() => _mediaPlayer.SetSubtitleTrack(track));
+            InvokeOnPlayerThread(() => _mediaPlayer.SetSubtitleStream(track));
         }
 
         public void RemoveSubtitles()

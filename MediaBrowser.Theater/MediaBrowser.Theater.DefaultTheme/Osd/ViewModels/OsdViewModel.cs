@@ -56,7 +56,13 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
             PlayCommand = new RelayCommand(Play);
             PlayPauseCommand = new RelayCommand(PlayPause);
 
-            _playbackStopHandler = args => NavigationService.Back();
+            _playbackStopHandler = args => {
+                NavigationService.Back();
+                if (MediaPlayer != null) {
+                    RemovePlayerEvents(MediaPlayer);
+                }
+            };
+
             _playbackStartHandler = args => {
                 MediaPlayer = args.Player;
                 NowPlayingItem = args.Player.CurrentMedia;
@@ -96,18 +102,33 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
             get { return _mediaPlayer; }
             set
             {
-                IMediaPlayer old = _mediaPlayer;
-
-                if (old != null) {
-                    RemovePlayerEvents(old);
+                if (Equals(_mediaPlayer, value)) {
+                    return;
+                }
+                
+                if (_mediaPlayer != null) {
+                    RemovePlayerEvents(_mediaPlayer);
                 }
 
-                bool changed = old != value;
                 _mediaPlayer = value;
 
-                if (changed) {
-                    OnPropertyChanged("MediaPlayer");
+                if (_mediaPlayer != null) {
+                    _mediaPlayer.MediaChanged += player_MediaChanged;
+                    _mediaPlayer.PlayStateChanged += player_PlayStateChanged;
+
+                    if (_currentPositionTimer == null) {
+                        var timer = new Timer(PositionTimerCallback, null, 0, 250);
+
+                        _currentPositionTimer = timer;
+                    }
+                } else {
+                    DisposeCurrentPositionTimer();
                 }
+
+                NowPlayingItem = _mediaPlayer == null ? null : _mediaPlayer.CurrentMedia;
+                UpdatePauseValues(_mediaPlayer);
+
+                OnPropertyChanged();
             }
         }
 
@@ -116,14 +137,26 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
             get { return _nowPlayingItem; }
             set
             {
-                bool changed = _nowPlayingItem != value;
+                if (Equals(_nowPlayingItem, value)) {
+                    return;
+                }
 
                 _nowPlayingItem = value;
 
-                if (changed) {
-                    OnPropertyChanged("NowPlayingItem");
-                    OnPropertyChanged("DisplayName");
-                }
+                IMediaPlayer player = MediaPlayer;
+
+                long? ticks = player != null ? player.CurrentDurationTicks : null;
+
+                DisplayDuration = ticks.HasValue ? GetTimeString(ticks.Value) : "--:--";
+                DurationTicks = ticks.HasValue ? ticks.Value : 0;
+
+                CanSeek = player != null && player.CanSeek;
+
+                UpdatePauseValues(player);
+                UpdatePlayerCapabilities(player, _nowPlayingItem);
+
+                OnPropertyChanged();
+                OnPropertyChanged("DisplayName");
             }
         }
 
@@ -146,7 +179,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
                 _displayDuration = value;
 
                 if (changed) {
-                    OnPropertyChanged("DisplayDuration");
+                    OnPropertyChanged();
                 }
             }
         }
@@ -160,7 +193,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
                 _displayPosition = value;
 
                 if (changed) {
-                    OnPropertyChanged("DisplayPosition");
+                    OnPropertyChanged();
                 }
             }
         }
@@ -174,7 +207,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
                 _canSeek = value;
 
                 if (changed) {
-                    OnPropertyChanged("CanSeek");
+                    OnPropertyChanged();
                 }
             }
         }
@@ -188,7 +221,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
                 _isPaused = value;
 
                 if (changed) {
-                    OnPropertyChanged("IsPaused");
+                    OnPropertyChanged();
                 }
             }
         }
@@ -202,7 +235,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
                 _canPause = value;
 
                 if (changed) {
-                    OnPropertyChanged("CanPause");
+                    OnPropertyChanged();
                 }
             }
         }
@@ -216,7 +249,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
                 _canPlay = value;
 
                 if (changed) {
-                    OnPropertyChanged("CanPlay");
+                    OnPropertyChanged();
                 }
             }
         }
@@ -230,7 +263,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
                 _durationTicks = value;
 
                 if (changed) {
-                    OnPropertyChanged("DurationTicks");
+                    OnPropertyChanged();
                 }
             }
         }
@@ -244,7 +277,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
                 _positionTicks = value;
 
                 if (changed) {
-                    OnPropertyChanged("PositionTicks");
+                    OnPropertyChanged();
                 }
             }
         }
@@ -258,7 +291,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
                     return;
                 }
                 _canSelectSubtitleTrack = value;
-                OnPropertyChanged("CanSelectSubtitleTrack");
+                OnPropertyChanged();
             }
         }
 
@@ -271,7 +304,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
                     return;
                 }
                 _canSelectAudioTrack = value;
-                OnPropertyChanged("CanSelectAudioTrack");
+                OnPropertyChanged();
             }
         }
 
@@ -284,7 +317,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
                     return;
                 }
                 _supportsChapters = value;
-                OnPropertyChanged("SupportsChapters");
+                OnPropertyChanged();
             }
         }
 
@@ -331,47 +364,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
 
             return timespan.TotalHours >= 1 ? timespan.ToString("hh':'mm':'ss") : timespan.ToString("mm':'ss");
         }
-
-        protected override void OnPropertyChanged(string name)
-        {
-            base.OnPropertyChanged(name);
-
-            if (string.Equals(name, "NowPlayingItem")) {
-                BaseItemDto media = NowPlayingItem;
-
-                IMediaPlayer player = MediaPlayer;
-
-                long? ticks = player != null ? player.CurrentDurationTicks : null;
-
-                DisplayDuration = ticks.HasValue ? GetTimeString(ticks.Value) : "--:--";
-                DurationTicks = ticks.HasValue ? ticks.Value : 0;
-
-                CanSeek = player != null && player.CanSeek;
-
-                UpdatePauseValues(player);
-                UpdatePlayerCapabilities(player, media);
-            } else if (string.Equals(name, "MediaPlayer")) {
-                IMediaPlayer player = MediaPlayer;
-
-                if (player != null) {
-                    player.MediaChanged += player_MediaChanged;
-                    player.PlayStateChanged += player_PlayStateChanged;
-
-                    if (_currentPositionTimer == null) {
-                        var timer = new Timer(PositionTimerCallback, null, 0, 250);
-
-                        _currentPositionTimer = timer;
-                    }
-                } else {
-                    DisposeCurrentPositionTimer();
-                }
-
-                NowPlayingItem = player == null ? null : player.CurrentMedia;
-
-                UpdatePauseValues(player);
-            }
-        }
-
+        
         private void PositionTimerCallback(object state)
         {
             UpdatePosition(MediaPlayer);

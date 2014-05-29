@@ -243,6 +243,7 @@ namespace MediaBrowser.UI
             _hiddenWindowThread = new Thread(() => ShowHiddenWindow(formWidth, formHeight, formTop, formLeft, startPosition, state));
             _hiddenWindowThread.SetApartmentState(ApartmentState.MTA); 
             _hiddenWindowThread.IsBackground = true;
+            _hiddenWindowThread.Priority = ThreadPriority.AboveNormal;
             _hiddenWindowThread.Start();
         }
 

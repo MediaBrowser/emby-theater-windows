@@ -332,7 +332,11 @@ namespace MediaBrowser.Theater.DirectShow
             _hiddenWindow.OnWMGRAPHNOTIFY = HandleGraphEvent;
             _hiddenWindow.OnDVDEVENT = HandleDvdEvent;
 
-            var hr = _mediaControl.Run();
+            //pre-roll the graph
+            var hr = _mediaControl.Pause(); 
+            DsError.ThrowExceptionForHR(hr);
+
+            hr = _mediaControl.Run();
             DsError.ThrowExceptionForHR(hr);
 
             PlayState = PlayState.Playing;

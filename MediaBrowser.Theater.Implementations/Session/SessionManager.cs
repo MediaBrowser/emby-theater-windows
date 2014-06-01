@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Common.Events;
+﻿using System.Threading;
+using MediaBrowser.Common.Events;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
@@ -130,7 +131,7 @@ namespace MediaBrowser.Theater.Implementations.Session
 
         protected async Task InternalLogin(string username, byte[] hash)
         {
-            var systemInfo = await _apiClient.GetSystemInfoAsync();
+            var systemInfo = await _apiClient.GetSystemInfoAsync(CancellationToken.None);
 
             if (Version.Parse(systemInfo.Version) < RequiredServerVersion)
             {

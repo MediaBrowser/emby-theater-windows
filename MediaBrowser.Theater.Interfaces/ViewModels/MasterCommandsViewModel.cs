@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -263,7 +264,7 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
             if (result != MessageBoxResult.OK) return;
             try
             {
-                var systemInfo = await ApiClient.GetSystemInfoAsync();
+                var systemInfo = await ApiClient.GetSystemInfoAsync(CancellationToken.None);
 
                 if (systemInfo.HasPendingRestart)
                 {
@@ -335,7 +336,7 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
 
                 try
                 {
-                    await ApiClient.GetSystemInfoAsync();
+                    await ApiClient.GetSystemInfoAsync(CancellationToken.None);
                     break;
                 }
                 catch (Exception)
@@ -366,7 +367,7 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
         {
             try
             {
-                var systemInfo = await ApiClient.GetSystemInfoAsync();
+                var systemInfo = await ApiClient.GetSystemInfoAsync(CancellationToken.None);
                 _serverHasPendingRestart = systemInfo.HasPendingRestart;
                 _serverCanSelfRestart = systemInfo.CanSelfRestart;
                 RefreshRestartServerNotification();

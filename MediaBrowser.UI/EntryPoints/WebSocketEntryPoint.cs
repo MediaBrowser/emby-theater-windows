@@ -147,7 +147,7 @@ namespace MediaBrowser.UI.EntryPoints
         {
             try
             {
-                var systemInfo = await _apiClient.GetSystemInfoAsync().ConfigureAwait(false);
+                var systemInfo = await _apiClient.GetSystemInfoAsync(CancellationToken.None).ConfigureAwait(false);
 
                 var socket = ApiWebSocket;
 

@@ -332,7 +332,7 @@ namespace MediaBrowser.UI
         public override async Task<CheckForUpdateResult> CheckForApplicationUpdate(CancellationToken cancellationToken,
                                                                     IProgress<double> progress)
         {
-            var serverInfo = await ApiClient.GetSystemInfoAsync().ConfigureAwait(false);
+            var serverInfo = await ApiClient.GetSystemInfoAsync(cancellationToken).ConfigureAwait(false);
 
             var availablePackages = await InstallationManager.GetAvailablePackagesWithoutRegistrationInfo(cancellationToken).ConfigureAwait(false);
 

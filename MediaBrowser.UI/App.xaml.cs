@@ -542,7 +542,7 @@ namespace MediaBrowser.UI
 
             try
             {
-                systemInfo = await _appHost.ApiClient.GetSystemInfoAsync().ConfigureAwait(false);
+                systemInfo = await _appHost.ApiClient.GetSystemInfoAsync(CancellationToken.None).ConfigureAwait(false);
 
                 foundServer = true;
             }
@@ -606,7 +606,7 @@ namespace MediaBrowser.UI
                 {
                     try
                     {
-                        systemInfo = await _appHost.ApiClient.GetSystemInfoAsync().ConfigureAwait(false);
+                        systemInfo = await _appHost.ApiClient.GetSystemInfoAsync(CancellationToken.None).ConfigureAwait(false);
                     }
                     catch (Exception)
                     {
@@ -631,7 +631,7 @@ namespace MediaBrowser.UI
 
                     _appHost.ApiClient.ChangeServerLocation(parts[0], address.Port);
 
-                    systemInfo = await _appHost.ApiClient.GetSystemInfoAsync().ConfigureAwait(false);
+                    systemInfo = await _appHost.ApiClient.GetSystemInfoAsync(CancellationToken.None).ConfigureAwait(false);
 
                     foundServer = true;
                 }

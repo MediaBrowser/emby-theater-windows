@@ -101,7 +101,6 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                     OnPropertyChanged("ItemType");
                     OnPropertyChanged("IsFolder");
                     OnPropertyChanged("IsNew");
-                    OnPropertyChanged("RecentlyAddedItemCount");
                     OnPropertyChanged("RecursiveUnplayedItemCount");
                     OnPropertyChanged("IsOffline");
                     OnPropertyChanged("DurationShortTimeString");
@@ -882,11 +881,6 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         public bool HasNegativeCriticRating
         {
             get { return _item != null && _item.CriticRating != null && _item.CriticRating.Value < 60; }
-        }
-
-        public int RecentlyAddedItemCount
-        {
-            get { return _item == null ? 0 : _item.RecentlyAddedItemCount ?? 0; }
         }
 
         public int RecursiveUnplayedItemCount

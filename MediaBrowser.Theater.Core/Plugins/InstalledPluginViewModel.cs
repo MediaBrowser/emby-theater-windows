@@ -68,16 +68,6 @@ namespace MediaBrowser.Theater.Core.Plugins
             }
         }
 
-        public PackageVersionClass UpdateClass
-        {
-            get { return Plugin.Configuration.UpdateClass; }
-            set
-            {
-                Plugin.Configuration.UpdateClass = value;
-                OnPropertyChanged("UpdateClass");
-            }
-        }
-
         private IPlugin _plugin;
         public IPlugin Plugin
         {
@@ -91,7 +81,6 @@ namespace MediaBrowser.Theater.Core.Plugins
                 OnPropertyChanged("ImageUri");
                 OnPropertyChanged("ImageVisibility");
                 OnPropertyChanged("DefaultImageVisibility");
-                OnPropertyChanged("UpdateClass");
             }
         }
 

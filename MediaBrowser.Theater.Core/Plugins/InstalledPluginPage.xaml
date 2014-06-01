@@ -15,7 +15,6 @@
             <RowDefinition></RowDefinition>
             <RowDefinition></RowDefinition>
             <RowDefinition></RowDefinition>
-            <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
@@ -27,10 +26,7 @@
 
         <TextBlock Text="{Binding Version, StringFormat='Version {0}'}" Style="{StaticResource TextBlockStyle}" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Left"></TextBlock>
 
-        <TextBlock Style="{StaticResource TextBlockStyle}" Grid.Row="2" Grid.Column="0" Margin="0 40 0 0">Automatic Update Level:</TextBlock>
-        <controls:SelectList x:Name="SelectUpdateLevel" Margin="40 40 0 0" Grid.Row="2" Grid.Column="1"></controls:SelectList>
-
-        <Button Command="{Binding UninstallCommand}" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="0 40 0 0">
+        <Button Command="{Binding UninstallCommand}" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0 40 0 0">
             <TextBlock Style="{StaticResource TextBlockStyle}">Uninstall</TextBlock>
         </Button>
     </Grid>

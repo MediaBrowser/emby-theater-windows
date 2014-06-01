@@ -2,6 +2,7 @@
 using MediaBrowser.Common.Extensions;
 using MediaBrowser.Common.Updates;
 using MediaBrowser.Model.Updates;
+using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.Pages;
@@ -87,14 +88,8 @@ namespace MediaBrowser.Theater.Core.Plugins
 
         private void SetInitialSelectedValue()
         {
+            // TODO: Grab this from app configuration
             var updateLevel = PackageVersionClass.Release;
-
-            var installedPlugin = _appHost.Plugins.FirstOrDefault(i => string.Equals(i.Name, _packageInfo.name, StringComparison.OrdinalIgnoreCase));
-
-            if (installedPlugin != null)
-            {
-                updateLevel = installedPlugin.Configuration.UpdateClass;
-            }
 
             var versions = _packageInfo.versions.OrderByDescending(i => i.version).ToList();
 

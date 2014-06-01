@@ -100,7 +100,7 @@ namespace MediaBrowser.UI
             var logManager = new NlogManager(appPaths.LogDirectoryPath, "theater");
             logManager.ReloadLogger(LogSeverity.Debug);
 
-            var updateArchive = Path.Combine(appPaths.TempUpdatePath, Constants.MbTheaterPkgName + ".zip");
+            var updateArchive = Path.Combine(appPaths.TempUpdatePath, "MBTheater" + ".zip");
 
             if (File.Exists(updateArchive))
             {

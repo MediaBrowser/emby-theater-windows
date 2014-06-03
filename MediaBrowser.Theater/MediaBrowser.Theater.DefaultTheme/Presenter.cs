@@ -202,8 +202,9 @@ namespace MediaBrowser.Theater.DefaultTheme
             
             var internalPlayerWindowThread = new Thread(() => ShowHiddenWindow(formWidth, formHeight, formTop, formLeft, startPosition, state));
             internalPlayerWindowThread.Name = "Internal Player Window";
-            internalPlayerWindowThread.SetApartmentState(ApartmentState.STA);
+            internalPlayerWindowThread.SetApartmentState(ApartmentState.MTA);
             internalPlayerWindowThread.IsBackground = true;
+            internalPlayerWindowThread.Priority = ThreadPriority.AboveNormal;
             internalPlayerWindowThread.Start();
         }
 

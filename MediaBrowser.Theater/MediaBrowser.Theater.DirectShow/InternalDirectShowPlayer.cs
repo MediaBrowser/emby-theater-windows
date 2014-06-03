@@ -1,4 +1,5 @@
 ﻿using MediaBrowser.Common.Events;
+using MediaBrowser.Common.Net;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
@@ -30,6 +31,8 @@ namespace MediaBrowser.Theater.DirectShow
         private readonly ITheaterConfigurationManager _config;
         private readonly IIsoManager _isoManager;
         private readonly IUserInputManager _inputManager;
+        private readonly IZipClient _zipClient;
+        private readonly IHttpClient _httpClient;
         private readonly IInternalPlayerWindowManager _windowManager;
         private readonly IPresenter _presentation;
 
@@ -41,7 +44,7 @@ namespace MediaBrowser.Theater.DirectShow
 
         private List<BaseItemDto> _playlist = new List<BaseItemDto>();
 
-        public InternalDirectShowPlayer(ILogManager logManager, IInternalPlayerWindowManager windowManager, IPresenter presentation, ISessionManager sessionManager, IApiClient apiClient, IPlaybackManager playbackManager, ITheaterConfigurationManager config, IIsoManager isoManager, IUserInputManager inputManager)
+        public InternalDirectShowPlayer(ILogManager logManager, IInternalPlayerWindowManager windowManager, IPresenter presentation, ISessionManager sessionManager, IApiClient apiClient, IPlaybackManager playbackManager, ITheaterConfigurationManager config, IIsoManager isoManager, IUserInputManager inputManager, IZipClient zipClient, IHttpClient httpClient)
         {
             _logger = logManager.GetLogger("InternalDirectShowPlayer");
             _windowManager = windowManager;
@@ -53,6 +56,8 @@ namespace MediaBrowser.Theater.DirectShow
             _config = config;
             _isoManager = isoManager;
             _inputManager = inputManager;
+            _zipClient = zipClient;
+            _httpClient = httpClient;
 
             windowManager.WindowLoaded += window => _hiddenWindow = window;
         }
@@ -202,7 +207,7 @@ namespace MediaBrowser.Theater.DirectShow
             {
                 InvokeOnPlayerThreadAsync(() =>
                 {
-                    _mediaPlayer = new DirectShowPlayer(_logger, _windowManager, this, _presentation.MainApplicationWindowHandle, _sessionManager, _config, _inputManager, _apiClient);
+                    _mediaPlayer = new DirectShowPlayer(_logger, _windowManager, this, _presentation.MainApplicationWindowHandle, _sessionManager, _config, _inputManager, _apiClient, _zipClient, _httpClient);
 
                     //HideCursor();
                 });

@@ -145,7 +145,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
         {
             _imageCancellationTokenSource = new CancellationTokenSource();
 
-            if (_person.PrimaryImageTag.HasValue) {
+            if (!string.IsNullOrEmpty(_person.PrimaryImageTag)) {
                 var options = new ImageOptions {
                     Height = 100,
                     ImageType = ImageType.Primary,

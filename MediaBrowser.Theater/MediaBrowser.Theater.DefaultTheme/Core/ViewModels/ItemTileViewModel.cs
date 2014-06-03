@@ -5,6 +5,8 @@ using System.Windows.Input;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
+using MediaBrowser.Model.Events;
+using MediaBrowser.Model.Session;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.Session;
@@ -220,7 +222,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
             return aspectRatio >= 1;
         }
 
-        private void serverEvents_UserDataChanged(object sender, UserDataChangedEventArgs e)
+        private void serverEvents_UserDataChanged(object sender, GenericEventArgs<UserDataChangeInfo> e)
         {
             RefreshUserDataFields();
         }

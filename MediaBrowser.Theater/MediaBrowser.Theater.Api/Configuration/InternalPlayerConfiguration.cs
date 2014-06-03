@@ -26,6 +26,8 @@ namespace MediaBrowser.Theater.Api.Configuration
 
         public KnownCOMObjectConfiguration COMConfig { get; set; }
 
+        public bool PublishGraph { get; set; }
+
         public InternalPlayerConfiguration()
         {
             //set defaults if necessary
@@ -34,6 +36,7 @@ namespace MediaBrowser.Theater.Api.Configuration
             SubtitleConfig = new SubtitleConfiguration();
             COMConfig = new KnownCOMObjectConfiguration();
             UsePrivateObjects = true;
+            PublishGraph = false;
         }
     }
 
@@ -107,6 +110,7 @@ namespace MediaBrowser.Theater.Api.Configuration
         public bool ShowTrayIcon { get; set; }
 
         public bool UseCustomPresenter { get; set; }
+        public int NominalRange { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether [enable madvr].
@@ -126,6 +130,7 @@ namespace MediaBrowser.Theater.Api.Configuration
             HwaMode = -1;
 
             UseCustomPresenter = true;
+            NominalRange = 2; //MFNominalRange_16_235
         }
 
         public void SetDefaults()
@@ -248,6 +253,12 @@ namespace MediaBrowser.Theater.Api.Configuration
         public bool ShowTrayIcon { get; set; }
         public AudioRendererChoice Renderer { get; set; }
         public string AudioDevice { get; set; }
+        public string SpeakerLayout { get; set; }
+        public int WasapiARFilters { get; set; }
+        public bool EnableTimeStretching { get; set; }
+        public bool UseWasapiEventMode { get; set; }
+        public int Ac3EncodingMode { get; set; }
+        public int OutputBufferSize { get; set; }
 
         /// <summary>
         /// Gets or sets audio codecs that will be enabled. 
@@ -265,8 +276,8 @@ namespace MediaBrowser.Theater.Api.Configuration
             EnablePCMMixing = false;
             EnableAutoSync = true;
             ConvertToStandardLayout = true;
-            Expand61 = false;
-            ExpandMono = false;
+            Expand61 = true;
+            ExpandMono = true;
             EnableDRC = false;
             DRCLevel = 100;
             LfeMixingLevel = 0;
@@ -274,6 +285,12 @@ namespace MediaBrowser.Theater.Api.Configuration
             SurroundMixingLevel = 0.7071;
             Renderer = AudioRendererChoice.Default;
             AudioDevice = string.Empty;
+            SpeakerLayout = "Stereo";
+            WasapiARFilters = 63; //all
+            EnableTimeStretching = false;
+            Ac3EncodingMode = 0; //disabled
+            UseWasapiEventMode = true;
+            OutputBufferSize = 500;
         }
 
         public void SetDefaults()

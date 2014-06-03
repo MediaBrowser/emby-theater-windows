@@ -192,6 +192,47 @@ namespace MediaBrowser.Theater.DirectShow
         [PreserveSig]
         int SetAllowBitStreaming(bool setting);
     }
+    
+    public enum MPARSetting
+    {
+        AC3_ENCODING = 0,           // enum (MPARAC3EncodingMode)
+        LOG_SAMPLE_TIMES = 1,       // bool
+        ENABLE_SYNC_ADJUSTMENT = 2, // bool
+        WASAPI_MODE = 3,            // enum (MPARWASAPIMode)
+        WASAPI_EVENT_DRIVEN = 4,    // bool
+        ENABLE_TIME_STRETCHING = 5, // bool
+        EXPAND_MONO_TO_STEREO = 6,  // bool
+        AC3_BITRATE = 7,            // enum (MPARAC3Bitrate)
+        SPEAKER_CONFIG = 8,         // enum (MPARSpeakerConfig)
+        FORCE_CHANNEL_MIXING = 9,   // bool
+        AUDIO_DELAY = 10,           // int (audio delay in ms)
+        OUTPUT_BUFFER_LENGTH = 11,  // int (output buffer in ms)
+        SAMPLE_RATE = 12,           // enum (MPARSampleRate)
+        BIT_DEPTH = 13,             // enum (MPARBitDepth)
+        LIB_RESAMPLE_QUALITY = 14,  // enum (MPARLibResampleQuality)
+        USE_FILTERS = 15,           // int (flags from MPARUseFilters enum)
+        SETTING_AUDIO_DEVICE = 16,  // wchar
+        ALLOW_BITSTREAMING = 17     // bool
+    }
+
+    [ComImport, System.Security.SuppressUnmanagedCodeSecurity,
+    Guid("CA0CDCD8-D26B-4F8F-B23C-D8D949B14297"),
+    InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    public interface IMPAudioRendererConfig
+    {
+        [PreserveSig]
+        int GetBool(MPARSetting setting, out bool value);
+        [PreserveSig]
+        int SetBool(MPARSetting setting, bool value);
+        [PreserveSig]
+        int GetInt(MPARSetting setting, out int value);
+        [PreserveSig]
+        int SetInt(MPARSetting setting, int value);
+        [PreserveSig]
+        int GetString(MPARSetting setting, [Out, MarshalAs(UnmanagedType.LPWStr)] StringBuilder value);
+        [PreserveSig]
+        int SetString(MPARSetting setting, [In, MarshalAs(UnmanagedType.LPWStr)] string value);
+    }
 
     #endregion
 }

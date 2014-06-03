@@ -12,4 +12,16 @@ namespace MediaBrowser.Theater.DirectShow
         Buttons, 
         Still
     }
+
+    public enum VideoScalingScheme
+    {
+        HALF,
+        NORMAL,
+        DOUBLE,
+        STRETCH,
+        FROMINSIDE,
+        FROMOUTSIDE,
+        ZOOM1,
+        ZOOM2
+    };
 }

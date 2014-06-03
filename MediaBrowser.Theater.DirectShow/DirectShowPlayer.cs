@@ -99,7 +99,9 @@ namespace MediaBrowser.Theater.DirectShow
         private string _filePath = string.Empty;
         private bool _customEvrPresenterLoaded = false;
         private IUserInputManager _input = null;
-        private MMDevice _audioDevice = null;
+        //private MMDevice _audioDevice = null;
+
+        VideoScalingScheme _iVideoScaling = VideoScalingScheme.FROMINSIDE;
 
         #region LAVConfigurationValues
 
@@ -1371,8 +1373,8 @@ namespace MediaBrowser.Theater.DirectShow
                         typeof (IMFVideoProcessor).GUID,
                         out objVideoProc
                         );
-                    MediaBrowser.Theater.DirectShow.InterfaceOverride.IMFVideoProcessor evrProc =
-                        objVideoProc as MediaBrowser.Theater.DirectShow.InterfaceOverride.IMFVideoProcessor;
+                    IMFVideoProcessor evrProc =
+                        objVideoProc as IMFVideoProcessor;
                     int dModes;
                     IntPtr ppModes = IntPtr.Zero;
                     Guid lpMode = Guid.Empty;
@@ -1571,8 +1573,92 @@ namespace MediaBrowser.Theater.DirectShow
             // Set the display position to the entire window.
             if (_mPDisplay != null)
             {
-                var rc = new MFRect(0, 0, screenWidth, screenHeight);
-                _mPDisplay.SetVideoPosition(null, rc);
+                MFRect dRect = new MFRect(0, 0, screenWidth, screenHeight);
+                MFSize vSize = new MFSize(), vAR = new MFSize();
+                double m_ZoomX = 1, m_ZoomY = 1, m_PosX = 0.5, m_PosY = 0.5;                  
+                MFVideoNormalizedRect sRect = new MFVideoNormalizedRect();
+                sRect.top = 0;
+                sRect.left = 0;
+                sRect.right = 1;
+                sRect.bottom = 1;
+
+                int hr = _mPDisplay.GetNativeVideoSize(vSize, vAR);
+                if (hr > -1)
+                {
+                    double dVideoAR = (double)vSize.Width / vSize.Height;
+
+                    double dWRWidth = screenWidth;
+                    double dWRHeight = screenHeight;
+
+                    double dVRWidth = dWRHeight * dVideoAR;
+                    double dVRHeight;
+
+                    switch (_iVideoScaling)
+                    {
+                        case VideoScalingScheme.HALF:
+                            dVRWidth = vSize.Width * 0.5;
+                            dVRHeight = vSize.Height * 0.5;
+                            break;
+                        case VideoScalingScheme.NORMAL:
+                            dVRWidth = vSize.Width;
+                            dVRHeight = vSize.Height;
+                            break;
+                        case VideoScalingScheme.DOUBLE:
+                            dVRWidth = vSize.Width * 2.0;
+                            dVRHeight = vSize.Height * 2.0;
+                            break;
+                        case VideoScalingScheme.STRETCH:
+                            dVRWidth = dWRWidth;
+                            dVRHeight = dWRHeight;
+                            break;
+                        default:
+                        //ASSERT(FALSE);
+                        // Fallback to "Touch Window From Inside" if settings were corrupted.
+                        case VideoScalingScheme.FROMINSIDE:
+                        case VideoScalingScheme.FROMOUTSIDE:
+                            if ((screenWidth < dVRWidth) != (_iVideoScaling == VideoScalingScheme.FROMOUTSIDE))
+                            {
+                                dVRWidth = dWRWidth;
+                                dVRHeight = dVRWidth / dVideoAR;
+                            }
+                            else
+                            {
+                                dVRHeight = dWRHeight;
+                            }
+                            break;
+                        case VideoScalingScheme.ZOOM1:
+                        case VideoScalingScheme.ZOOM2:
+                            {
+                                double minw = dWRWidth < dVRWidth ? dWRWidth : dVRWidth;
+                                double maxw = dWRWidth > dVRWidth ? dWRWidth : dVRWidth;
+
+                                double scale = _iVideoScaling == VideoScalingScheme.ZOOM1 ? 1.0 / 3.0 : 2.0 / 3.0;
+                                dVRWidth = minw + (maxw - minw) * scale;
+                                dVRHeight = dVRWidth / dVideoAR;
+                                break;
+                            }
+                    }
+
+                    // Scale video frame
+                    double dScaledVRWidth = m_ZoomX * dVRWidth;
+                    double dScaledVRHeight = m_ZoomY * dVRHeight;
+
+                    // Position video frame
+                    // left and top parts are allowed to be negative
+                    dRect.left = (int)Math.Round(m_PosX * (dWRWidth * 3.0 - dScaledVRWidth) - dWRWidth);
+                    dRect.top = (int)Math.Round(m_PosY * (dWRHeight * 3.0 - dScaledVRHeight) - dWRHeight);
+                    // right and bottom parts are always at picture center or beyond, so never negative
+                    dRect.right = (int)Math.Round(dRect.left + dScaledVRWidth);
+                    dRect.bottom = (int)Math.Round(dRect.top + dScaledVRHeight);
+
+                    //apply overscan
+                    //dRect.top = dRect.top - (ps.OverscanHeight / 2);
+                    //dRect.left = dRect.left - (ps.OverscanWidth / 2);
+                    //dRect.right = dRect.right + (ps.OverscanWidth / 2);//this.Width;
+                    //dRect.bottom = dRect.bottom + (ps.OverscanHeight / 2);//this.Height;
+                }
+
+                _mPDisplay.SetVideoPosition(sRect, dRect);
             }
 
             // Get Aspect Ratio

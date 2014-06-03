@@ -179,7 +179,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
         {
             _imageCancellationTokenSource = new CancellationTokenSource();
 
-            if (_chapter.ImageTag.HasValue) {
+            if (!string.IsNullOrEmpty(_chapter.ImageTag)) {
                 var options = new ImageOptions {
                     Height = 100,
                     ImageIndex = _item.Chapters.IndexOf(_chapter),

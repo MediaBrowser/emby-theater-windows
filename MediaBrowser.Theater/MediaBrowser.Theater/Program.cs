@@ -14,6 +14,8 @@ namespace MediaBrowser.Theater
 {
     public static class Program
     {
+        public const string PackageName = "MediaBrowser.Theater";
+
         [STAThread]
         public static void Main(string[] args)
         {
@@ -54,7 +56,7 @@ namespace MediaBrowser.Theater
 
         private static bool InstallUpdatePackage(ApplicationPaths appPaths, NlogManager logManager)
         {
-            string updateArchive = Path.Combine(appPaths.TempUpdatePath, Constants.MbTheaterPkgName + ".zip");
+            string updateArchive = Path.Combine(appPaths.TempUpdatePath, PackageName + ".zip");
 
             if (File.Exists(updateArchive)) {
                 // Update is there - execute update

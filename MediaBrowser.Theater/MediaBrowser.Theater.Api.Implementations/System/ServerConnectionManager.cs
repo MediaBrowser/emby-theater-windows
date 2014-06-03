@@ -38,7 +38,7 @@ namespace MediaBrowser.Theater.Api.System
             await SendWakeOnLanCommand();
 
             try {
-                systemInfo = await _apiClient.GetSystemInfoAsync().ConfigureAwait(false);
+                systemInfo = await _apiClient.GetSystemInfoAsync(CancellationToken.None).ConfigureAwait(false);
 
                 foundServer = true;
             }
@@ -87,7 +87,7 @@ namespace MediaBrowser.Theater.Api.System
             if (!foundServer && _configurationManager.Configuration.WakeOnLanConfiguration.HostMacAddresses.Count > 0) {
                 for (int i = 0; i < _configurationManager.Configuration.WakeOnLanConfiguration.WakeAttempts; i++) {
                     try {
-                        systemInfo = await _apiClient.GetSystemInfoAsync().ConfigureAwait(false);
+                        systemInfo = await _apiClient.GetSystemInfoAsync(CancellationToken.None).ConfigureAwait(false);
                     }
                     catch (Exception) { }
 
@@ -107,7 +107,7 @@ namespace MediaBrowser.Theater.Api.System
 
                     _apiClient.ChangeServerLocation(parts[0], address.Port);
 
-                    await _apiClient.GetSystemInfoAsync().ConfigureAwait(false);
+                    await _apiClient.GetSystemInfoAsync(CancellationToken.None).ConfigureAwait(false);
 
                     foundServer = true;
                 }

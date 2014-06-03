@@ -8,8 +8,20 @@ namespace MediaBrowser.Theater.DirectShow
 {
     internal enum DvdMenuMode
     {
-        No, 
-        Buttons, 
+        No,
+        Buttons,
         Still
     }
+
+    public enum VideoScalingScheme
+    {
+        HALF,
+        NORMAL,
+        DOUBLE,
+        STRETCH,
+        FROMINSIDE,
+        FROMOUTSIDE,
+        ZOOM1,
+        ZOOM2
+    };
 }

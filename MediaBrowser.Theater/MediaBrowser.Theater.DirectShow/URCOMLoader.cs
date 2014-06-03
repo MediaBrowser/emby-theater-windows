@@ -7,12 +7,12 @@ using System.IO;
 using DirectShowLib;
 using System.Text.RegularExpressions;
 using DirectShowLib.Utils;
+using MediaBrowser.Model.IO;
 using MediaBrowser.Theater.Api.Configuration;
 using MediaBrowser.Theater.Api;
 using System.Reflection;
 using System.Net;
 using System.Threading;
-using MediaBrowser.Common.Implementations.Archiving;
 
 namespace MediaBrowser.Theater.DirectShow
 {
@@ -46,7 +46,22 @@ namespace MediaBrowser.Theater.DirectShow
         SerializableDictionary<Guid, KnownCOMObject> _knownObjects;
         bool _preferURObjects = true;
 
-        public static void EnsureObjects(ITheaterConfigurationManager mbtConfig, bool block)
+        private static string _exeVersion = string.Empty;
+        public static string ExeVersion
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(_exeVersion))
+                {
+                    //build a shorter version # so we don't check every time the exe is rebuilt
+                    Version appVer = Assembly.GetEntryAssembly().GetName().Version;
+                    _exeVersion = string.Format("{0}.{1}.{2}", appVer.Major, appVer.Minor, appVer.Build);
+                }
+                return _exeVersion;
+            }
+        }
+
+        public static void EnsureObjects(ITheaterConfigurationManager mbtConfig, bool block, IZipClient zipClient)
         {
             try
             {
@@ -59,16 +74,18 @@ namespace MediaBrowser.Theater.DirectShow
                     Directory.CreateDirectory(objPath);
                 }
 
-                DateTime lastCheckDate = ReadTextDate(lastCheckedPath);
-                if (lastCheckDate.AddDays(7) > DateTime.Now)
+                DateAndVersion lastCheck = new DateAndVersion(lastCheckedPath);
+                if (lastCheck.StoredDate.AddDays(7) > DateTime.Now)
                     needsCheck = false;
+                if (lastCheck.VersionNumber != ExeVersion)
+                    needsCheck = true;
 
                 if (needsCheck)
                 {
                     if (block)
-                        CheckObjects(objPath);
+                        CheckObjects(objPath, zipClient);
                     else
-                        ThreadPool.QueueUserWorkItem(new WaitCallback(CheckObjects), objPath);
+                        ThreadPool.QueueUserWorkItem(o => CheckObjects(o, zipClient), objPath);
                 }
             }
             catch (Exception ex)
@@ -77,46 +94,7 @@ namespace MediaBrowser.Theater.DirectShow
             }
         }
 
-        private static DateTime ReadTextDate(string filePath)
-        {
-            DateTime textDate = DateTime.MinValue;
-
-            try
-            {
-                if (File.Exists(filePath))
-                {
-                    using (StreamReader sr = new StreamReader(filePath))
-                    {
-                        string firstLine = sr.ReadLine();
-                        if (!DateTime.TryParse(firstLine, out textDate))
-                        {
-                            textDate = DateTime.MinValue; //should be unecessary, but...
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-            }
-
-            return textDate;
-        }
-
-        private static void WriteTextDate(string filePath, DateTime theDate)
-        {
-            try
-            {
-                using (StreamWriter sw = new StreamWriter(filePath))
-                {
-                    sw.WriteLine(theDate);
-                }
-            }
-            catch (Exception ex)
-            {
-            }
-        }
-
-        private static void CheckObjects(object objDlPath)
+        private static void CheckObjects(object objDlPath, IZipClient zipClient)
         {
             try
             {
@@ -129,22 +107,21 @@ namespace MediaBrowser.Theater.DirectShow
                     string dlList = mwc.DownloadString(objManifest);
                     if (!string.IsNullOrWhiteSpace(dlList))
                     {
-                        ZipClient zc = new ZipClient();
-                        string[] objToCheck = dlList.Split(new string[]{System.Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries);
+                        string[] objToCheck = dlList.Split(new string[] { System.Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
                         foreach (string toCheck in objToCheck)
                         {
                             string txtPath = Path.Combine(dlPath, Path.ChangeExtension(toCheck, "txt"));
-                            DateTime lastUpdateDate = ReadTextDate(txtPath);
+                            DateAndVersion lastUpdate = new DateAndVersion(txtPath);
                             Uri comPath = new Uri(Path.Combine(Path.Combine(System.Configuration.ConfigurationSettings.AppSettings["PrivateObjectsManifest"], toCheck)));
                             WebRequest request = WebRequest.Create(comPath);
                             request.Method = "HEAD";
-                           
-                            using(WebResponse wr = request.GetResponse())
-                            {                                
+
+                            using (WebResponse wr = request.GetResponse())
+                            {
                                 DateTime lmDate;
                                 if (DateTime.TryParse(wr.Headers[HttpResponseHeader.LastModified], out lmDate))
                                 {
-                                    if (lmDate > lastUpdateDate)
+                                    if (lmDate > lastUpdate.StoredDate)
                                     {
                                         //download the updated component
                                         using (WebClient fd = new WebClient())
@@ -155,10 +132,10 @@ namespace MediaBrowser.Theater.DirectShow
                                             {
                                                 using (MemoryStream ms = new MemoryStream(comBin))
                                                 {
-                                                    zc.ExtractAll(ms, dlPath, true);
+                                                    zipClient.ExtractAll(ms, dlPath, true);
                                                 }
 
-                                                WriteTextDate(txtPath, lmDate);
+                                                DateAndVersion.Write(new DateAndVersion(txtPath, lmDate, ExeVersion));
                                             }
                                         }
                                     }
@@ -168,7 +145,7 @@ namespace MediaBrowser.Theater.DirectShow
                     }
                 }
 
-                WriteTextDate(lastCheckedPath, DateTime.Now);
+                DateAndVersion.Write(new DateAndVersion(lastCheckedPath, DateTime.Now, ExeVersion));
             }
             catch (Exception ex)
             {
@@ -186,10 +163,10 @@ namespace MediaBrowser.Theater.DirectShow
             private set;
         }
 
-        public URCOMLoader(ITheaterConfigurationManager mbtConfig)
+        public URCOMLoader(ITheaterConfigurationManager mbtConfig, IZipClient zipClient)
         {
             //this should be called on app load, but this will make sure it gets done.
-            URCOMLoader.EnsureObjects(mbtConfig, true);
+            URCOMLoader.EnsureObjects(mbtConfig, true, zipClient);
 
             _knownObjects = mbtConfig.Configuration.InternalPlayerConfiguration.COMConfig.FilterList;
             SearchPath = Path.Combine(mbtConfig.CommonApplicationPaths.ProgramDataPath, OJB_FOLDER);
@@ -337,5 +314,69 @@ namespace MediaBrowser.Theater.DirectShow
         }
 
         #endregion
+    }
+
+    public class DateAndVersion
+    {
+        public string FilePath { get; private set; }
+
+        public DateTime StoredDate { get; set; }
+        public string VersionNumber { get; set; }
+
+        public DateAndVersion(string filePath)
+        {
+            FilePath = filePath;
+            StoredDate = DateTime.MinValue;
+            VersionNumber = string.Empty;
+
+            try
+            {
+                DateTime textDate;
+                if (File.Exists(FilePath))
+                {
+                    using (StreamReader sr = new StreamReader(filePath))
+                    {
+                        string firstLine = sr.ReadLine();
+                        if (DateTime.TryParse(firstLine, out textDate))
+                        {
+                            StoredDate = textDate;
+                        }
+                        string secondLine = sr.ReadLine();
+                        if (!string.IsNullOrWhiteSpace(secondLine))
+                            VersionNumber = secondLine;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+            }
+        }
+
+        public DateAndVersion(string filePath, DateTime storedDate, string versionNumber)
+        {
+            FilePath = filePath;
+            StoredDate = storedDate;
+            VersionNumber = versionNumber;
+        }
+
+        public void Write()
+        {
+            DateAndVersion.Write(this);
+        }
+
+        public static void Write(DateAndVersion dv)
+        {
+            try
+            {
+                using (StreamWriter sw = new StreamWriter(dv.FilePath))
+                {
+                    sw.WriteLine(dv.StoredDate);
+                    sw.WriteLine(dv.VersionNumber);
+                }
+            }
+            catch (Exception ex)
+            {
+            }
+        }
     }
 }

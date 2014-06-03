@@ -8,6 +8,7 @@ using MediaBrowser.Common;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
+using MediaBrowser.Model.Events;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Model.Serialization;
@@ -117,7 +118,7 @@ namespace MediaBrowser.Theater.EntryPoints
         private async void UpdateServerLocation()
         {
             try {
-                SystemInfo systemInfo = await _apiClient.GetSystemInfoAsync().ConfigureAwait(false);
+                SystemInfo systemInfo = await _apiClient.GetSystemInfoAsync(CancellationToken.None).ConfigureAwait(false);
 
                 ApiWebSocket socket = ApiWebSocket;
 
@@ -149,13 +150,13 @@ namespace MediaBrowser.Theater.EntryPoints
             EnsureWebSocket();
         }
 
-        private void socket_MessageCommand(object sender, MessageCommandEventArgs e)
+        private void socket_MessageCommand(object sender, GenericEventArgs<MessageCommand> e)
         {
             _presentation.ShowMessage(new MessageBoxInfo {
                 Button = MessageBoxButton.OK,
-                Caption = e.Request.Header,
-                Text = e.Request.Text,
-                TimeoutMs = Convert.ToInt32(e.Request.TimeoutMs ?? 0)
+                Caption = e.Argument.Header,
+                Text = e.Argument.Text,
+                TimeoutMs = Convert.ToInt32(e.Argument.TimeoutMs ?? 0)
             });
         }
 
@@ -195,7 +196,7 @@ namespace MediaBrowser.Theater.EntryPoints
             }
         }
 
-        private async void _apiWebSocket_PlayCommand(object sender, PlayRequestEventArgs e)
+        private async void _apiWebSocket_PlayCommand(object sender, GenericEventArgs<PlayRequest> e)
         {
             if (_session.CurrentUser == null) {
                 OnAnonymousRemoteControlCommand();
@@ -204,7 +205,7 @@ namespace MediaBrowser.Theater.EntryPoints
 
             try {
                 ItemsResult result = await _apiClient.GetItemsAsync(new ItemQuery {
-                    Ids = e.Request.ItemIds,
+                    Ids = e.Argument.ItemIds,
                     UserId = _session.CurrentUser.Id,
                     Fields = new[] {
                         ItemFields.Chapters,
@@ -216,7 +217,7 @@ namespace MediaBrowser.Theater.EntryPoints
                 });
 
                 await _playbackManager.Play(new PlayOptions {
-                    StartPositionTicks = e.Request.StartPositionTicks ?? 0,
+                    StartPositionTicks = e.Argument.StartPositionTicks ?? 0,
                     GoFullScreen = true,
                     Items = result.Items.ToList()
                 });
@@ -226,7 +227,7 @@ namespace MediaBrowser.Theater.EntryPoints
             }
         }
 
-        private void _apiWebSocket_PlaystateCommand(object sender, PlaystateRequestEventArgs e)
+        private void _apiWebSocket_PlaystateCommand(object sender, GenericEventArgs<PlaystateRequest> e)
         {
             if (_session.CurrentUser == null) {
                 OnAnonymousRemoteControlCommand();
@@ -240,7 +241,7 @@ namespace MediaBrowser.Theater.EntryPoints
                 return;
             }
 
-            PlaystateRequest request = e.Request;
+            PlaystateRequest request = e.Argument;
 
             switch (request.Command) {
                 case PlaystateCommand.Pause:
@@ -253,7 +254,7 @@ namespace MediaBrowser.Theater.EntryPoints
                     player.UnPause();
                     break;
                 case PlaystateCommand.Seek:
-                    player.Seek(e.Request.SeekPositionTicks ?? 0);
+                    player.Seek(e.Argument.SeekPositionTicks ?? 0);
                     break;
                 case PlaystateCommand.PreviousTrack: {
                     player.GoToPreviousTrack();
@@ -266,16 +267,16 @@ namespace MediaBrowser.Theater.EntryPoints
             }
         }
 
-        private void _apiWebSocket_UserUpdated(object sender, UserUpdatedEventArgs e) { }
+        private void _apiWebSocket_UserUpdated(object sender, GenericEventArgs<UserDto> e) { }
 
-        private async void _apiWebSocket_UserDeleted(object sender, UserDeletedEventArgs e)
+        private async void _apiWebSocket_UserDeleted(object sender, GenericEventArgs<string> e)
         {
-            if (_session.CurrentUser != null && string.Equals(e.Id, _session.CurrentUser.Id)) {
+            if (_session.CurrentUser != null && string.Equals(e.Argument, _session.CurrentUser.Id)) {
                 await _session.Logout();
             }
         }
 
-        private async void _apiWebSocket_BrowseCommand(object sender, BrowseRequestEventArgs e)
+        private async void _apiWebSocket_BrowseCommand(object sender, GenericEventArgs<BrowseRequest> e)
         {
             if (_session.CurrentUser == null) {
                 OnAnonymousRemoteControlCommand();
@@ -283,7 +284,7 @@ namespace MediaBrowser.Theater.EntryPoints
             }
 
             try {
-                BaseItemDto dto = await _apiClient.GetItemAsync(e.Request.ItemId, _session.CurrentUser.Id);
+                BaseItemDto dto = await _apiClient.GetItemAsync(e.Argument.ItemId, _session.CurrentUser.Id);
                 await _nav.Navigate(Go.To.Item(dto));
             }
             catch (Exception ex) {

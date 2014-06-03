@@ -281,7 +281,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
                             continue;
                         }
                     } else if (imageType == ImageType.Thumb) {
-                        if (!item.ImageTags.ContainsKey(imageType) && !item.ParentThumbImageTag.HasValue && !item.SeriesThumbImageTag.HasValue) {
+                        if (!item.ImageTags.ContainsKey(imageType) && string.IsNullOrEmpty(item.ParentThumbImageTag) && string.IsNullOrEmpty(item.SeriesThumbImageTag)) {
                             continue;
                         }
                     } else {

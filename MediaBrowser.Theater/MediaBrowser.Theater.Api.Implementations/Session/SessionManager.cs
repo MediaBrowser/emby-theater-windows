@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using MediaBrowser.Common.Events;
 using MediaBrowser.Model.ApiClient;
@@ -123,7 +124,7 @@ namespace MediaBrowser.Theater.Api.Session
 
         protected async Task InternalLogin(string username, byte[] hash)
         {
-            SystemInfo systemInfo = await _apiClient.GetSystemInfoAsync();
+            SystemInfo systemInfo = await _apiClient.GetSystemInfoAsync(CancellationToken.None);
 
             if (Version.Parse(systemInfo.Version) < RequiredServerVersion) {
                 //todo show server connection error notification

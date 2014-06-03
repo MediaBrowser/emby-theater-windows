@@ -40,28 +40,27 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Assemblies\DirectShowLib-2005.dll</HintPath>
     </Reference>
-    <Reference Include="MediaBrowser.Common, Version=3.0.5217.42231, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.Common, Version=3.0.5267.16996, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.3.0.352\lib\net45\MediaBrowser.Common.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.394\lib\net45\MediaBrowser.Common.dll</HintPath>
     </Reference>
-    <Reference Include="MediaBrowser.Common.Implementations">
-      <HintPath>..\packages\MediaBrowser.Common.Internal.3.0.352\lib\net45\MediaBrowser.Common.Implementations.dll</HintPath>
-    </Reference>
-    <Reference Include="MediaBrowser.Model, Version=3.0.5217.42230, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.Common.Implementations, Version=3.0.5267.16997, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.3.0.352\lib\net45\MediaBrowser.Model.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.Internal.3.0.394\lib\net45\MediaBrowser.Common.Implementations.dll</HintPath>
     </Reference>
-    <Reference Include="MediaFoundation, Version=2.0.0.0, Culture=neutral, PublicKeyToken=36fa660e1d6ebf8d, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.Model, Version=3.0.5267.16995, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Assemblies\MediaFoundation.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.394\lib\net45\MediaBrowser.Model.dll</HintPath>
     </Reference>
-    <Reference Include="NLog">
-      <HintPath>..\packages\NLog.2.1.0\lib\net45\NLog.dll</HintPath>
+    <Reference Include="NLog, Version=3.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\NLog.3.0.0.0\lib\net45\NLog.dll</HintPath>
     </Reference>
     <Reference Include="PresentationUI, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="ReachFramework" />
-    <Reference Include="ServiceStack.Text">
-      <HintPath>..\packages\MediaBrowser.Common.Internal.3.0.352\lib\net45\ServiceStack.Text.dll</HintPath>
+    <Reference Include="ServiceStack.Text, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\MediaBrowser.Common.Internal.3.0.394\lib\net45\ServiceStack.Text.dll</HintPath>
     </Reference>
     <Reference Include="SharpCompress">
       <HintPath>..\packages\sharpcompress.0.10.3\lib\net40\SharpCompress.dll</HintPath>
@@ -106,7 +105,6 @@
     <Compile Include="IInternalPlayerWindow.cs" />
     <Compile Include="Imports.cs" />
     <Compile Include="InterfaceOverride\EVR.cs" />
-    <Compile Include="InterfaceOverride\MFUtils.cs" />
     <Compile Include="InternalDirectShowPlayer.cs" />
     <Compile Include="InternalPlayerWindow.cs">
       <SubType>Form</SubType>
@@ -116,6 +114,24 @@
     </Compile>
     <Compile Include="LavInterfaces.cs" />
     <Compile Include="MadvrInterface.cs" />
+    <Compile Include="MediaFoundation\Alt.cs" />
+    <Compile Include="MediaFoundation\dxvahd.cs" />
+    <Compile Include="MediaFoundation\EVR.cs" />
+    <Compile Include="MediaFoundation\Externs.cs" />
+    <Compile Include="MediaFoundation\mfcaptureengine.cs" />
+    <Compile Include="MediaFoundation\MFIdl.cs" />
+    <Compile Include="MediaFoundation\mfmediacapture.cs" />
+    <Compile Include="MediaFoundation\mfmediaengine.cs" />
+    <Compile Include="MediaFoundation\mfmp2dlna.cs" />
+    <Compile Include="MediaFoundation\MFObjects.cs" />
+    <Compile Include="MediaFoundation\MFPlay.cs" />
+    <Compile Include="MediaFoundation\MFReadWrite.cs" />
+    <Compile Include="MediaFoundation\mfsharingengine.cs" />
+    <Compile Include="MediaFoundation\MFTransform.cs" />
+    <Compile Include="MediaFoundation\MFUtils.cs" />
+    <Compile Include="MediaFoundation\misc.cs" />
+    <Compile Include="MediaFoundation\OpmApi.cs" />
+    <Compile Include="MediaFoundation\WMContainer.cs" />
     <Compile Include="PlayablePathBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StringProcessing.cs" />

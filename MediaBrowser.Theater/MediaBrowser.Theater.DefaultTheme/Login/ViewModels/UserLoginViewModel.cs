@@ -165,7 +165,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Login.ViewModels
 
         private async void DownloadImage()
         {
-            if (_user == null || !_user.PrimaryImageTag.HasValue) {
+            if (_user == null || string.IsNullOrEmpty(_user.PrimaryImageTag)) {
                 return;
             }
 

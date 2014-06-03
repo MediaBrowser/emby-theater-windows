@@ -324,13 +324,13 @@ namespace MediaBrowser.Theater
         public override async Task<CheckForUpdateResult> CheckForApplicationUpdate(CancellationToken cancellationToken,
                                                                                    IProgress<double> progress)
         {
-            SystemInfo serverInfo = await ApiClient.GetSystemInfoAsync().ConfigureAwait(false);
+            SystemInfo serverInfo = await ApiClient.GetSystemInfoAsync(cancellationToken).ConfigureAwait(false);
 
             IEnumerable<PackageInfo> availablePackages = await InstallationManager.GetAvailablePackagesWithoutRegistrationInfo(cancellationToken).ConfigureAwait(false);
 
             var serverVersion = new Version(serverInfo.Version);
 
-            PackageVersionInfo version = InstallationManager.GetLatestCompatibleVersion(availablePackages, Constants.MbTheaterPkgName, null, serverVersion, ConfigurationManager.CommonConfiguration.SystemUpdateLevel);
+            PackageVersionInfo version = InstallationManager.GetLatestCompatibleVersion(availablePackages, Program.PackageName, null, serverVersion, ConfigurationManager.CommonConfiguration.SystemUpdateLevel);
 
             return version != null ? new CheckForUpdateResult { AvailableVersion = version.version, IsUpdateAvailable = version.version > ApplicationVersion, Package = version } :
                        new CheckForUpdateResult { AvailableVersion = ApplicationVersion, IsUpdateAvailable = false };
@@ -347,7 +347,7 @@ namespace MediaBrowser.Theater
         {
             await InstallationManager.InstallPackage(package, progress, cancellationToken).ConfigureAwait(false);
 
-            OnApplicationUpdated(package.version);
+            OnApplicationUpdated(package);
         }
 
         protected override void ConfigureAutoRunAtStartup(bool autorun)

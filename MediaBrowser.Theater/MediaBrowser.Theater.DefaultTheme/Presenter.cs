@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,6 +6,7 @@ using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Interop;
+using System.Windows.Threading;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Api;
 using MediaBrowser.Theater.Api.Events;
@@ -30,24 +30,14 @@ namespace MediaBrowser.Theater.DefaultTheme
 
     public class WindowManager
     {
-        private readonly INavigator _navigator;
-        private readonly IInternalPlayerWindowManager _internalPlayerWindowManager;
         private readonly ITheaterApplicationHost _appHost;
+        private readonly IInternalPlayerWindowManager _internalPlayerWindowManager;
         private readonly ILogger _logger;
+        private readonly INavigator _navigator;
+        private PopupWindow _currentPopup;
 
         private MainWindow _mainWindow;
         private IntPtr _mainWindowHandle;
-        private PopupWindow _currentPopup;
-
-        public event Action<Window> MainWindowLoaded;
-        
-        protected virtual void OnMainWindowLoaded(Window obj)
-        {
-            Action<Window> handler = MainWindowLoaded;
-            if (handler != null) {
-                handler(obj);
-            }
-        }
 
         public WindowManager(INavigator navigator, IInternalPlayerWindowManager internalPlayerWindowManager, ILogManager logManager, ITheaterApplicationHost appHost)
         {
@@ -65,6 +55,16 @@ namespace MediaBrowser.Theater.DefaultTheme
         public FrameworkElement ActiveWindow
         {
             get { return _currentPopup as FrameworkElement ?? _mainWindow; }
+        }
+
+        public event Action<Window> MainWindowLoaded;
+
+        protected virtual void OnMainWindowLoaded(Window obj)
+        {
+            Action<Window> handler = MainWindowLoaded;
+            if (handler != null) {
+                handler(obj);
+            }
         }
 
         private void FocusMainWindow()
@@ -156,6 +156,25 @@ namespace MediaBrowser.Theater.DefaultTheme
 
                 // set window state
                 window.WindowState = config.WindowState.Value;
+            } else {
+                // set first startup size and state
+                if (double.IsNaN(window.Width)) {
+                    window.Width = SystemParameters.VirtualScreenWidth*0.75;
+                }
+
+                if (double.IsNaN(window.Height)) {
+                    window.Height = SystemParameters.VirtualScreenHeight*0.75;
+                }
+
+                if (double.IsNaN(window.Top)) {
+                    window.Top = 0;
+                }
+
+                if (double.IsNaN(window.Left)) {
+                    window.Left = 0;
+                }
+
+                window.WindowState = WindowState.Normal;
             }
 
             window.ShowInTaskbar = window.WindowState == WindowState.Minimized;
@@ -177,29 +196,25 @@ namespace MediaBrowser.Theater.DefaultTheme
             int? formLeft = null;
             int? formTop = null;
 
-            try
-            {
+            try {
                 formWidth = Convert.ToInt32(_mainWindow.Width);
                 formHeight = Convert.ToInt32(_mainWindow.Height);
             }
-            catch (OverflowException)
-            {
+            catch (OverflowException) {
                 formWidth = null;
                 formHeight = null;
             }
-            try
-            {
+            try {
                 formTop = Convert.ToInt32(_mainWindow.Top);
                 formLeft = Convert.ToInt32(_mainWindow.Left);
             }
-            catch (OverflowException)
-            {
+            catch (OverflowException) {
                 formLeft = null;
                 formTop = null;
             }
 
-            var state = GetWindowsFormState(_mainWindow.WindowState);
-            
+            FormWindowState state = GetWindowsFormState(_mainWindow.WindowState);
+
             var internalPlayerWindowThread = new Thread(() => ShowHiddenWindow(formWidth, formHeight, formTop, formLeft, startPosition, state));
             internalPlayerWindowThread.Name = "Internal Player Window";
             internalPlayerWindowThread.SetApartmentState(ApartmentState.MTA);
@@ -210,8 +225,7 @@ namespace MediaBrowser.Theater.DefaultTheme
 
         private FormWindowState GetWindowsFormState(WindowState state)
         {
-            switch (state)
-            {
+            switch (state) {
                 case WindowState.Maximized:
                     return FormWindowState.Maximized;
                 case WindowState.Minimized:
@@ -261,13 +275,13 @@ namespace MediaBrowser.Theater.DefaultTheme
 
             playerWindow.Show();
 
-            System.Windows.Threading.Dispatcher.Run();
+            Dispatcher.Run();
         }
 
         private void MovePlayerWindow(InternalPlayerWindow playerWindow)
         {
-            var top = _mainWindow.Top;
-            var left = _mainWindow.Left;
+            double top = _mainWindow.Top;
+            double left = _mainWindow.Left;
 
             if (double.IsNaN(top) || double.IsNaN(left)) {
                 return;
@@ -281,7 +295,7 @@ namespace MediaBrowser.Theater.DefaultTheme
 
         private void UpdatePlayerWindowState(InternalPlayerWindow playerWindow)
         {
-            var state = GetWindowsFormState(_mainWindow.WindowState);
+            FormWindowState state = GetWindowsFormState(_mainWindow.WindowState);
 
             _mainWindow.ShowInTaskbar = state == FormWindowState.Minimized;
 
@@ -297,11 +311,10 @@ namespace MediaBrowser.Theater.DefaultTheme
 
         private void UpdatePlayerWindowSize(InternalPlayerWindow playerWindow)
         {
-            var width = _mainWindow.Width;
-            var height = _mainWindow.Height;
+            double width = _mainWindow.Width;
+            double height = _mainWindow.Height;
 
-            if (double.IsNaN(width) || double.IsNaN(height))
-            {
+            if (double.IsNaN(width) || double.IsNaN(height)) {
                 return;
             }
 
@@ -325,7 +338,7 @@ namespace MediaBrowser.Theater.DefaultTheme
             }
         }
 
-        void HiddenWindow_Load(object sender, EventArgs e)
+        private void HiddenWindow_Load(object sender, EventArgs e)
         {
             // Hide this from ALT-TAB
             //var handle = HiddenWindow.Handle;
@@ -339,10 +352,9 @@ namespace MediaBrowser.Theater.DefaultTheme
                 return;
             }
 
-            var handle = window.Handle;
+            IntPtr handle = window.Handle;
 
-            _mainWindow.Dispatcher.InvokeAsync(() =>
-            {
+            _mainWindow.Dispatcher.InvokeAsync(() => {
                 new WindowInteropHelper(_mainWindow).Owner = handle;
                 _mainWindow.Show();
             });
@@ -387,19 +399,13 @@ namespace MediaBrowser.Theater.DefaultTheme
     public class Presenter
         : IPresenter
     {
+        private readonly IEventBus<PageLoadedEvent> _pageLoadedEvent;
         private readonly IEventBus<ShowNotificationEvent> _showNotificationEvent;
         private readonly IEventBus<ShowPageEvent> _showPageEvent;
-        private readonly IEventBus<PageLoadedEvent> _pageLoadedEvent;
 
         private readonly WindowManager _windowManager;
         private IntPtr _mainWindowHandle;
 
-        public event Action<Window> MainWindowLoaded
-        {
-            add { _windowManager.MainWindowLoaded += value; }
-            remove { _windowManager.MainWindowLoaded -= value; }
-        }
-        
         public Presenter(IEventAggregator events, WindowManager windowManager)
         {
             _showPageEvent = events.Get<ShowPageEvent>();
@@ -408,9 +414,21 @@ namespace MediaBrowser.Theater.DefaultTheme
             _windowManager = windowManager;
         }
 
-        public Window MainApplicationWindow { get { return _windowManager.MainWindow; } }
+        public event Action<Window> MainWindowLoaded
+        {
+            add { _windowManager.MainWindowLoaded += value; }
+            remove { _windowManager.MainWindowLoaded -= value; }
+        }
 
-        public Window ActiveWindow { get { return _windowManager.ActiveWindow as Window; }}
+        public Window MainApplicationWindow
+        {
+            get { return _windowManager.MainWindow; }
+        }
+
+        public Window ActiveWindow
+        {
+            get { return _windowManager.ActiveWindow as Window; }
+        }
 
         public IntPtr MainApplicationWindowHandle
         {

@@ -186,6 +186,40 @@ namespace MediaBrowser.Theater.DirectShow
             }
         }
 
+        /// <summary>
+        /// Get the current subtitle index.
+        /// </summary>
+        /// <value>The current subtitle index.</value>
+        public int? CurrentSubtitleStreamIndex
+        {
+            get
+            {
+                if (_mediaPlayer != null)
+                {
+                    return _mediaPlayer.CurrentSubtitleStreamIndex;
+                }
+
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Get the current audio index.
+        /// </summary>
+        /// <value>The current audio index.</value>
+        public int? CurrentAudioStreamIndex
+        {
+            get
+            {
+                if (_mediaPlayer != null)
+                {
+                    return _mediaPlayer.CurrentAudioStreamIndex;
+                }
+
+                return null;
+            }
+        }
+
         public bool CanPlayByDefault(BaseItemDto item)
         {
             return item.IsVideo || item.IsAudio;
@@ -464,6 +498,24 @@ namespace MediaBrowser.Theater.DirectShow
         {
             _mediaPlayer.Stop(TrackCompletionReason.ChangeTrack, newIndex);
             InvokeOnPlayerThread(() => _mediaPlayer.Stop(TrackCompletionReason.ChangeTrack, newIndex));
+        }
+
+        public void NextTrack()
+        {
+            var nextIndex = CurrentPlaylistIndex + 1;
+            if (nextIndex < CurrentPlayOptions.Items.Count)
+            {
+                ChangeTrack(nextIndex);
+            }
+        }
+
+        public void PreviousTrack()
+        {
+            var previousIndex = CurrentPlaylistIndex - 1;
+            if (previousIndex >= 0 && previousIndex <= CurrentPlayOptions.Items.Count)
+            {
+                ChangeTrack(previousIndex);
+            }
         }
 
         public IReadOnlyList<SelectableMediaStream> SelectableStreams

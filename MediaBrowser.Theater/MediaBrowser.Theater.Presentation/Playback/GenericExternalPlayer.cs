@@ -5,6 +5,7 @@ using MediaBrowser.Model.IO;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Api.Configuration;
 using MediaBrowser.Theater.Api.Playback;
+using MediaBrowser.Theater.Api.UserInput;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,7 +13,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using MediaBrowser.Theater.Api.UserInput;
 
 namespace MediaBrowser.Theater.Presentation.Playback
 {
@@ -135,6 +135,35 @@ namespace MediaBrowser.Theater.Presentation.Playback
             get { return false; }
         }
 
+
+        /// <summary>
+        /// Gets a value indicating whether this instance can set which audio stream to play
+        /// </summary>
+        /// <value><c>true</c> if this instance can set the audio stream index; otherwise, <c>false</c>.</value>
+        public virtual bool CanSetAudioStreamIndex
+        {
+            get { return false; }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this instance can set which subtitle stream to play
+        /// </summary>
+        /// <value><c>true</c> if this instance can set the subtitle stream index; otherwise, <c>false</c>.</value>
+        public virtual bool CanSetSubtitleStreamIndex
+        {
+            get { return false; }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this instance accepts navigation commands 
+        /// Up, down, left, right, pageup, pagedown, goHome, goSettings
+        /// </summary>
+        /// <value><c>true</c> if this instance can set the subtitle stream index; otherwise, <c>false</c>.</value>
+        public virtual bool CanAcceptNavigationCommands
+        {
+            get { return false; }
+        }
+
         /// <summary>
         /// Gets a value indicating whether this instance can track progress.
         /// </summary>
@@ -181,6 +210,18 @@ namespace MediaBrowser.Theater.Presentation.Playback
         public long? CurrentPositionTicks { get; protected set; }
 
         public long? CurrentDurationTicks { get; protected set; }
+
+        /// <summary>
+        /// Get the current subtitle index.
+        /// </summary>
+        /// <value>The current subtitle index.</value>
+        public int? CurrentSubtitleStreamIndex { get { return null; } }
+
+        /// <summary>
+        /// Get the current audio index.
+        /// </summary>
+        /// <value>The current audio index.</value>
+        public int? CurrentAudioStreamIndex { get { return null; } }
 
         /// <summary>
         /// Determines whether this instance can play the specified item.
@@ -419,12 +460,49 @@ namespace MediaBrowser.Theater.Presentation.Playback
             throw new NotImplementedException();
         }
 
+        // <summary>
+        // Changes to the next track.
+        // <summary>
+        public void NextTrack()
+        {
+            throw new NotImplementedException();
+        }
+
+        // <summary>
+        // Changes to the previous track.
+        // </summary>
+        public void PreviousTrack()
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Sets the playback speed
         /// </summary>
         /// <param name="rate">The playback speed</param>
         /// <exception cref="System.NotImplementedException"></exception>
         public virtual void SetRate(double rate)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetSubtitleStreamIndex(int subtitleStreamIndex)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void NextSubtitleStream()
+        {
+            throw new NotImplementedException(); ;
+        }
+
+
+        public void SetAudioStreamIndex(int subtitleStreamIndex)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void NextAudioStream()
         {
             throw new NotImplementedException();
         }

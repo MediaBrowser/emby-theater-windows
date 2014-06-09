@@ -62,6 +62,25 @@ namespace MediaBrowser.Theater.Api.Playback
         bool CanPause { get; }
 
         /// <summary>
+        /// Gets a value indicating whether this instance can set which audio stream to play
+        /// </summary>
+        /// <value><c>true</c> if this instance can set the audio stream index; otherwise, <c>false</c>.</value>
+        bool CanSetAudioStreamIndex { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether this instance can set which subtitle stream to play
+        /// </summary>
+        /// <value><c>true</c> if this instance can set the subtitle stream index; otherwise, <c>false</c>.</value>
+        bool CanSetSubtitleStreamIndex { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether this instance accepts navigation commands 
+        /// Up, down, left, right, pageup, pagedown, goHome, goSettings
+        /// </summary>
+        /// <value><c>true</c> if this instance can set the subtitle stream index; otherwise, <c>false</c>.</value>
+        bool CanAcceptNavigationCommands { get; }
+
+        /// <summary>
         /// Gets a value indicating whether this instance can queue.
         /// </summary>
         /// <value><c>true</c> if this instance can queue; otherwise, <c>false</c>.</value>
@@ -102,6 +121,18 @@ namespace MediaBrowser.Theater.Api.Playback
         /// </summary>
         /// <value>The current duration ticks.</value>
         long? CurrentDurationTicks { get; }
+
+        /// <summary>
+        /// Get the current subtitle index.
+        /// </summary>
+        /// <value>The current subtitle index.</value>
+        int? CurrentSubtitleStreamIndex { get; }
+
+        /// <summary>
+        /// Get the current audio index.
+        /// </summary>
+        /// <value>The current audio index.</value>
+        int? CurrentAudioStreamIndex { get; }
 
         /// <summary>
         /// Determines whether this instance can play the specified item.
@@ -152,10 +183,43 @@ namespace MediaBrowser.Theater.Api.Playback
         /// <param name="newIndex">The new index.</param>
         void ChangeTrack(int newIndex);
 
+        // <summary>
+        // Changes to the next track.
+        // <summary>
+        void NextTrack();
+
+        // <summary>
+        // Changes to the previous track.
+        // </summary>
+        void PreviousTrack();
+
+
         /// <summary>
         /// Set the play rate - FF or Rewindw
         /// </summary>
         /// <param name="rate">The speed to play the media.</param>
         void SetRate(Double rate);
+
+        /// <summary>
+        /// Set subtitle by subtitleStreamIndex
+        /// </summary>
+        /// <param name="subtitleStreamIndex">Index of desired subtitle.</param>
+        void SetSubtitleStreamIndex(int subtitleStreamIndex);
+
+        /// <summary>
+        /// Advances to teh next subtitle stream, Wraps at the end
+        /// </summary>
+        void NextSubtitleStream();
+
+        /// <summary>
+        /// Set subtitle by subtitleStreamIndex
+        /// </summary>
+        /// <param name="audioStreamIndex">Index of desired audio stream.</param>
+        void SetAudioStreamIndex(int audioStreamIndex);
+
+        /// <summary>
+        /// Advances to the next Audio Stream, Wraps at the end
+        /// </summary>
+        void NextAudioStream();
     }
 }

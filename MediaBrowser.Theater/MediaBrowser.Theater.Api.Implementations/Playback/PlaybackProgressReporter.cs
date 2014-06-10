@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.ApiClient;
+﻿using System.Linq;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Session;
 using System;
@@ -49,20 +50,23 @@ namespace MediaBrowser.Theater.Api.Playback
             {
                 var queueTypes = _mediaPlayer.CanQueue
                                      ? new List<string> { item.MediaType }
-                                     : new List<string>();
+                                     : new List<string> { };
 
                 var info = new PlaybackStartInfo
                 {
                     ItemId = item.Id,
                     CanSeek = _mediaPlayer.CanSeek,
-                    QueueableMediaTypes = queueTypes
+                    QueueableMediaTypes = queueTypes.ToList(),
+
+                    // TODO: Remove this hardcoding
+                    PlayMethod = PlayMethod.DirectPlay
                 };
 
                 await _apiClient.ReportPlaybackStartAsync(info);
 
                 if (_mediaPlayer.CanTrackProgress)
                 {
-                    _timer = new Timer(TimerCallback, null, 1000, 1000);
+                    _timer = new Timer(TimerCallback, null, 100, 900);
                 }
 
                 _mediaPlayer.MediaChanged += _mediaPlayer_MediaChanged;
@@ -142,13 +146,17 @@ namespace MediaBrowser.Theater.Api.Playback
                 {
                     var queueTypes = _mediaPlayer.CanQueue
                                 ? new List<string> { e.NewMedia.MediaType }
-                                : new List<string>();
+                                : new List<string> { };
 
                     var info = new PlaybackStartInfo
                     {
                         ItemId = e.NewMedia.Id,
+
                         CanSeek = _mediaPlayer.CanSeek,
-                        QueueableMediaTypes = queueTypes
+                        QueueableMediaTypes = queueTypes.ToList(),
+
+                        // TODO: Remove this hardcoding
+                        PlayMethod = PlayMethod.DirectPlay
                     };
 
                     await _apiClient.ReportPlaybackStartAsync(info);
@@ -172,13 +180,21 @@ namespace MediaBrowser.Theater.Api.Playback
             {
                 return;
             }
-            
+
             var info = new PlaybackProgressInfo
             {
+                //SessionId = _sessionManager
+                //Item = item,
                 ItemId = item.Id,
+                //MediaSourceId = string.Empty,
                 IsMuted = _playback.IsMuted,
                 IsPaused = _mediaPlayer.PlayState == PlayState.Paused,
-                PositionTicks = _mediaPlayer.CurrentPositionTicks
+                PositionTicks = _mediaPlayer.CurrentPositionTicks,
+                CanSeek = _mediaPlayer.CanSeek,
+                AudioStreamIndex = _mediaPlayer.CurrentAudioStreamIndex,
+                SubtitleStreamIndex = _mediaPlayer.CurrentSubtitleStreamIndex,
+                VolumeLevel = (_mediaPlayer.PlayState != PlayState.Idle) ? (int?)_playback.Volume : null,
+                PlayMethod = PlayMethod.DirectPlay, // todo remove hard coding
             };
 
             try
@@ -188,8 +204,6 @@ namespace MediaBrowser.Theater.Api.Playback
             catch (Exception ex)
             {
                 _logger.ErrorException("Error sending playback progress checking for {0}", ex, item.Name);
-
-                throw;
             }
         }
     }

@@ -102,7 +102,7 @@ namespace MediaBrowser.Theater.Api.Playback
             {
                 // play a phyical disk in the cdrom drive
                 // Will be re-entrant call, so has to be made befpre the interlocked.CompareExchange below
-                await PlayExternalDisk(true);
+                await PlayExternalDisc(true);
                 return;
             }
 
@@ -229,7 +229,7 @@ namespace MediaBrowser.Theater.Api.Playback
         /// Plays a DVD or Blueray disc in an external disk drive
         /// will ask for the disc to be inserted if it is not ready
         /// </summary>
-        public async Task PlayExternalDisk(bool forceAskToInsertDisc)
+        public async Task PlayExternalDisc(bool forceAskToInsertDisc)
         {
             var drive = DriveInfo.GetDrives().FirstOrDefault(d => d.DriveType == DriveType.CDRom);
             if (drive == null)
@@ -522,6 +522,18 @@ namespace MediaBrowser.Theater.Api.Playback
             }
         }
 
+        public void ToggleMute()
+        {
+            if (IsMuted)
+            {
+                UnMute();
+            }
+            else
+            {
+                Mute();
+            }
+        }
+
         public float Volume
         {
             get
@@ -579,6 +591,46 @@ namespace MediaBrowser.Theater.Api.Playback
             {
                 audioDevice.AudioEndpointVolume.VolumeStepDown();
             }
+        }
+
+        public void SetAudioStreamIndex(int audioStreamIndex)
+        {
+            var player = MediaPlayers.Where(p => (p.PlayState == PlayState.Playing || p.PlayState == PlayState.Paused) && p.CanSetAudioStreamIndex).FirstOrDefault();
+            if (player != null)
+            {
+                player.SetAudioStreamIndex(audioStreamIndex);
+            }
+
+        }
+
+        public void NextAudioStream()
+        {
+            var player = MediaPlayers.Where(p => (p.PlayState == PlayState.Playing || p.PlayState == PlayState.Paused) && p.CanSetAudioStreamIndex).FirstOrDefault();
+            if (player != null)
+            {
+                player.NextAudioStream();
+            }
+
+        }
+
+        public void SetSubtitleStreamIndex(int subitleStreamIndex)
+        {
+            var player = MediaPlayers.Where(p => (p.PlayState == PlayState.Playing || p.PlayState == PlayState.Paused) && p.CanSetAudioStreamIndex).FirstOrDefault();
+            if (player != null)
+            {
+                player.SetSubtitleStreamIndex(subitleStreamIndex);
+            }
+
+        }
+
+        public void NextSubtitleStream()
+        {
+            var player = MediaPlayers.Where(p => (p.PlayState == PlayState.Playing || p.PlayState == PlayState.Paused) && p.CanSetSubtitleStreamIndex).FirstOrDefault();
+            if (player != null)
+            {
+                player.NextSubtitleStream();
+            }
+
         }
 
         /// <summary>

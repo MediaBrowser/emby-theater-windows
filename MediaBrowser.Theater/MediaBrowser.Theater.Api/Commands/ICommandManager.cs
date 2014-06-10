@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Windows;
-using System.Windows.Input;
 
 namespace MediaBrowser.Theater.Api.Commands
 {
@@ -17,7 +16,18 @@ namespace MediaBrowser.Theater.Api.Commands
 
     public interface ICommandManager
     {
+        /// <summary>
+        /// subscribe to commands. It up to teh subscribe to decide how to exeute teh command.
+        /// if  the subscribe executes the command they should set handed to true
+        /// </summary>
         event CommandEventHandler CommandReceived;
+
+        /// <summary>
+        /// Send a command to command subsribers
+        ///  </summary>
+        /// <param name="command">The command to send</param>
+        /// <param name="args">The command arguments</param>
+        bool ExecuteCommand(Command command, Object args);
     }
 
     public class CommandRoutedEventArgs : RoutedEventArgs

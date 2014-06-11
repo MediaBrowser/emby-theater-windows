@@ -33,6 +33,15 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'StyleCheck|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\StyleCheck\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;DEFAULT_THEME_STYLE_CHECK</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="MediaBrowser.Common, Version=3.0.5267.16996, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -147,6 +156,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Core\Views\SleepMenuCommandIconView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Core\Views\StyleCheckView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -390,6 +403,7 @@
     <Compile Include="Core\ViewModels\ItemInfoViewModel.cs" />
     <Compile Include="Core\ViewModels\ItemSpotlightViewModel.cs" />
     <Compile Include="Core\ViewModels\ItemTileViewModel.cs" />
+    <Compile Include="Core\ViewModels\StyleCheckViewModel.cs" />
     <Compile Include="Core\Views\ClockView.xaml.cs">
       <DependentUpon>ClockView.xaml</DependentUpon>
     </Compile>
@@ -437,6 +451,9 @@
     </Compile>
     <Compile Include="Core\Views\SleepMenuCommandIconView.xaml.cs">
       <DependentUpon>SleepMenuCommandIconView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Views\StyleCheckView.xaml.cs">
+      <DependentUpon>StyleCheckView.xaml</DependentUpon>
     </Compile>
     <Compile Include="DependencyModule.cs" />
     <Compile Include="Home\Api.cs" />

@@ -28,6 +28,10 @@
         <views:RootView/>
     </DataTemplate>
     
+    <DataTemplate DataType="{x:Type viewModels:StyleCheckViewModel}">
+        <views:StyleCheckView/>
+    </DataTemplate>
+    
     <DataTemplate DataType="{x:Type viewModels:ClockViewModel}">
         <views:ClockView/>
     </DataTemplate>

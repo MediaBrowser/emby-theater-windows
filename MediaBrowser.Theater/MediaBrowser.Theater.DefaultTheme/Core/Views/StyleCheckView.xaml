@@ -1,0 +1,59 @@
+﻿<UserControl x:Class="MediaBrowser.Theater.DefaultTheme.Core.Views.StyleCheckView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:viewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.Core.ViewModels"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance viewModels:StyleCheckViewModel}"
+             d:DesignHeight="1080" d:DesignWidth="1920">
+    <Grid Margin="50">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Orientation="Vertical" Margin="0,0,0,100">
+            <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="STYLE CHECK"/>
+            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Test default theme style resources"/>
+        </StackPanel>
+        
+        <Canvas Grid.Row="1">
+            <StackPanel Orientation="Vertical" MaxWidth="800">
+                <TextBlock Style="{StaticResource HeadingTextBlockStyle}" Text="MOVIE TITLE: THE SEQUEL"/>
+                
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <StackPanel Margin="0,0,50,0">
+                        <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="YEAR"/>
+                        <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="BUDGET"/>
+                        <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="STUDIO"/>
+                        <TextBlock Style="{StaticResource LabelTextBlockStyle}" Text="DIRECTOR"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1">
+                        <TextBlock Style="{StaticResource AccentedTextBlockStyle}" Text="2013"/>
+                        <TextBlock Style="{StaticResource AccentedTextBlockStyle}" Text="$100m"/>
+                        <TextBlock Style="{StaticResource AccentedTextBlockStyle}" Text="Universal Studios"/>
+                        <TextBlock Style="{StaticResource AccentedTextBlockStyle}" Text="J.J. Abrams"/>
+                    </StackPanel>
+                </Grid>
+
+                <TextBlock Text="Item details here. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris id velit sit amet nisi ullamcorper commodo. Maecenas a mauris et nibh facilisis tempor quis eget dui. Vestibulum sagittis lectus massa."/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Canvas.Left="10" Canvas.Top="415">
+                <Button Content="CLICK ME" Margin="0,0,20,0"/>
+                <Button Content="NO, CLICK ME"/>
+            </StackPanel>
+            
+            <TextBox Text="Type here..." Width="400" Canvas.Left="10" Canvas.Top="501"/>
+            
+            <CheckBox Canvas.Left="10" Canvas.Top="582"/>
+        </Canvas>
+    </Grid>
+</UserControl>

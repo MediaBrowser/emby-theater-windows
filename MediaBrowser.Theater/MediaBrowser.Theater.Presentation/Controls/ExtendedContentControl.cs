@@ -162,6 +162,11 @@ namespace MediaBrowser.Theater.Presentation.Controls
             da.From = 0;
             da.To = 1;
             da.FillBehavior = FillBehavior.HoldEnd;
+            da.Completed += (s, e) => {
+                if (_contentPresenter.Effect == transitionEffect) {
+                    _contentPresenter.Effect = null;
+                }
+            };
 
             transitionEffect.OldImage = new VisualBrush(oldContentVisual);
             transitionEffect.BeginAnimation(TransitionEffect.ProgressProperty, da);

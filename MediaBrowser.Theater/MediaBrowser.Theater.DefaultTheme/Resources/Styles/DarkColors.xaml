@@ -9,6 +9,9 @@
 
     <Color x:Key="TextBackgroundColor">#60000000</Color>
 
+    <Color x:Key="TextColor1">#808080</Color>
+    <Color x:Key="TextColor2">#C6C6C6</Color>
+
     <Color x:Key="InputHighlightColor">#1ba1e2</Color>
     <Color x:Key="InputBackgroundColor">#262626</Color>
     <Color x:Key="InputBackgroundHoverColor">#3e3e42</Color>

@@ -1,6 +1,55 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    
+
+    <Style TargetType="{x:Type TextBlock}" x:Key="BaseTextBlockStyle">
+        <Setter Property="FontFamily" Value="{StaticResource FontFamily}"/>
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="TextOptions.TextFormattingMode" Value="Ideal"/>
+        <Setter Property="TextWrapping" Value="WrapWithOverflow" />
+        <Setter Property="TextTrimming" Value="WordEllipsis"/>
+    </Style>
+
+    <Style TargetType="TextBlock" x:Key="TitleTextBlockStyle" BasedOn="{StaticResource BaseTextBlockStyle}">
+        <Setter Property="FontSize" Value="{StaticResource TitleFontSize}"/>
+        <Setter Property="FontWeight" Value="{StaticResource TitleFontWeight}"/>
+        <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}"/>
+        <Setter Property="TextWrapping" Value="NoWrap" />
+    </Style>
+
+    <Style TargetType="TextBlock" x:Key="SubtitleTextBlockStyle" BasedOn="{StaticResource BaseTextBlockStyle}">
+        <Setter Property="FontSize" Value="{StaticResource SubtitleFontSize}"/>
+        <Setter Property="FontWeight" Value="{StaticResource SubtitleFontWeight}"/>
+        <Setter Property="Foreground" Value="{StaticResource SubtitleFontForeground}"/>
+    </Style>
+
+    <Style TargetType="TextBlock" x:Key="HeadingTextBlockStyle" BasedOn="{StaticResource BaseTextBlockStyle}">
+        <Setter Property="FontSize" Value="{StaticResource HeadingFontSize}"/>
+        <Setter Property="FontWeight" Value="{StaticResource HeadingFontWeight}"/>
+        <Setter Property="Foreground" Value="{StaticResource HeadingFontForeground}"/>
+        <Setter Property="TextWrapping" Value="NoWrap" />
+    </Style>
+
+    <Style TargetType="TextBlock" x:Key="LabelTextBlockStyle" BasedOn="{StaticResource BaseTextBlockStyle}">
+        <Setter Property="FontSize" Value="{StaticResource LabelFontSize}"/>
+        <Setter Property="FontWeight" Value="{StaticResource LabelFontWeight}"/>
+        <Setter Property="Foreground" Value="{StaticResource LabelFontForeground}"/>
+    </Style>
+
+    <Style TargetType="TextBlock" x:Key="AccentedTextBlockStyle" BasedOn="{StaticResource BaseTextBlockStyle}">
+        <Setter Property="FontSize" Value="{StaticResource AccentedTextFontSize}"/>
+        <Setter Property="FontWeight" Value="{StaticResource AccentedTextFontWeight}"/>
+        <Setter Property="Foreground" Value="{StaticResource AccentedTextFontForeground}"/>
+    </Style>
+
+    <Style TargetType="TextBlock" x:Key="NormalTextBlockStyle" BasedOn="{StaticResource BaseTextBlockStyle}">
+        <Setter Property="FontSize" Value="{StaticResource NormalTextFontSize}"/>
+        <Setter Property="FontWeight" Value="{StaticResource NormalTextFontWeight}"/>
+        <Setter Property="Foreground" Value="{StaticResource NormalTextFontForeground}"/>
+    </Style>
+
+    <Style TargetType="TextBlock" BasedOn="{StaticResource NormalTextBlockStyle}"/>
+
+
     <!--Default TextBlock style. -->
     <Style TargetType="TextBlock" x:Key="TextBlockStyle">
         <Setter Property="FontSize" Value="{StaticResource DefaultFontSize}"/>
@@ -12,7 +61,7 @@
         <Setter Property="TextOptions.TextFormattingMode" Value="Ideal"/>
     </Style>
     
-    <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockStyle}"/>
+<!--    <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockStyle}"/>-->
 
     <Style TargetType="TextBlock" x:Key="ParagraphTextBlockStyle">
         <Setter Property="FontSize" Value="{StaticResource DefaultFontSize}"/>

@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:viewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.Core.ViewModels"
+             xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance viewModels:StyleCheckViewModel}"
              Background="{StaticResource BackgroundBrush}"
@@ -18,45 +19,66 @@
             <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="STYLE CHECK"/>
             <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Test default theme style resources"/>
         </StackPanel>
-        
+
         <Canvas Grid.Row="1">
             <StackPanel Orientation="Vertical" MaxWidth="800">
                 <TextBlock Style="{StaticResource HeadingTextBlockStyle}" Text="MOVIE TITLE: THE SEQUEL" Margin="0,0,0,10"/>
-                
+
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="auto"/>
                         <RowDefinition Height="auto"/>
                     </Grid.RowDefinitions>
-                    
+
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="auto"/>
                         <ColumnDefinition Width="auto"/>
                         <ColumnDefinition Width="auto"/>
                         <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
-                    
+
                     <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource LabelTextBlockStyle}" Text="YEAR" Margin="0,0,50,0"/>
                     <TextBlock Grid.Row="0" Grid.Column="1" Style="{StaticResource LabelTextBlockStyle}" Text="RUNTIME" Margin="0,0,50,0"/>
-                    <TextBlock Grid.Row="0" Grid.Column="2" Style="{StaticResource LabelTextBlockStyle}" Text="STUDIO" Margin="0,0,50,0"/>
-                    <TextBlock Grid.Row="0" Grid.Column="3" Style="{StaticResource LabelTextBlockStyle}" Text="DIRECTOR" Margin="0,0,50,0"/>
+                    <TextBlock Grid.Row="0" Grid.Column="2" Style="{StaticResource LabelTextBlockStyle}" Text="REVIEW" Margin="0,0,50,0"/>
+                    <TextBlock Grid.Row="0" Grid.Column="3" Style="{StaticResource LabelTextBlockStyle}" Text="GENRE" Margin="0,0,50,0"/>
 
                     <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource AccentedTextBlockStyle}" Text="2013" Margin="0,0,50,0"/>
                     <TextBlock Grid.Row="1" Grid.Column="1" Style="{StaticResource AccentedTextBlockStyle}" Text="90 minutes" Margin="0,0,50,0"/>
-                    <TextBlock Grid.Row="1" Grid.Column="2" Style="{StaticResource AccentedTextBlockStyle}" Text="Universal Studios" Margin="0,0,50,0"/>
-                    <TextBlock Grid.Row="1" Grid.Column="3" Style="{StaticResource AccentedTextBlockStyle}" Text="J.J. Abrams" Margin="0,0,50,0"/>
+
+                    <controls:FiveStarRating Grid.Row="1" Grid.Column="2" Rating="7" Margin="0,0,50,0"/>
+
+                    <StackPanel Grid.Row="1" Grid.Column="3" Orientation="Horizontal" Margin="0,0,50,0">
+                        <TextBlock Text="Action" Style="{StaticResource AccentedTextBlockStyle}"/>
+                        <TextBlock Text="/"/>
+                        <TextBlock Text="Thriller" Style="{StaticResource AccentedTextBlockStyle}"/>
+                        <TextBlock Text="/"/>
+                        <TextBlock Text="Comedy" Style="{StaticResource AccentedTextBlockStyle}"/>
+                        <TextBlock Text="/"/>
+                        <TextBlock Text="Period Drama" Style="{StaticResource AccentedTextBlockStyle}"/>
+                    </StackPanel>
                 </Grid>
 
                 <TextBlock Margin="0,10,0,0" Text="Item details here. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris id velit sit amet nisi ullamcorper commodo. Maecenas a mauris et nibh facilisis tempor quis eget dui. Vestibulum sagittis lectus massa."/>
             </StackPanel>
 
+            <Grid Height="300" Canvas.Left="932" Canvas.Top="10">
+                <Image Source="/MediaBrowser.Theater.DefaultTheme;component/Resources/Images/upcomingtv.jpg"/>
+
+                <Border HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
+                    Background="{StaticResource TextBackgroundBrush}" Margin="0 0 0 -1">
+                    <StackPanel Orientation="Vertical" Margin="15 5 20 10">
+                        <TextBlock Text="S01E05 EPISODE NAME" Foreground="{StaticResource ForegroundBrush}"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
             <StackPanel Orientation="Horizontal" Canvas.Left="10" Canvas.Top="415">
                 <Button Content="CLICK ME" Margin="0,0,20,0"/>
                 <Button Content="NO, CLICK ME"/>
             </StackPanel>
-            
+
             <TextBox Text="Type here..." Width="400" Canvas.Left="10" Canvas.Top="501"/>
-            
+
             <CheckBox Canvas.Left="10" Canvas.Top="582"/>
         </Canvas>
     </Grid>

@@ -5,16 +5,18 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
              xmlns:viewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.Core.ViewModels"
+             xmlns:controls1="clr-namespace:MediaBrowser.Theater.DefaultTheme.Controls"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModels:ItemSpotlightViewModel}"
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid>
+    <controls1:TileButton x:Name="Tile" Command="{Binding ItemSelectedCommand}" HorizontalHeaderAlignment="Left">
+        <controls1:TileButton.Header>
+            <TextBlock Text="{Binding CurrentCaption}"
+                       Foreground="{Binding Foreground, ElementName=Tile}"
+                       Visibility="{Binding HasCaption, Converter={StaticResource BooleanToVisibility}}"
+                       Margin="15 5 20 10" />
+        </controls1:TileButton.Header>
+        
         <controls:ExtendedContentControl Content="{Binding Images}" />
-
-        <Border HorizontalAlignment="Left" VerticalAlignment="Bottom"
-                Visibility="{Binding HasCaption, Converter={StaticResource BooleanToVisibility}}"
-                Background="{StaticResource TextBackgroundBrush}" Margin="0 0 0 -1">
-            <TextBlock Text="{Binding CurrentCaption}" Style="{StaticResource TextBlockStyle}" Margin="15 5 20 10" />
-        </Border>
-    </Grid>
+    </controls1:TileButton>
 </UserControl>

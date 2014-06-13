@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:viewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.Core.ViewModels"
              xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
+             xmlns:controls1="clr-namespace:MediaBrowser.Theater.DefaultTheme.Controls"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance viewModels:StyleCheckViewModel}"
              Background="{StaticResource BackgroundBrush}"
@@ -61,16 +62,13 @@
                 <TextBlock Margin="0,10,0,0" Text="Item details here. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris id velit sit amet nisi ullamcorper commodo. Maecenas a mauris et nibh facilisis tempor quis eget dui. Vestibulum sagittis lectus massa."/>
             </StackPanel>
 
-            <Grid Height="300" Canvas.Left="932" Canvas.Top="10">
-                <Image Source="/MediaBrowser.Theater.DefaultTheme;component/Resources/Images/upcomingtv.jpg"/>
+            <controls1:TileButton x:Name="Tile1" Height="250" Canvas.Left="932" Canvas.Top="336">
+                <controls1:TileButton.Header>
+                    <TextBlock Text="S01E05 EPISODE NAME" Margin="15, 5, 20, 10" Foreground="{Binding Foreground, ElementName=Tile1}"/>
+                </controls1:TileButton.Header>
 
-                <Border HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
-                    Background="{StaticResource TextBackgroundBrush}" Margin="0 0 0 -1">
-                    <StackPanel Orientation="Vertical" Margin="15 5 20 10">
-                        <TextBlock Text="S01E05 EPISODE NAME" Foreground="{StaticResource ForegroundBrush}"/>
-                    </StackPanel>
-                </Border>
-            </Grid>
+                <Image Source="/MediaBrowser.Theater.DefaultTheme;component/Resources/Images/upcomingtv.jpg"/>
+            </controls1:TileButton>
 
             <StackPanel Orientation="Horizontal" Canvas.Left="10" Canvas.Top="415">
                 <Button Content="CLICK ME" Margin="0,0,20,0"/>

@@ -7,44 +7,52 @@
              xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
              xmlns:viewModels1="clr-namespace:MediaBrowser.Theater.DefaultTheme.Home.ViewModels"
              xmlns:commands="clr-namespace:MediaBrowser.Theater.Api.Commands;assembly=MediaBrowser.Theater.Api"
+             xmlns:controls1="clr-namespace:MediaBrowser.Theater.DefaultTheme.Controls"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModels:ItemTileViewModel}"
-             d:DesignHeight="300" d:DesignWidth="300">
-    <Button Command="{Binding GoToDetailsCommand}" Style="{StaticResource BaseItemButtonStyle}" Margin="{x:Static viewModels1:HomeViewModel.TileMarginThickness}">
-<!--        <Button.CacheMode>-->
-<!--            <BitmapCache EnableClearType="True" RenderAtScale="1"/>-->
-<!--        </Button.CacheMode>-->
+             d:DesignHeight="300" d:DesignWidth="300"
+             Margin="{x:Static viewModels1:HomeViewModel.TileMarginThickness}">
 
-        <Grid Width="{Binding Image.ActualWidth}" Height="{Binding Image.ActualHeight}">
-            <controls:ExtendedContentControl Content="{Binding Image}" />
+    <controls1:TileButton x:Name="Button" 
+                          Command="{Binding GoToDetailsCommand}" 
+                          AutoHideHeading="{Binding ShowCaptionBar, Converter={StaticResource BooleanInverter}}"
+                          Width="{Binding Image.ActualWidth}"
+                          Height="{Binding Image.ActualHeight}">
+        <controls1:TileButton.Header>
+            <Grid>
+                <ProgressBar Minimum="0" Maximum="100" Value="{Binding PlayedPercent, Mode=OneWay}">
+                    <ProgressBar.Style>
+                        <Style TargetType="{x:Type ProgressBar}" BasedOn="{StaticResource ResumeProgressBar}">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                            <Setter Property="Background" Value="{x:Null}" />
+                            <Setter Property="VerticalAlignment" Value="Stretch" />
+                            <Setter Property="HorizontalAlignment" Value="Stretch" />
+                            <Setter Property="Height" Value="NaN" />
 
-            <Border HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
-                    Visibility="{Binding ShowCaptionBar, Converter={StaticResource BooleanToVisibility}}"
-                    Background="{StaticResource TextBackgroundBrush}" Margin="0 0 0 -1">
-                <StackPanel Orientation="Vertical" Margin="15 5 20 10">
-                    <TextBlock Text="{Binding DisplayName}" Style="{StaticResource TextBlockStyle}" Visibility="{Binding ShowDisplayName, Converter={StaticResource BooleanToVisibility}}" />
-                    <TextBlock Text="{Binding Creator}" Style="{StaticResource TextBlockStyle}" Visibility="{Binding HasCreator, Converter={StaticResource BooleanToVisibility}}" Opacity="0.8"/>
+                            <Style.Triggers>
+                                <MultiDataTrigger>
+                                    <MultiDataTrigger.Conditions>
+                                        <Condition Binding="{Binding IsInProgress}" Value="True" />
+                                        <Condition Binding="{Binding IsFolder}" Value="False" />
+                                    </MultiDataTrigger.Conditions>
 
-                    <ProgressBar Minimum="0" Maximum="100" Value="{Binding PlayedPercent, Mode=OneWay}" Height="12">
-                        <ProgressBar.Style>
-                            <Style TargetType="{x:Type ProgressBar}" BasedOn="{StaticResource ResumeProgressBar}">
-                                <Setter Property="Visibility" Value="Collapsed"/>
-                                
-                                <Style.Triggers>
-                                    <MultiDataTrigger>
-                                        <MultiDataTrigger.Conditions>
-                                            <Condition Binding="{Binding IsInProgress}" Value="True"/>
-                                            <Condition Binding="{Binding IsFolder}" Value="False"/>
-                                        </MultiDataTrigger.Conditions>
-                                            
-                                        <Setter Property="Visibility" Value="Visible"/>
-                                    </MultiDataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </ProgressBar.Style>
-                    </ProgressBar>
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </MultiDataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ProgressBar.Style>
+                </ProgressBar>
+
+                <StackPanel Margin="15 5 20 10"
+                            Orientation="Vertical">
+                    <TextBlock Text="{Binding DisplayName}" Foreground="{Binding Foreground, ElementName=Button}"/>
+                    <TextBlock Text="{Binding Creator}" Foreground="{Binding Foreground, ElementName=Button}"
+                               Visibility="{Binding HasCreator, Converter={StaticResource BooleanToVisibility}}"
+                               Opacity="0.8" />
                 </StackPanel>
-            </Border>
-        </Grid>
-    </Button>
+            </Grid>
+        </controls1:TileButton.Header>
+
+        <controls:ExtendedContentControl Content="{Binding Image}" />
+    </controls1:TileButton>
 </UserControl>

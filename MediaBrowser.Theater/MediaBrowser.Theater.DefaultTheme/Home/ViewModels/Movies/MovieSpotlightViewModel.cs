@@ -118,7 +118,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
 
         public ICommand BrowseMoviesCommand { get; private set; }
         public ICommand TrailersCommand { get; private set; }
-
+             
         public string Title
         {
             get { return "MediaBrowser.Theater.DefaultTheme:Strings:Home_MovieSpotlight_Title".Localize(); }

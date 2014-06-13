@@ -121,7 +121,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
             return new ItemTileViewModel(_apiClient, _imageManager, _serverEvents, _navigator, _playbackManager, null) {
                 DesiredImageWidth = PosterWidth,
                 DesiredImageHeight = PosterHeight,
-                ShowDisplayName = false,
+                ShowCaptionBar = false,
                 PreferredImageTypes = new[] { ImageType.Primary, ImageType.Backdrop, ImageType.Thumb }
             };
         }

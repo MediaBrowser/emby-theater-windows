@@ -15,6 +15,14 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
         private readonly BaseItemDto _item;
         private Func<BaseItemDto, string> _displayNameGenerator;
 
+        private bool? _showParentText;
+        private bool? _showStats;
+        private bool? _showYear;
+        private bool? _showSeriesAirTime;
+        private bool? _showRuntime;
+        private bool? _showReview;
+        private bool? _showGenres;
+
         public ItemInfoViewModel(BaseItemDto item)
         {
             if (item == null) {
@@ -44,6 +52,48 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
             }
         }
 
+        public bool ShowParentText
+        {
+            get { return _showParentText ?? HasParentText; }
+            set { _showParentText = value; }
+        }
+
+        public bool ShowStats
+        {
+            get { return _showStats ?? _item.Type != "Person"; }
+            set { _showStats = value; }
+        }
+
+        public bool ShowDate
+        {
+            get { return _showYear ?? HasDate; }
+            set { _showYear = value; }
+        }
+
+        public bool ShowSeriesAirTime
+        {
+            get { return _showSeriesAirTime ?? HasAirTime; }
+            set { _showSeriesAirTime = value; }
+        }
+
+        public bool ShowRuntime
+        {
+            get { return _showRuntime ?? (HasRuntime && _item.Type == "Movie"); }
+            set { _showRuntime = value; }
+        }
+
+        public bool ShowReview
+        {
+            get { return _showReview ?? HasCommunityRating; }
+            set { _showReview = value; }
+        }
+
+        public bool ShowGenres
+        {
+            get { return _showGenres ?? HasGenres; }
+            set { _showGenres = value; }
+        }
+
         public string Overview
         {
             get { return _item.Overview; }
@@ -52,11 +102,6 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
         public string ItemType
         {
             get { return _item.Type; }
-        }
-
-        public bool ShowStats
-        {
-            get { return _item.Type != "Person"; }
         }
 
         public string Date
@@ -86,6 +131,29 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
         public bool HasDate
         {
             get { return !string.IsNullOrEmpty(Date); }
+        }
+
+        public string Parent
+        {
+            get
+            {
+                switch (_item.Type) {
+                    case "Season":
+                    case "Episode":
+                        return _item.SeriesName;
+                    case "Album":
+                        return _item.AlbumArtist;
+                    case "Track":
+                        return _item.Artists.ToLocalizedList();
+                }
+
+                return null;
+            }
+        }
+
+        public bool HasParentText
+        {
+            get { return !string.IsNullOrEmpty(Parent); }
         }
 
         public string AudioChannelLayout
@@ -257,6 +325,11 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
                 double minutes = Math.Round(TimeSpan.FromTicks(ticks.Value).TotalMinutes);
                 return "MediaBrowser.Theater.DefaultTheme:Strings:RuntimeMinutes".LocalizeFormat(minutes);
             }
+        }
+
+        public bool HasRuntime
+        {
+            get { return !string.IsNullOrEmpty(Runtime); }
         }
 
         public bool IsLiked

@@ -47,6 +47,12 @@
         <Setter Property="Foreground" Value="{StaticResource NormalTextFontForeground}"/>
     </Style>
 
+    <Style TargetType="TextBlock" x:Key="MinorTextBlockStyle" BasedOn="{StaticResource BaseTextBlockStyle}">
+        <Setter Property="FontSize" Value="{StaticResource MinorTextFontSize}"/>
+        <Setter Property="FontWeight" Value="{StaticResource MinorTextFontWeight}"/>
+        <Setter Property="Foreground" Value="{StaticResource MinorTextFontForeground}"/>
+    </Style>
+
     <Style TargetType="TextBlock" BasedOn="{StaticResource NormalTextBlockStyle}"/>
 
 

@@ -5,49 +5,183 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:lex="http://wpflocalizeextension.codeplex.com"
              xmlns:viewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.Core.ViewModels"
-             xmlns:controls="clr-namespace:MediaBrowser.Theater.DefaultTheme.Controls"
+             xmlns:controls1="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
              lex:LocalizeDictionary.DesignCulture="en"
              lex:ResxLocalizationProvider.DefaultAssembly="MediaBrowser.Theater.DefaultTheme"
              lex:ResxLocalizationProvider.DefaultDictionary="Strings"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModels:ItemInfoViewModel}"
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="300" d:DesignWidth="800">
+    
     <Grid>
+        
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
-            <RowDefinition/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         
-<!--        <TextBlock Grid.Row="0" Text="{Binding DisplayName}" Style="{StaticResource Heading1TextBlockStyle}" HorizontalAlignment="Center" FontSize="52"/>-->
+        <!--Title-->
+        <TextBlock Grid.Row="0" Text="{Binding Parent, Converter={StaticResource UppercaseConverter}}" Visibility="{Binding ShowParentText, Converter={StaticResource BooleanToVisibility}}" Style="{StaticResource LabelTextBlockStyle}"/>
+        <TextBlock Grid.Row="1" Text="{Binding DisplayName, Converter={StaticResource UppercaseConverter}}" Visibility="{Binding ShowDisplayName, Converter={StaticResource BooleanToVisibility}}" Style="{StaticResource HeadingTextBlockStyle}" Margin="0,0,0,10"/>
+        
+        <!--Statistics-->
+        <StackPanel  Grid.Row="2" Orientation="Horizontal" Visibility="{Binding ShowStats, Converter={StaticResource BooleanToVisibility}}" Margin="0,0,0,10">
+            <StackPanel Orientation="Vertical" Visibility="{Binding ShowDate, Converter={StaticResource BooleanToVisibility}}" Margin="0,0,40,0">
+                <TextBlock Text="{lex:Loc YearLabel}" Style="{StaticResource LabelTextBlockStyle}"/>
+                <TextBlock Text="{Binding Date}" Style="{StaticResource AccentedTextBlockStyle}"/>
+            </StackPanel>
 
-        <Grid Grid.Row="1" Visibility="{Binding ShowStats, Converter={StaticResource BooleanToVisibility}}">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="10"/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-            
-            <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition/>
-                <RowDefinition/>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
+            <StackPanel Orientation="Vertical" Visibility="{Binding ShowSeriesAirTime, Converter={StaticResource BooleanToVisibility}}" Margin="0,0,40,0">
+                <TextBlock Text="{Binding SeriesAirTimeLabel}" Style="{StaticResource LabelTextBlockStyle}"/>
+                <TextBlock Text="{Binding SeriesAirTime}" Style="{StaticResource AccentedTextBlockStyle}"/>
+            </StackPanel>
 
-            <TextBlock Grid.Column="0" Grid.Row="0" Text="{lex:Loc GenreLabel}" Style="{StaticResource SmallTextBlockStyle}" Opacity="0.5" HorizontalAlignment="Right" Visibility="{Binding HasGenres, Converter={StaticResource BooleanToVisibility}}"/>
-            <TextBlock Grid.Column="2" Grid.Row="0" Text="{Binding Genres}" Style="{StaticResource SmallTextBlockStyle}" Visibility="{Binding HasGenres, Converter={StaticResource BooleanToVisibility}}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"/>
+            <StackPanel Orientation="Vertical" Visibility="{Binding ShowRuntime, Converter={StaticResource BooleanToVisibility}}" Margin="0,0,40,0">
+                <TextBlock Text="{lex:Loc RuntimeLabel}" Style="{StaticResource LabelTextBlockStyle}"/>
+                <TextBlock Text="{Binding Runtime}" Style="{StaticResource AccentedTextBlockStyle}"/>
+            </StackPanel>
 
-            <TextBlock Grid.Column="0" Grid.Row="1" Text="{lex:Loc DateLabel}" Style="{StaticResource SmallTextBlockStyle}" Opacity="0.5" HorizontalAlignment="Right" Visibility="{Binding HasDate, Converter={StaticResource BooleanToVisibility}}"/>
-            <TextBlock Grid.Column="2" Grid.Row="1" Text="{Binding Date}" Style="{StaticResource SmallTextBlockStyle}" Visibility="{Binding HasDate, Converter={StaticResource BooleanToVisibility}}"/>
+            <StackPanel Orientation="Vertical" Visibility="{Binding ShowReview, Converter={StaticResource BooleanToVisibility}}" Margin="0,0,40,0">
+                <TextBlock Text="{lex:Loc ReviewLabel}" Style="{StaticResource LabelTextBlockStyle}"/>
+                <controls1:FiveStarRating Rating="{Binding CommunityRating}" Margin="0,4,0,0"/>
+            </StackPanel>
 
-            <TextBlock Grid.Column="0" Grid.Row="2" Text="{Binding SeriesAirTimeLabel}" Style="{StaticResource SmallTextBlockStyle}" Opacity="0.5" HorizontalAlignment="Right" Visibility="{Binding HasAirTime, Converter={StaticResource BooleanToVisibility}}"/>
-            <TextBlock Grid.Column="2" Grid.Row="2" Text="{Binding SeriesAirTime}" Style="{StaticResource SmallTextBlockStyle}" Visibility="{Binding HasAirTime, Converter={StaticResource BooleanToVisibility}}"/>
+            <StackPanel Orientation="Vertical" Visibility="{Binding ShowGenres, Converter={StaticResource BooleanToVisibility}}" Margin="0,0,40,0">
+                <TextBlock Text="{lex:Loc GenreLabel}" Style="{StaticResource LabelTextBlockStyle}"/>
+                <TextBlock Text="{Binding Genres}" Style="{StaticResource AccentedTextBlockStyle}"/>
+            </StackPanel>
+        </StackPanel>
+        
+        <!--Overview-->
+        <TextBlock  Grid.Row="3" Text="{Binding Overview}" Style="{StaticResource MinorTextBlockStyle}" Visibility="{Binding HasOverview, Converter={StaticResource BooleanToVisibility}}" Margin="0,0,0,10"/>
+        
+        <!--Icons-->
+        <StackPanel  Grid.Row="4" Orientation="Horizontal">
+            <Grid x:Name="UserLikeGrid">
+                <Grid Margin="0 0 20 0">
+                    <Grid.Style>
+                        <Style TargetType="{x:Type Grid}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding }" Value="{x:Null}">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsLiked}" Value="False">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsFavorite}" Value="True">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
+                    <Image Style="{StaticResource LikeImage}"></Image>
+                </Grid>
+            </Grid>
 
-            <TextBlock Grid.Column="0" Grid.Row="3" Text="{lex:Loc RatingLabel}" Style="{StaticResource SmallTextBlockStyle}" Opacity="0.5" HorizontalAlignment="Right" Visibility="{Binding HasCommunityRating, Converter={StaticResource BooleanToVisibility}}"/>
-            <controls:StarRating Grid.Column="2" Grid.Row="3" Rating="{Binding CommunityRating}" Visibility="{Binding HasCommunityRating, Converter={StaticResource BooleanToVisibility}}"/>
-        </Grid>
+            <Grid x:Name="UserDislikeGrid">
+                <Grid Margin="0 0 20 0">
+                    <Grid.Style>
+                        <Style TargetType="{x:Type Grid}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding }" Value="{x:Null}">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsDisliked}" Value="False">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
+                    <Image Style="{StaticResource DislikeImage}"></Image>
+                </Grid>
+            </Grid>
 
-        <TextBlock Grid.Row="2" Text="{Binding Overview}" Style="{StaticResource SmallTextBlockStyle}" Margin="0,20,0,0" TextWrapping="WrapWithOverflow" TextTrimming="WordEllipsis"/>
+            <Grid x:Name="UserFavoriteGrid">
+                <Grid Margin="0 0 20 0">
+                    <Grid.Style>
+                        <Style TargetType="{x:Type Grid}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsFavorite}" Value="False">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
+                    <Image Style="{StaticResource FavoriteImage}"></Image>
+                </Grid>
+            </Grid>
+
+            <Border Margin="0 0 20 0" Visibility="{Binding HasPlayers, Converter={StaticResource BooleanToVisibility}}">
+
+                <Border.Style>
+                    <Style TargetType="{x:Type Border}" BasedOn="{StaticResource MediaInfoTextBorder}">
+                    </Style>
+                </Border.Style>
+
+                <TextBlock Style="{StaticResource MediaInfoTextBlock}" Text="{Binding Players, Converter={StaticResource UppercaseConverter}, StringFormat='{}{0} PLAYER'}" VerticalAlignment="Center"></TextBlock>
+            </Border>
+
+            <Border Margin="0 0 20 0">
+
+                <Border.Style>
+                    <Style TargetType="{x:Type Border}" BasedOn="{StaticResource MediaInfoTextBorder}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding OfficialRating}" Value="{x:Null}">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding ItemType}" Value="Episode">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+
+                <TextBlock Style="{StaticResource MediaInfoTextBlock}" Text="{Binding OfficialRating, Converter={StaticResource UppercaseConverter}}" VerticalAlignment="Center"></TextBlock>
+            </Border>
+
+            <Border Margin="0 0 20 0" Visibility="{Binding HasResolution, Converter={StaticResource BooleanToVisibility}}" Style="{StaticResource MediaInfoTextBorder}">
+
+                <TextBlock Style="{StaticResource MediaInfoTextBlock}" Text="{Binding Resolution, Converter={StaticResource UppercaseConverter}}" VerticalAlignment="Center"></TextBlock>
+            </Border>
+
+            <Border Margin="0 0 20 0">
+
+                <Border.Style>
+                    <Style TargetType="{x:Type Border}" BasedOn="{StaticResource MediaInfoTextBorder}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding AudioChannelLayout}" Value="{x:Null}">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding MediaType}" Value="Audio">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+
+                <TextBlock Style="{StaticResource MediaInfoTextBlock}" Text="{Binding AudioChannelLayout, Converter={StaticResource UppercaseConverter}}" VerticalAlignment="Center"></TextBlock>
+            </Border>
+
+            <Border Margin="0 0 20 0">
+
+                <Border.Style>
+                    <Style TargetType="{x:Type Border}" BasedOn="{StaticResource MediaInfoTextBorder}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding AudioCodec}" Value="{x:Null}">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding MediaType}" Value="Video">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+
+                <TextBlock Style="{StaticResource MediaInfoTextBlock}" Text="{Binding AudioCodec, Converter={StaticResource UppercaseConverter}}" VerticalAlignment="Center"></TextBlock>
+            </Border>
+        </StackPanel>
     </Grid>
 </UserControl>

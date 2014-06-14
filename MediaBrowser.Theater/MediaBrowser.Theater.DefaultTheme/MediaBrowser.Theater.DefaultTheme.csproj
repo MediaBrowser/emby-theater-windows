@@ -91,10 +91,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\StarRating.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Core\Views\ClockView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -124,10 +120,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Core\Views\ItemArtworkView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Core\Views\ItemFooterView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -390,9 +382,6 @@
     </Compile>
     <Compile Include="Configuration\ColorPalette.cs" />
     <Compile Include="Configuration\PluginConfiguration.cs" />
-    <Compile Include="Controls\StarRating.xaml.cs">
-      <DependentUpon>StarRating.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Controls\TileButton.cs" />
     <Compile Include="Core\Commands\ExitMenuCommand.cs" />
     <Compile Include="Core\Commands\HomeCommand.cs" />
@@ -432,9 +421,6 @@
     </Compile>
     <Compile Include="Core\Views\ItemArtworkView.xaml.cs">
       <DependentUpon>ItemArtworkView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Core\Views\ItemFooterView.xaml.cs">
-      <DependentUpon>ItemFooterView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Core\Views\ItemInfoView.xaml.cs">
       <DependentUpon>ItemInfoView.xaml</DependentUpon>

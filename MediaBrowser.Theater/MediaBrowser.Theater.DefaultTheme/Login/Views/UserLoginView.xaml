@@ -107,65 +107,76 @@
                 TrueState="Selected"
                 FalseState="Hidden" />
         </i:Interaction.Behaviors>
+        
+        <Grid Width="400" Height="400" x:Name="UserImage" Opacity="0.6">
+            <Grid Background="#CFCFCF">
+                <Grid.Style>
+                    <Style TargetType="{x:Type Grid}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding HasImage}" Value="True">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
 
-        <Border BorderThickness="2" Background="Transparent" IsHitTestVisible="True">
-            <Border.Style>
-                <Style TargetType="Border">
-                    <Style.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="BorderBrush" Value="{StaticResource ForegroundBrush}" />
-                        </Trigger>
-                    </Style.Triggers>
-                </Style>
-            </Border.Style>
-
-            <Grid Width="400" Height="400" x:Name="UserImage" Opacity="0.6">
-                <Grid Background="#CFCFCF">
-                    <Grid.Style>
-                        <Style TargetType="{x:Type Grid}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding HasImage}" Value="True">
-                                    <Setter Property="Visibility" Value="Collapsed" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Grid.Style>
-
-                    <Path Style="{StaticResource DefaultUserIcon}" Margin="20" />
-                </Grid>
-
-                <Image Stretch="Uniform" Source="{Binding Image}" VerticalAlignment="Bottom">
-                    <Image.Style>
-                        <Style TargetType="{x:Type Image}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding HasImage}" Value="False">
-                                    <Setter Property="Visibility" Value="Collapsed" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Image.Style>
-                </Image>
-
-                <Grid Visibility="{Binding HasUsername, Converter={StaticResource BooleanToVisibility}}"
-                      HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
-                      Background="{StaticResource TextBackgroundBrush}">
-
-                    <Grid.Style>
-                        <Style TargetType="{x:Type Grid}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding HasImage}" Value="True">
-                                    <Setter Property="Visibility" Value="Collapsed" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Grid.Style>
-
-                    <StackPanel Orientation="Vertical" Margin="10 5 0 10">
-                        <TextBlock Text="{Binding Username}" />
-                    </StackPanel>
-                </Grid>
+                <Path Style="{StaticResource DefaultUserIcon}" Margin="20" />
             </Grid>
-        </Border>
+
+            <Image Stretch="Uniform" Source="{Binding Image}" VerticalAlignment="Bottom">
+                <Image.Style>
+                    <Style TargetType="{x:Type Image}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding HasImage}" Value="False">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Image.Style>
+            </Image>
+
+            <Border x:Name="HighlightBorder" BorderThickness="4" Background="Transparent">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="BorderBrush" Value="Transparent"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsMouseOver, ElementName=_this}" Value="True">
+                                <Setter Property="BorderBrush" Value="{StaticResource InputHighlightBrush}"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsKeyboardFocusWithin, ElementName=_this}" Value="True">
+                                <Setter Property="BorderBrush" Value="{StaticResource InputHighlightBrush}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+            </Border>
+
+            <Grid Visibility="{Binding HasUsername, Converter={StaticResource BooleanToVisibility}}"
+                  HorizontalAlignment="Left" VerticalAlignment="Bottom">
+
+                <Grid.Style>
+                    <Style TargetType="{x:Type Grid}">
+                        <Setter Property="Background" Value="{StaticResource TextBackgroundBrush}"/>
+                        
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding HasImage}" Value="True">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsMouseOver, ElementName=_this}" Value="True">
+                                <Setter Property="Background" Value="{StaticResource InputHighlightBrush}"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsKeyboardFocusWithin, ElementName=_this}" Value="True">
+                                <Setter Property="Background" Value="{StaticResource InputHighlightBrush}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+
+                <StackPanel Orientation="Vertical" Margin="15 5 20 10">
+                    <TextBlock Text="{Binding Username}" />
+                </StackPanel>
+            </Grid>
+        </Grid>
 
         <StackPanel Margin="0,20,0,0" x:Name="Controls" IsHitTestVisible="False">
             <osk:TextField x:Name="Username" Watermark="{lex:Loc Login_Username}"
@@ -177,7 +188,8 @@
                 </osk:TextField.RenderTransform>
             </osk:TextField>
 
-            <osk:TextField x:Name="Password" Watermark="{lex:Loc Login_Password}" Text="{Binding Password, Mode=TwoWay}" IsMasked="True"
+            <osk:TextField x:Name="Password" Watermark="{lex:Loc Login_Password}"
+                           Text="{Binding Password, Mode=TwoWay}" IsMasked="True"
                            Visibility="{Binding RequiresPassword, Converter={StaticResource BooleanToVisibility}}"
                            Margin="0,0,0,10" Opacity="0">
                 <osk:TextField.RenderTransform>
@@ -185,7 +197,8 @@
                 </osk:TextField.RenderTransform>
             </osk:TextField>
 
-            <Button x:Name="Login" Content="{lex:Loc Login_Login}" Command="{Binding LoginCommand}" Margin="0,0,0,10" Opacity="0">
+            <Button x:Name="Login" Content="{lex:Loc Login_Login}" Command="{Binding LoginCommand}" Margin="0,0,0,10"
+                    Opacity="0">
                 <Button.RenderTransform>
                     <TranslateTransform />
                 </Button.RenderTransform>
@@ -199,7 +212,8 @@
                 <TextBlock Text="{lex:Loc Login_RememberMe}" />
             </CheckBox>
 
-            <TextBlock Text="{lex:Loc Login_InvalidCredentialsError}" TextWrapping="Wrap" FontSize="18" Foreground="Red"
+            <TextBlock Text="{lex:Loc Login_InvalidCredentialsError}" TextWrapping="Wrap" FontSize="18"
+                       Foreground="Red"
                        HorizontalAlignment="Center"
                        Visibility="{Binding IsInvalidLoginDetails, Converter={StaticResource BooleanToVisibility}}" />
         </StackPanel>

@@ -48,7 +48,7 @@
 
             <Grid>
                 <TextBlock Text="{Binding Detail}" Opacity="0.8" />
-                <controls1:StarRating Rating="{Binding CommunityRating}"
+                <controls:FiveStarRating Rating="{Binding CommunityRating}"
                                       Visibility="{Binding HasCommunityRating, Converter={StaticResource BooleanToVisibility}}"
                                       HorizontalAlignment="Right" />
             </Grid>

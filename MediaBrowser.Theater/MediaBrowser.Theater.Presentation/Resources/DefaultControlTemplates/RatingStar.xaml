@@ -3,6 +3,7 @@
                     xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls">
     
     <Style TargetType="{x:Type controls:RatingStar}">
+        <Setter Property="Focusable" Value="False"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:RatingStar}">
@@ -27,10 +28,11 @@
     </Style>
     
     <Style TargetType="{x:Type controls:FiveStarRating}">
+        <Setter Property="Focusable" Value="False"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:FiveStarRating}">
-                    <ItemsControl x:Name="PART_Stars">
+                    <ItemsControl x:Name="PART_Stars" Focusable="False">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <StackPanel Orientation="Horizontal" />

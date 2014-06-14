@@ -141,9 +141,9 @@
     <value>@Core_SleepCommand</value>
     <comment>The menu text for putting the computer to sleep</comment>
   </data>
-  <data name="DateLabel" xml:space="preserve">
-    <value>@DateLabel</value>
-    <comment>Date label</comment>
+  <data name="YearLabel" xml:space="preserve">
+    <value>@YearLabel</value>
+    <comment>Year label</comment>
   </data>
   <data name="DetailSection_AlbumsHeader" xml:space="preserve">
     <value>@DetailSection_AlbumsHeader</value>
@@ -253,9 +253,9 @@
     <value>@Login_Username</value>
     <comment>Username field text</comment>
   </data>
-  <data name="RatingLabel" xml:space="preserve">
-    <value>@RatingLabel</value>
-    <comment>Rating label</comment>
+  <data name="ReviewLabel" xml:space="preserve">
+    <value>@ReviewLabel</value>
+    <comment>Rewiew/rating label</comment>
   </data>
   <data name="RuntimeMinutes" xml:space="preserve">
     <value>@RuntimeMinutes</value>
@@ -308,5 +308,9 @@
   <data name="Theme_Name" xml:space="preserve">
     <value>@Theme_Name</value>
     <comment>The name of the theme</comment>
+  </data>
+  <data name="RuntimeLabel" xml:space="preserve">
+    <value>@RuntimeLabel</value>
+    <comment>Runtime label</comment>
   </data>
 </root>

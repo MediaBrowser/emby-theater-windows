@@ -13,15 +13,7 @@
         <Setter Property="HorizontalAlignment" Value="Left" />
         <Setter Property="CornerRadius" Value="3" />
         <Setter Property="Padding" Value="9 3 9 3" />
-
-        <Setter Property="Background">
-            <Setter.Value>
-                <LinearGradientBrush SpreadMethod="Reflect" ColorInterpolationMode="SRgbLinearInterpolation" StartPoint="0,0" EndPoint="0,1" >
-                    <GradientStop Color="#d6484848" Offset="0" />
-                    <GradientStop Color="#a6222222" Offset="1" />
-                </LinearGradientBrush>
-            </Setter.Value>
-        </Setter>
+        <Setter Property="Background" Value="#d6484848"/>
     </Style>
 
     <Style TargetType="Image" x:Key="CommunityRatingImage">

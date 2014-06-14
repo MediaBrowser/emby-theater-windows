@@ -129,6 +129,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
             get { return "MediaBrowser.Theater.DefaultTheme:Strings:Home_MoviesSectionTitle".Localize(); }
         }
 
+        public int Index { get; set; }
+
         public Size Size
         {
             get

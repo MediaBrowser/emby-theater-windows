@@ -8,9 +8,10 @@ using MediaBrowser.Theater.Presentation.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels
 {
-    public interface IHomePage
+    public interface IHomePage : IViewModel
     {
         string SectionTitle { get; }
+        int Index { get; set; }
     }
 
     public class HomeViewModel
@@ -33,7 +34,13 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels
         public HomeViewModel(ITheaterApplicationHost appHost)
         {
             var pageGenerators = appHost.GetExports<IHomePageGenerator>();
-            Pages = pageGenerators.SelectMany(p => p.GetHomePages()).ToList();
+            var pages = pageGenerators.SelectMany(p => p.GetHomePages()).ToList();
+
+            for (int i = 0; i < pages.Count; i++) {
+                pages[i].Index = i;
+            }
+
+            Pages = pages.Cast<IViewModel>().ToList();
         }
     }
 }

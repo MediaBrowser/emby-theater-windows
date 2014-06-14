@@ -49,6 +49,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
         }
 
         public string SectionTitle { get { return "MediaBrowser.Theater.DefaultTheme:Strings:Home_TVSectionTitle".Localize(); } }
+        public int Index { get; set; }
 
         public RangeObservableCollection<ItemTileViewModel> Episodes { get; private set; }
 

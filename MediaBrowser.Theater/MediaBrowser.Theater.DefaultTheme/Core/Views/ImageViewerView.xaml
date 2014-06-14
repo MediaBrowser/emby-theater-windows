@@ -70,7 +70,7 @@
         <Border HorizontalAlignment="Left" VerticalAlignment="Bottom"
                 Visibility="{Binding HasCurrentText, Converter={StaticResource BooleanToVisibility}}"
                 Background="{StaticResource TextBackgroundBrush}" Margin="0 0 0 -1">
-            <TextBlock Text="{Binding CurrentText}" Style="{StaticResource TextBlockStyle}" Margin="15 5 20 10" />
+            <TextBlock Text="{Binding CurrentText}" Margin="15 5 20 10" />
         </Border>
     </Grid>
 </UserControl>

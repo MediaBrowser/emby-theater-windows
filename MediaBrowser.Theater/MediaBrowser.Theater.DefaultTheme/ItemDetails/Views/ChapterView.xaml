@@ -26,8 +26,7 @@
                                              Visibility="{Binding ShowImage, Converter={StaticResource BooleanToVisibility}}" />
             <TextBlock Text="{lex:Loc DetailSection_ChapterUnwatched}" HorizontalAlignment="Center"
                        VerticalAlignment="Center"
-                       Visibility="{Binding IsUnwatched, Converter={StaticResource BooleanToVisibility}}"
-                       Style="{StaticResource SmallTextBlockStyle}" />
+                       Visibility="{Binding IsUnwatched, Converter={StaticResource BooleanToVisibility}}" />
         </Grid>
 
         <StackPanel Grid.Column="1" Margin="10,4,14,4">

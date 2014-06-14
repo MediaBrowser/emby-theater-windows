@@ -6,7 +6,7 @@
     <DataTemplate x:Key="PanoramaTitleTemplate" DataType="{x:Type system:String}">
         <TextBlock Text="{Binding}" Margin="50,0,30,0">
             <TextBlock.Style>
-                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource Heading1TextBlockStyle}">
+                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TitleTextBlockStyle}">
                     <Setter Property="Opacity" Value="0.2"/>
                     <Style.Triggers>
                         <MultiDataTrigger>
@@ -41,8 +41,16 @@
     <DataTemplate x:Key="PanoramaIndexTemplate" DataType="{x:Type system:String}">
         <TextBlock Text="{Binding}" Margin="30,0,30,0">
             <TextBlock.Style>
-                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SmallTextBlockStyle}">
+                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource NormalTextBlockStyle}">
                     <Setter Property="Opacity" Value="0.15"/>
+                    <Setter Property="FontSize" Value="30"/>
+                    <Setter Property="RenderTransformOrigin" Value="0.5 0.5"/>
+                    <Setter Property="RenderTransform">
+                        <Setter.Value>
+                            <ScaleTransform ScaleX="1" ScaleY="1"/>
+                        </Setter.Value>
+                    </Setter>
+
                     <Style.Triggers>
                         <MultiDataTrigger>
                             <MultiDataTrigger.Conditions>
@@ -60,12 +68,22 @@
                             Value="True">
                             <Setter Property="Foreground" Value="{StaticResource InputHighlightBrush}" />
                             <Setter Property="Opacity" Value="1" />
+                            <Setter Property="RenderTransform">
+                                <Setter.Value>
+                                    <ScaleTransform ScaleX="1.2" ScaleY="1.2"/>
+                                </Setter.Value>
+                            </Setter>
                         </DataTrigger>
                         <DataTrigger
                             Binding="{Binding IsMouseOver, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}"
                             Value="True">
                             <Setter Property="Foreground" Value="{StaticResource InputHighlightBrush}" />
                             <Setter Property="Opacity" Value="1" />
+                            <Setter Property="RenderTransform">
+                                <Setter.Value>
+                                    <ScaleTransform ScaleX="1.2" ScaleY="1.2"/>
+                                </Setter.Value>
+                            </Setter>
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
@@ -73,7 +91,7 @@
         </TextBlock>
     </DataTemplate>
 
-    <Style TargetType="TextBlock" x:Key="PanoramaTitleTextBlockStyle" BasedOn="{StaticResource Heading3TextBlockStyle}">
+    <Style TargetType="TextBlock" x:Key="PanoramaTitleTextBlockStyle" BasedOn="{StaticResource LabelTextBlockStyle}">
         <Setter Property="Margin" Value="0,0,0,5"/>
     </Style>
 

@@ -8,7 +8,7 @@
              d:DataContext="{d:DesignInstance viewModels:ClockViewModel}"
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
-        <TextBlock Style="{StaticResource TextBlockStyle}" Text="{Binding TimeLeft}"/>
-        <TextBlock Style="{StaticResource TextBlockStyle}" Text="{Binding TimeRight}" Foreground="{StaticResource AccentBrush}"/>
+        <TextBlock Text="{Binding TimeLeft}"/>
+        <TextBlock Text="{Binding TimeRight}" Foreground="{StaticResource AccentBrush}"/>
     </Grid>
 </UserControl>

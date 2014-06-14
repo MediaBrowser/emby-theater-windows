@@ -214,7 +214,7 @@
     <value>Remember me?</value>
   </data>
   <data name="Login_Title" xml:space="preserve">
-    <value>Please Sign In</value>
+    <value>Sign In</value>
   </data>
   <data name="Login_Username" xml:space="preserve">
     <value>Username</value>

@@ -32,39 +32,4 @@
     <FontWeight x:Key="MinorTextFontWeight">Light</FontWeight>
     <SolidColorBrush x:Key="MinorTextFontForeground" Color="{DynamicResource TextColor1}"/>
 
-
-
-    <!--Default font for text. Themes should override these as needed-->
-    <FontFamily x:Key="DefaultFontFamily">Segoe UI SemiLight, Lucida Sans Unicode, Verdana</FontFamily>
-<!--    <FontFamily x:Key="DefaultFontFamily">pack://application:,,,/Resources/fonts/#Source Sans Pro</FontFamily>-->
-    <FontWeight x:Key="DefaultFontWeight">Light</FontWeight>
-    <SolidColorBrush x:Key="DefaultFontForeground" Color="{DynamicResource ForegroundColor}"/>
-    <system:Double x:Key="DefaultFontSize">30</system:Double>
-
-    <!--Default font for small text. Themes should override these as needed-->
-    <FontFamily x:Key="SmallFontFamily">Segoe UI SemiLight, Lucida Sans Unicode, Verdana</FontFamily>
-<!--    <FontFamily x:Key="SmallFontFamily">pack://application:,,,/Resources/fonts/#Source Sans Pro</FontFamily>-->
-    <FontWeight x:Key="SmallFontWeight">Light</FontWeight>
-    <SolidColorBrush x:Key="SmallFontForeground" Color="{DynamicResource ForegroundColor}"/>
-    <system:Double x:Key="SmallFontSize">25</system:Double>
-
-    <!--Default font for h1 headers. Themes should override these as needed-->
-    <FontFamily x:Key="Heading1FontFamily">Segoe UI Light, Lucida Sans Unicode, Verdana</FontFamily>
-<!--    <FontFamily x:Key="Heading1FontFamily">pack://application:,,,/Resources/fonts/#Source Sans Pro ExtraLight</FontFamily>-->
-    <system:Double x:Key="Heading1FontSize">42</system:Double>
-    <FontWeight x:Key="Heading1FontWeight">ExtraLight</FontWeight>
-    <SolidColorBrush x:Key="Heading1FontForeground" Color="{DynamicResource ForegroundColor}"/>
-
-    <!--Default font for h2 headers. Themes should override these as needed-->
-    <FontFamily x:Key="Heading2FontFamily">Segoe UI Light, Lucida Sans Unicode, Verdana</FontFamily>
-<!--    <FontFamily x:Key="Heading2FontFamily">pack://application:,,,/Resources/fonts/#Source Sans Pro ExtraLight</FontFamily>-->
-    <system:Double x:Key="Heading2FontSize">38</system:Double>
-    <FontWeight x:Key="Heading2FontWeight">ExtraLight</FontWeight>
-    <SolidColorBrush x:Key="Heading2FontForeground" Color="{DynamicResource ForegroundColor}"/>
-
-<!--    <FontFamily x:Key="Heading3FontFamily">pack://application:,,,/Resources/fonts/#Source Sans Pro ExtraLight</FontFamily>-->
-    <FontFamily x:Key="Heading3FontFamily">Segoe UI SemiLight, Lucida Sans Unicode, Verdana</FontFamily>
-    <system:Double x:Key="Heading3FontSize">16</system:Double>
-    <FontWeight x:Key="Heading3FontWeight">Normal</FontWeight>
-    <SolidColorBrush x:Key="Heading3FontForeground" Color="{DynamicResource ForegroundColor}"/>
 </ResourceDictionary>

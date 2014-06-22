@@ -1,4 +1,4 @@
-﻿using System.Windows.Controls;
+﻿using System.Windows;
 using System.Windows.Input;
 
 namespace MediaBrowser.Theater.DefaultTheme.SideMenu.Views
@@ -6,7 +6,7 @@ namespace MediaBrowser.Theater.DefaultTheme.SideMenu.Views
     /// <summary>
     ///     Interaction logic for SideMenuView.xaml
     /// </summary>
-    public partial class SideMenuView : UserControl
+    public partial class SideMenuView
     {
         public SideMenuView()
         {
@@ -16,7 +16,7 @@ namespace MediaBrowser.Theater.DefaultTheme.SideMenu.Views
             Loaded += SideMenuView_Loaded;
         }
 
-        void SideMenuView_Loaded(object sender, System.Windows.RoutedEventArgs e)
+        private void SideMenuView_Loaded(object sender, RoutedEventArgs e)
         {
             MoveFocus(new TraversalRequest(FocusNavigationDirection.First));
         }

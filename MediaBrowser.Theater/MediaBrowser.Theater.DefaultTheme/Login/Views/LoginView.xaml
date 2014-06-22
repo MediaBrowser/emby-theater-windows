@@ -26,7 +26,7 @@
             <RowDefinition Height="800" />
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" Text="{lex:Loc Login_Title}" Style="{StaticResource Heading1TextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        <TextBlock Grid.Row="0" Text="{lex:Loc Login_Title}" Style="{StaticResource TitleTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
 
         <controls:ExtendedScrollViewer x:Name="ScrollViewer" Grid.Row="1" IgnoreAllDirectionKeys="True" IsTabStop="False" Focusable="False" CanContentScroll="True" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" VerticalAlignment="Top">
             <controls:ScrollingPanel CanHorizontallyScroll="True" CanVerticallyScroll="False">

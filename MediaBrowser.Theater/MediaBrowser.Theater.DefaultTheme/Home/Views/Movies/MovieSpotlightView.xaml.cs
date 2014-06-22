@@ -1,28 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+﻿using System.Windows.Input;
+using MediaBrowser.Theater.DefaultTheme.Home.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.Home.Views.Movies
 {
     /// <summary>
-    /// Interaction logic for MovieSpotlightView.xaml
+    ///     Interaction logic for MovieSpotlightView.xaml
     /// </summary>
-    public partial class MovieSpotlightView : UserControl
+    public partial class MovieSpotlightView
     {
         public MovieSpotlightView()
         {
             InitializeComponent();
+
+            Loaded += (s, e) => {
+                var page = DataContext as IHomePage;
+                if (page != null && page.Index == 0) {
+                    MoveFocus(new TraversalRequest(FocusNavigationDirection.First));
+                }
+            };
         }
     }
 }

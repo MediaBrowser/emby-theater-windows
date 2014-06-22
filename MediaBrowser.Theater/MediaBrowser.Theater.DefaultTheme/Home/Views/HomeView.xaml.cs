@@ -24,10 +24,10 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.Views
         {
             InitializeComponent();
 
-            Loaded += (s, e) => {
-                MoveFocus(new TraversalRequest(FocusNavigationDirection.First));
-                MoveFocus(new TraversalRequest(FocusNavigationDirection.Down));
-            };
+//            Loaded += (s, e) => {
+//                MoveFocus(new TraversalRequest(FocusNavigationDirection.First));
+//                MoveFocus(new TraversalRequest(FocusNavigationDirection.Down));
+//            };
         }
     }
 }

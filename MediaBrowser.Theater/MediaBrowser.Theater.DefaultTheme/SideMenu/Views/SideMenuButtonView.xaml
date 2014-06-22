@@ -16,7 +16,7 @@
             </Grid.ColumnDefinitions>
 
             <controls:ExtendedContentControl Content="{Binding Icon}" Width="50" Height="50"/>
-            <TextBlock Text="{Binding DisplayName}" Grid.Column="1" Margin="10,0,10,0" VerticalAlignment="Center" Style="{StaticResource SmallTextBlockStyle}"/>
+            <TextBlock Text="{Binding DisplayName}" Grid.Column="1" Margin="10,0,10,0" VerticalAlignment="Center" />
         </Grid>
     </Button>
 </UserControl>

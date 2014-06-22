@@ -406,6 +406,8 @@ namespace MediaBrowser.Theater.DefaultTheme
         private readonly WindowManager _windowManager;
         private IntPtr _mainWindowHandle;
 
+        private IViewModel _currentPage;
+
         public Presenter(IEventAggregator events, WindowManager windowManager)
         {
             _showPageEvent = events.Get<ShowPageEvent>();
@@ -455,6 +457,8 @@ namespace MediaBrowser.Theater.DefaultTheme
         public async Task ShowPage(IViewModel contents)
         {
             await _windowManager.ClosePopup();
+
+            _currentPage = contents;
             await _showPageEvent.Publish(new ShowPageEvent { ViewModel = contents });
             await _pageLoadedEvent.Publish(new PageLoadedEvent { ViewModel = contents });
         }
@@ -474,6 +478,10 @@ namespace MediaBrowser.Theater.DefaultTheme
         {
             //todo message box
             return MessageBoxResult.Cancel;
+        }
+
+        public IViewModel CurrentPage {
+            get { return _currentPage; }
         }
     }
 }

@@ -30,6 +30,7 @@
         </controls:IndexedItemsControl>
 
         <controls:ExtendedListBox Grid.Row="1"
+                                  x:Name="Index"
                                   Margin="0,20,0,0"
                                   Background="{x:Null}"
                                   BorderBrush="{x:Null}"
@@ -52,10 +53,11 @@
                                                                Focusable="False"
                                                                CanContentScroll="True"
                                                                VerticalAlignment="Top">
-                                    <controls:ScrollingPanel CanHorizontallyScroll="True"
-                                                             CanVerticallyScroll="False">
-                                        <StackPanel Orientation="Horizontal" IsItemsHost="True" />
-                                    </controls:ScrollingPanel>
+<!--                                    <controls:ScrollingPanel CanHorizontallyScroll="True"-->
+<!--                                                             CanVerticallyScroll="False">-->
+<!--                                        <StackPanel Orientation="Horizontal" IsItemsHost="True" />-->
+<!--                                    </controls:ScrollingPanel>-->
+                                    <StackPanel Orientation="Horizontal" IsItemsHost="True" />
                                 </controls:ExtendedScrollViewer>
                             </ControlTemplate>
                         </Setter.Value>
@@ -77,12 +79,6 @@
             </ListBox.ItemContainerStyle>
         </controls:ExtendedListBox>
 
-        <controls:ExtendedContentControl Grid.Row="2" Margin="50" Content="{Binding SelectedItemDetails}" Visibility="{Binding HasSelectedItemDetails, Converter={StaticResource BooleanToVisibility}}" HorizontalAlignment="Center" VerticalAlignment="Stretch">
-            <controls:ExtendedContentControl.ContentTemplate>
-                <DataTemplate DataType="{x:Type viewModels1:ItemInfoViewModel}">
-                    <views:ItemFooterView/>
-                </DataTemplate>
-            </controls:ExtendedContentControl.ContentTemplate>
-        </controls:ExtendedContentControl>
+        <controls:ExtendedContentControl Grid.Row="2" Margin="50" Content="{Binding SelectedItemDetails}" Visibility="{Binding HasSelectedItemDetails, Converter={StaticResource BooleanToVisibility}}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
     </Grid>
 </UserControl>

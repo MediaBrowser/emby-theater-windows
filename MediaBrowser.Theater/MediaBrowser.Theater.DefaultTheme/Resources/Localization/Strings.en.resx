@@ -135,8 +135,8 @@
   <data name="Core_SleepCommand" xml:space="preserve">
     <value>Sleep</value>
   </data>
-  <data name="DateLabel" xml:space="preserve">
-    <value>Date</value>
+  <data name="YearLabel" xml:space="preserve">
+    <value>Year</value>
   </data>
   <data name="DetailSection_AlbumsHeader" xml:space="preserve">
     <value>Albums</value>
@@ -214,13 +214,13 @@
     <value>Remember me?</value>
   </data>
   <data name="Login_Title" xml:space="preserve">
-    <value>Please Sign In</value>
+    <value>Sign In</value>
   </data>
   <data name="Login_Username" xml:space="preserve">
     <value>Username</value>
   </data>
-  <data name="RatingLabel" xml:space="preserve">
-    <value>Rating</value>
+  <data name="ReviewLabel" xml:space="preserve">
+    <value>Review</value>
   </data>
   <data name="RuntimeMinutes" xml:space="preserve">
     <value>{0} minutes</value>
@@ -260,5 +260,29 @@
   </data>
   <data name="Theme_Name" xml:space="preserve">
     <value>Default Theme</value>
+  </data>
+  <data name="RuntimeLabel" xml:space="preserve">
+    <value>Runtime</value>
+  </data>
+  <data name="Sorting_AscendingSortDirection" xml:space="preserve">
+    <value>Ascending</value>
+  </data>
+  <data name="Sorting_ByCommunityReview" xml:space="preserve">
+    <value>Community Review</value>
+  </data>
+  <data name="Sorting_ByTitle" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Sorting_ByYear" xml:space="preserve">
+    <value>Year</value>
+  </data>
+  <data name="Sorting_DescendingSortDirection" xml:space="preserve">
+    <value>Descending</value>
+  </data>
+  <data name="Sorting_SortModeDirectionLabel" xml:space="preserve">
+    <value>Direction:</value>
+  </data>
+  <data name="Sorting_SortModeOptionsLabel" xml:space="preserve">
+    <value>Sort by:</value>
   </data>
 </root>

@@ -7,6 +7,7 @@
              xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
              xmlns:movies="clr-namespace:MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies"
              xmlns:viewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.Home.ViewModels"
+             xmlns:controls1="clr-namespace:MediaBrowser.Theater.DefaultTheme.Controls"
              lex:LocalizeDictionary.DesignCulture="en"
              lex:ResxLocalizationProvider.DefaultAssembly="MediaBrowser.Theater.DefaultTheme"
              lex:ResxLocalizationProvider.DefaultDictionary="Strings"
@@ -16,53 +17,46 @@
              d:DesignHeight="750" d:DesignWidth="1000">
 
     <StackPanel Orientation="Vertical" Margin="50,0,0,0">
-        <TextBlock Text="{Binding Title, Converter={StaticResource UppercaseConverter}}" Margin="2,0,0,0" Style="{StaticResource PanoramaTitleTextBlockStyle}" />
+        <TextBlock Text="{Binding Title, Converter={StaticResource UppercaseConverter}}" Margin="2,0,0,0"
+                   Style="{StaticResource PanoramaTitleTextBlockStyle}" />
 
         <StackPanel Orientation="Horizontal">
             <StackPanel Orientation="Vertical">
 
-                <Button Style="{StaticResource BaseItemButtonStyle}"
-                        Width="{Binding SpotlightWidth}" Height="{Binding SpotlightHeight}"
-                        Command="{Binding SpotlightViewModel.ItemSelectedCommand}"
-                        Margin="{x:Static viewModels:HomeViewModel.TileMarginThickness}"
-                        HorizontalAlignment="Center" VerticalAlignment="Top">
-                    <controls:ExtendedContentControl Content="{Binding SpotlightViewModel}"
-                                                     Width="{Binding SpotlightWidth}"
-                                                     Height="{Binding SpotlightHeight}" />
-                </Button>
+                <controls:ExtendedContentControl Content="{Binding SpotlightViewModel}"
+                                                 HorizontalAlignment="Center" VerticalAlignment="Top"
+                                                 Margin="{x:Static viewModels:HomeViewModel.TileMarginThickness}"
+                                                 Width="{Binding SpotlightWidth}"
+                                                 Height="{Binding SpotlightHeight}" />
 
                 <WrapPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top"
                            Margin="0 0 0 0">
 
-                    <Button Style="{StaticResource BaseItemButtonStyle}" Command="{Binding BrowseMoviesCommand}"
-                            Width="{Binding LowerSpotlightWidth}" Height="{Binding LowerSpotlightHeight}"
-                            Margin="{x:Static viewModels:HomeViewModel.TileMarginThickness}">
-                        <Grid>
-                            <controls:ExtendedContentControl Content="{Binding AllMoviesImagesViewModel}"
-                                                             HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                    <controls1:TileButton x:Name="AllMoviesButton"
+                                          Command="{Binding BrowseMoviesCommand}"
+                                          Width="{Binding LowerSpotlightWidth}" Height="{Binding LowerSpotlightHeight}"
+                                          Margin="{x:Static viewModels:HomeViewModel.TileMarginThickness}">
+                        <controls1:TileButton.Header>
+                            <TextBlock Text="Browse All Movies" Margin="10 5 15 10"
+                                       Foreground="{Binding Foreground, ElementName=AllMoviesButton}" />
+                        </controls1:TileButton.Header>
 
-                            <Border HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
-                                    Background="{DynamicResource TextBackgroundBrush}" Margin="0 0 0 -1">
-                                <TextBlock Text="Browse All Movies" Style="{StaticResource SmallTextBlockStyle}"
-                                           Margin="10 5 15 10" />
-                            </Border>
-                        </Grid>
-                    </Button>
+                        <controls:ExtendedContentControl Content="{Binding AllMoviesImagesViewModel}"
+                                                         HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                    </controls1:TileButton>
 
-                    <Button Style="{StaticResource BaseItemButtonStyle}" Command="{Binding TrailersCommand}"
-                            Width="{Binding LowerSpotlightWidth}" Height="{Binding LowerSpotlightHeight}"
-                            Margin="{x:Static viewModels:HomeViewModel.TileMarginThickness}">
-                        <Grid>
-                            <Image Source="/MediaBrowser.Theater.DefaultTheme;component/Resources/Images/trailer.png"
-                                   Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Top" />
+                    <controls1:TileButton x:Name="TrailersButton"
+                                          Command="{Binding TrailersCommand}"
+                                          Width="{Binding LowerSpotlightWidth}" Height="{Binding LowerSpotlightHeight}"
+                                          Margin="{x:Static viewModels:HomeViewModel.TileMarginThickness}">
+                        <controls1:TileButton.Header>
+                            <TextBlock Text="Trailers" Margin="10 5 15 10"
+                                       Foreground="{Binding Foreground, ElementName=TrailersButton}" />
+                        </controls1:TileButton.Header>
 
-                            <Border HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
-                                    Background="{DynamicResource TextBackgroundBrush}" Margin="0 0 0 -1">
-                                <TextBlock Text="Trailers" Style="{StaticResource SmallTextBlockStyle}"
-                                           Margin="10 5 15 10" />
-                            </Border>
-                        </Grid>
-                    </Button>
+                        <Image Source="/MediaBrowser.Theater.DefaultTheme;component/Resources/Images/trailer.png"
+                               Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Top" />
+                    </controls1:TileButton>
 
                 </WrapPanel>
             </StackPanel>

@@ -4,6 +4,12 @@
              xmlns:converters="clr-namespace:MediaBrowser.Theater.Presentation.Converters;assembly=MediaBrowser.Theater.Presentation">
     <Application.Resources>
         <ResourceDictionary>
+            <converters:BooleanInverter x:Key="BooleanInverter"/>
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibility"/>
+            <converters:UppercaseConverter x:Key="UppercaseConverter"/>
+            <converters:LowercaseConverter x:Key="LowercaseConverter"/>
+            <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibility"/>
+            
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="ViewModelBindings.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/LightColors.xaml"/>
@@ -24,12 +30,8 @@
                 <ResourceDictionary Source="Resources/Styles/VirtualKeyboard.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/Panorama.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/TransportOsd.xaml"/>
+                <ResourceDictionary Source="Resources/Styles/TileButton.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-            
-            <converters:BooleanInverter x:Key="BooleanInverter"/>
-            <BooleanToVisibilityConverter x:Key="BooleanToVisibility"/>
-            <converters:UppercaseConverter x:Key="UppercaseConverter"/>
-            <converters:LowercaseConverter x:Key="LowercaseConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

@@ -8,6 +8,7 @@
     <SolidColorBrush x:Key="BackgroundBrush3" Color="{DynamicResource BackgroundColor3}"/>
 
     <SolidColorBrush x:Key="TextBackgroundBrush" Color="{DynamicResource TextBackgroundColor}"/>
+    <SolidColorBrush x:Key="AccentColorBackgroundTextBrush" Color="{DynamicResource ForegroundColor}"/>
     <SolidColorBrush x:Key="ImageOverlayBackgroundBrush" Color="#A6000000"/>
 
     <SolidColorBrush x:Key="InputHighlightBrush" Color="{DynamicResource InputHighlightColor}"/>

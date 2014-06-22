@@ -4,18 +4,105 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
+using MediaBrowser.Theater.Presentation;
 using MediaBrowser.Theater.Presentation.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
 {
+    public class ItemNameSortMode
+        : IItemListSortMode
+    {
+        public string DisplayName { get { return "MediaBrowser.Theater.DefaultTheme:Strings:Sorting_ByTitle".Localize(); } }
+
+        public object GetSortKey(BaseItemDto item)
+        {
+            var index = GetIndexKey(item);
+
+            string name = item.SortName ?? item.Name ?? string.Empty;
+            if (name.Length > 0) {
+                return index + name.ToUpper(CultureInfo.CurrentUICulture);
+            }
+
+            return index + "#";
+        }
+
+        public object GetIndexKey(BaseItemDto item)
+        {
+            string name = (item.SortName ?? item.Name ?? string.Empty).Trim();
+            if (name.Length > 0) {
+                var key = name.First().ToString(CultureInfo.CurrentUICulture).ToUpper(CultureInfo.CurrentUICulture);
+
+                if (char.IsLetter(key, 0)) {
+                    return key;
+                }
+                
+                if (char.IsNumber(key, 0)) {
+                    return "#";
+                }
+            }
+
+            return "_";
+        }
+    }
+
+    public class ItemYearSortMode
+        : IItemListSortMode
+    {
+        public string DisplayName { get { return "MediaBrowser.Theater.DefaultTheme:Strings:Sorting_ByYear".Localize(); } }
+
+        public object GetSortKey(BaseItemDto item)
+        {
+            if (item.PremiereDate != null) {
+                return item.PremiereDate.Value.Year;
+            }
+
+            return int.MaxValue;
+        }
+
+        public object GetIndexKey(BaseItemDto item)
+        {
+            if (item.PremiereDate != null) {
+                return (item.PremiereDate.Value.Year / 5) * 5;
+            }
+
+            return "N/A";
+        }
+    }
+
+    public class ItemCommunityReviewSortMode
+        : IItemListSortMode
+    {
+        public string DisplayName { get { return "MediaBrowser.Theater.DefaultTheme:Strings:Sorting_ByCommunityReview".Localize(); } }
+
+        public object GetSortKey(BaseItemDto item)
+        {
+            if (item.CommunityRating != null) {
+                return item.CommunityRating.Value;
+            }
+
+            return float.NegativeInfinity;
+        }
+
+        public object GetIndexKey(BaseItemDto item)
+        {
+            if (item.CommunityRating != null)
+            {
+                return Math.Round(item.CommunityRating.Value);
+            }
+
+            return "N/A";
+        }
+    }
+
     public class ItemListViewModel
-        : BaseViewModel, IHasRootPresentationOptions
+        : BaseViewModel, IHasRootPresentationOptions, IHasItemSortModes
     {
         public const double ItemHeight = 500;
 
@@ -26,8 +113,13 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
         private readonly IPlaybackManager _playbackManager;
         private readonly IServerEvents _serverEvents;
         private readonly ISessionManager _sessionManager;
+        
+        private IItemListSortMode _sortMode;
+
         private ItemTileViewModel _selectedItem;
         private ItemInfoViewModel _selectedItemDetails;
+        private IEnumerable<IItemListSortMode> _availableSortModes;
+        private SortDirection _sortDirection;
 
         public ItemListViewModel(Task<ItemsResult> items, string title, IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator, ISessionManager sessionManager, IPlaybackManager playbackManager)
         {
@@ -38,12 +130,66 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
             _navigator = navigator;
             _sessionManager = sessionManager;
             _playbackManager = playbackManager;
+            _availableSortModes = new IItemListSortMode[] { new ItemNameSortMode(), new ItemYearSortMode(), new ItemCommunityReviewSortMode() };
+            _sortMode = _availableSortModes.First();
             Items = new RangeObservableCollection<ItemTileViewModel>();
 
             PresentationOptions = new RootPresentationOptions {
                 ShowMediaBrowserLogo = false,
                 Title = title
             };
+        }
+
+        public SortDirection SortDirection
+        {
+            get { return _sortDirection; }
+            set
+            {
+                if (value == _sortDirection) {
+                    return;
+                }
+
+                _sortDirection = value;
+
+                OnPropertyChanged();
+                RefreshSorting();
+            }
+        }
+
+        public IEnumerable<IItemListSortMode> AvailableSortModes
+        {
+            get { return _availableSortModes; }
+            set
+            {
+                _availableSortModes = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public IItemListSortMode SortMode
+        {
+            get { return _sortMode; }
+            set
+            {
+                if (Equals(_sortMode, value)) {
+                    return;
+                }
+
+                _sortMode = value;
+
+                OnPropertyChanged();
+                RefreshSorting();
+            }
+        }
+        
+        private void RefreshSorting()
+        {
+            var sorted = (SortDirection == SortDirection.Ascending) ?
+                Items.OrderBy(vm => _sortMode.GetSortKey(vm.Item)).ToList() :
+                Items.OrderByDescending(vm => _sortMode.GetSortKey(vm.Item)).ToList();
+
+            Items.Clear();
+            Items.AddRange(sorted);
         }
 
         public RangeObservableCollection<ItemTileViewModel> Items { get; private set; }
@@ -92,7 +238,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
             {
                 return item => {
                     var viewModel = (ItemTileViewModel) item;
-                    return GetSortKey(viewModel);
+                    return _sortMode.GetIndexKey(viewModel.Item);
                 };
             }
         }
@@ -105,15 +251,6 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
             await base.Initialize();
         }
 
-        private static object GetSortKey(ItemTileViewModel viewModel)
-        {
-            string name = viewModel.Item.SortName ?? viewModel.Item.Name;
-            if (name.Length > 0) {
-                return name.First().ToString(CultureInfo.CurrentUICulture).ToUpper(CultureInfo.CurrentUICulture);
-            }
-            return string.Empty;
-        }
-
         private async Task LoadItems(Task<ItemsResult> itemsTask)
         {
             ItemsResult result = await itemsTask;
@@ -121,7 +258,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
                 DesiredImageHeight = ItemHeight
             });
 
-            Items.AddRange(viewModels.OrderBy(GetSortKey));
+            Items.AddRange(viewModels.OrderBy(vm => _sortMode.GetSortKey(vm.Item)));
         }
     }
 }

@@ -165,7 +165,7 @@
                                               FalseState="TitleHidden" />
                     </i:Interaction.Behaviors>
 
-                    <TextBlock Text="{Binding Title}" Style="{StaticResource Heading1TextBlockStyle}" FontSize="60" />
+                    <TextBlock Text="{Binding Title}" Style="{StaticResource TitleTextBlockStyle}" FontSize="60" />
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,0,30,0" HorizontalAlignment="Right" >

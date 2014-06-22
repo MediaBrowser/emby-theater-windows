@@ -6,6 +6,8 @@ using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels;
+using MediaBrowser.Theater.DefaultTheme.SortModeMenu;
+using MediaBrowser.Theater.DefaultTheme.SortModeMenu.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.ItemList
 {
@@ -33,6 +35,13 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList
             _presenter = presenter;
             _sessionManager = sessionManager;
             _playbackManager = playbackManager;
+
+            Binder.Bind<SortModeMenuPath>(async path => {
+                var context = appHost.CreateInstance(typeof (SortModeMenuContext)) as SortModeMenuContext;
+                context.Items = _viewModel;
+
+                return context;
+            });
         }
 
         public ItemListParameters Parameters { get; set; }

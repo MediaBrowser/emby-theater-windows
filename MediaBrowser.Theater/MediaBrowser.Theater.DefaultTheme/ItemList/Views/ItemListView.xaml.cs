@@ -1,26 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.Collections.Specialized;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.ItemList.Views
 {
     /// <summary>
-    /// Interaction logic for ItemListView.xaml
+    ///     Interaction logic for ItemListView.xaml
     /// </summary>
-    public partial class ItemListView : UserControl
+    public partial class ItemListView
     {
         public ItemListView()
         {
@@ -31,12 +21,22 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.Views
                 MoveFocus(new TraversalRequest(FocusNavigationDirection.First));
 
                 var context = DataContext as ItemListViewModel;
+                
                 context.Items.CollectionChanged += async (sender, args) => {
-                    if (args.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Reset) {
+                    if (IsKeyboardFocusWithin && args.Action == NotifyCollectionChangedAction.Reset) {
                         await Task.Delay(100);
                         MoveFocus(new TraversalRequest(FocusNavigationDirection.First));
                     }
                 };
+            };
+
+            Panorama.PropertyChanged += (sender, arg) => {
+                if (arg.PropertyName == "Indices") {
+                    var first = Panorama.Indices.FirstOrDefault();
+                    if (first != null) {
+                        Index.ScrollIntoView(first);
+                    }
+                }
             };
         }
     }

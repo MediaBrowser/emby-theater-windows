@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace MediaBrowser.Theater.DefaultTheme.Core.Views
 {
     /// <summary>
-    /// Interaction logic for ItemFooterView.xaml
+    /// Interaction logic for StyleCheckView.xaml
     /// </summary>
-    public partial class ItemFooterView : UserControl
+    public partial class StyleCheckView : UserControl
     {
-        public ItemFooterView()
+        public StyleCheckView()
         {
             InitializeComponent();
         }

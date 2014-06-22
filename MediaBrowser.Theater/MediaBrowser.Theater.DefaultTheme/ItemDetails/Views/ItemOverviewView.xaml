@@ -36,17 +36,17 @@
                         </Style>
                     </Button.Style>
                     
-                    <TextBlock Text="Play" Margin="10,0,10,0" VerticalAlignment="Center" Style="{StaticResource SmallTextBlockStyle}"/>
+                    <TextBlock Text="Play" Margin="10,0,10,0" VerticalAlignment="Center" />
                 </Button>
 
                 <Button Command="{Binding PlayAllCommand}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Margin="0,5,0,5" Visibility="{Binding Info.IsFolder, Converter={StaticResource BooleanToVisibility}}">
-                    <TextBlock Text="Play All" Margin="10,0,10,0" VerticalAlignment="Center" Style="{StaticResource SmallTextBlockStyle}"/>
+                    <TextBlock Text="Play All" Margin="10,0,10,0" VerticalAlignment="Center" />
                 </Button>
 
                 <Button Command="{Binding ResumeCommand}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Margin="0,5,0,5" Padding="0" Visibility="{Binding Info.IsInProgress, Converter={StaticResource BooleanToVisibility}}">
                     <Grid HorizontalAlignment="Stretch">
                         <ProgressBar Minimum="0" Maximum="100" Value="{Binding Info.PlayedPercentage, Mode=OneWay}" BorderThickness="0" Background="Transparent" Foreground="{StaticResource ForegroundBrush}" Opacity="0.1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-                        <TextBlock Text="Resume" Margin="16,3,16,5" VerticalAlignment="Center" HorizontalAlignment="Center" Style="{StaticResource SmallTextBlockStyle}"/>
+                        <TextBlock Text="Resume" Margin="16,3,16,5" VerticalAlignment="Center" HorizontalAlignment="Center" />
                     </Grid>
                 </Button>
             </StackPanel>

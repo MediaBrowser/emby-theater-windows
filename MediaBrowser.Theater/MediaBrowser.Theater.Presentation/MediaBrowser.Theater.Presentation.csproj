@@ -33,6 +33,15 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'StyleCheck|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\StyleCheck\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="MediaBrowser.Common, Version=3.0.5267.16996, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -93,6 +102,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Resources\DefaultControlTemplates\RatingStar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Resources\DefaultControlTemplates\VirtualKeyboard.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -117,6 +130,7 @@
     <Compile Include="Controls\ExtendedItemsControl.cs" />
     <Compile Include="Controls\ExtendedListBox.cs" />
     <Compile Include="Controls\ExtendedScrollViewer.cs" />
+    <Compile Include="Controls\FiveStarRating.cs" />
     <Compile Include="Controls\IndexedItemsControl.cs" />
     <Compile Include="Controls\Osk\AlternateKeySelection.cs" />
     <Compile Include="Controls\Osk\EmptyStringVisibilityConverter.cs" />
@@ -147,10 +161,12 @@
     <Compile Include="Controls\Osk\VirtualKeySet.cs" />
     <Compile Include="Controls\Osk\VirtualKeySetRow.cs" />
     <Compile Include="Controls\PanoramaPanel.cs" />
+    <Compile Include="Controls\RatingStar.cs" />
     <Compile Include="Controls\ScrollingPanel.cs" />
     <Compile Include="Controls\WindowCommands.cs" />
     <Compile Include="Converters\BooleanInverter.cs" />
     <Compile Include="Converters\BooleanOrConverter.cs" />
+    <Compile Include="Converters\InverseBooleanToVisibilityConverter.cs" />
     <Compile Include="Converters\LowercaseConverter.cs" />
     <Compile Include="Converters\StringNotEmptyToVisbilityConverter.cs" />
     <Compile Include="Converters\UppercaseConverter.cs" />

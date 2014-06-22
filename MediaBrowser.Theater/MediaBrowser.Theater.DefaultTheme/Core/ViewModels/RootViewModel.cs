@@ -34,7 +34,12 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
             Clock = new ClockViewModel();
             IsInFocus = true;
 
+#if DEFAULT_THEME_STYLE_CHECK
+            ActivePage = new StyleCheckViewModel();
+#else
             events.Get<ShowPageEvent>().Subscribe(message => ActivePage = message.ViewModel);
+#endif
+
             events.Get<PlaybackStopEventArgs>().Subscribe(message => IsInternalMediaPlaying = false);
             events.Get<PlaybackStartEventArgs>().Subscribe(message => {
                 if (message.Player is IInternalMediaPlayer && message.Player is IVideoPlayer && message.Options.Items[0].IsVideo) {

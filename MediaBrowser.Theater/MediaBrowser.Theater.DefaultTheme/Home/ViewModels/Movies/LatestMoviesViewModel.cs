@@ -76,6 +76,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
             get { return "MediaBrowser.Theater.DefaultTheme:Strings:Home_MoviesSectionTitle".Localize(); }
         }
 
+        public int Index { get; set; }
+
         public Size Size
         {
             get
@@ -120,7 +122,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
             return new ItemTileViewModel(_apiClient, _imageManager, _serverEvents, _navigator, _playbackManager, null) {
                 DesiredImageWidth = PosterWidth,
                 DesiredImageHeight = PosterHeight,
-                ShowDisplayName = false,
+                ShowCaptionBar = false,
                 PreferredImageTypes = new[] { ImageType.Primary, ImageType.Backdrop, ImageType.Thumb }
             };
         }

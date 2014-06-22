@@ -25,7 +25,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
         private BaseItemDto _item;
         private readonly IPlaybackManager _playbackManager;
 
-        private bool? _showDisplayName;
+        private bool? _showHeader;
 
         public ItemTileViewModel(IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents,
                                  INavigator navigator, IPlaybackManager playbackManager, BaseItemDto item)
@@ -93,24 +93,10 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
 
         public bool ShowCaptionBar
         {
-            get { return ShowDisplayName || HasCreator || IsInProgress; }
+            get { return _showHeader ?? ShouldShowDisplayNameByImageType(); }
+            set { _showHeader = value; }
         }
-
-        public bool ShowDisplayName
-        {
-            get { return _showDisplayName ?? ShouldShowDisplayNameByImageType(); }
-            set
-            {
-                if (Equals(_showDisplayName, value)) {
-                    return;
-                }
-
-                _showDisplayName = value;
-                OnPropertyChanged();
-                OnPropertyChanged("ShowCaptionBar");
-            }
-        }
-
+        
         public bool IsFolder
         {
             get { return _item != null && _item.IsFolder; }

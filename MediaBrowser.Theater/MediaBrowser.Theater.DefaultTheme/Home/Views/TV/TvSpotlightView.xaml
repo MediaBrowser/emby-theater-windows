@@ -7,6 +7,7 @@
              xmlns:tv="clr-namespace:MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV"
              xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
              xmlns:viewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.Home.ViewModels"
+             xmlns:controls1="clr-namespace:MediaBrowser.Theater.DefaultTheme.Controls"
              lex:LocalizeDictionary.DesignCulture="en"
              lex:ResxLocalizationProvider.DefaultAssembly="MediaBrowser.Theater.DefaultTheme"
              lex:ResxLocalizationProvider.DefaultDictionary="Strings"
@@ -23,65 +24,53 @@
         <StackPanel Orientation="Horizontal">
             <StackPanel Orientation="Vertical">
 
-                <Button Style="{StaticResource BaseItemButtonStyle}"
-                        Width="{Binding SpotlightWidth}" Height="{Binding SpotlightHeight}"
-                        Command="{Binding SpotlightViewModel.ItemSelectedCommand}"
-                        Margin="{x:Static viewModels:HomeViewModel.TileMarginThickness}"
-                        HorizontalAlignment="Center" VerticalAlignment="Top">
                     <controls:ExtendedContentControl Content="{Binding SpotlightViewModel}"
+                                                     Margin="{x:Static viewModels:HomeViewModel.TileMarginThickness}"
+                                                     HorizontalAlignment="Center" VerticalAlignment="Top"
                                                      Width="{Binding SpotlightWidth}"
                                                      Height="{Binding SpotlightHeight}" />
-                </Button>
 
                 <WrapPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top"
                            Margin="0 0 0 0">
 
-                    <Button Style="{StaticResource BaseItemButtonStyle}" Command="{Binding AllShowsCommand}"
-                            Width="{Binding LowerSpotlightWidth}" Height="{Binding LowerSpotlightHeight}"
-                            Margin="{x:Static viewModels:HomeViewModel.TileMarginThickness}">
-                        <Grid>
-                            <controls:ExtendedContentControl Content="{Binding AllShowsImagesViewModel}"
-                                                             HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                    <controls1:TileButton x:Name="AllShowsButton"
+                                          Command="{Binding AllShowsCommand}"
+                                          Width="{Binding LowerSpotlightWidth}" Height="{Binding LowerSpotlightHeight}"
+                                          Margin="{x:Static viewModels:HomeViewModel.TileMarginThickness}">
+                        <controls1:TileButton.Header>
+                            <TextBlock Text="Browse All Shows" Margin="10 5 15 10"
+                                       Foreground="{Binding Foreground, ElementName=AllShowsButton}" />
+                        </controls1:TileButton.Header>
 
-                            <Border HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
-                                    Background="{DynamicResource TextBackgroundBrush}" Margin="0 0 0 -1">
-                                <TextBlock Text="Browse All Shows" Style="{StaticResource SmallTextBlockStyle}"
-                                           Margin="10 5 15 10" />
-                            </Border>
-                        </Grid>
-                    </Button>
+                        <controls:ExtendedContentControl Content="{Binding AllShowsImagesViewModel}"
+                                                         HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                    </controls1:TileButton>
 
-                    <Button Style="{StaticResource BaseItemButtonStyle}" Command="{Binding GenresCommand}"
-                            Width="{Binding LowerSpotlightWidth}" Height="{Binding LowerSpotlightHeight}"
-                            Margin="{x:Static viewModels:HomeViewModel.TileMarginThickness}">
-                        <Grid>
-                            <Image
-                                Source="/MediaBrowser.Theater.DefaultTheme;component/Resources/Images/moviegenres.jpg"
+                    <controls1:TileButton x:Name="WatchNextButton"
+                                          Command="{Binding GenresCommand}"
+                                          Width="{Binding LowerSpotlightWidth}" Height="{Binding LowerSpotlightHeight}"
+                                          Margin="{x:Static viewModels:HomeViewModel.TileMarginThickness}">
+                        <controls1:TileButton.Header>
+                            <TextBlock Text="To Watch Next" Margin="10 5 15 10"
+                                       Foreground="{Binding Foreground, ElementName=WatchNextButton}" />
+                        </controls1:TileButton.Header>
+
+                        <Image Source="/MediaBrowser.Theater.DefaultTheme;component/Resources/Images/moviegenres.jpg"
                                 Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Top" />
+                    </controls1:TileButton>
 
-                            <Border HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
-                                    Background="{DynamicResource TextBackgroundBrush}" Margin="0 0 0 -1">
-                                <TextBlock Text="To Watch Next" Style="{StaticResource SmallTextBlockStyle}"
-                                           Margin="10 5 15 10" />
-                            </Border>
-                        </Grid>
-                    </Button>
+                    <controls1:TileButton x:Name="UpcommingButton"
+                                          Command="{Binding UpcomingCommand}"
+                                          Width="{Binding LowerSpotlightWidth}" Height="{Binding LowerSpotlightHeight}"
+                                          Margin="{x:Static viewModels:HomeViewModel.TileMarginThickness}">
+                        <controls1:TileButton.Header>
+                            <TextBlock Text="To Watch Next" Margin="10 5 15 10"
+                                       Foreground="{Binding Foreground, ElementName=UpcommingButton}" />
+                        </controls1:TileButton.Header>
 
-                    <Button Style="{StaticResource BaseItemButtonStyle}" Command="{Binding UpcomingCommand}"
-                            Width="{Binding LowerSpotlightWidth}" Height="{Binding LowerSpotlightHeight}"
-                            Margin="{x:Static viewModels:HomeViewModel.TileMarginThickness}">
-                        <Grid>
-                            <Image
-                                Source="/MediaBrowser.Theater.DefaultTheme;component/Resources/Images/upcomingtv.jpg"
+                        <Image Source="/MediaBrowser.Theater.DefaultTheme;component/Resources/Images/upcomingtv.jpg"
                                 Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Top" />
-
-                            <Border HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
-                                    Background="{DynamicResource TextBackgroundBrush}" Margin="0 0 0 -1">
-                                <TextBlock Text="Upcoming TV" Style="{StaticResource SmallTextBlockStyle}"
-                                           Margin="10 5 15 10" />
-                            </Border>
-                        </Grid>
-                    </Button>
+                    </controls1:TileButton>
 
                 </WrapPanel>
             </StackPanel>

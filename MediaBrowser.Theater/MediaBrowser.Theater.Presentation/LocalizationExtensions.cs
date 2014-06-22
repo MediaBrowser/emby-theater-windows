@@ -14,7 +14,7 @@ namespace MediaBrowser.Theater.Presentation
             
             var locExtension = new LocExtension(key);
             locExtension.ResolveLocalizedValue(out localized);
-            return localized;
+            return localized ?? key;
         }
 
         public static string LocalizeFormat(this string key, params object[] arguments)

@@ -11,6 +11,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using MediaBrowser.Theater.Presentation.Annotations;
+using MediaBrowser.Theater.Presentation.ViewModels;
 
 namespace MediaBrowser.Theater.Presentation.Controls
 {
@@ -44,15 +45,15 @@ namespace MediaBrowser.Theater.Presentation.Controls
         }
 
 
-        private readonly ObservableCollection<object> _indexObjects;
         private readonly Dictionary<object, object> _indicesByItem;
         private readonly Dictionary<object, object> _itemsByIndex;
         private Panel _panel;
         private object _selectedIndex;
+        private IEnumerable<object> _indices;
 
         public IndexedItemsControl()
         {
-            _indexObjects = new ObservableCollection<object>();
+            _indices = new object[0];
             _itemsByIndex = new Dictionary<object, object>();
             _indicesByItem = new Dictionary<object, object>();
 
@@ -71,9 +72,17 @@ namespace MediaBrowser.Theater.Presentation.Controls
             ItemsPanelProperty.OverrideMetadata(typeof(IndexedItemsControl), new FrameworkPropertyMetadata(defaultPanel));
         }
 
-        public ObservableCollection<object> Indices
+        public IEnumerable<object> Indices
         {
-            get { return _indexObjects; }
+            get { return _indices; }
+            private set
+            {
+                if (Equals(value, _indices)) {
+                    return;
+                }
+                _indices = value;
+                OnPropertyChanged();
+            }
         }
 
         public object SelectedIndex
@@ -230,7 +239,6 @@ namespace MediaBrowser.Theater.Presentation.Controls
 
         private void FindIndices()
         {
-            _indexObjects.Clear();
             _indicesByItem.Clear();
             _itemsByIndex.Clear();
 
@@ -250,13 +258,10 @@ namespace MediaBrowser.Theater.Presentation.Controls
                 _indicesByItem[item] = previousIndex;
             }
 
-            _indexObjects.Clear();
-            foreach (object index in _itemsByIndex.Keys) {
-                _indexObjects.Add(index);
-            }
+            Indices = _itemsByIndex.Keys.ToList();
 
-            if (SelectedIndex == null || !_indexObjects.Contains(SelectedIndex)) {
-                SelectedIndex = _indexObjects.FirstOrDefault();
+            if (SelectedIndex == null || !Indices.Contains(SelectedIndex)) {
+                SelectedIndex = Indices.FirstOrDefault();
             }
         }
 

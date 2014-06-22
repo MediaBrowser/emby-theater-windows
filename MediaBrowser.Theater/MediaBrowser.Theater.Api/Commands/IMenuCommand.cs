@@ -16,6 +16,7 @@ namespace MediaBrowser.Theater.Api.Commands
     {
         public int SortOrder { get; set; }
 
+        public static readonly MenuCommandGroup ViewSettings = new MenuCommandGroup { SortOrder = 0 };
         public static readonly MenuCommandGroup User = new MenuCommandGroup { SortOrder = 10 };
         public static readonly MenuCommandGroup Navigation = new MenuCommandGroup { SortOrder = 20 };
         public static readonly MenuCommandGroup Power = new MenuCommandGroup { SortOrder = 30 };

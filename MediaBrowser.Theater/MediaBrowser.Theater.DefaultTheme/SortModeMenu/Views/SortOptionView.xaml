@@ -1,0 +1,33 @@
+﻿<UserControl x:Class="MediaBrowser.Theater.DefaultTheme.SortModeMenu.Views.SortOptionView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:viewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.SortModeMenu.ViewModels"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance viewModels:SortOptionViewModel}"
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Button Style="{StaticResource ImageButton}" HorizontalAlignment="Stretch" Command="{Binding SelectCommand}" HorizontalContentAlignment="Stretch">
+        <Grid HorizontalAlignment="Stretch">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+        
+            <Border Width="20" Height="20" Margin="10" BorderBrush="{StaticResource ForegroundBrush}" BorderThickness="1">
+                <Border.Style>
+                    <Style TargetType="{x:Type Border}">
+                        <Setter Property="Background" Value="{x:Null}"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                <Setter Property="Background" Value="{StaticResource ForegroundBrush}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+            </Border>
+        
+            <TextBlock Grid.Column="1" Text="{Binding DisplayName}" VerticalAlignment="Center"/>
+        </Grid>
+    </Button>
+</UserControl>

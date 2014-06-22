@@ -151,6 +151,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="SortModeMenu\Views\SortModeCommandView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SortModeMenu\Views\SortModeMenuView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Core\Views\StyleCheckView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -371,6 +379,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="SortModeMenu\Views\SortOptionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ViewModelBindings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -385,6 +397,7 @@
     <Compile Include="Controls\TileButton.cs" />
     <Compile Include="Core\Commands\ExitMenuCommand.cs" />
     <Compile Include="Core\Commands\HomeCommand.cs" />
+    <Compile Include="SortModeMenu\Commands\SortModeCommand.cs" />
     <Compile Include="Core\Commands\RestartMenuCommand.cs" />
     <Compile Include="Core\Commands\ShutdownMenuCommand.cs" />
     <Compile Include="Core\Commands\SleepMenuCommand.cs" />
@@ -397,6 +410,8 @@
     <Compile Include="Core\ViewModels\ItemInfoViewModel.cs" />
     <Compile Include="Core\ViewModels\ItemSpotlightViewModel.cs" />
     <Compile Include="Core\ViewModels\ItemTileViewModel.cs" />
+    <Compile Include="SortModeMenu\SortModeMenuContext.cs" />
+    <Compile Include="SortModeMenu\ViewModels\SortModeMenuViewModel.cs" />
     <Compile Include="Core\ViewModels\StyleCheckViewModel.cs" />
     <Compile Include="Core\Views\ClockView.xaml.cs">
       <DependentUpon>ClockView.xaml</DependentUpon>
@@ -442,6 +457,13 @@
     </Compile>
     <Compile Include="Core\Views\SleepMenuCommandIconView.xaml.cs">
       <DependentUpon>SleepMenuCommandIconView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SortModeMenu\ViewModels\SortOptionViewModel.cs" />
+    <Compile Include="SortModeMenu\Views\SortModeCommandView.xaml.cs">
+      <DependentUpon>SortModeCommandView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SortModeMenu\Views\SortModeMenuView.xaml.cs">
+      <DependentUpon>SortModeMenuView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Core\Views\StyleCheckView.xaml.cs">
       <DependentUpon>StyleCheckView.xaml</DependentUpon>
@@ -597,6 +619,9 @@
     </Compile>
     <Compile Include="SideMenu\Views\SideMenuView.xaml.cs">
       <DependentUpon>SideMenuView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SortModeMenu\Views\SortOptionView.xaml.cs">
+      <DependentUpon>SortOptionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Theme.cs" />
     <Compile Include="Core\ViewModels\HelloWorldViewModel.cs" />

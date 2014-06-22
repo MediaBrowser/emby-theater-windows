@@ -109,6 +109,7 @@
     <Compile Include="System\IServerConnectionManager.cs" />
     <Compile Include="System\IStartupEntryPoint.cs" />
     <Compile Include="UserInput\IUserInputManager.cs" />
+    <Compile Include="UserInterface\IHasItemSortModes.cs" />
     <Compile Include="UserInterface\IImageManager.cs" />
     <Compile Include="UserInterface\IItemDetailsViewModel.cs" />
     <Compile Include="UserInterface\MessageBoxIcon.cs" />

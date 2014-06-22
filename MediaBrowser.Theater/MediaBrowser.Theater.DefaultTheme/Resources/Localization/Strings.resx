@@ -313,4 +313,32 @@
     <value>@RuntimeLabel</value>
     <comment>Runtime label</comment>
   </data>
+  <data name="Sorting_AscendingSortDirection" xml:space="preserve">
+    <value>@Sorting_AscendingSortDirection</value>
+    <comment>Sort items in ascending order</comment>
+  </data>
+  <data name="Sorting_ByCommunityReview" xml:space="preserve">
+    <value>@Sorting_ByCommunityReview</value>
+    <comment>Sort by community review</comment>
+  </data>
+  <data name="Sorting_ByTitle" xml:space="preserve">
+    <value>@Sorting_ByTitle</value>
+    <comment>Sort by item name</comment>
+  </data>
+  <data name="Sorting_ByYear" xml:space="preserve">
+    <value>@Sorting_ByYear</value>
+    <comment>Sort by item year</comment>
+  </data>
+  <data name="Sorting_DescendingSortDirection" xml:space="preserve">
+    <value>@Sorting_DescendingSortDirection</value>
+    <comment>Sort items in descending order</comment>
+  </data>
+  <data name="Sorting_SortModeDirectionLabel" xml:space="preserve">
+    <value>@Sorting_SortModeDirectionLabel</value>
+    <comment>Item list sort direction selection label</comment>
+  </data>
+  <data name="Sorting_SortModeOptionsLabel" xml:space="preserve">
+    <value>@Sorting_SortModeOptionsLabel</value>
+    <comment>Item list sort mode selection label</comment>
+  </data>
 </root>

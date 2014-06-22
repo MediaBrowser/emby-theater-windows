@@ -264,4 +264,25 @@
   <data name="RuntimeLabel" xml:space="preserve">
     <value>Runtime</value>
   </data>
+  <data name="Sorting_AscendingSortDirection" xml:space="preserve">
+    <value>Ascending</value>
+  </data>
+  <data name="Sorting_ByCommunityReview" xml:space="preserve">
+    <value>Community Review</value>
+  </data>
+  <data name="Sorting_ByTitle" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Sorting_ByYear" xml:space="preserve">
+    <value>Year</value>
+  </data>
+  <data name="Sorting_DescendingSortDirection" xml:space="preserve">
+    <value>Descending</value>
+  </data>
+  <data name="Sorting_SortModeDirectionLabel" xml:space="preserve">
+    <value>Direction:</value>
+  </data>
+  <data name="Sorting_SortModeOptionsLabel" xml:space="preserve">
+    <value>Sort by:</value>
+  </data>
 </root>

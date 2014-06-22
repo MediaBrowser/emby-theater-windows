@@ -142,6 +142,7 @@ namespace MediaBrowser.Theater.Api.Navigation
                 _activeFrame = _logicalBackStack.Pop();
 
                 await _activeFrame.Context.Activate();
+                OnNavigated(new NavigationEventArgs(CurrentLocation));
             }
         }
 
@@ -152,6 +153,7 @@ namespace MediaBrowser.Theater.Api.Navigation
                 _activeFrame = _logicalForwardStack.Pop();
 
                 await _activeFrame.Context.Activate();
+                OnNavigated(new NavigationEventArgs(CurrentLocation));
             }
         }
 

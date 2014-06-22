@@ -1,8 +1,15 @@
-﻿using System.Windows;
+﻿using System.Collections.Generic;
+using System.Windows;
 using MediaBrowser.Model.Plugins;
 
 namespace MediaBrowser.Theater.DefaultTheme.Configuration
 {
+    public class SortModePreference
+    {
+        public string ItemType {get;set;}
+        public string SortModeType { get; set; }
+    }
+
     public class PluginConfiguration
         : BasePluginConfiguration
     {
@@ -20,9 +27,12 @@ namespace MediaBrowser.Theater.DefaultTheme.Configuration
 
         public bool ShowOnlyWatchedChapters { get; set; }
 
+        public SortModePreference[] SortModes { get; set; }
+
         public PluginConfiguration()
         {
-            Palette = new ColorPalette { Style = ThemeStyle.Dark, Accent = AccentColors.MediaBrowserGreen };
+            Palette = new ColorPalette { Style = ThemeStyle.Light, Accent = AccentColors.MediaBrowserGreen };
+            SortModes = new SortModePreference[0];
             ShowOnlyWatchedChapters = true;
         }
     }

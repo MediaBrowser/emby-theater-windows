@@ -484,6 +484,69 @@ namespace MediaBrowser.Theater.DefaultTheme.Resources.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to @Sorting_AscendingSortDirection.
+        /// </summary>
+        internal static string Sorting_AscendingSortDirection {
+            get {
+                return ResourceManager.GetString("Sorting_AscendingSortDirection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @Sorting_ByCommunityReview.
+        /// </summary>
+        internal static string Sorting_ByCommunityReview {
+            get {
+                return ResourceManager.GetString("Sorting_ByCommunityReview", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @Sorting_ByTitle.
+        /// </summary>
+        internal static string Sorting_ByTitle {
+            get {
+                return ResourceManager.GetString("Sorting_ByTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @Sorting_ByYear.
+        /// </summary>
+        internal static string Sorting_ByYear {
+            get {
+                return ResourceManager.GetString("Sorting_ByYear", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @Sorting_DescendingSortDirection.
+        /// </summary>
+        internal static string Sorting_DescendingSortDirection {
+            get {
+                return ResourceManager.GetString("Sorting_DescendingSortDirection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @Sorting_SortModeDirectionLabel.
+        /// </summary>
+        internal static string Sorting_SortModeDirectionLabel {
+            get {
+                return ResourceManager.GetString("Sorting_SortModeDirectionLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @Sorting_SortModeOptionsLabel.
+        /// </summary>
+        internal static string Sorting_SortModeOptionsLabel {
+            get {
+                return ResourceManager.GetString("Sorting_SortModeOptionsLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to @Theme_Name.
         /// </summary>
         internal static string Theme_Name {

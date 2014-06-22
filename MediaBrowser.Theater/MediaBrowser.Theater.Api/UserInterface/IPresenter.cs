@@ -17,6 +17,7 @@ namespace MediaBrowser.Theater.Api.UserInterface
         Task ShowPopup(IViewModel contents);
         Task ShowNotification(IViewModel contents);
         MessageBoxResult ShowMessage(MessageBoxInfo messageBoxInfo);
+        IViewModel CurrentPage { get; }
     }
 
     public class PageLoadedEvent

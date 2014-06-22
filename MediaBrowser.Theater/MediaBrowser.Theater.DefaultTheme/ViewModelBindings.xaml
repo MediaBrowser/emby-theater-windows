@@ -22,7 +22,10 @@
                     xmlns:viewModels5="clr-namespace:MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels"
                     xmlns:views5="clr-namespace:MediaBrowser.Theater.DefaultTheme.ItemDetails.Views"
                     xmlns:viewModels6="clr-namespace:MediaBrowser.Theater.DefaultTheme.Osd.ViewModels"
-                    xmlns:views6="clr-namespace:MediaBrowser.Theater.DefaultTheme.Osd.Views">
+                    xmlns:views6="clr-namespace:MediaBrowser.Theater.DefaultTheme.Osd.Views"
+                    xmlns:commands11="clr-namespace:MediaBrowser.Theater.DefaultTheme.SortModeMenu.Commands"
+                    xmlns:viewModels7="clr-namespace:MediaBrowser.Theater.DefaultTheme.SortModeMenu.ViewModels"
+                    xmlns:views7="clr-namespace:MediaBrowser.Theater.DefaultTheme.SortModeMenu.Views">
     
     <DataTemplate DataType="{x:Type viewModels:RootViewModel}">
         <views:RootView/>
@@ -62,6 +65,18 @@
     
     <DataTemplate DataType="{x:Type viewModels1:SearchCommandIconViewModel}">
         <views1:SearchCommandIconView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type commands11:SortModeCommandViewModel}">
+        <views7:SortModeCommandView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels7:SortModeMenuViewModel}">
+        <views7:SortModeMenuView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels7:SortOptionViewModel}">
+        <views7:SortOptionView/>
     </DataTemplate>
     
     <DataTemplate DataType="{x:Type loginViewModels:LoginViewModel}">

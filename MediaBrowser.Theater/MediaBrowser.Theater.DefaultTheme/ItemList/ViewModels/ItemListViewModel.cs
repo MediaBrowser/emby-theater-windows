@@ -113,9 +113,9 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
         private readonly IPlaybackManager _playbackManager;
         private readonly IServerEvents _serverEvents;
         private readonly ISessionManager _sessionManager;
-        
-        private IItemListSortMode _sortMode;
 
+        private string _itemType;
+        private IItemListSortMode _sortMode;
         private ItemTileViewModel _selectedItem;
         private ItemInfoViewModel _selectedItemDetails;
         private IEnumerable<IItemListSortMode> _availableSortModes;
@@ -131,7 +131,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
             _sessionManager = sessionManager;
             _playbackManager = playbackManager;
             _availableSortModes = new IItemListSortMode[] { new ItemNameSortMode(), new ItemYearSortMode(), new ItemCommunityReviewSortMode() };
-            _sortMode = _availableSortModes.First();
+
             Items = new RangeObservableCollection<ItemTileViewModel>();
 
             PresentationOptions = new RootPresentationOptions {
@@ -150,6 +150,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
                 }
 
                 _sortDirection = value;
+                SaveSortPreference();
 
                 OnPropertyChanged();
                 RefreshSorting();
@@ -168,7 +169,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
 
         public IItemListSortMode SortMode
         {
-            get { return _sortMode; }
+            get { return _sortMode ?? _availableSortModes.First(); }
             set
             {
                 if (Equals(_sortMode, value)) {
@@ -176,20 +177,33 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
                 }
 
                 _sortMode = value;
+                SaveSortPreference();
 
                 OnPropertyChanged();
                 RefreshSorting();
             }
         }
+
+        private void SaveSortPreference()
+        {
+            if (!string.IsNullOrEmpty(_itemType) && _sortMode != null) {
+                Theme.Instance.Configuration.SaveSortMode(_itemType, _sortMode, _sortDirection);
+            }
+        }
         
         private void RefreshSorting()
         {
-            var sorted = (SortDirection == SortDirection.Ascending) ?
-                Items.OrderBy(vm => _sortMode.GetSortKey(vm.Item)).ToList() :
-                Items.OrderByDescending(vm => _sortMode.GetSortKey(vm.Item)).ToList();
+            var sorted = SortItems(Items);
 
             Items.Clear();
             Items.AddRange(sorted);
+        }
+
+        private IEnumerable<ItemTileViewModel> SortItems(IEnumerable<ItemTileViewModel> items)
+        {
+            return (SortDirection == SortDirection.Ascending) ?
+                       items.OrderBy(vm => SortMode.GetSortKey(vm.Item)).ToList() :
+                       items.OrderByDescending(vm => SortMode.GetSortKey(vm.Item)).ToList();
         }
 
         public RangeObservableCollection<ItemTileViewModel> Items { get; private set; }
@@ -238,7 +252,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
             {
                 return item => {
                     var viewModel = (ItemTileViewModel) item;
-                    return _sortMode.GetIndexKey(viewModel.Item);
+                    return SortMode.GetIndexKey(viewModel.Item);
                 };
             }
         }
@@ -258,7 +272,17 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
                 DesiredImageHeight = ItemHeight
             });
 
-            Items.AddRange(viewModels.OrderBy(vm => _sortMode.GetSortKey(vm.Item)));
+            if (result.Items.Length > 0 && _sortMode == null) {
+                _itemType = result.Items[0].Type;
+
+                var sortModePreference = Theme.Instance.Configuration.FindSortMode(_itemType);
+                if (sortModePreference != null) {
+                    _sortDirection = sortModePreference.SortDirection;
+                    _sortMode = _availableSortModes.FirstOrDefault(sm => sm.GetType().FullName == sortModePreference.SortModeType);
+                }
+            }
+
+            Items.AddRange(SortItems(viewModels));
         }
     }
 }

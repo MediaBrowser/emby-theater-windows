@@ -116,6 +116,16 @@ namespace MediaBrowser.Theater.Presentation.Controls
                 }
             }
 
+            if (e.Key == Key.PageDown) {
+                ScrollPageRight();
+                e.Handled = true;
+            }
+
+            if (e.Key == Key.PageUp) {
+                ScrollPageLeft();
+                e.Handled = true;
+            }
+
             if (!e.Handled) {
                 base.OnKeyDown(e);
             }
@@ -131,6 +141,65 @@ namespace MediaBrowser.Theater.Presentation.Controls
             }
 
             return -1;
+        }
+
+        private void ScrollPageRight()
+        {
+            var target = _itemPositionOffsets[_firstVisibleItem] + _viewport.Width;
+            int endIndex;
+            for (endIndex = _firstVisibleItem + 1; endIndex < _itemPositionOffsets.Length - 1; endIndex++) {
+                if (_itemPositionOffsets[endIndex + 1] >= target) {
+                    break;
+                }
+            }
+
+            IItemContainerGenerator generator = ItemContainerGenerator;
+            GeneratorPosition itemPos = generator.GeneratorPositionFromIndex(endIndex);
+            int childIndex = (itemPos.Offset == 0) ? itemPos.Index : itemPos.Index + 1;
+
+            var newFocus = Children[Math.Min(Children.Count - 1, childIndex)];
+            FocusFirstAvailable(newFocus);
+
+            SetHorizontalOffset(_itemPositionOffsets[endIndex] - _itemPositionOffsets[0]);
+        }
+
+        private void ScrollPageLeft()
+        {
+            int startIndex;
+            for (startIndex = _lastVisibleItem - 1; startIndex >= 0; startIndex--)
+            {
+                if (_itemPositionOffsets[startIndex] < _offset.X) {
+                    break;
+                }
+            }
+
+            IItemContainerGenerator generator = ItemContainerGenerator;
+            GeneratorPosition itemPos = generator.GeneratorPositionFromIndex(startIndex);
+            int childIndex = (itemPos.Offset == 0) ? itemPos.Index : itemPos.Index + 1;
+
+            var newFocus = Children[Math.Max(0, childIndex)];
+            FocusFirstAvailable(newFocus);
+
+            SetHorizontalOffset(_itemPositionOffsets[startIndex + 1] + _itemPositionOffsets[0] - _viewport.Width);
+        }
+
+        private bool FocusFirstAvailable(DependencyObject obj)
+        {
+            var inputElement = obj as IInputElement;
+            if (inputElement != null && inputElement.Focusable) {
+                Keyboard.Focus(inputElement);
+                return true;
+            }
+
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(obj); i++)
+            {
+                var child = VisualTreeHelper.GetChild(obj, i);
+                if (FocusFirstAvailable(child)) {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private void PreventNavigationWrappingWithSubNavigation(KeyEventArgs e)

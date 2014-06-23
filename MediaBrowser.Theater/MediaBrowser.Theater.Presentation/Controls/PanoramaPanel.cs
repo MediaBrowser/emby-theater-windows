@@ -173,6 +173,8 @@ namespace MediaBrowser.Theater.Presentation.Controls
                 }
             }
 
+            startIndex++;
+
             IItemContainerGenerator generator = ItemContainerGenerator;
             GeneratorPosition itemPos = generator.GeneratorPositionFromIndex(startIndex);
             int childIndex = (itemPos.Offset == 0) ? itemPos.Index : itemPos.Index + 1;
@@ -584,14 +586,14 @@ namespace MediaBrowser.Theater.Presentation.Controls
 
         private void EnqueueCleanup(int firstVisibleItemIndex, int lastVisibleItemIndex)
         {
-            _firstVisibleItem = firstVisibleItemIndex;
-            _lastVisibleItem = lastVisibleItemIndex;
-
             DateTime now = DateTime.Now;
 
-            for (int i = _firstVisibleItem; i < _lastVisibleItem + 1; i++) {
+            for (int i = Math.Max(0, _firstVisibleItem - 1); i < _lastVisibleItem + 1; i++) {
                 _lastVisibleTimes[i] = now;
             }
+
+            _firstVisibleItem = firstVisibleItemIndex;
+            _lastVisibleItem = lastVisibleItemIndex;
 
             CleanUpItems();
         }

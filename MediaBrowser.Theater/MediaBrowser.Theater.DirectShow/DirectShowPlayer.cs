@@ -2710,7 +2710,13 @@ namespace MediaBrowser.Theater.DirectShow
             var url = _apiClient.GetSubtitleUrl(new SubtitleDownloadOptions
             {
                 ItemId = _item.OriginalItem.Id,
-                StreamIndex = stream.Index
+                StreamIndex = stream.Index,
+               
+                // todo MBT hasn't implemented MediaSources yet. Will be handled by migration to StreamBuilder library.
+                // For now, this knowledge of the ID isn't great, but should work
+                MediaSourceId = _item.OriginalItem.Id,
+                
+                Format = "srt"
             });
 
             // as xvfilter throw's an error for a stream, we copy the stream to

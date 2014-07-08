@@ -148,41 +148,37 @@ namespace MediaBrowser.UI
                 _appHost.NavigationService, _appHost.ScreensaverManager);
 
             var config = _appHost.TheaterConfigurationManager.Configuration;
-
-            System.Windows.Forms.FormStartPosition? startPosition = null;
-
+            
             // Restore window position/size
             if (config.WindowState.HasValue)
             {
                 double left = 0;
                 double top = 0;
-
+                
                 // Set left
                 if (config.WindowLeft.HasValue)
                 {
                     win.WindowStartupLocation = WindowStartupLocation.Manual;
-                    startPosition = System.Windows.Forms.FormStartPosition.Manual;
-                    win.Left = left = Math.Max(config.WindowLeft.Value, 0);
+                    win.Left = left = Math.Max(config.WindowLeft.Value, SystemParameters.VirtualScreenLeft);
                 }
 
                 // Set top
                 if (config.WindowTop.HasValue)
                 {
                     win.WindowStartupLocation = WindowStartupLocation.Manual;
-                    startPosition = System.Windows.Forms.FormStartPosition.Manual;
-                    win.Top = top = Math.Max(config.WindowTop.Value, 0);
+                    win.Top = top = Math.Max(config.WindowTop.Value, SystemParameters.VirtualScreenLeft);
                 }
 
                 // Set width
-                if (config.WindowWidth.HasValue)
+                if (config.WindowWidth.HasValue && config.WindowWidth.Value > 0)
                 {
-                    win.Width = Math.Min(config.WindowWidth.Value, SystemParameters.VirtualScreenWidth - left);
+                    win.Width = Math.Min(config.WindowWidth.Value, SystemParameters.VirtualScreenWidth - left + SystemParameters.VirtualScreenLeft);
                 }
 
                 // Set height
-                if (config.WindowHeight.HasValue)
+                if (config.WindowHeight.HasValue && config.WindowHeight.Value > 0)
                 {
-                    win.Height = Math.Min(config.WindowHeight.Value, SystemParameters.VirtualScreenHeight - top);
+                    win.Height = Math.Min(config.WindowHeight.Value, SystemParameters.VirtualScreenHeight - top + SystemParameters.VirtualScreenTop);
                 }
 
                 // Set window state
@@ -192,9 +188,9 @@ namespace MediaBrowser.UI
             {
                 //Set these so we don't generate exceptions later on. This also fixes the issue where the first run hidden window size problem.
                 if (double.IsNaN(win.Width))
-                    win.Width = System.Windows.SystemParameters.VirtualScreenWidth * .75;
+                    win.Width = System.Windows.SystemParameters.FullPrimaryScreenWidth * .75;
                 if (double.IsNaN(win.Height))
-                    win.Height = System.Windows.SystemParameters.VirtualScreenHeight * .75;
+                    win.Height = System.Windows.SystemParameters.FullPrimaryScreenHeight * .75;
 
                 if (double.IsNaN(win.Top))
                     win.Top = 0;
@@ -240,7 +236,7 @@ namespace MediaBrowser.UI
 
             var state = GetWindowsFormState(ApplicationWindow.WindowState);
 
-            _hiddenWindowThread = new Thread(() => ShowHiddenWindow(formWidth, formHeight, formTop, formLeft, startPosition, state));
+            _hiddenWindowThread = new Thread(() => ShowHiddenWindow(formWidth, formHeight, formTop, formLeft, state));
             _hiddenWindowThread.SetApartmentState(ApartmentState.MTA); 
             _hiddenWindowThread.IsBackground = true;
             _hiddenWindowThread.Priority = ThreadPriority.AboveNormal;
@@ -264,20 +260,17 @@ namespace MediaBrowser.UI
             ApplicationWindow.Loaded -= win_Loaded;
         }
 
-        private void ShowHiddenWindow(int? width, int? height, int? top, int? left, System.Windows.Forms.FormStartPosition? startPosition, System.Windows.Forms.FormWindowState windowState)
+        private void ShowHiddenWindow(int? width, int? height, int? top, int? left, System.Windows.Forms.FormWindowState windowState)
         {
             HiddenWindow = new HiddenForm();
             HiddenWindow.Load += HiddenWindow_Load;
             HiddenWindow.Activated += HiddenWindow_Activated;
-  
-            if (width.HasValue)
+
+            if (left.HasValue || top.HasValue)
             {
-                HiddenWindow.Width = width.Value;
+                HiddenWindow.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             }
-            if (height.HasValue)
-            {
-                HiddenWindow.Height = height.Value;
-            }
+
             if (top.HasValue)
             {
                 HiddenWindow.Top = top.Value;
@@ -286,14 +279,17 @@ namespace MediaBrowser.UI
             {
                 HiddenWindow.Left = left.Value;
             }
-
-            HiddenWindow.WindowState = windowState;
-
-            if (startPosition.HasValue)
+            if (width.HasValue)
             {
-                HiddenWindow.StartPosition = startPosition.Value;
+                HiddenWindow.Width = width.Value;
+            }
+            if (height.HasValue)
+            {
+                HiddenWindow.Height = height.Value;
             }
 
+            HiddenWindow.WindowState = windowState;
+            
             HiddenWindow.Show();
 
             System.Windows.Threading.Dispatcher.Run();

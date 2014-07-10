@@ -340,8 +340,10 @@ namespace MediaBrowser.UI
 
             var version = InstallationManager.GetLatestCompatibleVersion(availablePackages, "MBTheater", null, serverVersion, ConfigurationManager.CommonConfiguration.SystemUpdateLevel);
 
-            return version != null ? new CheckForUpdateResult { AvailableVersion = version.version, IsUpdateAvailable = version.version > ApplicationVersion, Package = version } :
-                       new CheckForUpdateResult { AvailableVersion = ApplicationVersion, IsUpdateAvailable = false };
+            var versionObject = version == null || string.IsNullOrWhiteSpace(version.versionStr) ? null : new Version(version.versionStr);
+            
+            return versionObject != null ? new CheckForUpdateResult { AvailableVersion = versionObject.ToString(), IsUpdateAvailable = versionObject > ApplicationVersion, Package = version } :
+                       new CheckForUpdateResult { AvailableVersion = ApplicationVersion.ToString(), IsUpdateAvailable = false };
         }
 
         /// <summary>

@@ -154,9 +154,9 @@ namespace MediaBrowser.UI.Implementations
         /// <returns>DispatcherOperation.</returns>
         public async Task NavigateToLoginPage()
         {
-            var systemConfig = await _apiClient.GetServerConfigurationAsync();
+            var users = await _apiClient.GetPublicUsersAsync();
 
-            if (systemConfig.RequireNonMobileManualLogin)
+            if (users.Length == 0)
             {
                 await NavigateToManualLoginPage();
             }

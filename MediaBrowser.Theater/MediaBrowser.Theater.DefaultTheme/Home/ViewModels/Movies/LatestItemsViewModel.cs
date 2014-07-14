@@ -6,6 +6,7 @@ using System.Windows;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
+using MediaBrowser.Model.Querying;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.Session;
@@ -17,7 +18,7 @@ using MediaBrowser.Theater.Presentation.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
 {
-    public class LatestMoviesViewModel
+    public class LatestItemsViewModel
         : BaseViewModel, IKnownSize, IHomePage
     {
         private const double PosterHeight = (HomeViewModel.TileHeight*1.5) + HomeViewModel.TileMargin;
@@ -32,7 +33,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
 
         private bool _isVisible;
 
-        public LatestMoviesViewModel(Task<MoviesView> moviesViewTask, IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator, ISessionManager sessionManager, IPlaybackManager playbackManager)
+        public LatestItemsViewModel(BaseItemDto movieFolder, IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator, ISessionManager sessionManager, IPlaybackManager playbackManager)
         {
             _apiClient = apiClient;
             _imageManager = imageManager;
@@ -47,15 +48,12 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
             }
 
             IsVisible = true;
-            LoadItems(moviesViewTask);
+            LoadItems(movieFolder);
         }
 
         public RangeObservableCollection<ItemTileViewModel> Movies { get; private set; }
 
-        public string Title
-        {
-            get { return "MediaBrowser.Theater.DefaultTheme:Strings:Home_LatestMovies_Title".Localize(); }
-        }
+        public string Title { get; set; }
 
         public bool IsVisible
         {
@@ -71,10 +69,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
             }
         }
 
-        public string SectionTitle
-        {
-            get { return "MediaBrowser.Theater.DefaultTheme:Strings:Home_MoviesSectionTitle".Localize(); }
-        }
+        public string SectionTitle { get; set; }
 
         public int Index { get; set; }
 
@@ -93,10 +88,18 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
             }
         }
 
-        private async void LoadItems(Task<MoviesView> moviesViewTask)
+        private async void LoadItems(BaseItemDto movieFolder)
         {
-            MoviesView tvView = await moviesViewTask;
-            BaseItemDto[] items = tvView.LatestMovies.ToArray();
+            var result = await _apiClient.GetItemsAsync(new ItemQuery {
+                UserId = _sessionManager.CurrentUser.Id,
+                ParentId = movieFolder.Id,
+                SortBy = new[] { ItemSortBy.DateCreated },
+                SortOrder = SortOrder.Descending,
+                Limit = 8,
+                Recursive = true
+            });
+
+            var items = result.Items;
 
             for (int i = 0; i < items.Length; i++) {
                 if (Movies.Count > i) {

@@ -13,7 +13,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
     public class ImageSlideshowViewModel
         : BaseViewModel
     {
-        private readonly FrameworkElement _defaultImage = new FrameworkElement();
+        private FrameworkElement _defaultImage;
         private readonly Dispatcher _dispatcher;
         private readonly IImageManager _imageManager;
         private readonly RangeObservableCollection<string> _images = new RangeObservableCollection<string>();
@@ -33,6 +33,9 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
 
             _dispatcher = Dispatcher.CurrentDispatcher;
             _imageManager = imageManager;
+
+            Action createDefaultImage = () => _defaultImage = new FrameworkElement();
+            createDefaultImage.OnUiThread();
 
             StartRotating();
         }

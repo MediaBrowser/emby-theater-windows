@@ -10,6 +10,6 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels
 {
     public interface IHomePageGenerator
     {
-        IEnumerable<IHomePage> GetHomePages();
+        Task<IEnumerable<IHomePage>> GetHomePages();
     }
 }

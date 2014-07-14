@@ -397,6 +397,7 @@
     <Compile Include="Controls\TileButton.cs" />
     <Compile Include="Core\Commands\ExitMenuCommand.cs" />
     <Compile Include="Core\Commands\HomeCommand.cs" />
+    <Compile Include="Home\ViewModels\IHomePageMediaFolderGenerator.cs" />
     <Compile Include="SortModeMenu\Commands\SortModeCommand.cs" />
     <Compile Include="Core\Commands\RestartMenuCommand.cs" />
     <Compile Include="Core\Commands\ShutdownMenuCommand.cs" />
@@ -473,7 +474,7 @@
     <Compile Include="Home\HomeContext.cs" />
     <Compile Include="Home\ViewModels\HomeViewModel.cs" />
     <Compile Include="Home\ViewModels\IHomePageGenerator.cs" />
-    <Compile Include="Home\ViewModels\Movies\LatestMoviesViewModel.cs" />
+    <Compile Include="Home\ViewModels\Movies\LatestItemsViewModel.cs" />
     <Compile Include="Home\ViewModels\Movies\LatestTrailersViewModel.cs" />
     <Compile Include="Home\ViewModels\Movies\MovieHomePageGenerator.cs" />
     <Compile Include="Home\ViewModels\Movies\MovieSpotlightViewModel.cs" />

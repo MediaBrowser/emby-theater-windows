@@ -1,17 +1,21 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
+using MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies;
+using MediaBrowser.Theater.Presentation;
 
 namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
 {
     public class TvHomePageGenerator
-        : IHomePageGenerator
+        : IHomePageMediaFolderGenerator
     {
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
@@ -32,14 +36,32 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
             _logManager = logManager;
         }
 
-        public IEnumerable<IHomePage> GetHomePages()
-        {
-            var cancellationSource = new CancellationTokenSource();
-            Task<TvView> tvView = _apiClient.GetTvView(_sessionManager.CurrentUser.Id, cancellationSource.Token);
+//        public Task<IEnumerable<IHomePage>> GetHomePages()
+//        {
+//            var cancellationSource = new CancellationTokenSource();
+//            Task<TvView> tvView = _apiClient.GetTvView(_sessionManager.CurrentUser.Id, cancellationSource.Token);
+//
+//            return Task.FromResult<IEnumerable<IHomePage>>(new IHomePage[] {
+//                new TvSpotlightViewModel(tvView, _imageManager, _navigator, _apiClient, _serverEvents, _sessionManager, _logManager, _playbackManager),
+//                new ResumeEpisodesViewModel(tvView, _apiClient, _imageManager, _serverEvents, _navigator, _sessionManager, _playbackManager),
+//                new LatestEpisodesViewModel(tvView, _apiClient, _imageManager, _serverEvents, _navigator, _sessionManager, _playbackManager)
+//            });
+//        }
 
-            yield return new TvSpotlightViewModel(tvView, _imageManager, _navigator, _apiClient, _serverEvents, _sessionManager, _logManager, _playbackManager);
-            yield return new ResumeEpisodesViewModel(tvView, _apiClient, _imageManager, _serverEvents, _navigator, _sessionManager, _playbackManager);
-            yield return new LatestEpisodesViewModel(tvView, _apiClient, _imageManager, _serverEvents, _navigator, _sessionManager, _playbackManager);
+        public Task<IEnumerable<IHomePage>> GetHomePages(BaseItemDto mediaFolder)
+        {
+            if (mediaFolder.CollectionType != "tvshows")
+            {
+                return Task.FromResult(Enumerable.Empty<IHomePage>());
+            }
+
+            IEnumerable<IHomePage> pages = new IHomePage[] {
+                new TvSpotlightViewModel(mediaFolder, _imageManager, _navigator, _apiClient, _serverEvents, _sessionManager, _logManager, _playbackManager),
+//                new ResumeEpisodesViewModel(mediaFolder, _apiClient, _imageManager, _serverEvents, _navigator, _sessionManager, _playbackManager),
+//                new LatestEpisodesViewModel(mediaFolder, _apiClient, _imageManager, _serverEvents, _navigator, _sessionManager, _playbackManager)
+            };
+
+            return Task.FromResult(pages);
         }
     }
 }

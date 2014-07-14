@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Theater.Api;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.Presentation.ViewModels;
@@ -26,6 +28,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels
 
         public static Thickness TileMarginThickness = new Thickness(TileMargin);
 
+        private readonly IEnumerable<IHomePageGenerator> _generators;
+
         public Func<object, object> TitleSelector
         {
             get { return item => ((IHomePage) item).SectionTitle; }
@@ -33,14 +37,25 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels
 
         public HomeViewModel(ITheaterApplicationHost appHost)
         {
-            var pageGenerators = appHost.GetExports<IHomePageGenerator>();
-            var pages = pageGenerators.SelectMany(p => p.GetHomePages()).ToList();
+            _generators = appHost.GetExports<IHomePageGenerator>();
+            
+        }
 
-            for (int i = 0; i < pages.Count; i++) {
+        public override async Task Initialize()
+        {
+            var pageTasks = _generators.Select(p => p.GetHomePages()).ToList();
+
+            await Task.WhenAll(pageTasks);
+
+            var pages = pageTasks.SelectMany(t => t.Result).ToList();
+            for (int i = 0; i < pages.Count; i++)
+            {
                 pages[i].Index = i;
             }
 
             Pages = pages.Cast<IViewModel>().ToList();
+
+            await base.Initialize();
         }
     }
 }

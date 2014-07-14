@@ -10,7 +10,7 @@
              lex:ResxLocalizationProvider.DefaultAssembly="MediaBrowser.Theater.DefaultTheme"
              lex:ResxLocalizationProvider.DefaultDictionary="Strings"
              mc:Ignorable="d"
-             d:DataContext="{d:DesignInstance movies:LatestMoviesViewModel}"
+             d:DataContext="{d:DesignInstance movies:LatestItemsViewModel}"
              Focusable="False"
              d:DesignHeight="300" d:DesignWidth="300">
     <StackPanel Visibility="{Binding IsVisible, Converter={StaticResource BooleanToVisibility}}" Margin="50,0,0,0">

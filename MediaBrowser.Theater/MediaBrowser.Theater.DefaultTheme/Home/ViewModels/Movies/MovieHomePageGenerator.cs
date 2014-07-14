@@ -1,18 +1,21 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
+using MediaBrowser.Theater.Presentation;
 using MediaBrowser.Theater.Presentation.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
 {
     public class MovieHomePageGenerator
-        : IHomePageGenerator
+        : IHomePageMediaFolderGenerator
     {
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
@@ -33,14 +36,31 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
             _logManager = logManager;
         }
 
-        public IEnumerable<IHomePage> GetHomePages()
-        {
-            var cancellationSource = new CancellationTokenSource();
-            Task<MoviesView> movieView = _apiClient.GetMovieView(_sessionManager.CurrentUser.Id, cancellationSource.Token);
+//        public IEnumerable<IHomePage> GetHomePages()
+//        {
+//            var cancellationSource = new CancellationTokenSource();
+//            Task<MoviesView> movieView = _apiClient.GetMovieView(_sessionManager.CurrentUser.Id, cancellationSource.Token);
+//
+//            yield return new MovieSpotlightViewModel(movieView, _imageManager, _navigator, _apiClient, _serverEvents, _playbackManager, _sessionManager, _logManager);
+//            yield return new LatestItemsViewModel(movieView, _apiClient, _imageManager, _serverEvents, _navigator, _sessionManager, _playbackManager);
+//            yield return new LatestTrailersViewModel(movieView, _apiClient, _imageManager, _serverEvents, _navigator, _sessionManager, _playbackManager);
+//        }
 
-            yield return new MovieSpotlightViewModel(movieView, _imageManager, _navigator, _apiClient, _serverEvents, _playbackManager, _sessionManager, _logManager);
-            yield return new LatestMoviesViewModel(movieView, _apiClient, _imageManager, _serverEvents, _navigator, _sessionManager, _playbackManager);
-            yield return new LatestTrailersViewModel(movieView, _apiClient, _imageManager, _serverEvents, _navigator, _sessionManager, _playbackManager);
+        public Task<IEnumerable<IHomePage>> GetHomePages(BaseItemDto mediaFolder)
+        {
+            if (mediaFolder.CollectionType != "movies") {
+                return Task.FromResult(Enumerable.Empty<IHomePage>());
+            }
+
+            IEnumerable<IHomePage> pages = new IHomePage[] {
+                new MovieSpotlightViewModel(mediaFolder, _imageManager, _navigator, _apiClient, _serverEvents, _playbackManager, _sessionManager, _logManager),
+                new LatestItemsViewModel(mediaFolder, _apiClient, _imageManager, _serverEvents, _navigator, _sessionManager, _playbackManager) {
+                    Title = "MediaBrowser.Theater.DefaultTheme:Strings:Home_LatestMovies_Title".Localize(),
+                    SectionTitle = "MediaBrowser.Theater.DefaultTheme:Strings:Home_MoviesSectionTitle".Localize()
+                }
+            };
+
+            return Task.FromResult(pages);
         }
     }
 }

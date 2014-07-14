@@ -36,18 +36,6 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
             _logManager = logManager;
         }
 
-//        public Task<IEnumerable<IHomePage>> GetHomePages()
-//        {
-//            var cancellationSource = new CancellationTokenSource();
-//            Task<TvView> tvView = _apiClient.GetTvView(_sessionManager.CurrentUser.Id, cancellationSource.Token);
-//
-//            return Task.FromResult<IEnumerable<IHomePage>>(new IHomePage[] {
-//                new TvSpotlightViewModel(tvView, _imageManager, _navigator, _apiClient, _serverEvents, _sessionManager, _logManager, _playbackManager),
-//                new ResumeEpisodesViewModel(tvView, _apiClient, _imageManager, _serverEvents, _navigator, _sessionManager, _playbackManager),
-//                new LatestEpisodesViewModel(tvView, _apiClient, _imageManager, _serverEvents, _navigator, _sessionManager, _playbackManager)
-//            });
-//        }
-
         public Task<IEnumerable<IHomePage>> GetHomePages(BaseItemDto mediaFolder)
         {
             if (mediaFolder.CollectionType != "tvshows")
@@ -57,8 +45,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
 
             IEnumerable<IHomePage> pages = new IHomePage[] {
                 new TvSpotlightViewModel(mediaFolder, _imageManager, _navigator, _apiClient, _serverEvents, _sessionManager, _logManager, _playbackManager),
-//                new ResumeEpisodesViewModel(mediaFolder, _apiClient, _imageManager, _serverEvents, _navigator, _sessionManager, _playbackManager),
-//                new LatestEpisodesViewModel(mediaFolder, _apiClient, _imageManager, _serverEvents, _navigator, _sessionManager, _playbackManager)
+                new ResumeEpisodesViewModel(mediaFolder, _apiClient, _imageManager, _serverEvents, _navigator, _sessionManager, _playbackManager),
+                new LatestEpisodesViewModel(mediaFolder, _apiClient, _imageManager, _serverEvents, _navigator, _sessionManager, _playbackManager)
             };
 
             return Task.FromResult(pages);

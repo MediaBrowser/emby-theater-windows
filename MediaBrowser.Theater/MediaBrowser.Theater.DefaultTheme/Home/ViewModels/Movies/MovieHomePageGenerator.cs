@@ -36,16 +36,6 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
             _logManager = logManager;
         }
 
-//        public IEnumerable<IHomePage> GetHomePages()
-//        {
-//            var cancellationSource = new CancellationTokenSource();
-//            Task<MoviesView> movieView = _apiClient.GetMovieView(_sessionManager.CurrentUser.Id, cancellationSource.Token);
-//
-//            yield return new MovieSpotlightViewModel(movieView, _imageManager, _navigator, _apiClient, _serverEvents, _playbackManager, _sessionManager, _logManager);
-//            yield return new LatestItemsViewModel(movieView, _apiClient, _imageManager, _serverEvents, _navigator, _sessionManager, _playbackManager);
-//            yield return new LatestTrailersViewModel(movieView, _apiClient, _imageManager, _serverEvents, _navigator, _sessionManager, _playbackManager);
-//        }
-
         public Task<IEnumerable<IHomePage>> GetHomePages(BaseItemDto mediaFolder)
         {
             if (mediaFolder.CollectionType != "movies") {
@@ -54,10 +44,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
 
             IEnumerable<IHomePage> pages = new IHomePage[] {
                 new MovieSpotlightViewModel(mediaFolder, _imageManager, _navigator, _apiClient, _serverEvents, _playbackManager, _sessionManager, _logManager),
-                new LatestItemsViewModel(mediaFolder, _apiClient, _imageManager, _serverEvents, _navigator, _sessionManager, _playbackManager) {
-                    Title = "MediaBrowser.Theater.DefaultTheme:Strings:Home_LatestMovies_Title".Localize(),
-                    SectionTitle = "MediaBrowser.Theater.DefaultTheme:Strings:Home_MoviesSectionTitle".Localize()
-                }
+                new LatestItemsViewModel(mediaFolder, _apiClient, _imageManager, _serverEvents, _navigator, _sessionManager, _playbackManager)
             };
 
             return Task.FromResult(pages);

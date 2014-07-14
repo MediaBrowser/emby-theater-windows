@@ -50,6 +50,9 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
             SpotlightWidth = 16*(SpotlightHeight/9) + 100;
             _miniSpotlightWidth = HomeViewModel.TileWidth + (HomeViewModel.TileMargin/4) - 1;
 
+            Title = movieFolder.Name;
+            SectionTitle = movieFolder.Name;
+
             LowerSpotlightWidth = SpotlightWidth/2 - HomeViewModel.TileMargin;
             LowerSpotlightHeight = HomeViewModel.TileHeight;
 
@@ -116,16 +119,10 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
 
         public ICommand BrowseMoviesCommand { get; private set; }
         public ICommand TrailersCommand { get; private set; }
-             
-        public string Title
-        {
-            get { return "MediaBrowser.Theater.DefaultTheme:Strings:Home_MovieSpotlight_Title".Localize(); }
-        }
 
-        public string SectionTitle
-        {
-            get { return "MediaBrowser.Theater.DefaultTheme:Strings:Home_MoviesSectionTitle".Localize(); }
-        }
+        public string Title { get; set; }
+
+        public string SectionTitle { get; set; }
 
         public int Index { get; set; }
 

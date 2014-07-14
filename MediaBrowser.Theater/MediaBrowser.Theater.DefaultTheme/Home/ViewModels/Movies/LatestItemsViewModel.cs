@@ -42,6 +42,9 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
             _sessionManager = sessionManager;
             _playbackManager = playbackManager;
 
+            SectionTitle = movieFolder.Name;
+            Title = "MediaBrowser.Theater.DefaultTheme:Strings:Home_LatestMovies_Title".Localize();
+
             Movies = new RangeObservableCollection<ItemTileViewModel>();
             for (int i = 0; i < 8; i++) {
                 Movies.Add(CreateMovieItem());
@@ -93,6 +96,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
             var result = await _apiClient.GetItemsAsync(new ItemQuery {
                 UserId = _sessionManager.CurrentUser.Id,
                 ParentId = movieFolder.Id,
+                IncludeItemTypes = new[] { "Movie" },
                 SortBy = new[] { ItemSortBy.DateCreated },
                 SortOrder = SortOrder.Descending,
                 Limit = 8,

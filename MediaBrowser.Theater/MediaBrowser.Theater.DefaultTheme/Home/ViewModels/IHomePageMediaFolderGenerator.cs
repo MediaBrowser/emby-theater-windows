@@ -41,7 +41,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels
             });
 
             var tasks = new List<Task<IEnumerable<IHomePage>>>();
-            foreach (BaseItemDto folder in mediaFolders.Items.OrderBy(f => f.CollectionType)) {
+            foreach (BaseItemDto folder in mediaFolders.Items.OrderBy(f => f.CollectionType).ThenBy(f => f.SortName)) {
                 tasks.AddRange(_generators.Select(g => g.GetHomePages(folder)));
             }
 

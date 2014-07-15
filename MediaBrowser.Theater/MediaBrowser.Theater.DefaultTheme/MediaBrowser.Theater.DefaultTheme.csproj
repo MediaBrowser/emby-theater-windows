@@ -171,10 +171,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Home\Views\Movies\LatestTrailersView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Home\Views\Movies\MovieSpotlightView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -397,6 +393,7 @@
     <Compile Include="Controls\TileButton.cs" />
     <Compile Include="Core\Commands\ExitMenuCommand.cs" />
     <Compile Include="Core\Commands\HomeCommand.cs" />
+    <Compile Include="Home\ViewModels\Generic\GenericFolderSpotlightViewModel.cs" />
     <Compile Include="Home\ViewModels\IHomePageMediaFolderGenerator.cs" />
     <Compile Include="SortModeMenu\Commands\SortModeCommand.cs" />
     <Compile Include="Core\Commands\RestartMenuCommand.cs" />
@@ -474,8 +471,7 @@
     <Compile Include="Home\HomeContext.cs" />
     <Compile Include="Home\ViewModels\HomeViewModel.cs" />
     <Compile Include="Home\ViewModels\IHomePageGenerator.cs" />
-    <Compile Include="Home\ViewModels\Movies\LatestItemsViewModel.cs" />
-    <Compile Include="Home\ViewModels\Movies\LatestTrailersViewModel.cs" />
+    <Compile Include="Home\ViewModels\Movies\LatestMoviesViewModel.cs" />
     <Compile Include="Home\ViewModels\Movies\MovieHomePageGenerator.cs" />
     <Compile Include="Home\ViewModels\Movies\MovieSpotlightViewModel.cs" />
     <Compile Include="Home\ViewModels\TV\LatestEpisodesViewModel.cs" />
@@ -487,9 +483,6 @@
     </Compile>
     <Compile Include="Home\Views\Movies\LatestMoviesView.xaml.cs">
       <DependentUpon>LatestMoviesView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Home\Views\Movies\LatestTrailersView.xaml.cs">
-      <DependentUpon>LatestTrailersView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Home\Views\Movies\MovieSpotlightView.xaml.cs">
       <DependentUpon>MovieSpotlightView.xaml</DependentUpon>

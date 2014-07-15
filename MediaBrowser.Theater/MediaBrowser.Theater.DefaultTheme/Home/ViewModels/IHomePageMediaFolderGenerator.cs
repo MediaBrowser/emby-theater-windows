@@ -37,7 +37,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels
 
             ItemsResult mediaFolders = await _apiClient.GetItemsAsync(new ItemQuery {
                 UserId = _sessionManager.CurrentUser.Id,
-                ParentId = root.Id
+                ParentId = root.Id,
+                Filters = new[] { ItemFilter.IsFolder }
             });
 
             var tasks = new List<Task<IEnumerable<IHomePage>>>();

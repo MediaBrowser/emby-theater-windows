@@ -6,6 +6,7 @@ using System.Windows;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
+using MediaBrowser.Model.Querying;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.Session;
@@ -17,7 +18,7 @@ using MediaBrowser.Theater.Presentation.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
 {
-    public class LatestTrailersViewModel
+    public class LatestMoviesViewModel
         : BaseViewModel, IKnownSize, IHomePage
     {
         private const double PosterHeight = (HomeViewModel.TileHeight*1.5) + HomeViewModel.TileMargin;
@@ -32,7 +33,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
 
         private bool _isVisible;
 
-        public LatestTrailersViewModel(Task<MoviesView> moviesViewTask, IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator, ISessionManager sessionManager, IPlaybackManager playbackManager)
+        public LatestMoviesViewModel(BaseItemDto movieFolder, IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator, ISessionManager sessionManager, IPlaybackManager playbackManager)
         {
             _apiClient = apiClient;
             _imageManager = imageManager;
@@ -41,21 +42,21 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
             _sessionManager = sessionManager;
             _playbackManager = playbackManager;
 
-            Trailers = new RangeObservableCollection<ItemTileViewModel>();
+            SectionTitle = movieFolder.Name;
+            Title = "MediaBrowser.Theater.DefaultTheme:Strings:Home_LatestMovies_Title".Localize();
+
+            Movies = new RangeObservableCollection<ItemTileViewModel>();
             for (int i = 0; i < 8; i++) {
-                Trailers.Add(CreateMovieItem());
+                Movies.Add(CreateMovieItem());
             }
 
             IsVisible = true;
-            LoadItems(moviesViewTask);
+            LoadItems(movieFolder);
         }
 
-        public RangeObservableCollection<ItemTileViewModel> Trailers { get; private set; }
+        public RangeObservableCollection<ItemTileViewModel> Movies { get; private set; }
 
-        public string Title
-        {
-            get { return "MediaBrowser.Theater.DefaultTheme:Strings:Home_LatestTrailers_Title".Localize(); }
-        }
+        public string Title { get; set; }
 
         public bool IsVisible
         {
@@ -71,10 +72,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
             }
         }
 
-        public string SectionTitle
-        {
-            get { return "MediaBrowser.Theater.DefaultTheme:Strings:Home_MoviesSectionTitle".Localize(); }
-        }
+        public string SectionTitle { get; set; }
 
         public int Index { get; set; }
 
@@ -82,40 +80,49 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
         {
             get
             {
-                if (Trailers.Count == 0) {
+                if (Movies.Count == 0) {
                     return new Size();
                 }
 
-                var width = (int) Math.Ceiling(Trailers.Count/2.0);
+                var width = (int) Math.Ceiling(Movies.Count/2.0);
 
                 return new Size(width*(PosterWidth + 2*HomeViewModel.TileMargin) + HomeViewModel.SectionSpacing,
-                                2*(PosterHeight + 2*HomeViewModel.TileMargin));
+                                2*(PosterWidth + 2*HomeViewModel.TileMargin));
             }
         }
 
-        private async void LoadItems(Task<MoviesView> moviesViewTask)
+        private async void LoadItems(BaseItemDto movieFolder)
         {
-            MoviesView moviesView = await moviesViewTask;
-            BaseItemDto[] items = moviesView.LatestTrailers.ToArray();
+            var result = await _apiClient.GetItemsAsync(new ItemQuery {
+                UserId = _sessionManager.CurrentUser.Id,
+                ParentId = movieFolder.Id,
+                IncludeItemTypes = new[] { "Movie" },
+                SortBy = new[] { ItemSortBy.DateCreated },
+                SortOrder = SortOrder.Descending,
+                Filters = new[] { ItemFilter.IsRecentlyAdded },
+                Limit = 8,
+                Recursive = true
+            });
+
+            var items = result.Items;
 
             for (int i = 0; i < items.Length; i++) {
-                if (Trailers.Count > i) {
-                    Trailers[i].Item = items[i];
+                if (Movies.Count > i) {
+                    Movies[i].Item = items[i];
                 } else {
                     ItemTileViewModel vm = CreateMovieItem();
                     vm.Item = items[i];
 
-                    Trailers.Add(vm);
+                    Movies.Add(vm);
                 }
             }
 
-            if (Trailers.Count > items.Length) {
-                List<ItemTileViewModel> toRemove = Trailers.Skip(items.Length).ToList();
-                Trailers.RemoveRange(toRemove);
+            if (Movies.Count > items.Length) {
+                List<ItemTileViewModel> toRemove = Movies.Skip(items.Length).ToList();
+                Movies.RemoveRange(toRemove);
             }
 
-            IsVisible = Trailers.Count > 0;
-            OnPropertyChanged("Size");
+            IsVisible = Movies.Count > 0;
         }
 
         private ItemTileViewModel CreateMovieItem()

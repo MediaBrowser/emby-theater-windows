@@ -96,6 +96,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
                 IncludeItemTypes = new[] { "Episode" },
                 SortBy = new[] { ItemSortBy.DateCreated },
                 SortOrder = SortOrder.Descending,
+                Filters = new[] { ItemFilter.IsRecentlyAdded },
                 Limit = 9,
                 Recursive = true
             });

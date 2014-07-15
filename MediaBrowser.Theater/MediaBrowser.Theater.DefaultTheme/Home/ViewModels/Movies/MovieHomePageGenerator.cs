@@ -44,7 +44,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
 
             IEnumerable<IHomePage> pages = new IHomePage[] {
                 new MovieSpotlightViewModel(mediaFolder, _imageManager, _navigator, _apiClient, _serverEvents, _playbackManager, _sessionManager, _logManager),
-                new LatestItemsViewModel(mediaFolder, _apiClient, _imageManager, _serverEvents, _navigator, _sessionManager, _playbackManager)
+                new LatestMoviesViewModel(mediaFolder, _apiClient, _imageManager, _serverEvents, _navigator, _sessionManager, _playbackManager)
             };
 
             return Task.FromResult(pages);

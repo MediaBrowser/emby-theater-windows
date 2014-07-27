@@ -220,6 +220,8 @@ namespace MediaBrowser.Theater.Implementations.Session
                     if (!wolConfig.HostMacAddresses.Contains(systemInfo.MacAddress))
                         wolConfig.HostMacAddresses.Add(systemInfo.MacAddress);
 
+                    wolConfig.HostName = host;
+
                     _config.SaveConfiguration();
                 }
             }

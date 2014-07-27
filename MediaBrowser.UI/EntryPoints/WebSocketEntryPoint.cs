@@ -147,11 +147,9 @@ namespace MediaBrowser.UI.EntryPoints
         {
             try
             {
-                var systemInfo = await _apiClient.GetSystemInfoAsync(CancellationToken.None).ConfigureAwait(false);
-
                 var socket = ApiWebSocket;
 
-                await socket.ChangeServerLocation(_apiClient.ServerHostName, systemInfo.WebSocketPortNumber, CancellationToken.None).ConfigureAwait(false);
+                await socket.ChangeServerLocation(_apiClient.ServerAddress, CancellationToken.None).ConfigureAwait(false);
 
                 socket.StartEnsureConnectionTimer(5000);
             }

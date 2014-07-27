@@ -7,15 +7,21 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
     public class AutoLoginConfiguration
     {
         /// <summary>
-        /// Gets or sets the username to use in auto-login.
+        /// Gets or sets the user identifier.
         /// </summary>
-        /// <value>The username.</value>
-        public string UserName { get; set; }
+        /// <value>The user identifier.</value>
+        public string UserId { get; set; }
 
         /// <summary>
         /// Gets or sets the password hash to use in auto-login.
         /// </summary>
         /// <value>The password hash.</value>
-        public string UserPasswordHash { get; set; }
+        public string AccessToken { get; set; }
+
+        /// <summary>
+        /// Gets or sets the server identifier.
+        /// </summary>
+        /// <value>The server identifier.</value>
+        public string ServerId { get; set; }
     }
 }

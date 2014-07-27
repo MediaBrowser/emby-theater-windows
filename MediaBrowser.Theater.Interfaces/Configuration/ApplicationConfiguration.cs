@@ -9,16 +9,10 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
     public class ApplicationConfiguration : BaseApplicationConfiguration
     {
         /// <summary>
-        /// Gets or sets the server host name (myserver or 192.168.x.x)
+        /// Gets or sets the server address.
         /// </summary>
-        /// <value>The name of the server host.</value>
-        public string ServerHostName { get; set; }
-
-        /// <summary>
-        /// Gets or sets the port number used by the API
-        /// </summary>
-        /// <value>The server API port.</value>
-        public int ServerApiPort { get; set; }
+        /// <value>The server address.</value>
+        public string ServerAddress { get; set; }
 
         /// <summary>
         /// Gets or sets the auto-login user details.
@@ -82,8 +76,7 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
         public ApplicationConfiguration()
             : base()
         {
-            ServerHostName = "localhost";
-            ServerApiPort = 8096;
+            ServerAddress = "http://localhost:8096";
             AutoLoginConfiguration = new AutoLoginConfiguration();
 
             EnableBackdrops = true;

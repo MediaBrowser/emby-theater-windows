@@ -201,7 +201,7 @@ namespace MediaBrowser.UI
         {
             var logger = LogManager.GetLogger("ApiClient");
 
-            var apiClient = new ApiClient(new HttpWebRequestClient(logger), logger, TheaterConfigurationManager.Configuration.ServerHostName, TheaterConfigurationManager.Configuration.ServerApiPort, "Media Browser Theater", Environment.MachineName, Environment.MachineName, ApplicationVersion.ToString())
+            var apiClient = new ApiClient(new HttpWebRequestClient(logger), logger, TheaterConfigurationManager.Configuration.ServerAddress, "Media Browser Theater", Environment.MachineName, Environment.MachineName, ApplicationVersion.ToString())
             {
                 JsonSerializer = JsonSerializer,
                 ImageQuality = TheaterConfigurationManager.Configuration.DownloadCompressedImages
@@ -210,15 +210,30 @@ namespace MediaBrowser.UI
             };
 
             ApiClient = apiClient;
+            ApiClient.HttpResponseReceived += ApiClient_HttpResponseReceived;
 
             logger = LogManager.GetLogger("ApiWebSocket");
 
-            // WebSocketEntry point will handle figuring out the port and connecting
-            ApiWebSocket = new ApiWebSocket(logger, JsonSerializer, apiClient.ServerHostName, 0,
+            ApiWebSocket = new ApiWebSocket(logger, JsonSerializer, apiClient.ServerAddress,
                                   ApiClient.DeviceId, apiClient.ApplicationVersion,
                                   apiClient.ClientName, apiClient.DeviceName, () => ClientWebSocketFactory.CreateWebSocket(logger));
 
             apiClient.WebSocketConnection = ApiWebSocket;
+        }
+
+        async void ApiClient_HttpResponseReceived(object sender, HttpResponseEventArgs e)
+        {
+            if (e.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                try
+                {
+                    await SessionManager.Logout();
+                }
+                catch (Exception ex)
+                {
+                    Logger.ErrorException("Error logging out", ex);
+                }
+            }
         }
 
         public override Task Restart()
@@ -410,8 +425,6 @@ namespace MediaBrowser.UI
                 return;
             }
 
-            Logger.Log(LogSeverity.Info, String.Format("Sending Wake on LAN signal to {0}", TheaterConfigurationManager.Configuration.ServerHostName));
-
             //Send magic packets to each address
             foreach (var macAddress in wolConfig.HostMacAddresses)
             {
@@ -440,17 +453,22 @@ namespace MediaBrowser.UI
                     }
                 }
 
-                //Send packet WAN
-                using (var udp = new UdpClient())
+                var hostname = TheaterConfigurationManager.Configuration.WolConfiguration.HostName;
+
+                if (!string.IsNullOrEmpty(hostname))
                 {
-                    try
+                    //Send packet WAN
+                    using (var udp = new UdpClient())
                     {
-                        udp.Connect(TheaterConfigurationManager.Configuration.ServerHostName, wolConfig.Port);
-                        await udp.SendAsync(payload, payloadSize);
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Error(String.Format("Magic packet send failed: {0}", ex.Message));
+                        try
+                        {
+                            udp.Connect(hostname, wolConfig.Port);
+                            await udp.SendAsync(payload, payloadSize);
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Error(String.Format("Magic packet send failed: {0}", ex.Message));
+                        }
                     }
                 }
             }

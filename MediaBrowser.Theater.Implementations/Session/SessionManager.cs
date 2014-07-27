@@ -1,18 +1,20 @@
-﻿using System.Threading;
-using MediaBrowser.Common.Events;
+﻿using MediaBrowser.Common.Events;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Net;
+using MediaBrowser.Theater.Implementations.Networking;
 using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.Theming;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MediaBrowser.Theater.Implementations.Session
@@ -46,7 +48,7 @@ namespace MediaBrowser.Theater.Implementations.Session
         {
             _playback.StopAllPlayback();
 
-            _apiClient.CurrentUserId = null;
+            await _apiClient.Logout();
 
             var previous = CurrentUser;
 
@@ -57,7 +59,7 @@ namespace MediaBrowser.Theater.Implementations.Session
                 EventHelper.FireEventIfNotNull(UserLoggedOut, this, EventArgs.Empty, _logger);
             }
 
-            //Clear auto login info
+            // Clear auto login info
             _config.Configuration.AutoLoginConfiguration = new AutoLoginConfiguration();
             _config.SaveConfiguration();
 
@@ -84,40 +86,7 @@ namespace MediaBrowser.Theater.Implementations.Session
 
             //Compute hash then pass to main login routine
             var hash = ComputeHash(password);
-            await InternalLogin(username, hash);
-
-            //Save details if we need to 
-            if (rememberCredentials)
-            {
-                _config.Configuration.AutoLoginConfiguration.UserName = username;
-                if(String.IsNullOrEmpty(password)) { _config.Configuration.AutoLoginConfiguration.UserPasswordHash = null;}
-                else {_config.Configuration.AutoLoginConfiguration.UserPasswordHash = Convert.ToBase64String(hash); }
-                _config.SaveConfiguration();
-            }
-            else
-            {
-                _config.Configuration.AutoLoginConfiguration = new AutoLoginConfiguration();
-                _config.SaveConfiguration();
-            }
-        }
-
-        public async Task LoginWithHash(string username, string passwordHash, bool rememberCredentials)
-        {
-            byte[] hash = Convert.FromBase64String(passwordHash);
-            await InternalLogin(username, hash);
-
-            //Save details if we need to 
-            if (rememberCredentials)
-            {
-                _config.Configuration.AutoLoginConfiguration.UserName = username;
-                _config.Configuration.AutoLoginConfiguration.UserPasswordHash = passwordHash;
-                _config.SaveConfiguration();
-            }
-            else
-            {
-                _config.Configuration.AutoLoginConfiguration = new AutoLoginConfiguration();
-                _config.SaveConfiguration();
-            }
+            await InternalLogin(username, hash, rememberCredentials);
         }
 
         protected byte[] ComputeHash(string data)
@@ -129,7 +98,7 @@ namespace MediaBrowser.Theater.Implementations.Session
             }
         }
 
-        protected async Task InternalLogin(string username, byte[] hash)
+        protected async Task InternalLogin(string username, byte[] hash, bool rememberLogin)
         {
             var systemInfo = await _apiClient.GetSystemInfoAsync(CancellationToken.None);
 
@@ -143,18 +112,121 @@ namespace MediaBrowser.Theater.Implementations.Session
                 var result = await _apiClient.AuthenticateUserAsync(username, hash);
 
                 CurrentUser = result.User;
-                _apiClient.CurrentUserId = CurrentUser.Id;
+                _apiClient.SetAuthenticationInfo(result.AccessToken, result.User.Id);
+
+                UpdateSavedLogin(result.AccessToken, result.User.Id, result.ServerId, rememberLogin);
             }
             catch (HttpException ex)
             {
                 throw new UnauthorizedAccessException("Invalid username or password. Please try again.");
             }
 
+            await AfterLogin();
+        }
+
+        private void UpdateSavedLogin(string accessToken, string userId, string serverId, bool remember)
+        {
+            //Save details if we need to 
+            if (remember)
+            {
+                _config.Configuration.AutoLoginConfiguration.UserId = userId;
+                _config.Configuration.AutoLoginConfiguration.AccessToken = accessToken;
+                _config.Configuration.AutoLoginConfiguration.ServerId = serverId;
+                _config.SaveConfiguration();
+            }
+            else
+            {
+                _config.Configuration.AutoLoginConfiguration = new AutoLoginConfiguration();
+                _config.SaveConfiguration();
+            }
+        }
+
+        public async Task ValidateSavedLogin(AutoLoginConfiguration configuration)
+        {
+            if (string.IsNullOrEmpty(configuration.AccessToken) ||
+                string.IsNullOrEmpty(configuration.ServerId) ||
+                string.IsNullOrEmpty(configuration.UserId))
+            {
+                _apiClient.ClearAuthenticationInfo();
+
+                throw new UnauthorizedAccessException();
+            }
+
+            _apiClient.SetAuthenticationInfo(configuration.AccessToken, configuration.UserId);
+
+            try
+            {
+                CurrentUser = await _apiClient.GetUserAsync(configuration.UserId);
+            }
+            catch (Exception ex)
+            {
+                _apiClient.ClearAuthenticationInfo();
+
+                throw;
+            }
+
+            await AfterLogin();
+        }
+
+        private async Task AfterLogin()
+        {
             EventHelper.FireEventIfNotNull(UserLoggedIn, this, EventArgs.Empty, _logger);
 
+            await UpdateWolInfo();
             await _navService.NavigateToHomePage();
 
             _navService.ClearHistory();
+        }
+
+        private async Task UpdateWolInfo()
+        {
+            var systemInfo = await _apiClient.GetSystemInfoAsync(CancellationToken.None);
+            
+            //Check WOL config
+            if (_config.Configuration.WolConfiguration == null)
+            {
+                _config.Configuration.WolConfiguration = new WolConfiguration
+                {
+                    Port = 9,
+                    HostMacAddresses = new List<string>(),
+                    HostIpAddresses = new List<string>(),
+                    WakeAttempts = 1
+                };
+                _config.SaveConfiguration();
+            }
+
+            var wolConfig = _config.Configuration.WolConfiguration;
+
+            try
+            {
+                var uri = new Uri(_apiClient.ServerAddress);
+                var host = uri.Host;
+
+                var currentIpAddresses = await NetworkUtils.ResolveIpAddressesForHostName(host);
+
+                var hasChanged = currentIpAddresses.Any(currentIpAddress => wolConfig.HostIpAddresses.All(x => x != currentIpAddress));
+
+                if (!hasChanged)
+                    hasChanged = wolConfig.HostIpAddresses.Any(hostIpAddress => currentIpAddresses.All(x => x != hostIpAddress));
+
+                if (hasChanged)
+                {
+                    wolConfig.HostMacAddresses =
+                        await NetworkUtils.ResolveMacAddressesForHostName(host);
+
+                    wolConfig.HostIpAddresses = currentIpAddresses;
+
+                    //Always add system info MAC address in case we are in a WAN setting
+                    if (!wolConfig.HostMacAddresses.Contains(systemInfo.MacAddress))
+                        wolConfig.HostMacAddresses.Add(systemInfo.MacAddress);
+
+                    _config.SaveConfiguration();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.ErrorException("Error attempting to configure WOL.", ex);
+            }
         }
     }
 }

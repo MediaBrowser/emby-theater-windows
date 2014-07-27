@@ -44,14 +44,23 @@ namespace MediaBrowser.UI.StartupWizard
         {
             base.OnInitialized(e);
 
+            TxtHost.Text = string.Empty;
+            TxtPort.Text = string.Empty;
+            
             try
             {
                 var result = await new ServerLocator().FindServer(CancellationToken.None);
 
                 if (result != null)
                 {
-                    TxtHost.Text = result.Address.ToString();
-                    TxtPort.Text = result.Port.ToString(_usCulture);
+                    var uri = new Uri(result.Address);
+
+                    TxtHost.Text = uri.Host;
+
+                    if (!uri.IsDefaultPort)
+                    {
+                        TxtPort.Text = uri.Port.ToString(CultureInfo.InvariantCulture);
+                    }
                 }
             }
             catch (Exception ex)
@@ -73,21 +82,22 @@ namespace MediaBrowser.UI.StartupWizard
         {
             if (ValidateInput())
             {
-                var port = int.Parse(TxtPort.Text, _usCulture);
-
-                var url = string.Format("http://{0}:{1}/mediabrowser/system/info", TxtHost.Text, port);
+                var serverAddress = string.Format("http://{0}", TxtHost.Text);
+                if (!string.IsNullOrEmpty(TxtPort.Text))
+                {
+                    serverAddress += ":" + TxtPort.Text;
+                }
 
                 try
                 {
                     using (var client = new HttpClient())
                     {
-                        var json = await client.GetStringAsync(url);
+                        var json = await client.GetStringAsync(serverAddress + "/mediabrowser");
                     }
 
-                    _apiClient.ChangeServerLocation(TxtHost.Text, port);
-                    
-                    _config.Configuration.ServerApiPort = port;
-                    _config.Configuration.ServerHostName = TxtHost.Text;
+                    _apiClient.ChangeServerLocation(serverAddress);
+
+                    _config.Configuration.ServerAddress = serverAddress;
                     _config.SaveConfiguration();
 
                     await _nav.Navigate(new StartupWizardLav(_nav, _presentation, _mediaFilters, _apiClient));
@@ -114,7 +124,7 @@ namespace MediaBrowser.UI.StartupWizard
         {
             int port;
 
-            if (!int.TryParse(TxtPort.Text, NumberStyles.Integer, _usCulture, out port))
+            if (!string.IsNullOrEmpty(TxtPort.Text) && !int.TryParse(TxtPort.Text, NumberStyles.Integer, _usCulture, out port))
             {
                 TxtPort.Focus();
 

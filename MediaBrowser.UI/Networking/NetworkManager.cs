@@ -2,6 +2,7 @@
 using MediaBrowser.Common.Net;
 using MediaBrowser.Model.IO;
 using MediaBrowser.Model.Net;
+using MediaBrowser.Theater.Implementations.Networking;
 using System;
 using System.Collections.Generic;
 using System.Globalization;

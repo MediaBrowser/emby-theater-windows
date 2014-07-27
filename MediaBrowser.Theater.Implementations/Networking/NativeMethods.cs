@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Security;
 
-namespace MediaBrowser.UI.Networking
+namespace MediaBrowser.Theater.Implementations.Networking
 {
     /// <summary>
     /// Class NativeMethods
@@ -67,11 +67,11 @@ namespace MediaBrowser.UI.Networking
         /// <summary>
         /// The sv100_platform_id
         /// </summary>
-        internal int sv100_platform_id;
+        public int sv100_platform_id;
         /// <summary>
         /// The sv100_name
         /// </summary>
         [MarshalAs(UnmanagedType.LPWStr)]
-        internal string sv100_name;
+        public string sv100_name;
     }
 }

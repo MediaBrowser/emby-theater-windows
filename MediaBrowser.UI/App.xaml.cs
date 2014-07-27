@@ -532,14 +532,14 @@ namespace MediaBrowser.UI
             var foundServer = false;
             _appHost.PresentationManager.ShowModalLoadingAnimation();
 
-            SystemInfo systemInfo = null;
+            PublicSystemInfo systemInfo = null;
 
             //Try and send WOL now to give system time to wake
             await _appHost.SendWolCommand();
 
             try
             {
-                systemInfo = await _appHost.ApiClient.GetSystemInfoAsync(CancellationToken.None).ConfigureAwait(false);
+                systemInfo = await _appHost.ApiClient.GetPublicSystemInfoAsync(CancellationToken.None).ConfigureAwait(false);
 
                 foundServer = true;
             }
@@ -547,52 +547,7 @@ namespace MediaBrowser.UI
             {
                 _logger.ErrorException(
                     "Error connecting to server using saved connection information. Host: {0}, Port {1}", ex,
-                    _appHost.ApiClient.ServerHostName, _appHost.ApiClient.ServerApiPort);
-            }
-
-            if (foundServer)
-            {
-                //Check WOL config
-                if (_appHost.TheaterConfigurationManager.Configuration.WolConfiguration == null)
-                {
-                    _appHost.TheaterConfigurationManager.Configuration.WolConfiguration = new WolConfiguration
-                    {
-                        Port = 9,
-                        HostMacAddresses = new List<string>(),
-                        HostIpAddresses = new List<string>(),
-                        WakeAttempts = 1
-                    };
-                    _appHost.TheaterConfigurationManager.SaveConfiguration();
-                }
-
-                var wolConfig = _appHost.TheaterConfigurationManager.Configuration.WolConfiguration;
-
-                try
-                {
-                    var currentIpAddresses = await NetworkUtils.ResolveIpAddressesForHostName(_appHost.TheaterConfigurationManager.Configuration.ServerHostName);
-
-                    var hasChanged = currentIpAddresses.Any(currentIpAddress => wolConfig.HostIpAddresses.All(x => x != currentIpAddress));
-
-                    if(!hasChanged)
-                        hasChanged = wolConfig.HostIpAddresses.Any(hostIpAddress => currentIpAddresses.All(x => x != hostIpAddress));
-
-                    if (hasChanged)
-                    {
-                        wolConfig.HostMacAddresses =
-                            await NetworkUtils.ResolveMacAddressesForHostName(_appHost.TheaterConfigurationManager.Configuration.ServerHostName);
-                        wolConfig.HostIpAddresses = currentIpAddresses;
-
-                        //Always add system info MAC address in case we are in a WAN setting
-                        if(!wolConfig.HostMacAddresses.Contains(systemInfo.MacAddress))
-                            wolConfig.HostMacAddresses.Add(systemInfo.MacAddress);
-
-                        _appHost.TheaterConfigurationManager.SaveConfiguration();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _logger.ErrorException("Error attempting to configure WOL.", ex);
-                }
+                    _appHost.ApiClient.ServerAddress);
             }
             
             //Try and wait for WOL if its configured
@@ -622,13 +577,11 @@ namespace MediaBrowser.UI
             {
                 try
                 {
-                    var address = await new ServerLocator().FindServer(500, CancellationToken.None).ConfigureAwait(false);
+                    var info = await new ServerLocator(_logger).FindServer(500, CancellationToken.None).ConfigureAwait(false);
 
-                    var parts = address.ToString().Split(':');
+                    _appHost.ApiClient.ChangeServerLocation(info.Address);
 
-                    _appHost.ApiClient.ChangeServerLocation(parts[0], address.Port);
-
-                    systemInfo = await _appHost.ApiClient.GetSystemInfoAsync(CancellationToken.None).ConfigureAwait(false);
+                    systemInfo = await _appHost.ApiClient.GetPublicSystemInfoAsync(CancellationToken.None).ConfigureAwait(false);
 
                     foundServer = true;
                 }
@@ -649,32 +602,26 @@ namespace MediaBrowser.UI
             }
 
             //Do final login
-            await Dispatcher.InvokeAsync(async () => await Login());
+            await Dispatcher.InvokeAsync(async () => await Login(systemInfo));
         }
 
-        private async Task Login()
+        private async Task Login(PublicSystemInfo systemInfo)
         {
             //Check for auto-login credientials
             var config = _appHost.TheaterConfigurationManager.Configuration;
+
             try
             {
-                if (config.AutoLoginConfiguration.UserName != null && config.AutoLoginConfiguration.UserPasswordHash != null)
+                if (systemInfo != null && string.Equals(systemInfo.Id, config.AutoLoginConfiguration.ServerId))
                 {
-                    //Attempt password login
-                    await _appHost.SessionManager.LoginWithHash(config.AutoLoginConfiguration.UserName, config.AutoLoginConfiguration.UserPasswordHash, true);
-                    return;
-                }
-                else if (config.AutoLoginConfiguration.UserName != null)
-                {
-                    //Attempt passwordless login
-                    await _appHost.SessionManager.Login(config.AutoLoginConfiguration.UserName, string.Empty, true);
+                    await _appHost.SessionManager.ValidateSavedLogin(config.AutoLoginConfiguration);
                     return;
                 }
             }
             catch (UnauthorizedAccessException ex)
             {
                 //Login failed, redirect to login page and clear the auto-login
-                _logger.ErrorException("Auto-login failed", ex, config.AutoLoginConfiguration.UserName);
+                _logger.ErrorException("Auto-login failed", ex);
 
                 config.AutoLoginConfiguration = new AutoLoginConfiguration();
                 _appHost.TheaterConfigurationManager.SaveConfiguration();

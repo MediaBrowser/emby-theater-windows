@@ -29,5 +29,11 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
         /// The number of times the system will try to connect following a WOL attempt.
         /// </summary>
         public int WakeAttempts { get; set; }
+
+        /// <summary>
+        /// Gets or sets the name of the host.
+        /// </summary>
+        /// <value>The name of the host.</value>
+        public string HostName { get; set; }
     }
 }

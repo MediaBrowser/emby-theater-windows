@@ -5,7 +5,7 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 
-namespace MediaBrowser.UI.Networking
+namespace MediaBrowser.Theater.Implementations.Networking
 {
     public static class NetworkUtils
     {

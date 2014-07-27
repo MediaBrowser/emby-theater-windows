@@ -22,7 +22,7 @@ namespace MediaBrowser.Theater.Core.NetworkSettings
         private readonly ISessionManager _session;
 
         private readonly CultureInfo _usCulture = new CultureInfo("en-US");
-        
+
         public NetworkSettingsPage(ITheaterConfigurationManager config, IApiClient apiClient, ISessionManager session, IPresentationManager presentationManager)
         {
             _config = config;
@@ -43,28 +43,31 @@ namespace MediaBrowser.Theater.Core.NetworkSettings
 
         void NetworkSettingsPage_Loaded(object sender, RoutedEventArgs e)
         {
-            TxtHost.Text = _config.Configuration.ServerHostName;
-            TxtPort.Text = _config.Configuration.ServerApiPort.ToString(_usCulture);
+            TxtHost.Text = string.Empty;
+            TxtPort.Text = string.Empty;
+
+            if (!string.IsNullOrEmpty(_config.Configuration.ServerAddress))
+            {
+                var uri = new Uri(_config.Configuration.ServerAddress);
+
+                TxtHost.Text = uri.Host;
+
+                if (!uri.IsDefaultPort)
+                {
+                    TxtPort.Text = uri.Port.ToString(CultureInfo.InvariantCulture);
+                }
+            }
         }
 
         async void BtnApply_Click(object sender, RoutedEventArgs e)
         {
             if (ValidateInput())
             {
-                var currentLocation = _config.Configuration.ServerHostName + ":" +
-                                      _config.Configuration.ServerApiPort.ToString(_usCulture);
-
-                var newLocation = TxtHost.Text + ":" + TxtPort.Text;
-
-                if (string.Equals(currentLocation, newLocation, StringComparison.OrdinalIgnoreCase))
+                var serverAddress = string.Format("http://{0}", TxtHost.Text);
+                if (!string.IsNullOrEmpty(TxtPort.Text))
                 {
-                    // Nothing to do
-                    return;
+                    serverAddress += ":" + TxtPort.Text;
                 }
-
-                var port = int.Parse(TxtPort.Text, _usCulture);
-
-                var url = string.Format("http://{0}:{1}/mediabrowser/system/info", TxtHost.Text, port);
 
                 _presentationManager.ShowModalLoadingAnimation();
 
@@ -72,13 +75,12 @@ namespace MediaBrowser.Theater.Core.NetworkSettings
                 {
                     using (var client = new HttpClient())
                     {
-                        var json = await client.GetStringAsync(url);
+                        var json = await client.GetStringAsync(serverAddress + "/mediabrowser");
                     }
 
-                    _apiClient.ChangeServerLocation(TxtHost.Text, port);
+                    _apiClient.ChangeServerLocation(serverAddress);
 
-                    _config.Configuration.ServerApiPort = port;
-                    _config.Configuration.ServerHostName = TxtHost.Text;
+                    _config.Configuration.ServerAddress = serverAddress;
                     _config.SaveConfiguration();
 
                     _presentationManager.HideModalLoadingAnimation();
@@ -96,7 +98,7 @@ namespace MediaBrowser.Theater.Core.NetworkSettings
                 catch (Exception)
                 {
                     _presentationManager.HideModalLoadingAnimation();
-                    
+
                     _presentationManager.ShowMessage(new MessageBoxInfo
                     {
                         Button = MessageBoxButton.OK,
@@ -112,7 +114,7 @@ namespace MediaBrowser.Theater.Core.NetworkSettings
         {
             int port;
 
-            if (!int.TryParse(TxtPort.Text, NumberStyles.Integer, _usCulture, out port))
+            if (!string.IsNullOrEmpty(TxtPort.Text) && !int.TryParse(TxtPort.Text, NumberStyles.Integer, _usCulture, out port))
             {
                 TxtPort.Focus();
 

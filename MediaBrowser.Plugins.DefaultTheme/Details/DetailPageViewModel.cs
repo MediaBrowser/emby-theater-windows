@@ -237,15 +237,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
             if (item.ChildCount > 0)
             {
-                if (item.IsType("series") && item.SeasonCount == 1)
-                {
-                    views.Add(new TabItem
-                    {
-                        Name = "episodes",
-                        DisplayName = "Episodes"
-                    });
-                }
-                else if (item.IsType("series"))
+                if (item.IsType("series"))
                 {
                     views.Add(new TabItem
                     {
@@ -884,8 +876,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                                  ItemFields.DateCreated,
                                  ItemFields.Overview
                         },
-                SeriesId = item.Id,
-                IsSpecialSeason = false
+                SeriesId = item.Id
             };
 
             return _apiClient.GetSeasonsAsync(query);

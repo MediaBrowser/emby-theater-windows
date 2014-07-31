@@ -70,6 +70,8 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
 
         public InternalPlayerConfiguration InternalPlayerConfiguration { get; set; }
 
+        public int MaxStreamingBitrate { get; set; }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ApplicationConfiguration" /> class.
         /// </summary>
@@ -83,6 +85,8 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
             MediaPlayers = new PlayerConfiguration[] { };
 
             InternalPlayerConfiguration = new InternalPlayerConfiguration();
+
+            MaxStreamingBitrate = 8000000;
         }
     }
 }

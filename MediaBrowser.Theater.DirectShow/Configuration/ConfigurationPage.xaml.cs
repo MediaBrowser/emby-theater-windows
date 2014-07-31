@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.System;
@@ -60,6 +61,13 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
             {
                 SelectAudioRenderer.Options.Add(new SelectListItem { Text = bsOption, Value = bsOption });
             }
+
+            SelectMaxStreamingBitrate.Options = new List<SelectListItem>();
+
+            for (var i = 1; i <= 40; i++)
+            {
+                SelectMaxStreamingBitrate.Options.Add(new SelectListItem { Text = i.ToString(CultureInfo.InvariantCulture) + " Mbps", Value = i.ToString(CultureInfo.InvariantCulture) });
+            }
         }
 
         void BtnConfigureSubtitles_Click(object sender, RoutedEventArgs e)
@@ -96,7 +104,8 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
             ChkEnableXySubFilter.IsChecked = config.SubtitleConfig.EnableXySubFilter;
             SelectAudioBitstreamingMode.SelectedValue = config.AudioConfig.AudioBitstreaming.ToString();
             SelectHwaMode.SelectedValue = config.VideoConfig.HwaMode.ToString();
-            SelectAudioRenderer.SelectedValue = config.AudioConfig.Renderer.ToString();            
+            SelectAudioRenderer.SelectedValue = config.AudioConfig.Renderer.ToString();
+            SelectMaxStreamingBitrate.SelectedValue = (_config.Configuration.MaxStreamingBitrate / 1000000).ToString(CultureInfo.InvariantCulture);
         }
 
         void GeneralSettingsPage_Unloaded(object sender, RoutedEventArgs e)
@@ -111,6 +120,8 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
             config.AudioConfig.Renderer = (AudioRendererChoice)Enum.Parse(typeof(AudioRendererChoice), SelectAudioRenderer.SelectedValue);
 
             config.VideoConfig.HwaMode = int.Parse(SelectHwaMode.SelectedValue);
+
+            _config.Configuration.MaxStreamingBitrate = int.Parse(SelectMaxStreamingBitrate.SelectedValue) * 1000000;
 
             _config.SaveConfiguration();
         }

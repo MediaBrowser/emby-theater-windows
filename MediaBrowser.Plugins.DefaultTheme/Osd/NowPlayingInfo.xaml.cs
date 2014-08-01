@@ -121,6 +121,11 @@ namespace MediaBrowser.Plugins.DefaultTheme.Osd
 
         public static string GetName(BaseItemDto item)
         {
+            if (item == null)
+            {
+                return string.Empty;
+            }
+
             try
             {
                 var name = item.Name;

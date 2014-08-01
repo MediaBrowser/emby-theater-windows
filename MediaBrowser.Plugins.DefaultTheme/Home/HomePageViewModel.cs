@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Channels;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
@@ -91,6 +92,29 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             catch (Exception ex)
             {
                 _logger.ErrorException("Error getting item counts", ex);
+            }
+
+            try
+            {
+                var channels = await _apiClient.GetChannels(new ChannelQuery
+                {
+                    UserId = _sessionManager.CurrentUser.Id,
+                    Limit = 0
+
+                }, CancellationToken.None);
+
+                if (channels.TotalRecordCount > 0)
+                {
+                    views.Add(new TabItem
+                    {
+                        Name = "channels",
+                        DisplayName = "Channels"
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.ErrorException("Error getting channels", ex);
             }
 
             //views.Add(new TabItem
@@ -196,6 +220,25 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 moviesViewModel.CurrentItemChanged += SectionViewModel_CurrentItemChanged;
                 return moviesViewModel;
             }
+            if (string.Equals(section, "channels"))
+            {
+                var vm = new ItemListViewModel(GetChannelsAsync, _presentationManager, _imageManager, _apiClient, _nav, _playbackManager, _logger, _serverEvents)
+                {
+                    ImageDisplayWidth = 480,
+                    ImageDisplayHeightGenerator = v => 270,
+                    DisplayNameGenerator = GetDisplayName,
+
+                    OnItemCreated = v =>
+                    {
+                        v.DisplayNameVisibility = Visibility.Visible;
+                    },
+
+                    PreferredImageTypesGenerator = i => new[] { ImageType.Thumb, ImageType.Backdrop, ImageType.Primary }
+                };
+
+                return vm;
+
+            }
 
             return null;
         }
@@ -209,6 +252,22 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         {
             return new MoviesViewModel(_presentationManager, _imageManager, _apiClient, _sessionManager, _nav,
                                        _playbackManager, _logger, TileWidth, TileHeight, _serverEvents);
+        }
+
+        private async Task<ItemsResult> GetChannelsAsync(ItemListViewModel viewModel)
+        {
+            var query = new ChannelQuery
+            {
+                UserId = _sessionManager.CurrentUser.Id
+            };
+
+            var result = await _apiClient.GetChannels(query, CancellationToken.None);
+
+            return new ItemsResult
+            {
+                Items = result.Items,
+                TotalRecordCount = result.TotalRecordCount
+            };
         }
 
         private Task<ItemsResult> GetMediaCollectionsAsync(ItemListViewModel viewModel)

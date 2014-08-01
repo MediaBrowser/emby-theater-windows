@@ -78,6 +78,21 @@
                                         </Setter.Value>
                                     </Setter>
                                 </DataTrigger>
+                                <DataTrigger Binding="{Binding CurrentSection}" Value="channels">
+                                    <Setter Property="Content">
+                                        <Setter.Value>
+                                            <Grid>
+                                                <controls:ExtendedListBox Margin="-20 0" DataContext="{Binding ContentViewModel}" ItemsSource="{Binding ListCollectionView}" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{StaticResource ListBoxStyle}" ItemContainerStyle="{StaticResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource HomePageItemTemplate}">
+                                                    <controls:ExtendedListBox.ItemsPanel>
+                                                        <ItemsPanelTemplate>
+                                                            <UniformGrid Margin="20 20" Rows="2"></UniformGrid>
+                                                        </ItemsPanelTemplate>
+                                                    </controls:ExtendedListBox.ItemsPanel>
+                                                </controls:ExtendedListBox>
+                                            </Grid>
+                                        </Setter.Value>
+                                    </Setter>
+                                </DataTrigger>
                                 <DataTrigger Binding="{Binding CurrentSection}" Value="games">
                                     <Setter Property="Content">
                                         <Setter.Value>

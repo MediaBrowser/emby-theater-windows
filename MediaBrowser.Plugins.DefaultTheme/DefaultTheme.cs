@@ -1,6 +1,8 @@
 ﻿using System.Threading;
+using System.Threading.Tasks;
 using MediaBrowser.Common;
 using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Channels;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
@@ -134,6 +136,13 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// <returns>Page.</returns>
         public Page GetFolderPage(BaseItemDto item, ViewType context, DisplayPreferences displayPreferences)
         {
+            if (item.IsType("channel") || item.IsType("channelfolderitem"))
+            {
+                var options = GetChannelPageConfig(item, context);
+
+                return new FolderPage(item, displayPreferences, _apiClient, _imageManager, _presentationManager, _navService, _playbackManager, _logger, _serverEvents, options);
+            }
+
             if (context == ViewType.Folders || !_folderTypesWithDetailPages.Contains(item.Type, StringComparer.OrdinalIgnoreCase))
             {
                 var options = GetListPageConfig(item, context);
@@ -142,6 +151,75 @@ namespace MediaBrowser.Plugins.DefaultTheme
             }
 
             return GetItemPage(item, context);
+        }
+
+        private ListPageConfig GetChannelPageConfig(BaseItemDto item, ViewType context)
+        {
+            var config = new ListPageConfig();
+
+            config.CustomItemQuery = (vm, displayPreferences) =>
+            {
+                return GetChannelItems(new ChannelItemQuery
+                {
+                    UserId = _sessionManager.CurrentUser.Id,
+                    ChannelId = item.IsType("channel") ? item.Id : item.ChannelId,
+                    FolderId = item.IsType("channel") ? null : item.Id,
+                    Fields = FolderPage.QueryFields.ToList()
+
+                }, CancellationToken.None);
+            };
+
+            return config;
+        }
+
+        private async Task<ItemsResult> GetChannelItems(ChannelItemQuery query, CancellationToken cancellationToken)
+        {
+            var queryLimit = await GetChannelQueryLimit(query.ChannelId, cancellationToken);
+            var startIndex = 0;
+            var callLimit = 3;
+            var currentCall = 1;
+
+            var result = await GetChannelItems(query, startIndex, queryLimit, CancellationToken.None);
+
+            while (result.Items.Length < result.TotalRecordCount && currentCall <= callLimit && queryLimit.HasValue)
+            {
+                startIndex += queryLimit.Value;
+
+                var innerResult = await GetChannelItems(query, startIndex, queryLimit, CancellationToken.None);
+
+                var list = result.Items.ToList();
+                list.AddRange(innerResult.Items);
+                result.Items = list.ToArray();
+
+                currentCall++;
+            }
+
+            return new ItemsResult
+            {
+                TotalRecordCount = result.TotalRecordCount,
+                Items = result.Items
+            };
+        }
+
+        private async Task<int?> GetChannelQueryLimit(string channelId, CancellationToken cancellationToken)
+        {
+            var features = await _apiClient.GetChannelFeatures(channelId, cancellationToken);
+
+            return features.MaxPageSize;
+        }
+
+        private async Task<ItemsResult> GetChannelItems(ChannelItemQuery query, int start, int? limit, CancellationToken cancellationToken)
+        {
+            query.StartIndex = start;
+            query.Limit = limit;
+
+            var result = await _apiClient.GetChannelItems(query, CancellationToken.None);
+
+            return new ItemsResult
+            {
+                TotalRecordCount = result.TotalRecordCount,
+                Items = result.Items
+            };
         }
 
         private ListPageConfig GetListPageConfig(BaseItemDto item, ViewType context)
@@ -174,7 +252,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
             {
                 config.CustomItemQuery = (vm, displayPreferences) =>
                 {
-                   
+
                     if (item.IsType("series"))
                     {
                         return _apiClient.GetSeasonsAsync(new SeasonQuery
@@ -184,7 +262,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
                             Fields = FolderPage.QueryFields
                         }, CancellationToken.None);
                     }
-                 
+
 
                     if (item.IsType("season"))
                     {
@@ -209,7 +287,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
                     // Server will sort boxset titles based on server settings
                     if (!item.IsType("boxset"))
                     {
-                        query.SortBy = new[] {ItemSortBy.SortName};
+                        query.SortBy = new[] { ItemSortBy.SortName };
                         query.SortOrder = displayPreferences.SortOrder;
                     }
 

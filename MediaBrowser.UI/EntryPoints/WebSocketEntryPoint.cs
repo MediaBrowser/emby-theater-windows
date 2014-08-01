@@ -452,7 +452,7 @@ namespace MediaBrowser.UI.EntryPoints
                         ItemFields.Path,
                         ItemFields.People,
                     }
-                });
+                }, CancellationToken.None);
 
                 await _playbackManager.Play(new PlayOptions
                 {

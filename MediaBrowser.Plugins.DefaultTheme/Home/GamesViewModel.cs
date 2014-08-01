@@ -350,7 +350,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 query.MinPlayers = query.MaxPlayers = int.Parse(indexOption.Name);
             }
 
-            return ApiClient.GetItemsAsync(query);
+            return ApiClient.GetItemsAsync(query, CancellationToken.None);
         }
 
         private async Task NavigateToYearsInternal()
@@ -412,7 +412,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 query.Years = new[] { int.Parse(indexOption.Name) };
             }
 
-            return ApiClient.GetItemsAsync(query);
+            return ApiClient.GetItemsAsync(query, CancellationToken.None);
         }
 
         private Task<ItemsResult> GetGameSystems(ItemListViewModel viewModel)
@@ -502,7 +502,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 query.Genres = new[] { indexOption.Name };
             }
 
-            return ApiClient.GetItemsAsync(query);
+            return ApiClient.GetItemsAsync(query, CancellationToken.None);
         }
 
         private CancellationTokenSource _mainViewCancellationTokenSource;

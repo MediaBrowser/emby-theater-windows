@@ -723,7 +723,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 query.Artists = new[] { item.Name };
             }
 
-            return _apiClient.GetItemsAsync(query);
+            return _apiClient.GetItemsAsync(query, CancellationToken.None);
         }
 
         private async Task<QueryResult<ItemReview>> GetCriticReviews(BaseItemDto item)
@@ -793,22 +793,22 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
             if (item.IsType("trailer"))
             {
-                return _apiClient.GetSimilarTrailersAsync(query);
+                return _apiClient.GetSimilarTrailersAsync(query, CancellationToken.None);
             }
             if (item.IsGame)
             {
-                return _apiClient.GetSimilarGamesAsync(query);
+                return _apiClient.GetSimilarGamesAsync(query, CancellationToken.None);
             }
             if (item.IsType("musicalbum"))
             {
-                return _apiClient.GetSimilarAlbumsAsync(query);
+                return _apiClient.GetSimilarAlbumsAsync(query, CancellationToken.None);
             }
             if (item.IsType("series"))
             {
-                return _apiClient.GetSimilarSeriesAsync(query);
+                return _apiClient.GetSimilarSeriesAsync(query, CancellationToken.None);
             }
 
-            return _apiClient.GetSimilarMoviesAsync(query);
+            return _apiClient.GetSimilarMoviesAsync(query, CancellationToken.None);
         }
 
         private Task<ItemsResult> GetSoundtracks(ItemListViewModel viewModel)
@@ -827,7 +827,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 SortBy = new[] { ItemSortBy.SortName }
             };
 
-            return _apiClient.GetItemsAsync(query);
+            return _apiClient.GetItemsAsync(query, CancellationToken.None);
         }
 
         private async Task<ItemsResult> GetTrailers(ItemListViewModel viewModel)
@@ -860,7 +860,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 SortBy = new[] { ItemSortBy.SortName }
             };
 
-            return _apiClient.GetItemsAsync(query);
+            return _apiClient.GetItemsAsync(query, CancellationToken.None);
         }
 
         private Task<ItemsResult> GetSeasons(ItemListViewModel viewModel)
@@ -879,7 +879,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 SeriesId = item.Id
             };
 
-            return _apiClient.GetSeasonsAsync(query);
+            return _apiClient.GetSeasonsAsync(query, CancellationToken.None);
         }
 
         private Task<ItemsResult> GetSeriesEpisodes(ItemListViewModel viewModel)
@@ -896,7 +896,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                         },
                 SeasonNumber = 1,
                 SeriesId = ItemViewModel.Item.Id
-            });
+            }, CancellationToken.None);
         }
 
         private Task<ItemsResult> GetAlbumSongs(ItemListViewModel viewModel)
@@ -920,7 +920,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                 IncludeItemTypes = new[] { "Audio" }
             };
 
-            return _apiClient.GetItemsAsync(query);
+            return _apiClient.GetItemsAsync(query, CancellationToken.None);
         }
 
         private async Task<ItemsResult> GetSpecialFeatures(ItemListViewModel viewModel)

@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Common;
+﻿using System.Threading;
+using MediaBrowser.Common;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
@@ -69,7 +70,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
                 Limit = 1000,
                 SortBy = new[] { ItemSortBy.Random },
                 Recursive = true
-            });
+            }, CancellationToken.None);
 
             if (items.Items.Length == 0)
             {

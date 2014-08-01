@@ -606,7 +606,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 query.SortOrder = SortOrder.Ascending;
             }
 
-            return ApiClient.GetItemsAsync(query);
+            return ApiClient.GetItemsAsync(query, CancellationToken.None);
         }
 
         private Task<ItemsResult> GetMoviesByGenre(ItemListViewModel viewModel, DisplayPreferences displayPreferences)
@@ -635,7 +635,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 query.Genres = new[] { indexOption.Name };
             }
 
-            return ApiClient.GetItemsAsync(query);
+            return ApiClient.GetItemsAsync(query, CancellationToken.None);
         }
 
         private Task<ItemsResult> GetMoviesByYear(ItemListViewModel viewModel, DisplayPreferences displayPreferences)
@@ -664,7 +664,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 query.Years = new[] { int.Parse(indexOption.Name) };
             }
 
-            return ApiClient.GetItemsAsync(query);
+            return ApiClient.GetItemsAsync(query, CancellationToken.None);
         }
 
         internal static Dictionary<string, string> GetMovieSortOptions()

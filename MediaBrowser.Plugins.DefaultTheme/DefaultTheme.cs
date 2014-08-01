@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Common;
+﻿using System.Threading;
+using MediaBrowser.Common;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
@@ -181,7 +182,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
                             UserId = _sessionManager.CurrentUser.Id,
                             SeriesId = item.Id,
                             Fields = FolderPage.QueryFields
-                        });
+                        }, CancellationToken.None);
                     }
                  
 
@@ -193,7 +194,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
                             SeriesId = item.SeriesId,
                             SeasonId = item.Id,
                             Fields = FolderPage.QueryFields
-                        });
+                        }, CancellationToken.None);
                     }
 
                     var query = new ItemQuery
@@ -212,7 +213,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
                         query.SortOrder = displayPreferences.SortOrder;
                     }
 
-                    return _apiClient.GetItemsAsync(query);
+                    return _apiClient.GetItemsAsync(query, CancellationToken.None);
                 };
 
                 if (item.IsType("season") && item.IndexNumber.HasValue && item.IndexNumber.Value > 0)

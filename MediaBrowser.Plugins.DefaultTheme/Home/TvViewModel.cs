@@ -438,7 +438,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 Recursive = true
             };
 
-            return ApiClient.GetItemsAsync(query);
+            return ApiClient.GetItemsAsync(query, CancellationToken.None);
         }
 
         internal static Dictionary<string, string> GetSeriesSortOptions()
@@ -481,7 +481,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 query.Genres = new[] { indexOption.Name };
             }
 
-            return ApiClient.GetItemsAsync(query);
+            return ApiClient.GetItemsAsync(query, CancellationToken.None);
         }
 
         private Task<ItemsResult> GetNextUpAsync(ItemListViewModel viewModel)

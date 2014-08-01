@@ -141,7 +141,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Search
                     Fields = FolderPage.QueryFields
                 };
 
-                _searchedItemsResult = await _apiClient.GetItemsAsync(query);
+                _searchedItemsResult = await _apiClient.GetItemsAsync(query, CancellationToken.None);
             }
             else
             {
@@ -165,7 +165,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Search
                     Fields = FolderPage.QueryFields
                 };
 
-                _searchedPeopleItemsResult = await _apiClient.GetItemsAsync(query);
+                _searchedPeopleItemsResult = await _apiClient.GetItemsAsync(query, CancellationToken.None);
             }
             else
             {

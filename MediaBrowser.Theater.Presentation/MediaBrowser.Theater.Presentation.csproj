@@ -35,11 +35,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="MediaBrowser.Common">
-      <HintPath>..\packages\MediaBrowser.Common.3.0.421\lib\net45\MediaBrowser.Common.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.422\lib\net45\MediaBrowser.Common.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="MediaBrowser.Model">
-      <HintPath>..\packages\MediaBrowser.Common.3.0.421\lib\net45\MediaBrowser.Model.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.422\lib\net45\MediaBrowser.Model.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Expression.Effects, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">

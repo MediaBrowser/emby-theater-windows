@@ -1,8 +1,10 @@
 ﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
+using MediaBrowser.Model.Querying;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -27,13 +29,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         public List<ItemStub> FamilyMovies { get; set; }
 
-        public List<ItemStub> RomanceItems { get; set; }
-        public List<ItemStub> ComedyItems { get; set; }
-
-        public double FamilyMoviePercentage { get; set; }
-
-        public double HDMoviePercentage { get; set; }
-
         public List<BaseItemDto> LatestTrailers { get; set; }
         public List<BaseItemDto> LatestMovies { get; set; }
     }
@@ -42,20 +37,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
     {
         public List<ItemStub> ShowsItems { get; set; }
 
-        public List<ItemStub> RomanceItems { get; set; }
-        public List<ItemStub> ComedyItems { get; set; }
-
-        public List<string> SeriesIdsInProgress { get; set; }
-
         public List<BaseItemDto> LatestEpisodes { get; set; }
         public List<BaseItemDto> NextUpEpisodes { get; set; }
         public List<BaseItemDto> ResumableEpisodes { get; set; }
-    }
-
-    public class ItemByNameInfo
-    {
-        public string Name { get; set; }
-        public int ItemCount { get; set; }
     }
 
     public class GamesView : BaseView
@@ -72,18 +56,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         public List<BaseItemDto> MiniSpotlights { get; set; }
     }
 
-    public class FavoritesView : BaseView
-    {
-        public List<BaseItemDto> Artists { get; set; }
-        public List<BaseItemDto> Movies { get; set; }
-        public List<BaseItemDto> Series { get; set; }
-        public List<BaseItemDto> Episodes { get; set; }
-        public List<BaseItemDto> Games { get; set; }
-        public List<BaseItemDto> Books { get; set; }
-        public List<BaseItemDto> Albums { get; set; }
-        public List<BaseItemDto> Songs { get; set; }
-    }
-
     public static class ApiClientExtensions
     {
         public const string ComedyGenre = "comedy";
@@ -93,32 +65,234 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         public const double TopTvCommunityRating = 8.5;
         public const double TopMovieCommunityRating = 8.2;
 
-        public static Task<TvView> GetTvView(this IApiClient apiClient, string userId, CancellationToken cancellationToken)
+        public static async Task<TvView> GetTvView(this IApiClient apiClient, string userId, CancellationToken cancellationToken)
         {
-            var url = apiClient.GetApiUrl("MBT/DefaultTheme/TV?userId=" + userId + "&ComedyGenre=" + ComedyGenre + "&RomanceGenre=" + RomanceGenre + "&TopCommunityRating=" + TopTvCommunityRating + "&NextUpEpisodeLimit=15&LatestEpisodeLimit=9&ResumableEpisodeLimit=3");
+            var allShowsItemsTask = apiClient.GetItemsAsync(new ItemQuery
+            {
+                IncludeItemTypes = new[] { "Series" },
+                ImageTypes = new[] { ImageType.Backdrop },
+                SortBy = new[] { ItemSortBy.Random },
+                UserId = userId,
+                Recursive = true,
+                Limit = 1
+            }, cancellationToken);
 
-            return apiClient.GetAsync<TvView>(url, cancellationToken);
+            var nextUpItemsTask = apiClient.GetNextUpEpisodesAsync(new NextUpQuery
+            {
+                UserId = userId,
+                Limit = 15
+            }, cancellationToken);
+
+            var latestEpisodesTask = apiClient.GetItemsAsync(new ItemQuery
+            {
+                IncludeItemTypes = new[] { "Episode" },
+                ImageTypes = new[] { ImageType.Primary },
+                SortBy = new[] { ItemSortBy.DateCreated },
+                SortOrder = SortOrder.Descending,
+                IsPlayed = false,
+                UserId = userId,
+                Limit = 9,
+                Recursive = true,
+                IsUnaired = false,
+                IsMissing = false
+            }, cancellationToken);
+
+            var resumableEpisodesTask = apiClient.GetItemsAsync(new ItemQuery
+            {
+                IncludeItemTypes = new[] { "Episode" },
+                ImageTypes = new[] { ImageType.Primary },
+                SortBy = new[] { ItemSortBy.DatePlayed },
+                SortOrder = SortOrder.Descending,
+                Filters = new[] { ItemFilter.IsResumable },
+                UserId = userId,
+                Limit = 3,
+                Recursive = true
+            }, cancellationToken);
+
+            var backdropItemsTask = apiClient.GetItemsAsync(new ItemQuery
+            {
+                IncludeItemTypes = new[] { "Series" },
+                ImageTypes = new[] { ImageType.Backdrop },
+                SortBy = new[] { ItemSortBy.Random },
+                UserId = userId,
+                Limit = 60,
+                Recursive = true
+            }, cancellationToken);
+
+            await Task.WhenAll(allShowsItemsTask, nextUpItemsTask, latestEpisodesTask, resumableEpisodesTask, backdropItemsTask);
+
+            return new TvView
+            {
+                ShowsItems = allShowsItemsTask.Result.Items.Select(GetStub).ToList(),
+                NextUpEpisodes = nextUpItemsTask.Result.Items.ToList(),
+                LatestEpisodes = latestEpisodesTask.Result.Items.ToList(),
+                ResumableEpisodes = resumableEpisodesTask.Result.Items.ToList(),
+                BackdropItems = backdropItemsTask.Result.Items.ToList(),
+                MiniSpotlights = backdropItemsTask.Result.Items.OrderBy(i => Guid.NewGuid()).ToList(),
+                SpotlightItems = backdropItemsTask.Result.Items.OrderBy(i => Guid.NewGuid()).ToList()
+            };
         }
 
-        public static Task<MoviesView> GetMovieView(this IApiClient apiClient, string userId, CancellationToken cancellationToken)
+        public static async Task<GamesView> GetGamesView(this IApiClient apiClient, string userId, CancellationToken cancellationToken)
+        {
+            var multiPlayerItemsTask = apiClient.GetItemsAsync(new ItemQuery
+            {
+                MinPlayers = 2,
+                MediaTypes = new[] { MediaType.Game },
+                ImageTypes = new[] { ImageType.Primary },
+                SortBy = new[] { ItemSortBy.Random },
+                UserId = userId,
+                Recursive = true,
+                Limit = 1
+            }, cancellationToken);
+
+            var gameSystemTask = apiClient.GetItemsAsync(new ItemQuery
+            {
+                IncludeItemTypes = new[] { "GameSystem" },
+                SortBy = new[] { ItemSortBy.SortName },
+                UserId = userId,
+                Recursive = true
+            }, cancellationToken);
+
+            var recentlyPlayedGamesTask = apiClient.GetItemsAsync(new ItemQuery
+            {
+                MediaTypes = new[] { MediaType.Game },
+                ImageTypes = new[] { ImageType.Primary },
+                SortBy = new[] { ItemSortBy.DatePlayed },
+                SortOrder = SortOrder.Descending,
+                IsPlayed = true,
+                UserId = userId,
+                Limit = 3,
+                Recursive = true
+            }, cancellationToken);
+
+            var backdropItemsTask = apiClient.GetItemsAsync(new ItemQuery
+            {
+                MediaTypes = new[] { MediaType.Game },
+                ImageTypes = new[] { ImageType.Backdrop },
+                SortBy = new[] { ItemSortBy.Random },
+                UserId = userId,
+                Limit = 60,
+                Recursive = true
+            }, cancellationToken);
+
+            await Task.WhenAll(multiPlayerItemsTask, gameSystemTask, recentlyPlayedGamesTask, backdropItemsTask);
+
+            return new GamesView
+            {
+                GameSystems = gameSystemTask.Result.Items.ToList(),
+                RecentlyPlayedGames = recentlyPlayedGamesTask.Result.Items.ToList(),
+                MultiPlayerItems = multiPlayerItemsTask.Result.Items.Select(GetStub).ToList(),
+
+                BackdropItems = backdropItemsTask.Result.Items.ToList(),
+
+                MiniSpotlights = backdropItemsTask.Result.Items.OrderBy(i => Guid.NewGuid()).ToList(),
+
+                SpotlightItems = backdropItemsTask.Result.Items.OrderBy(i => Guid.NewGuid()).ToList()
+            };
+        }
+
+        public static async Task<MoviesView> GetMovieView(this IApiClient apiClient, string userId, CancellationToken cancellationToken)
         {
             var url = apiClient.GetApiUrl("MBT/DefaultTheme/Movies?familyrating=pg&userId=" + userId + "&ComedyGenre=" + ComedyGenre + "&RomanceGenre=" + RomanceGenre + "&FamilyGenre=" + FamilyGenre + "&LatestMoviesLimit=16&LatestTrailersLimit=6");
 
-            return apiClient.GetAsync<MoviesView>(url, cancellationToken);
+            var threeDItemsTask = apiClient.GetItemsAsync(new ItemQuery
+            {
+                IncludeItemTypes = new[] { "Movie" },
+                SortBy = new[] { ItemSortBy.Random },
+                UserId = userId,
+                Limit = 1,
+                Recursive = true,
+                Is3D = true
+            }, cancellationToken);
+
+            var familyItemsTask = apiClient.GetItemsAsync(new ItemQuery
+            {
+                IncludeItemTypes = new[] { "Movie" },
+                SortBy = new[] { ItemSortBy.Random },
+                UserId = userId,
+                Limit = 1,
+                Recursive = true,
+                Genres = new[] { "Family" }
+            }, cancellationToken);
+
+            var hdItemsTask = apiClient.GetItemsAsync(new ItemQuery
+            {
+                IncludeItemTypes = new[] { "Movie" },
+                SortBy = new[] { ItemSortBy.Random },
+                UserId = userId,
+                Limit = 1,
+                Recursive = true,
+                IsHD = true
+            }, cancellationToken);
+
+            var movieItemsTask = apiClient.GetItemsAsync(new ItemQuery
+            {
+                IncludeItemTypes = new[] { "Movie" },
+                SortBy = new[] { ItemSortBy.Random },
+                UserId = userId,
+                Limit = 1,
+                Recursive = true
+            }, cancellationToken);
+
+            var boxsetItemsTask = apiClient.GetItemsAsync(new ItemQuery
+            {
+                IncludeItemTypes = new[] { "BoxSet" },
+                SortBy = new[] { ItemSortBy.Random },
+                UserId = userId,
+                Limit = 1,
+                Recursive = true
+            }, cancellationToken);
+
+            var latestMoviesTask = apiClient.GetItemsAsync(new ItemQuery
+            {
+                IncludeItemTypes = new[] { "Movie" },
+                SortBy = new[] { ItemSortBy.DateCreated },
+                SortOrder = SortOrder.Descending,
+                IsPlayed = false,
+                UserId = userId,
+                Limit = 16,
+                Recursive = true
+            }, cancellationToken);
+
+            var backdropItemsTask = apiClient.GetItemsAsync(new ItemQuery
+            {
+                IncludeItemTypes = new[] { "Movie" },
+                ImageTypes = new[] { ImageType.Backdrop },
+                SortBy = new[] { ItemSortBy.Random },
+                UserId = userId,
+                Limit = 60,
+                Recursive = true
+            }, cancellationToken);
+
+            await Task.WhenAll(threeDItemsTask, familyItemsTask, movieItemsTask, hdItemsTask, boxsetItemsTask, latestMoviesTask, backdropItemsTask);
+
+            return new MoviesView
+            {
+                BoxSetItems = boxsetItemsTask.Result.Items.Select(GetStub).ToList(),
+                FamilyMovies = familyItemsTask.Result.Items.Select(GetStub).ToList(),
+                ThreeDItems = threeDItemsTask.Result.Items.Select(GetStub).ToList(),
+                MovieItems = movieItemsTask.Result.Items.Select(GetStub).ToList(),
+                HDItems = hdItemsTask.Result.Items.Select(GetStub).ToList(),
+                LatestMovies = latestMoviesTask.Result.Items.ToList(),
+                BackdropItems = backdropItemsTask.Result.Items.ToList(),
+                MiniSpotlights = backdropItemsTask.Result.Items.OrderBy(i => Guid.NewGuid()).ToList(),
+                SpotlightItems = backdropItemsTask.Result.Items.OrderBy(i => Guid.NewGuid()).ToList(),
+                TrailerItems = new List<ItemStub>(),
+                LatestTrailers = new List<BaseItemDto>()
+            };
         }
 
-        public static Task<FavoritesView> GetFavoritesView(this IApiClient apiClient, string userId, CancellationToken cancellationToken)
+        private static ItemStub GetStub(BaseItemDto item)
         {
-            var url = apiClient.GetApiUrl("MBT/DefaultTheme/Favorites?userId=" + userId);
+            var stub = new ItemStub();
 
-            return apiClient.GetAsync<FavoritesView>(url, cancellationToken);
-        }
+            stub.Id = item.Id;
+            stub.Name = item.Name;
+            stub.ImageType = ImageType.Primary;
+            stub.ImageTag = item.ImageTags.ContainsKey(ImageType.Primary) ? item.ImageTags[ImageType.Primary] : null;
 
-        public static Task<GamesView> GetGamesView(this IApiClient apiClient, string userId, CancellationToken cancellationToken)
-        {
-            var url = apiClient.GetApiUrl("MBT/DefaultTheme/Games?userId=" + userId + "&RecentlyPlayedGamesLimit=3");
-
-            return apiClient.GetAsync<GamesView>(url, cancellationToken);
+            return stub;
         }
     }
 }

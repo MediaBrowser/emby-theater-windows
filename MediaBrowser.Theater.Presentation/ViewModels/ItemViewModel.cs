@@ -1,5 +1,4 @@
-﻿using System.Windows;
-using MediaBrowser.Model.ApiClient;
+﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Events;
@@ -15,6 +14,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -101,7 +101,6 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                     OnPropertyChanged("ItemType");
                     OnPropertyChanged("IsFolder");
                     OnPropertyChanged("IsNew");
-                    OnPropertyChanged("RecursiveUnplayedItemCount");
                     OnPropertyChanged("IsOffline");
                     OnPropertyChanged("DurationShortTimeString");
                
@@ -163,6 +162,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         private void RefreshUserDataFields()
         {
+            OnPropertyChanged("RecursiveUnplayedItemCount");
             OnPropertyChanged("PlayedPercentage");
             OnPropertyChanged("CanResume");
             OnPropertyChanged("IsLiked");
@@ -783,31 +783,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         public double PlayedPercentage
         {
-            get
-            {
-                var item = _item;
-
-                if (item != null)
-                {
-                    if (item.IsFolder)
-                    {
-                        return item.PlayedPercentage ?? 0;
-                    }
-
-                    if (item.RunTimeTicks.HasValue)
-                    {
-                        if (item.UserData != null && item.UserData.PlaybackPositionTicks > 0)
-                        {
-                            double percent = item.UserData.PlaybackPositionTicks;
-                            percent /= item.RunTimeTicks.Value;
-
-                            return percent * 100;
-                        }
-                    }
-                }
-
-                return 0;
-            }
+            get { return _item == null || _item.UserData == null ? 0 : _item.UserData.PlayedPercentage ?? 0; }
         }
 
         public string RuntimeMinutesText
@@ -885,7 +861,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         public int RecursiveUnplayedItemCount
         {
-            get { return _item == null ? 0 : _item.RecursiveUnplayedItemCount ?? 0; }
+            get { return _item == null || _item.UserData == null ? 0 : _item.UserData.UnplayedItemCount ?? 0; }
         }
 
         public bool IsFolder

@@ -377,7 +377,7 @@ namespace MediaBrowser.UI.Implementations
                 query.Genres = new[] { indexOption.Name };
             }
 
-            return _apiClient.GetItemsAsync(query);
+            return _apiClient.GetItemsAsync(query, CancellationToken.None);
         }
 
         private Task<ItemsResult> GetSeriesByGenre(ItemListViewModel viewModel, DisplayPreferences displayPreferences)
@@ -406,7 +406,7 @@ namespace MediaBrowser.UI.Implementations
                 query.Genres = new[] { indexOption.Name };
             }
 
-            return _apiClient.GetItemsAsync(query);
+            return _apiClient.GetItemsAsync(query, CancellationToken.None);
         }
 
         private async Task NavigateToGenreInternal(string itemType, string includeItemType, string pageTitle, Func<ItemListViewModel, DisplayPreferences, Task<ItemsResult>> query, string selectedGenre)

@@ -163,7 +163,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
                 Limit = 20, //MaxPhotos,
                 // SortBy = new[] { ItemSortBy.Random },
                 Recursive = true,
-            });
+            }, CancellationToken.None);
 
             var ars = items.Items.Select(i => i.PrimaryImageAspectRatio).ToArray();
 

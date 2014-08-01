@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.ApiClient;
+﻿using System.Threading;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
@@ -228,7 +229,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 SortOrder = SortOrder.Ascending
             };
 
-            return _apiClient.GetItemsAsync(query);
+            return _apiClient.GetItemsAsync(query, CancellationToken.None);
         }
 
         public void SetBackdrops()

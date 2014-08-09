@@ -332,7 +332,9 @@ namespace MediaBrowser.Theater
 
             PackageVersionInfo version = InstallationManager.GetLatestCompatibleVersion(availablePackages, Program.PackageName, null, serverVersion, ConfigurationManager.CommonConfiguration.SystemUpdateLevel);
 
-            return version != null ? new CheckForUpdateResult { AvailableVersion = version.version.ToString(), IsUpdateAvailable = version.version > ApplicationVersion, Package = version } :
+            var versionObject = version == null || string.IsNullOrWhiteSpace(version.versionStr) ? null : new Version(version.versionStr);
+
+            return versionObject != null ? new CheckForUpdateResult { AvailableVersion = versionObject.ToString(), IsUpdateAvailable = versionObject > ApplicationVersion, Package = version } :
                        new CheckForUpdateResult { AvailableVersion = ApplicationVersion.ToString(), IsUpdateAvailable = false };
         }
 

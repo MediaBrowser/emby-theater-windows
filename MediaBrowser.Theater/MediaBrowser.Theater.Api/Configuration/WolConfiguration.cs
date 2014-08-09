@@ -30,6 +30,11 @@ namespace MediaBrowser.Theater.Api.Configuration
         /// </summary>
         public int WakeAttempts { get; set; }
 
+        /// <summary>
+        /// Gets or sets the name of the host.
+        /// </summary>
+        public string HostName { get; set; }
+
         public WolConfiguration()
         {
             HostIpAddresses = new List<string>();

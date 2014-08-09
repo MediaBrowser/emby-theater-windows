@@ -128,7 +128,6 @@
     <Compile Include="EntryPoints\CommandActions\CommandActionMap.cs" />
     <Compile Include="EntryPoints\CommandActions\CommandActionsEntryPoint.cs" />
     <Compile Include="EntryPoints\WebSocketEntryPoint.cs" />
-    <Compile Include="Networking\NativeMethods.cs" />
     <Compile Include="Networking\NetworkManager.cs" />
     <Compile Include="Networking\NetworkShares.cs" />
     <Compile Include="Program.cs" />

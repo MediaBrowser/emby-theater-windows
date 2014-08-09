@@ -189,6 +189,10 @@
     <value>@SetupWizard_PreviousButton</value>
     <comment>Previous page button text</comment>
   </data>
+  <data name="SetupWizard_ServerDetails_AddressLabel" xml:space="preserve">
+    <value>@SetupWizard_ServerDetails_AddessLabel</value>
+    <comment>Setup wizard server address textbox label</comment>
+  </data>
   <data name="SetupWizard_ServerDetails_ConnectionFailedError" xml:space="preserve">
     <value>@SetupWizard_ServerDetails_ConnectionFailedError</value>
     <comment>Server connection failed message</comment>
@@ -196,14 +200,6 @@
   <data name="SetupWizard_ServerDetails_Content" xml:space="preserve">
     <value>@SetupWizard_ServerDetails_Content</value>
     <comment>Setup wizard server details text</comment>
-  </data>
-  <data name="SetupWizard_ServerDetails_HostNameLabel" xml:space="preserve">
-    <value>@SetupWizard_ServerDetails_HostNameLabel</value>
-    <comment>Setup wizard server details host name textbox label</comment>
-  </data>
-  <data name="SetupWizard_ServerDetails_PortLabel" xml:space="preserve">
-    <value>@SetupWizard_ServerDetails_PortLabel</value>
-    <comment>Setup wizard server details port number textbox label</comment>
   </data>
   <data name="SetupWizard_ServerDetails_ServerDownloadLinkText" xml:space="preserve">
     <value>@SetupWizard_ServerDetails_ServerDownloadLinkText</value>

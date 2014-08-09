@@ -10,6 +10,7 @@ using MediaBrowser.Common.Implementations.Networking;
 using MediaBrowser.Common.Net;
 using MediaBrowser.Model.IO;
 using MediaBrowser.Model.Net;
+using MediaBrowser.Theater.Api.Networking;
 
 namespace MediaBrowser.Theater.Networking
 {

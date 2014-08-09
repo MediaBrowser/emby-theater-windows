@@ -110,8 +110,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Session\SessionManager.cs" />
     <Compile Include="System\MediaFilters.cs" />
-    <Compile Include="System\NativeNetworkMethods.cs" />
-    <Compile Include="System\NetworkUtils.cs" />
+    <Compile Include="Networking\NativeMethods.cs" />
+    <Compile Include="Networking\NetworkUtils.cs" />
     <Compile Include="System\ServerConnectionManager.cs" />
     <Compile Include="UserInput\GlobalEventProvider.cs">
       <SubType>Component</SubType>

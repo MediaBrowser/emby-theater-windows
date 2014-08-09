@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
@@ -12,6 +14,7 @@ using MediaBrowser.Model.System;
 using MediaBrowser.Model.Users;
 using MediaBrowser.Theater.Api.Configuration;
 using MediaBrowser.Theater.Api.Navigation;
+using MediaBrowser.Theater.Api.Networking;
 using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.UserInterface;
 
@@ -54,7 +57,7 @@ namespace MediaBrowser.Theater.Api.Session
         {
 //            _playback.StopAllPlayback();
 
-            _apiClient.CurrentUserId = null;
+            await _apiClient.Logout();
 
             UserDto previous = CurrentUser;
 
@@ -81,37 +84,7 @@ namespace MediaBrowser.Theater.Api.Session
 
             //Compute hash then pass to main login routine
             byte[] hash = ComputeHash(password);
-            await InternalLogin(username, hash);
-
-            //Save details if we need to 
-            if (rememberCredentials) {
-                _config.Configuration.AutoLoginConfiguration.UserName = username;
-                if (String.IsNullOrEmpty(password)) {
-                    _config.Configuration.AutoLoginConfiguration.UserPasswordHash = null;
-                } else {
-                    _config.Configuration.AutoLoginConfiguration.UserPasswordHash = Convert.ToBase64String(hash);
-                }
-                _config.SaveConfiguration();
-            } else {
-                _config.Configuration.AutoLoginConfiguration = new AutoLoginConfiguration();
-                _config.SaveConfiguration();
-            }
-        }
-
-        public async Task LoginWithHash(string username, string passwordHash, bool rememberCredentials)
-        {
-            byte[] hash = Convert.FromBase64String(passwordHash);
-            await InternalLogin(username, hash);
-
-            //Save details if we need to 
-            if (rememberCredentials) {
-                _config.Configuration.AutoLoginConfiguration.UserName = username;
-                _config.Configuration.AutoLoginConfiguration.UserPasswordHash = passwordHash;
-                _config.SaveConfiguration();
-            } else {
-                _config.Configuration.AutoLoginConfiguration = new AutoLoginConfiguration();
-                _config.SaveConfiguration();
-            }
+            await InternalLogin(username, hash, rememberCredentials);
         }
 
         protected byte[] ComputeHash(string data)
@@ -122,7 +95,7 @@ namespace MediaBrowser.Theater.Api.Session
             }
         }
 
-        protected async Task InternalLogin(string username, byte[] hash)
+        protected async Task InternalLogin(string username, byte[] hash, bool rememberLogin)
         {
             SystemInfo systemInfo = await _apiClient.GetSystemInfoAsync(CancellationToken.None);
 
@@ -135,15 +108,121 @@ namespace MediaBrowser.Theater.Api.Session
                 AuthenticationResult result = await _apiClient.AuthenticateUserAsync(username, hash);
 
                 CurrentUser = result.User;
-                _apiClient.CurrentUserId = CurrentUser.Id;
+                _apiClient.SetAuthenticationInfo(result.AccessToken, result.User.Id);
+
+                UpdateSavedLogin(result.AccessToken, result.User.Id, result.ServerId, rememberLogin);
             } catch (HttpException ex) {
                 throw new UnauthorizedAccessException("Invalid username or password. Please try again.");
             }
 
+            AfterLogin();
+        }
+
+        private void UpdateSavedLogin(string accessToken, string userId, string serverId, bool remember)
+        {
+            //Save details if we need to 
+            if (remember)
+            {
+                _config.Configuration.AutoLoginConfiguration.UserId = userId;
+                _config.Configuration.AutoLoginConfiguration.AccessToken = accessToken;
+                _config.Configuration.AutoLoginConfiguration.ServerId = serverId;
+                _config.SaveConfiguration();
+            }
+            else
+            {
+                _config.Configuration.AutoLoginConfiguration = new AutoLoginConfiguration();
+                _config.SaveConfiguration();
+            }
+        }
+
+        public async Task ValidateSavedLogin(AutoLoginConfiguration configuration)
+        {
+            if (string.IsNullOrEmpty(configuration.AccessToken) ||
+                string.IsNullOrEmpty(configuration.ServerId) ||
+                string.IsNullOrEmpty(configuration.UserId))
+            {
+                _apiClient.ClearAuthenticationInfo();
+
+                throw new UnauthorizedAccessException();
+            }
+
+            _apiClient.SetAuthenticationInfo(configuration.AccessToken, configuration.UserId);
+
+            try
+            {
+                CurrentUser = await _apiClient.GetUserAsync(configuration.UserId);
+            }
+            catch (Exception ex)
+            {
+                _apiClient.ClearAuthenticationInfo();
+
+                throw;
+            }
+
+            await AfterLogin();
+        }
+
+        private async Task AfterLogin()
+        {
             EventHelper.FireEventIfNotNull(UserLoggedIn, this, EventArgs.Empty, _logger);
+
+            await UpdateWolInfo();
 
             await _navService.Navigate(Go.To.Home());
             _navService.ClearNavigationHistory();
+        }
+
+        private async Task UpdateWolInfo()
+        {
+            var systemInfo = await _apiClient.GetSystemInfoAsync(CancellationToken.None);
+
+            //Check WOL config
+            if (_config.Configuration.WakeOnLanConfiguration == null)
+            {
+                _config.Configuration.WakeOnLanConfiguration = new WolConfiguration
+                {
+                    Port = 9,
+                    HostMacAddresses = new List<string>(),
+                    HostIpAddresses = new List<string>(),
+                    WakeAttempts = 1
+                };
+                _config.SaveConfiguration();
+            }
+
+            var wolConfig = _config.Configuration.WakeOnLanConfiguration;
+
+            try
+            {
+                var uri = new Uri(_apiClient.ServerAddress);
+                var host = uri.Host;
+
+                var currentIpAddresses = await NetworkUtils.ResolveIpAddressesForHostName(host);
+
+                var hasChanged = currentIpAddresses.Any(currentIpAddress => wolConfig.HostIpAddresses.All(x => x != currentIpAddress));
+
+                if (!hasChanged)
+                    hasChanged = wolConfig.HostIpAddresses.Any(hostIpAddress => currentIpAddresses.All(x => x != hostIpAddress));
+
+                if (hasChanged)
+                {
+                    wolConfig.HostMacAddresses =
+                        await NetworkUtils.ResolveMacAddressesForHostName(host);
+
+                    wolConfig.HostIpAddresses = currentIpAddresses;
+
+                    //Always add system info MAC address in case we are in a WAN setting
+                    if (!wolConfig.HostMacAddresses.Contains(systemInfo.MacAddress))
+                        wolConfig.HostMacAddresses.Add(systemInfo.MacAddress);
+
+                    wolConfig.HostName = host;
+
+                    _config.SaveConfiguration();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.ErrorException("Error attempting to configure WOL.", ex);
+            }
         }
     }
 }

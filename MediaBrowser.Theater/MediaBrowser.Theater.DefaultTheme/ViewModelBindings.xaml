@@ -107,7 +107,7 @@
         <movies1:MovieSpotlightView/>
     </DataTemplate>
     
-    <DataTemplate DataType="{x:Type movies:LatestItemsViewModel}">
+    <DataTemplate DataType="{x:Type movies:LatestMoviesViewModel}">
         <movies1:LatestMoviesView/>
     </DataTemplate>
     

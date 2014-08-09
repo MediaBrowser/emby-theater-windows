@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using MediaBrowser.Model.Dto;
+using MediaBrowser.Theater.Api.Configuration;
 
 namespace MediaBrowser.Theater.Api.Session
 {
@@ -35,15 +36,14 @@ namespace MediaBrowser.Theater.Api.Session
         /// </summary>
         /// <param name="username">The username.</param>
         /// <param name="password">The password.</param>
+        /// <param name="rememberCredentials"><c>true</c> if login credentials should be saved; else <c>false</c>.</param>
         /// <returns>Task.</returns>
         Task Login(string username, string password, bool rememberCredentials);
 
         /// <summary>
-        ///     Logins the specified user.
+        /// Validates the saved login.
         /// </summary>
-        /// <param name="username">The username.</param>
-        /// <param name="password">The password hash string.</param>
-        /// <returns>Task.</returns>
-        Task LoginWithHash(string username, string passwordHash, bool rememberCredentials);
+        /// <param name="configuration">The auto login configuration.</param>
+        Task ValidateSavedLogin(AutoLoginConfiguration configuration);
     }
 }

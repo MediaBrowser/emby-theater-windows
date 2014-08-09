@@ -86,7 +86,7 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
 
             InternalPlayerConfiguration = new InternalPlayerConfiguration();
 
-            MaxStreamingBitrate = 8000000;
+            MaxStreamingBitrate = 3000000;
         }
     }
 }

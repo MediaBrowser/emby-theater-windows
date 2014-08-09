@@ -1,18 +1,16 @@
-﻿using System.Linq;
-using System.Windows.Forms.VisualStyles;
-using MediaBrowser.Model.ApiClient;
+﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Session;
 using MediaBrowser.Theater.Interfaces.Playback;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using MediaBrowser.Theater.Interfaces.Session;
 
 namespace MediaBrowser.Theater.Implementations.Playback
 {
-    public class PlaybackProgressReporter
+    public class PlaybackProgressReporter : IDisposable
     {
         private readonly IApiClient _apiClient;
         private readonly IMediaPlayer _mediaPlayer;
@@ -207,6 +205,18 @@ namespace MediaBrowser.Theater.Implementations.Playback
             catch (Exception ex)
             {
                 _logger.ErrorException("Error sending playback progress checking for {0}", ex, item.Name);
+            }
+        }
+
+        public void Dispose()
+        {
+            _mediaPlayer.MediaChanged -= _mediaPlayer_MediaChanged;
+            _mediaPlayer.PlaybackCompleted -= _mediaPlayer_PlaybackCompleted;
+
+            if (_timer != null)
+            {
+                _timer.Dispose();
+                _timer = null;
             }
         }
     }

@@ -180,7 +180,7 @@ namespace MediaBrowser.Theater.DirectShow
             }
         }
 
-         /// <summary>
+        /// <summary>
         /// Get the current subtitle index.
         /// </summary>
         /// <value>The current subtitle index.</value>
@@ -233,13 +233,6 @@ namespace MediaBrowser.Theater.DirectShow
 
             try
             {
-                //InvokeOnPlayerThread(() =>
-                //{
-                //    _mediaPlayer = new DirectShowPlayer(_logger, _hiddenWindow, this, _presentation.WindowHandle, _sessionManager, _config, _inputManager, _apiClient, _zipClient, _httpClient);
-
-                //    //HideCursor();
-                //});
-
                 await PlayTrack(0, options.StartPositionTicks);
             }
             catch (Exception ex)
@@ -273,11 +266,12 @@ namespace MediaBrowser.Theater.DirectShow
                     DisposePlayer();
                     _mediaPlayer = new DirectShowPlayer(_logger, _hiddenWindow, this, _presentation.WindowHandle, _sessionManager, _config, _inputManager, _apiClient, _zipClient, _httpClient);
                     _mediaPlayer.Play(playableItem, enableMadVr, false);
-                });
+
+                }, true);
             }
             catch
             {
-                DisposeMount(playableItem);
+                OnPlaybackStopped(playableItem, null, TrackCompletionReason.Failure, null);
 
                 throw;
             }
@@ -300,13 +294,11 @@ namespace MediaBrowser.Theater.DirectShow
                     PreviousPlaylistIndex = previousIndex,
                     EndingPositionTicks = endingTicks
                 };
-                
-               
+
                 _presentation.Window.Dispatcher.Invoke
                 (
                     () => MediaChanged(this, args)
                 );
-               
             }
         }
 
@@ -384,7 +376,7 @@ namespace MediaBrowser.Theater.DirectShow
         //    {
         //        return false;
         //    }
-            
+
         //    return true;
         //}
 
@@ -392,7 +384,8 @@ namespace MediaBrowser.Theater.DirectShow
         {
             if (_mediaPlayer != null)
             {
-                InvokeOnPlayerThread(() => {
+                InvokeOnPlayerThread(() =>
+                {
                     _mediaPlayer.Dispose();
                     _mediaPlayer = null; //force the object to get cleaned up
                 });
@@ -498,14 +491,7 @@ namespace MediaBrowser.Theater.DirectShow
 
             DisposePlayer();
 
-            try
-            {
-                await _apiClient.StopTranscodingProcesses(_apiClient.DeviceId);
-            }
-            catch
-            {
-
-            }
+            StopTranscoding(media);
 
             var args = new PlaybackStopEventArgs
             {
@@ -521,6 +507,22 @@ namespace MediaBrowser.Theater.DirectShow
             _playbackManager.ReportPlaybackCompleted(args);
         }
 
+        private async void StopTranscoding(PlayableItem media)
+        {
+            // If streaming video, stop the transcoder
+            if (media.IsVideo && media.PlayablePath.IndexOf("://", StringComparison.OrdinalIgnoreCase) != -1)
+            {
+                try
+                {
+                    await _apiClient.StopTranscodingProcesses(_apiClient.DeviceId);
+                }
+                catch
+                {
+
+                }
+            }
+        }
+
         public void ChangeTrack(int newIndex)
         {
             _mediaPlayer.Stop(TrackCompletionReason.ChangeTrack, newIndex); // don't invoke on player thread
@@ -528,11 +530,11 @@ namespace MediaBrowser.Theater.DirectShow
 
         public void NextTrack()
         {
-             var nextIndex = CurrentPlaylistIndex + 1;
-             if (nextIndex < CurrentPlayOptions.Items.Count)
-             {
-                 ChangeTrack(nextIndex);
-             }
+            var nextIndex = CurrentPlaylistIndex + 1;
+            if (nextIndex < CurrentPlayOptions.Items.Count)
+            {
+                ChangeTrack(nextIndex);
+            }
         }
 
         public void PreviousTrack()
@@ -554,7 +556,7 @@ namespace MediaBrowser.Theater.DirectShow
             InvokeOnPlayerThread(() => _mediaPlayer.SetAudioTrack(track));
         }
 
-      
+
         public void SetSubtitleStreamIndex(int subtitleStreamIndex)
         {
             InvokeOnPlayerThread(() => _mediaPlayer.SetSubtitleStreamIndex(subtitleStreamIndex));
@@ -564,7 +566,7 @@ namespace MediaBrowser.Theater.DirectShow
         {
             InvokeOnPlayerThread(() => _mediaPlayer.NextSubtitleStream());
         }
-      
+
         public void SetAudioStreamIndex(int audioStreamIndex)
         {
             InvokeOnPlayerThread(() => _mediaPlayer.SetAudioStreamIndex(audioStreamIndex));
@@ -585,22 +587,24 @@ namespace MediaBrowser.Theater.DirectShow
 
         }
 
-        private void InvokeOnPlayerThread(Action action)
+        private void InvokeOnPlayerThread(Action action, bool throwOnError = false)
         {
             try
             {
-            if (_hiddenWindow.Form.InvokeRequired)
-            {
-                _hiddenWindow.Form.Invoke(action);
+                if (_hiddenWindow.Form.InvokeRequired)
+                {
+                    _hiddenWindow.Form.Invoke(action);
+                }
+                else
+                {
+                    action();
+                }
             }
-            else
-            {
-                action();
-            }
-        }
             catch (Exception ex)
             {
                 _logger.ErrorException("InvokeOnPlayerThread", ex);
+
+                if (throwOnError) throw ex;
             }
         }
     }
@@ -609,6 +613,7 @@ namespace MediaBrowser.Theater.DirectShow
     {
         Stop,
         Ended,
-        ChangeTrack
+        ChangeTrack,
+        Failure
     }
 }

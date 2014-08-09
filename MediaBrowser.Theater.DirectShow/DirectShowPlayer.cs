@@ -2171,6 +2171,13 @@ namespace MediaBrowser.Theater.DirectShow
                     {
                         Stop(TrackCompletionReason.Ended, null);
                     }
+                    else if (evCode == EventCode.ErrorAbort ||
+                        evCode == EventCode.ErrorStPlaying ||
+                        evCode == EventCode.StErrStopped ||
+                        evCode == EventCode.ErrorStPlaying)
+                    {
+                        Stop(TrackCompletionReason.Failure, null);
+                    }
                     else if (evCode == EventCode.VideoSizeChanged)
                     {
                         var param1Val = evParam1.ToInt32();

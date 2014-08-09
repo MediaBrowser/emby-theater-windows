@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-using System.Threading;
-using CoreAudioApi;
+﻿using CoreAudioApi;
 using MediaBrowser.Common.Events;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
@@ -11,13 +9,14 @@ using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
+using MediaBrowser.Theater.Interfaces.Theming;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using MediaBrowser.Theater.Interfaces.Theming;
 
 namespace MediaBrowser.Theater.Implementations.Playback
 {
@@ -29,6 +28,8 @@ namespace MediaBrowser.Theater.Implementations.Playback
         private readonly INavigationService _nav;
         private readonly IPresentationManager _presentationManager;
         private int _isStarting;
+
+        private PlaybackProgressReporter _reporter;
 
         public event EventHandler<PlaybackStartEventArgs> PlaybackStarted;
 
@@ -100,7 +101,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
         /// <returns>Task.</returns>
         private async Task Play(IMediaPlayer player, PlayOptions options, PlayerConfiguration configuration)
         {
-            if (options.Items[0].IsPlaceHolder??false)
+            if (options.Items[0].IsPlaceHolder ?? false)
             {
                 // play a phyical disc in the cdrom drive
                 // Will be re-entrant call, so has to be made befpre the interlocked.CompareExchange below
@@ -119,7 +120,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
 
                     var firstItem = options.Items[0];
 
-                  
+
                     if (options.StartPositionTicks == 0 && player.SupportsMultiFilePlayback && firstItem.IsVideo && firstItem.LocationType == LocationType.FileSystem && options.GoFullScreen)
                     {
                         try
@@ -149,7 +150,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
                         }
                     }
                     OnPlaybackStarted(player, options);
-                    
+
                 }
                 finally
                 {
@@ -157,6 +158,8 @@ namespace MediaBrowser.Theater.Implementations.Playback
                 }
             }
         }
+
+        private readonly object _reporterLock = new object();
 
         /// <summary>
         /// Called when [playback started].
@@ -171,7 +174,17 @@ namespace MediaBrowser.Theater.Implementations.Playback
                 Player = player
             }, _logger);
 
-           await new PlaybackProgressReporter(_apiClient, player, _logger, this).Start().ConfigureAwait(false);
+            lock (_reporterLock)
+            {
+                if (_reporter != null)
+                {
+                    _reporter.Dispose();
+                    _reporter = null;
+                }
+            }
+
+            _reporter = new PlaybackProgressReporter(_apiClient, player, _logger, this);
+            await _reporter.Start().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -180,6 +193,15 @@ namespace MediaBrowser.Theater.Implementations.Playback
         /// <param name="eventArgs">The <see cref="PlaybackStopEventArgs"/> instance containing the event data.</param>
         public async void ReportPlaybackCompleted(PlaybackStopEventArgs eventArgs)
         {
+            lock (_reporterLock)
+            {
+                if (_reporter != null)
+                {
+                    _reporter.Dispose();
+                    _reporter = null;
+                }
+            }
+
             await _presentationManager.Window.Dispatcher.InvokeAsync(() => _presentationManager.WindowOverlay.SetResourceReference(FrameworkElement.StyleProperty, "WindowBackgroundContent"));
 
             EventHelper.QueueEventIfNotNull(PlaybackCompleted, this, eventArgs, _logger);
@@ -605,7 +627,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
 
         public void SetAudioStreamIndex(int audioStreamIndex)
         {
-            var player  =MediaPlayers.Where(p =>(p.PlayState == PlayState.Playing || p.PlayState == PlayState.Paused) &&p.CanSetAudioStreamIndex).FirstOrDefault();
+            var player = MediaPlayers.Where(p => (p.PlayState == PlayState.Playing || p.PlayState == PlayState.Paused) && p.CanSetAudioStreamIndex).FirstOrDefault();
             if (player != null)
             {
                 player.SetAudioStreamIndex(audioStreamIndex);
@@ -635,7 +657,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
 
         public void NextSubtitleStream()
         {
-            var player = MediaPlayers.Where(p =>(p.PlayState == PlayState.Playing || p.PlayState == PlayState.Paused) && p.CanSetSubtitleStreamIndex).FirstOrDefault();
+            var player = MediaPlayers.Where(p => (p.PlayState == PlayState.Playing || p.PlayState == PlayState.Paused) && p.CanSetSubtitleStreamIndex).FirstOrDefault();
             if (player != null)
             {
                 player.NextSubtitleStream();
@@ -664,7 +686,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
             {
                 return false;
             }
-           
+
 
             if (item.PlayAccess != PlayAccess.Full)
             {

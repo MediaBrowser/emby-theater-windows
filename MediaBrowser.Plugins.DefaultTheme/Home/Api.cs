@@ -265,7 +265,19 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 Recursive = true
             }, cancellationToken);
 
-            await Task.WhenAll(threeDItemsTask, familyItemsTask, movieItemsTask, hdItemsTask, boxsetItemsTask, latestMoviesTask, backdropItemsTask);
+            var resumableTask = apiClient.GetItemsAsync(new ItemQuery
+            {
+                IncludeItemTypes = new[] { "Movie" },
+                ImageTypes = new[] { ImageType.Primary },
+                SortBy = new[] { ItemSortBy.DatePlayed },
+                SortOrder = SortOrder.Descending,
+                Filters = new[] { ItemFilter.IsResumable },
+                UserId = userId,
+                Limit = 3,
+                Recursive = true
+            }, cancellationToken);
+
+            await Task.WhenAll(threeDItemsTask, familyItemsTask, movieItemsTask, hdItemsTask, boxsetItemsTask, latestMoviesTask, backdropItemsTask, resumableTask);
 
             return new MoviesView
             {
@@ -276,7 +288,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 HDItems = hdItemsTask.Result.Items.Select(GetStub).ToList(),
                 LatestMovies = latestMoviesTask.Result.Items.ToList(),
                 BackdropItems = backdropItemsTask.Result.Items.ToList(),
-                MiniSpotlights = backdropItemsTask.Result.Items.OrderBy(i => Guid.NewGuid()).ToList(),
+                MiniSpotlights = resumableTask.Result.Items.OrderBy(i => Guid.NewGuid()).ToList(),
                 SpotlightItems = backdropItemsTask.Result.Items.OrderBy(i => Guid.NewGuid()).ToList(),
                 TrailerItems = new List<ItemStub>(),
                 LatestTrailers = new List<BaseItemDto>()

@@ -164,7 +164,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
                     UserId = _sessionManager.CurrentUser.Id,
                     ChannelId = item.IsType("channel") ? item.Id : item.ChannelId,
                     FolderId = item.IsType("channel") ? null : item.Id,
-                    Fields = FolderPage.QueryFields.ToList()
+                    Fields = FolderPage.QueryFields
 
                 }, CancellationToken.None);
             };

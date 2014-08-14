@@ -577,13 +577,16 @@ namespace MediaBrowser.UI
             {
                 try
                 {
-                    var info = await new ServerLocator(_logger).FindServer(500, CancellationToken.None).ConfigureAwait(false);
+                    var info = (await new ServerLocator(_logger).FindServers(500, CancellationToken.None).ConfigureAwait(false)).FirstOrDefault();
 
-                    _appHost.ApiClient.ChangeServerLocation(info.Address);
+                    if (info != null)
+                    {
+                        _appHost.ApiClient.ChangeServerLocation(info.Address);
 
-                    systemInfo = await _appHost.ApiClient.GetPublicSystemInfoAsync(CancellationToken.None).ConfigureAwait(false);
+                        systemInfo = await _appHost.ApiClient.GetPublicSystemInfoAsync(CancellationToken.None).ConfigureAwait(false);
 
-                    foundServer = true;
+                        foundServer = true;
+                    }
                 }
                 catch (Exception ex)
                 {

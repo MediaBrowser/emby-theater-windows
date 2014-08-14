@@ -9,6 +9,7 @@ using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Presentation.Pages;
 using System;
 using System.Globalization;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Windows;
@@ -49,7 +50,7 @@ namespace MediaBrowser.UI.StartupWizard
             
             try
             {
-                var result = await new ServerLocator().FindServer(CancellationToken.None);
+                var result = (await new ServerLocator(_logger).FindServers(500, CancellationToken.None).ConfigureAwait(false)).FirstOrDefault();
 
                 if (result != null)
                 {

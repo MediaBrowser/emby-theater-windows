@@ -160,15 +160,15 @@
             <TextBlock Grid.Column="1" Grid.Row="0" Padding="35 0 0 0" Text=" " Visibility="{Binding ResumeVisibility}" Style="{StaticResource SmallTextBlockStyle}">
             </TextBlock>
 
-            <StackPanel Orientation="Horizontal" Grid.Column="2" Grid.Row="0" Visibility="{Binding LatestEpisodesVisibility}">
+            <StackPanel Orientation="Horizontal" Grid.Column="2" Grid.Row="0" Visibility="{Binding NextUpVisibility}">
 
-                <TextBlock Style="{StaticResource SmallTextBlockStyle}" Padding="55 0 0 0" Text="LATEST EPISODES">
+                <TextBlock Style="{StaticResource SmallTextBlockStyle}" Padding="55 0 0 0" Text="NEXT UP">
                 </TextBlock>
             </StackPanel>
 
-            <StackPanel Orientation="Horizontal" Grid.Column="3" Grid.Row="0" Visibility="{Binding NextUpVisibility}">
+            <StackPanel Orientation="Horizontal" Grid.Column="3" Grid.Row="0" Visibility="{Binding LatestEpisodesVisibility}">
 
-                <TextBlock Style="{StaticResource SmallTextBlockStyle}" Padding="55 0 0 0" Text="NEXT UP">
+                <TextBlock Style="{StaticResource SmallTextBlockStyle}" Padding="55 0 0 0" Text="LATEST EPISODES">
                 </TextBlock>
             </StackPanel>
 
@@ -282,9 +282,9 @@
                 </controls:ExtendedListBox>
             </Grid>
 
-            <Grid Grid.Row="1" Grid.Column="2" Margin="50 0 0 0" Visibility="{Binding LatestEpisodesVisibility}">
+            <Grid Grid.Row="1" Grid.Column="2" Margin="50 0 0 0" Visibility="{Binding NextUpVisibility}">
 
-                <controls:ExtendedListBox Margin="-35" DataContext="{Binding LatestEpisodesViewModel}" ItemsSource="{Binding ListCollectionView}" KeyboardNavigation.DirectionalNavigation="Continue" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{StaticResource ListBoxStyle}" ItemContainerStyle="{StaticResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource HomePageItemTemplate}">
+                <controls:ExtendedListBox Margin="-35" DataContext="{Binding NextUpViewModel}" ItemsSource="{Binding ListCollectionView}" KeyboardNavigation.DirectionalNavigation="Continue" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{StaticResource ListBoxStyle}" ItemContainerStyle="{StaticResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource HomePageItemTemplate}">
                     <controls:ExtendedListBox.ItemsPanel>
                         <ItemsPanelTemplate>
                             <WrapPanel Margin="35" Orientation="Vertical"></WrapPanel>
@@ -293,9 +293,9 @@
                 </controls:ExtendedListBox>
             </Grid>
 
-            <Grid Grid.Row="1" Grid.Column="3" Margin="50 0 0 0" Visibility="{Binding NextUpVisibility}">
+            <Grid Grid.Row="1" Grid.Column="3" Margin="50 0 0 0" Visibility="{Binding LatestEpisodesVisibility}">
 
-                <controls:ExtendedListBox Margin="-35" DataContext="{Binding NextUpViewModel}" ItemsSource="{Binding ListCollectionView}" KeyboardNavigation.DirectionalNavigation="Continue" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{StaticResource ListBoxStyle}" ItemContainerStyle="{StaticResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource HomePageItemTemplate}">
+                <controls:ExtendedListBox Margin="-35" DataContext="{Binding LatestEpisodesViewModel}" ItemsSource="{Binding ListCollectionView}" KeyboardNavigation.DirectionalNavigation="Continue" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{StaticResource ListBoxStyle}" ItemContainerStyle="{StaticResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource HomePageItemTemplate}">
                     <controls:ExtendedListBox.ItemsPanel>
                         <ItemsPanelTemplate>
                             <WrapPanel Margin="35" Orientation="Vertical"></WrapPanel>
@@ -326,9 +326,6 @@
             <TextBlock Style="{StaticResource SmallTextBlockStyle}" Grid.Column="1" Grid.Row="0" Padding="35 0 0 0" Visibility="Hidden" Text=" "></TextBlock>
 
             <TextBlock Grid.Column="2" Grid.Row="0" Padding="50 0 0 0" Text="LATEST MOVIES" Visibility="{Binding LatestMoviesVisibility}" Style="{StaticResource SmallTextBlockStyle}">
-            </TextBlock>
-
-            <TextBlock Grid.Column="3" Grid.Row="0" Padding="50 0 0 0" Text="LATEST TRAILERS" Visibility="{Binding LatestTrailersVisibility}" Style="{StaticResource SmallTextBlockStyle}">
             </TextBlock>
 
             <Grid Grid.Row="1" Grid.Column="0" Margin="0 0 0 0">
@@ -424,22 +421,6 @@
                             </Border>
                         </Grid>
                     </controls:ExtendedButton>
-
-                    <controls:ExtendedButton Style="{StaticResource BaseItemButtonStyle}" DataContext="{Binding TrailersViewModel}" Command="{Binding CustomCommand}">
-                        <i:Interaction.Triggers>
-                            <i:EventTrigger EventName="GotFocus">
-                                <i:InvokeCommandAction Command="{Binding FocusedCommand}"/>
-                            </i:EventTrigger>
-                        </i:Interaction.Triggers>
-                        <Grid Height="{Binding GalleryHeight}" Width="{Binding GalleryWidth}">
-
-                            <Image Source="Images/trailer.png" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Top"></Image>
-
-                            <Border HorizontalAlignment="Left" VerticalAlignment="Bottom" Background="{DynamicResource TextBackground}" Margin="0 0 0 -1">
-                                <TextBlock Text="Trailers" Style="{StaticResource SmallTextBlockStyle}" Margin="10 5 15 10"></TextBlock>
-                            </Border>
-                        </Grid>
-                    </controls:ExtendedButton>
                 </WrapPanel>
             </Grid>
 
@@ -457,17 +438,6 @@
             <Grid Grid.Row="1" Grid.Column="2" Margin="45 0 0 0" Visibility="{Binding LatestMoviesVisibility}">
 
                 <controls:ExtendedListBox Margin="-35" DataContext="{Binding LatestMoviesViewModel}" ItemsSource="{Binding ListCollectionView}" KeyboardNavigation.DirectionalNavigation="Continue" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{StaticResource ListBoxStyle}" ItemContainerStyle="{StaticResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource HomePageItemTemplate}">
-                    <controls:ExtendedListBox.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <WrapPanel Margin="35" Orientation="Vertical"></WrapPanel>
-                        </ItemsPanelTemplate>
-                    </controls:ExtendedListBox.ItemsPanel>
-                </controls:ExtendedListBox>
-            </Grid>
-
-            <Grid Grid.Row="1" Grid.Column="3" Margin="45 0 0 0" Visibility="{Binding LatestTrailersVisibility}">
-
-                <controls:ExtendedListBox Margin="-35" DataContext="{Binding LatestTrailersViewModel}" ItemsSource="{Binding ListCollectionView}" KeyboardNavigation.DirectionalNavigation="Continue" Command="{Binding NavigateCommand}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Style="{StaticResource ListBoxStyle}" ItemContainerStyle="{StaticResource HighlightedBorderListBoxItemStyle}" ScrollViewer.CanContentScroll="False" ItemTemplate="{StaticResource HomePageItemTemplate}">
                     <controls:ExtendedListBox.ItemsPanel>
                         <ItemsPanelTemplate>
                             <WrapPanel Margin="35" Orientation="Vertical"></WrapPanel>

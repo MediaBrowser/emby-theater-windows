@@ -65,7 +65,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         public const double TopTvCommunityRating = 8.5;
         public const double TopMovieCommunityRating = 8.2;
 
-        public static async Task<TvView> GetTvView(this IApiClient apiClient, string userId, CancellationToken cancellationToken)
+        public static async Task<TvView> GetTvView(this IApiClient apiClient, string userId, string parentId, CancellationToken cancellationToken)
         {
             var allShowsItemsTask = apiClient.GetItemsAsync(new ItemQuery
             {
@@ -74,13 +74,17 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 SortBy = new[] { ItemSortBy.Random },
                 UserId = userId,
                 Recursive = true,
-                Limit = 1
+                Limit = 1,
+                ParentId = parentId
+
             }, cancellationToken);
 
             var nextUpItemsTask = apiClient.GetNextUpEpisodesAsync(new NextUpQuery
             {
                 UserId = userId,
-                Limit = 15
+                Limit = 15,
+                ParentId = parentId
+
             }, cancellationToken);
 
             var latestEpisodesTask = apiClient.GetItemsAsync(new ItemQuery
@@ -94,7 +98,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 Limit = 9,
                 Recursive = true,
                 IsUnaired = false,
-                IsMissing = false
+                IsMissing = false,
+                ParentId = parentId
+
             }, cancellationToken);
 
             var resumableEpisodesTask = apiClient.GetItemsAsync(new ItemQuery
@@ -106,7 +112,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 Filters = new[] { ItemFilter.IsResumable },
                 UserId = userId,
                 Limit = 3,
-                Recursive = true
+                Recursive = true,
+                ParentId = parentId
+
             }, cancellationToken);
 
             var backdropItemsTask = apiClient.GetItemsAsync(new ItemQuery
@@ -116,7 +124,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 SortBy = new[] { ItemSortBy.Random },
                 UserId = userId,
                 Limit = 60,
-                Recursive = true
+                Recursive = true,
+                ParentId = parentId
+
             }, cancellationToken);
 
             await Task.WhenAll(allShowsItemsTask, nextUpItemsTask, latestEpisodesTask, resumableEpisodesTask, backdropItemsTask);
@@ -133,7 +143,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             };
         }
 
-        public static async Task<GamesView> GetGamesView(this IApiClient apiClient, string userId, CancellationToken cancellationToken)
+        public static async Task<GamesView> GetGamesView(this IApiClient apiClient, string userId, string parentId, CancellationToken cancellationToken)
         {
             var multiPlayerItemsTask = apiClient.GetItemsAsync(new ItemQuery
             {
@@ -143,7 +153,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 SortBy = new[] { ItemSortBy.Random },
                 UserId = userId,
                 Recursive = true,
-                Limit = 1
+                Limit = 1,
+                ParentId = parentId
+
             }, cancellationToken);
 
             var gameSystemTask = apiClient.GetItemsAsync(new ItemQuery
@@ -151,7 +163,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 IncludeItemTypes = new[] { "GameSystem" },
                 SortBy = new[] { ItemSortBy.SortName },
                 UserId = userId,
-                Recursive = true
+                Recursive = true,
+                ParentId = parentId
+
             }, cancellationToken);
 
             var recentlyPlayedGamesTask = apiClient.GetItemsAsync(new ItemQuery
@@ -163,7 +177,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 IsPlayed = true,
                 UserId = userId,
                 Limit = 3,
-                Recursive = true
+                Recursive = true,
+                ParentId = parentId
+
             }, cancellationToken);
 
             var backdropItemsTask = apiClient.GetItemsAsync(new ItemQuery
@@ -173,7 +189,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 SortBy = new[] { ItemSortBy.Random },
                 UserId = userId,
                 Limit = 60,
-                Recursive = true
+                Recursive = true,
+                ParentId = parentId
+
             }, cancellationToken);
 
             await Task.WhenAll(multiPlayerItemsTask, gameSystemTask, recentlyPlayedGamesTask, backdropItemsTask);
@@ -192,7 +210,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             };
         }
 
-        public static async Task<MoviesView> GetMovieView(this IApiClient apiClient, string userId, CancellationToken cancellationToken)
+        public static async Task<MoviesView> GetMovieView(this IApiClient apiClient, string userId, string parentId, CancellationToken cancellationToken)
         {
             var url = apiClient.GetApiUrl("MBT/DefaultTheme/Movies?familyrating=pg&userId=" + userId + "&ComedyGenre=" + ComedyGenre + "&RomanceGenre=" + RomanceGenre + "&FamilyGenre=" + FamilyGenre + "&LatestMoviesLimit=16&LatestTrailersLimit=6");
 
@@ -203,7 +221,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 UserId = userId,
                 Limit = 1,
                 Recursive = true,
-                Is3D = true
+                Is3D = true,
+                ParentId = parentId
+
             }, cancellationToken);
 
             var familyItemsTask = apiClient.GetItemsAsync(new ItemQuery
@@ -213,7 +233,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 UserId = userId,
                 Limit = 1,
                 Recursive = true,
-                Genres = new[] { "Family" }
+                Genres = new[] { "Family" },
+                ParentId = parentId
+
             }, cancellationToken);
 
             var hdItemsTask = apiClient.GetItemsAsync(new ItemQuery
@@ -223,7 +245,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 UserId = userId,
                 Limit = 1,
                 Recursive = true,
-                IsHD = true
+                IsHD = true,
+                ParentId = parentId
+
             }, cancellationToken);
 
             var movieItemsTask = apiClient.GetItemsAsync(new ItemQuery
@@ -232,7 +256,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 SortBy = new[] { ItemSortBy.Random },
                 UserId = userId,
                 Limit = 1,
-                Recursive = true
+                Recursive = true,
+                ParentId = parentId
+
             }, cancellationToken);
 
             var boxsetItemsTask = apiClient.GetItemsAsync(new ItemQuery
@@ -241,7 +267,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 SortBy = new[] { ItemSortBy.Random },
                 UserId = userId,
                 Limit = 1,
-                Recursive = true
+                Recursive = true,
+                ParentId = parentId
+
             }, cancellationToken);
 
             var latestMoviesTask = apiClient.GetItemsAsync(new ItemQuery
@@ -252,7 +280,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 IsPlayed = false,
                 UserId = userId,
                 Limit = 16,
-                Recursive = true
+                Recursive = true,
+                ParentId = parentId
+
             }, cancellationToken);
 
             var backdropItemsTask = apiClient.GetItemsAsync(new ItemQuery
@@ -262,7 +292,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 SortBy = new[] { ItemSortBy.Random },
                 UserId = userId,
                 Limit = 60,
-                Recursive = true
+                Recursive = true,
+                ParentId = parentId
+
             }, cancellationToken);
 
             var resumableTask = apiClient.GetItemsAsync(new ItemQuery
@@ -274,7 +306,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 Filters = new[] { ItemFilter.IsResumable },
                 UserId = userId,
                 Limit = 3,
-                Recursive = true
+                Recursive = true,
+                ParentId = parentId
+
             }, cancellationToken);
 
             await Task.WhenAll(threeDItemsTask, familyItemsTask, movieItemsTask, hdItemsTask, boxsetItemsTask, latestMoviesTask, backdropItemsTask, resumableTask);

@@ -174,16 +174,17 @@ namespace MediaBrowser.Plugins.DefaultTheme
 
         private async Task<ItemsResult> GetChannelItems(ChannelItemQuery query, CancellationToken cancellationToken)
         {
-            var queryLimit = await GetChannelQueryLimit(query.ChannelId, cancellationToken);
             var startIndex = 0;
             var callLimit = 3;
             var currentCall = 1;
 
-            var result = await GetChannelItems(query, startIndex, queryLimit, CancellationToken.None);
+            var result = await GetChannelItems(query, startIndex, null, CancellationToken.None);
 
-            while (result.Items.Length < result.TotalRecordCount && currentCall <= callLimit && queryLimit.HasValue)
+            var queryLimit = result.Items.Length;
+            
+            while (result.Items.Length < result.TotalRecordCount && currentCall <= callLimit)
             {
-                startIndex += queryLimit.Value;
+                startIndex += queryLimit;
 
                 var innerResult = await GetChannelItems(query, startIndex, queryLimit, CancellationToken.None);
 
@@ -199,13 +200,6 @@ namespace MediaBrowser.Plugins.DefaultTheme
                 TotalRecordCount = result.TotalRecordCount,
                 Items = result.Items
             };
-        }
-
-        private async Task<int?> GetChannelQueryLimit(string channelId, CancellationToken cancellationToken)
-        {
-            var features = await _apiClient.GetChannelFeatures(channelId, cancellationToken);
-
-            return features.MaxPageSize;
         }
 
         private async Task<ItemsResult> GetChannelItems(ChannelItemQuery query, int start, int? limit, CancellationToken cancellationToken)

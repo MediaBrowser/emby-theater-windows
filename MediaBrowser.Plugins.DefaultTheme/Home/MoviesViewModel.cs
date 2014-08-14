@@ -45,7 +45,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         private MoviesView _moviesView;
 
-        public MoviesViewModel(IPresentationManager presentation, IImageManager imageManager, IApiClient apiClient, ISessionManager session, INavigationService nav, IPlaybackManager playback, ILogger logger, double tileWidth, double tileHeight, IServerEvents serverEvents)
+        public string ParentId { get; private set; }
+        
+        public MoviesViewModel(IPresentationManager presentation, IImageManager imageManager, IApiClient apiClient, ISessionManager session, INavigationService nav, IPlaybackManager playback, ILogger logger, double tileWidth, double tileHeight, IServerEvents serverEvents, string parentId)
             : base(presentation, apiClient)
         {
             _sessionManager = session;
@@ -54,6 +56,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             _playbackManager = playback;
             _logger = logger;
             _serverEvents = serverEvents;
+            ParentId = parentId;
 
             TileWidth = tileWidth;
             TileHeight = tileHeight;
@@ -64,7 +67,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             var spotlightTileHeight = TileHeight * 2 + TileMargin * 2;
             var spotlightTileWidth = 16 * (spotlightTileHeight / 9) + 100;
 
-            var lowerSpotlightWidth = spotlightTileWidth / 4 - (TileMargin * 1.5);
+            var lowerSpotlightWidth = spotlightTileWidth / 3 - (TileMargin * 1.5);
 
             GenresViewModel = new GalleryViewModel(ApiClient, _imageManager, _navService)
             {
@@ -132,7 +135,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             try
             {
-                var view = await ApiClient.GetMovieView(_sessionManager.CurrentUser.Id, cancellationSource.Token);
+                var view = await ApiClient.GetMovieView(_sessionManager.CurrentUser.Id, ParentId, cancellationSource.Token);
 
                 _moviesView = view;
 
@@ -329,7 +332,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 IncludeItemTypes = new[] { "Movie" },
                 SortBy = new[] { ItemSortBy.SortName },
                 Recursive = true,
-                UserId = _sessionManager.CurrentUser.Id
+                UserId = _sessionManager.CurrentUser.Id,
+                ParentId = ParentId
+
             });
 
             var indexOptions = genres.Items.Select(i => new TabItem
@@ -412,7 +417,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             var displayPreferences = await PresentationManager.GetDisplayPreferences("Movies", CancellationToken.None);
 
-            var view = _moviesView ?? await ApiClient.GetMovieView(_sessionManager.CurrentUser.Id, CancellationToken.None);
+            var view = _moviesView ?? await ApiClient.GetMovieView(_sessionManager.CurrentUser.Id, ParentId, CancellationToken.None);
 
             var tabs = new List<TabItem>();
 
@@ -520,7 +525,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
                 SortOrder = displayPreferences.SortOrder,
 
-                Recursive = true
+                Recursive = true,
+                ParentId = ParentId
+
             };
 
             var indexOption = viewModel.CurrentIndexOption == null ? string.Empty : viewModel.CurrentIndexOption.Name;
@@ -625,7 +632,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
                 SortOrder = displayPreferences.SortOrder,
 
-                Recursive = true
+                Recursive = true,
+                ParentId = ParentId
+
             };
 
             var indexOption = viewModel.CurrentIndexOption;
@@ -654,7 +663,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
                 SortOrder = displayPreferences.SortOrder,
 
-                Recursive = true
+                Recursive = true,
+                ParentId = ParentId
+
             };
 
             var indexOption = viewModel.CurrentIndexOption;

@@ -42,7 +42,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         private TvView _tvView;
 
-        public TvViewModel(IPresentationManager presentation, IImageManager imageManager, IApiClient apiClient, ISessionManager session, INavigationService nav, IPlaybackManager playback, ILogger logger, double tileWidth, double tileHeight, IServerEvents serverEvents)
+        public string ParentId { get; private set; }
+        
+        public TvViewModel(IPresentationManager presentation, IImageManager imageManager, IApiClient apiClient, ISessionManager session, INavigationService nav, IPlaybackManager playback, ILogger logger, double tileWidth, double tileHeight, IServerEvents serverEvents, string parentId)
             : base(presentation, apiClient)
         {
             _sessionManager = session;
@@ -51,6 +53,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             _navService = nav;
             _logger = logger;
             _serverEvents = serverEvents;
+            ParentId = parentId;
 
             TileWidth = tileWidth;
             TileHeight = tileHeight;
@@ -137,7 +140,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             try
             {
-                var view = await ApiClient.GetTvView(_sessionManager.CurrentUser.Id, cancellationSource.Token);
+                var view = await ApiClient.GetTvView(_sessionManager.CurrentUser.Id, ParentId, cancellationSource.Token);
 
                 _tvView = view;
 
@@ -357,7 +360,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 IncludeItemTypes = new[] { "Series" },
                 SortBy = new[] { ItemSortBy.SortName },
                 Recursive = true,
-                UserId = _sessionManager.CurrentUser.Id
+                UserId = _sessionManager.CurrentUser.Id,
+                ParentId = ParentId
+
             });
 
             var indexOptions = genres.Items.Select(i => new TabItem
@@ -435,7 +440,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
                 SortOrder = displayPreferences.SortOrder,
 
-                Recursive = true
+                Recursive = true,
+                ParentId = ParentId
+
             };
 
             return ApiClient.GetItemsAsync(query, CancellationToken.None);
@@ -471,7 +478,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
                 SortOrder = displayPreferences.SortOrder,
 
-                Recursive = true
+                Recursive = true,
+                ParentId = ParentId
+
             };
 
             var indexOption = viewModel.CurrentIndexOption;

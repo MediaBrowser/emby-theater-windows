@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Theater.Interfaces.ViewModels;
+﻿using MediaBrowser.Model.Dto;
+using MediaBrowser.Theater.Interfaces.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -223,5 +224,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         public string Name { get; set; }
         public string DisplayName { get; set; }
         public string TabType { get; set; }
+
+        public BaseItemDto Item { get; set; }
     }
 }

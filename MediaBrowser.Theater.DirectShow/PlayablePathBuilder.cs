@@ -3,6 +3,7 @@ using MediaBrowser.Model.Dlna;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.IO;
+using MediaBrowser.Model.MediaInfo;
 using MediaBrowser.Theater.DirectShow.Streaming;
 using System;
 using System.IO;
@@ -45,7 +46,17 @@ namespace MediaBrowser.Theater.DirectShow
                         return GetBlurayPath(item.Path);
                     }
 
-                    return item.Path;
+                    if (item.VideoType.HasValue && item.VideoType.Value == VideoType.Dvd)
+                    {
+                        return item.Path;
+                    }
+
+                    if (item.VideoType.HasValue && item.VideoType.Value == VideoType.HdDvd)
+                    {
+                        return item.Path;
+                    }
+
+                    //return item.Path;
                 }
             }
 
@@ -78,6 +89,10 @@ namespace MediaBrowser.Theater.DirectShow
                 info = new StreamBuilder().BuildAudioItem(options);
                 info.StartPositionTicks = startTimeTicks ?? 0;
 
+                if (info.MediaSource.Protocol == MediaProtocol.File && File.Exists(info.MediaSource.Path))
+                {
+                    return info.MediaSource.Path;
+                }
                 return info.ToUrl(apiClient.ServerAddress + "/mediabrowser");
             }
             else
@@ -100,6 +115,10 @@ namespace MediaBrowser.Theater.DirectShow
                 info = new StreamBuilder().BuildVideoItem(options);
                 info.StartPositionTicks = startTimeTicks ?? 0;
 
+                if (info.MediaSource.Protocol == MediaProtocol.File && File.Exists(info.MediaSource.Path))
+                {
+                    return info.MediaSource.Path;
+                }
                 return info.ToUrl(apiClient.ServerAddress + "/mediabrowser") + "&EnableAdaptiveBitrateStreaming=false";
             }
         }

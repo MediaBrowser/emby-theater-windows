@@ -40,7 +40,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         private GamesView _gamesView;
 
-        public GamesViewModel(IPresentationManager presentation, IImageManager imageManager, IApiClient apiClient, ISessionManager session, INavigationService nav, IPlaybackManager playback, ILogger logger, double tileWidth, double tileHeight, IServerEvents serverEvents)
+        public string ParentId { get; private set; }
+
+        public GamesViewModel(IPresentationManager presentation, IImageManager imageManager, IApiClient apiClient, ISessionManager session, INavigationService nav, IPlaybackManager playback, ILogger logger, double tileWidth, double tileHeight, IServerEvents serverEvents, string parentId)
             : base(presentation, apiClient)
         {
             _sessionManager = session;
@@ -49,6 +51,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             _navService = nav;
             _logger = logger;
             _serverEvents = serverEvents;
+            ParentId = parentId;
 
             TileWidth = tileWidth;
             TileHeight = tileHeight;
@@ -142,7 +145,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             try
             {
-                var view = await ApiClient.GetGamesView(_sessionManager.CurrentUser.Id, cancellationSource.Token);
+                var view = await ApiClient.GetGamesView(_sessionManager.CurrentUser.Id, ParentId, cancellationSource.Token);
 
                 _gamesView = view;
 
@@ -402,7 +405,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
                 SortOrder = displayPreferences.SortOrder,
 
-                Recursive = true
+                Recursive = true,
+
+                ParentId = ParentId
             };
 
             var indexOption = viewModel.CurrentIndexOption;
@@ -450,7 +455,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 IncludeItemTypes = new[] { "Game" },
                 SortBy = new[] { ItemSortBy.SortName },
                 Recursive = true,
-                UserId = _sessionManager.CurrentUser.Id
+                UserId = _sessionManager.CurrentUser.Id,
+                ParentId = ParentId
+
             });
 
             var indexOptions = genres.Items.Select(i => new TabItem
@@ -492,7 +499,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
                 SortOrder = displayPreferences.SortOrder,
 
-                Recursive = true
+                Recursive = true,
+
+                ParentId = ParentId
+
             };
 
             var indexOption = viewModel.CurrentIndexOption;

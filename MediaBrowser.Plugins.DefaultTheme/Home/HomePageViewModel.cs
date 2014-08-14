@@ -46,82 +46,40 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         protected override async Task<IEnumerable<TabItem>> GetSections()
         {
-            var views = new List<TabItem>
+            var userViews = await _apiClient.GetUserViews(_sessionManager.CurrentUser.Id, CancellationToken.None);
+
+            var views = userViews.Items.Select(i =>
+            {
+                // Mixed folder type.
+                if (string.IsNullOrEmpty(i.CollectionType))
                 {
-                    //_sessionManager.CurrentUser.Name.ToLower()
+                    return null;
+                }
+
+                var supportedViews = new List<string>
+                {
+                    CollectionType.Movies,
+                    "Folders",
+                    CollectionType.Channels,
+                    CollectionType.Games,
+                    CollectionType.TvShows,
+                    CollectionType.Playlists,
+                    CollectionType.LiveTv
                 };
 
-            try
-            {
-                var itemCounts = await _apiClient.GetItemCountsAsync(new ItemCountsQuery
+                if (!supportedViews.Contains(i.CollectionType, StringComparer.OrdinalIgnoreCase))
                 {
-                    UserId = _sessionManager.CurrentUser.Id
-                });
-
-                if (itemCounts.MovieCount > 0)
-                {
-                    views.Add(new TabItem
-                    {
-                        Name = "movies",
-                        DisplayName = "Movies"
-                    });
+                    return null;
                 }
 
-                if (itemCounts.SeriesCount > 0 || itemCounts.EpisodeCount > 0)
+                return new TabItem
                 {
-                    views.Add(new TabItem
-                    {
-                        Name = "tv",
-                        DisplayName = "TV"
-                    });
-                }
+                    DisplayName = i.Name,
+                    Name = i.CollectionType,
+                    Item = i
+                };
 
-                //if (itemCounts.SongCount > 0)
-                //{
-                //    views.Add("music");
-                //}
-                if (itemCounts.GameCount > 0)
-                {
-                    views.Add(new TabItem
-                    {
-                        Name = "games",
-                        DisplayName = "Games"
-                    });
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.ErrorException("Error getting item counts", ex);
-            }
-
-            try
-            {
-                var channels = await _apiClient.GetChannels(new ChannelQuery
-                {
-                    UserId = _sessionManager.CurrentUser.Id,
-                    Limit = 0
-
-                }, CancellationToken.None);
-
-                if (channels.TotalRecordCount > 0)
-                {
-                    views.Add(new TabItem
-                    {
-                        Name = "channels",
-                        DisplayName = "Channels"
-                    });
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.ErrorException("Error getting channels", ex);
-            }
-
-            //views.Add(new TabItem
-            //{
-            //    Name = "favorites",
-            //    DisplayName = "Favorites"
-            //});
+            }).Where(i => i != null).ToList();
 
             if (_presentationManager.GetApps(_sessionManager.CurrentUser).Any())
             {
@@ -131,12 +89,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                     DisplayName = "Apps"
                 });
             }
-
-            views.Add(new TabItem
-            {
-                Name = "media collections",
-                DisplayName = "Folders"
-            });
 
             return views;
         }
@@ -182,13 +134,33 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         {
             CurrentItem = null;
 
-            if (string.Equals(section, "apps"))
+            var tab = (TabItem)Sections.CurrentItem;
+            
+            if (string.Equals(section, "apps", StringComparison.OrdinalIgnoreCase))
             {
                 return new AppListViewModel(_presentationManager, _sessionManager, _logger);
             }
-            if (string.Equals(section, "media collections"))
+            if (string.Equals(section, "playlists", StringComparison.OrdinalIgnoreCase))
             {
-                var vm = new ItemListViewModel(GetMediaCollectionsAsync, _presentationManager, _imageManager, _apiClient, _nav, _playbackManager, _logger, _serverEvents)
+                // Eventually when people have enough playlists we'll need to do something different
+                var vm = new ItemListViewModel(i => GetFolderItems(i, tab.Item.Id), _presentationManager, _imageManager, _apiClient, _nav, _playbackManager, _logger, _serverEvents)
+                {
+                    ImageDisplayWidth = 270,
+                    ImageDisplayHeightGenerator = v => 270,
+                    DisplayNameGenerator = GetDisplayName,
+
+                    OnItemCreated = v =>
+                    {
+                        v.DisplayNameVisibility = Visibility.Visible;
+                    }
+                };
+
+                return vm;
+
+            }
+            if (string.Equals(section, "folders", StringComparison.OrdinalIgnoreCase))
+            {
+                var vm = new ItemListViewModel(i => GetFolderItems(i, tab.Item.Id), _presentationManager, _imageManager, _apiClient, _nav, _playbackManager, _logger, _serverEvents)
                 {
                     ImageDisplayWidth = 480,
                     ImageDisplayHeightGenerator = v => 270,
@@ -203,24 +175,41 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 return vm;
 
             }
-            if (string.Equals(section, "games"))
+            if (string.Equals(section, CollectionType.LiveTv, StringComparison.OrdinalIgnoreCase))
+            {
+                var vm = new ItemListViewModel(i => GetFolderItems(i, tab.Item.Id), _presentationManager, _imageManager, _apiClient, _nav, _playbackManager, _logger, _serverEvents)
+                {
+                    ImageDisplayWidth = 270,
+                    ImageDisplayHeightGenerator = v => 270,
+                    DisplayNameGenerator = GetDisplayName,
+
+                    OnItemCreated = v =>
+                    {
+                        v.DisplayNameVisibility = Visibility.Visible;
+                    }
+                };
+
+                return vm;
+
+            }
+            if (string.Equals(section, CollectionType.Games, StringComparison.OrdinalIgnoreCase))
             {
                 return new GamesViewModel(_presentationManager, _imageManager, _apiClient, _sessionManager, _nav,
-                                       _playbackManager, _logger, TileWidth, TileHeight, _serverEvents);
+                                       _playbackManager, _logger, TileWidth, TileHeight, _serverEvents, tab.Item.Id);
             }
-            if (string.Equals(section, "tv"))
+            if (string.Equals(section, CollectionType.TvShows, StringComparison.OrdinalIgnoreCase))
             {
-                var tvViewModel = GetTvViewModel();
+                var tvViewModel = GetTvViewModel(tab.Item.Id);
                 tvViewModel.CurrentItemChanged += SectionViewModel_CurrentItemChanged;
                 return tvViewModel;
             }
-            if (string.Equals(section, "movies"))
+            if (string.Equals(section, CollectionType.Movies, StringComparison.OrdinalIgnoreCase))
             {
-                var moviesViewModel = GetMoviesViewModel();
+                var moviesViewModel = GetMoviesViewModel(tab.Item.Id);
                 moviesViewModel.CurrentItemChanged += SectionViewModel_CurrentItemChanged;
                 return moviesViewModel;
             }
-            if (string.Equals(section, "channels"))
+            if (string.Equals(section, CollectionType.Channels, StringComparison.OrdinalIgnoreCase))
             {
                 var vm = new ItemListViewModel(GetChannelsAsync, _presentationManager, _imageManager, _apiClient, _nav, _playbackManager, _logger, _serverEvents)
                 {
@@ -243,15 +232,15 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             return null;
         }
 
-        private TvViewModel GetTvViewModel()
+        private TvViewModel GetTvViewModel(string parentId)
         {
-            return new TvViewModel(_presentationManager, _imageManager, _apiClient, _sessionManager, _nav, _playbackManager, _logger, TileWidth, TileHeight, _serverEvents);
+            return new TvViewModel(_presentationManager, _imageManager, _apiClient, _sessionManager, _nav, _playbackManager, _logger, TileWidth, TileHeight, _serverEvents, parentId);
         }
 
-        private MoviesViewModel GetMoviesViewModel()
+        private MoviesViewModel GetMoviesViewModel(string parentId)
         {
             return new MoviesViewModel(_presentationManager, _imageManager, _apiClient, _sessionManager, _nav,
-                                       _playbackManager, _logger, TileWidth, TileHeight, _serverEvents);
+                                       _playbackManager, _logger, TileWidth, TileHeight, _serverEvents, parentId);
         }
 
         private async Task<ItemsResult> GetChannelsAsync(ItemListViewModel viewModel)
@@ -270,7 +259,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             };
         }
 
-        private Task<ItemsResult> GetMediaCollectionsAsync(ItemListViewModel viewModel)
+        private Task<ItemsResult> GetFolderItems(ItemListViewModel viewModel,string parentId)
         {
             var query = new ItemQuery
             {
@@ -285,7 +274,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
                 SortBy = new[] { ItemSortBy.SortName },
 
-                SortOrder = SortOrder.Ascending
+                SortOrder = SortOrder.Ascending,
+
+                ParentId = parentId
             };
 
             return _apiClient.GetItemsAsync(query, CancellationToken.None);
@@ -313,7 +304,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 {
                     NavigateToAllMoviesInternal();
                 }
-                else if (string.Equals(tab.Name, "tv"))
+                else if (string.Equals(tab.Name, "tvshows"))
                 {
                     NavigateToAllShowsInternal();
                 }
@@ -326,7 +317,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             if (vm == null)
             {
-                vm = GetTvViewModel();
+                var tab = (TabItem)Sections.CurrentItem;
+                vm = GetTvViewModel(tab.Item.Id);
             }
 
             return vm.NavigateToAllShows();
@@ -338,7 +330,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             if (vm == null)
             {
-                vm = GetMoviesViewModel();
+                var tab = (TabItem)Sections.CurrentItem;
+                vm = GetMoviesViewModel(tab.Item.Id);
             }
 
             return vm.NavigateToMovies();

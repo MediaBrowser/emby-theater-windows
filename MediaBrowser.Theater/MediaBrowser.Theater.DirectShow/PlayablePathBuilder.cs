@@ -45,7 +45,7 @@ namespace MediaBrowser.Theater.DirectShow
                         return GetBlurayPath(item.Path);
                     }
 
-                    //return item.Path;
+                    return item.Path;
                 }
             }
 

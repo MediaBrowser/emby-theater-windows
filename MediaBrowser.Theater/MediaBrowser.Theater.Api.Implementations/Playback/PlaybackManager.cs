@@ -28,7 +28,10 @@ namespace MediaBrowser.Theater.Api.Playback
         private readonly IPresenter _presentationManager;
         private readonly IEventBus<PlaybackStartEventArgs> _playbackStart;
         private readonly IEventBus<PlaybackStopEventArgs> _playbackStop;
+        private PlaybackProgressReporter _reporter;
         private int _isStarting;
+
+        private readonly object _reporterLock = new object();
 
         public void AddParts(IEnumerable<IMediaPlayer> mediaPlayers)
         {
@@ -163,7 +166,16 @@ namespace MediaBrowser.Theater.Api.Playback
         private async void OnPlaybackStarted(IMediaPlayer player, PlayOptions options)
         {
             await _playbackStart.Publish(new PlaybackStartEventArgs { Options = options, Player = player });
-            await new PlaybackProgressReporter(_apiClient, player, _logger, this).Start().ConfigureAwait(false);
+
+            lock (_reporterLock) {
+                if (_reporter != null) {
+                    _reporter.Dispose();
+                    _reporter = null;
+                }
+            }
+
+            _reporter = new PlaybackProgressReporter(_apiClient, player, _logger, this);
+            await _reporter.Start().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -172,6 +184,13 @@ namespace MediaBrowser.Theater.Api.Playback
         /// <param name="eventArgsArgs">The <see cref="PlaybackStopEventArgs"/> instance containing the event data.</param>
         public void ReportPlaybackCompleted(PlaybackStopEventArgs eventArgsArgs)
         {
+            lock (_reporterLock) {
+                if (_reporter != null) {
+                    _reporter.Dispose();
+                    _reporter = null;
+                }
+            }
+
             _playbackStop.Publish(eventArgsArgs);
         }
 

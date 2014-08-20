@@ -273,11 +273,15 @@ namespace MediaBrowser.Theater.DirectShow
                 var enableMadVr = EnableMadvr(options);
                 //var enableReclock = EnableReclock(options);
 
-                InvokeOnPlayerThread(() => _mediaPlayer.Play(playableItem, enableMadVr, false));
+                InvokeOnPlayerThread(() => {
+                    DisposePlayer();
+                    _mediaPlayer = new DirectShowPlayer(_logger, _windowManager, this, _presentation.MainApplicationWindowHandle, _sessionManager, _config, _inputManager, _apiClient, _zipClient, _httpClient);
+
+                    _mediaPlayer.Play(playableItem, enableMadVr, false);
+                }, true);
             }
-            catch
-            {
-                DisposeMount(playableItem);
+            catch {
+                OnPlaybackStopped(playableItem, null, TrackCompletionReason.Failure, null);
 
                 throw;
             }
@@ -485,6 +489,8 @@ namespace MediaBrowser.Theater.DirectShow
             }
             catch { }
 
+            StopTranscoding(media);
+
             var args = new PlaybackStopEventArgs
             {
                 Player = this,
@@ -497,6 +503,17 @@ namespace MediaBrowser.Theater.DirectShow
             EventHelper.FireEventIfNotNull(PlaybackCompleted, this, args, _logger);
 
             _playbackManager.ReportPlaybackCompleted(args);
+        }
+
+        private async void StopTranscoding(PlayableItem media)
+        {
+            // If streaming video, stop the transcoder
+            if (media.IsVideo && media.PlayablePath.IndexOf("://", StringComparison.OrdinalIgnoreCase) != -1) {
+                try {
+                    await _apiClient.StopTranscodingProcesses(_apiClient.DeviceId);
+                }
+                catch { }
+            }
         }
 
         public void ChangeTrack(int newIndex)
@@ -564,15 +581,18 @@ namespace MediaBrowser.Theater.DirectShow
 
         }
 
-        private void InvokeOnPlayerThread(Action action)
+        private void InvokeOnPlayerThread(Action action, bool throwOnError = false)
         {
-            if (_hiddenWindow.Form.InvokeRequired)
-            {
-                _hiddenWindow.Form.Invoke(action);
+            try {
+                if (_hiddenWindow.Form.InvokeRequired) {
+                    _hiddenWindow.Form.Invoke(action);
+                } else {
+                    action();
+                }
             }
-            else
-            {
-                action();
+            catch (Exception ex) {
+                _logger.ErrorException("InvokeOnPlayerThread", ex);
+                if (throwOnError) throw ex;
             }
         }
 
@@ -592,6 +612,7 @@ namespace MediaBrowser.Theater.DirectShow
     {
         Stop,
         Ended,
-        ChangeTrack
+        ChangeTrack,
+        Failure
     }
 }

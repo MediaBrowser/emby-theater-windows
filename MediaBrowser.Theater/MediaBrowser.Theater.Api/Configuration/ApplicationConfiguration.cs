@@ -50,7 +50,7 @@ namespace MediaBrowser.Theater.Api.Configuration
             ServerAddress = "http://localhost:8096";
             ActiveThemeGuid = new Guid("C501C937-3BC9-471A-A538-20FAA9B7CE51");
             EnableHighQualityImageScaling = true;
-            MaxStreamingBitrate = 8000000;
+            MaxStreamingBitrate = 3000000;
 
             AutoLoginConfiguration = new AutoLoginConfiguration();
             WakeOnLanConfiguration = new WolConfiguration();

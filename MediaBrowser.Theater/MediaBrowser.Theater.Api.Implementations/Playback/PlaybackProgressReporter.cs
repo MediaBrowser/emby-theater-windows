@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace MediaBrowser.Theater.Api.Playback
 {
-    public class PlaybackProgressReporter
+    public class PlaybackProgressReporter : IDisposable
     {
         private readonly IApiClient _apiClient;
         private readonly IMediaPlayer _mediaPlayer;
@@ -204,6 +204,17 @@ namespace MediaBrowser.Theater.Api.Playback
             catch (Exception ex)
             {
                 _logger.ErrorException("Error sending playback progress checking for {0}", ex, item.Name);
+            }
+        }
+
+        public void Dispose()
+        {
+            _mediaPlayer.MediaChanged -= _mediaPlayer_MediaChanged;
+            _mediaPlayer.PlaybackCompleted -= _mediaPlayer_PlaybackCompleted;
+
+            if (_timer != null) {
+                _timer.Dispose();
+                _timer = null;
             }
         }
     }

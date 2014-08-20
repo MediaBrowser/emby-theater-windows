@@ -2193,6 +2193,12 @@ namespace MediaBrowser.Theater.DirectShow
                     {
                         Stop(TrackCompletionReason.Ended, null);
                     }
+                    else if (evCode == EventCode.ErrorAbort ||
+                             evCode == EventCode.ErrorStPlaying ||
+                             evCode == EventCode.StErrStopped) 
+                    {
+                        Stop(TrackCompletionReason.Failure, null);
+                    }
                     else if (evCode == EventCode.VideoSizeChanged)
                     {
                         var param1Val = evParam1.ToInt32();

@@ -58,9 +58,9 @@ namespace MediaBrowser.Theater.Api.System
 
             //Try and find server
             try {
-                var serverInfo = await new ServerLocator().FindServer(500, CancellationToken.None).ConfigureAwait(false);
+                var serverInfo = await new ServerLocator().FindServers(500, CancellationToken.None).ConfigureAwait(false);
 
-                _apiClient.ChangeServerLocation(serverInfo.Address);
+                _apiClient.ChangeServerLocation(serverInfo.First().Address);
 
                 return await _apiClient.GetPublicSystemInfoAsync(CancellationToken.None).ConfigureAwait(false);
             }

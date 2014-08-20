@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -43,7 +44,7 @@ namespace MediaBrowser.Theater.StartupWizard.ViewModels
 
             Task.Run(async () => {
                 try {
-                    var info = await new ServerLocator().FindServer(500, CancellationToken.None).ConfigureAwait(false);
+                    var info = (await new ServerLocator().FindServers(500, CancellationToken.None).ConfigureAwait(false)).FirstOrDefault();
                     Address = info.Address;
                 }
                 catch (Exception e) {

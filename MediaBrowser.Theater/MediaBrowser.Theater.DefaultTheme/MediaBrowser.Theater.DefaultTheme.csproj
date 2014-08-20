@@ -394,7 +394,8 @@
     <Compile Include="Core\Commands\ExitMenuCommand.cs" />
     <Compile Include="Core\Commands\HomeCommand.cs" />
     <Compile Include="Home\ViewModels\Generic\GenericFolderSpotlightViewModel.cs" />
-    <Compile Include="Home\ViewModels\IHomePageMediaFolderGenerator.cs" />
+    <Compile Include="Home\ViewModels\Generic\GenericViewHomePageGenerator.cs" />
+    <Compile Include="Home\ViewModels\UserViewsPageGenerator.cs" />
     <Compile Include="SortModeMenu\Commands\SortModeCommand.cs" />
     <Compile Include="Core\Commands\RestartMenuCommand.cs" />
     <Compile Include="Core\Commands\ShutdownMenuCommand.cs" />

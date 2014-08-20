@@ -40,8 +40,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
             _sessionManager = sessionManager;
             _playbackManager = playbackManager;
 
-            Title = tvFolder.Name;
-            SectionTitle = "MediaBrowser.Theater.DefaultTheme:Strings:Home_TVSectionTitle".Localize();
+            Title = "MediaBrowser.Theater.DefaultTheme:Strings:Home_ResumeEpisodes_Title".Localize();
+            SectionTitle = tvFolder.Name;
 
             Episodes = new RangeObservableCollection<ItemTileViewModel>();
             for (int i = 0; i < 3; i++) {

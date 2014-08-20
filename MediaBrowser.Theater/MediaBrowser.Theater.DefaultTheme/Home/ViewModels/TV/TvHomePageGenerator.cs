@@ -15,7 +15,7 @@ using MediaBrowser.Theater.Presentation;
 namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
 {
     public class TvHomePageGenerator
-        : IHomePageMediaFolderGenerator
+        : IUserViewHomePageGenerator
     {
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
@@ -35,6 +35,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
             _playbackManager = playbackManager;
             _logManager = logManager;
         }
+
+        public string CollectionType { get { return Model.Entities.CollectionType.TvShows; } }
 
         public Task<IEnumerable<IHomePage>> GetHomePages(BaseItemDto mediaFolder)
         {

@@ -58,10 +58,8 @@ namespace MediaBrowser.Theater.DirectShow
 
             StreamInfo info;
 
-            if (item.IsAudio)
-            {
-                var options = new AudioOptions
-                {
+            if (item.IsAudio) {
+                var options = new AudioOptions {
                     Context = EncodingContext.Streaming,
                     DeviceId = apiClient.DeviceId,
                     ItemId = item.Id,
@@ -76,11 +74,11 @@ namespace MediaBrowser.Theater.DirectShow
                 };
 
                 info = new StreamBuilder().BuildAudioItem(options);
-            }
-            else
-            {
-                var options = new VideoOptions
-                {
+                info.StartPositionTicks = startTimeTicks ?? 0;
+
+                return info.ToUrl(apiClient.ServerAddress + "/mediabrowser");
+            } else {
+                var options = new VideoOptions {
                     Context = EncodingContext.Streaming,
                     DeviceId = apiClient.DeviceId,
                     ItemId = item.Id,
@@ -95,11 +93,10 @@ namespace MediaBrowser.Theater.DirectShow
                 };
 
                 info = new StreamBuilder().BuildVideoItem(options);
+                info.StartPositionTicks = startTimeTicks ?? 0;
+
+                return info.ToUrl(apiClient.ServerAddress + "/mediabrowser") + "&EnableAdaptiveBitrateStreaming=false";
             }
-
-            info.StartPositionTicks = startTimeTicks ?? 0;
-
-            return info.ToUrl(apiClient.ServerAddress + "/mediabrowser");
         }
 
         private static string GetBlurayPath(string root)

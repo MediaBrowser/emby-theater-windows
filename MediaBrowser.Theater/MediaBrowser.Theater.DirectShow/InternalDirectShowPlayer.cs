@@ -327,7 +327,7 @@ namespace MediaBrowser.Theater.DirectShow
             return new PlayableItem
             {
                 OriginalItem = item,
-                PlayablePath = PlayablePathBuilder.GetPlayablePath(item, mountedIso, _apiClient, startTimeTicks),
+                PlayablePath = PlayablePathBuilder.GetPlayablePath(item, mountedIso, _apiClient, startTimeTicks, _config.Configuration.MaxStreamingBitrate),
                 IsoMount = mountedIso
             };
         }
@@ -479,6 +479,11 @@ namespace MediaBrowser.Theater.DirectShow
             }
 
             DisposePlayer();
+
+            try {
+                await _apiClient.StopTranscodingProcesses(_apiClient.DeviceId);
+            }
+            catch { }
 
             var args = new PlaybackStopEventArgs
             {

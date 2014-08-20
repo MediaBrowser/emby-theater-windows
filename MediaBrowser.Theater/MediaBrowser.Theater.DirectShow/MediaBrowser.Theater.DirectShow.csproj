@@ -145,6 +145,7 @@
     <Compile Include="MediaFoundation\WMContainer.cs" />
     <Compile Include="PlayablePathBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Streaming\MediaBrowserTheaterProfile.cs" />
     <Compile Include="StringProcessing.cs" />
     <Compile Include="Subtitles.cs" />
     <Compile Include="URCOMLoader.cs" />

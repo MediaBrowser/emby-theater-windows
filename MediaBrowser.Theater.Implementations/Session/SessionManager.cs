@@ -75,7 +75,7 @@ namespace MediaBrowser.Theater.Implementations.Session
         {
             get
             {
-                return Version.Parse("3.0.5115.35703");
+                return Version.Parse("3.0.5340.21263");
             }
         }
 

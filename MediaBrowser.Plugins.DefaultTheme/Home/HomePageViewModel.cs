@@ -145,8 +145,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 // Eventually when people have enough playlists we'll need to do something different
                 var vm = new ItemListViewModel(i => GetFolderItems(i, tab.Item.Id), _presentationManager, _imageManager, _apiClient, _nav, _playbackManager, _logger, _serverEvents)
                 {
-                    ImageDisplayWidth = 270,
-                    ImageDisplayHeightGenerator = v => 270,
+                    ImageDisplayWidth = 330,
+                    ImageDisplayHeightGenerator = v => 330,
                     DisplayNameGenerator = GetDisplayName,
 
                     OnItemCreated = v =>

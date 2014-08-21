@@ -213,11 +213,6 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
         {
             await _navigator.Initialize(_rootContext);
             await base.Initialize();
-
-            bool serverFound = await _serverManager.AttemptServerConnection();
-            if (!serverFound) {
-                // todo show server connection error to user, and give the option to go to the server settings page to resolve
-            }
         }
     }
 }

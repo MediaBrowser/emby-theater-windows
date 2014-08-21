@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using MediaBrowser.ApiInteraction;
 using MediaBrowser.ApiInteraction.WebSocket;
 using MediaBrowser.Common;
 using MediaBrowser.Model.ApiClient;
@@ -172,11 +173,9 @@ namespace MediaBrowser.UI.EntryPoints
         {
             try
             {
-                var systemInfo = await _apiClient.GetSystemInfoAsync(CancellationToken.None).ConfigureAwait(false);
-
                 var socket = ApiWebSocket;
 
-                await socket.ChangeServerLocation(_apiClient.ServerHostName, systemInfo.WebSocketPortNumber, CancellationToken.None).ConfigureAwait(false);
+                await socket.ChangeServerLocation(((ApiClient)_apiClient).ApiUrl, CancellationToken.None).ConfigureAwait(false);
 
                 socket.StartEnsureConnectionTimer(5000);
             }
@@ -196,9 +195,14 @@ namespace MediaBrowser.UI.EntryPoints
             EnsureWebSocket();
         }
 
-        private void EnsureWebSocket()
+        private async void EnsureWebSocket()
         {
-            ApiWebSocket.EnsureConnectionAsync(CancellationToken.None);
+            try {
+                await ApiWebSocket.EnsureConnectionAsync(CancellationToken.None).ConfigureAwait(false);
+            }
+            catch (Exception ex) {
+                _logger.ErrorException("Error connecting to web socket", ex);
+            }
         }
 
         void socket_Closed(object sender, EventArgs e)

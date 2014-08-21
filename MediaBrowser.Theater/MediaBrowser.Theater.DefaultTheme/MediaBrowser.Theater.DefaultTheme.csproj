@@ -43,13 +43,13 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MediaBrowser.Common, Version=3.0.5267.16996, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.Common, Version=3.0.5338.24788, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.3.0.394\lib\net45\MediaBrowser.Common.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.426\lib\net45\MediaBrowser.Common.dll</HintPath>
     </Reference>
-    <Reference Include="MediaBrowser.Model, Version=3.0.5267.16995, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.Model, Version=3.0.5338.24788, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.3.0.394\lib\net45\MediaBrowser.Model.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.426\lib\net45\MediaBrowser.Model.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Expression.Effects, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -168,10 +168,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Home\Views\Movies\LatestMoviesView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Home\Views\Movies\LatestTrailersView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -397,6 +393,9 @@
     <Compile Include="Controls\TileButton.cs" />
     <Compile Include="Core\Commands\ExitMenuCommand.cs" />
     <Compile Include="Core\Commands\HomeCommand.cs" />
+    <Compile Include="Home\ViewModels\Generic\GenericFolderSpotlightViewModel.cs" />
+    <Compile Include="Home\ViewModels\Generic\GenericViewHomePageGenerator.cs" />
+    <Compile Include="Home\ViewModels\UserViewsPageGenerator.cs" />
     <Compile Include="SortModeMenu\Commands\SortModeCommand.cs" />
     <Compile Include="Core\Commands\RestartMenuCommand.cs" />
     <Compile Include="Core\Commands\ShutdownMenuCommand.cs" />
@@ -474,7 +473,6 @@
     <Compile Include="Home\ViewModels\HomeViewModel.cs" />
     <Compile Include="Home\ViewModels\IHomePageGenerator.cs" />
     <Compile Include="Home\ViewModels\Movies\LatestMoviesViewModel.cs" />
-    <Compile Include="Home\ViewModels\Movies\LatestTrailersViewModel.cs" />
     <Compile Include="Home\ViewModels\Movies\MovieHomePageGenerator.cs" />
     <Compile Include="Home\ViewModels\Movies\MovieSpotlightViewModel.cs" />
     <Compile Include="Home\ViewModels\TV\LatestEpisodesViewModel.cs" />
@@ -486,9 +484,6 @@
     </Compile>
     <Compile Include="Home\Views\Movies\LatestMoviesView.xaml.cs">
       <DependentUpon>LatestMoviesView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Home\Views\Movies\LatestTrailersView.xaml.cs">
-      <DependentUpon>LatestTrailersView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Home\Views\Movies\MovieSpotlightView.xaml.cs">
       <DependentUpon>MovieSpotlightView.xaml</DependentUpon>

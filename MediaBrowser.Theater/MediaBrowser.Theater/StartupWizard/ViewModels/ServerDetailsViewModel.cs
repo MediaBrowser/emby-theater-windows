@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -31,23 +32,20 @@ namespace MediaBrowser.Theater.StartupWizard.ViewModels
         private int _port;
         private ConnectionStatus _status;
         private bool _isSearchingForServer;
-        
+        private string _address;
+
         public ServerDetailsViewModel(ILogManager logManager, IApiClient apiClient, ITheaterConfigurationManager config)
         {
             _apiClient = apiClient;
             _config = config;
 
             IsSearchingForServer = true;
-            HostName = _config.Configuration.ServerHostName ?? "127.0.0.1";
-            Port = _config.Configuration.ServerApiPort;
+            Address = "http://localhost:8096";
 
             Task.Run(async () => {
                 try {
-                    var address = await new ServerLocator().FindServer(500, CancellationToken.None).ConfigureAwait(false);
-                    var parts = address.ToString().Split(':');
-
-                    HostName = parts[0];
-                    Port = address.Port;
+                    var info = (await new ServerLocator().FindServers(500, CancellationToken.None).ConfigureAwait(false)).FirstOrDefault();
+                    Address = info.Address;
                 }
                 catch (Exception e) {
                     var log = logManager.GetLogger("SetupWizard.SeverDetails");
@@ -61,30 +59,16 @@ namespace MediaBrowser.Theater.StartupWizard.ViewModels
 
         [Required]
         [StringLength(255)]
-        public string HostName
+        public string Address
         {
-            get { return _hostName; }
+            get { return _address; }
             set
             {
-                if (value == _hostName) {
+                if (value == _address) {
                     return;
                 }
-                _hostName = value;
-                OnPropertyChanged();
-            }
-        }
-
-        [Range(0, ushort.MaxValue)]
-        public int Port
-        {
-            get { return _port; }
-            set
-            {
-                if (value == _port) {
-                    return;
-                }
-                _port = value;
-                OnPropertyChanged();
+                _address = value;
+                OnPropertyChanged("Address");
             }
         }
 
@@ -131,21 +115,21 @@ namespace MediaBrowser.Theater.StartupWizard.ViewModels
 
                 Status = ConnectionStatus.Checking;
 
-                var url = string.Format("http://{0}:{1}/mediabrowser/system/info", HostName, Port);
+                var url = string.Format("{0}/mediabrowser/system/info", Address);
 
                 try {
                     using (var client = new HttpClient()) {
                         await client.GetStringAsync(url).ConfigureAwait(false);
                     }
 
-                    _apiClient.ChangeServerLocation(HostName, Port);
+                    _apiClient.ChangeServerLocation(Address);
 
-                    _config.Configuration.ServerApiPort = Port;
-                    _config.Configuration.ServerHostName = HostName;
+                    _config.Configuration.ServerAddress = Address;
                     _config.SaveConfiguration();
 
                     Status = ConnectionStatus.Ok;
                     return true;
+
                 }
                 catch (Exception) {
                     Status = ConnectionStatus.Failed;

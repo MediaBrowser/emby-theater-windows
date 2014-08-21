@@ -6,6 +6,7 @@ using System.Windows;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
+using MediaBrowser.Model.Querying;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.Session;
@@ -29,7 +30,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
 
         private bool _isVisible;
 
-        public LatestEpisodesViewModel(Task<TvView> tvViewTask, IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator, ISessionManager sessionManager, IPlaybackManager playbackManager)
+        public LatestEpisodesViewModel(BaseItemDto tvFolder, IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator, ISessionManager sessionManager, IPlaybackManager playbackManager)
         {
             _apiClient = apiClient;
             _imageManager = imageManager;
@@ -38,21 +39,21 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
             _sessionManager = sessionManager;
             _playbackManager = playbackManager;
 
+            SectionTitle = tvFolder.Name;
+            Title = "MediaBrowser.Theater.DefaultTheme:Strings:Home_LatestEpisodes_Title".Localize();
+
             Episodes = new RangeObservableCollection<ItemTileViewModel>();
             for (int i = 0; i < 9; i++) {
                 Episodes.Add(CreateEpisodeItem());
             }
 
             IsVisible = false;
-            LoadItems(tvViewTask);
+            LoadItems(tvFolder);
         }
 
         public RangeObservableCollection<ItemTileViewModel> Episodes { get; private set; }
 
-        public string Title
-        {
-            get { return "MediaBrowser.Theater.DefaultTheme:Strings:Home_LatestEpisodes_Title".Localize(); }
-        }
+        public string Title { get; set; }
 
         public bool IsVisible
         {
@@ -68,10 +69,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
             }
         }
 
-        public string SectionTitle
-        {
-            get { return "MediaBrowser.Theater.DefaultTheme:Strings:Home_TVSectionTitle".Localize(); }
-        }
+        public string SectionTitle { get; set; }
 
         public int Index { get; set; }
 
@@ -90,10 +88,20 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
             }
         }
 
-        private async void LoadItems(Task<TvView> tvViewTask)
+        private async void LoadItems(BaseItemDto tvFolder)
         {
-            TvView tvView = await tvViewTask;
-            BaseItemDto[] items = tvView.LatestEpisodes.ToArray();
+            var result = await _apiClient.GetItemsAsync(new ItemQuery {
+                UserId = _sessionManager.CurrentUser.Id,
+                ParentId = tvFolder.Id,
+                IncludeItemTypes = new[] { "Episode" },
+                SortBy = new[] { ItemSortBy.DateCreated },
+                SortOrder = SortOrder.Descending,
+                Filters = new[] { ItemFilter.IsRecentlyAdded },
+                Limit = 9,
+                Recursive = true
+            });
+
+            var items = result.Items;
 
             for (int i = 0; i < items.Length; i++) {
                 if (Episodes.Count > i) {

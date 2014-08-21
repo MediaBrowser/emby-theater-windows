@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace MediaBrowser.Theater.Api.System
+namespace MediaBrowser.Theater.Api.Networking
 {
     public static class NetworkUtils
     {
@@ -20,7 +19,7 @@ namespace MediaBrowser.Theater.Api.System
             const int macAddressLength = 6;
             var length = macAddressLength;
             var macBytes = new byte[macAddressLength];
-            NativeNetworkMethods.SendARP(BitConverter.ToInt32(ipAddress.GetAddressBytes(), 0), 0, macBytes, ref length);
+            NativeMethods.SendARP(BitConverter.ToInt32(ipAddress.GetAddressBytes(), 0), 0, macBytes, ref length);
             return new PhysicalAddress(macBytes);
         }
 

@@ -23,18 +23,11 @@
             <TextBlock TextWrapping="Wrap" Margin="0 4 0 0" Text="{lex:Loc SetupWizard_ServerDetails_Content}"/>
 
             <StackPanel Orientation="Vertical" Margin="0 14 0 0">
-                <TextBlock Text="{lex:Loc SetupWizard_ServerDetails_HostNameLabel}"/>
+                <TextBlock Text="{lex:Loc SetupWizard_ServerDetails_AddressLabel}"/>
                 <TextBox
-                    Text="{Binding HostName, ValidatesOnNotifyDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
+                    Text="{Binding Address, ValidatesOnNotifyDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
                     Validation.ErrorTemplate="{StaticResource SilverlightErrorTemplate}" Width="150"
                     HorizontalAlignment="Left" />
-            </StackPanel>
-
-            <StackPanel Orientation="Vertical" Margin="0 4 0 0">
-                <TextBlock Text="{lex:Loc SetupWizard_ServerDetails_PortLabel}"/>
-                <TextBox Text="{Binding Port, ValidatesOnNotifyDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
-                         Validation.ErrorTemplate="{StaticResource SilverlightErrorTemplate}" Width="150"
-                         HorizontalAlignment="Left" />
             </StackPanel>
         </StackPanel>
 

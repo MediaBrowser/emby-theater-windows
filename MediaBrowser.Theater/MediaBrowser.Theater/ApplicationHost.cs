@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -214,7 +215,7 @@ namespace MediaBrowser.Theater
         {
             ILogger logger = LogManager.GetLogger("ApiClient");
 
-            var apiClient = new ApiClient(new HttpWebRequestClient(logger), logger, TheaterConfigurationManager.Configuration.ServerHostName, TheaterConfigurationManager.Configuration.ServerApiPort, "Media Browser Theater", Environment.MachineName, Environment.MachineName, ApplicationVersion.ToString()) {
+            var apiClient = new ApiClient(new HttpWebRequestClient(logger), logger, TheaterConfigurationManager.Configuration.ServerAddress, "Media Browser Theater", Environment.MachineName, Environment.MachineName, ApplicationVersion.ToString()) {
                 JsonSerializer = JsonSerializer,
                 ImageQuality = TheaterConfigurationManager.Configuration.DownloadCompressedImages
                                    ? 90
@@ -222,15 +223,31 @@ namespace MediaBrowser.Theater
             };
 
             ApiClient = apiClient;
+            ApiClient.HttpResponseReceived += ApiClient_HttpResponseReceived;
 
             logger = LogManager.GetLogger("ApiWebSocket");
 
             // WebSocketEntry point will handle figuring out the port and connecting
-            ApiWebSocket = new ApiWebSocket(logger, JsonSerializer, apiClient.ServerHostName, 0,
+            ApiWebSocket = new ApiWebSocket(logger, JsonSerializer, apiClient.ServerAddress,
                                             ApiClient.DeviceId, apiClient.ApplicationVersion,
                                             apiClient.ClientName, apiClient.DeviceName, () => ClientWebSocketFactory.CreateWebSocket(logger));
 
             apiClient.WebSocketConnection = ApiWebSocket;
+        }
+
+        private async void ApiClient_HttpResponseReceived(object sender, HttpResponseEventArgs e)
+        {
+            if (e.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                try {
+                    var sessionManager = Resolve<ISessionManager>();
+                    await sessionManager.Logout();
+                }
+                catch (Exception ex)
+                {
+                    Logger.ErrorException("Error logging out", ex);
+                }
+            }
         }
 
         public override async Task Restart()
@@ -332,8 +349,10 @@ namespace MediaBrowser.Theater
 
             PackageVersionInfo version = InstallationManager.GetLatestCompatibleVersion(availablePackages, Program.PackageName, null, serverVersion, ConfigurationManager.CommonConfiguration.SystemUpdateLevel);
 
-            return version != null ? new CheckForUpdateResult { AvailableVersion = version.version, IsUpdateAvailable = version.version > ApplicationVersion, Package = version } :
-                       new CheckForUpdateResult { AvailableVersion = ApplicationVersion, IsUpdateAvailable = false };
+            var versionObject = version == null || string.IsNullOrWhiteSpace(version.versionStr) ? null : new Version(version.versionStr);
+
+            return versionObject != null ? new CheckForUpdateResult { AvailableVersion = versionObject.ToString(), IsUpdateAvailable = versionObject > ApplicationVersion, Package = version } :
+                       new CheckForUpdateResult { AvailableVersion = ApplicationVersion.ToString(), IsUpdateAvailable = false };
         }
 
         /// <summary>

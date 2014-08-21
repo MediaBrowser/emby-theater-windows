@@ -119,9 +119,9 @@ namespace MediaBrowser.Theater.Api.System
         public async Task InstallLavFilters(IProgress<double> progress, CancellationToken cancellationToken)
         {
             // Guess we'll have to hard-code the latest version?
-            // https://code.google.com/p/lavfilters/downloads/list
+            // https://github.com/Nevcairiel/LAVFilters/releases
 
-            const string url = "https://lavfilters.googlecode.com/files/LAVFilters-0.60.1.exe";
+            const string url = "https://github.com/Nevcairiel/LAVFilters/releases/download/0.62/LAVFilters-0.62-Installer.exe";
 
             string tempFile = await _httpClient.GetTempFile(new HttpRequestOptions {
                 Url = url,

@@ -9,16 +9,9 @@ namespace MediaBrowser.Theater.Api.Configuration
     public class ApplicationConfiguration : BaseApplicationConfiguration
     {
         /// <summary>
-        ///     Gets or sets the server host name (myserver or 192.168.x.x)
+        /// Gets or sets the server address.
         /// </summary>
-        /// <value>The name of the server host.</value>
-        public string ServerHostName { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the port number used by the API
-        /// </summary>
-        /// <value>The server API port.</value>
-        public int ServerApiPort { get; set; }
+        public string ServerAddress { get; set; }
 
         /// <summary>
         ///     Gets or sets the auto-login user details.
@@ -49,13 +42,15 @@ namespace MediaBrowser.Theater.Api.Configuration
 
         public bool EnableHighQualityImageScaling { get; set; }
 
+        public int MaxStreamingBitrate { get; set; }
+
         public ApplicationConfiguration()
         {
             // default sever and theme settings
-            ServerHostName = "127.0.0.1";
-            ServerApiPort = 8096;
+            ServerAddress = "http://localhost:8096";
             ActiveThemeGuid = new Guid("C501C937-3BC9-471A-A538-20FAA9B7CE51");
             EnableHighQualityImageScaling = true;
+            MaxStreamingBitrate = 3000000;
 
             AutoLoginConfiguration = new AutoLoginConfiguration();
             WakeOnLanConfiguration = new WolConfiguration();

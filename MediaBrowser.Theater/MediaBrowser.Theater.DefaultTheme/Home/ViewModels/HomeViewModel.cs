@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
+using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Api;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.Presentation.ViewModels;
@@ -17,6 +20,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels
     public class HomeViewModel
         : BaseViewModel
     {
+        private readonly ILogger _logger;
+
         public List<IViewModel> Pages { get; private set; }
 
         public const double TileWidth = 400; //336;
@@ -26,21 +31,46 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels
 
         public static Thickness TileMarginThickness = new Thickness(TileMargin);
 
+        private readonly IEnumerable<IHomePageGenerator> _generators;
+
         public Func<object, object> TitleSelector
         {
             get { return item => ((IHomePage) item).SectionTitle; }
         }
 
-        public HomeViewModel(ITheaterApplicationHost appHost)
+        public HomeViewModel(ITheaterApplicationHost appHost, ILogManager logManager)
         {
-            var pageGenerators = appHost.GetExports<IHomePageGenerator>();
-            var pages = pageGenerators.SelectMany(p => p.GetHomePages()).ToList();
+            _logger = logManager.GetLogger("HomeViewModel");
+            _generators = appHost.GetExports<IHomePageGenerator>();
+        }
 
-            for (int i = 0; i < pages.Count; i++) {
+        public override async Task Initialize()
+        {
+            var pageTasks = _generators.Select(p => p.GetHomePages()).ToList();
+
+            try {
+                await Task.WhenAll(pageTasks);
+            }
+            catch { }
+
+            var pages = pageTasks.SelectMany(t => {
+                try {
+                    return t.Result;
+                }
+                catch (Exception ex) {
+                    _logger.ErrorException("Home page generator", ex);
+                    return Enumerable.Empty<IHomePage>();
+                }
+            }).ToList();
+
+            for (int i = 0; i < pages.Count; i++)
+            {
                 pages[i].Index = i;
             }
 
             Pages = pages.Cast<IViewModel>().ToList();
+
+            await base.Initialize();
         }
     }
 }

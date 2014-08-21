@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
@@ -9,23 +7,21 @@ using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
-using MediaBrowser.Theater.Presentation;
-using MediaBrowser.Theater.Presentation.ViewModels;
 
-namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
+namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Generic
 {
-    public class MovieHomePageGenerator
+    public class GenericViewHomePageGenerator
         : IUserViewHomePageGenerator
     {
         private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
         private readonly ILogManager _logManager;
         private readonly INavigator _navigator;
+        private readonly IPlaybackManager _playbackManager;
         private readonly IServerEvents _serverEvents;
         private readonly ISessionManager _sessionManager;
-        private readonly IPlaybackManager _playbackManager;
 
-        public MovieHomePageGenerator(IImageManager imageManager, INavigator navigator, IApiClient apiClient, ISessionManager sessionManager, IServerEvents serverEvents, IPlaybackManager playbackManager, ILogManager logManager)
+        public GenericViewHomePageGenerator(IImageManager imageManager, INavigator navigator, IApiClient apiClient, ISessionManager sessionManager, IServerEvents serverEvents, IPlaybackManager playbackManager, ILogManager logManager)
         {
             _imageManager = imageManager;
             _navigator = navigator;
@@ -36,13 +32,15 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
             _logManager = logManager;
         }
 
-        public string CollectionType { get { return Model.Entities.CollectionType.Movies; } }
+        public string CollectionType
+        {
+            get { return null; }
+        }
 
         public Task<IEnumerable<IHomePage>> GetHomePages(BaseItemDto mediaFolder)
         {
             IEnumerable<IHomePage> pages = new IHomePage[] {
-                new MovieSpotlightViewModel(mediaFolder, _imageManager, _navigator, _apiClient, _serverEvents, _playbackManager, _sessionManager, _logManager),
-                new LatestMoviesViewModel(mediaFolder, _apiClient, _imageManager, _serverEvents, _navigator, _sessionManager, _playbackManager)
+                new GenericFolderSpotlightViewModel(mediaFolder, _imageManager, _navigator, _apiClient, _serverEvents, _sessionManager, _logManager, _playbackManager);
             };
 
             return Task.FromResult(pages);

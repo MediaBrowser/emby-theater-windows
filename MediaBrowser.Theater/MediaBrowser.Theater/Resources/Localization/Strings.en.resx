@@ -175,17 +175,14 @@ Click next to proceed.</value>
   <data name="SetupWizard_PreviousButton" xml:space="preserve">
     <value>Previous</value>
   </data>
+  <data name="SetupWizard_ServerDetails_AddressLabel" xml:space="preserve">
+    <value>Server address:</value>
+  </data>
   <data name="SetupWizard_ServerDetails_ConnectionFailedError" xml:space="preserve">
     <value>Could not connect to the media browser server. Please ensure the server is installed and available.</value>
   </data>
   <data name="SetupWizard_ServerDetails_Content" xml:space="preserve">
     <value>Please confirm the location of your server.</value>
-  </data>
-  <data name="SetupWizard_ServerDetails_HostNameLabel" xml:space="preserve">
-    <value>Host name or IP address:</value>
-  </data>
-  <data name="SetupWizard_ServerDetails_PortLabel" xml:space="preserve">
-    <value>Port number:</value>
   </data>
   <data name="SetupWizard_ServerDetails_ServerDownloadLinkText" xml:space="preserve">
     <value>Download Media Browser Server</value>

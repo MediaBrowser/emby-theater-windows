@@ -11,6 +11,8 @@ using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.System;
 using MediaBrowser.Theater.Api.Configuration;
+using MediaBrowser.Theater.Api.Networking;
+using MediaBrowser.Theater.Api.Session;
 
 namespace MediaBrowser.Theater.Api.System
 {
@@ -18,105 +20,88 @@ namespace MediaBrowser.Theater.Api.System
         : IServerConnectionManager
     {
         private readonly IApiClient _apiClient;
+        private readonly ITheaterApplicationHost _appHost;
+        private readonly ISessionManager _sessionManager;
         private readonly ITheaterConfigurationManager _configurationManager;
         private readonly ILogger _logger;
 
-        public ServerConnectionManager(ILogManager logManager, ITheaterConfigurationManager configurationManager, IApiClient apiClient)
+        public ServerConnectionManager(ILogManager logManager, ITheaterConfigurationManager configurationManager, IApiClient apiClient, ITheaterApplicationHost appHost, ISessionManager sessionManager)
         {
             _logger = logManager.GetLogger("ServerManager");
             _configurationManager = configurationManager;
             _apiClient = apiClient;
+            _appHost = appHost;
+            _sessionManager = sessionManager;
         }
 
-        public async Task<bool> AttemptServerConnection()
+        public async Task<PublicSystemInfo> AttemptServerConnection()
         {
-            bool foundServer = false;
-
-            SystemInfo systemInfo = null;
-
             //Try and send WOL now to give system time to wake
             await SendWakeOnLanCommand();
 
             try {
-                systemInfo = await _apiClient.GetSystemInfoAsync(CancellationToken.None).ConfigureAwait(false);
-
-                foundServer = true;
+                return await _apiClient.GetPublicSystemInfoAsync(CancellationToken.None).ConfigureAwait(false);
             }
             catch (Exception ex) {
-                _logger.ErrorException("Error connecting to server using saved connection information. Host: {0}, Port {1}", ex,
-                                       _apiClient.ServerHostName, _apiClient.ServerApiPort);
-            }
-
-            if (foundServer) {
-                //Check WOL config
-                if (_configurationManager.Configuration.WakeOnLanConfiguration == null) {
-                    _configurationManager.Configuration.WakeOnLanConfiguration = new WolConfiguration();
-                    _configurationManager.SaveConfiguration();
-                }
-
-                WolConfiguration wolConfig = _configurationManager.Configuration.WakeOnLanConfiguration;
-
-                try {
-                    List<string> currentIpAddresses = await NetworkUtils.ResolveIpAddressesForHostName(_configurationManager.Configuration.ServerHostName);
-
-                    bool hasChanged = currentIpAddresses.Any(currentIpAddress => wolConfig.HostIpAddresses.All(x => x != currentIpAddress));
-
-                    if (!hasChanged) {
-                        hasChanged = wolConfig.HostIpAddresses.Any(hostIpAddress => currentIpAddresses.All(x => x != hostIpAddress));
-                    }
-
-                    if (hasChanged) {
-                        wolConfig.HostMacAddresses =
-                            await NetworkUtils.ResolveMacAddressesForHostName(_configurationManager.Configuration.ServerHostName);
-                        wolConfig.HostIpAddresses = currentIpAddresses;
-
-                        //Always add system info MAC address in case we are in a WAN setting
-                        if (!wolConfig.HostMacAddresses.Contains(systemInfo.MacAddress)) {
-                            wolConfig.HostMacAddresses.Add(systemInfo.MacAddress);
-                        }
-
-                        _configurationManager.SaveConfiguration();
-                    }
-                }
-                catch (Exception ex) {
-                    _logger.ErrorException("Error attempting to configure WOL.", ex);
-                }
+                _logger.ErrorException("Error connecting to server using saved connection information. Address: {0}", ex, _apiClient.ServerAddress);
             }
 
             //Try and wait for WOL if its configured
-            if (!foundServer && _configurationManager.Configuration.WakeOnLanConfiguration.HostMacAddresses.Count > 0) {
+            if (_configurationManager.Configuration.WakeOnLanConfiguration.HostMacAddresses.Count > 0) {
                 for (int i = 0; i < _configurationManager.Configuration.WakeOnLanConfiguration.WakeAttempts; i++) {
                     try {
-                        systemInfo = await _apiClient.GetSystemInfoAsync(CancellationToken.None).ConfigureAwait(false);
+                        return await _apiClient.GetPublicSystemInfoAsync(CancellationToken.None).ConfigureAwait(false);
                     }
                     catch (Exception) { }
-
-                    if (systemInfo != null) {
-                        foundServer = true;
-                        break;
-                    }
                 }
             }
 
             //Try and find server
-            if (!foundServer) {
-                try {
-                    IPEndPoint address = await new ServerLocator().FindServer(500, CancellationToken.None).ConfigureAwait(false);
+            try {
+                var serverInfo = await new ServerLocator().FindServers(500, CancellationToken.None).ConfigureAwait(false);
 
-                    string[] parts = address.ToString().Split(':');
+                _apiClient.ChangeServerLocation(serverInfo.First().Address);
 
-                    _apiClient.ChangeServerLocation(parts[0], address.Port);
-
-                    await _apiClient.GetSystemInfoAsync(CancellationToken.None).ConfigureAwait(false);
-
-                    foundServer = true;
-                }
-                catch (Exception ex) {
-                    _logger.ErrorException("Error attempting to locate server.", ex);
-                }
+                return await _apiClient.GetPublicSystemInfoAsync(CancellationToken.None).ConfigureAwait(false);
+            }
+            catch (Exception ex) {
+                _logger.ErrorException("Error attempting to locate server.", ex);
             }
 
-            return foundServer;
+            return null;
+        }
+
+        public async Task<bool> AttemptAutoLogin(PublicSystemInfo systemInfo)
+        {
+            //Check for auto-login credientials
+            var config = _appHost.TheaterConfigurationManager.Configuration;
+
+            try
+            {
+                if (systemInfo != null && string.Equals(systemInfo.Id, config.AutoLoginConfiguration.ServerId))
+                {
+                    await _sessionManager.ValidateSavedLogin(config.AutoLoginConfiguration);
+                    return true;
+                }
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                //Login failed, redirect to login page and clear the auto-login
+                _logger.ErrorException("Auto-login failed", ex);
+
+                config.AutoLoginConfiguration = new AutoLoginConfiguration();
+                _appHost.TheaterConfigurationManager.SaveConfiguration();
+            }
+            catch (FormatException ex)
+            {
+                //Login failed, redirect to login page and clear the auto-login
+                _logger.ErrorException("Auto-login password hash corrupt", ex);
+
+                config.AutoLoginConfiguration = new AutoLoginConfiguration();
+                _appHost.TheaterConfigurationManager.SaveConfiguration();
+            }
+
+            return false;
         }
 
         public async Task SendWakeOnLanCommand()
@@ -128,7 +113,7 @@ namespace MediaBrowser.Theater.Api.System
                 return;
             }
 
-            _logger.Log(LogSeverity.Info, String.Format("Sending Wake on LAN signal to {0}", _configurationManager.Configuration.ServerHostName));
+            _logger.Log(LogSeverity.Info, String.Format("Sending Wake on LAN signal to {0}", _configurationManager.Configuration.ServerAddress));
 
             //Send magic packets to each address
             foreach (string macAddress in wolConfig.HostMacAddresses) {
@@ -155,14 +140,18 @@ namespace MediaBrowser.Theater.Api.System
                     }
                 }
 
-                //Send packet WAN
-                using (var udp = new UdpClient()) {
-                    try {
-                        udp.Connect(_configurationManager.Configuration.ServerHostName, wolConfig.Port);
-                        await udp.SendAsync(payload, payloadSize);
-                    }
-                    catch (Exception ex) {
-                        _logger.Error(String.Format("Magic packet send failed: {0}", ex.Message));
+                var hostname = _configurationManager.Configuration.WakeOnLanConfiguration.HostName;
+
+                if (!string.IsNullOrEmpty(hostname)) {
+                    //Send packet WAN
+                    using (var udp = new UdpClient()) {
+                        try {
+                            udp.Connect(hostname, wolConfig.Port);
+                            await udp.SendAsync(payload, payloadSize);
+                        }
+                        catch (Exception ex) {
+                            _logger.Error(String.Format("Magic packet send failed: {0}", ex.Message));
+                        }
                     }
                 }
             }

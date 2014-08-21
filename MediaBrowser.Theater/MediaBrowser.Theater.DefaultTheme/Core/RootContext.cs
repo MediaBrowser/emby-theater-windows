@@ -1,10 +1,8 @@
-﻿using System;
-using System.Threading.Tasks;
-using MediaBrowser.Model.Logging;
+﻿using System.Threading.Tasks;
+using MediaBrowser.Model.System;
 using MediaBrowser.Theater.Api;
-using MediaBrowser.Theater.Api.Configuration;
 using MediaBrowser.Theater.Api.Navigation;
-using MediaBrowser.Theater.Api.Session;
+using MediaBrowser.Theater.Api.System;
 using MediaBrowser.Theater.DefaultTheme.Home;
 using MediaBrowser.Theater.DefaultTheme.ItemDetails;
 using MediaBrowser.Theater.DefaultTheme.ItemList;
@@ -18,17 +16,13 @@ namespace MediaBrowser.Theater.DefaultTheme.Core
     public class RootContext
         : NavigationContext
     {
-        private readonly ITheaterApplicationHost _appHost;
-        private readonly ILogger _logger;
-        private readonly ISessionManager _sessionManager;
         private readonly INavigator _navigator;
+        private readonly IServerConnectionManager _serverConnectionManager;
 
-        public RootContext(ITheaterApplicationHost appHost, INavigator navigator, ISessionManager sessionManager, ILogManager logManager) : base(appHost)
+        public RootContext(ITheaterApplicationHost appHost, INavigator navigator, IServerConnectionManager serverConnectionManager) : base(appHost)
         {
-            _appHost = appHost;
             _navigator = navigator;
-            _sessionManager = sessionManager;
-            _logger = logManager.GetLogger("RootContext");
+            _serverConnectionManager = serverConnectionManager;
 
             // create root navigation bindings
             Binder.Bind<LoginPath, LoginContext>();
@@ -59,36 +53,13 @@ namespace MediaBrowser.Theater.DefaultTheme.Core
 
         private async void AttemptLogin()
         {
-            //Check for auto-login credientials
-            ApplicationConfiguration config = _appHost.TheaterConfigurationManager.Configuration;
-            try {
-                if (config.AutoLoginConfiguration.UserName != null && config.AutoLoginConfiguration.UserPasswordHash != null) {
-                    //Attempt password login
-                    await _sessionManager.LoginWithHash(config.AutoLoginConfiguration.UserName, config.AutoLoginConfiguration.UserPasswordHash, true);
-                    return;
-                }
-                if (config.AutoLoginConfiguration.UserName != null) {
-                    //Attempt passwordless login
-                    await _sessionManager.Login(config.AutoLoginConfiguration.UserName, string.Empty, true);
-                    return;
+            PublicSystemInfo serverInfo = await _serverConnectionManager.AttemptServerConnection();
+            if (serverInfo != null) {
+                bool autoLoggedIn = await _serverConnectionManager.AttemptAutoLogin(serverInfo);
+                if (!autoLoggedIn) {
+                    await _navigator.Navigate(Go.To.Login());
                 }
             }
-            catch (UnauthorizedAccessException ex) {
-                //Login failed, redirect to login page and clear the auto-login
-                _logger.ErrorException("Auto-login failed", ex, config.AutoLoginConfiguration.UserName);
-
-                config.AutoLoginConfiguration = new AutoLoginConfiguration();
-                _appHost.TheaterConfigurationManager.SaveConfiguration();
-            }
-            catch (FormatException ex) {
-                //Login failed, redirect to login page and clear the auto-login
-                _logger.ErrorException("Auto-login password hash corrupt", ex);
-
-                config.AutoLoginConfiguration = new AutoLoginConfiguration();
-                _appHost.TheaterConfigurationManager.SaveConfiguration();
-            }
-
-            await _navigator.Navigate(Go.To.Login());
         }
     }
 }

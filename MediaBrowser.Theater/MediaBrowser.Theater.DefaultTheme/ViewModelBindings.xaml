@@ -111,10 +111,6 @@
         <movies1:LatestMoviesView/>
     </DataTemplate>
     
-    <DataTemplate DataType="{x:Type movies:LatestTrailersViewModel}">
-        <movies1:LatestTrailersView/>
-    </DataTemplate>
-    
     <DataTemplate DataType="{x:Type viewModels:ImageViewerViewModel}">
         <views:ImageViewerView/>
     </DataTemplate>

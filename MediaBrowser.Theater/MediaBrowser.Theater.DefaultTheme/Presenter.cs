@@ -145,12 +145,12 @@ namespace MediaBrowser.Theater.DefaultTheme
                 }
 
                 // Set width
-                if (config.WindowWidth.HasValue) {
+                if (config.WindowWidth.HasValue && config.WindowWidth.Value > 0) {
                     window.Width = Math.Min(config.WindowWidth.Value, SystemParameters.VirtualScreenWidth - left);
                 }
 
                 // Set height
-                if (config.WindowHeight.HasValue) {
+                if (config.WindowHeight.HasValue && config.WindowHeight.Value > 0) {
                     window.Height = Math.Min(config.WindowHeight.Value, SystemParameters.VirtualScreenHeight - top);
                 }
 
@@ -241,6 +241,10 @@ namespace MediaBrowser.Theater.DefaultTheme
             playerWindow.Load += HiddenWindow_Load;
             playerWindow.Activated += HiddenWindow_Activated;
 
+            if (startPosition.HasValue) {
+                playerWindow.StartPosition = startPosition.Value;
+            }
+
             if (width.HasValue) {
                 playerWindow.Width = width.Value;
             }
@@ -255,10 +259,6 @@ namespace MediaBrowser.Theater.DefaultTheme
             }
 
             playerWindow.WindowState = windowState;
-
-            if (startPosition.HasValue) {
-                playerWindow.StartPosition = startPosition.Value;
-            }
 
             _mainWindow.Loaded += (s, e) => {
                 MovePlayerWindow(playerWindow);

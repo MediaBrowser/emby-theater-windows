@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -22,9 +23,9 @@ using MediaBrowser.Theater.Presentation;
 using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.ViewModels;
 
-namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
+namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Generic
 {
-    public class TvSpotlightViewModel
+    public class GenericFolderSpotlightViewModel
         : BaseViewModel, IKnownSize, IHomePage
     {
         private readonly IApiClient _apiClient;
@@ -37,7 +38,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
         private readonly ISessionManager _sessionManager;
         private CancellationTokenSource _mainViewCancellationTokenSource;
 
-        public TvSpotlightViewModel(BaseItemDto tvFolder, IImageManager imageManager, INavigator navigator, IApiClient apiClient, IServerEvents serverEvents, ISessionManager sessionManager, ILogManager logManager, IPlaybackManager playbackManager)
+        public GenericFolderSpotlightViewModel(BaseItemDto folder, IImageManager imageManager, INavigator navigator, IApiClient apiClient, IServerEvents serverEvents, ISessionManager sessionManager, ILogManager logManager, IPlaybackManager playbackManager)
         {
             _imageManager = imageManager;
             _navigator = navigator;
@@ -45,41 +46,41 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
             _serverEvents = serverEvents;
             _playbackManager = playbackManager;
             _sessionManager = sessionManager;
-            _logger = logManager.GetLogger("TV Spotlight");
+            _logger = logManager.GetLogger(folder.Name + " Spotlight");
             SpotlightHeight = HomeViewModel.TileHeight*2 + HomeViewModel.TileMargin*2;
             SpotlightWidth = 16*(SpotlightHeight/9) + 100;
             _miniSpotlightWidth = HomeViewModel.TileWidth + (HomeViewModel.TileMargin/4) - 1;
 
-            Title = SectionTitle = tvFolder.Name;
-
             LowerSpotlightWidth = SpotlightWidth/3 - HomeViewModel.TileMargin*1.5;
             LowerSpotlightHeight = HomeViewModel.TileHeight;
 
-            AllShowsCommand = new RelayCommand(arg => {
+            BrowseItemsCommand = new RelayCommand(arg => {
                 var itemParams = new ItemListParameters {
-                    Items = GetChildren(tvFolder),
-                    Title = "Browse TV Shows"
+                    Items = GetChildren(folder),
+                    Title = "Browse All" //todo localize
                 };
 
                 navigator.Navigate(Go.To.ItemList(itemParams));
             });
-
-            SpotlightViewModel = new ItemSpotlightViewModel(imageManager, apiClient) {
-                ImageType = ImageType.Backdrop,
-                ItemSelectedAction = i => navigator.Navigate(Go.To.Item(i))
-            };
-
+            
             AllShowsImagesViewModel = new ImageSlideshowViewModel(imageManager, Enumerable.Empty<string>()) {
                 ImageStretch = Stretch.UniformToFill
             };
 
-            MiniSpotlightItems = new RangeObservableCollection<ItemTileViewModel> {
+            MiniSpotlightItemsSide = new RangeObservableCollection<ItemTileViewModel> {
                 CreateMiniSpotlightItem(),
                 CreateMiniSpotlightItem(),
                 CreateMiniSpotlightItem(),
             };
 
-            LoadViewModels(tvFolder);
+            MiniSpotlightItemsBottom = new RangeObservableCollection<ItemTileViewModel> {
+                CreateMiniSpotlightItem(),
+                CreateMiniSpotlightItem(),
+            };
+
+            Title = SectionTitle = folder.Name;
+
+            LoadViewModels(folder);
         }
         
         public double SpotlightWidth { get; private set; }
@@ -88,16 +89,15 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
         public double LowerSpotlightWidth { get; private set; }
         public double LowerSpotlightHeight { get; private set; }
 
-        public ItemSpotlightViewModel SpotlightViewModel { get; private set; }
-        public RangeObservableCollection<ItemTileViewModel> MiniSpotlightItems { get; private set; }
         public ImageSlideshowViewModel AllShowsImagesViewModel { get; private set; }
-        public ICommand AllShowsCommand { get; private set; }
-        public ICommand GenresCommand { get; private set; }
-        public ICommand UpcomingCommand { get; private set; }
+        public RangeObservableCollection<ItemTileViewModel> MiniSpotlightItemsSide { get; private set; }
+        public RangeObservableCollection<ItemTileViewModel> MiniSpotlightItemsBottom { get; private set; }
 
-        public string Title { get; private set; }
+        public ICommand BrowseItemsCommand { get; private set; }
 
-        public string SectionTitle { get; private set; }
+        public string Title { get; set; }
+
+        public string SectionTitle { get; set; }
 
         public int Index { get; set; }
 
@@ -145,10 +145,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
             {
                 UserId = _sessionManager.CurrentUser.Id,
                 ParentId = item.Id,
-                IncludeItemTypes = new[] { "Series" },
                 SortBy = new[] { ItemSortBy.SortName },
-                Fields = MovieSpotlightViewModel.QueryFields,
-                Recursive = true
+                Fields = MovieSpotlightViewModel.QueryFields
             };
 
             return _apiClient.GetItemsAsync(query);
@@ -160,24 +158,36 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
 
             try {
                 cancellationSource.Token.ThrowIfCancellationRequested();
-
+                                
                 var spotlight = await _apiClient.GetItemsAsync(new ItemQuery
                 {
                     UserId = _sessionManager.CurrentUser.Id,
                     ParentId = tvFolder.Id,
-                    IncludeItemTypes = new[] { "Series" },
                     SortBy = new[] { ItemSortBy.CommunityRating },
                     SortOrder = SortOrder.Descending,
                     Fields = MovieSpotlightViewModel.QueryFields,
+                    Filters = new[] { ItemFilter.IsRecentlyAdded },
+                    Limit = 10,
                     Recursive = true
                 });
 
-                LoadSpotlightViewModel(spotlight);
+                if (spotlight.TotalRecordCount < 2) {
+                    spotlight = await _apiClient.GetItemsAsync(new ItemQuery {
+                        UserId = _sessionManager.CurrentUser.Id,
+                        ParentId = tvFolder.Id,
+                        SortBy = new[] { ItemSortBy.CommunityRating },
+                        SortOrder = SortOrder.Descending,
+                        Fields = MovieSpotlightViewModel.QueryFields,
+                        Limit = 10,
+                        Recursive = true
+                    });
+                }
+
                 await LoadAllShowsViewModel(tvFolder);
                 LoadMiniSpotlightsViewModel(spotlight);
             }
             catch (Exception ex) {
-                _logger.ErrorException("Error getting tv view", ex);
+                _logger.ErrorException("Error getting folder view", ex);
             }
             finally {
                 DisposeMainViewCancellationTokenSource(false);
@@ -197,46 +207,60 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
         private void LoadMiniSpotlightsViewModel(ItemsResult tvItems)
         {
             var rnd = new Random();
-            BaseItemDto[] items = tvItems.Items.OrderBy(i => rnd.Next()).Take(3).ToArray();
+            var items = tvItems.Items.OrderBy(i => rnd.Next()).Take(5).ToList();
 
-            for (int i = 0; i < items.Length; i++) {
-                if (MiniSpotlightItems.Count > i) {
-                    MiniSpotlightItems[i].Item = items[i];
+            AddItemsToMiniSpotlight(MiniSpotlightItemsBottom, items.Take(2).ToList());
+            AddItemsToMiniSpotlight(MiniSpotlightItemsSide, items.Skip(2).Take(3).ToList());
+        }
+
+        private void AddItemsToMiniSpotlight(RangeObservableCollection<ItemTileViewModel> spotlight, IList<BaseItemDto> items) 
+        {
+            for (int i = 0; i < items.Count; i++) {
+                if (spotlight.Count > i) {
+                    spotlight[i].Item = items[i];
                 } else {
                     ItemTileViewModel vm = CreateMiniSpotlightItem();
                     vm.Item = items[i];
 
-                    MiniSpotlightItems.Add(vm);
+                    spotlight.Add(vm);
                 }
             }
 
-            if (MiniSpotlightItems.Count > items.Length) {
-                List<ItemTileViewModel> toRemove = MiniSpotlightItems.Skip(items.Length).ToList();
-                MiniSpotlightItems.RemoveRange(toRemove);
+            if (spotlight.Count > items.Count) {
+                List<ItemTileViewModel> toRemove = spotlight.Skip(items.Count).ToList();
+                spotlight.RemoveRange(toRemove);
             }
         }
 
-        private void LoadSpotlightViewModel(ItemsResult tvItems)
+        private async Task LoadAllShowsViewModel(BaseItemDto folder)
         {
-            var first10 = tvItems.Items.Where(i => i.BackdropImageTags.Any()).Take(10).ToArray();
-            SpotlightViewModel.Items = first10;
+            var folderImage = FindFolderImage(folder);
+            if (folderImage != null) {
+                AllShowsImagesViewModel.Images.Add(folderImage);
+            } else {
+                var items = await GetChildren(folder);
+
+                IEnumerable<string> images = items.Items
+                                                  .Where(i => i.BackdropImageTags.Any())
+                                                  .Select(i => _apiClient.GetImageUrl(i.Id, new ImageOptions {
+                                                      ImageType = ImageType.Backdrop,
+                                                      Tag = i.BackdropImageTags.First(),
+                                                      Width = (int) SpotlightWidth,
+                                                      EnableImageEnhancers = false
+                                                  }));
+
+                AllShowsImagesViewModel.Images.AddRange(images);
+            }
+
+            AllShowsImagesViewModel.StartRotating();
         }
 
-        private async Task LoadAllShowsViewModel(BaseItemDto tvFolder)
+        private string FindFolderImage(BaseItemDto folder)
         {
-            var items = await GetChildren(tvFolder);
+            var preferredTypes = new[] { ImageType.Backdrop, ImageType.Art, ImageType.Primary };
 
-            IEnumerable<string> images = items.Items
-                                              .Where(i => i.BackdropImageTags.Any())
-                                              .Select(i => _apiClient.GetImageUrl(i.Id, new ImageOptions {
-                                                  ImageType = ImageType.Backdrop,
-                                                  Tag = i.BackdropImageTags.First(),
-                                                  Height = Convert.ToInt32(HomeViewModel.TileWidth*2),
-                                                  EnableImageEnhancers = false
-                                              }));
-
-            AllShowsImagesViewModel.Images.AddRange(images);
-            AllShowsImagesViewModel.StartRotating();
+            return preferredTypes.Select(imageType => _apiClient.GetImageUrl(folder.Id, new ImageOptions { ImageType = imageType, Width = (int) SpotlightWidth, EnableImageEnhancers = false }))
+                                 .FirstOrDefault(folderImage => folderImage != null);
         }
     }
 }

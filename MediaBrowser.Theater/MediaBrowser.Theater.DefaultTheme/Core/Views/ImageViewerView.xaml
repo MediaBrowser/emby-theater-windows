@@ -21,7 +21,7 @@
                 <VisualState Name="ImageLoaded">
                     <Storyboard>
                         <DoubleAnimation Storyboard.TargetName="Image" Storyboard.TargetProperty="Opacity"
-                                                 To="1" FillBehavior="HoldEnd" Duration="0:0:1.75"
+                                                 To="1" FillBehavior="HoldEnd" Duration="0:0:0.5"
                                                  DecelerationRatio="0.5" />
                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="EmptyBackground"
                                                                Storyboard.TargetProperty="Visibility">
@@ -32,7 +32,7 @@
                 <VisualState Name="ImageUnloaded">
                     <Storyboard>
                         <DoubleAnimation Storyboard.TargetName="Image" Storyboard.TargetProperty="Opacity"
-                                                 To="0" FillBehavior="HoldEnd" Duration="0:0:1.75"
+                                                 To="0" FillBehavior="HoldEnd" Duration="0:0:0.5"
                                                  DecelerationRatio="0.5" />
                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="EmptyBackground"
                                                                Storyboard.TargetProperty="Visibility">
@@ -56,7 +56,7 @@
 
         <controls:ExtendedContentControl x:Name="Image" Content="{Binding CurrentImage}" Opacity="0">
             <controls:ExtendedContentControl.TransitionAnimation>
-                <DoubleAnimation Duration="0:0:1.75">
+                <DoubleAnimation Duration="0:0:0.5">
                     <DoubleAnimation.EasingFunction>
                         <ExponentialEase EasingMode="EaseInOut" />
                     </DoubleAnimation.EasingFunction>

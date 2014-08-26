@@ -5,6 +5,7 @@ using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Library;
 using MediaBrowser.Model.Logging;
+using MediaBrowser.Model.Querying;
 using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
@@ -77,6 +78,57 @@ namespace MediaBrowser.Theater.Implementations.Playback
             if (options.Items == null || options.Items.Count(i => i.LocationType != LocationType.Offline) == 0)
             {
                 throw new ArgumentException("At least one item must be supplied.");
+            }
+
+            if (options.Items.Count == 1)
+            {
+                var item = options.Items[0];
+
+                ItemQuery query = null;
+
+                if (item.IsType("playlist"))
+                {
+                    query = new ItemQuery
+                    {
+                        ParentId = item.Id
+                    };
+                }
+                else if (item.IsType("musicalbum"))
+                {
+                    query = new ItemQuery
+                    {
+                        ParentId = item.Id,
+                        SortBy = new[] { ItemSortBy.SortName }
+                    };
+                }
+                else if (item.IsType("musicartist"))
+                {
+                    query = new ItemQuery
+                    {
+                        SortBy = new[] { ItemSortBy.SortName },
+                        IncludeItemTypes = new[] { "Audio" },
+                        Artists = new[] { item.Name }
+                    };
+                }
+                else if (item.IsType("musicgenre"))
+                {
+                    query = new ItemQuery
+                    {
+                        SortBy = new[] { ItemSortBy.SortName },
+                        IncludeItemTypes = new[] { "Audio" },
+                        Genres = new[] { item.Name }
+                    };
+                }
+
+                if (query != null)
+                {
+                    query.UserId = _apiClient.CurrentUserId;
+                    query.Fields = new[] { ItemFields.Path, ItemFields.Chapters, ItemFields.MediaSources };
+
+                    var result = await _apiClient.GetItemsAsync(query);
+
+                    options.Items = result.Items.ToList();
+                }
             }
 
             PlayerConfiguration config;
@@ -672,6 +724,11 @@ namespace MediaBrowser.Theater.Implementations.Playback
         /// <returns><c>true</c> if this instance can play the specified item; otherwise, <c>false</c>.</returns>
         public bool CanPlay(BaseItemDto item)
         {
+            if (item.IsType("playlist") || item.IsType("musicalbum") || item.IsType("musicartist") || item.IsType("musicgenre"))
+            {
+                return true;
+            }
+
             if (item.IsFolder)
             {
                 return false;

@@ -6,7 +6,6 @@ using MediaBrowser.Model.Querying;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
-using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.Extensions;
 using MediaBrowser.Theater.Presentation.Pages;
 using MediaBrowser.Theater.Presentation.ViewModels;
@@ -50,6 +49,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
 
             SetDefaults(displayPreferences);
 
+            var playAllFromHere = parent.IsType("playlist") || parent.IsType("musicalbum");
+
             _viewModel = new ItemListViewModel(vm => options.CustomItemQuery(vm, displayPreferences), _presentationManager, _imageManager, _apiClient, navigationManager, playbackManager, _logger, serverEvents)
             {
                 ImageDisplayHeightGenerator = GetImageDisplayHeight,
@@ -61,7 +62,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
 
                 AutoSelectFirstItem = true,
 
-                ShowLoadingAnimation = true
+                ShowLoadingAnimation = true,
+
+                PlayAllFromHereOnPlayCommand = playAllFromHere,
+                PlayAllFromHereOnNavigateCommand = playAllFromHere
             };
 
             _viewModel.AddIndexOptions(options.IndexOptions);

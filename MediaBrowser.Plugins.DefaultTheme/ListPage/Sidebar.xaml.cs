@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using MediaBrowser.Model.Dto;
+﻿using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
@@ -86,41 +85,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
 
         private async void UpdateLogoForListView(ItemViewModel viewModel, BaseItemDto item)
         {
-            if (item != null && item.BackdropCount > 0)
-            {
-                var tokenSource = new CancellationTokenSource();
-
-                _logoCancellationTokenSource = tokenSource;
-
-                try
-                {
-                    var img = await viewModel.GetBitmapImageAsync(new ImageOptions
-                    {
-                        ImageType = ImageType.Backdrop,
-                        Height = 320
-
-                    }, tokenSource.Token);
-
-                    tokenSource.Token.ThrowIfCancellationRequested();
-
-                    LogoImage.Source = img;
-                    LogoImage.Visibility = Visibility.Visible;
-                    LogoImage.HorizontalAlignment = HorizontalAlignment.Left;
-                }
-                catch (OperationCanceledException)
-                {
-                    LogoImage.Visibility = Visibility.Collapsed;
-                }
-                catch
-                {
-                    LogoImage.Visibility = Visibility.Collapsed;
-                }
-                finally
-                {
-                    DisposeLogoCancellationToken(tokenSource, false);
-                }
-            }
-            else if (item != null && item.HasThumb)
+            if (item != null && item.HasThumb)
             {
                 var tokenSource = new CancellationTokenSource();
 

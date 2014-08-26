@@ -44,15 +44,19 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         public ICommand NavigateCommand { get; private set; }
         public ICommand PlayCommand { get; private set; }
+        public ICommand PlayAllFromHereCommand { get; private set; }
 
         public bool EnableBackdropsForCurrentItem { get; set; }
         public bool AutoSelectFirstItem { get; set; }
         public bool ShowLoadingAnimation { get; set; }
 
+        public bool PlayAllFromHereOnPlayCommand { get; set; }
+        public bool PlayAllFromHereOnNavigateCommand { get; set; }
+
         private readonly Dispatcher _dispatcher;
 
         public bool EnableServerImageEnhancers { get; set; }
-        
+
         public ItemListViewModel(Func<ItemListViewModel, Task<ItemsResult>> getItemsDelegate, IPresentationManager presentationManager, IImageManager imageManager, IApiClient apiClient, INavigationService navigationService, IPlaybackManager playbackManager, ILogger logger, IServerEvents serverEvents)
         {
             EnableBackdropsForCurrentItem = true;
@@ -73,6 +77,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
             NavigateCommand = new RelayCommand(Navigate);
             PlayCommand = new RelayCommand(Play);
+            PlayAllFromHereCommand = new RelayCommand(PlayAllFromHere);
         }
 
         public string ListType { get; set; }
@@ -204,7 +209,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 OnPropertyChanged("CurrentItemIndex");
             }
         }
-        
+
         private double? _medianPrimaryImageAspectRatio;
         public double? MedianPrimaryImageAspectRatio
         {
@@ -657,6 +662,11 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         private async void Navigate(object commandParameter)
         {
+            if (PlayAllFromHereOnNavigateCommand)
+            {
+                PlayAllFromHere(commandParameter);
+                return;
+            }
             var item = commandParameter as ItemViewModel;
 
             if (item != null)
@@ -679,6 +689,39 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             if (item != null)
             {
                 item.Play();
+            }
+        }
+
+        private async void PlayAllFromHere(object commandParameter)
+        {
+            var itemViewModel = commandParameter as ItemViewModel;
+
+            if (itemViewModel != null)
+            {
+                try
+                {
+                    var items = _listItems.SkipWhile(i => i != itemViewModel)
+                        .Where(i => _playbackManager.CanPlay(i.Item))
+                        .ToList();
+
+                    if (items.Count > 0)
+                    {
+                        var result = await _apiClient.GetItemsAsync(new ItemQuery
+                        {
+                            UserId = _apiClient.CurrentUserId,
+
+                            Fields = new[] { ItemFields.Path, ItemFields.Chapters, ItemFields.MediaSources },
+
+                            Ids = items.Select(i => i.Item.Id).ToArray()
+                        });
+
+                        await _playbackManager.Play(new PlayOptions(result.Items));
+                    }
+                }
+                catch (Exception)
+                {
+                    _presentationManager.ShowDefaultErrorMessage();
+                }
             }
         }
 
@@ -707,7 +750,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 }
 
                 _lastIndexValue = _indexOptionsCollectionView.CurrentItem;
-                
+
                 if (_indexSelectionChangeTimer == null)
                 {
                     _indexSelectionChangeTimer = new Timer(OnIndexSelectionChange, null, 600, Timeout.Infinite);
@@ -774,7 +817,14 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         public void HandlePlayCommand()
         {
-            Play(CurrentItem);
+            if (PlayAllFromHereOnPlayCommand)
+            {
+                PlayAllFromHere(CurrentItem);
+            }
+            else
+            {
+                Play(CurrentItem);
+            }
         }
     }
 }

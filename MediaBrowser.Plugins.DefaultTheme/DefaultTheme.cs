@@ -147,7 +147,8 @@ namespace MediaBrowser.Plugins.DefaultTheme
             {
                 var options = GetListPageConfig(item, context);
 
-                return new FolderPage(item, displayPreferences, _apiClient, _imageManager, _presentationManager, _navService, _playbackManager, _logger, _serverEvents, options);
+                return new FolderPage(item, displayPreferences, _apiClient, _imageManager, _presentationManager,
+                    _navService, _playbackManager, _logger, _serverEvents, options);
             }
 
             return GetItemPage(item, context);
@@ -220,6 +221,10 @@ namespace MediaBrowser.Plugins.DefaultTheme
         {
             var config = new ListPageConfig();
 
+            if (item.IsType("playlist"))
+            {
+                config.DefaultViewType = ListViewTypes.List;
+            }
             if (context == ViewType.Tv || item.IsType("season"))
             {
                 TvViewModel.SetDefaults(config);

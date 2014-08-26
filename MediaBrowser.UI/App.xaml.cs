@@ -21,6 +21,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
+using MediaBrowser.Common.Implementations.Archiving;
 
 namespace MediaBrowser.UI
 {
@@ -645,7 +646,9 @@ namespace MediaBrowser.UI
         {
             try
             {
-                return mediaFilters.IsLavSplitterInstalled() && mediaFilters.IsLavAudioInstalled() && mediaFilters.IsLavVideoInstalled() && mediaFilters.IsXyVsFilterInstalled();
+                MediaBrowser.Theater.DirectShow.URCOMLoader.EnsureObjects(_appHost.TheaterConfigurationManager, false, new ZipClient());
+                return true;
+                //return mediaFilters.IsLavSplitterInstalled() && mediaFilters.IsLavAudioInstalled() && mediaFilters.IsLavVideoInstalled() && mediaFilters.IsXyVsFilterInstalled();
             }
             catch
             {

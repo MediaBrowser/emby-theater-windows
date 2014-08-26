@@ -41,7 +41,9 @@
                 <TextBlock Style="{StaticResource TextBlockStyle}">madVR Settings</TextBlock>
             </Button>
         </StackPanel>
-
+        <CheckBox x:Name="ChkEnableAutoRes" Margin="0 30 0 0" VerticalAlignment="Center">
+            <TextBlock Style="{StaticResource TextBlockStyle}">Change Refresh Rate to Match Video</TextBlock>
+        </CheckBox>
         <CheckBox x:Name="ChkEnableXySubFilter" Margin="0 30 0 0" VerticalAlignment="Center">
             <TextBlock Style="{StaticResource TextBlockStyle}">Enable XySubFilter *</TextBlock>
         </CheckBox>

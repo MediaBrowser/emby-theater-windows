@@ -117,7 +117,8 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
         /// </summary>
         /// <value><c>true</c> if [enable madvr]; otherwise, <c>false</c>.</value>
         public bool EnableMadvr { get; set; }
-        
+        public bool AutoChangeRefreshRate { get; set; }
+
         public VideoConfiguration()
         {
             HwaEnabledCodecs = new List<string>();
@@ -131,6 +132,8 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
 
             UseCustomPresenter = true;
             NominalRange = 2; //MFNominalRange_16_235
+
+            AutoChangeRefreshRate = false;
         }
 
         public void SetDefaults()

@@ -100,7 +100,7 @@ namespace MediaBrowser.Theater.DirectShow
         private bool _customEvrPresenterLoaded = false;
         private IUserInputManager _input = null;
         //private MMDevice _audioDevice = null;
-
+        private Resolution _startResolution = null;
         VideoScalingScheme _iVideoScaling = VideoScalingScheme.FROMINSIDE;
 
         #region LAVConfigurationValues
@@ -323,6 +323,41 @@ namespace MediaBrowser.Theater.DirectShow
 
             _item = item;
             _isInExclusiveMode = false;
+
+            if (item.IsVideo && _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig.AutoChangeRefreshRate)
+            {
+                //find the video stream (assume that the first one is the main one)
+                foreach (var ms in item.MediaStreams)
+                {
+                    if (ms.Type == MediaStreamType.Video)
+                    {
+                        _startResolution = Display.GetCurrentResolution();
+                        int videoRate = (int)ms.RealFrameRate;
+
+                        if (videoRate == 25 || videoRate == 29 || ms.IsInterlaced) //assume the video is interlaced, ms.IsInterlaced doesn't appear to be accurate
+                            videoRate = (int)(ms.RealFrameRate * 2);
+
+                        if (videoRate != _startResolution.Rate)
+                        {
+                            Resolution desiredRes = new Resolution(_startResolution.ToString());
+                            desiredRes.Rate = videoRate;
+                            if (Display.ChangeResolution(desiredRes, false))
+                                _logger.Info("Changed resolution from {0} to {1}", _startResolution, desiredRes);
+                            else
+                            {
+                                _logger.Info("Couldn't change resolution from {0} to {1}", _startResolution, desiredRes);
+                                _startResolution = null;
+                            }
+                        }
+                        else
+                            _startResolution = null;
+
+                        break;
+                    }
+                    else
+                        _startResolution = null;
+                }
+            }
 
             var isDvd = ((item.OriginalItem.VideoType ?? VideoType.VideoFile) == VideoType.Dvd ||
                          (item.OriginalItem.IsoType ?? IsoType.BluRay) == IsoType.Dvd) &&
@@ -1790,6 +1825,12 @@ namespace MediaBrowser.Theater.DirectShow
             // Stop media playback
             if (_mediaControl != null)
                 hr = _mediaControl.Stop();
+
+            if (_startResolution != null)
+            {
+                _logger.Info("Change resolution back to {0}", _startResolution);
+                Display.ChangeResolution(_startResolution, false);
+            }
 
             DsError.ThrowExceptionForHR(hr);
 

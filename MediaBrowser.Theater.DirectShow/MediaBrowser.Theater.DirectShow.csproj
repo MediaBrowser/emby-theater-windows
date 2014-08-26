@@ -131,6 +131,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="ResolutionChanger.cs" />
     <Compile Include="Streaming\MediaBrowserTheaterProfile.cs" />
     <Compile Include="StringProcessing.cs" />
     <Compile Include="Subtitles.cs" />

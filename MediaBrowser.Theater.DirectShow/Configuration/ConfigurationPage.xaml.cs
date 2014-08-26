@@ -106,6 +106,7 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
             SelectHwaMode.SelectedValue = config.VideoConfig.HwaMode.ToString();
             SelectAudioRenderer.SelectedValue = config.AudioConfig.Renderer.ToString();
             SelectMaxStreamingBitrate.SelectedValue = (_config.Configuration.MaxStreamingBitrate / 1000000).ToString(CultureInfo.InvariantCulture);
+            ChkEnableAutoRes.IsChecked = config.VideoConfig.AutoChangeRefreshRate;
         }
 
         void GeneralSettingsPage_Unloaded(object sender, RoutedEventArgs e)
@@ -120,7 +121,7 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
             config.AudioConfig.Renderer = (AudioRendererChoice)Enum.Parse(typeof(AudioRendererChoice), SelectAudioRenderer.SelectedValue);
 
             config.VideoConfig.HwaMode = int.Parse(SelectHwaMode.SelectedValue);
-
+            config.VideoConfig.AutoChangeRefreshRate = ChkEnableAutoRes.IsChecked ?? false;
             _config.Configuration.MaxStreamingBitrate = int.Parse(SelectMaxStreamingBitrate.SelectedValue) * 1000000;
 
             _config.SaveConfiguration();

@@ -2684,10 +2684,6 @@ namespace MediaBrowser.Theater.DirectShow
             ToggleHideSubtitles(stream.Name.ToLower().Contains("no subtitles"));
         }
         
-        [DllImport("shlwapi.dll", CharSet = CharSet.Unicode)]
-        [return: MarshalAsAttribute(UnmanagedType.Bool)]
-        internal static extern bool PathIsUNC([MarshalAsAttribute(UnmanagedType.LPWStr), In] string pszPath);
-
         private async void LoadExternalSubtitleFromStream(SelectableMediaStream stream)
         {
             // get a url for the stream
@@ -2729,16 +2725,8 @@ namespace MediaBrowser.Theater.DirectShow
             }
             else
             {
-                if (PathIsUNC(stream.Path))
-                {
-                    // if it is unc path, we can stream it directly
-                    LoadExternalSubtitle(stream.Path);
-                }
-                else
-                {
-                     // if not, we need to copy the stream to the local system and play form there (xyfilter issue)
-                     LoadExternalSubtitleFromStream(stream);
-                }
+                // if not, we need to copy the stream to the local system and play form there (xyfilter issue)
+                LoadExternalSubtitleFromStream(stream);
 
                 UpdateStreamActiveSetting(stream.Name, stream.Type); // display this  streams as active
             }

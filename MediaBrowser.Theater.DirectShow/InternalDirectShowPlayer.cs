@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 
 namespace MediaBrowser.Theater.DirectShow
 {
-    public class InternalDirectShowPlayer : IInternalMediaPlayer, IVideoPlayer
+    public class InternalDirectShowPlayer : IInternalMediaPlayer, IVideoPlayer, IDisposable
     {
         private DirectShowPlayer _mediaPlayer;
 
@@ -34,10 +34,19 @@ namespace MediaBrowser.Theater.DirectShow
         private readonly IUserInputManager _inputManager;
         private readonly IHttpClient _httpClient;
         private readonly IZipClient _zipClient;
+        private URCOMLoader _privateCom = null;
 
         public event EventHandler<MediaChangeEventArgs> MediaChanged;
 
         public event EventHandler<PlaybackStopEventArgs> PlaybackCompleted;
+
+        public URCOMLoader PrivateCom
+        {
+            get
+            {
+                return _privateCom;
+            }
+        }
 
         private List<BaseItemDto> _playlist = new List<BaseItemDto>();
 
@@ -54,6 +63,15 @@ namespace MediaBrowser.Theater.DirectShow
             _isoManager = isoManager;
             _inputManager = inputManager;
             _zipClient = zipClient;
+
+            _config.Configuration.InternalPlayerConfiguration.VideoConfig.SetDefaults();
+            _config.Configuration.InternalPlayerConfiguration.AudioConfig.SetDefaults();
+            _config.Configuration.InternalPlayerConfiguration.SubtitleConfig.SetDefaults();
+            _config.Configuration.InternalPlayerConfiguration.COMConfig.SetDefaults();
+
+            //use a static object so we keep the libraries in the same place. Doesn't usually matter, but the EVR Presenter does some COM hooking that has problems if we change the lib address.
+            if (_privateCom == null)
+                _privateCom = new URCOMLoader(_config, zipClient);
         }
 
         public IReadOnlyList<BaseItemDto> Playlist
@@ -607,6 +625,32 @@ namespace MediaBrowser.Theater.DirectShow
                 if (throwOnError) throw ex;
             }
         }
+
+        #region IDisposable
+
+        private bool _disposed = false;
+        private void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (!_disposed)
+                {
+                    if (_privateCom != null)
+                        _privateCom.Dispose();
+                    _privateCom = null;
+
+                    _disposed = true;
+                }
+            }
+        }
+
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        #endregion
     }
 
     public enum TrackCompletionReason

@@ -87,7 +87,6 @@ namespace MediaBrowser.Theater.DirectShow
         private double _currentPlaybackRate = 1.0;
 
         private object _madvr = null;
-        private static URCOMLoader _urCom = null;
 
         private PlayableItem _item = null;
 
@@ -185,15 +184,6 @@ namespace MediaBrowser.Theater.DirectShow
             //_input.
             _mbtConfig = mbtConfig;
             _apiClient = apiClient;
-
-            _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig.SetDefaults();
-            _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.SetDefaults();
-            _mbtConfig.Configuration.InternalPlayerConfiguration.SubtitleConfig.SetDefaults();
-            _mbtConfig.Configuration.InternalPlayerConfiguration.COMConfig.SetDefaults();
-
-            //use a static object so we keep the libraries in the same place. Doesn't usually matter, but the EVR Presenter does some COM hooking that has problems if we change the lib address.
-            if (_urCom == null)
-                _urCom = new URCOMLoader(_mbtConfig, zipClient);
         }
 
         private IBaseFilter AudioRenderer
@@ -441,7 +431,7 @@ namespace MediaBrowser.Theater.DirectShow
             {
                 //prefer LAV Spliter Source
                 bool loadSource = true;
-                object objLavSource = _urCom.GetObject(typeof (LAVSplitterSource).GUID, true);
+                object objLavSource = _playerWrapper.PrivateCom.GetObject(typeof(LAVSplitterSource).GUID, true);
                 _sourceFilter = objLavSource as IBaseFilter;
                     //Activator.CreateInstance(Type.GetTypeFromCLSID(new Guid("{B98D13E7-55DB-4385-A33D-09FD1BA26338}"))) as DirectShowLib.IBaseFilter;
                 if (_sourceFilter != null)
@@ -560,7 +550,7 @@ namespace MediaBrowser.Theater.DirectShow
                 case AudioRendererChoice.WASAPI:
                     try
                     {
-                        _wasapiAR = _urCom.GetObject(typeof(MPAudioFilter).GUID, true);
+                        _wasapiAR = _playerWrapper.PrivateCom.GetObject(typeof(MPAudioFilter).GUID, true);
                         var aRenderer = _wasapiAR as DirectShowLib.IBaseFilter;
                         if (aRenderer != null)
                         {
@@ -644,7 +634,7 @@ namespace MediaBrowser.Theater.DirectShow
 
                     try
                     {
-                        _madvr = _urCom.GetObject(typeof (MadVR).GUID, true); // new MadVR();
+                        _madvr = _playerWrapper.PrivateCom.GetObject(typeof (MadVR).GUID, true); // new MadVR();
                         var vmadvr = _madvr as DirectShowLib.IBaseFilter;
                         if (vmadvr != null)
                         {
@@ -719,7 +709,7 @@ namespace MediaBrowser.Theater.DirectShow
                 {
                     try
                     {
-                        _xySubFilter = _urCom.GetObject(typeof (XySubFilter).GUID, true); //new XySubFilter();
+                        _xySubFilter = _playerWrapper.PrivateCom.GetObject(typeof (XySubFilter).GUID, true); //new XySubFilter();
                         var vxySubFilter = _xySubFilter as DirectShowLib.IBaseFilter;
                         if (vxySubFilter != null)
                         {
@@ -756,7 +746,7 @@ namespace MediaBrowser.Theater.DirectShow
 
                 try
                 {
-                    _lavvideo = _urCom.GetObject(typeof (LAVVideo).GUID, true); //new LAVVideo();
+                    _lavvideo = _playerWrapper.PrivateCom.GetObject(typeof (LAVVideo).GUID, true); //new LAVVideo();
                     var vlavvideo = _lavvideo as DirectShowLib.IBaseFilter;
                     if (vlavvideo != null)
                     {
@@ -864,7 +854,7 @@ namespace MediaBrowser.Theater.DirectShow
 
             try
             {
-                _lavaudio = _urCom.GetObject(typeof (LAVAudio).GUID, true); // new LAVAudio();
+                _lavaudio = _playerWrapper.PrivateCom.GetObject(typeof (LAVAudio).GUID, true); // new LAVAudio();
                 var vlavaudio = _lavaudio as DirectShowLib.IBaseFilter;
                 if (vlavaudio != null)
                 {
@@ -1327,7 +1317,7 @@ namespace MediaBrowser.Theater.DirectShow
             if (_mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig.UseCustomPresenter)
             {
                 IMFVideoRenderer pRenderer = pEvr as IMFVideoRenderer;
-                pPresenter = _urCom.GetObject("EVR Presenter (babgvant)", false) as IMFVideoPresenter;
+                pPresenter = _playerWrapper.PrivateCom.GetObject("EVR Presenter (babgvant)", false) as IMFVideoPresenter;
 
                 try
                 {

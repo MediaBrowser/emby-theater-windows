@@ -299,7 +299,7 @@ namespace DirectShowLib.Utils
         //            filter = filters[0] as IAMLine21Decoder;
         //            if (filter != null)
         //                break;
-                    
+
         //            Marshal.ReleaseComObject(filters[0]);
         //        }
         //        Marshal.ReleaseComObject(enumFilters);
@@ -894,8 +894,8 @@ namespace DirectShowLib.Utils
             int eaten;
 
             try
-            {               
-                int  hr = NativeMethods.CreateBindCtx(0, out bindCtx);
+            {
+                int hr = NativeMethods.CreateBindCtx(0, out bindCtx);
                 Marshal.ThrowExceptionForHR(hr);
 
                 hr = NativeMethods.MkParseDisplayName(bindCtx, devicePath, out eaten, out moniker);
@@ -1141,11 +1141,11 @@ namespace DirectShowLib.Utils
     [Flags]
     internal enum STGC
     {
-        Default        = 0,
-        Overwrite      = 1,
-        OnlyIfCurrent  = 2,
+        Default = 0,
+        Overwrite = 1,
+        OnlyIfCurrent = 2,
         DangerouslyCommitMerelyToDiskCache = 4,
-        Consolidate    = 8
+        Consolidate = 8
     }
 
     [Guid("0000000b-0000-0000-C000-000000000046"),
@@ -1161,9 +1161,9 @@ namespace DirectShowLib.Utils
 #if USING_NET11
 			[Out] out UCOMIStream ppstm
 #else
-			[Out] out IStream ppstm
+ [Out] out IStream ppstm
 #endif
-            );
+);
 
         [PreserveSig]
         int OpenStream(
@@ -1174,9 +1174,9 @@ namespace DirectShowLib.Utils
 #if USING_NET11
 			[Out] out UCOMIStream ppstm
 #else
-			[Out] out IStream ppstm
+ [Out] out IStream ppstm
 #endif
-			);
+);
 
         [PreserveSig]
         int CreateStorage(
@@ -1221,9 +1221,9 @@ namespace DirectShowLib.Utils
 
         [PreserveSig]
         int EnumElements(
-            [In] int reserved1, 
-            [In] IntPtr reserved2, 
-            [In] int reserved3, 
+            [In] int reserved1,
+            [In] IntPtr reserved2,
+            [In] int reserved3,
             [Out, MarshalAs(UnmanagedType.Interface)] out object ppenum
             );
 
@@ -1232,30 +1232,30 @@ namespace DirectShowLib.Utils
 
         [PreserveSig]
         int RenameElement(
-            [In, MarshalAs(UnmanagedType.LPWStr)] string pwcsOldName, 
+            [In, MarshalAs(UnmanagedType.LPWStr)] string pwcsOldName,
             [In, MarshalAs(UnmanagedType.LPWStr)] string pwcsNewName
             );
 
         [PreserveSig]
         int SetElementTimes(
-            [In, MarshalAs(UnmanagedType.LPWStr)] string pwcsName, 
+            [In, MarshalAs(UnmanagedType.LPWStr)] string pwcsName,
 #if USING_NET11
 			[In] FILETIME pctime,
 			[In] FILETIME patime,
 			[In] FILETIME pmtime
 #else
-			[In] System.Runtime.InteropServices.ComTypes.FILETIME pctime,
-            [In] System.Runtime.InteropServices.ComTypes.FILETIME patime,
-            [In] System.Runtime.InteropServices.ComTypes.FILETIME pmtime
+ [In] System.Runtime.InteropServices.ComTypes.FILETIME pctime,
+ [In] System.Runtime.InteropServices.ComTypes.FILETIME patime,
+ [In] System.Runtime.InteropServices.ComTypes.FILETIME pmtime
 #endif
-			);
+);
 
         [PreserveSig]
         int SetClass([In, MarshalAs(UnmanagedType.LPStruct)] Guid clsid);
 
         [PreserveSig]
         int SetStateBits(
-            [In] int grfStateBits, 
+            [In] int grfStateBits,
             [In] int grfMask
             );
 
@@ -1264,46 +1264,53 @@ namespace DirectShowLib.Utils
 #if USING_NET11
 			[Out] out STATSTG pStatStg, 
 #else
-			[Out] out System.Runtime.InteropServices.ComTypes.STATSTG pStatStg, 
+[Out] out System.Runtime.InteropServices.ComTypes.STATSTG pStatStg,
 #endif
-			[In] int grfStatFlag
-            );
+ [In] int grfStatFlag
+ );
     }
 
     internal sealed class NativeMethods
     {
-        private NativeMethods(){}
+        public const int ENUM_CURRENT_SETTINGS = -1;
+        public const int ENUM_REGISTRY_SETTINGS = -2;
+
+        public const int DM_INTERLACED = 0x00000002;
+        public const int DISP_CHANGE_SUCCESSFUL = 0;
+        public const int DISP_CHANGE_RESTART = 1;
+        public const int DISP_CHANGE_FAILED = -1;
+        private NativeMethods() { }
 
         [DllImport("ole32.dll")]
 #if USING_NET11
 		public static extern int CreateBindCtx(int reserved, out UCOMIBindCtx ppbc);
 #else
-		public static extern int CreateBindCtx(int reserved, out IBindCtx ppbc);
+        public static extern int CreateBindCtx(int reserved, out IBindCtx ppbc);
 #endif
 
         [DllImport("ole32.dll")]
 #if USING_NET11
 		public static extern int MkParseDisplayName(UCOMIBindCtx pcb, [MarshalAs(UnmanagedType.LPWStr)] string szUserName, out int pchEaten, out UCOMIMoniker ppmk);
 #else
-		public static extern int MkParseDisplayName(IBindCtx pcb, [MarshalAs(UnmanagedType.LPWStr)] string szUserName, out int pchEaten, out IMoniker ppmk);
+        public static extern int MkParseDisplayName(IBindCtx pcb, [MarshalAs(UnmanagedType.LPWStr)] string szUserName, out int pchEaten, out IMoniker ppmk);
 #endif
 
-        [DllImport("oleaut32.dll", CharSet=CharSet.Unicode, ExactSpelling=true)]
+        [DllImport("oleaut32.dll", CharSet = CharSet.Unicode, ExactSpelling = true)]
         public static extern int OleCreatePropertyFrame(
-            [In] IntPtr hwndOwner, 
-            [In] int x, 
+            [In] IntPtr hwndOwner,
+            [In] int x,
             [In] int y,
-            [In, MarshalAs(UnmanagedType.LPWStr)] string lpszCaption, 
+            [In, MarshalAs(UnmanagedType.LPWStr)] string lpszCaption,
             [In] int cObjects,
-            [In, MarshalAs(UnmanagedType.LPArray, ArraySubType=UnmanagedType.IUnknown)] object[] ppUnk,
-            [In] int cPages,	
-            [In] IntPtr pPageClsID, 
-            [In] int lcid, 
-            [In] int dwReserved, 
-            [In] IntPtr pvReserved 
+            [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.IUnknown)] object[] ppUnk,
+            [In] int cPages,
+            [In] IntPtr pPageClsID,
+            [In] int lcid,
+            [In] int dwReserved,
+            [In] IntPtr pvReserved
             );
 
-        [DllImport("ole32.dll", CharSet=CharSet.Unicode, ExactSpelling=true)]
+        [DllImport("ole32.dll", CharSet = CharSet.Unicode, ExactSpelling = true)]
         public static extern int StgCreateDocfile(
             [In, MarshalAs(UnmanagedType.LPWStr)] string pwcsName,
             [In] STGM grfMode,
@@ -1311,10 +1318,10 @@ namespace DirectShowLib.Utils
             [Out] out IStorage ppstgOpen
             );
 
-        [DllImport("ole32.dll", CharSet=CharSet.Unicode, ExactSpelling=true)]
+        [DllImport("ole32.dll", CharSet = CharSet.Unicode, ExactSpelling = true)]
         public static extern int StgIsStorageFile([In, MarshalAs(UnmanagedType.LPWStr)] string pwcsName);
 
-        [DllImport("ole32.dll", CharSet=CharSet.Unicode, ExactSpelling=true)]
+        [DllImport("ole32.dll", CharSet = CharSet.Unicode, ExactSpelling = true)]
         public static extern int StgOpenStorage(
             [In, MarshalAs(UnmanagedType.LPWStr)] string pwcsName,
             [In] IStorage pstgPriority,
@@ -1339,6 +1346,117 @@ namespace DirectShowLib.Utils
 
         [DllImport("kernel32", CharSet = CharSet.Ansi, ExactSpelling = true, SetLastError = true)]
         public static extern IntPtr GetProcAddress(IntPtr hModule, string procName);
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        public static extern int EnumDisplaySettings(string deviceName, int modeNum, ref DEVMODE devMode);
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        public static extern int ChangeDisplaySettings(ref DEVMODE devMode, CDS flags);
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        public static extern int ChangeDisplaySettings(IntPtr devMode, CDS flags);
+
+    }
+
+    public enum CDS
+    {
+        Dynamic = 0,
+        UpdateRegistry = 1,
+        Test = 2,
+        FullScreen = 4,
+        Global = 8,
+        SetPrimary = 10,
+        VideoParameters = 20
+    }
+
+    public enum DisplayFixedOutput
+    {
+        Default = 0,
+        Stretch,
+        Center
+    }
+
+    public struct POINTL
+    {
+        public int x;
+        public int y;
+    }
+
+    [Flags()]
+    public enum DM : int
+    {
+        Orientation = 0x1,
+        PaperSize = 0x2,
+        PaperLength = 0x4,
+        PaperWidth = 0x8,
+        Scale = 0x10,
+        Position = 0x20,
+        NUP = 0x40,
+        DisplayOrientation = 0x80,
+        Copies = 0x100,
+        DefaultSource = 0x200,
+        PrintQuality = 0x400,
+        Color = 0x800,
+        Duplex = 0x1000,
+        YResolution = 0x2000,
+        TTOption = 0x4000,
+        Collate = 0x8000,
+        FormName = 0x10000,
+        LogPixels = 0x20000,
+        BitsPerPixel = 0x40000,
+        PelsWidth = 0x80000,
+        PelsHeight = 0x100000,
+        DisplayFlags = 0x200000,
+        DisplayFrequency = 0x400000,
+        ICMMethod = 0x800000,
+        ICMIntent = 0x1000000,
+        MediaType = 0x2000000,
+        DitherType = 0x4000000,
+        PanningWidth = 0x8000000,
+        PanningHeight = 0x10000000,
+        DisplayFixedOutput = 0x20000000
+    }
+
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
+    public struct DEVMODE
+    {
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
+        public string dmDeviceName;
+        public short dmSpecVersion;
+        public short dmDriverVersion;
+        public short dmSize;
+        public short dmDriverExtra;
+        public DM dmFields;
+        //short dmOrientation;
+        //short dmPaperSize;
+        //short dmPaperLength;
+        //short dmPaperWidth;
+        //short dmScale;
+        //short dmCopies;
+        //short dmDefaultSource;
+        //short dmPrintQuality;
+        public POINTL dmPosition;
+        public int dmDisplayOrientation;
+        public int dmDisplayFixedOutput;
+        short dmColor;
+        short dmDuplex;
+        short dmYResolution;
+        short dmTTOption;
+        short dmCollate;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
+        public string dmFormName;
+        public short dmLogPixels;
+        public int dmBitsPerPel;
+        public int dmPelsWidth;
+        public int dmPelsHeight;
+        public int dmDisplayFlags;
+        public int dmDisplayFrequency;
+        public int dmICMMethod;
+        public int dmICMIntent;
+        public int dmMediaType;
+        public int dmDitherType;
+        public int dmReserved1;
+        public int dmReserved2;
+        public int dmPanningWidth;
+        public int dmPanningHeight;
     }
     #endregion
 

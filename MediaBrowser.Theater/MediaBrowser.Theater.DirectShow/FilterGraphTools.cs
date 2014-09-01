@@ -65,18 +65,14 @@ namespace DirectShowLib.Utils
             if (graphBuilder == null)
                 throw new ArgumentNullException("graphBuilder");
 
-            try
-            {
+            try {
                 Type type = Type.GetTypeFromCLSID(clsid);
                 filter = (IBaseFilter)Activator.CreateInstance(type);
 
                 hr = graphBuilder.AddFilter(filter, name);
                 DsError.ThrowExceptionForHR(hr);
-            }
-            catch
-            {
-                if (filter != null)
-                {
+            } catch {
+                if (filter != null) {
                     Marshal.ReleaseComObject(filter);
                     filter = null;
                 }
@@ -88,13 +84,10 @@ namespace DirectShowLib.Utils
         [SecurityPermission(SecurityAction.LinkDemand, UnmanagedCode = true)]
         public static object CreateComObjectFromClsid(Guid clsid)
         {
-            try
-            {
+            try {
                 Type type = Type.GetTypeFromCLSID(clsid);
                 return Activator.CreateInstance(type);
-            }
-            catch
-            {
+            } catch {
                 return null;
             }
         }
@@ -125,12 +118,10 @@ namespace DirectShowLib.Utils
 
             DsDevice[] devices = DsDevice.GetDevicesOfCat(deviceCategory);
 
-            for (int i = 0; i < devices.Length; i++)
-            {
+            for (int i = 0; i < devices.Length; i++) {
                 if (string.IsNullOrEmpty(devices[i].Name)) //if the name is empty ignore the filter
                     continue;
-                else
-                {
+                else {
                     if (!devices[i].Name.Equals(friendlyName))
                         continue;
                 }
@@ -166,8 +157,8 @@ namespace DirectShowLib.Utils
             int hr = 0;
             IBaseFilter filter = null;
 #if USING_NET11
-			UCOMIBindCtx bindCtx = null;
-			UCOMIMoniker moniker = null;
+            UCOMIBindCtx bindCtx = null;
+            UCOMIMoniker moniker = null;
 #else
             IBindCtx bindCtx = null;
             IMoniker moniker = null;
@@ -177,8 +168,7 @@ namespace DirectShowLib.Utils
             if (graphBuilder == null)
                 throw new ArgumentNullException("graphBuilder");
 
-            try
-            {
+            try {
                 hr = NativeMethods.CreateBindCtx(0, out bindCtx);
                 Marshal.ThrowExceptionForHR(hr);
 
@@ -187,13 +177,9 @@ namespace DirectShowLib.Utils
 
                 hr = (graphBuilder as IFilterGraph2).AddSourceFilterForMoniker(moniker, bindCtx, name, out filter);
                 DsError.ThrowExceptionForHR(hr);
-            }
-            catch
-            {
+            } catch {
                 // An error occur. Just returning null...
-            }
-            finally
-            {
+            } finally {
                 if (bindCtx != null) Marshal.ReleaseComObject(bindCtx);
                 if (moniker != null) Marshal.ReleaseComObject(moniker);
             }
@@ -205,10 +191,8 @@ namespace DirectShowLib.Utils
         {
             object source = null;
             Guid iid = typeof(IBaseFilter).GUID;
-            foreach (DsDevice device in DsDevice.GetDevicesOfCat(category))
-            {
-                if (device.DevicePath.CompareTo(devicePath) == 0)
-                {
+            foreach (DsDevice device in DsDevice.GetDevicesOfCat(category)) {
+                if (device.DevicePath.CompareTo(devicePath) == 0) {
                     device.Mon.BindToObject(null, null, ref iid, out source);
                     break;
                 }
@@ -236,22 +220,18 @@ namespace DirectShowLib.Utils
                 throw new ArgumentNullException("graphBuilder");
 
             hr = graphBuilder.EnumFilters(out enumFilters);
-            if (hr == 0)
-            {
+            if (hr == 0) {
                 IBaseFilter[] filters = new IBaseFilter[1];
 
-                while (enumFilters.Next(filters.Length, filters, IntPtr.Zero) == 0)
-                {
+                while (enumFilters.Next(filters.Length, filters, IntPtr.Zero) == 0) {
                     FilterInfo filterInfo;
 
                     hr = filters[0].QueryFilterInfo(out filterInfo);
-                    if (hr == 0)
-                    {
+                    if (hr == 0) {
                         if (filterInfo.pGraph != null)
                             Marshal.ReleaseComObject(filterInfo.pGraph);
 
-                        if (filterInfo.achName.Equals(filterName))
-                        {
+                        if (filterInfo.achName.Equals(filterName)) {
                             filter = filters[0];
                             break;
                         }
@@ -299,7 +279,7 @@ namespace DirectShowLib.Utils
         //            filter = filters[0] as IAMLine21Decoder;
         //            if (filter != null)
         //                break;
-                    
+
         //            Marshal.ReleaseComObject(filters[0]);
         //        }
         //        Marshal.ReleaseComObject(enumFilters);
@@ -316,8 +296,7 @@ namespace DirectShowLib.Utils
 
             FilterInfo filterInfo;
             hr = filter.QueryFilterInfo(out filterInfo);
-            if (hr == 0)
-            {
+            if (hr == 0) {
                 if (filterInfo.pGraph != null)
                     Marshal.ReleaseComObject(filterInfo.pGraph);
 
@@ -339,41 +318,33 @@ namespace DirectShowLib.Utils
                 throw new ArgumentNullException("graphBuilder");
 
             hr = graphBuilder.EnumFilters(out enumFilters);
-            if (hr == 0)
-            {
-                while (true)
-                {
+            if (hr == 0) {
+                while (true) {
                     IBaseFilter[] filters = new IBaseFilter[1];
                     int fetched;
                     // Get the next filter
                     IntPtr d = Marshal.AllocCoTaskMem(4);
-                    try
-                    {
+                    try {
                         //int hr = emtDvr.Next(1, amtDvr, d);
                         hr = enumFilters.Next(1, filters, d);
                         DsError.ThrowExceptionForHR(hr);
                         fetched = Marshal.ReadInt32(d);
-                    }
-                    finally
-                    {
+                    } finally {
                         Marshal.FreeCoTaskMem(d);
                     }
 
-                    if (fetched > 0)
-                    {
+                    if (fetched > 0) {
                         Guid clsid;
 
                         hr = filters[0].GetClassID(out clsid);
 
-                        if ((hr == 0) && (clsid == gClsid))
-                        {
+                        if ((hr == 0) && (clsid == gClsid)) {
                             filter = filters[0];
                             break;
                         }
 
                         Marshal.ReleaseComObject(filters[0]);
-                    }
-                    else
+                    } else
                         break;
                 }
                 Marshal.ReleaseComObject(enumFilters);
@@ -402,18 +373,15 @@ namespace DirectShowLib.Utils
                 throw new ArgumentNullException("graphBuilder");
 
             hr = graphBuilder.EnumFilters(out enumFilters);
-            if (hr == 0)
-            {
+            if (hr == 0) {
                 IBaseFilter[] filters = new IBaseFilter[1];
 
-                while (enumFilters.Next(filters.Length, filters, IntPtr.Zero) == 0)
-                {
+                while (enumFilters.Next(filters.Length, filters, IntPtr.Zero) == 0) {
                     Guid clsid;
 
                     hr = filters[0].GetClassID(out clsid);
 
-                    if ((hr == 0) && (clsid == filterClsid))
-                    {
+                    if ((hr == 0) && (clsid == filterClsid)) {
                         filter = filters[0];
                         break;
                     }
@@ -436,18 +404,15 @@ namespace DirectShowLib.Utils
                 throw new ArgumentNullException("graphBuilder");
 
             hr = graphBuilder.EnumFilters(out enumFilters);
-            if (hr == 0)
-            {
+            if (hr == 0) {
                 IBaseFilter[] filters = new IBaseFilter[1];
 
-                while (enumFilters.Next(filters.Length, filters, IntPtr.Zero) == 0)
-                {
+                while (enumFilters.Next(filters.Length, filters, IntPtr.Zero) == 0) {
                     Guid clsid;
 
                     IFileSinkFilter fsf = filters[0] as IFileSinkFilter;
 
-                    if (fsf != null)
-                    {
+                    if (fsf != null) {
                         hr = fsf.SetFileName(OutputFile, null);
                         Marshal.ReleaseComObject(filters[0]);
                         break;
@@ -493,8 +458,7 @@ namespace DirectShowLib.Utils
 
             IPin pin = DsFindPin.ByName(source, pinName);
 
-            if (pin != null)
-            {
+            if (pin != null) {
                 hr = graphBuilder.Render(pin);
                 Marshal.ReleaseComObject(pin);
 
@@ -547,23 +511,16 @@ namespace DirectShowLib.Utils
             hr = filter.EnumPins(out enumPins);
             DsError.ThrowExceptionForHR(hr);
 
-            try
-            {
-                while (enumPins.Next(pins.Length, pins, IntPtr.Zero) == 0)
-                {
-                    try
-                    {
+            try {
+                while (enumPins.Next(pins.Length, pins, IntPtr.Zero) == 0) {
+                    try {
                         hr = pins[0].Disconnect();
                         DsError.ThrowExceptionForHR(hr);
-                    }
-                    finally
-                    {
+                    } finally {
                         Marshal.ReleaseComObject(pins[0]);
                     }
                 }
-            }
-            finally
-            {
+            } finally {
                 Marshal.ReleaseComObject(enumPins);
             }
         }
@@ -588,22 +545,16 @@ namespace DirectShowLib.Utils
             hr = graphBuilder.EnumFilters(out enumFilters);
             DsError.ThrowExceptionForHR(hr);
 
-            try
-            {
+            try {
                 IBaseFilter[] filters = new IBaseFilter[1];
 
-                while (enumFilters.Next(filters.Length, filters, IntPtr.Zero) == 0)
-                {
-                    try
-                    {
+                while (enumFilters.Next(filters.Length, filters, IntPtr.Zero) == 0) {
+                    try {
                         DisconnectPins(filters[0]);
-                    }
-                    catch { }
+                    } catch { }
                     Marshal.ReleaseComObject(filters[0]);
                 }
-            }
-            finally
-            {
+            } finally {
                 Marshal.ReleaseComObject(enumFilters);
             }
         }
@@ -628,22 +579,17 @@ namespace DirectShowLib.Utils
             hr = graphBuilder.EnumFilters(out enumFilters);
             DsError.ThrowExceptionForHR(hr);
 
-            try
-            {
+            try {
                 IBaseFilter[] filters = new IBaseFilter[1];
 
-                while (enumFilters.Next(filters.Length, filters, IntPtr.Zero) == 0)
-                {
+                while (enumFilters.Next(filters.Length, filters, IntPtr.Zero) == 0) {
                     filtersArray.Add(filters[0]);
                 }
-            }
-            finally
-            {
+            } finally {
                 Marshal.ReleaseComObject(enumFilters);
             }
 
-            foreach (IBaseFilter filter in filtersArray)
-            {
+            foreach (IBaseFilter filter in filtersArray) {
                 hr = graphBuilder.RemoveFilter(filter);
                 Marshal.ReleaseComObject(filter);
             }
@@ -673,8 +619,7 @@ namespace DirectShowLib.Utils
             if (graphBuilder == null)
                 throw new ArgumentNullException("graphBuilder");
 
-            try
-            {
+            try {
                 hr = NativeMethods.StgCreateDocfile(
                     fileName,
                     STGM.Create | STGM.Transacted | STGM.ReadWrite | STGM.ShareExclusive,
@@ -699,9 +644,7 @@ namespace DirectShowLib.Utils
 
                 hr = storage.Commit(STGC.Default);
                 Marshal.ThrowExceptionForHR(hr);
-            }
-            finally
-            {
+            } finally {
                 if (stream != null)
                     Marshal.ReleaseComObject(stream);
                 if (storage != null)
@@ -725,7 +668,7 @@ namespace DirectShowLib.Utils
             int hr = 0;
             IStorage storage = null;
 #if USING_NET11
-			UCOMIStream stream = null;
+            UCOMIStream stream = null;
 #else
             IStream stream = null;
 #endif
@@ -733,8 +676,7 @@ namespace DirectShowLib.Utils
             if (graphBuilder == null)
                 throw new ArgumentNullException("graphBuilder");
 
-            try
-            {
+            try {
                 if (NativeMethods.StgIsStorageFile(fileName) != 0)
                     throw new ArgumentException();
 
@@ -761,9 +703,7 @@ namespace DirectShowLib.Utils
 
                 hr = (graphBuilder as IPersistStream).Load(stream);
                 Marshal.ThrowExceptionForHR(hr);
-            }
-            finally
-            {
+            } finally {
                 if (stream != null)
                     Marshal.ReleaseComObject(stream);
                 if (storage != null)
@@ -821,8 +761,7 @@ namespace DirectShowLib.Utils
             if (filter == null)
                 throw new ArgumentNullException("filter");
 
-            if (HasPropertyPages(filter))
-            {
+            if (HasPropertyPages(filter)) {
                 hr = filter.QueryFilterInfo(out filterInfo);
                 DsError.ThrowExceptionForHR(hr);
 
@@ -832,8 +771,7 @@ namespace DirectShowLib.Utils
                 hr = (filter as ISpecifyPropertyPages).GetPages(out caGuid);
                 DsError.ThrowExceptionForHR(hr);
 
-                try
-                {
+                try {
                     objs = new object[1];
                     objs[0] = filter;
 
@@ -845,9 +783,7 @@ namespace DirectShowLib.Utils
                         0, 0,
                         IntPtr.Zero
                         );
-                }
-                finally
-                {
+                } finally {
                     Marshal.FreeCoTaskMem(caGuid.pElems);
                 }
             }
@@ -872,14 +808,12 @@ namespace DirectShowLib.Utils
         {
             bool retval = false;
 
-            try
-            {
+            try {
                 Type type = Type.GetTypeFromCLSID(clsid);
                 object o = Activator.CreateInstance(type);
                 retval = true;
                 Marshal.ReleaseComObject(o);
-            }
-            catch { }
+            } catch { }
 
             return retval;
         }
@@ -893,19 +827,15 @@ namespace DirectShowLib.Utils
 
             int eaten;
 
-            try
-            {               
-                int  hr = NativeMethods.CreateBindCtx(0, out bindCtx);
+            try {
+                int hr = NativeMethods.CreateBindCtx(0, out bindCtx);
                 Marshal.ThrowExceptionForHR(hr);
 
                 hr = NativeMethods.MkParseDisplayName(bindCtx, devicePath, out eaten, out moniker);
                 Marshal.ThrowExceptionForHR(hr);
 
                 retval = true;
-            }
-            catch { }
-            finally
-            {
+            } catch { } finally {
                 if (bindCtx != null) Marshal.ReleaseComObject(bindCtx);
                 if (moniker != null) Marshal.ReleaseComObject(moniker);
             }
@@ -987,14 +917,11 @@ namespace DirectShowLib.Utils
             if (destPin == null)
                 throw new ArgumentException("The downstream filter has no pin called : " + destPinName, destPinName);
 
-            try
-            {
+            try {
                 sourcePin.ConnectedTo(out cPin);
                 if (cPin == null || !ignoreConnectedPins)
                     ConnectFilters(graphBuilder, sourcePin, destPin, useIntelligentConnect);
-            }
-            finally
-            {
+            } finally {
                 if (cPin != null)
                     Marshal.ReleaseComObject(cPin);
 
@@ -1031,13 +958,10 @@ namespace DirectShowLib.Utils
             if (destPin == null)
                 throw new ArgumentNullException("destPin");
 
-            if (useIntelligentConnect)
-            {
+            if (useIntelligentConnect) {
                 hr = graphBuilder.Connect(sourcePin, destPin);
                 DsError.ThrowExceptionForHR(hr);
-            }
-            else
-            {
+            } else {
                 hr = graphBuilder.ConnectDirect(sourcePin, destPin, null);
                 DsError.ThrowExceptionForHR(hr);
             }
@@ -1051,27 +975,22 @@ namespace DirectShowLib.Utils
             int index = 0;
 
             tPin = DsFindPin.ByDirection(filter, direction, index);
-            while (tPin != null)
-            {
+            while (tPin != null) {
 
                 IEnumMediaTypes emtDvr = null;
                 AMMediaType[] amtDvr = new AMMediaType[1];
 
-                try
-                {
+                try {
                     tPin.EnumMediaTypes(out emtDvr);
 
                     hr = emtDvr.Next(1, amtDvr, IntPtr.Zero);
                     DsError.ThrowExceptionForHR(hr);
 
-                    if (amtDvr[0] != null && amtDvr[0].majorType == mType && (amtDvr[0].subType == sType || sType == MediaSubType.Null))
-                    {
+                    if (amtDvr[0] != null && amtDvr[0].majorType == mType && (amtDvr[0].subType == sType || sType == MediaSubType.Null)) {
                         pRet = tPin;
                         break;
                     }
-                }
-                finally
-                {
+                } finally {
                     DsUtils.FreeAMMediaType(amtDvr[0]);
                     if (emtDvr != null)
                         Marshal.ReleaseComObject(emtDvr);
@@ -1097,12 +1016,10 @@ namespace DirectShowLib.Utils
                 throw new ArgumentNullException("graphBuilder");
 
             hr = graphBuilder.EnumFilters(out enumFilters);
-            if (hr == 0)
-            {
+            if (hr == 0) {
                 IBaseFilter[] filters = new IBaseFilter[1];
 
-                while (enumFilters.Next(filters.Length, filters, IntPtr.Zero) == 0)
-                {
+                while (enumFilters.Next(filters.Length, filters, IntPtr.Zero) == 0) {
                     hr = filters[0].SetSyncSource(clock);
                     DsError.ThrowExceptionForHR(hr);
 
@@ -1141,11 +1058,11 @@ namespace DirectShowLib.Utils
     [Flags]
     internal enum STGC
     {
-        Default        = 0,
-        Overwrite      = 1,
-        OnlyIfCurrent  = 2,
+        Default = 0,
+        Overwrite = 1,
+        OnlyIfCurrent = 2,
         DangerouslyCommitMerelyToDiskCache = 4,
-        Consolidate    = 8
+        Consolidate = 8
     }
 
     [Guid("0000000b-0000-0000-C000-000000000046"),
@@ -1159,11 +1076,11 @@ namespace DirectShowLib.Utils
             [In] int reserved1,
             [In] int reserved2,
 #if USING_NET11
-			[Out] out UCOMIStream ppstm
+            [Out] out UCOMIStream ppstm
 #else
-			[Out] out IStream ppstm
+ [Out] out IStream ppstm
 #endif
-            );
+);
 
         [PreserveSig]
         int OpenStream(
@@ -1172,11 +1089,11 @@ namespace DirectShowLib.Utils
             [In] STGM grfMode,
             [In] int reserved2,
 #if USING_NET11
-			[Out] out UCOMIStream ppstm
+            [Out] out UCOMIStream ppstm
 #else
-			[Out] out IStream ppstm
+ [Out] out IStream ppstm
 #endif
-			);
+);
 
         [PreserveSig]
         int CreateStorage(
@@ -1221,9 +1138,9 @@ namespace DirectShowLib.Utils
 
         [PreserveSig]
         int EnumElements(
-            [In] int reserved1, 
-            [In] IntPtr reserved2, 
-            [In] int reserved3, 
+            [In] int reserved1,
+            [In] IntPtr reserved2,
+            [In] int reserved3,
             [Out, MarshalAs(UnmanagedType.Interface)] out object ppenum
             );
 
@@ -1232,78 +1149,85 @@ namespace DirectShowLib.Utils
 
         [PreserveSig]
         int RenameElement(
-            [In, MarshalAs(UnmanagedType.LPWStr)] string pwcsOldName, 
+            [In, MarshalAs(UnmanagedType.LPWStr)] string pwcsOldName,
             [In, MarshalAs(UnmanagedType.LPWStr)] string pwcsNewName
             );
 
         [PreserveSig]
         int SetElementTimes(
-            [In, MarshalAs(UnmanagedType.LPWStr)] string pwcsName, 
+            [In, MarshalAs(UnmanagedType.LPWStr)] string pwcsName,
 #if USING_NET11
-			[In] FILETIME pctime,
-			[In] FILETIME patime,
-			[In] FILETIME pmtime
+            [In] FILETIME pctime,
+            [In] FILETIME patime,
+            [In] FILETIME pmtime
 #else
-			[In] System.Runtime.InteropServices.ComTypes.FILETIME pctime,
-            [In] System.Runtime.InteropServices.ComTypes.FILETIME patime,
-            [In] System.Runtime.InteropServices.ComTypes.FILETIME pmtime
+ [In] System.Runtime.InteropServices.ComTypes.FILETIME pctime,
+ [In] System.Runtime.InteropServices.ComTypes.FILETIME patime,
+ [In] System.Runtime.InteropServices.ComTypes.FILETIME pmtime
 #endif
-			);
+);
 
         [PreserveSig]
         int SetClass([In, MarshalAs(UnmanagedType.LPStruct)] Guid clsid);
 
         [PreserveSig]
         int SetStateBits(
-            [In] int grfStateBits, 
+            [In] int grfStateBits,
             [In] int grfMask
             );
 
         [PreserveSig]
         int Stat(
 #if USING_NET11
-			[Out] out STATSTG pStatStg, 
+            [Out] out STATSTG pStatStg, 
 #else
-			[Out] out System.Runtime.InteropServices.ComTypes.STATSTG pStatStg, 
+[Out] out System.Runtime.InteropServices.ComTypes.STATSTG pStatStg,
 #endif
-			[In] int grfStatFlag
-            );
+ [In] int grfStatFlag
+ );
     }
 
     internal sealed class NativeMethods
     {
-        private NativeMethods(){}
+        public const int ENUM_CURRENT_SETTINGS = -1;
+        public const int ENUM_REGISTRY_SETTINGS = -2;
+
+        public const int DM_INTERLACED = 0x00000002;
+        public const int DISP_CHANGE_SUCCESSFUL = 0;
+        public const int DISP_CHANGE_RESTART = 1;
+        public const int DISP_CHANGE_FAILED = -1;
+        private NativeMethods() { }
 
         [DllImport("ole32.dll")]
 #if USING_NET11
-		public static extern int CreateBindCtx(int reserved, out UCOMIBindCtx ppbc);
+        public static extern int CreateBindCtx(int reserved, out UCOMIBindCtx ppbc);
 #else
-		public static extern int CreateBindCtx(int reserved, out IBindCtx ppbc);
+        public static extern int CreateBindCtx(int reserved, out IBindCtx ppbc);
 #endif
 
         [DllImport("ole32.dll")]
 #if USING_NET11
-		public static extern int MkParseDisplayName(UCOMIBindCtx pcb, [MarshalAs(UnmanagedType.LPWStr)] string szUserName, out int pchEaten, out UCOMIMoniker ppmk);
+        public static extern int MkParseDisplayName(UCOMIBindCtx pcb, [MarshalAs(UnmanagedType.LPWStr)] string szUserName, out int pchEaten, out UCOMIMoniker ppmk);
 #else
-		public static extern int MkParseDisplayName(IBindCtx pcb, [MarshalAs(UnmanagedType.LPWStr)] string szUserName, out int pchEaten, out IMoniker ppmk);
+        public static extern int MkParseDisplayName(IBindCtx pcb, [MarshalAs(UnmanagedType.LPWStr)] string szUserName, out int pchEaten, out IMoniker ppmk);
 #endif
 
-        [DllImport("oleaut32.dll", CharSet=CharSet.Unicode, ExactSpelling=true)]
+        [DllImport("oleaut32.dll", CharSet = CharSet.Unicode, ExactSpelling = true)]
         public static extern int OleCreatePropertyFrame(
-            [In] IntPtr hwndOwner, 
-            [In] int x, 
+            [In] IntPtr hwndOwner,
+            [In] int x,
             [In] int y,
-            [In, MarshalAs(UnmanagedType.LPWStr)] string lpszCaption, 
+            [In, MarshalAs(UnmanagedType.LPWStr)] string lpszCaption,
             [In] int cObjects,
-            [In, MarshalAs(UnmanagedType.LPArray, ArraySubType=UnmanagedType.IUnknown)] object[] ppUnk,
-            [In] int cPages,	
-            [In] IntPtr pPageClsID, 
-            [In] int lcid, 
-            [In] int dwReserved, 
-            [In] IntPtr pvReserved 
+            [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.IUnknown)] object[] ppUnk,
+            [In] int cPages,
+            [In] IntPtr pPageClsID,
+            [In] int lcid,
+            [In] int dwReserved,
+            [In] IntPtr pvReserved
             );
 
-        [DllImport("ole32.dll", CharSet=CharSet.Unicode, ExactSpelling=true)]
+        [DllImport("ole32.dll", CharSet = CharSet.Unicode, ExactSpelling = true)]
         public static extern int StgCreateDocfile(
             [In, MarshalAs(UnmanagedType.LPWStr)] string pwcsName,
             [In] STGM grfMode,
@@ -1311,10 +1235,10 @@ namespace DirectShowLib.Utils
             [Out] out IStorage ppstgOpen
             );
 
-        [DllImport("ole32.dll", CharSet=CharSet.Unicode, ExactSpelling=true)]
+        [DllImport("ole32.dll", CharSet = CharSet.Unicode, ExactSpelling = true)]
         public static extern int StgIsStorageFile([In, MarshalAs(UnmanagedType.LPWStr)] string pwcsName);
 
-        [DllImport("ole32.dll", CharSet=CharSet.Unicode, ExactSpelling=true)]
+        [DllImport("ole32.dll", CharSet = CharSet.Unicode, ExactSpelling = true)]
         public static extern int StgOpenStorage(
             [In, MarshalAs(UnmanagedType.LPWStr)] string pwcsName,
             [In] IStorage pstgPriority,
@@ -1339,6 +1263,117 @@ namespace DirectShowLib.Utils
 
         [DllImport("kernel32", CharSet = CharSet.Ansi, ExactSpelling = true, SetLastError = true)]
         public static extern IntPtr GetProcAddress(IntPtr hModule, string procName);
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        public static extern int EnumDisplaySettings(string deviceName, int modeNum, ref DEVMODE devMode);
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        public static extern int ChangeDisplaySettings(ref DEVMODE devMode, CDS flags);
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        public static extern int ChangeDisplaySettings(IntPtr devMode, CDS flags);
+
+    }
+
+    public enum CDS
+    {
+        Dynamic = 0,
+        UpdateRegistry = 1,
+        Test = 2,
+        FullScreen = 4,
+        Global = 8,
+        SetPrimary = 10,
+        VideoParameters = 20
+    }
+
+    public enum DisplayFixedOutput
+    {
+        Default = 0,
+        Stretch,
+        Center
+    }
+
+    public struct POINTL
+    {
+        public int x;
+        public int y;
+    }
+
+    [Flags()]
+    public enum DM : int
+    {
+        Orientation = 0x1,
+        PaperSize = 0x2,
+        PaperLength = 0x4,
+        PaperWidth = 0x8,
+        Scale = 0x10,
+        Position = 0x20,
+        NUP = 0x40,
+        DisplayOrientation = 0x80,
+        Copies = 0x100,
+        DefaultSource = 0x200,
+        PrintQuality = 0x400,
+        Color = 0x800,
+        Duplex = 0x1000,
+        YResolution = 0x2000,
+        TTOption = 0x4000,
+        Collate = 0x8000,
+        FormName = 0x10000,
+        LogPixels = 0x20000,
+        BitsPerPixel = 0x40000,
+        PelsWidth = 0x80000,
+        PelsHeight = 0x100000,
+        DisplayFlags = 0x200000,
+        DisplayFrequency = 0x400000,
+        ICMMethod = 0x800000,
+        ICMIntent = 0x1000000,
+        MediaType = 0x2000000,
+        DitherType = 0x4000000,
+        PanningWidth = 0x8000000,
+        PanningHeight = 0x10000000,
+        DisplayFixedOutput = 0x20000000
+    }
+
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
+    public struct DEVMODE
+    {
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
+        public string dmDeviceName;
+        public short dmSpecVersion;
+        public short dmDriverVersion;
+        public short dmSize;
+        public short dmDriverExtra;
+        public DM dmFields;
+        //short dmOrientation;
+        //short dmPaperSize;
+        //short dmPaperLength;
+        //short dmPaperWidth;
+        //short dmScale;
+        //short dmCopies;
+        //short dmDefaultSource;
+        //short dmPrintQuality;
+        public POINTL dmPosition;
+        public int dmDisplayOrientation;
+        public int dmDisplayFixedOutput;
+        short dmColor;
+        short dmDuplex;
+        short dmYResolution;
+        short dmTTOption;
+        short dmCollate;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
+        public string dmFormName;
+        public short dmLogPixels;
+        public int dmBitsPerPel;
+        public int dmPelsWidth;
+        public int dmPelsHeight;
+        public int dmDisplayFlags;
+        public int dmDisplayFrequency;
+        public int dmICMMethod;
+        public int dmICMIntent;
+        public int dmMediaType;
+        public int dmDitherType;
+        public int dmReserved1;
+        public int dmReserved2;
+        public int dmPanningWidth;
+        public int dmPanningHeight;
     }
     #endregion
 

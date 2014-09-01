@@ -40,7 +40,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Generic
         public Task<IEnumerable<IHomePage>> GetHomePages(BaseItemDto mediaFolder)
         {
             IEnumerable<IHomePage> pages = new IHomePage[] {
-                new GenericFolderSpotlightViewModel(mediaFolder, _imageManager, _navigator, _apiClient, _serverEvents, _sessionManager, _logManager, _playbackManager);
+                new GenericFolderSpotlightViewModel(mediaFolder, _imageManager, _navigator, _apiClient, _serverEvents, _sessionManager, _logManager, _playbackManager)
             };
 
             return Task.FromResult(pages);

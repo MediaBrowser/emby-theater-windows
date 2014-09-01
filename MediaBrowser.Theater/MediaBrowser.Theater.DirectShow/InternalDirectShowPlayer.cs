@@ -20,7 +20,7 @@ using MediaBrowser.Theater.Api.UserInput;
 
 namespace MediaBrowser.Theater.DirectShow
 {
-    public class InternalDirectShowPlayer : IInternalMediaPlayer, IVideoPlayer
+    public class InternalDirectShowPlayer : IInternalMediaPlayer, IVideoPlayer, IDisposable
     {
         private DirectShowPlayer _mediaPlayer;
 
@@ -36,6 +36,8 @@ namespace MediaBrowser.Theater.DirectShow
         private readonly IInternalPlayerWindowManager _windowManager;
         private readonly IPresenter _presentation;
 
+        private URCOMLoader _privateCom = null;
+
         private IInternalPlayerWindow _hiddenWindow;
 
         public event EventHandler<MediaChangeEventArgs> MediaChanged;
@@ -43,6 +45,11 @@ namespace MediaBrowser.Theater.DirectShow
         public event EventHandler<PlaybackStopEventArgs> PlaybackCompleted;
 
         private List<BaseItemDto> _playlist = new List<BaseItemDto>();
+
+        public URCOMLoader PrivateCom 
+        {
+            get { return _privateCom; }
+        }
 
         public InternalDirectShowPlayer(ILogManager logManager, IInternalPlayerWindowManager windowManager, IPresenter presentation, ISessionManager sessionManager, IApiClient apiClient, IPlaybackManager playbackManager, ITheaterConfigurationManager config, IIsoManager isoManager, IUserInputManager inputManager, IZipClient zipClient, IHttpClient httpClient)
         {
@@ -58,6 +65,15 @@ namespace MediaBrowser.Theater.DirectShow
             _inputManager = inputManager;
             _zipClient = zipClient;
             _httpClient = httpClient;
+
+            _config.Configuration.InternalPlayerConfiguration.VideoConfig.SetDefaults();
+            _config.Configuration.InternalPlayerConfiguration.AudioConfig.SetDefaults();
+            _config.Configuration.InternalPlayerConfiguration.SubtitleConfig.SetDefaults();
+            _config.Configuration.InternalPlayerConfiguration.COMConfig.SetDefaults();
+
+            //use a static object so we keep the libraries in the same place. Doesn't usually matter, but the EVR Presenter does some COM hooking that has problems if we change the lib address.
+            if (_privateCom == null)
+                _privateCom = new URCOMLoader(_config, zipClient);
 
             windowManager.WindowLoaded += window => _hiddenWindow = window;
         }
@@ -606,6 +622,32 @@ namespace MediaBrowser.Theater.DirectShow
             action();
             return Task.FromResult(0);
         }
+
+        #region IDisposable
+
+        private bool _disposed = false;
+        private void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (!_disposed)
+                {
+                    if (_privateCom != null)
+                        _privateCom.Dispose();
+                    _privateCom = null;
+
+                    _disposed = true;
+                }
+            }
+        }
+
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        #endregion
     }
 
     public enum TrackCompletionReason

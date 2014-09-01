@@ -440,6 +440,7 @@ namespace MediaBrowser.UI.EntryPoints
                         ItemFields.Overview,
                         ItemFields.Path,
                         ItemFields.People,
+                        ItemFields.MediaSources
                     }
                 });
 

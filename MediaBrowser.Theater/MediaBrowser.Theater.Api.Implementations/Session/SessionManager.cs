@@ -44,7 +44,7 @@ namespace MediaBrowser.Theater.Api.Session
         /// </summary>
         private Version RequiredServerVersion
         {
-            get { return Version.Parse("3.0.5115.35703"); }
+            get { return Version.Parse("3.0.5340.21263"); }
         }
 
         public event EventHandler<EventArgs> UserLoggedIn;

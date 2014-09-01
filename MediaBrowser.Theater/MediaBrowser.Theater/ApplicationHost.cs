@@ -15,6 +15,7 @@ using MediaBrowser.ApiInteraction.WebSocket;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Constants;
 using MediaBrowser.Common.Implementations;
+using MediaBrowser.Common.Implementations.Archiving;
 using MediaBrowser.Common.Implementations.ScheduledTasks;
 using MediaBrowser.Common.Net;
 using MediaBrowser.Common.Plugins;
@@ -98,6 +99,8 @@ namespace MediaBrowser.Theater
         {
             await base.Init(progress).ConfigureAwait(false);
             await RunStartupTasks().ConfigureAwait(false);
+
+            URCOMLoader.EnsureObjects(TheaterConfigurationManager, false, new ZipClient());
 
             Action<Window> mainWindowLoaded = null;
             mainWindowLoaded = w => {

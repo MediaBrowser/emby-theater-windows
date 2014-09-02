@@ -313,8 +313,13 @@ namespace MediaBrowser.Theater.DirectShow
 
             _item = item;
             _isInExclusiveMode = false;
+            TimeSpan itemDuration = TimeSpan.MaxValue;
+            if(item.OriginalItem.RunTimeTicks > 0)
+                itemDuration = TimeSpan.FromTicks((long)item.OriginalItem.RunTimeTicks);
 
-            if (IsFullScreen && item.IsVideo && _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig.AutoChangeRefreshRate)
+            if (IsFullScreen && item.IsVideo 
+                && _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig.AutoChangeRefreshRate
+                && _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig.MinRefreshRateMin < itemDuration.TotalMinutes)
             {
                 //find the video stream (assume that the first one is the main one)
                 foreach (var ms in item.MediaStreams)
@@ -324,9 +329,11 @@ namespace MediaBrowser.Theater.DirectShow
                         _startResolution = Display.GetCurrentResolution();
                         int videoRate = (int)ms.RealFrameRate;
 
-                        if (videoRate == 25 || videoRate == 29 || ms.IsInterlaced) //assume the video is interlaced, ms.IsInterlaced doesn't appear to be accurate
+                        if (videoRate == 25 || videoRate == 29 || videoRate == 30 || ms.IsInterlaced) // ms.IsInterlaced doesn't appear to be accurate
+                        {
+                            //Every display/GPU should be able to display @2x FPS and it's quite likely that 2x is the rendered FPS anyway
                             videoRate = (int)(ms.RealFrameRate * 2);
-
+                        }
                         if (videoRate != _startResolution.Rate)
                         {
                             Resolution desiredRes = new Resolution(_startResolution.ToString());

@@ -317,42 +317,51 @@ namespace MediaBrowser.Theater.DirectShow
             if(item.OriginalItem.RunTimeTicks > 0)
                 itemDuration = TimeSpan.FromTicks((long)item.OriginalItem.RunTimeTicks);
 
-            if (IsFullScreen && item.IsVideo 
+            if (IsFullScreen && 
+                item.IsVideo 
                 && _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig.AutoChangeRefreshRate
-                && _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig.MinRefreshRateMin < itemDuration.TotalMinutes)
+                && _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig.MinRefreshRateMin < itemDuration.TotalMinutes
+                )
             {
-                //find the video stream (assume that the first one is the main one)
-                foreach (var ms in item.MediaStreams)
+                if (item.MediaStreams != null)
                 {
-                    if (ms.Type == MediaStreamType.Video)
+                    _logger.Warn("item.MediaStreams is null, cannot detect framerate");
+                }
+                else
+                {
+                    //find the video stream (assume that the first one is the main one)
+                    foreach (var ms in item.MediaStreams)
                     {
-                        _startResolution = Display.GetCurrentResolution();
-                        int videoRate = (int)ms.RealFrameRate;
+                        if (ms.Type == MediaStreamType.Video)
+                        {
+                            _startResolution = Display.GetCurrentResolution();
+                            int videoRate = (int)ms.RealFrameRate;
 
-                        if (videoRate == 25 || videoRate == 29 || videoRate == 30 || ms.IsInterlaced) // ms.IsInterlaced doesn't appear to be accurate
-                        {
-                            //Every display/GPU should be able to display @2x FPS and it's quite likely that 2x is the rendered FPS anyway
-                            videoRate = (int)(ms.RealFrameRate * 2);
-                        }
-                        if (videoRate != _startResolution.Rate)
-                        {
-                            Resolution desiredRes = new Resolution(_startResolution.ToString());
-                            desiredRes.Rate = videoRate;
-                            if (Display.ChangeResolution(desiredRes, false))
-                                _logger.Info("Changed resolution from {0} to {1}", _startResolution, desiredRes);
-                            else
+                            if (videoRate == 25 || videoRate == 29 || videoRate == 30 || ms.IsInterlaced) // ms.IsInterlaced doesn't appear to be accurate
                             {
-                                _logger.Info("Couldn't change resolution from {0} to {1}", _startResolution, desiredRes);
-                                _startResolution = null;
+                                //Every display/GPU should be able to display @2x FPS and it's quite likely that 2x is the rendered FPS anyway
+                                videoRate = (int)(ms.RealFrameRate * 2);
                             }
+                            if (videoRate != _startResolution.Rate)
+                            {
+                                Resolution desiredRes = new Resolution(_startResolution.ToString());
+                                desiredRes.Rate = videoRate;
+                                if (Display.ChangeResolution(desiredRes, false))
+                                    _logger.Info("Changed resolution from {0} to {1}", _startResolution, desiredRes);
+                                else
+                                {
+                                    _logger.Info("Couldn't change resolution from {0} to {1}", _startResolution, desiredRes);
+                                    _startResolution = null;
+                                }
+                            }
+                            else
+                                _startResolution = null;
+
+                            break;
                         }
                         else
                             _startResolution = null;
-
-                        break;
                     }
-                    else
-                        _startResolution = null;
                 }
             }
 

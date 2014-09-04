@@ -10,6 +10,7 @@ namespace MediaBrowser.Theater.Presentation.Playback
         public string PlayablePath { get; set; }
 
         public BaseItemDto OriginalItem { get; set; }
+        public MediaSourceInfo MediaSource { get; set; }
 
         public bool IsVideo
         {
@@ -18,7 +19,7 @@ namespace MediaBrowser.Theater.Presentation.Playback
 
         public List<MediaStream> MediaStreams
         {
-            get { return OriginalItem.MediaStreams; }
+            get { return MediaSource.MediaStreams; }
         }
 
         public IIsoMount IsoMount { get; set; }

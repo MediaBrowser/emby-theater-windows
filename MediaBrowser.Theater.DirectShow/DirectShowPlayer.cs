@@ -314,7 +314,7 @@ namespace MediaBrowser.Theater.DirectShow
             _item = item;
             _isInExclusiveMode = false;
 
-            if (item.IsVideo && _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig.AutoChangeRefreshRate)
+            if (IsFullScreen && item.IsVideo && _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig.AutoChangeRefreshRate)
             {
                 //find the video stream (assume that the first one is the main one)
                 foreach (var ms in item.MediaStreams)

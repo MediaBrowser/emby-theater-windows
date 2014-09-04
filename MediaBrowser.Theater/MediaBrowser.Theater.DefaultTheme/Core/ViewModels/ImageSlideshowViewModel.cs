@@ -165,6 +165,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
                 token.ThrowIfCancellationRequested();
 
                 img.Stretch = ImageStretch;
+                img.VerticalAlignment = VerticalAlignment.Center;
+                img.HorizontalAlignment = HorizontalAlignment.Center;
 
                 CurrentImage = img;
             }

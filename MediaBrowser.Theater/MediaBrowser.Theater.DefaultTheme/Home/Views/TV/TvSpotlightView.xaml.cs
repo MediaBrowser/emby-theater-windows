@@ -11,13 +11,6 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.Views.TV
         public TvSpotlightView()
         {
             InitializeComponent();
-
-            Loaded += (s, e) => {
-                var page = DataContext as IHomePage;
-                if (page != null && page.Index == 0) {
-                    MoveFocus(new TraversalRequest(FocusNavigationDirection.First));
-                }
-            };
         }
     }
 }

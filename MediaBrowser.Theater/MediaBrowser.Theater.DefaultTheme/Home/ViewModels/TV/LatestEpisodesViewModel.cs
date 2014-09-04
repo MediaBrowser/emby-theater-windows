@@ -120,6 +120,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
             }
 
             IsVisible = Episodes.Count > 0;
+            OnPropertyChanged("Size");
         }
 
         private ItemTileViewModel CreateEpisodeItem()

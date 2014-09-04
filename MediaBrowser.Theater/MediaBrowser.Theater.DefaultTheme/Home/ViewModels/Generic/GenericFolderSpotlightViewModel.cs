@@ -19,7 +19,6 @@ using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
 using MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies;
 using MediaBrowser.Theater.DefaultTheme.ItemList;
-using MediaBrowser.Theater.Presentation;
 using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.ViewModels;
 
@@ -51,7 +50,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Generic
             SpotlightWidth = 16*(SpotlightHeight/9) + 100;
             _miniSpotlightWidth = HomeViewModel.TileWidth + (HomeViewModel.TileMargin/4) - 1;
 
-            LowerSpotlightWidth = SpotlightWidth/3 - HomeViewModel.TileMargin*1.5;
+            LowerSpotlightWidth = SpotlightWidth/2 - HomeViewModel.TileMargin;//*1.5;
             LowerSpotlightHeight = HomeViewModel.TileHeight;
 
             BrowseItemsCommand = new RelayCommand(arg => {
@@ -63,19 +62,19 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Generic
                 navigator.Navigate(Go.To.ItemList(itemParams));
             });
             
-            AllShowsImagesViewModel = new ImageSlideshowViewModel(imageManager, Enumerable.Empty<string>()) {
+            AllItemsImagesViewModel = new ImageSlideshowViewModel(imageManager, Enumerable.Empty<string>()) {
                 ImageStretch = Stretch.UniformToFill
             };
 
             MiniSpotlightItemsSide = new RangeObservableCollection<ItemTileViewModel> {
-                CreateMiniSpotlightItem(),
-                CreateMiniSpotlightItem(),
-                CreateMiniSpotlightItem(),
+                CreateMiniSpotlightItem(_miniSpotlightWidth, HomeViewModel.TileHeight),
+                CreateMiniSpotlightItem(_miniSpotlightWidth, HomeViewModel.TileHeight),
+                CreateMiniSpotlightItem(_miniSpotlightWidth, HomeViewModel.TileHeight),
             };
 
             MiniSpotlightItemsBottom = new RangeObservableCollection<ItemTileViewModel> {
-                CreateMiniSpotlightItem(),
-                CreateMiniSpotlightItem(),
+                CreateMiniSpotlightItem(LowerSpotlightWidth, LowerSpotlightHeight),
+                CreateMiniSpotlightItem(LowerSpotlightWidth, LowerSpotlightHeight),
             };
 
             Title = SectionTitle = folder.Name;
@@ -89,7 +88,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Generic
         public double LowerSpotlightWidth { get; private set; }
         public double LowerSpotlightHeight { get; private set; }
 
-        public ImageSlideshowViewModel AllShowsImagesViewModel { get; private set; }
+        public ImageSlideshowViewModel AllItemsImagesViewModel { get; private set; }
         public RangeObservableCollection<ItemTileViewModel> MiniSpotlightItemsSide { get; private set; }
         public RangeObservableCollection<ItemTileViewModel> MiniSpotlightItemsBottom { get; private set; }
 
@@ -152,38 +151,36 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Generic
             return _apiClient.GetItemsAsync(query);
         }
 
-        private async void LoadViewModels(BaseItemDto tvFolder)
+        private async void LoadViewModels(BaseItemDto folder)
         {
             CancellationTokenSource cancellationSource = _mainViewCancellationTokenSource = new CancellationTokenSource();
 
             try {
-                cancellationSource.Token.ThrowIfCancellationRequested();
-                                
                 var spotlight = await _apiClient.GetItemsAsync(new ItemQuery
                 {
                     UserId = _sessionManager.CurrentUser.Id,
-                    ParentId = tvFolder.Id,
+                    ParentId = folder.Id,
                     SortBy = new[] { ItemSortBy.CommunityRating },
                     SortOrder = SortOrder.Descending,
                     Fields = MovieSpotlightViewModel.QueryFields,
                     Filters = new[] { ItemFilter.IsRecentlyAdded },
                     Limit = 10,
                     Recursive = true
-                });
+                }, cancellationSource.Token);
 
                 if (spotlight.TotalRecordCount < 2) {
                     spotlight = await _apiClient.GetItemsAsync(new ItemQuery {
                         UserId = _sessionManager.CurrentUser.Id,
-                        ParentId = tvFolder.Id,
+                        ParentId = folder.Id,
                         SortBy = new[] { ItemSortBy.CommunityRating },
                         SortOrder = SortOrder.Descending,
                         Fields = MovieSpotlightViewModel.QueryFields,
                         Limit = 10,
                         Recursive = true
-                    });
+                    }, cancellationSource.Token);
                 }
 
-                await LoadAllShowsViewModel(tvFolder);
+                await LoadAllItemsViewModel(folder);
                 LoadMiniSpotlightsViewModel(spotlight);
             }
             catch (Exception ex) {
@@ -194,32 +191,32 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Generic
             }
         }
 
-        private ItemTileViewModel CreateMiniSpotlightItem()
+        private ItemTileViewModel CreateMiniSpotlightItem(double width, double height)
         {
             return new ItemTileViewModel(_apiClient, _imageManager, _serverEvents, _navigator, _playbackManager, null) {
-                DesiredImageWidth = _miniSpotlightWidth,
-                DesiredImageHeight = HomeViewModel.TileHeight,
+                DesiredImageWidth = width,
+                DesiredImageHeight = height,
                 PreferredImageTypes = new[] { ImageType.Backdrop, ImageType.Thumb },
                 DisplayNameGenerator = GetDisplayName
             };
         }
 
-        private void LoadMiniSpotlightsViewModel(ItemsResult tvItems)
+        private void LoadMiniSpotlightsViewModel(ItemsResult itemResult)
         {
             var rnd = new Random();
-            var items = tvItems.Items.OrderBy(i => rnd.Next()).Take(5).ToList();
+            var items = itemResult.Items.OrderBy(i => rnd.Next()).Take(5).ToList();
 
-            AddItemsToMiniSpotlight(MiniSpotlightItemsBottom, items.Take(2).ToList());
-            AddItemsToMiniSpotlight(MiniSpotlightItemsSide, items.Skip(2).Take(3).ToList());
+            AddItemsToMiniSpotlight(MiniSpotlightItemsBottom, items.Take(2).ToList(), LowerSpotlightWidth, LowerSpotlightHeight);
+            AddItemsToMiniSpotlight(MiniSpotlightItemsSide, items.Skip(2).Take(3).ToList(), _miniSpotlightWidth, HomeViewModel.TileHeight);
         }
 
-        private void AddItemsToMiniSpotlight(RangeObservableCollection<ItemTileViewModel> spotlight, IList<BaseItemDto> items) 
+        private void AddItemsToMiniSpotlight(RangeObservableCollection<ItemTileViewModel> spotlight, IList<BaseItemDto> items, double itemWidth, double itemHeight) 
         {
             for (int i = 0; i < items.Count; i++) {
                 if (spotlight.Count > i) {
                     spotlight[i].Item = items[i];
                 } else {
-                    ItemTileViewModel vm = CreateMiniSpotlightItem();
+                    ItemTileViewModel vm = CreateMiniSpotlightItem(itemWidth, itemHeight);
                     vm.Item = items[i];
 
                     spotlight.Add(vm);
@@ -232,35 +229,73 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Generic
             }
         }
 
-        private async Task LoadAllShowsViewModel(BaseItemDto folder)
+        private async Task LoadAllItemsViewModel(BaseItemDto folder)
         {
-            var folderImage = FindFolderImage(folder);
+            var folderImage = DownloadImage(folder);
             if (folderImage != null) {
-                AllShowsImagesViewModel.Images.Add(folderImage);
+                AllItemsImagesViewModel.Images.Add(folderImage);
             } else {
                 var items = await GetChildren(folder);
 
-                IEnumerable<string> images = items.Items
-                                                  .Where(i => i.BackdropImageTags.Any())
-                                                  .Select(i => _apiClient.GetImageUrl(i.Id, new ImageOptions {
-                                                      ImageType = ImageType.Backdrop,
-                                                      Tag = i.BackdropImageTags.First(),
-                                                      Width = (int) SpotlightWidth,
-                                                      EnableImageEnhancers = false
-                                                  }));
+                IEnumerable<string> images = items.Items.Select(DownloadImage)
+                                                  .Where(img => img != null);
 
-                AllShowsImagesViewModel.Images.AddRange(images);
+                AllItemsImagesViewModel.Images.AddRange(images);
             }
 
-            AllShowsImagesViewModel.StartRotating();
+            AllItemsImagesViewModel.StartRotating();
+        }
+        
+        /// <summary>
+        ///     Gets an image url that can be used to download an image from the api
+        /// </summary>
+        /// <param name="imageType">The type of image requested</param>
+        /// <param name="imageIndex">
+        ///     The image index, if there are multiple. Currently only applies to backdrops. Supply null or 0
+        ///     for first backdrop.
+        /// </param>
+        /// <returns>System.String.</returns>
+        private string GetImageUrl(BaseItemDto item, ImageType imageType, int? imageIndex = null)
+        {
+            var imageOptions = new ImageOptions
+            {
+                ImageType = imageType,
+                ImageIndex = imageIndex,
+                Width = (int)SpotlightWidth,
+                EnableImageEnhancers = false
+            };
+            
+            return _apiClient.GetImageUrl(item, imageOptions);
         }
 
-        private string FindFolderImage(BaseItemDto folder)
+        public string DownloadImage(BaseItemDto item)
         {
-            var preferredTypes = new[] { ImageType.Backdrop, ImageType.Art, ImageType.Primary };
+            var preferredImageTypes = new[] { ImageType.Backdrop, ImageType.Art, ImageType.Primary };
+            
+            if (item != null)
+            {
+                foreach (ImageType imageType in preferredImageTypes)
+                {
+                    if (imageType == ImageType.Backdrop)
+                    {
+                        if (item.BackdropCount == 0)
+                        {
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        if (!item.ImageTags.ContainsKey(imageType))
+                        {
+                            continue;
+                        }
+                    }
 
-            return preferredTypes.Select(imageType => _apiClient.GetImageUrl(folder.Id, new ImageOptions { ImageType = imageType, Width = (int) SpotlightWidth, EnableImageEnhancers = false }))
-                                 .FirstOrDefault(folderImage => folderImage != null);
+                    return GetImageUrl(item, imageType);
+                }
+            }
+
+            return null;
         }
     }
 }

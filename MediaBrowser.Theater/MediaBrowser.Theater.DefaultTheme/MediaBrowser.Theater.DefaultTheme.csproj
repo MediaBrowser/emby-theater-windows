@@ -151,6 +151,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Home\Views\Generic\GenericFolderSpotlightView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="SortModeMenu\Views\SortModeCommandView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -396,6 +400,9 @@
     <Compile Include="Home\ViewModels\Generic\GenericFolderSpotlightViewModel.cs" />
     <Compile Include="Home\ViewModels\Generic\GenericViewHomePageGenerator.cs" />
     <Compile Include="Home\ViewModels\UserViewsPageGenerator.cs" />
+    <Compile Include="Home\Views\Generic\GenericFolderSpotlightView.xaml.cs">
+      <DependentUpon>GenericFolderSpotlightView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SortModeMenu\Commands\SortModeCommand.cs" />
     <Compile Include="Core\Commands\RestartMenuCommand.cs" />
     <Compile Include="Core\Commands\ShutdownMenuCommand.cs" />

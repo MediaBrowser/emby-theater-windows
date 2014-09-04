@@ -123,6 +123,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
             }
 
             IsVisible = Movies.Count > 0;
+            OnPropertyChanged("Size");
         }
 
         private ItemTileViewModel CreateMovieItem()

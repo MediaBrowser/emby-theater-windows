@@ -336,12 +336,7 @@ namespace MediaBrowser.Theater.DirectShow
                 }
             }
 
-            return new PlayableItem
-            {
-                OriginalItem = item,
-                PlayablePath = PlayablePathBuilder.GetPlayablePath(item, mountedIso, _apiClient, startTimeTicks, _config.Configuration.MaxStreamingBitrate),
-                IsoMount = mountedIso
-            };
+            return PlayablePathBuilder.GetPlayableItem(item, mountedIso, _apiClient, startTimeTicks, _config.Configuration.MaxStreamingBitrate);
         }
 
         /// <summary>

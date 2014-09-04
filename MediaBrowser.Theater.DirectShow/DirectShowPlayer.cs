@@ -317,8 +317,9 @@ namespace MediaBrowser.Theater.DirectShow
             if(item.OriginalItem.RunTimeTicks > 0)
                 itemDuration = TimeSpan.FromTicks((long)item.OriginalItem.RunTimeTicks);
 
-            if (IsFullScreen && 
-                item.IsVideo 
+            if (item.IsVideo
+                && IsFullScreen 
+                && !string.IsNullOrWhiteSpace(item.OriginalItem.ParentId)                 
                 && _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig.AutoChangeRefreshRate
                 && _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig.MinRefreshRateMin < itemDuration.TotalMinutes
                 )

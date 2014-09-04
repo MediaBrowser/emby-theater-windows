@@ -3,6 +3,8 @@ using MediaBrowser.Model.Dlna;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.IO;
+using MediaBrowser.Model.MediaInfo;
+using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.DirectShow.Streaming;
 using System;
 using System.IO;
@@ -23,17 +25,29 @@ namespace MediaBrowser.Theater.DirectShow
         /// <param name="apiClient">The API client.</param>
         /// <param name="startTimeTicks">The start time ticks.</param>
         /// <returns>System.String.</returns>
-        public static string GetPlayablePath(BaseItemDto item, IIsoMount isoMount, IApiClient apiClient, long? startTimeTicks, int? maxBitrate)
+        public static PlayableItem GetPlayableItem(BaseItemDto item, IIsoMount isoMount, IApiClient apiClient, long? startTimeTicks, int? maxBitrate)
         {
             // Check the mounted path first
             if (isoMount != null)
             {
                 if (item.IsoType.HasValue && item.IsoType.Value == IsoType.BluRay)
                 {
-                    return GetBlurayPath(isoMount.MountedPath);
+                    return new PlayableItem
+                    {
+                        OriginalItem = item,
+                        PlayablePath = GetBlurayPath(isoMount.MountedPath),
+                        IsoMount = isoMount,
+                        MediaSource = item.MediaSources.First()
+                    };
                 }
 
-                return isoMount.MountedPath;
+                return new PlayableItem
+                {
+                    OriginalItem = item,
+                    PlayablePath = isoMount.MountedPath,
+                    IsoMount = isoMount,
+                    MediaSource = item.MediaSources.First()
+                };
             }
 
             if (item.LocationType == LocationType.FileSystem)
@@ -42,24 +56,51 @@ namespace MediaBrowser.Theater.DirectShow
                 {
                     if (item.VideoType.HasValue && item.VideoType.Value == VideoType.BluRay)
                     {
-                        return GetBlurayPath(item.Path);
+                        return new PlayableItem
+                        {
+                            OriginalItem = item,
+                            PlayablePath = GetBlurayPath(item.Path),
+                            MediaSource = item.MediaSources.First()
+                        };
                     }
 
-                    return item.Path;
+                    if (item.VideoType.HasValue && item.VideoType.Value == VideoType.Dvd)
+                    {
+                        return new PlayableItem
+                        {
+                            OriginalItem = item,
+                            PlayablePath = item.Path,
+                            MediaSource = item.MediaSources.First()
+                        };
+                    }
+
+                    if (item.VideoType.HasValue && item.VideoType.Value == VideoType.HdDvd)
+                    {
+                        return new PlayableItem
+                        {
+                            OriginalItem = item,
+                            PlayablePath = item.Path,
+                            MediaSource = item.MediaSources.First()
+                        };
+                    }
+
+                    //return item.Path;
                 }
             }
 
-            return GetStreamedPath(item, apiClient, startTimeTicks, maxBitrate);
+            return GetStreamedItem(item, apiClient, startTimeTicks, maxBitrate);
         }
 
-        private static string GetStreamedPath(BaseItemDto item, IApiClient apiClient, long? startTimeTicks, int? maxBitrate)
+        private static PlayableItem GetStreamedItem(BaseItemDto item, IApiClient apiClient, long? startTimeTicks, int? maxBitrate)
         {
             var profile = new MediaBrowserTheaterProfile();
 
             StreamInfo info;
 
-            if (item.IsAudio) {
-                var options = new AudioOptions {
+            if (item.IsAudio)
+            {
+                var options = new AudioOptions
+                {
                     Context = EncodingContext.Streaming,
                     DeviceId = apiClient.DeviceId,
                     ItemId = item.Id,
@@ -76,9 +117,27 @@ namespace MediaBrowser.Theater.DirectShow
                 info = new StreamBuilder().BuildAudioItem(options);
                 info.StartPositionTicks = startTimeTicks ?? 0;
 
-                return info.ToUrl(apiClient.ServerAddress + "/mediabrowser");
-            } else {
-                var options = new VideoOptions {
+                if (info.MediaSource.Protocol == MediaProtocol.File && File.Exists(info.MediaSource.Path))
+                {
+                    return new PlayableItem
+                    {
+                        OriginalItem = item,
+                        PlayablePath = info.MediaSource.Path,
+                        MediaSource = info.MediaSource
+                    };
+                }
+
+                return new PlayableItem
+                {
+                    OriginalItem = item,
+                    PlayablePath = info.ToUrl(apiClient.ServerAddress + "/mediabrowser"),
+                    MediaSource = info.MediaSource
+                };
+            }
+            else
+            {
+                var options = new VideoOptions
+                {
                     Context = EncodingContext.Streaming,
                     DeviceId = apiClient.DeviceId,
                     ItemId = item.Id,
@@ -95,7 +154,21 @@ namespace MediaBrowser.Theater.DirectShow
                 info = new StreamBuilder().BuildVideoItem(options);
                 info.StartPositionTicks = startTimeTicks ?? 0;
 
-                return info.ToUrl(apiClient.ServerAddress + "/mediabrowser") + "&EnableAdaptiveBitrateStreaming=false";
+                if (info.MediaSource.Protocol == MediaProtocol.File && File.Exists(info.MediaSource.Path))
+                {
+                    return new PlayableItem
+                    {
+                        OriginalItem = item,
+                        PlayablePath = info.MediaSource.Path,
+                        MediaSource = info.MediaSource
+                    };
+                }
+                return new PlayableItem
+                {
+                    OriginalItem = item,
+                    PlayablePath = info.ToUrl(apiClient.ServerAddress + "/mediabrowser") + "&EnableAdaptiveBitrateStreaming=false",
+                    MediaSource = info.MediaSource
+                };
             }
         }
 

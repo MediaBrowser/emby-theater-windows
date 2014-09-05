@@ -205,6 +205,15 @@ namespace MediaBrowser.Theater.DefaultTheme.Resources.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to @Home_Channels_Title.
+        /// </summary>
+        internal static string Home_Channels_Title {
+            get {
+                return ResourceManager.GetString("Home_Channels_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to @Home_LatestEpisodes_Title.
         /// </summary>
         internal static string Home_LatestEpisodes_Title {

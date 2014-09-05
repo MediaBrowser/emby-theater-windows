@@ -27,7 +27,9 @@
                     xmlns:viewModels7="clr-namespace:MediaBrowser.Theater.DefaultTheme.SortModeMenu.ViewModels"
                     xmlns:views7="clr-namespace:MediaBrowser.Theater.DefaultTheme.SortModeMenu.Views"
                     xmlns:generic="clr-namespace:MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Generic"
-                    xmlns:generic1="clr-namespace:MediaBrowser.Theater.DefaultTheme.Home.Views.Generic">
+                    xmlns:generic1="clr-namespace:MediaBrowser.Theater.DefaultTheme.Home.Views.Generic"
+                    xmlns:channels="clr-namespace:MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Channels"
+                    xmlns:channels1="clr-namespace:MediaBrowser.Theater.DefaultTheme.Home.Views.Channels">
     
     <DataTemplate DataType="{x:Type viewModels:RootViewModel}">
         <views:RootView/>
@@ -95,6 +97,10 @@
     
     <DataTemplate DataType="{x:Type generic:GenericFolderSpotlightViewModel}">
         <generic1:GenericFolderSpotlightView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type channels:ChannelListViewModel}">
+        <channels1:ChannelListView/>
     </DataTemplate>
     
     <DataTemplate DataType="{x:Type tv:TvSpotlightViewModel}">

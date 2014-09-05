@@ -151,6 +151,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Home\Views\Channels\ChannelListView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Home\Views\Generic\GenericFolderSpotlightView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -397,9 +401,14 @@
     <Compile Include="Controls\TileButton.cs" />
     <Compile Include="Core\Commands\ExitMenuCommand.cs" />
     <Compile Include="Core\Commands\HomeCommand.cs" />
+    <Compile Include="Home\ViewModels\Channels\ChannelsListViewModel.cs" />
+    <Compile Include="Home\ViewModels\Channels\ChannelListHomePageGenerator.cs" />
     <Compile Include="Home\ViewModels\Generic\GenericFolderSpotlightViewModel.cs" />
     <Compile Include="Home\ViewModels\Generic\GenericViewHomePageGenerator.cs" />
     <Compile Include="Home\ViewModels\UserViewsPageGenerator.cs" />
+    <Compile Include="Home\Views\Channels\ChannelListView.xaml.cs">
+      <DependentUpon>ChannelListView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Home\Views\Generic\GenericFolderSpotlightView.xaml.cs">
       <DependentUpon>GenericFolderSpotlightView.xaml</DependentUpon>
     </Compile>

@@ -57,8 +57,17 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
 
             AllShowsCommand = new RelayCommand(arg => {
                 var itemParams = new ItemListParameters {
-                    Items = GetChildren(tvFolder),
+                    Items = GetChildren(tvFolder, new[] { "Series" }, new[] { "Playlist" }),
                     Title = "Browse TV Shows"
+                };
+
+                navigator.Navigate(Go.To.ItemList(itemParams));
+            });
+
+            PlaylistsCommand = new RelayCommand(arg => {
+                var itemParams = new ItemListParameters {
+                    Items = GetChildren(tvFolder, new[] { "Playlist" }),
+                    Title = "Movie Playlists"
                 };
 
                 navigator.Navigate(Go.To.ItemList(itemParams));
@@ -92,7 +101,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
         public RangeObservableCollection<ItemTileViewModel> MiniSpotlightItems { get; private set; }
         public ImageSlideshowViewModel AllShowsImagesViewModel { get; private set; }
         public ICommand AllShowsCommand { get; private set; }
-        public ICommand GenresCommand { get; private set; }
+        public ICommand PlaylistsCommand { get; private set; }
         public ICommand UpcomingCommand { get; private set; }
 
         public string Title { get; private set; }
@@ -139,13 +148,14 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
             return name;
         }
 
-        private Task<ItemsResult> GetChildren(BaseItemDto item)
+        private Task<ItemsResult> GetChildren(BaseItemDto item, string[] includeItemTypes = null, string[] excludeItemTypes = null)
         {
             var query = new ItemQuery
             {
                 UserId = _sessionManager.CurrentUser.Id,
                 ParentId = item.Id,
-                IncludeItemTypes = new[] { "Series" },
+                IncludeItemTypes = includeItemTypes,
+                ExcludeItemTypes = excludeItemTypes,
                 SortBy = new[] { ItemSortBy.SortName },
                 Fields = MovieSpotlightViewModel.QueryFields,
                 Recursive = true

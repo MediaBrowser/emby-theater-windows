@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
@@ -11,7 +10,6 @@ using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.System;
 using MediaBrowser.Theater.Api.Configuration;
-using MediaBrowser.Theater.Api.Networking;
 using MediaBrowser.Theater.Api.Session;
 
 namespace MediaBrowser.Theater.Api.System
@@ -36,8 +34,14 @@ namespace MediaBrowser.Theater.Api.System
 
         public async Task<PublicSystemInfo> AttemptServerConnection()
         {
-            //Try and send WOL now to give system time to wake
-            await SendWakeOnLanCommand();
+            try {
+                //Try and send WOL now to give system time to wake
+                await SendWakeOnLanCommand();
+            }
+            catch (Exception e) {
+                _logger.ErrorException("Failed to sent wake on LAN command", e);
+            }
+
 
             try {
                 return await _apiClient.GetPublicSystemInfoAsync(CancellationToken.None).ConfigureAwait(false);
@@ -115,9 +119,19 @@ namespace MediaBrowser.Theater.Api.System
 
             _logger.Log(LogSeverity.Info, String.Format("Sending Wake on LAN signal to {0}", _configurationManager.Configuration.ServerAddress));
 
+            bool invalidConfiguration = false;
+
             //Send magic packets to each address
             foreach (string macAddress in wolConfig.HostMacAddresses) {
-                byte[] macBytes = PhysicalAddress.Parse(macAddress).GetAddressBytes();
+                byte[] macBytes;
+
+                try {
+                    macBytes = PhysicalAddress.Parse(macAddress).GetAddressBytes();
+                }
+                catch (FormatException) {
+                    invalidConfiguration = true;
+                    continue;
+                }
 
                 _logger.Log(LogSeverity.Debug, String.Format("Sending magic packet to {0}", macAddress));
 
@@ -154,6 +168,11 @@ namespace MediaBrowser.Theater.Api.System
                         }
                     }
                 }
+            }
+
+            if (invalidConfiguration) {
+                _configurationManager.Configuration.WakeOnLanConfiguration = null;
+                _configurationManager.SaveConfiguration();
             }
         }
     }

@@ -100,13 +100,6 @@ namespace MediaBrowser.Theater.Implementations.Session
 
         protected async Task InternalLogin(string username, byte[] hash, bool rememberLogin)
         {
-            var systemInfo = await _apiClient.GetSystemInfoAsync(CancellationToken.None);
-
-            if (Version.Parse(systemInfo.Version) < RequiredServerVersion)
-            {
-                throw new ApplicationException(string.Format("Media Browser Server is out of date. Please upgrade to {0} or greater.", RequiredServerVersion));
-            }
-
             try
             {
                 var result = await _apiClient.AuthenticateUserAsync(username, hash);

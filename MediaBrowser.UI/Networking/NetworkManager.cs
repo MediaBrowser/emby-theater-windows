@@ -1,6 +1,7 @@
 ﻿using MediaBrowser.Common.Implementations.Networking;
 using MediaBrowser.Common.Net;
 using MediaBrowser.Model.IO;
+using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Net;
 using MediaBrowser.Theater.Implementations.Networking;
 using System;
@@ -17,6 +18,10 @@ namespace MediaBrowser.UI.Networking
     /// </summary>
     public class NetworkManager : BaseNetworkManager, INetworkManager
     {
+        public NetworkManager(ILogger logger) : base(logger)
+        {
+        }
+
         /// <summary>
         /// Gets the network shares.
         /// </summary>

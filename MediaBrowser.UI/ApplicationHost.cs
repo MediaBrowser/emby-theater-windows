@@ -8,6 +8,7 @@ using MediaBrowser.ApiInteraction.WebSocket;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Constants;
 using MediaBrowser.Common.Implementations;
+using MediaBrowser.Common.Implementations.Devices;
 using MediaBrowser.Common.Implementations.ScheduledTasks;
 using MediaBrowser.Common.Net;
 using MediaBrowser.IsoMounter;
@@ -189,9 +190,9 @@ namespace MediaBrowser.UI
             ScreensaverManager.AddParts(GetExports<IScreensaverFactory>());
         }
 
-        protected override INetworkManager CreateNetworkManager()
+        protected override INetworkManager CreateNetworkManager(ILogger logger)
         {
-            return new NetworkManager();
+            return new NetworkManager(logger);
         }
 
         /// <summary>
@@ -201,7 +202,10 @@ namespace MediaBrowser.UI
         {
             var logger = LogManager.GetLogger("ApiClient");
 
-            var apiClient = new ApiClient(new HttpWebRequestClient(logger), logger, TheaterConfigurationManager.Configuration.ServerAddress, "Media Browser Theater", Environment.MachineName, Environment.MachineName, ApplicationVersion.ToString())
+            var deviceName = Environment.MachineName;
+            var deviceId = new DeviceId(ApplicationPaths, LogManager.GetLogger("DeviceId")).Value;
+
+            var apiClient = new ApiClient(new HttpWebRequestClient(logger), logger, TheaterConfigurationManager.Configuration.ServerAddress, "Media Browser Theater", deviceName, deviceId, ApplicationVersion.ToString())
             {
                 JsonSerializer = JsonSerializer,
                 ImageQuality = TheaterConfigurationManager.Configuration.DownloadCompressedImages

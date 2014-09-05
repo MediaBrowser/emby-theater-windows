@@ -149,13 +149,13 @@ namespace MediaBrowser.UI
                 _appHost.NavigationService, _appHost.ScreensaverManager);
 
             var config = _appHost.TheaterConfigurationManager.Configuration;
-            
+
             // Restore window position/size
             if (config.WindowState.HasValue)
             {
                 double left = 0;
                 double top = 0;
-                
+
                 // Set left
                 if (config.WindowLeft.HasValue)
                 {
@@ -238,7 +238,7 @@ namespace MediaBrowser.UI
             var state = GetWindowsFormState(ApplicationWindow.WindowState);
 
             _hiddenWindowThread = new Thread(() => ShowHiddenWindow(formWidth, formHeight, formTop, formLeft, state));
-            _hiddenWindowThread.SetApartmentState(ApartmentState.MTA); 
+            _hiddenWindowThread.SetApartmentState(ApartmentState.MTA);
             _hiddenWindowThread.IsBackground = true;
             _hiddenWindowThread.Priority = ThreadPriority.AboveNormal;
             _hiddenWindowThread.Start();
@@ -290,7 +290,7 @@ namespace MediaBrowser.UI
             }
 
             HiddenWindow.WindowState = windowState;
-            
+
             HiddenWindow.Show();
 
             System.Windows.Threading.Dispatcher.Run();
@@ -535,8 +535,15 @@ namespace MediaBrowser.UI
 
             PublicSystemInfo systemInfo = null;
 
-            //Try and send WOL now to give system time to wake
-            await _appHost.SendWolCommand();
+            try
+            {
+                //Try and send WOL now to give system time to wake
+                await _appHost.SendWolCommand();
+            }
+            catch (Exception ex)
+            {
+                _logger.ErrorException("Error sending wake on lan command", ex);
+            }
 
             try
             {
@@ -550,7 +557,7 @@ namespace MediaBrowser.UI
                     "Error connecting to server using saved connection information. Host: {0}, Port {1}", ex,
                     _appHost.ApiClient.ServerAddress);
             }
-            
+
             //Try and wait for WOL if its configured
             if (!foundServer && _appHost.TheaterConfigurationManager.Configuration.WolConfiguration != null
                 && _appHost.TheaterConfigurationManager.Configuration.WolConfiguration.HostMacAddresses.Count > 0)

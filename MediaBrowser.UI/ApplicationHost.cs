@@ -429,10 +429,23 @@ namespace MediaBrowser.UI
                 return;
             }
 
+            bool invalidConfiguration = false;
+
             //Send magic packets to each address
             foreach (var macAddress in wolConfig.HostMacAddresses)
             {
-                var macBytes = PhysicalAddress.Parse(macAddress).GetAddressBytes();
+                byte[] macBytes;
+
+                try
+                {
+                    macBytes = PhysicalAddress.Parse(macAddress).GetAddressBytes();
+                }
+                catch (FormatException)
+                {
+                    // invalid mac address stored in the config file, reset our configuration to invalidate it
+                    invalidConfiguration = true;
+                    continue;
+                }
 
                 Logger.Log(LogSeverity.Debug, String.Format("Sending magic packet to {0}", macAddress));
 
@@ -475,6 +488,12 @@ namespace MediaBrowser.UI
                         }
                     }
                 }
+            }
+
+            if (invalidConfiguration)
+            {
+                TheaterConfigurationManager.Configuration.WolConfiguration = null;
+                TheaterConfigurationManager.SaveConfiguration();
             }
         }
 

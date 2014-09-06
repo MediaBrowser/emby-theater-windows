@@ -336,7 +336,7 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
 
                 try
                 {
-                    await ApiClient.GetSystemInfoAsync(CancellationToken.None);
+                    await ApiClient.GetPublicSystemInfoAsync(CancellationToken.None);
                     break;
                 }
                 catch (Exception)

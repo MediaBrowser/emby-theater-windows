@@ -566,7 +566,7 @@ namespace MediaBrowser.UI
                 {
                     try
                     {
-                        systemInfo = await _appHost.ApiClient.GetSystemInfoAsync(CancellationToken.None).ConfigureAwait(false);
+                        systemInfo = await _appHost.ApiClient.GetPublicSystemInfoAsync(CancellationToken.None).ConfigureAwait(false);
                     }
                     catch (Exception)
                     {

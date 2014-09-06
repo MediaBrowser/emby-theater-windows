@@ -203,9 +203,8 @@ namespace MediaBrowser.UI
             var logger = LogManager.GetLogger("ApiClient");
 
             var deviceName = Environment.MachineName;
-            var deviceId = new DeviceId(ApplicationPaths, LogManager.GetLogger("DeviceId")).Value;
 
-            var apiClient = new ApiClient(new HttpWebRequestClient(logger), logger, TheaterConfigurationManager.Configuration.ServerAddress, "Media Browser Theater", deviceName, deviceId, ApplicationVersion.ToString())
+            var apiClient = new ApiClient(new HttpWebRequestClient(logger), logger, TheaterConfigurationManager.Configuration.ServerAddress, "Media Browser Theater", deviceName, SystemId, ApplicationVersion.ToString())
             {
                 JsonSerializer = JsonSerializer,
                 ImageQuality = TheaterConfigurationManager.Configuration.DownloadCompressedImages
@@ -351,7 +350,7 @@ namespace MediaBrowser.UI
         public override async Task<CheckForUpdateResult> CheckForApplicationUpdate(CancellationToken cancellationToken,
                                                                     IProgress<double> progress)
         {
-            var serverInfo = await ApiClient.GetSystemInfoAsync(cancellationToken).ConfigureAwait(false);
+            var serverInfo = await ApiClient.GetPublicSystemInfoAsync(cancellationToken).ConfigureAwait(false);
 
             var availablePackages = await InstallationManager.GetAvailablePackagesWithoutRegistrationInfo(cancellationToken).ConfigureAwait(false);
 

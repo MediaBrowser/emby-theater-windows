@@ -57,31 +57,6 @@
                     <Path Margin="80" Stretch="Fill" Fill="{StaticResource ForegroundBrush}" Data="F1 M 30.0833,22.1667L 50.6665,37.6043L 50.6665,38.7918L 30.0833,53.8333L 30.0833,22.1667 Z "/>
                 </Border>
             </controls1:TileButton>
-
-<!--            <Button Command="{Binding PlayCommand}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center">-->
-<!--                <Button.Style>-->
-<!--                    <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">-->
-<!--                        <Style.Triggers>-->
-<!--                            <DataTrigger Binding="{Binding Info.IsFolder}" Value="True">-->
-<!--                                <Setter Property="Visibility" Value="Collapsed"/>-->
-<!--                            </DataTrigger>-->
-<!--                        </Style.Triggers>-->
-<!--                    </Style>-->
-<!--                </Button.Style>-->
-<!---->
-<!--                <TextBlock Text="Play" Margin="10,0,10,0" VerticalAlignment="Center" />-->
-<!--            </Button>-->
-<!---->
-<!--            <Button Command="{Binding PlayAllCommand}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Visibility="{Binding Info.IsFolder, Converter={StaticResource BooleanToVisibility}}">-->
-<!--                <TextBlock Text="Play All" Margin="10,0,10,0" VerticalAlignment="Center" />-->
-<!--            </Button>-->
-<!---->
-<!--            <Button Command="{Binding ResumeCommand}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Padding="0" Visibility="{Binding Info.IsInProgress, Converter={StaticResource BooleanToVisibility}}">-->
-<!--                <Grid HorizontalAlignment="Stretch">-->
-<!--                    <ProgressBar Minimum="0" Maximum="100" Value="{Binding Info.PlayedPercentage, Mode=OneWay}" BorderThickness="0" Background="Transparent" Foreground="{StaticResource ForegroundBrush}" Opacity="0.1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>-->
-<!--                    <TextBlock Text="Resume" Margin="16,3,16,5" VerticalAlignment="Center" HorizontalAlignment="Center" />-->
-<!--                </Grid>-->
-<!--            </Button>-->
         </StackPanel>
     </StackPanel>
 </UserControl>

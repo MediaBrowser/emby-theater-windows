@@ -120,6 +120,8 @@ namespace MediaBrowser.Theater.Api.Configuration
 
         public bool AutoChangeRefreshRate { get; set; }
 
+        public int MinRefreshRateMin { get; set; }
+
         public VideoConfiguration()
         {
             HwaEnabledCodecs = new List<string>();
@@ -135,6 +137,7 @@ namespace MediaBrowser.Theater.Api.Configuration
             NominalRange = 2; //MFNominalRange_16_235
 
             AutoChangeRefreshRate = false;
+            MinRefreshRateMin = 5;
         }
 
         public void SetDefaults()

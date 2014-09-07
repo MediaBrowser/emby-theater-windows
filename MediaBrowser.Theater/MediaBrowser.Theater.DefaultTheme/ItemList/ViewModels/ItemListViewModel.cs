@@ -63,8 +63,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
     public class IndexSortMode
         : IItemListSortMode
     {
-        private static readonly Regex NumberRegex = new Regex(@"^\d+");
-        private ItemNameSortMode _byName = new ItemNameSortMode();
+        private readonly ItemNameSortMode _byName = new ItemNameSortMode();
 
         public string DisplayName { get { return "MediaBrowser.Theater.DefaultTheme:Strings:Sorting_ByNaturalOrder".Localize(); } }
 
@@ -156,9 +155,9 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
         private IEnumerable<IItemListSortMode> _availableSortModes;
         private SortDirection _sortDirection;
 
-        public ItemListViewModel(Task<ItemsResult> items, string title, IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator, ISessionManager sessionManager, IPlaybackManager playbackManager)
+        public ItemListViewModel(ItemListParameters parameters, IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator, ISessionManager sessionManager, IPlaybackManager playbackManager)
         {
-            _items = items;
+            _items = parameters.Items;
             _apiClient = apiClient;
             _imageManager = imageManager;
             _serverEvents = serverEvents;
@@ -171,7 +170,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
 
             PresentationOptions = new RootPresentationOptions {
                 ShowMediaBrowserLogo = false,
-                Title = title
+                Title = parameters.Title
             };
         }
 

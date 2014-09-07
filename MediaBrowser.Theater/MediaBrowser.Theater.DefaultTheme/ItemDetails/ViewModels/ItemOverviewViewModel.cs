@@ -6,6 +6,7 @@ using System.Windows.Input;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
+using MediaBrowser.Model.Querying;
 using MediaBrowser.Theater.Api.Library;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Playback;
@@ -77,8 +78,16 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
             PlayCommand = new RelayCommand(o => playbackManager.Play(new PlayOptions(item) { GoFullScreen = true, EnableCustomPlayers = true, Resume = false }));
             ResumeCommand = new RelayCommand(o => playbackManager.Play(new PlayOptions(item) { GoFullScreen = true, EnableCustomPlayers = true, Resume = true }));
             PlayAllCommand = new RelayCommand(async o => {
-                var items = await apiClient.GetItemsAsync(new Model.Querying.ItemQuery { ParentId = item.Id, UserId = sessionManager.CurrentUser.Id, Recursive = true, IncludeItemTypes = new[] { "Movie", "Episode", "Track" } });
-                await playbackManager.Play(new PlayOptions(items.Items) { EnableCustomPlayers = true, GoFullScreen = true });
+                var items = await apiClient.GetItemsAsync(new ItemQuery {
+                    ParentId = item.Id,
+                    UserId = sessionManager.CurrentUser.Id,
+                    Recursive = true,
+                    IncludeItemTypes = new[] { "Movie", "Episode", "Audio" },
+                    Fields = new[] { ItemFields.MediaSources }
+                });
+                if (items.Items.Length > 0) {
+                    await playbackManager.Play(new PlayOptions(items.Items) { EnableCustomPlayers = true, GoFullScreen = true });
+                }
             });
 
             BrowseAllCommand = new RelayCommand(o => navigator.Navigate(Go.To.ItemList(new ItemListParameters {

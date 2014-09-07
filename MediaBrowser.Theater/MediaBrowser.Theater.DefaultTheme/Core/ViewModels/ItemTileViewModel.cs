@@ -233,39 +233,4 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
             OnPropertyChanged("ShowCaptionBar");
         }
     }
-
-    public class ItemListElementViewModel
-        : ItemTileViewModel 
-    {
-        public ItemListElementViewModel(IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator, IPlaybackManager playbackManager, BaseItemDto item) 
-            : base(apiClient, imageManager, serverEvents, navigator, playbackManager, item) { }
-
-        public string Detail
-        {
-            get
-            {
-                if (Item.Type == "Episode")
-                {
-                    if (Item.IndexNumber == null)
-                    {
-                        return null;
-                    }
-
-                    if (Item.IndexNumberEnd != null)
-                    {
-                        return string.Format("S{0}, E{1}-{2}", Item.ParentIndexNumber, Item.IndexNumber, Item.IndexNumberEnd);
-                    }
-
-                    return string.Format("S{0}, E{1}", Item.ParentIndexNumber, Item.IndexNumber);
-                }
-
-                if (Item.ProductionYear != null)
-                {
-                    return Item.ProductionYear.Value.ToString(CultureInfo.InvariantCulture);
-                }
-
-                return null;
-            }
-        }
-    }
 }

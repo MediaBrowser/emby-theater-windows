@@ -58,7 +58,7 @@
                 </Border>
             </controls1:TileButton>
 
-            <controls1:TileButton Command="{Binding BrowseAllCommand}" Width="250" Height="250" AutoHideHeading="True" Visibility="{Binding Info.IsFolder, Converter={StaticResource BooleanToVisibility}}" Background="{StaticResource BackgroundBrush2}">
+            <controls1:TileButton Command="{Binding BrowseAllCommand}" Width="250" Height="250" Margin="0,20,0,0" AutoHideHeading="True" Visibility="{Binding Info.IsFolder, Converter={StaticResource BooleanToVisibility}}" Background="{StaticResource BackgroundBrush2}">
                 <controls1:TileButton.Header>
                     <TextBlock Text="Browse All" Margin="15, 5, 20, 10"/>
                 </controls1:TileButton.Header>

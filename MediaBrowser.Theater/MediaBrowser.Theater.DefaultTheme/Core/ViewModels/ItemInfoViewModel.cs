@@ -15,6 +15,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
         private readonly BaseItemDto _item;
         private Func<BaseItemDto, string> _displayNameGenerator;
 
+        private bool? _showDisplayName;
         private bool? _showParentText;
         private bool? _showStats;
         private bool? _showYear;
@@ -50,6 +51,12 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
                 OnPropertyChanged();
                 OnPropertyChanged("DisplayName");
             }
+        }
+
+        public bool ShowDisplayName
+        {
+            get { return _showDisplayName ?? !string.IsNullOrEmpty(DisplayName); }
+            set { _showDisplayName = value; }
         }
 
         public bool ShowParentText
@@ -434,6 +441,11 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
                 var progress = PlayedPercentage;
                 return progress > 0 && progress < 100;
             }
+        }
+
+        public bool IsResumable
+        {
+            get { return IsInProgress && _item.CanResume; }
         }
     }
 }

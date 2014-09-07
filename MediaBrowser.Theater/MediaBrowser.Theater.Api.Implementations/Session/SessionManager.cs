@@ -71,8 +71,10 @@ namespace MediaBrowser.Theater.Api.Session
             _config.Configuration.AutoLoginConfiguration = new AutoLoginConfiguration();
             _config.SaveConfiguration();
 
-            await _navService.Navigate(Go.To.Login());
-            _navService.ClearNavigationHistory();
+            if (!(_navService.CurrentLocation is LoginPath)) {
+                await _navService.Navigate(Go.To.Login());
+                _navService.ClearNavigationHistory();
+            }
         }
 
         public async Task Login(string username, string password, bool rememberCredentials)

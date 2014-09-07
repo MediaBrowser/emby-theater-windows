@@ -20,7 +20,8 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
     {
         private readonly BaseItemDto _item;
 
-        public ItemArtworkViewModel Artwork { get; set; }
+        public ItemArtworkViewModel PosterArtwork { get; set; }
+        public ItemArtworkViewModel BackgroundArtwork { get; set; }
         public ItemInfoViewModel Info { get; set; }
 
         public ICommand PlayCommand { get; set; }
@@ -47,16 +48,25 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
         {
             _item = item;
 
-            Artwork = new ItemArtworkViewModel(item, apiClient, imageManager) { DesiredImageHeight = 700 };
-            Info = new ItemInfoViewModel(item);
+            Info = new ItemInfoViewModel(item) {
+                ShowDisplayName = false,
+                ShowParentText = false
+            };
+
+            PosterArtwork = new ItemArtworkViewModel(item, apiClient, imageManager) { DesiredImageHeight = 700 };
 
             if (item.Type == "Episode")
-                Artwork.PreferredImageTypes = new[] { ImageType.Screenshot, ImageType.Art, ImageType.Primary };
+                PosterArtwork.PreferredImageTypes = new[] { ImageType.Screenshot, ImageType.Art, ImageType.Primary };
 
-            Artwork.PropertyChanged += (s, e) => {
+            PosterArtwork.PropertyChanged += (s, e) => {
                 if (e.PropertyName == "Size") {
                     OnPropertyChanged("Size");
                 }
+            };
+
+            BackgroundArtwork = new ItemArtworkViewModel(item, apiClient, imageManager) {
+                DesiredImageWidth = 800,
+                PreferredImageTypes = new[] { ImageType.Backdrop, ImageType.Art, ImageType.Banner, ImageType.Screenshot, ImageType.Primary }
             };
 
             PlayCommand = new RelayCommand(o => playbackManager.Play(new PlayOptions(item) { GoFullScreen = true, EnableCustomPlayers = true, Resume = false }));
@@ -71,12 +81,11 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
         {
             get
             {
-                var artWidth = Math.Min(1200, Artwork.ActualWidth);
-
                 if (ShowInfo)
-                    return new Size(artWidth + 600 + 20, 700);
-                else
-                    return new Size(artWidth, 700);
+                    return new Size(800 + 20 + 250, 700);
+
+                var artWidth = Math.Min(1200, PosterArtwork.ActualWidth);
+                return new Size(artWidth + 20 + 250, 700);
             }
         }
     }

@@ -206,9 +206,9 @@ namespace MediaBrowser.Theater
             Theme.Run();
         }
 
-        protected override INetworkManager CreateNetworkManager()
+        protected override INetworkManager CreateNetworkManager(ILogger logger)
         {
-            return new NetworkManager();
+            return new NetworkManager(logger);
         }
 
         /// <summary>

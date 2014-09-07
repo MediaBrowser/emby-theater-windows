@@ -410,7 +410,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
 
                 if (item != null) {
                     if (item.IsFolder) {
-                        return item.PlayedPercentage ?? 0;
+                        return item.UserData.PlayedPercentage ?? 0;
                     }
 
                     if (item.RunTimeTicks.HasValue) {

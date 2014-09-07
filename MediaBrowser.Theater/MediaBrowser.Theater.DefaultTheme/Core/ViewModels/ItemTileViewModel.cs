@@ -137,7 +137,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
                 }
 
                 if (_item.IsFolder) {
-                    return _item.PlayedPercentage ?? 0;
+                    return _item.UserData.PlayedPercentage ?? 0;
                 }
 
                 if (_item.RunTimeTicks.HasValue) {

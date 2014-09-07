@@ -57,6 +57,16 @@
                     <Path Margin="80" Stretch="Fill" Fill="{StaticResource ForegroundBrush}" Data="F1 M 30.0833,22.1667L 50.6665,37.6043L 50.6665,38.7918L 30.0833,53.8333L 30.0833,22.1667 Z "/>
                 </Border>
             </controls1:TileButton>
+
+            <controls1:TileButton Command="{Binding BrowseAllCommand}" Width="250" Height="250" AutoHideHeading="True" Visibility="{Binding Info.IsFolder, Converter={StaticResource BooleanToVisibility}}" Background="{StaticResource BackgroundBrush2}">
+                <controls1:TileButton.Header>
+                    <TextBlock Text="Browse All" Margin="15, 5, 20, 10"/>
+                </controls1:TileButton.Header>
+
+                <Border Background="{StaticResource BackgroundBrush2}">
+                    <Path Margin="80" Stretch="Fill" Fill="{StaticResource ForegroundBrush}" Data="F1 M 19,50L 28,34L 63,34L 54,50L 19,50 Z M 19,28.0001L 35,28C 36,25 37.4999,24.0001 37.4999,24.0001L 48.75,24C 49.3023,24 50,24.6977 50,25.25L 50,28L 53.9999,28.0001L 53.9999,32L 27,32L 19,46.4L 19,28.0001 Z "/>
+                </Border>
+            </controls1:TileButton>
         </StackPanel>
     </StackPanel>
 </UserControl>

@@ -80,6 +80,7 @@
     <Compile Include="Events\IEventAggregator.cs" />
     <Compile Include="Events\IEventBus.cs" />
     <Compile Include="ITheaterApplicationHost.cs" />
+    <Compile Include="Library\ItemChildrenEnumerator.cs" />
     <Compile Include="Playback\IAcceptsPlayCommand.cs" />
     <Compile Include="Playback\IConfigurableMediaPlayer.cs" />
     <Compile Include="Playback\IExternalMediaPlayer.cs" />

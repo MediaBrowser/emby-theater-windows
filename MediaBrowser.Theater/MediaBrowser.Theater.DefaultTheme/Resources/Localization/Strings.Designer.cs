@@ -511,6 +511,15 @@ namespace MediaBrowser.Theater.DefaultTheme.Resources.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to @Sorting_ByNaturalOrder.
+        /// </summary>
+        internal static string Sorting_ByNaturalOrder {
+            get {
+                return ResourceManager.GetString("Sorting_ByNaturalOrder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to @Sorting_ByTitle.
         /// </summary>
         internal static string Sorting_ByTitle {

@@ -345,4 +345,8 @@
     <value>@Home_Channels_Title</value>
     <comment>Section title for channels</comment>
   </data>
+  <data name="Sorting_ByNaturalOrder" xml:space="preserve">
+    <value>@Sorting_ByNaturalOrder</value>
+    <comment>Sort by the item's natural sort order</comment>
+  </data>
 </root>

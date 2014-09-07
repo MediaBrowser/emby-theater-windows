@@ -406,7 +406,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
 
         public bool IsFolder
         {
-            get { return _item.IsFolder; }
+            get { return _item.IsFolder || _item.Type == "Person"; }
         }
 
         public double PlayedPercentage

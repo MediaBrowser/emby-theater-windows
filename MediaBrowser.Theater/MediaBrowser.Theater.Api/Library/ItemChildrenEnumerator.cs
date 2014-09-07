@@ -12,35 +12,64 @@ namespace MediaBrowser.Theater.Api.Library
 {
     public static class ItemChildren
     {
-        public static async Task<ItemsResult> GetChildren(BaseItemDto item, IApiClient apiClient, ISessionManager sessionManager, bool expandSingleItems = false)
+        public static async Task<ItemsResult> GetChildren(
+            BaseItemDto item, IApiClient apiClient, ISessionManager sessionManager,
+            bool recursive = false, bool expandSingleItems = false, string[] includeItemTypes = null, ItemFields[] fields = null)
         {
-            var children = await GetChildrenInternal(item, apiClient, sessionManager);
+            var children = await GetChildrenInternal(item, apiClient, sessionManager, recursive, includeItemTypes, fields);
             if (children.TotalRecordCount == 1 && expandSingleItems && children.Items[0].IsFolder) {
-                return await GetChildren(children.Items[0], apiClient, sessionManager, true);
+                return await GetChildren(children.Items[0], apiClient, sessionManager, recursive, true, includeItemTypes, fields);
             }
 
             return children;
         }
 
-        private static Task<ItemsResult> GetChildrenInternal(BaseItemDto item, IApiClient apiClient, ISessionManager sessionManager)
+        private static async Task<ItemsResult> GetChildrenInternal(
+            BaseItemDto item, IApiClient apiClient, ISessionManager sessionManager,
+            bool recursive, string[] includeItemTypes, ItemFields[] fields)
         {
             if (item.IsType("channel")) {
-                return GetChannelItems(apiClient, new ChannelItemQuery {
+                var result = await GetChannelItems(apiClient, new ChannelItemQuery {
                     UserId = sessionManager.CurrentUser.Id,
-                    ChannelId = item.Id
+                    ChannelId = item.Id,
+                    Fields = fields,
                 }, CancellationToken.None);
+
+                result.Items = result.Items.Where(i => includeItemTypes.Any(i.IsType)).ToArray();
+                result.TotalRecordCount = result.Items.Length;
             }
 
             if (item.IsType("ChannelFolderItem") && !string.IsNullOrEmpty(item.ChannelId)) {
-                return GetChannelItems(apiClient, new ChannelItemQuery {
+                var result = await GetChannelItems(apiClient, new ChannelItemQuery {
                     UserId = sessionManager.CurrentUser.Id,
                     ChannelId = item.ChannelId,
-                    FolderId = item.Id
+                    FolderId = item.Id,
+                    Fields = fields
                 }, CancellationToken.None);
+
+                result.Items = result.Items.Where(i => includeItemTypes.Any(i.IsType)).ToArray();
+                result.TotalRecordCount = result.Items.Length;
             }
 
-            var query = new ItemQuery { ParentId = item.Id, UserId = sessionManager.CurrentUser.Id };
-            return apiClient.GetItemsAsync(query);
+            if (item.IsType("Person")) {
+                return await apiClient.GetItemsAsync(new ItemQuery {
+                    Person = item.Name,
+                    UserId = sessionManager.CurrentUser.Id,
+                    Recursive = recursive,
+                    Fields = fields,
+                    IncludeItemTypes = includeItemTypes
+                });
+            }
+
+            var query = new ItemQuery {
+                ParentId = item.Id,
+                UserId = sessionManager.CurrentUser.Id,
+                Recursive = recursive,
+                Fields = fields,
+                IncludeItemTypes = includeItemTypes
+            };
+
+            return await apiClient.GetItemsAsync(query);
         }
 
         private static async Task<ItemsResult> GetChannelItems(IApiClient apiClient, ChannelItemQuery query, CancellationToken cancellationToken)

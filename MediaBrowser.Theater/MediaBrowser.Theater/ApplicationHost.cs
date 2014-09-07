@@ -344,7 +344,7 @@ namespace MediaBrowser.Theater
         public override async Task<CheckForUpdateResult> CheckForApplicationUpdate(CancellationToken cancellationToken,
                                                                                    IProgress<double> progress)
         {
-            SystemInfo serverInfo = await ApiClient.GetSystemInfoAsync(cancellationToken).ConfigureAwait(false);
+            var serverInfo = await ApiClient.GetPublicSystemInfoAsync(cancellationToken).ConfigureAwait(false);
 
             IEnumerable<PackageInfo> availablePackages = await InstallationManager.GetAvailablePackagesWithoutRegistrationInfo(cancellationToken).ConfigureAwait(false);
 

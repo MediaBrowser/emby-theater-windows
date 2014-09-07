@@ -108,6 +108,8 @@
     <Compile Include="Playback\PlaybackManager.cs" />
     <Compile Include="Playback\PlaybackProgressReporter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ScheduledTasks\PluginUpdateTask.cs" />
+    <Compile Include="ScheduledTasks\SystemUpdateTask.cs" />
     <Compile Include="Session\SessionManager.cs" />
     <Compile Include="System\MediaFilters.cs" />
     <Compile Include="Networking\NativeMethods.cs" />

@@ -28,7 +28,7 @@
         <TextBlock Grid.Row="1" Text="{Binding DisplayName, Converter={StaticResource UppercaseConverter}}" Visibility="{Binding ShowDisplayName, Converter={StaticResource BooleanToVisibility}}" Style="{StaticResource HeadingTextBlockStyle}" Margin="0,0,0,10"/>
         
         <!--Statistics-->
-        <StackPanel  Grid.Row="2" Orientation="Horizontal" Visibility="{Binding ShowStats, Converter={StaticResource BooleanToVisibility}}" Margin="0,0,0,10">
+        <WrapPanel  Grid.Row="2" Orientation="Horizontal" Visibility="{Binding ShowStats, Converter={StaticResource BooleanToVisibility}}" Margin="0,0,0,10">
             <StackPanel Orientation="Vertical" Visibility="{Binding ShowDate, Converter={StaticResource BooleanToVisibility}}" Margin="0,0,40,0">
                 <TextBlock Text="{lex:Loc YearLabel}" Style="{StaticResource LabelTextBlockStyle}"/>
                 <TextBlock Text="{Binding Date}" Style="{StaticResource AccentedTextBlockStyle}"/>
@@ -53,7 +53,7 @@
                 <TextBlock Text="{lex:Loc GenreLabel}" Style="{StaticResource LabelTextBlockStyle}"/>
                 <TextBlock Text="{Binding Genres}" Style="{StaticResource AccentedTextBlockStyle}"/>
             </StackPanel>
-        </StackPanel>
+        </WrapPanel>
         
         <!--Overview-->
         <TextBlock  Grid.Row="3" Text="{Binding Overview}" Style="{StaticResource MinorTextBlockStyle}" Visibility="{Binding HasOverview, Converter={StaticResource BooleanToVisibility}}" Margin="0,0,0,10"/>

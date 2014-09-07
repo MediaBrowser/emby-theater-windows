@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
@@ -19,6 +20,8 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
     public class ItemNameSortMode
         : IItemListSortMode
     {
+        private static readonly Regex NumberRegex = new Regex(@"^\d+");
+
         public string DisplayName { get { return "MediaBrowser.Theater.DefaultTheme:Strings:Sorting_ByTitle".Localize(); } }
 
         public object GetSortKey(BaseItemDto item)
@@ -27,6 +30,11 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
 
             string name = item.SortName ?? item.Name ?? string.Empty;
             if (name.Length > 0) {
+                var match = NumberRegex.Match(name);
+                if (match.Success) {
+                    int number = int.Parse(match.Value);
+                    name = number.ToString("D5") + name.Substring(match.Index + match.Length);
+                }
                 return index + name.ToUpper(CultureInfo.CurrentUICulture);
             }
 
@@ -52,6 +60,32 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
         }
     }
 
+    public class IndexSortMode
+        : IItemListSortMode
+    {
+        private readonly ItemNameSortMode _byName = new ItemNameSortMode();
+
+        public string DisplayName { get { return "MediaBrowser.Theater.DefaultTheme:Strings:Sorting_ByNaturalOrder".Localize(); } }
+
+        public object GetSortKey(BaseItemDto item)
+        {
+            if (item.IndexNumber != null) {
+                return item.IndexNumber;
+            }
+
+            return _byName.GetSortKey(item);
+        }
+
+        public object GetIndexKey(BaseItemDto item)
+        {
+            if (item.IndexNumber != null) {
+                return (item.IndexNumber/5)*5;
+            }
+
+            return _byName.GetIndexKey(item);
+        }
+    }
+
     public class ItemYearSortMode
         : IItemListSortMode
     {
@@ -60,7 +94,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
         public object GetSortKey(BaseItemDto item)
         {
             if (item.PremiereDate != null) {
-                return item.PremiereDate.Value.Year;
+                return item.PremiereDate.Value;
             }
 
             return int.MaxValue;
@@ -121,22 +155,22 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
         private IEnumerable<IItemListSortMode> _availableSortModes;
         private SortDirection _sortDirection;
 
-        public ItemListViewModel(Task<ItemsResult> items, string title, IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator, ISessionManager sessionManager, IPlaybackManager playbackManager)
+        public ItemListViewModel(ItemListParameters parameters, IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator, ISessionManager sessionManager, IPlaybackManager playbackManager)
         {
-            _items = items;
+            _items = parameters.Items;
             _apiClient = apiClient;
             _imageManager = imageManager;
             _serverEvents = serverEvents;
             _navigator = navigator;
             _sessionManager = sessionManager;
             _playbackManager = playbackManager;
-            _availableSortModes = new IItemListSortMode[] { new ItemNameSortMode(), new ItemYearSortMode(), new ItemCommunityReviewSortMode() };
+            _availableSortModes = new IItemListSortMode[] { new IndexSortMode(), new ItemNameSortMode(), new ItemYearSortMode(), new ItemCommunityReviewSortMode() };
 
             Items = new RangeObservableCollection<ItemTileViewModel>();
 
             PresentationOptions = new RootPresentationOptions {
                 ShowMediaBrowserLogo = false,
-                Title = title
+                Title = parameters.Title
             };
         }
 

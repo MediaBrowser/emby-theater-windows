@@ -89,7 +89,6 @@ namespace MediaBrowser.Theater.DirectShow
         private double _currentPlaybackRate = 1.0;
 
         private object _madvr = null;
-        private static URCOMLoader _urCom = null;
 
         private PlayableItem _item = null;
 
@@ -103,6 +102,7 @@ namespace MediaBrowser.Theater.DirectShow
         private IUserInputManager _input = null;
         //private MMDevice _audioDevice = null;
 
+        private Resolution _startResolution = null;
         VideoScalingScheme _iVideoScaling = VideoScalingScheme.FROMINSIDE;
 
         #region LAVConfigurationValues
@@ -189,15 +189,6 @@ namespace MediaBrowser.Theater.DirectShow
             _apiClient = apiClient;
 
             windowManager.WindowLoaded += window => _hiddenWindow = window;
-
-            _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig.SetDefaults();
-            _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.SetDefaults();
-            _mbtConfig.Configuration.InternalPlayerConfiguration.SubtitleConfig.SetDefaults();
-            _mbtConfig.Configuration.InternalPlayerConfiguration.COMConfig.SetDefaults();
-
-            //use a static object so we keep the libraries in the same place. Doesn't usually matter, but the EVR Presenter does some COM hooking that has problems if we change the lib address.
-            if (_urCom == null)
-                _urCom = new URCOMLoader(_mbtConfig, zipClient);
         }
 
         private IBaseFilter AudioRenderer
@@ -322,11 +313,63 @@ namespace MediaBrowser.Theater.DirectShow
         public void Play(PlayableItem item, bool enableMadvr, bool enableMadvrExclusiveMode)
         {
             _logger.Info("Playing {0}. Audio Renderer: {1}, Madvr: {2}, xySubFilter: {3}", item.OriginalItem.Name,
-                _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.Renderer, enableMadvr, _mbtConfig.Configuration.InternalPlayerConfiguration.SubtitleConfig.EnableXySubFilter);
+                            _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.Renderer, enableMadvr, _mbtConfig.Configuration.InternalPlayerConfiguration.SubtitleConfig.EnableXySubFilter);
             _logger.Info("Playing Path {0}", item.PlayablePath);
 
             _item = item;
             _isInExclusiveMode = false;
+            TimeSpan itemDuration = TimeSpan.MaxValue;
+            if (item.OriginalItem.RunTimeTicks > 0)
+                itemDuration = TimeSpan.FromTicks((long)item.OriginalItem.RunTimeTicks);
+
+            if (IsFullScreen
+                && item.IsVideo
+                && !string.IsNullOrWhiteSpace(item.OriginalItem.ParentId)
+                && _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig.AutoChangeRefreshRate
+                && _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig.MinRefreshRateMin < itemDuration.TotalMinutes
+                )
+            {
+                if (item.MediaStreams != null)
+                {
+                    _logger.Warn("item.MediaStreams is null, cannot detect framerate");
+                }
+                else
+                {
+                    //find the video stream (assume that the first one is the main one)
+                    foreach (var ms in item.MediaStreams)
+                    {
+                        if (ms.Type == MediaStreamType.Video)
+                        {
+                            _startResolution = Display.GetCurrentResolution();
+                            int videoRate = (int)ms.RealFrameRate;
+
+                            if (videoRate == 25 || videoRate == 29 || videoRate == 30 || ms.IsInterlaced) // ms.IsInterlaced doesn't appear to be accurate
+                            {
+                                //Every display/GPU should be able to display @2x FPS and it's quite likely that 2x is the rendered FPS anyway
+                                videoRate = (int)(ms.RealFrameRate * 2);
+                            }
+                            if (videoRate != _startResolution.Rate)
+                            {
+                                Resolution desiredRes = new Resolution(_startResolution.ToString());
+                                desiredRes.Rate = videoRate;
+                                if (Display.ChangeResolution(desiredRes, false))
+                                    _logger.Info("Changed resolution from {0} to {1}", _startResolution, desiredRes);
+                                else
+                                {
+                                    _logger.Info("Couldn't change resolution from {0} to {1}", _startResolution, desiredRes);
+                                    _startResolution = null;
+                                }
+                            }
+                            else
+                                _startResolution = null;
+
+                            break;
+                        }
+                        else
+                            _startResolution = null;
+                    }
+                }
+            }
 
             var isDvd = ((item.OriginalItem.VideoType ?? VideoType.VideoFile) == VideoType.Dvd ||
                          (item.OriginalItem.IsoType ?? IsoType.BluRay) == IsoType.Dvd) &&
@@ -410,7 +453,7 @@ namespace MediaBrowser.Theater.DirectShow
             {
                 //prefer LAV Spliter Source
                 bool loadSource = true;
-                object objLavSource = _urCom.GetObject(typeof(LAVSplitterSource).GUID, true);
+                object objLavSource = _playerWrapper.PrivateCom.GetObject(typeof(LAVSplitterSource).GUID, true);
                 _sourceFilter = objLavSource as IBaseFilter;
                 //Activator.CreateInstance(Type.GetTypeFromCLSID(new Guid("{B98D13E7-55DB-4385-A33D-09FD1BA26338}"))) as DirectShowLib.IBaseFilter;
                 if (_sourceFilter != null)
@@ -529,7 +572,7 @@ namespace MediaBrowser.Theater.DirectShow
                 case AudioRendererChoice.WASAPI:
                     try
                     {
-                        _wasapiAR = _urCom.GetObject(typeof(MPAudioFilter).GUID, true);
+                        _wasapiAR =  _playerWrapper.PrivateCom.GetObject(typeof(MPAudioFilter).GUID, true);
                         var aRenderer = _wasapiAR as DirectShowLib.IBaseFilter;
                         if (aRenderer != null)
                         {
@@ -613,7 +656,7 @@ namespace MediaBrowser.Theater.DirectShow
 
                     try
                     {
-                        _madvr = _urCom.GetObject(typeof(MadVR).GUID, true); // new MadVR();
+                        _madvr =  _playerWrapper.PrivateCom.GetObject(typeof(MadVR).GUID, true); // new MadVR();
                         var vmadvr = _madvr as DirectShowLib.IBaseFilter;
                         if (vmadvr != null)
                         {
@@ -688,7 +731,7 @@ namespace MediaBrowser.Theater.DirectShow
                 {
                     try
                     {
-                        _xySubFilter = _urCom.GetObject(typeof(XySubFilter).GUID, true); //new XySubFilter();
+                        _xySubFilter =  _playerWrapper.PrivateCom.GetObject(typeof(XySubFilter).GUID, true); //new XySubFilter();
                         var vxySubFilter = _xySubFilter as DirectShowLib.IBaseFilter;
                         if (vxySubFilter != null)
                         {
@@ -725,7 +768,7 @@ namespace MediaBrowser.Theater.DirectShow
 
                 try
                 {
-                    _lavvideo = _urCom.GetObject(typeof(LAVVideo).GUID, true); //new LAVVideo();
+                    _lavvideo =  _playerWrapper.PrivateCom.GetObject(typeof(LAVVideo).GUID, true); //new LAVVideo();
                     var vlavvideo = _lavvideo as DirectShowLib.IBaseFilter;
                     if (vlavvideo != null)
                     {
@@ -833,7 +876,7 @@ namespace MediaBrowser.Theater.DirectShow
 
             try
             {
-                _lavaudio = _urCom.GetObject(typeof(LAVAudio).GUID, true); // new LAVAudio();
+                _lavaudio =  _playerWrapper.PrivateCom.GetObject(typeof(LAVAudio).GUID, true); // new LAVAudio();
                 var vlavaudio = _lavaudio as DirectShowLib.IBaseFilter;
                 if (vlavaudio != null)
                 {
@@ -1296,7 +1339,7 @@ namespace MediaBrowser.Theater.DirectShow
             if (_mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig.UseCustomPresenter)
             {
                 IMFVideoRenderer pRenderer = pEvr as IMFVideoRenderer;
-                pPresenter = _urCom.GetObject("EVR Presenter (babgvant)", false) as IMFVideoPresenter;
+                pPresenter =  _playerWrapper.PrivateCom.GetObject("EVR Presenter (babgvant)", false) as IMFVideoPresenter;
 
                 try
                 {
@@ -1802,6 +1845,12 @@ namespace MediaBrowser.Theater.DirectShow
                 // Stop media playback
                 if (_mediaControl != null)
                     hr = _mediaControl.Stop();
+
+                if (_startResolution != null)
+                {
+                    _logger.Info("Change resolution back to {0}", _startResolution);
+                    Display.ChangeResolution(_startResolution, false);
+                }
 
                 DsError.ThrowExceptionForHR(hr);
 
@@ -2704,12 +2753,7 @@ namespace MediaBrowser.Theater.DirectShow
 
             ToggleHideSubtitles(stream.Name.ToLower().Contains("no subtitles"));
         }
-
-
-        [DllImport("shlwapi.dll", CharSet = CharSet.Unicode)]
-        [return: MarshalAsAttribute(UnmanagedType.Bool)]
-        internal static extern bool PathIsUNC([MarshalAsAttribute(UnmanagedType.LPWStr), In] string pszPath);
-
+        
         private async void LoadExternalSubtitleFromStream(SelectableMediaStream stream)
         {
             // get a url for the stream
@@ -2751,16 +2795,8 @@ namespace MediaBrowser.Theater.DirectShow
             }
             else
             {
-                if (PathIsUNC(stream.Path))
-                {
-                    // if it is unc path, we can stream it directly
-                    LoadExternalSubtitle(stream.Path);
-                }
-                else
-                {
-                    // if not, we need to copy the stream to the local system and play form there (xyfilter issue)
-                    LoadExternalSubtitleFromStream(stream);
-                }
+                // if not, we need to copy the stream to the local system and play form there (xyfilter issue)
+                LoadExternalSubtitleFromStream(stream);
 
                 UpdateStreamActiveSetting(stream.Name, stream.Type); // display this  streams as active
             }

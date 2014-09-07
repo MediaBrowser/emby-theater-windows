@@ -5,11 +5,11 @@ namespace MediaBrowser.Theater.Presentation
 {
     public static class ImageTypeExtensions
     {
-        public static float GetAspectRatio(this ImageType imageType)
+        public static float GetAspectRatio(this ImageType imageType, string itemType)
         {
             switch (imageType) {
                 case ImageType.Primary:
-                    return 1000f/1426f;
+                    return PrimaryImageAspectRatio(itemType);
                 case ImageType.Art:
                 case ImageType.Backdrop:
                 case ImageType.Screenshot:
@@ -27,6 +27,20 @@ namespace MediaBrowser.Theater.Presentation
                     return 1;
                 default:
                     throw new ArgumentOutOfRangeException("imageType");
+            }
+        }
+
+        private static float PrimaryImageAspectRatio(string itemType)
+        {
+            switch (itemType) {
+                case "Episode":
+                    return 16f/9f;
+                case "MusicAlbum":
+                case "MusicArtist":
+                case "Audio":
+                    return 1;
+                default:
+                    return 1000f / 1426f;
             }
         }
     }

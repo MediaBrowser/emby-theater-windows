@@ -285,4 +285,10 @@
   <data name="Sorting_SortModeOptionsLabel" xml:space="preserve">
     <value>Sort by:</value>
   </data>
+  <data name="Home_Channels_Title" xml:space="preserve">
+    <value>Channels</value>
+  </data>
+  <data name="Sorting_ByNaturalOrder" xml:space="preserve">
+    <value>Natural Order</value>
+  </data>
 </root>

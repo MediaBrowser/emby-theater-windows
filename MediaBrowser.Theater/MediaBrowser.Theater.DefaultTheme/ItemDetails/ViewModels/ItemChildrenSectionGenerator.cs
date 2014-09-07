@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Querying;
+using MediaBrowser.Theater.Api.Library;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.Session;
@@ -30,14 +31,8 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
         public override async Task<IEnumerable<IItemDetailSection>> GetSections(BaseItemDto item)
         {
-            ItemsResult result = await Query(item, _apiClient, _sessionManager);
+            ItemsResult result = await ItemChildren.GetChildren(item, _apiClient, _sessionManager);
             return new[] { await GetItemsSection(result) };
-        }
-
-        public static Task<ItemsResult> Query(BaseItemDto item, IApiClient apiClient, ISessionManager sessionManager)
-        {
-            var query = new ItemQuery { ParentId = item.Id, UserId = sessionManager.CurrentUser.Id };
-            return apiClient.GetItemsAsync(query);
         }
     }
 }

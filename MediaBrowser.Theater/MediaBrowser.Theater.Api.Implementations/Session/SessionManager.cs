@@ -44,7 +44,7 @@ namespace MediaBrowser.Theater.Api.Session
         /// </summary>
         private Version RequiredServerVersion
         {
-            get { return Version.Parse("3.0.5115.35703"); }
+            get { return Version.Parse("3.0.5340.21263"); }
         }
 
         public event EventHandler<EventArgs> UserLoggedIn;
@@ -71,8 +71,10 @@ namespace MediaBrowser.Theater.Api.Session
             _config.Configuration.AutoLoginConfiguration = new AutoLoginConfiguration();
             _config.SaveConfiguration();
 
-            await _navService.Navigate(Go.To.Login());
-            _navService.ClearNavigationHistory();
+            if (!(_navService.CurrentLocation is LoginPath)) {
+                await _navService.Navigate(Go.To.Login());
+                _navService.ClearNavigationHistory();
+            }
         }
 
         public async Task Login(string username, string password, bool rememberCredentials)
@@ -97,13 +99,6 @@ namespace MediaBrowser.Theater.Api.Session
 
         protected async Task InternalLogin(string username, byte[] hash, bool rememberLogin)
         {
-            SystemInfo systemInfo = await _apiClient.GetSystemInfoAsync(CancellationToken.None);
-
-            if (Version.Parse(systemInfo.Version) < RequiredServerVersion) {
-                //todo show server connection error notification
-                throw new ApplicationException(string.Format("Media Browser Server is out of date. Please upgrade to {0} or greater.", RequiredServerVersion));
-            }
-
             try {
                 AuthenticationResult result = await _apiClient.AuthenticateUserAsync(username, hash);
 

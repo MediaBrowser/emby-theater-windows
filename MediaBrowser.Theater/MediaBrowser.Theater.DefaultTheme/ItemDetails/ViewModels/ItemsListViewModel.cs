@@ -19,7 +19,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
     public class ItemsListViewModel
         : BaseViewModel, IItemDetailSection, IKnownSize
     {
-        private const int TileHeight = 100;
+        private const int TileHeight = 200;
 
         private readonly ItemsResult _itemsResult;
         private readonly IApiClient _apiClient;
@@ -44,7 +44,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
                     return new Size();
                 }
 
-                return new Size(600, 700);
+                return new Size(Items.First().Size.Width + 20, 700);
             }
         }
 
@@ -90,7 +90,8 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
         private void LoadItems()
         {
-            IEnumerable<ItemTileViewModel> items = _itemsResult.Items.Select(i => new ItemListElementViewModel(_apiClient, _imageManager, _serverEvents, _navigator, _playbackManager, i) {
+            IEnumerable<ItemTileViewModel> items = _itemsResult.Items.Select(i => new ItemTileViewModel(_apiClient, _imageManager, _serverEvents, _navigator, _playbackManager, i)
+            {
                 DesiredImageHeight = TileHeight,
                 PreferredImageTypes = _preferredImageTypes
             });

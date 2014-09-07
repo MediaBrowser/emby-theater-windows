@@ -58,8 +58,17 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
 
             BrowseMoviesCommand = new RelayCommand(arg => {
                 var itemParams = new ItemListParameters { 
-                    Items = GetChildren(movieFolder),
+                    Items = GetChildren(movieFolder, excludeItemTypes: new[] { "Playlist" }),
                     Title = "Browse Movies"
+                };
+
+                navigator.Navigate(Go.To.ItemList(itemParams));
+            });
+
+            PlaylistsCommand = new RelayCommand(arg => {
+                var itemParams = new ItemListParameters {
+                    Items = GetChildren(movieFolder, new[] { "Playlist" }),
+                    Title = "Movie Playlists"
                 };
 
                 navigator.Navigate(Go.To.ItemList(itemParams));
@@ -83,11 +92,13 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
             LoadViewModels(movieFolder);
         }
 
-        private Task<ItemsResult> GetChildren(BaseItemDto item) 
+        private Task<ItemsResult> GetChildren(BaseItemDto item, string[] includeItemTypes = null, string[] excludeItemTypes = null) 
         {
             var query = new ItemQuery {
                 UserId = _sessionManager.CurrentUser.Id,
                 ParentId = item.Id,
+                IncludeItemTypes = includeItemTypes,
+                ExcludeItemTypes = excludeItemTypes,
                 SortBy = new[] { ItemSortBy.SortName },
                 Fields = QueryFields,
                 Recursive = true
@@ -118,7 +129,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
         public ImageSlideshowViewModel AllMoviesImagesViewModel { get; private set; }
 
         public ICommand BrowseMoviesCommand { get; private set; }
-        public ICommand TrailersCommand { get; private set; }
+        public ICommand PlaylistsCommand { get; private set; }
 
         public string Title { get; set; }
 

@@ -56,7 +56,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Core
             PublicSystemInfo serverInfo = await _serverConnectionManager.AttemptServerConnection();
             if (serverInfo != null) {
                 bool autoLoggedIn = await _serverConnectionManager.AttemptAutoLogin(serverInfo);
-                if (!autoLoggedIn) {
+                if (!autoLoggedIn && !(_navigator.CurrentLocation is LoginPath)) {
                     await _navigator.Navigate(Go.To.Login());
                 }
             }

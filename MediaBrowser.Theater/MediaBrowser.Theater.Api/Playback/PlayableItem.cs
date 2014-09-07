@@ -11,6 +11,8 @@ namespace MediaBrowser.Theater.Api.Playback
 
         public BaseItemDto OriginalItem { get; set; }
 
+        public MediaSourceInfo MediaSource { get; set; }
+
         public bool IsVideo
         {
             get { return OriginalItem.IsVideo; }
@@ -18,7 +20,7 @@ namespace MediaBrowser.Theater.Api.Playback
 
         public List<MediaStream> MediaStreams
         {
-            get { return OriginalItem.MediaStreams; }
+            get { return MediaSource.MediaStreams; }
         }
 
         public IIsoMount IsoMount { get; set; }

@@ -16,9 +16,9 @@ using MediaBrowser.Theater.Presentation;
 using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.ViewModels;
 
-namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
+namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Channels
 {
-    public class LatestEpisodesViewModel
+    public class ChannelListViewModel
         : BaseViewModel, IKnownSize, IHomePage
     {
         private readonly IApiClient _apiClient;
@@ -30,7 +30,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
 
         private bool _isVisible;
 
-        public LatestEpisodesViewModel(BaseItemDto tvFolder, IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator, ISessionManager sessionManager, IPlaybackManager playbackManager)
+        public ChannelListViewModel(IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator, ISessionManager sessionManager, IPlaybackManager playbackManager)
         {
             _apiClient = apiClient;
             _imageManager = imageManager;
@@ -39,19 +39,19 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
             _sessionManager = sessionManager;
             _playbackManager = playbackManager;
 
-            SectionTitle = tvFolder.Name;
-            Title = "MediaBrowser.Theater.DefaultTheme:Strings:Home_LatestEpisodes_Title".Localize();
+            Title = SectionTitle = "MediaBrowser.Theater.DefaultTheme:Strings:Home_Channels_Title".Localize();
 
-            Episodes = new RangeObservableCollection<ItemTileViewModel>();
-            for (int i = 0; i < 9; i++) {
-                Episodes.Add(CreateEpisodeItem());
+            Channels = new RangeObservableCollection<ItemTileViewModel>();
+            for (int i = 0; i < 8; i++)
+            {
+                Channels.Add(CreateChannelItem());
             }
 
-            IsVisible = false;
-            LoadItems(tvFolder);
+            IsVisible = true;
+            LoadItems();
         }
 
-        public RangeObservableCollection<ItemTileViewModel> Episodes { get; private set; }
+        public RangeObservableCollection<ItemTileViewModel> Channels { get; private set; }
 
         public string Title { get; set; }
 
@@ -60,7 +60,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
             get { return _isVisible; }
             private set
             {
-                if (Equals(_isVisible, value)) {
+                if (Equals(_isVisible, value))
+                {
                     return;
                 }
 
@@ -77,59 +78,58 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
         {
             get
             {
-                if (Episodes.Count == 0) {
+                if (Channels.Count == 0) {
                     return new Size();
                 }
 
-                var width = (int) Math.Ceiling(Episodes.Count/3.0);
+                var width = (int) Math.Ceiling(Channels.Count/3.0);
 
                 return new Size(width*(HomeViewModel.TileWidth + 2*HomeViewModel.TileMargin) + HomeViewModel.SectionSpacing,
                                 3*(HomeViewModel.TileHeight + 2*HomeViewModel.TileMargin));
             }
         }
 
-        private async void LoadItems(BaseItemDto tvFolder)
+        private async void LoadItems()
         {
-            var result = await _apiClient.GetItemsAsync(new ItemQuery {
-                UserId = _sessionManager.CurrentUser.Id,
-                ParentId = tvFolder.Id,
-                IncludeItemTypes = new[] { "Episode" },
-                SortBy = new[] { ItemSortBy.DateCreated },
-                SortOrder = SortOrder.Descending,
-                Filters = new[] { ItemFilter.IsRecentlyAdded },
-                Limit = 9,
-                Recursive = true
+            var channels = await _apiClient.GetChannels(new Model.Channels.ChannelQuery {
+                UserId = _sessionManager.CurrentUser.Id
             });
 
-            var items = result.Items;
+            var items = channels.Items;
 
-            for (int i = 0; i < items.Length; i++) {
-                if (Episodes.Count > i) {
-                    Episodes[i].Item = items[i];
-                } else {
-                    ItemTileViewModel vm = CreateEpisodeItem();
+            for (int i = 0; i < items.Length; i++)
+            {
+                if (Channels.Count > i)
+                {
+                    Channels[i].Item = items[i];
+                }
+                else
+                {
+                    ItemTileViewModel vm = CreateChannelItem();
                     vm.Item = items[i];
 
-                    Episodes.Add(vm);
+                    Channels.Add(vm);
                 }
             }
 
-            if (Episodes.Count > items.Length) {
-                List<ItemTileViewModel> toRemove = Episodes.Skip(items.Length).ToList();
-                Episodes.RemoveRange(toRemove);
+            if (Channels.Count > items.Length)
+            {
+                List<ItemTileViewModel> toRemove = Channels.Skip(items.Length).ToList();
+                Channels.RemoveRange(toRemove);
             }
 
-            IsVisible = Episodes.Count > 0;
+            IsVisible = Channels.Count > 0;
             OnPropertyChanged("Size");
         }
 
-        private ItemTileViewModel CreateEpisodeItem()
+        private ItemTileViewModel CreateChannelItem()
         {
-            return new ItemTileViewModel(_apiClient, _imageManager, _serverEvents, _navigator, _playbackManager, null) {
+            return new ItemTileViewModel(_apiClient, _imageManager, _serverEvents, _navigator, _playbackManager, null)
+            {
                 DesiredImageWidth = HomeViewModel.TileWidth,
                 DesiredImageHeight = HomeViewModel.TileHeight,
-                PreferredImageTypes = new[] { ImageType.Primary, ImageType.Screenshot, ImageType.Thumb, ImageType.Backdrop },
-                DisplayNameGenerator = TvSpotlightViewModel.GetDisplayName
+                ShowCaptionBar = false,
+                PreferredImageTypes = new[] { ImageType.Backdrop, ImageType.Thumb, ImageType.Primary }
             };
         }
     }

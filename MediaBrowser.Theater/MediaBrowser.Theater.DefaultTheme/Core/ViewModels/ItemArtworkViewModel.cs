@@ -151,7 +151,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
                 }
 
                 if (DesiredImageHeight != null) {
-                    double aspectRatio = EnforcePreferredImageAspectRatio || (int) Image.ImageHeight == 0 ? PreferredImageTypes.First().GetAspectRatio() : Image.ImageWidth/Image.ImageHeight;
+                    var itemType = _item != null ? _item.Type : null;
+                    double aspectRatio = EnforcePreferredImageAspectRatio || (int) Image.ImageHeight == 0 ? PreferredImageTypes.First().GetAspectRatio(itemType) : Image.ImageWidth/Image.ImageHeight;
                     return (double) DesiredImageHeight*aspectRatio;
                 }
 
@@ -168,7 +169,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
                 }
 
                 if (DesiredImageWidth != null) {
-                    double aspectRatio = EnforcePreferredImageAspectRatio || (int) Image.ImageWidth == 0 ? PreferredImageTypes.First().GetAspectRatio() : Image.ImageWidth/Image.ImageHeight;
+                    var itemType = _item != null ? _item.Type : null;
+                    double aspectRatio = EnforcePreferredImageAspectRatio || (int) Image.ImageWidth == 0 ? PreferredImageTypes.First().GetAspectRatio(itemType) : Image.ImageWidth/Image.ImageHeight;
                     return (double) DesiredImageWidth/aspectRatio;
                 }
 

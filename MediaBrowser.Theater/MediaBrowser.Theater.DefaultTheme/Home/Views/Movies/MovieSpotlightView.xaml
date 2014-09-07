@@ -45,17 +45,17 @@
                                                          HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
                     </controls1:TileButton>
 
-                    <controls1:TileButton x:Name="TrailersButton"
-                                          Command="{Binding TrailersCommand}"
+                    <controls1:TileButton x:Name="PlaylistsButton"
+                                          Command="{Binding PlaylistsCommand}"
                                           Width="{Binding LowerSpotlightWidth}" Height="{Binding LowerSpotlightHeight}"
                                           Margin="{x:Static viewModels:HomeViewModel.TileMarginThickness}">
                         <controls1:TileButton.Header>
-                            <TextBlock Text="Trailers" Margin="10 5 15 10"
-                                       Foreground="{Binding Foreground, ElementName=TrailersButton}" />
+                            <TextBlock Text="Playlists" Margin="10 5 15 10"
+                                       Foreground="{Binding Foreground, ElementName=PlaylistsButton}" />
                         </controls1:TileButton.Header>
 
-                        <Image Source="/MediaBrowser.Theater.DefaultTheme;component/Resources/Images/trailer.png"
-                               Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Top" />
+                        <Image Source="/MediaBrowser.Theater.DefaultTheme;component/Resources/Images/moviegenres.jpg"
+                                Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Top" />
                     </controls1:TileButton>
 
                 </WrapPanel>

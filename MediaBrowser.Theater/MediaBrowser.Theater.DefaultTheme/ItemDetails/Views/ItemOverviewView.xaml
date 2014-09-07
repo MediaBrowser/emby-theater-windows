@@ -5,51 +5,68 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
              xmlns:viewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels"
+             xmlns:controls1="clr-namespace:MediaBrowser.Theater.DefaultTheme.Controls"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance viewModels:ItemOverviewViewModel}"
              d:DesignHeight="300" d:DesignWidth="800">
-    <Grid Margin="0,20,0,0">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="auto"/>
-            <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
-        
-        <controls:ExtendedContentControl Grid.Column="0" Content="{Binding Artwork}" MaxWidth="1200"/>
+    <StackPanel Margin="0,20,0,0" Orientation="Horizontal" Height="{Binding Size.Height}">
 
-        <Grid Grid.Column="1" Background="{StaticResource BackgroundBrush2}" Margin="20,0,0,0" Width="600" Height="{Binding Size.Height}" Visibility="{Binding ShowInfo, Converter={StaticResource BooleanToVisibility}}">
+        <controls:ExtendedContentControl Content="{Binding PosterArtwork}" MaxWidth="1200" Visibility="{Binding ShowInfo, Converter={StaticResource InverseBooleanToVisibility}}"/>
+
+        <Grid Width="800" Visibility="{Binding ShowInfo, Converter={StaticResource BooleanToVisibility}}">
             <Grid.RowDefinitions>
                 <RowDefinition/>
                 <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
-            
-            <controls:ExtendedContentControl Content="{Binding Info}" Margin="10"/>
-            
-            <StackPanel Grid.Row="1" Margin="10,5,10,5">
-                <Button Command="{Binding PlayCommand}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Margin="0,5,0,5">
-                    <Button.Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Info.IsFolder}" Value="True">
-                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Style>
-                    
-                    <TextBlock Text="Play" Margin="10,0,10,0" VerticalAlignment="Center" />
-                </Button>
 
-                <Button Command="{Binding PlayAllCommand}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Margin="0,5,0,5" Visibility="{Binding Info.IsFolder, Converter={StaticResource BooleanToVisibility}}">
-                    <TextBlock Text="Play All" Margin="10,0,10,0" VerticalAlignment="Center" />
-                </Button>
+            <Border Grid.Row="0" Background="{StaticResource BackgroundBrush2}">
+                <controls:ExtendedContentControl Content="{Binding Info}" Margin="10"/>
+            </Border>
 
-                <Button Command="{Binding ResumeCommand}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Margin="0,5,0,5" Padding="0" Visibility="{Binding Info.IsInProgress, Converter={StaticResource BooleanToVisibility}}">
-                    <Grid HorizontalAlignment="Stretch">
-                        <ProgressBar Minimum="0" Maximum="100" Value="{Binding Info.PlayedPercentage, Mode=OneWay}" BorderThickness="0" Background="Transparent" Foreground="{StaticResource ForegroundBrush}" Opacity="0.1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-                        <TextBlock Text="Resume" Margin="16,3,16,5" VerticalAlignment="Center" HorizontalAlignment="Center" />
-                    </Grid>
-                </Button>
-            </StackPanel>
+            <controls:ExtendedContentControl Grid.Row="1" Content="{Binding BackgroundArtwork}"/>
         </Grid>
-    </Grid>
+
+        <StackPanel Margin="20,0,0,0">
+            <controls1:TileButton x:Name="PlayButton" Command="{Binding PlayCommand}" Width="250" Height="250" AutoHideHeading="True" Visibility="{Binding Info.IsFolder, Converter={StaticResource InverseBooleanToVisibility}}">
+                <controls1:TileButton.Header>
+                    <TextBlock Text="Play" Margin="15, 5, 20, 10"/>
+                </controls1:TileButton.Header>
+
+                <Border Background="{StaticResource BackgroundBrush2}">
+                    <Path Margin="80" Stretch="Fill" Fill="{StaticResource ForegroundBrush}" Data="F1 M 30.0833,22.1667L 50.6665,37.6043L 50.6665,38.7918L 30.0833,53.8333L 30.0833,22.1667 Z "/>
+                </Border>
+            </controls1:TileButton>
+
+            <controls1:TileButton x:Name="ResumeButton" Command="{Binding ResumeCommand}" Width="250" Height="250" Margin="0,20,0,0" AutoHideHeading="True" Visibility="{Binding Info.IsResumable, Converter={StaticResource BooleanToVisibility}}">
+                <controls1:TileButton.Header>
+                    <TextBlock Text="Resume" Margin="15 5 20 10"/>
+                </controls1:TileButton.Header>
+
+                <Grid Background="{StaticResource BackgroundBrush2}">
+                    <Path Margin="80"  Stretch="Fill" Fill="{StaticResource ForegroundBrush}" Data="F1 M 38,22.1667L 58.5832,37.6043L 58.5832,38.7918L 38,53.8333L 38,22.1667 Z M 33.25,22.1667L 33.25,53.8333L 26.9167,53.8333L 26.9167,22.1667L 33.25,22.1667 Z "/>
+                    <ProgressBar Minimum="0" Maximum="100" Value="{Binding Info.PlayedPercentage, Mode=OneWay}" BorderThickness="0" Background="Transparent" Foreground="{StaticResource ForegroundBrush}" Opacity="0.1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                </Grid>
+            </controls1:TileButton>
+
+            <controls1:TileButton Command="{Binding PlayAllCommand}" Width="250" Height="250" AutoHideHeading="True" Visibility="{Binding Info.IsFolder, Converter={StaticResource BooleanToVisibility}}" Background="{StaticResource BackgroundBrush2}">
+                <controls1:TileButton.Header>
+                    <TextBlock Text="Play All" Margin="15, 5, 20, 10"/>
+                </controls1:TileButton.Header>
+
+                <Border Background="{StaticResource BackgroundBrush2}">
+                    <Path Margin="80" Stretch="Fill" Fill="{StaticResource ForegroundBrush}" Data="F1 M 30.0833,22.1667L 50.6665,37.6043L 50.6665,38.7918L 30.0833,53.8333L 30.0833,22.1667 Z "/>
+                </Border>
+            </controls1:TileButton>
+
+            <controls1:TileButton Command="{Binding BrowseAllCommand}" Width="250" Height="250" Margin="0,20,0,0" AutoHideHeading="True" Visibility="{Binding Info.IsFolder, Converter={StaticResource BooleanToVisibility}}" Background="{StaticResource BackgroundBrush2}">
+                <controls1:TileButton.Header>
+                    <TextBlock Text="Browse All" Margin="15, 5, 20, 10"/>
+                </controls1:TileButton.Header>
+
+                <Border Background="{StaticResource BackgroundBrush2}">
+                    <Path Margin="80" Stretch="Fill" Fill="{StaticResource ForegroundBrush}" Data="F1 M 19,50L 28,34L 63,34L 54,50L 19,50 Z M 19,28.0001L 35,28C 36,25 37.4999,24.0001 37.4999,24.0001L 48.75,24C 49.3023,24 50,24.6977 50,25.25L 50,28L 53.9999,28.0001L 53.9999,32L 27,32L 19,46.4L 19,28.0001 Z "/>
+                </Border>
+            </controls1:TileButton>
+        </StackPanel>
+    </StackPanel>
 </UserControl>

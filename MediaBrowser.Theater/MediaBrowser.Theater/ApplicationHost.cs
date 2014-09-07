@@ -15,6 +15,7 @@ using MediaBrowser.ApiInteraction.WebSocket;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Constants;
 using MediaBrowser.Common.Implementations;
+using MediaBrowser.Common.Implementations.Archiving;
 using MediaBrowser.Common.Implementations.ScheduledTasks;
 using MediaBrowser.Common.Net;
 using MediaBrowser.Common.Plugins;
@@ -98,6 +99,8 @@ namespace MediaBrowser.Theater
         {
             await base.Init(progress).ConfigureAwait(false);
             await RunStartupTasks().ConfigureAwait(false);
+
+            URCOMLoader.EnsureObjects(TheaterConfigurationManager, false, new ZipClient());
 
             Action<Window> mainWindowLoaded = null;
             mainWindowLoaded = w => {
@@ -203,9 +206,9 @@ namespace MediaBrowser.Theater
             Theme.Run();
         }
 
-        protected override INetworkManager CreateNetworkManager()
+        protected override INetworkManager CreateNetworkManager(ILogger logger)
         {
-            return new NetworkManager();
+            return new NetworkManager(logger);
         }
 
         /// <summary>
@@ -341,7 +344,7 @@ namespace MediaBrowser.Theater
         public override async Task<CheckForUpdateResult> CheckForApplicationUpdate(CancellationToken cancellationToken,
                                                                                    IProgress<double> progress)
         {
-            SystemInfo serverInfo = await ApiClient.GetSystemInfoAsync(cancellationToken).ConfigureAwait(false);
+            var serverInfo = await ApiClient.GetPublicSystemInfoAsync(cancellationToken).ConfigureAwait(false);
 
             IEnumerable<PackageInfo> availablePackages = await InstallationManager.GetAvailablePackagesWithoutRegistrationInfo(cancellationToken).ConfigureAwait(false);
 

@@ -43,13 +43,13 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MediaBrowser.Common, Version=3.0.5338.24788, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.Common, Version=3.0.5362.26505, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.3.0.426\lib\net45\MediaBrowser.Common.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.433\lib\net45\MediaBrowser.Common.dll</HintPath>
     </Reference>
-    <Reference Include="MediaBrowser.Model, Version=3.0.5338.24788, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.Model, Version=3.0.5362.26504, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.3.0.426\lib\net45\MediaBrowser.Model.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.433\lib\net45\MediaBrowser.Model.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Expression.Effects, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -127,10 +127,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Core\Views\ItemListElementView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Core\Views\ItemSpotlightView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -150,6 +146,14 @@
     <Page Include="Core\Views\SleepMenuCommandIconView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Home\Views\Channels\ChannelListView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Home\Views\Generic\GenericFolderSpotlightView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="SortModeMenu\Views\SortModeCommandView.xaml">
       <SubType>Designer</SubType>
@@ -393,9 +397,17 @@
     <Compile Include="Controls\TileButton.cs" />
     <Compile Include="Core\Commands\ExitMenuCommand.cs" />
     <Compile Include="Core\Commands\HomeCommand.cs" />
+    <Compile Include="Home\ViewModels\Channels\ChannelsListViewModel.cs" />
+    <Compile Include="Home\ViewModels\Channels\ChannelListHomePageGenerator.cs" />
     <Compile Include="Home\ViewModels\Generic\GenericFolderSpotlightViewModel.cs" />
     <Compile Include="Home\ViewModels\Generic\GenericViewHomePageGenerator.cs" />
     <Compile Include="Home\ViewModels\UserViewsPageGenerator.cs" />
+    <Compile Include="Home\Views\Channels\ChannelListView.xaml.cs">
+      <DependentUpon>ChannelListView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Home\Views\Generic\GenericFolderSpotlightView.xaml.cs">
+      <DependentUpon>GenericFolderSpotlightView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SortModeMenu\Commands\SortModeCommand.cs" />
     <Compile Include="Core\Commands\RestartMenuCommand.cs" />
     <Compile Include="Core\Commands\ShutdownMenuCommand.cs" />
@@ -438,9 +450,6 @@
     </Compile>
     <Compile Include="Core\Views\ItemInfoView.xaml.cs">
       <DependentUpon>ItemInfoView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Core\Views\ItemListElementView.xaml.cs">
-      <DependentUpon>ItemListElementView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Core\Views\ItemSpotlightView.xaml.cs">
       <DependentUpon>ItemSpotlightView.xaml</DependentUpon>

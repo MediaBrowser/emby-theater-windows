@@ -1,0 +1,58 @@
+﻿<UserControl x:Class="MediaBrowser.Theater.DefaultTheme.Home.Views.Generic.GenericFolderSpotlightView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:lex="http://wpflocalizeextension.codeplex.com"
+             xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
+             xmlns:viewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.Home.ViewModels"
+             xmlns:generic="clr-namespace:MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Generic"
+             xmlns:controls1="clr-namespace:MediaBrowser.Theater.DefaultTheme.Controls"
+             lex:LocalizeDictionary.DesignCulture="en"
+             lex:ResxLocalizationProvider.DefaultAssembly="MediaBrowser.Theater.DefaultTheme"
+             lex:ResxLocalizationProvider.DefaultDictionary="Strings"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance generic:GenericFolderSpotlightViewModel}"
+             Focusable="False"
+             d:DesignHeight="750" d:DesignWidth="1000">
+
+    <StackPanel Orientation="Vertical" Margin="50,0,0,0">
+        <TextBlock Text="{Binding Title, Converter={StaticResource UppercaseConverter}}" Margin="2,0,0,0"
+                   Style="{StaticResource PanoramaTitleTextBlockStyle}" />
+
+        <StackPanel Orientation="Horizontal">
+            <StackPanel Orientation="Vertical">
+
+                <controls1:TileButton x:Name="AllItemsButton"
+                                          Command="{Binding BrowseItemsCommand}"
+                                          Width="{Binding SpotlightWidth}" Height="{Binding SpotlightHeight}"
+                                          Margin="{x:Static viewModels:HomeViewModel.TileMarginThickness}">
+                    <controls1:TileButton.Header>
+                        <TextBlock Text="Browse All" Margin="10 5 15 10"
+                                       Foreground="{Binding Foreground, ElementName=AllItemsButton}" />
+                    </controls1:TileButton.Header>
+
+                    <controls:ExtendedContentControl Content="{Binding AllItemsImagesViewModel}"
+                                                         HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                </controls1:TileButton>
+                
+                <controls:ExtendedItemsControl ItemsSource="{Binding MiniSpotlightItemsBottom}" HorizontalAlignment="Center" VerticalAlignment="Top">
+                    <controls:ExtendedItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </controls:ExtendedItemsControl.ItemsPanel>
+                </controls:ExtendedItemsControl>
+            </StackPanel>
+
+            <controls:ExtendedItemsControl ItemsSource="{Binding MiniSpotlightItemsSide}">
+                <controls:ExtendedItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Vertical" />
+                    </ItemsPanelTemplate>
+                </controls:ExtendedItemsControl.ItemsPanel>
+            </controls:ExtendedItemsControl>
+        </StackPanel>
+
+    </StackPanel>
+</UserControl>

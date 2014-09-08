@@ -44,6 +44,7 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
             {
                  new SelectListItem{ Text = "Auto", Value="-1"},
                  new SelectListItem{ Text = "Disabled", Value="0"},
+                 new SelectListItem{ Text = "Nvidia CUVID", Value="1"},
                  new SelectListItem{ Text = "QuickSync", Value="2"},
                  new SelectListItem{ Text = "DXVA2CopyBack", Value="3"}
             };

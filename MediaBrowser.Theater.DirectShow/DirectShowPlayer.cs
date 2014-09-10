@@ -782,6 +782,8 @@ namespace MediaBrowser.Theater.DirectShow
                             hr = vsett.SetRuntimeConfig(true);
                             DsError.ThrowExceptionForHR(hr);
 
+                            _logger.Debug("GPU Model: {0}", VideoConfigurationUtils.GpuModel);
+
                             LAVHWAccel configuredMode =
                                 VideoConfigurationUtils.GetHwaMode(
                                     _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig,

@@ -788,6 +788,7 @@ namespace MediaBrowser.Theater.DirectShow
                                     _customEvrPresenterLoaded);
 
                             LAVHWAccel testme = vsett.GetHWAccel();
+                            _logger.Debug("Current HWA Mode: {0} Desired Mode: {1}", testme, configuredMode);
                             if (testme != configuredMode)
                             {
                                 hr = vsett.SetHWAccel(configuredMode);

@@ -307,8 +307,10 @@ namespace MediaBrowser.Theater.DirectShow
 
         public void Play(PlayableItem item, bool enableMadvr, bool enableMadvrExclusiveMode)
         {
-            _logger.Info("Playing {0}. Audio Renderer: {1}, Madvr: {2}, xySubFilter: {3}", item.OriginalItem.Name,
-                _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.Renderer, enableMadvr, _mbtConfig.Configuration.InternalPlayerConfiguration.SubtitleConfig.EnableXySubFilter);
+            _logger.Info("Playing {0}. Audio Renderer: {1}, Madvr: {2}, xySubFilter: {3}, ParentID: {4}", item.OriginalItem.Name,
+                _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.Renderer, enableMadvr, 
+                _mbtConfig.Configuration.InternalPlayerConfiguration.SubtitleConfig.EnableXySubFilter,
+                item.OriginalItem.ParentId);
             _logger.Info("Playing Path {0}", item.PlayablePath);
 
             _item = item;
@@ -343,6 +345,9 @@ namespace MediaBrowser.Theater.DirectShow
                                 //Every display/GPU should be able to display @2x FPS and it's quite likely that 2x is the rendered FPS anyway
                                 videoRate = (int)(ms.RealFrameRate * 2);
                             }
+
+                            _logger.Info("RealFrameRate: {0} videoRate: {1} startRate: {2}", ms.RealFrameRate, videoRate, _startResolution);
+
                             if (videoRate != _startResolution.Rate)
                             {
                                 Resolution desiredRes = new Resolution(_startResolution.ToString());
@@ -777,12 +782,15 @@ namespace MediaBrowser.Theater.DirectShow
                             hr = vsett.SetRuntimeConfig(true);
                             DsError.ThrowExceptionForHR(hr);
 
+                            _logger.Debug("GPU Model: {0}", VideoConfigurationUtils.GpuModel);
+
                             LAVHWAccel configuredMode =
                                 VideoConfigurationUtils.GetHwaMode(
                                     _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig,
                                     _customEvrPresenterLoaded);
 
                             LAVHWAccel testme = vsett.GetHWAccel();
+                            _logger.Debug("Current HWA Mode: {0} Desired Mode: {1}", testme, configuredMode);
                             if (testme != configuredMode)
                             {
                                 hr = vsett.SetHWAccel(configuredMode);

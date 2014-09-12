@@ -853,7 +853,8 @@ namespace MediaBrowser.Theater.DirectShow
                             }
 
                             int hwaRes = vsett.GetHWAccelResolutionFlags();
-                            if (hwaRes != _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig.HwaResolution)
+                            if (hwaRes != _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig.HwaResolution 
+                                && _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig.HwaResolution > 0)
                             {
                                 _logger.Debug("Change HWA resolution support from {0} to {1}.", hwaRes,
                                     _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig.HwaResolution);

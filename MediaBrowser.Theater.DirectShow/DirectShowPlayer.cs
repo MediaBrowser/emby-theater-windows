@@ -326,7 +326,7 @@ namespace MediaBrowser.Theater.DirectShow
                 && _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig.MinRefreshRateMin < itemDuration.TotalMinutes
                 )
             {
-                if (item.MediaStreams != null)
+                if (item.MediaStreams == null)
                 {
                     _logger.Warn("item.MediaStreams is null, cannot detect framerate");
                 }

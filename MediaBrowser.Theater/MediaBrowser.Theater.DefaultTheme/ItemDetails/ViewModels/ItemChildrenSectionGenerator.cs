@@ -31,7 +31,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
         public override async Task<IEnumerable<IItemDetailSection>> GetSections(BaseItemDto item)
         {
-            ItemsResult result = await ItemChildren.GetChildren(item, _apiClient, _sessionManager);
+            ItemsResult result = await ItemChildren.Get(_apiClient, _sessionManager, item);
             return new[] { await GetItemsSection(result) };
         }
     }

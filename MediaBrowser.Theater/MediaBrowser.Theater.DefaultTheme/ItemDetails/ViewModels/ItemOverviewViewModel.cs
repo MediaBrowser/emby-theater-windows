@@ -78,14 +78,18 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
             PlayCommand = new RelayCommand(o => playbackManager.Play(new PlayOptions(item) { GoFullScreen = true, EnableCustomPlayers = true, Resume = false }));
             ResumeCommand = new RelayCommand(o => playbackManager.Play(new PlayOptions(item) { GoFullScreen = true, EnableCustomPlayers = true, Resume = true }));
             PlayAllCommand = new RelayCommand(async o => {
-                var items = await ItemChildren.GetChildren(item, apiClient, sessionManager, recursive: true, fields: new[] { ItemFields.MediaSources }, includeItemTypes: new[] { "Movie", "Episode", "Audio" } );
+                var items = await ItemChildren.Get(apiClient, sessionManager, item, new ChildrenQueryParams {
+                    
+                })
+
+                //var items = await ItemChildren.Get(item, apiClient, sessionManager, recursive: true, fields: new[] { ItemFields.MediaSources }, includeItemTypes: new[] { "Movie", "Episode", "Audio" } );
                 if (items.Items.Length > 0) {
                     await playbackManager.Play(new PlayOptions(items.Items) { EnableCustomPlayers = true, GoFullScreen = true });
                 }
             });
 
             BrowseAllCommand = new RelayCommand(o => navigator.Navigate(Go.To.ItemList(new ItemListParameters {
-                Items = ItemChildren.GetChildren(item, apiClient, sessionManager, true),
+                Items = ItemChildren.Get(apiClient, sessionManager, item),
                 Title = item.Name
             })));
         }

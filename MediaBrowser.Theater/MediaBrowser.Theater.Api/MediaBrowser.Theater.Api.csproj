@@ -75,6 +75,7 @@
     <Compile Include="Configuration\ITheaterConfigurationManager.cs" />
     <Compile Include="Configuration\PlayerConfiguration.cs" />
     <Compile Include="Configuration\WolConfiguration.cs" />
+    <Compile Include="EnumerableExtensions.cs" />
     <Compile Include="Events\EventAggregator.cs" />
     <Compile Include="Events\EventBus.cs" />
     <Compile Include="Events\IEventAggregator.cs" />

@@ -13,6 +13,7 @@ using MediaBrowser.Model.Entities;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
+using MediaBrowser.Theater.DefaultTheme.Home.ViewModels;
 using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.ViewModels;
 
@@ -48,7 +49,16 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
         public Size Size
         {
-            get { return new Size(600, 700); }
+            get
+            {
+                if (People.Count == 0) {
+                    return new Size(0, 0);
+                }
+
+                int width = Math.Min(People.Count, 3);
+
+                return new Size((167 + 2 * HomeViewModel.TileMargin) * width + 20, 700);
+            }
         }
 
         private void LoadItems()
@@ -147,7 +157,8 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
             if (!string.IsNullOrEmpty(_person.PrimaryImageTag)) {
                 var options = new ImageOptions {
-                    Height = 100,
+                    Height = 250,
+                    Width = 167,
                     ImageType = ImageType.Primary,
                     Tag = _person.PrimaryImageTag
                 };

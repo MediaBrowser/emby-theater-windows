@@ -14,7 +14,7 @@
              d:DataContext="{d:DesignInstance viewModels:ItemsListViewModel}"
              Focusable="False"
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid Visibility="{Binding IsVisible, Converter={StaticResource BooleanToVisibility}}" Margin="20,0,0,0" Width="780">
+    <Grid Visibility="{Binding IsVisible, Converter={StaticResource BooleanToVisibility}}" Margin="20,0,0,0" MaxWidth="513">
         <Grid.RowDefinitions>
             <RowDefinition Height="20"/>
             <RowDefinition/>
@@ -44,7 +44,8 @@
                                                                Focusable="False"
                                                                CanContentScroll="True"
                                                                VerticalAlignment="Top">
-                                        <VirtualizingStackPanel VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" IsItemsHost="True"/>
+<!--                                        <VirtualizingStackPanel VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" IsItemsHost="True"/>-->
+                                        <WrapPanel IsItemsHost="True"/>
                                     </controls:ExtendedScrollViewer>
                                 </ControlTemplate>
                             </Setter.Value>

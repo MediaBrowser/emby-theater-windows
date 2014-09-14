@@ -181,20 +181,15 @@ namespace MediaBrowser.Theater.Api.UserInterface
         /// <returns>BitmapImage.</returns>
         private BitmapImage GetCachedBitmapImage(string cachePath)
         {
-            var bitmapImage = new BitmapImage {
-                CacheOption = BitmapCacheOption.OnLoad,
-                UriCachePolicy = new RequestCachePolicy(RequestCacheLevel.CacheIfAvailable)
-            };
+            var bitmapImage = new BitmapImage();
 
-            BitmapScalingMode scalingMode = _config.Configuration.EnableHighQualityImageScaling
-                                                ? BitmapScalingMode.Fant
-                                                : BitmapScalingMode.LowQuality;
+            using (var stream = File.OpenRead(cachePath)) {
+                bitmapImage.BeginInit();
+                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                bitmapImage.StreamSource = stream;
+                bitmapImage.EndInit();
+            }
 
-            RenderOptions.SetBitmapScalingMode(bitmapImage, scalingMode);
-
-            bitmapImage.BeginInit();
-            bitmapImage.UriSource = new Uri(cachePath);
-            bitmapImage.EndInit();
             bitmapImage.Freeze();
             return bitmapImage;
         }

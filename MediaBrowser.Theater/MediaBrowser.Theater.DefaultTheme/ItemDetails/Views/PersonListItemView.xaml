@@ -1,27 +1,27 @@
-﻿<Button x:Class="MediaBrowser.Theater.DefaultTheme.ItemDetails.Views.PersonListItemView"
+﻿<UserControl x:Class="MediaBrowser.Theater.DefaultTheme.ItemDetails.Views.PersonListItemView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
+        xmlns:controls1="clr-namespace:MediaBrowser.Theater.DefaultTheme.Controls"
+        xmlns:viewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.Home.ViewModels"
         mc:Ignorable="d"
         d:DesignHeight="300" d:DesignWidth="300"
         HorizontalAlignment="Stretch"
         HorizontalContentAlignment="Stretch"
         VerticalContentAlignment="Stretch"
-        Style="{StaticResource ImageButton}"
-        Command="{Binding NavigateCommand}">
-    <Grid HorizontalAlignment="Stretch">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="auto" />
-            <ColumnDefinition />
-        </Grid.ColumnDefinitions>
+        Margin="{x:Static viewModels:HomeViewModel.TileMarginThickness}"
+        Height="250"
+        Width="167">
+    <controls1:TileButton Command="{Binding NavigateCommand}">
+        <controls1:TileButton.Header>
+            <StackPanel Grid.Column="1" Margin="10,4,14,4">
+                <TextBlock Text="{Binding Name}" />
+                <TextBlock Text="{Binding Role}" Opacity="0.8" />
+            </StackPanel>
+        </controls1:TileButton.Header>
 
-        <controls:ExtendedContentControl Content="{Binding Artwork}" Margin="4" Height="100" MinWidth="67"/>
-
-        <StackPanel Grid.Column="1" Margin="10,4,14,4">
-            <TextBlock Text="{Binding Name}" />
-            <TextBlock Text="{Binding Role}" Opacity="0.8" />
-        </StackPanel>
-    </Grid>
-</Button>
+        <controls:ExtendedContentControl Content="{Binding Artwork}"/>
+    </controls1:TileButton>
+</UserControl>

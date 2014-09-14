@@ -11,6 +11,8 @@ using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Querying;
+using MediaBrowser.Theater.Api;
+using MediaBrowser.Theater.Api.Library;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.Session;
@@ -58,8 +60,10 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
 
             BrowseMoviesCommand = new RelayCommand(arg => {
                 var itemParams = new ItemListParameters { 
-                    Items = GetChildren(movieFolder, excludeItemTypes: new[] { "Playlist" }),
-                    Title = "Browse Movies"
+                    Title = "Browse Movies",
+                    Items = ItemChildren.Get(apiClient, sessionManager, movieFolder, new ChildrenQueryParams {
+                        ExcludeItemTypes = new[] { "Playlist" }
+                    })
                 };
 
                 navigator.Navigate(Go.To.ItemList(itemParams));
@@ -67,8 +71,10 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
 
             PlaylistsCommand = new RelayCommand(arg => {
                 var itemParams = new ItemListParameters {
-                    Items = GetChildren(movieFolder, new[] { "Playlist" }),
-                    Title = "Movie Playlists"
+                    Title = "Movie Playlists",
+                    Items = ItemChildren.Get(apiClient, sessionManager, movieFolder, new ChildrenQueryParams {
+                        IncludeItemTypes = new[] { "Playlist" }
+                    })
                 };
 
                 navigator.Navigate(Go.To.ItemList(itemParams));
@@ -91,33 +97,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
 
             LoadViewModels(movieFolder);
         }
-
-        private Task<ItemsResult> GetChildren(BaseItemDto item, string[] includeItemTypes = null, string[] excludeItemTypes = null) 
-        {
-            var query = new ItemQuery {
-                UserId = _sessionManager.CurrentUser.Id,
-                ParentId = item.Id,
-                IncludeItemTypes = includeItemTypes,
-                ExcludeItemTypes = excludeItemTypes,
-                SortBy = new[] { ItemSortBy.SortName },
-                Fields = QueryFields,
-                Recursive = true
-            };
-
-            return _apiClient.GetItemsAsync(query);
-        }
-
-        public static ItemFields[] QueryFields = new[]
-            {
-                ItemFields.PrimaryImageAspectRatio,
-                ItemFields.DateCreated,
-                ItemFields.MediaStreams,
-                ItemFields.Taglines,
-                ItemFields.Genres,
-                ItemFields.Overview,
-                ItemFields.DisplayPreferencesId
-            };
-
+        
         public double SpotlightWidth { get; private set; }
         public double SpotlightHeight { get; private set; }
 
@@ -167,10 +147,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
             try {
                 cancellationSource.Token.ThrowIfCancellationRequested();
 
-                var spotlight = await _apiClient.GetItemsAsync(new ItemQuery {
-                    UserId = _sessionManager.CurrentUser.Id,
-                    ParentId = movieFolder.Id,
-                    IsPlayed = false,
+                var spotlight = await ItemChildren.Get(_apiClient, _sessionManager, movieFolder, new ChildrenQueryParams {
+                    Filters = new[] { ItemFilter.IsUnplayed},
                     SortBy = new[] { ItemSortBy.CommunityRating },
                     SortOrder = SortOrder.Descending,
                     Limit = 20,
@@ -178,7 +156,9 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
                 });
 
                 if (spotlight.TotalRecordCount < 10) {
-                    spotlight = await GetChildren(movieFolder);
+                    spotlight = await ItemChildren.Get(_apiClient, _sessionManager, movieFolder, new ChildrenQueryParams {
+                        Recursive = true
+                    });
                 }
 
                 LoadSpotlightViewModel(spotlight);
@@ -204,8 +184,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
 
         private async Task LoadMiniSpotlightsViewModel(ItemsResult spotlightItems)
         {
-            var rnd = new Random();
-            BaseItemDto[] items = spotlightItems.Items.Skip(5).OrderBy(i => rnd.Next()).Take(3).ToArray();
+            BaseItemDto[] items = spotlightItems.Items.Skip(5).Shuffle().Take(3).ToArray();
 
             for (int i = 0; i < items.Length; i++) {
                 if (MiniSpotlightItems.Count > i) {
@@ -224,14 +203,14 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
             }
         }
 
-        private void LoadSpotlightViewModel(ItemsResult spotlightItemsw)
+        private void LoadSpotlightViewModel(ItemsResult spotlightItems)
         {
-            SpotlightViewModel.Items = spotlightItemsw.Items.Take(5);
+            SpotlightViewModel.Items = spotlightItems.Items.Take(5).Shuffle();
         }
 
         private async Task LoadAllMoviesViewModel(BaseItemDto movieFolder)
         {
-            var items = await GetChildren(movieFolder);
+            var items = await ItemChildren.Get(_apiClient, _sessionManager, movieFolder);
 
             IEnumerable<string> images = items.Items
                                               .Where(i => i.BackdropImageTags.Any())
@@ -241,8 +220,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
                                                   Width = Convert.ToInt32(HomeViewModel.TileWidth*2),
                                                   EnableImageEnhancers = false
                                               }));
-
-            AllMoviesImagesViewModel.Images.AddRange(images);
+            
+            AllMoviesImagesViewModel.Images.AddRange(images.Shuffle());
             AllMoviesImagesViewModel.StartRotating();
         }
     }

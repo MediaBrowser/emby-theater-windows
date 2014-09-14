@@ -89,7 +89,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
             });
 
             BrowseAllCommand = new RelayCommand(o => navigator.Navigate(Go.To.ItemList(new ItemListParameters {
-                Items = ItemChildren.Get(apiClient, sessionManager, item),
+                Items = ItemChildren.Get(apiClient, sessionManager, item, new ChildrenQueryParams { ExpandSingleItems = true }),
                 Title = item.Name
             })));
         }

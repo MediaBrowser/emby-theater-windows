@@ -107,7 +107,7 @@ namespace MediaBrowser.Theater.DirectShow
                     string dlList = mwc.DownloadString(objManifest);
                     if (!string.IsNullOrWhiteSpace(dlList))
                     {
-                        string[] objToCheck = dlList.Split(new string[] { System.Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+                        string[] objToCheck = dlList.Split(new string[] { System.Environment.NewLine, "\n" }, StringSplitOptions.RemoveEmptyEntries);
                         foreach (string toCheck in objToCheck)
                         {
                             string txtPath = Path.Combine(dlPath, Path.ChangeExtension(toCheck, "txt"));

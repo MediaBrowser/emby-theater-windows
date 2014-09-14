@@ -89,8 +89,6 @@ namespace MediaBrowser.UI.EntryPoints
 
             socket.Closed += socket_Closed;
             socket.Connected += socket_Connected;
-
-            UpdateServerLocation();
         }
 
         async void PageLoaded(PageLoadedEvent e)
@@ -166,7 +164,7 @@ namespace MediaBrowser.UI.EntryPoints
 
         void _apiClient_ServerLocationChanged(object sender, EventArgs e)
         {
-            UpdateServerLocation();
+            //UpdateServerLocation();
         }
 
         private async void UpdateServerLocation()
@@ -192,7 +190,7 @@ namespace MediaBrowser.UI.EntryPoints
                 return;
             }
 
-            EnsureWebSocket();
+            UpdateServerLocation();
         }
 
         private async void EnsureWebSocket()

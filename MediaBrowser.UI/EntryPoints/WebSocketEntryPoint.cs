@@ -41,9 +41,9 @@ namespace MediaBrowser.UI.EntryPoints
 
         private bool _isDisposed;
 
-        private ApiWebSocket ApiWebSocket
+        private ApiClient ApiWebSocket
         {
-            get { return _appHost.ApiWebSocket; }
+            get { return _appHost.ApiClient; }
         }
 
         public WebSocketEntryPoint(ISessionManager sessionManagerManager, IApiClient apiClient, ILogManager logManager, IApplicationHost appHost, IImageManager imageManager, INavigationService navigationService, IPlaybackManager playbackManager, IPresentationManager presentationManager, ICommandManager commandManager, IServerEvents serverEvents, IUserInputManager userInputManager)
@@ -64,7 +64,6 @@ namespace MediaBrowser.UI.EntryPoints
         public void Run()
         {
             _sessionManager.UserLoggedIn += SessionManagerUserLoggedIn;
-            _apiClient.ServerLocationChanged += _apiClient_ServerLocationChanged;
             _navigationService.Navigated += NavigationServiceNavigated;
 
             var socket = ApiWebSocket;
@@ -80,11 +79,6 @@ namespace MediaBrowser.UI.EntryPoints
             socket.SetAudioStreamIndexCommand += socket_SetAudioStreamIndexCommand;
             socket.SetSubtitleStreamIndexCommand += socket_SetSubtitleStreamIndexCommand;
             socket.SetVolumeCommand += socket_SetVolumeCommand;
-            
-            socket.Closed += socket_Closed;
-            socket.Connected += socket_Connected;
-
-            //UpdateServerLocation();
         }
 
         void socket_SetVolumeCommand(object sender, GenericEventArgs<int> e)
@@ -107,59 +101,6 @@ namespace MediaBrowser.UI.EntryPoints
             _userInputManager.SendTextInputToFocusedElement(e.Argument);
         }
 
-        void socket_Connected(object sender, EventArgs e)
-        {
-            ReportCapabilities(CancellationToken.None);
-        }
-
-        private async void ReportCapabilities(CancellationToken cancellationToken)
-        {
-            try
-            {
-                await _apiClient.ReportCapabilities(new ClientCapabilities
-                {
-
-                    PlayableMediaTypes = new List<string>
-                    {
-                        MediaType.Audio,
-                        MediaType.Video,
-                        MediaType.Game,
-                        MediaType.Photo,
-                        MediaType.Book
-                    },
-
-                    // MBT should be able to implement them all
-                    SupportedCommands = Enum.GetNames(typeof(GeneralCommandType)).ToList()
-
-                }, cancellationToken);
-            }
-            catch (Exception ex)
-            {
-                _logger.ErrorException("Error reporting capabilities", ex);
-            }
-        }
-
-        void _apiClient_ServerLocationChanged(object sender, EventArgs e)
-        {
-            //UpdateServerLocation();
-        }
-
-        private async void UpdateServerLocation()
-        {
-            try
-            {
-                var socket = ApiWebSocket;
-
-                await socket.ChangeServerLocation(((ApiClient)_apiClient).ApiUrl, CancellationToken.None).ConfigureAwait(false);
-
-                socket.StartEnsureConnectionTimer(5000);
-            }
-            catch (Exception ex)
-            {
-                _logger.ErrorException("Error establishing web socket connection", ex);
-            }
-        }
-
         void SessionManagerUserLoggedIn(object sender, EventArgs e)
         {
             if (_isDisposed)
@@ -167,24 +108,7 @@ namespace MediaBrowser.UI.EntryPoints
                 return;
             }
 
-            UpdateServerLocation();
-        }
-
-        private async void EnsureWebSocket()
-        {
-            try
-            {
-                await ApiWebSocket.EnsureConnectionAsync(CancellationToken.None).ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                _logger.ErrorException("Error connecting to web socket", ex);
-            }
-        }
-
-        void socket_Closed(object sender, EventArgs e)
-        {
-            EnsureWebSocket();
+            ApiWebSocket.OpenWebSocket(() => ClientWebSocketFactory.CreateWebSocket(_logger));
         }
 
         void socket_MessageCommand(object sender, GenericEventArgs<MessageCommand> e)
@@ -602,8 +526,6 @@ namespace MediaBrowser.UI.EntryPoints
                 socket.GeneralCommand -= socket_GeneralCommand;
                 socket.MessageCommand -= socket_MessageCommand;
                 socket.PlayCommand -= _apiWebSocket_PlayCommand;
-                socket.Closed -= socket_Closed;
-                socket.Connected -= socket_Connected;
 
                 socket.Dispose();
             }

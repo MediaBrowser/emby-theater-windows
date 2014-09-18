@@ -39,7 +39,7 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
         public ICommand GoBackCommand { get; private set; }
         public ICommand RestartServerCommand { get; private set; }
         public ICommand RestartApplicationCommand { get; private set; }
-        public ICommand ShutdownApplicationCommand { get;  private set; }
+        public ICommand ShutdownApplicationCommand { get; private set; }
         public ICommand ShutdownSystemCommand { get; private set; }
         public ICommand RestartSystemCommand { get; private set; }
         public ICommand SleepSystemCommand { get; private set; }
@@ -112,7 +112,6 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
             ServerEvents.RestartRequired += ServerEvents_RestartRequired;
             ServerEvents.ServerRestarting += ServerEvents_ServerRestarting;
             ServerEvents.ServerShuttingDown += ServerEvents_ServerShuttingDown;
-            ServerEvents.Connected += ServerEvents_Connected;
             AppHost.HasPendingRestartChanged += AppHostHasPendingRestartChanged;
             SessionManager.UserLoggedIn += SessionManager_UserLoggedIn;
             SessionManager.UserLoggedOut += SessionManager_UserLoggedOut;
@@ -153,7 +152,6 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
         {
             if (dispose)
             {
-                ServerEvents.Connected -= ServerEvents_Connected;
                 ServerEvents.RestartRequired -= ServerEvents_RestartRequired;
                 ServerEvents.ServerRestarting -= ServerEvents_ServerRestarting;
                 ServerEvents.ServerShuttingDown -= ServerEvents_ServerShuttingDown;
@@ -177,7 +175,7 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
                 await NavigationService.NavigateToLoginPage();
             }
 
-            if (PageNavigated != null) { PageNavigated(this, new EventArgs());}
+            if (PageNavigated != null) { PageNavigated(this, new EventArgs()); }
         }
 
         protected async virtual void GoSearch()
@@ -189,7 +187,7 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
         protected async virtual void GoSettings()
         {
             await NavigationService.NavigateToSettingsPage();
-            if (PageNavigated != null) { PageNavigated(this, new EventArgs());}
+            if (PageNavigated != null) { PageNavigated(this, new EventArgs()); }
         }
 
         /// <summary>
@@ -351,19 +349,11 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
         protected virtual void SessionManager_UserLoggedIn(object sender, EventArgs e)
         {
             RefreshHomeButton(NavigationService.CurrentPage);
+
+            RefreshRestartData();
         }
 
-        protected virtual void SessionManager_UserLoggedOut(object sender, EventArgs e)
-        {
-            RefreshHomeButton(NavigationService.CurrentPage);
-        }
-
-        protected virtual void NavigationService_Navigated(object sender, NavigationEventArgs e)
-        {
-            RefreshHomeButton(e.NewPage as Page);
-        }
-
-        private async void ServerEvents_Connected(object sender, EventArgs e)
+        private async void RefreshRestartData()
         {
             try
             {
@@ -376,6 +366,16 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
             {
 
             }
+        }
+
+        protected virtual void SessionManager_UserLoggedOut(object sender, EventArgs e)
+        {
+            RefreshHomeButton(NavigationService.CurrentPage);
+        }
+
+        protected virtual void NavigationService_Navigated(object sender, NavigationEventArgs e)
+        {
+            RefreshHomeButton(e.NewPage as Page);
         }
 
         private void ServerEvents_ServerShuttingDown(object sender, EventArgs e)

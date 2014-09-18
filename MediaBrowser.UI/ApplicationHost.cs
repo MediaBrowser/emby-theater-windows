@@ -13,7 +13,9 @@ using MediaBrowser.Common.Implementations.ScheduledTasks;
 using MediaBrowser.Common.Net;
 using MediaBrowser.IsoMounter;
 using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
+using MediaBrowser.Model.Session;
 using MediaBrowser.Model.System;
 using MediaBrowser.Model.Updates;
 using MediaBrowser.Plugins.DefaultTheme;
@@ -67,9 +69,7 @@ namespace MediaBrowser.UI
         /// Gets the API client.
         /// </summary>
         /// <value>The API client.</value>
-        public IApiClient ApiClient { get; private set; }
-
-        internal ApiWebSocket ApiWebSocket { get; set; }
+        public ApiClient ApiClient { get; private set; }
 
         public IThemeManager ThemeManager { get; private set; }
         public IPlaybackManager PlaybackManager { get; private set; }
@@ -152,7 +152,7 @@ namespace MediaBrowser.UI
             ImageManager = new ImageManager(ApiClient, ApplicationPaths, TheaterConfigurationManager);
             RegisterSingleInstance(ImageManager);
 
-            NavigationService = new NavigationService(ThemeManager, () => PlaybackManager, ApiClient, PresentationManager, TheaterConfigurationManager, () => SessionManager, this, InstallationManager, ImageManager, Logger, () => UserInputManager, ApiWebSocket, hiddenWindow);
+            NavigationService = new NavigationService(ThemeManager, () => PlaybackManager, ApiClient, PresentationManager, TheaterConfigurationManager, () => SessionManager, this, InstallationManager, ImageManager, Logger, () => UserInputManager, ApiClient, hiddenWindow);
             RegisterSingleInstance(NavigationService);
 
             UserInputManager = new UserInputManager(PresentationManager, NavigationService, hiddenWindow, LogManager);
@@ -167,14 +167,14 @@ namespace MediaBrowser.UI
             SessionManager = new SessionManager(NavigationService, ApiClient, Logger, ThemeManager, TheaterConfigurationManager, PlaybackManager);
             RegisterSingleInstance(SessionManager);
 
-            ScreensaverManager = new ScreensaverManager(UserInputManager, PresentationManager, PlaybackManager, SessionManager, ApiClient, TheaterConfigurationManager, LogManager, ApiWebSocket);
+            ScreensaverManager = new ScreensaverManager(UserInputManager, PresentationManager, PlaybackManager, SessionManager, ApiClient, TheaterConfigurationManager, LogManager, ApiClient);
             RegisterSingleInstance(ScreensaverManager);
 
-            RegisterSingleInstance(ApiClient);
+            RegisterSingleInstance<IApiClient>(ApiClient);
 
             RegisterSingleInstance<IHiddenWindow>(hiddenWindow);
 
-            RegisterSingleInstance<IServerEvents>(ApiWebSocket);
+            RegisterSingleInstance<IServerEvents>(ApiClient);
         }
 
         /// <summary>
@@ -204,7 +204,24 @@ namespace MediaBrowser.UI
 
             var deviceName = Environment.MachineName;
 
-            var apiClient = new ApiClient(new HttpWebRequestClient(logger), logger, TheaterConfigurationManager.Configuration.ServerAddress, "Media Browser Theater", deviceName, SystemId, ApplicationVersion.ToString())
+            var capabilities = new ClientCapabilities
+            {
+
+                PlayableMediaTypes = new List<string>
+                {
+                    MediaType.Audio,
+                    MediaType.Video,
+                    MediaType.Game,
+                    MediaType.Photo,
+                    MediaType.Book
+                },
+
+                // MBT should be able to implement them all
+                SupportedCommands = Enum.GetNames(typeof (GeneralCommandType)).ToList()
+
+            };
+
+            var apiClient = new ApiClient(new HttpWebRequestClient(logger), logger, TheaterConfigurationManager.Configuration.ServerAddress, "Media Browser Theater", deviceName, SystemId, ApplicationVersion.ToString(), capabilities)
             {
                 JsonSerializer = JsonSerializer,
                 ImageQuality = TheaterConfigurationManager.Configuration.DownloadCompressedImages
@@ -214,14 +231,6 @@ namespace MediaBrowser.UI
 
             ApiClient = apiClient;
             ApiClient.HttpResponseReceived += ApiClient_HttpResponseReceived;
-
-            logger = LogManager.GetLogger("ApiWebSocket");
-
-            ApiWebSocket = new ApiWebSocket(logger, JsonSerializer, apiClient.ServerAddress,
-                                  ApiClient.DeviceId, apiClient.ApplicationVersion,
-                                  apiClient.ClientName, apiClient.DeviceName, () => ClientWebSocketFactory.CreateWebSocket(logger));
-
-            apiClient.WebSocketConnection = ApiWebSocket;
         }
 
         async void ApiClient_HttpResponseReceived(object sender, HttpResponseEventArgs e)

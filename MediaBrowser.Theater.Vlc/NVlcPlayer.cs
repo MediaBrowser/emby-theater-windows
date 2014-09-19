@@ -1,10 +1,4 @@
-﻿using Declarations;
-using Declarations.Enums;
-using Declarations.Events;
-using Declarations.Media;
-using Declarations.Players;
-using Implementation;
-using MediaBrowser.Common.Events;
+﻿using MediaBrowser.Common.Events;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
@@ -15,11 +9,13 @@ using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.UserInput;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Vlc.DotNet.Core;
+using Vlc.DotNet.Core.Interops.Signatures.LibVlc.MediaListPlayer;
+using Vlc.DotNet.Core.Medias;
+using Vlc.DotNet.Forms;
 using ILogger = MediaBrowser.Model.Logging.ILogger;
 
 namespace MediaBrowser.Theater.Vlc
@@ -34,14 +30,6 @@ namespace MediaBrowser.Theater.Vlc
         public event EventHandler<PlaybackStopEventArgs> PlaybackCompleted;
 
         /// <summary>
-        /// The _media player factory
-        /// </summary>
-        private MediaPlayerFactory _mediaPlayerFactory;
-
-        private Declarations.Players.IVideoPlayer _videoPlayer;
-        private IMedia _media;
-
-        /// <summary>
         /// The _hidden window
         /// </summary>
         private readonly IHiddenWindow _hiddenWindow;
@@ -51,6 +39,8 @@ namespace MediaBrowser.Theater.Vlc
         private readonly IUserInputManager _userInput;
         private readonly IApiClient _apiClient;
         private readonly IPresentationManager _presentation;
+
+        private VlcControl _vlcControl;
 
         /// <summary>
         /// The _task result
@@ -110,7 +100,10 @@ namespace MediaBrowser.Theater.Vlc
         /// <value><c>true</c> if this instance can seek; otherwise, <c>false</c>.</value>
         public bool CanSeek
         {
-            get { return true; }
+            get
+            {
+                return _vlcControl != null && CurrentMedia != null & _vlcControl.IsSeekable;
+            }
         }
 
         /// <summary>
@@ -137,7 +130,7 @@ namespace MediaBrowser.Theater.Vlc
         /// <value><c>true</c> if this instance can queue; otherwise, <c>false</c>.</value>
         public bool CanQueue
         {
-            get { return true; }
+            get { return false; }
         }
 
         /// <summary>
@@ -167,6 +160,7 @@ namespace MediaBrowser.Theater.Vlc
             get { return true; }
         }
 
+        private bool _isPaused;
         /// <summary>
         /// Gets the state of the play.
         /// </summary>
@@ -175,12 +169,12 @@ namespace MediaBrowser.Theater.Vlc
         {
             get
             {
-                if (_videoPlayer == null)
+                if (_playlist == null || _playlist.Count == 0)
                 {
                     return PlayState.Idle;
                 }
 
-                if (_videoPlayer.PlaybackRate.Equals(0))
+                if (_isPaused)
                 {
                     return PlayState.Paused;
                 }
@@ -189,23 +183,40 @@ namespace MediaBrowser.Theater.Vlc
             }
         }
 
+        private bool _initialized;
         /// <summary>
         /// Ensures the media player created.
         /// </summary>
         private void EnsureMediaPlayerCreated()
         {
-            if (_mediaPlayerFactory != null)
+            if (_initialized)
             {
                 return;
             }
 
-            //_windowsFormsPanel = new Panel
-            //{
-            //    BackColor = Color.Black
-            //};
+            //VlcContext.LibVlcDllsPath = @"D:\\Development\\MediaBrowser.Theater\\MediaBrowser.UI\\bin\\x86\\Debug";
+            //VlcContext.LibVlcDllsPath = @"C:\\Program Files (x86)\\VideoLAN\\VLC";
 
-            //_hiddenWindow.Form.Controls.Clear();
-            //_hiddenWindow.Form.Controls.Add(_windowsFormsPanel);
+            // Set the vlc plugins directory path
+            //VlcContext.LibVlcPluginsPath = @"C:\\Program Files (x86)\\VideoLAN\\VLC\\plugins";
+
+            /* Setting up the configuration of the VLC instance.
+                     * You can use any available command-line option using the AddOption function (see last two options). 
+                     * A list of options is available at 
+                     *     http://wiki.videolan.org/VLC_command-line_help
+                     * for example. */
+
+            // Ignore the VLC configuration file
+            VlcContext.StartupOptions.IgnoreConfig = true;
+
+            // Enable file based logging
+            VlcContext.StartupOptions.LogOptions.LogInFile = false;
+
+            // Shows the VLC log console (in addition to the applications window)
+            VlcContext.StartupOptions.LogOptions.ShowLoggerConsole = false;
+
+            // Set the log level for the VLC instance
+            VlcContext.StartupOptions.LogOptions.Verbosity = VlcLogVerbosities.Debug;
 
             var configStrings = new List<string>
                 {
@@ -214,7 +225,7 @@ namespace MediaBrowser.Theater.Vlc
 		        "--ignore-config", 
                 "--no-osd",
                 "--disable-screensaver",
-		        "--plugin-path=./plugins"
+                "--no-video-title-show"
                 };
 
             if (_config.Configuration.VlcConfiguration.EnableGpuAcceleration)
@@ -222,7 +233,15 @@ namespace MediaBrowser.Theater.Vlc
                 configStrings.Add("--ffmpeg-hw");
             }
 
-            _mediaPlayerFactory = new MediaPlayerFactory(configStrings.ToArray());
+            foreach (var opt in configStrings)
+            {
+                VlcContext.StartupOptions.AddOption(opt);
+            }
+
+            // Initialize the VlcContext
+            VlcContext.Initialize();
+
+            _initialized = true;
         }
 
         /// <summary>
@@ -232,44 +251,54 @@ namespace MediaBrowser.Theater.Vlc
         /// <returns>Task.</returns>
         public async Task Play(PlayOptions options)
         {
-            InvokeOnPlayerThread(async () => await PlayInternal(options));
+            InvokeOnPlayerThread(() => PlayInternal(options));
         }
 
-        private bool _initialEndEventFired = false;
-        private Task PlayInternal(PlayOptions options)
+        private void PlayInternal(PlayOptions options)
         {
             EnsureMediaPlayerCreated();
 
             CurrentPlaylistIndex = 0;
             CurrentPlayOptions = options;
+            _duration = null;
 
             _playlist = options.Items.ToList();
+            _isPaused = false;
 
             try
             {
-                //_media = _mediaPlayerFactory.CreateMedia<IMedia>(@"D:\\Video\\TV\\30 Rock\\Season 1\\30 Rock - 1x02 - The Aftermath.mkv");
-                _media = _mediaPlayerFactory.CreateMedia<IMedia>(options.Items[0].Path);
-                _videoPlayer = _mediaPlayerFactory.CreatePlayer<Declarations.Players.IVideoPlayer>();
-                _videoPlayer.Open(_media);
-                _videoPlayer.Play();
+                //var media = new PathMedia(@"D:\\Video\\TV\\30 Rock\\Season 1\\30 Rock - 1x02 - The Aftermath.mkv");
+                var media = new LocationMedia(options.Items.First().Path);
+                //media.StateChanged +=
+                //    delegate(MediaBase s, VlcEventArgs<States> args)
+                //    {
+                //        if (args.Data == States.Ended)
+                //        {
+                //            var subItems = media.SubItems;
+                //            if (subItems.Count > 0)
+                //            {
+                //                _vlcControl.Play(subItems[0]);
+                //            }
+                //        }
+                //    };
+                //media.MediaSubItemAdded +=
+                //    delegate(MediaBase s, VlcEventArgs<MediaBase> args)
+                //    {
+                //        _vlcControl.Media = args.Data;
+                //        _vlcControl.Play();
+                //    };
 
-                _videoPlayer.WindowHandle = _hiddenWindow.Form.Handle;
-                _videoPlayer.DeviceType = GetAudioDeviceType();
-                _videoPlayer.Events.PlayerPaused += Events_PlayerPaused;
-                _videoPlayer.Events.PlayerPlaying += Events_PlayerPaused;
-                _videoPlayer.Events.PlayerStopped += Events_PlayerStopped;
-                _videoPlayer.Events.MediaEnded += Events_MediaEnded;
+                _vlcControl = new VlcControl();
 
-                _videoPlayer.Play();
+                _vlcControl.Media = media;
+                _vlcControl.PlaybackMode = PlaybackModes.Loop;
+                _vlcControl.Stopped += _vlcControl_Stopped;
+                _vlcControl.Paused += _vlcControl_Paused;
+                _vlcControl.Playing += _vlcControl_Playing;
+                _vlcControl.LengthChanged += _vlcControl_LengthChanged;
+                _vlcControl.Play();
 
-                var position = options.StartPositionTicks;
-
-                if (position > 0)
-                {
-                    _videoPlayer.Time = Convert.ToInt64(TimeSpan.FromTicks(position).TotalMilliseconds);
-                }
-
-                //_mediaListPlayer.MediaListPlayerEvents.MediaListPlayerNextItemSet += MediaListPlayerEvents_MediaListPlayerNextItemSet;
+                _vlcControl.SetHandle(_hiddenWindow.Form.Handle);
 
                 _userInput.GlobalKeyDown += _userInput_KeyDown;
             }
@@ -279,125 +308,26 @@ namespace MediaBrowser.Theater.Vlc
 
                 DisposePlayer();
             }
-
-            return _taskResult;
         }
 
-        private void InvokeOnPlayerThread(Action action, bool throwOnError = false)
+        void _vlcControl_LengthChanged(VlcControl sender, VlcEventArgs<long> e)
         {
-            try
-            {
-                if (_hiddenWindow.Form.InvokeRequired)
-                {
-                    _hiddenWindow.Form.Invoke(action);
-                }
-                else
-                {
-                    action();
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.ErrorException("InvokeOnPlayerThread", ex);
-
-                if (throwOnError) throw ex;
-            }
+            _duration = _duration ?? e.Data;
         }
 
-        private void PlaySubItem()
+        void _vlcControl_Playing(VlcControl sender, VlcEventArgs<EventArgs> e)
         {
-            InvokeOnPlayerThread(async () =>
-            {
-                var subItems = _media.SubItems;
-
-                if (subItems != null)
-                {
-                    var subItem = subItems.FirstOrDefault();
-
-                    if (subItem != null)
-                    {
-                        _videoPlayer.Open(subItem);
-                        _videoPlayer.Play();
-                    }
-                }
-            });
-        }
-
-        void Events_MediaEnded(object sender, EventArgs e)
-        {
-            if (!_initialEndEventFired)
-            {
-                _initialEndEventFired = true;
-                PlaySubItem();
-                return;
-            }
-
-            Stop();
-        }
-
-        void Events_PlayerPaused(object sender, EventArgs e)
-        {
-            //PlaySubItem();
             OnPlayStateChanged();
+            _isPaused = false ;
         }
 
-        void _userInput_KeyDown(object sender, KeyEventArgs e)
+        void _vlcControl_Paused(VlcControl sender, VlcEventArgs<EventArgs> e)
         {
-            switch (e.KeyCode)
-            {
-                case Keys.Pause:
-                    _videoPlayer.Pause();
-                    break;
-                case Keys.VolumeDown:
-                    _videoPlayer.Volume -= 5;
-                    break;
-                case Keys.VolumeUp:
-                    _videoPlayer.Volume += 5;
-                    _videoPlayer.Mute = false;
-                    break;
-                case Keys.VolumeMute:
-                    _videoPlayer.ToggleMute();
-                    break;
-                case Keys.MediaNextTrack:
-                    break;
-                case Keys.MediaPlayPause:
-                    _videoPlayer.Pause();
-                    break;
-                case Keys.MediaPreviousTrack:
-                    break;
-                case Keys.MediaStop:
-                    _videoPlayer.Stop();
-                    break;
-                default:
-                    return;
-            }
+            OnPlayStateChanged();
+            _isPaused = true;
         }
 
-        private AudioOutputDeviceType GetAudioDeviceType()
-        {
-            switch (_config.Configuration.VlcConfiguration.AudioLayout)
-            {
-                case AudioLayout.Five1:
-                    return AudioOutputDeviceType.AudioOutputDevice_5_1;
-                case AudioLayout.Six1:
-                    return AudioOutputDeviceType.AudioOutputDevice_6_1;
-                case AudioLayout.Seven1:
-                    return AudioOutputDeviceType.AudioOutputDevice_7_1;
-                case AudioLayout.Mono:
-                    return AudioOutputDeviceType.AudioOutputDevice_Mono;
-                case AudioLayout.Spdif:
-                    return AudioOutputDeviceType.AudioOutputDevice_SPDIF;
-                default:
-                    return AudioOutputDeviceType.AudioOutputDevice_Stereo;
-            }
-        }
-
-        /// <summary>
-        /// Handles the PlayerStopped event of the Events control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
-        void Events_PlayerStopped(object sender, EventArgs e)
+        void _vlcControl_Stopped(VlcControl sender, VlcEventArgs<EventArgs> e)
         {
             var playlist = _playlist.ToList();
             var index = CurrentPlaylistIndex;
@@ -421,68 +351,57 @@ namespace MediaBrowser.Theater.Vlc
             _playbackManager.ReportPlaybackCompleted(args);
         }
 
-        /// <summary>
-        /// Medias the list player events_ media list player next item set.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="e">The e.</param>
-        void MediaListPlayerEvents_MediaListPlayerNextItemSet(object sender, MediaListPlayerNextItemSet e)
+        private void InvokeOnPlayerThread(Action action, bool throwOnError = false)
         {
-            //var current = _mediaList.FirstOrDefault(i => i.Tag == e.Item.Tag);
-
-            //var newIndex = current != null ? MediaList.IndexOf(current) : -1;
-
-            //var currentIndex = _currentPlaylistIndex;
-
-            //if (newIndex != currentIndex)
-            //{
-            //    OnMediaChanged(currentIndex, null, newIndex);
-            //}
-
-            //_currentPlaylistIndex = newIndex;
-        }
-
-        /// <summary>
-        /// Gets the playable path.
-        /// </summary>
-        /// <param name="item">The item.</param>
-        /// <returns>System.String.</returns>
-        private string GetPlayablePath(BaseItemDto item)
-        {
-            if (item.LocationType == LocationType.Remote)
+            try
             {
-                return GetStreamingUrl(item);
-            }
-            if (!File.Exists(item.Path) && !Directory.Exists(item.Path))
-            {
-                return GetStreamingUrl(item);
-            }
-
-            if (item.VideoType.HasValue && item.VideoType.Value == VideoType.BluRay)
-            {
-                var file = new DirectoryInfo(item.Path)
-                    .EnumerateFiles("*.m2ts", SearchOption.AllDirectories)
-                    .OrderByDescending(f => f.Length)
-                    .FirstOrDefault();
-
-                if (file != null)
+                if (_hiddenWindow.Form.InvokeRequired)
                 {
-                    return file.FullName;
+                    _hiddenWindow.Form.Invoke(action);
+                }
+                else
+                {
+                    action();
                 }
             }
+            catch (Exception ex)
+            {
+                _logger.ErrorException("InvokeOnPlayerThread", ex);
 
-            return item.Path;
+                if (throwOnError) throw ex;
+            }
         }
 
-        private string GetStreamingUrl(BaseItemDto item)
+        void _userInput_KeyDown(object sender, KeyEventArgs e)
         {
-            // TODO: Add non-static url's for dvd + bluray
-
-            return _apiClient.GetVideoStreamUrl(new VideoStreamOptions
+            switch (e.KeyCode)
             {
-                Static = true,
-                ItemId = item.Id
-            });
+                case Keys.Pause:
+                    Pause();
+                    break;
+                case Keys.VolumeDown:
+                    _vlcControl.AudioProperties.Volume -= 5;
+                    break;
+                case Keys.VolumeUp:
+                    _vlcControl.AudioProperties.Volume += 5;
+                    _vlcControl.AudioProperties.IsMute = false;
+                    break;
+                case Keys.VolumeMute:
+                    _vlcControl.AudioProperties.IsMute = !_vlcControl.AudioProperties.IsMute;
+                    break;
+                case Keys.MediaNextTrack:
+                    break;
+                case Keys.MediaPlayPause:
+                    Pause();
+                    break;
+                case Keys.MediaPreviousTrack:
+                    break;
+                case Keys.MediaStop:
+                    Stop();
+                    break;
+                default:
+                    return;
+            }
         }
 
         /// <summary>
@@ -506,7 +425,7 @@ namespace MediaBrowser.Theater.Vlc
         /// <returns>Task.</returns>
         public void Stop()
         {
-            _videoPlayer.Stop();
+            InvokeOnPlayerThread(() => _vlcControl.Stop());
         }
 
         /// <summary>
@@ -516,12 +435,12 @@ namespace MediaBrowser.Theater.Vlc
         /// <returns>Task.</returns>
         public Task SetVolume(int volume)
         {
-            if (volume > 0 && _videoPlayer.Mute)
+            if (volume > 0 && IsMuted)
             {
-                _videoPlayer.Mute = false;
+                _vlcControl.AudioProperties.IsMute = false;
             }
 
-            _videoPlayer.Volume = volume;
+            _vlcControl.AudioProperties.Volume = volume;
 
             OnVolumeChanged();
 
@@ -534,7 +453,7 @@ namespace MediaBrowser.Theater.Vlc
         /// <returns>Task.</returns>
         public Task Mute()
         {
-            _videoPlayer.Mute = true;
+            _vlcControl.AudioProperties.IsMute = true;
 
             OnVolumeChanged();
 
@@ -547,7 +466,7 @@ namespace MediaBrowser.Theater.Vlc
         /// <returns>Task.</returns>
         public Task UnMute()
         {
-            _videoPlayer.Mute = false;
+            _vlcControl.AudioProperties.IsMute = false;
 
             OnVolumeChanged();
 
@@ -560,7 +479,7 @@ namespace MediaBrowser.Theater.Vlc
         /// <returns>Task.</returns>
         public void Pause()
         {
-            _videoPlayer.Pause();
+            _vlcControl.Pause();
         }
 
         /// <summary>
@@ -569,7 +488,7 @@ namespace MediaBrowser.Theater.Vlc
         /// <returns>Task.</returns>
         public void UnPause()
         {
-            _videoPlayer.Pause();
+            _vlcControl.Play();
         }
 
         /// <summary>
@@ -579,7 +498,10 @@ namespace MediaBrowser.Theater.Vlc
         /// <returns>Task.</returns>
         public void Seek(long positionTicks)
         {
-            _videoPlayer.Time = Convert.ToInt64(TimeSpan.FromTicks(positionTicks).TotalMilliseconds);
+            if (_vlcControl != null)
+            {
+                _vlcControl.Time = TimeSpan.FromTicks(positionTicks);
+            }
         }
 
         /// <summary>
@@ -588,15 +510,7 @@ namespace MediaBrowser.Theater.Vlc
         /// <value>The current position ticks.</value>
         public long? CurrentPositionTicks
         {
-            get
-            {
-                if (_videoPlayer != null)
-                {
-                    return TimeSpan.FromMilliseconds(_videoPlayer.Time).Ticks;
-                }
-
-                return null;
-            }
+            get { return _vlcControl == null ? (long?)null : _vlcControl.Time.Ticks; }
         }
 
         /// <summary>
@@ -605,7 +519,7 @@ namespace MediaBrowser.Theater.Vlc
         /// <value><c>true</c> if this instance is muted; otherwise, <c>false</c>.</value>
         public bool IsMuted
         {
-            get { return _videoPlayer.Mute; }
+            get { return _vlcControl.AudioProperties.IsMute; }
         }
 
         /// <summary>
@@ -614,7 +528,7 @@ namespace MediaBrowser.Theater.Vlc
         /// <value>The volume.</value>
         public int Volume
         {
-            get { return _videoPlayer.Volume; }
+            get { return _vlcControl.AudioProperties.Volume; }
         }
 
         /// <summary>
@@ -636,10 +550,7 @@ namespace MediaBrowser.Theater.Vlc
             {
                 DisposePlayer();
 
-                if (_mediaPlayerFactory != null)
-                {
-                    _mediaPlayerFactory.Dispose();
-                }
+                VlcContext.CloseAll();
             }
         }
 
@@ -650,30 +561,9 @@ namespace MediaBrowser.Theater.Vlc
         {
             _userInput.GlobalKeyDown -= _userInput_KeyDown;
 
-            if (_videoPlayer != null)
-            {
-                //_mediaListPlayer.MediaListPlayerEvents.MediaListPlayerNextItemSet -= MediaListPlayerEvents_MediaListPlayerNextItemSet;
-            }
-
-            if (_videoPlayer != null)
-            {
-                _videoPlayer.Events.PlayerPaused -= Events_PlayerPaused;
-                _videoPlayer.Events.PlayerPlaying -= Events_PlayerPaused;
-                _videoPlayer.Events.PlayerStopped -= Events_PlayerStopped;
-                _videoPlayer.Events.MediaEnded -= Events_MediaEnded;
-                _videoPlayer.Dispose();
-            }
-
-            if (_media != null)
-            {
-                _media.Dispose();
-                _media = null;
-            }
-
-            _videoPlayer = null;
-
             CurrentPlayOptions = null;
             CurrentPlaylistIndex = 0;
+            _duration = null;
 
             _playlist = new List<BaseItemDto>();
         }
@@ -716,16 +606,12 @@ namespace MediaBrowser.Theater.Vlc
             get { return false; }
         }
 
+        private long? _duration;
         public long? CurrentDurationTicks
         {
             get
             {
-
-                if (_videoPlayer != null)
-                {
-                    return TimeSpan.FromMilliseconds(_videoPlayer.Length).Ticks;
-                }
-                return null;
+                return _duration;
             }
         }
 

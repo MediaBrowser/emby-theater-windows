@@ -72,6 +72,8 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
 
         public int MaxStreamingBitrate { get; set; }
 
+        public VlcConfiguration VlcConfiguration { get; set; }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ApplicationConfiguration" /> class.
         /// </summary>
@@ -87,6 +89,8 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
             InternalPlayerConfiguration = new InternalPlayerConfiguration();
 
             MaxStreamingBitrate = 3000000;
+
+            VlcConfiguration = new VlcConfiguration();
         }
     }
 }

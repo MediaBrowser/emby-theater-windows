@@ -118,6 +118,20 @@ namespace MediaBrowser.Theater.Interfaces.Playback
         Task Play(PlayOptions options);
 
         /// <summary>
+        /// Plays the embedded URL.
+        /// </summary>
+        /// <param name="url">The URL.</param>
+        /// <returns>Task.</returns>
+        Task PlayEmbeddedUrl(string url);
+
+        /// <summary>
+        /// Determines whether this instance [can play embedded URL] the specified URL.
+        /// </summary>
+        /// <param name="url">The URL.</param>
+        /// <returns><c>true</c> if this instance [can play embedded URL] the specified URL; otherwise, <c>false</c>.</returns>
+        bool CanPlayEmbeddedUrl(string url);
+
+        /// <summary>
         /// Plays a DVD or Blueray disc in an external disk drive
         /// will ask for the disc to be inserted if it is not ready
         /// </summary>

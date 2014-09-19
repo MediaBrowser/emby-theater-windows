@@ -40,6 +40,7 @@ using MediaBrowser.Theater.Interfaces.System;
 using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Interfaces.UserInput;
 using MediaBrowser.Theater.Presentation.Playback;
+using MediaBrowser.Theater.Vlc;
 using MediaBrowser.UI.EntryPoints;
 using MediaBrowser.UI.Implementations;
 using MediaBrowser.UI.Networking;
@@ -306,6 +307,8 @@ namespace MediaBrowser.UI
 
             yield return typeof(PismoIsoManager).Assembly;
 
+            yield return typeof(NVlcPlayer).Assembly;
+            
             // Default theme assembly
             yield return typeof(DefaultTheme).Assembly;
         }

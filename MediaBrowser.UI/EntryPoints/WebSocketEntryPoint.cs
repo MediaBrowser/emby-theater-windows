@@ -495,13 +495,16 @@ namespace MediaBrowser.UI.EntryPoints
             {
                 var item = itemPage.PageItem;
 
-                try
+                if (ApiWebSocket.IsWebSocketConnected)
                 {
-                    await ApiWebSocket.SendContextMessageAsync(item.Type, item.Id, item.Name, itemPage.ViewType.ToString(), CancellationToken.None).ConfigureAwait(false);
-                }
-                catch (Exception ex)
-                {
-                    _logger.ErrorException("Error sending context message", ex);
+                    try
+                    {
+                        await ApiWebSocket.SendContextMessageAsync(item.Type, item.Id, item.Name, itemPage.ViewType.ToString(), CancellationToken.None).ConfigureAwait(false);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.ErrorException("Error sending context message", ex);
+                    }
                 }
             }
         }

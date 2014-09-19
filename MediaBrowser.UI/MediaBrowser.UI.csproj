@@ -101,9 +101,9 @@
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MediaBrowser.ApiInteraction, Version=3.0.5374.32385, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.ApiInteraction, Version=3.0.5374.37391, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.ApiClient.3.0.0.346\lib\net45\MediaBrowser.ApiInteraction.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.ApiClient.3.0.0.348\lib\net45\MediaBrowser.ApiInteraction.dll</HintPath>
     </Reference>
     <Reference Include="MediaBrowser.Common, Version=3.0.5374.30104, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -410,6 +410,10 @@
       <Project>{14eddb65-890e-40b5-8d29-414d0aed60c1}</Project>
       <Name>MediaBrowser.Theater.Presentation</Name>
     </ProjectReference>
+    <ProjectReference Include="..\MediaBrowser.Theater.Vlc\MediaBrowser.Theater.Vlc.csproj">
+      <Project>{7ead6221-f3f6-4cae-8bdc-906013195acc}</Project>
+      <Name>MediaBrowser.Theater.Vlc</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\Icon.ico" />
@@ -454,6 +458,9 @@ xcopy "$(TargetDir)libvlccore.dll" "$(SolutionDir)..\Deploy\MBT\System\" /y
 xcopy "$(TargetDir)$(TargetFileName).config" "$(SolutionDir)..\Deploy\MBT\System\" /y
 
 xcopy "$(TargetDir)*.dll" "$(SolutionDir)..\Deploy\MBT\System" /y
+
+mkdir "$(SolutionDir)..\Deploy\MBT\System\plugins"
+xcopy "$(TargetDir)plugins" "$(SolutionDir)..\Deploy\MBT\System\plugins" /y /s
 
 del "$(SolutionDir)..\Deploy\MBTheater.zip"
 "$(SolutionDir)ThirdParty\7zip\7za" a -tzip "$(SolutionDir)..\Deploy\MBTheater.zip" "$(SolutionDir)..\Deploy\MBT\*"

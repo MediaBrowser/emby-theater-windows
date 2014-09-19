@@ -37,7 +37,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
 
             if (item == null)
             {
-                throw new InvalidOperationException("Nothing is currently playing");
+                return;
             }
 
             if (item.Id == null)

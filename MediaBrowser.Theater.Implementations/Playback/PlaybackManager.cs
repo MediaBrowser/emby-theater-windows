@@ -755,5 +755,33 @@ namespace MediaBrowser.Theater.Implementations.Playback
 
             return player != null;
         }
+
+        public Task PlayEmbeddedUrl(string url)
+        {
+            StopAllPlayback();
+
+            var player = _mediaPlayers.First(i => string.Equals(i.GetType().Name, "NVlcPlayer", StringComparison.OrdinalIgnoreCase));
+
+            var item = new BaseItemDto
+            {
+                Path = url,
+                Type = "Video",
+                MediaType = "Video",
+                LocationType = LocationType.Remote
+            };
+
+            return Play(player, new PlayOptions
+            {
+                Configuration = new PlayerConfiguration(),
+                GoFullScreen = true,
+                Items = new List<BaseItemDto> { item },
+
+            }, new PlayerConfiguration { });
+        }
+
+        public bool CanPlayEmbeddedUrl(string url)
+        {
+            return true;
+        }
     }
 }

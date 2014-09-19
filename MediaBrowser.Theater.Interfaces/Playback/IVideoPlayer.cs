@@ -41,5 +41,11 @@ namespace MediaBrowser.Theater.Interfaces.Playback
         /// Removes the subtitles.
         /// </summary>
         void RemoveSubtitles();
+
+        /// <summary>
+        /// Gets a value indicating whether [requires global mouse hook].
+        /// </summary>
+        /// <value><c>true</c> if [requires global mouse hook]; otherwise, <c>false</c>.</value>
+        bool RequiresGlobalMouseHook { get; }
     }
 }

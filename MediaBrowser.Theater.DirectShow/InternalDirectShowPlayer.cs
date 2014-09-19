@@ -94,6 +94,14 @@ namespace MediaBrowser.Theater.DirectShow
             }
         }
 
+        public bool RequiresGlobalMouseHook
+        {
+            get
+            {
+                return false;
+            }
+        }
+
         public bool CanSeek
         {
             get { return true; }

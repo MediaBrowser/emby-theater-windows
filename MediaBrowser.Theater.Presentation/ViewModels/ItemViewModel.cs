@@ -7,6 +7,7 @@ using MediaBrowser.Model.Session;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Reflection;
+using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Interfaces.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -103,13 +104,13 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                     OnPropertyChanged("IsNew");
                     OnPropertyChanged("IsOffline");
                     OnPropertyChanged("DurationShortTimeString");
-               
+
                     OnPropertyChanged("CommunityRating");
                     OnPropertyChanged("CommunityRatingVisibility");
 
                     OnPropertyChanged("CriticRating");
                     OnPropertyChanged("CriticRatingVisibility");
-                    
+
                     OnPropertyChanged("HasPositiveCriticRating");
                     OnPropertyChanged("HasNegativeCriticRating");
                     OnPropertyChanged("AudioCodec");
@@ -118,7 +119,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                     OnPropertyChanged("SubtitleLanguages");
                     OnPropertyChanged("VideoCodec");
                     OnPropertyChanged("AudioChannels");
-                 
+
                     OnPropertyChanged("Resolution");
                     OnPropertyChanged("ResolutionVisibility");
 
@@ -210,7 +211,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         public bool HasTrailer
         {
-            get { return _item != null && _item.LocalTrailerCount > 0; }
+            get { return _item != null && (_item.LocalTrailerCount > 0 || (Item.RemoteTrailers != null && Item.RemoteTrailers.Count > 0)); }
         }
 
         public bool IsVirtualUnairedEpisode
@@ -1189,7 +1190,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             {
                 var item = _item;
 
-                if (! _playbackManager.CanPlay(item))
+                if (!_playbackManager.CanPlay(item))
                     return;
 
                 if (item.IsVideo && (item.Chapters == null || item.MediaStreams == null))
@@ -1205,7 +1206,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                     item = await _apiClient.GetItemAsync(item.Id, _apiClient.CurrentUserId);
                 }
 
-               await _playbackManager.Play(new PlayOptions(item));
+                await _playbackManager.Play(new PlayOptions(item));
             }
             catch (Exception)
             {
@@ -1235,15 +1236,44 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         public async void PlayTrailer()
         {
-            try
+            if (_item.LocalTrailerCount > 0)
             {
-                var trailers = await _apiClient.GetLocalTrailersAsync(_apiClient.CurrentUserId, _item.Id);
+                try
+                {
+                    var trailers = await _apiClient.GetLocalTrailersAsync(_apiClient.CurrentUserId, _item.Id);
 
-                await _playbackManager.Play(new PlayOptions(trailers.First()));
+                    await _playbackManager.Play(new PlayOptions(trailers.First()));
+                }
+                catch (Exception)
+                {
+                    _presentation.ShowDefaultErrorMessage();
+                }
             }
-            catch (Exception)
+            else if (_item.RemoteTrailers != null && _item.RemoteTrailers.Count > 0)
             {
-                _presentation.ShowDefaultErrorMessage();
+                var url = _item.RemoteTrailers.First().Url;
+
+                if (_playbackManager.CanPlayEmbeddedUrl(url))
+                {
+                    try
+                    {
+                        await _playbackManager.PlayEmbeddedUrl(url);
+                    }
+                    catch (Exception)
+                    {
+                        _presentation.ShowDefaultErrorMessage();
+                    }
+                }
+                else
+                {
+                    _presentation.ShowMessage(new MessageBoxInfo
+                    {
+                        Button = MessageBoxButton.OKCancel,
+                        Icon = MessageBoxIcon.Information,
+                        Caption = "Install Player",
+                        Text = ""
+                    });
+                }
             }
         }
 

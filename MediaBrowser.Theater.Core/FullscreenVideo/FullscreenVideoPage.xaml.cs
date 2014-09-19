@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Linq;
+using System.Runtime.InteropServices;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Interfaces.Navigation;
@@ -238,8 +239,19 @@ namespace MediaBrowser.Theater.Core.FullscreenVideo
         {
             _lastMouseInput = DateTime.Now;
             _activityTimer = new Timer(TimerCallback, null, 100, 100);
-
+            
             _userInputManager.MouseMove += _userInputManager_MouseMove;
+
+            var player = _playbackManager
+                .MediaPlayers
+                .OfType<IVideoPlayer>()
+                .FirstOrDefault(i => i.PlayState != PlayState.Idle);
+
+            if (player != null && player.RequiresGlobalMouseHook)
+            {
+                _userInputManager.GlobalMouseMove += _userInputManager_GlobalMouseMove;
+            }
+
             _presentation.SetGlobalThemeContentVisibility(false);
             _playbackManager.PlaybackCompleted += _playbackManager_PlaybackCompleted;
 
@@ -257,6 +269,7 @@ namespace MediaBrowser.Theater.Core.FullscreenVideo
             DisposeOsdTimer();
 
             _userInputManager.MouseMove -= _userInputManager_MouseMove;
+            _userInputManager.GlobalMouseMove -= _userInputManager_GlobalMouseMove;
             _presentation.SetGlobalThemeContentVisibility(true);
             _playbackManager.PlaybackCompleted -= _playbackManager_PlaybackCompleted;
 
@@ -317,6 +330,21 @@ namespace MediaBrowser.Theater.Core.FullscreenVideo
         // are only interested in change in position.
          private System.Windows.Point? _lastMouseMovePoint;
         void _userInputManager_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (!_lastMouseMovePoint.HasValue)
+            {
+                _lastMouseMovePoint = GetCursorPosition();
+                return;
+            }
+            if (_lastMouseMovePoint == GetCursorPosition())
+            {
+                return;
+            }
+            _lastMouseMovePoint = GetCursorPosition();
+            _lastMouseInput = DateTime.Now;
+        }
+
+        void _userInputManager_GlobalMouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             if (!_lastMouseMovePoint.HasValue)
             {

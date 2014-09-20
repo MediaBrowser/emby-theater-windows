@@ -260,15 +260,19 @@ namespace MediaBrowser.Theater.Vlc
 
             CurrentPlaylistIndex = 0;
             CurrentPlayOptions = options;
-            _duration = null;
 
             _playlist = options.Items.ToList();
             _isPaused = false;
 
+            var path = options.Items.First().Path;
+
             try
             {
                 //var media = new PathMedia(@"D:\\Video\\TV\\30 Rock\\Season 1\\30 Rock - 1x02 - The Aftermath.mkv");
-                var media = new LocationMedia(options.Items.First().Path);
+                var media = path.StartsWith("http", StringComparison.OrdinalIgnoreCase) ?
+                    (MediaBase)new LocationMedia(path) :
+                    (MediaBase)new PathMedia(path);
+
                 //media.StateChanged +=
                 //    delegate(MediaBase s, VlcEventArgs<States> args)
                 //    {
@@ -295,7 +299,6 @@ namespace MediaBrowser.Theater.Vlc
                 _vlcControl.Stopped += _vlcControl_Stopped;
                 _vlcControl.Paused += _vlcControl_Paused;
                 _vlcControl.Playing += _vlcControl_Playing;
-                _vlcControl.LengthChanged += _vlcControl_LengthChanged;
                 _vlcControl.Play();
 
                 _vlcControl.SetHandle(_hiddenWindow.Form.Handle);
@@ -310,15 +313,10 @@ namespace MediaBrowser.Theater.Vlc
             }
         }
 
-        void _vlcControl_LengthChanged(VlcControl sender, VlcEventArgs<long> e)
-        {
-            _duration = _duration ?? e.Data;
-        }
-
         void _vlcControl_Playing(VlcControl sender, VlcEventArgs<EventArgs> e)
         {
             OnPlayStateChanged();
-            _isPaused = false ;
+            _isPaused = false;
         }
 
         void _vlcControl_Paused(VlcControl sender, VlcEventArgs<EventArgs> e)
@@ -563,7 +561,6 @@ namespace MediaBrowser.Theater.Vlc
 
             CurrentPlayOptions = null;
             CurrentPlaylistIndex = 0;
-            _duration = null;
 
             _playlist = new List<BaseItemDto>();
         }
@@ -593,36 +590,54 @@ namespace MediaBrowser.Theater.Vlc
 
         public bool CanSetAudioStreamIndex
         {
-            get { return false; }
+            get { return true; }
         }
 
         public bool CanSetSubtitleStreamIndex
         {
-            get { return false; }
+            get { return true; }
         }
 
         public bool CanAcceptNavigationCommands
         {
-            get { return false; }
+            get { return true; }
         }
 
-        private long? _duration;
         public long? CurrentDurationTicks
         {
             get
             {
-                return _duration;
+                if (_vlcControl != null)
+                {
+                    return _vlcControl.Duration.Ticks;
+                }
+
+                return null;
             }
         }
 
         public int? CurrentSubtitleStreamIndex
         {
-            get { return null; }
+            get
+            {
+                var stream =
+                    SelectableStreams.FirstOrDefault(
+                        i => i.Type == MediaStreamType.Subtitle && i.IsActive);
+
+                return stream == null ? (int?)null : stream.Index;
+            }
         }
 
         public int? CurrentAudioStreamIndex
         {
-            get { return null; }
+            get
+            {
+                var stream =
+                    SelectableStreams.FirstOrDefault(
+                        i => i.Type == MediaStreamType.Audio && i.IsActive);
+
+                return stream == null ? (int?)null : stream.Index;
+            }
         }
 
         public void ChangeTrack(int newIndex)
@@ -643,6 +658,7 @@ namespace MediaBrowser.Theater.Vlc
 
         public void SetSubtitleStreamIndex(int subtitleStreamIndex)
         {
+            ChangeSubtitleStream(SelectableStreams.FirstOrDefault(i => i.Type == MediaStreamType.Subtitle && i.Index == subtitleStreamIndex));
         }
 
         public void NextSubtitleStream()
@@ -651,6 +667,7 @@ namespace MediaBrowser.Theater.Vlc
 
         public void SetAudioStreamIndex(int audioStreamIndex)
         {
+            ChangeAudioStream(SelectableStreams.FirstOrDefault(i => i.Type == MediaStreamType.Audio && i.Index == audioStreamIndex));
         }
 
         public void NextAudioStream()
@@ -659,12 +676,12 @@ namespace MediaBrowser.Theater.Vlc
 
         public bool CanSelectAudioTrack
         {
-            get { return false; }
+            get { return true; }
         }
 
         public bool CanSelectSubtitleTrack
         {
-            get { return false; }
+            get { return true; }
         }
 
         public IReadOnlyList<SelectableMediaStream> SelectableStreams

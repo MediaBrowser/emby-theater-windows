@@ -1,4 +1,7 @@
-﻿using MediaBrowser.Common.Events;
+﻿using System.Diagnostics;
+using System.IO;
+using MediaBrowser.Common.Configuration;
+using MediaBrowser.Common.Events;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
@@ -194,10 +197,12 @@ namespace MediaBrowser.Theater.Vlc
                 return;
             }
 
-            //VlcContext.LibVlcDllsPath = @"D:\\Development\\MediaBrowser.Theater\\MediaBrowser.UI\\bin\\x86\\Debug";
-            //VlcContext.LibVlcDllsPath = @"C:\\Program Files (x86)\\VideoLAN\\VLC";
+            var path = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
+            VlcContext.LibVlcDllsPath = path;
+            VlcContext.LibVlcPluginsPath = Path.Combine(path, "plugins");
 
             // Set the vlc plugins directory path
+            //VlcContext.LibVlcDllsPath = @"C:\\Program Files (x86)\\VideoLAN\\VLC";
             //VlcContext.LibVlcPluginsPath = @"C:\\Program Files (x86)\\VideoLAN\\VLC\\plugins";
 
             /* Setting up the configuration of the VLC instance.

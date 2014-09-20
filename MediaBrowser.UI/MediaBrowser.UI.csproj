@@ -462,6 +462,9 @@ xcopy "$(TargetDir)*.dll" "$(SolutionDir)..\Deploy\MBT\System" /y
 mkdir "$(SolutionDir)..\Deploy\MBT\System\plugins"
 xcopy "$(TargetDir)plugins" "$(SolutionDir)..\Deploy\MBT\System\plugins" /y /s
 
+mkdir "$(SolutionDir)..\Deploy\MBT\System\lua"
+xcopy "$(TargetDir)lua" "$(SolutionDir)..\Deploy\MBT\System\lua" /y /s
+
 del "$(SolutionDir)..\Deploy\MBTheater.zip"
 "$(SolutionDir)ThirdParty\7zip\7za" a -tzip "$(SolutionDir)..\Deploy\MBTheater.zip" "$(SolutionDir)..\Deploy\MBT\*"
 )</PostBuildEvent>

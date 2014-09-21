@@ -1180,6 +1180,16 @@ namespace MediaBrowser.Theater.DirectShow
                                 if (decOut != null && rendIn != null)
                                 {
                                     hr = _filterGraph.ConnectDirect(decOut, rendIn, null);
+                                    if (hr == -2004287474 && _wasapiAR != null) //AUDCLNT_E_EXCLUSIVE_MODE_NOT_ALLOWED
+                                    {
+                                        IMPAudioRendererConfig arSett = _wasapiAR as IMPAudioRendererConfig;
+                                        if (arSett != null)
+                                        {
+                                            arSett.SetInt(MPARSetting.WASAPI_MODE, (int)AUDCLNT_SHAREMODE.SHARED);
+                                            _logger.Warn("WASAPI AR failed to connected in exclusive mode, check device properties");
+                                            hr = _filterGraph.ConnectDirect(decOut, rendIn, null);
+                                        }
+                                    }
                                     DsError.ThrowExceptionForHR(hr);
 
                                     needsRender = false;

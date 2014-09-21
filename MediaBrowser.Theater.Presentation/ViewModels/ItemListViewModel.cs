@@ -710,7 +710,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                         {
                             UserId = _apiClient.CurrentUserId,
 
-                            Fields = new[] { ItemFields.Path, ItemFields.Chapters, ItemFields.MediaSources },
+                            Fields = new[] { ItemFields.Path, ItemFields.Chapters, ItemFields.MediaSources, ItemFields.ParentId },
 
                             Ids = items.Select(i => i.Item.Id).ToArray()
                         });

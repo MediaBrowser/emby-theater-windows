@@ -28,6 +28,7 @@ namespace MediaBrowser.Theater.Api.Library
     public static class ItemChildren
     {
         public static ItemFields[] DefaultQueryFields = {
+            ItemFields.ParentId,
             ItemFields.PrimaryImageAspectRatio,
             ItemFields.DateCreated,
             ItemFields.MediaStreams,

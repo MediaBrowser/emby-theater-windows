@@ -1171,9 +1171,16 @@ namespace MediaBrowser.Theater.DirectShow
                             if (decIn != null)
                             {
                                 hr = _filterGraph.ConnectDirect(pins[0], decIn, null);
-                                DsError.ThrowExceptionForHR(hr);
-                                decOut = DsFindPin.ByDirection((DirectShowLib.IBaseFilter) _lavaudio,
-                                    PinDirection.Output, 0);
+                                if (hr < 0) //LAV cannot handle this audio type
+                                {
+                                    _logger.Warn("LAV Audio could not decode audio media type.");
+                                }
+                                else
+                                {
+                                    //DsError.ThrowExceptionForHR(hr);
+                                    decOut = DsFindPin.ByDirection((DirectShowLib.IBaseFilter)_lavaudio,
+                                        PinDirection.Output, 0);
+                                }
 
                                 rendIn = DsFindPin.ByDirection(AudioRenderer, PinDirection.Input, 0);
                                 

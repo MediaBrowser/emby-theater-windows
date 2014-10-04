@@ -382,15 +382,17 @@ namespace MediaBrowser.Theater.DirectShow
             _hiddenWindow.OnDVDEVENT = HandleDvdEvent;
 
             //pre-roll the graph
+            _logger.Debug("pre-roll the graph");
             var hr = _mediaControl.Pause(); 
             DsError.ThrowExceptionForHR(hr);
 
+            _logger.Debug("run the graph");
             hr = _mediaControl.Run();
             DsError.ThrowExceptionForHR(hr);
 
             PlayState = PlayState.Playing;
             _currentPlaybackRate = 1.0;
-
+                        
             _streams = GetStreams();
 
             LoadActiveExternalSubtitles();
@@ -489,6 +491,8 @@ namespace MediaBrowser.Theater.DirectShow
             // Get the seeking capabilities.
             hr = _mediaSeeking.GetCapabilities(out _mSeekCaps);
             DsError.ThrowExceptionForHR(hr);
+
+            _logger.Debug("Retrieved seeking capabilities: {0}", _mSeekCaps);
         }
 
         private void InitializeDvd(string path)
@@ -1171,9 +1175,16 @@ namespace MediaBrowser.Theater.DirectShow
                             if (decIn != null)
                             {
                                 hr = _filterGraph.ConnectDirect(pins[0], decIn, null);
-                                DsError.ThrowExceptionForHR(hr);
-                                decOut = DsFindPin.ByDirection((DirectShowLib.IBaseFilter) _lavaudio,
-                                    PinDirection.Output, 0);
+                                if (hr < 0) //LAV cannot handle this audio type
+                                {
+                                    _logger.Warn("LAV Audio could not decode audio media type.");
+                                }
+                                else
+                                {
+                                    //DsError.ThrowExceptionForHR(hr);
+                                    decOut = DsFindPin.ByDirection((DirectShowLib.IBaseFilter)_lavaudio,
+                                        PinDirection.Output, 0);
+                                }
 
                                 rendIn = DsFindPin.ByDirection(AudioRenderer, PinDirection.Input, 0);
                                 
@@ -2458,135 +2469,144 @@ namespace MediaBrowser.Theater.DirectShow
 
         private List<SelectableMediaStream> GetInternalStreams()
         {
+            _logger.Debug("GetInternalStreams");
+
             var streams = new List<SelectableMediaStream>();
 
-            IEnumFilters enumFilters;
-            var hr = m_graph.EnumFilters(out enumFilters);
-
-            DsError.ThrowExceptionForHR(hr);
-
-            var filters = new DirectShowLib.IBaseFilter[1];
-
-            while (enumFilters.Next(filters.Length, filters, IntPtr.Zero) == 0)
+            IEnumFilters enumFilters = null;
+            try
             {
-                FilterInfo filterInfo;
+                var hr = m_graph.EnumFilters(out enumFilters);
 
-                hr = filters[0].QueryFilterInfo(out filterInfo);
                 DsError.ThrowExceptionForHR(hr);
 
-                Guid cl;
-                filters[0].GetClassID(out cl);
+                var filters = new DirectShowLib.IBaseFilter[1];
 
-                if (filterInfo.pGraph != null)
+                while (enumFilters.Next(filters.Length, filters, IntPtr.Zero) == 0)
                 {
-                    Marshal.ReleaseComObject(filterInfo.pGraph);
-                }
+                    FilterInfo filterInfo;
 
-                var iss = filters[0] as IAMStreamSelect;
-
-                if (iss != null)
-                {
-                    int count;
-
-                    hr = iss.Count(out count);
+                    hr = filters[0].QueryFilterInfo(out filterInfo);
                     DsError.ThrowExceptionForHR(hr);
 
-                    for (int i = 0; i < count; i++)
+                    Guid cl;
+                    filters[0].GetClassID(out cl);
+
+                    if (filterInfo.pGraph != null)
                     {
-                        DirectShowLib.AMMediaType type;
-                        AMStreamSelectInfoFlags flags;
-                        int plcid, pwdGrp; // language
-                        String pzname;
+                        Marshal.ReleaseComObject(filterInfo.pGraph);
+                    }
 
-                        object ppobject, ppunk;
+                    var iss = filters[0] as IAMStreamSelect;
 
-                        hr = iss.Info(i, out type, out flags, out plcid, out pwdGrp, out pzname, out ppobject, out ppunk);
+                    if (iss != null)
+                    {
+                        int count;
+
+                        hr = iss.Count(out count);
                         DsError.ThrowExceptionForHR(hr);
 
-                        if (ppobject != null)
+                        for (int i = 0; i < count; i++)
                         {
-                            Marshal.ReleaseComObject(ppobject);
-                        }
+                            DirectShowLib.AMMediaType type;
+                            AMStreamSelectInfoFlags flags;
+                            int plcid, pwdGrp; // language
+                            String pzname;
 
-                        if (type != null)
-                        {
-                            DsUtils.FreeAMMediaType(type);
-                        }
+                            object ppobject, ppunk;
 
-                        if (ppunk != null)
-                        {
-                            Marshal.ReleaseComObject(ppunk);
-                        }
+                            hr = iss.Info(i, out type, out flags, out plcid, out pwdGrp, out pzname, out ppobject, out ppunk);
+                            DsError.ThrowExceptionForHR(hr);
 
-                        if (pwdGrp == 2)
-                        {
-                            if (_grp2Selector == Guid.Empty)
+                            if (ppobject != null)
                             {
-                                filters[0].GetClassID(out _grp2Selector);
+                                Marshal.ReleaseComObject(ppobject);
                             }
 
-                            var stream = new SelectableMediaStream
+                            if (type != null)
                             {
-                                Index = i,
-                                Name = pzname,
-                                Type = MediaStreamType.Subtitle
-                            };
-
-                            if ((AMStreamSelectInfoFlags.Enabled & flags) == AMStreamSelectInfoFlags.Enabled)
-                            {
-                                stream.IsActive = true;
-                            }
-                            streams.Add(stream);
-                        }
-
-                        if (pwdGrp == 1)
-                        {
-                            if (_audioSelector == Guid.Empty)
-                            {
-                                filters[0].GetClassID(out _audioSelector);
-                            }
-                            var stream = new SelectableMediaStream
-                            {
-                                Index = i,
-                                Name = pzname,
-                                Type = MediaStreamType.Audio
-                            };
-                            if ((AMStreamSelectInfoFlags.Enabled & flags) == AMStreamSelectInfoFlags.Enabled)
-                            {
-                                stream.IsActive = true;
-                            }
-                            streams.Add(stream);
-                        }
-
-                        if (pwdGrp == 6590033)
-                        {
-                            if (_vobsubSelector == Guid.Empty)
-                            {
-                                filters[0].GetClassID(out _vobsubSelector);
+                                DsUtils.FreeAMMediaType(type);
                             }
 
-                            var stream = new SelectableMediaStream
+                            if (ppunk != null)
                             {
-                                Index = i,
-                                Name = pzname,
-                                Type = MediaStreamType.Subtitle,
-                                Identifier = "Vobsub"
-                            };
-
-                            if ((AMStreamSelectInfoFlags.Enabled & flags) == AMStreamSelectInfoFlags.Enabled)
-                            {
-                                stream.IsActive = true;
+                                Marshal.ReleaseComObject(ppunk);
                             }
-                            streams.Add(stream);
+
+                            if (pwdGrp == 2)
+                            {
+                                if (_grp2Selector == Guid.Empty)
+                                {
+                                    filters[0].GetClassID(out _grp2Selector);
+                                }
+
+                                var stream = new SelectableMediaStream
+                                {
+                                    Index = i,
+                                    Name = pzname,
+                                    Type = MediaStreamType.Subtitle
+                                };
+
+                                if ((AMStreamSelectInfoFlags.Enabled & flags) == AMStreamSelectInfoFlags.Enabled)
+                                {
+                                    stream.IsActive = true;
+                                }
+                                streams.Add(stream);
+                            }
+
+                            if (pwdGrp == 1)
+                            {
+                                if (_audioSelector == Guid.Empty)
+                                {
+                                    filters[0].GetClassID(out _audioSelector);
+                                }
+                                var stream = new SelectableMediaStream
+                                {
+                                    Index = i,
+                                    Name = pzname,
+                                    Type = MediaStreamType.Audio
+                                };
+                                if ((AMStreamSelectInfoFlags.Enabled & flags) == AMStreamSelectInfoFlags.Enabled)
+                                {
+                                    stream.IsActive = true;
+                                }
+                                streams.Add(stream);
+                            }
+
+                            if (pwdGrp == 6590033)
+                            {
+                                if (_vobsubSelector == Guid.Empty)
+                                {
+                                    filters[0].GetClassID(out _vobsubSelector);
+                                }
+
+                                var stream = new SelectableMediaStream
+                                {
+                                    Index = i,
+                                    Name = pzname,
+                                    Type = MediaStreamType.Subtitle,
+                                    Identifier = "Vobsub"
+                                };
+
+                                if ((AMStreamSelectInfoFlags.Enabled & flags) == AMStreamSelectInfoFlags.Enabled)
+                                {
+                                    stream.IsActive = true;
+                                }
+                                streams.Add(stream);
+                            }
                         }
                     }
-                }
 
-                Marshal.ReleaseComObject(filters[0]);
+                    Marshal.ReleaseComObject(filters[0]);
+                }
+            }
+            finally
+            {
+                if (enumFilters != null)
+                    Marshal.ReleaseComObject(enumFilters);
             }
 
-            Marshal.ReleaseComObject(enumFilters);
-
+            _logger.Debug("Return InternalStreamCount: {0}", streams.Count);
             return streams;
         }
 
@@ -2660,6 +2680,8 @@ namespace MediaBrowser.Theater.DirectShow
 
         private List<SelectableMediaStream> GetStreams()
         {
+            _logger.Debug("GetStreams()");
+
             var streams = GetInternalStreams();
             var externalSubtitleStreams = GetExternalSubtitleStreams(streams);
             if (externalSubtitleStreams != null && externalSubtitleStreams.Any())

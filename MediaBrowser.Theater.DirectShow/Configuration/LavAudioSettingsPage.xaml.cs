@@ -104,7 +104,16 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
             SelectMixingEncoding.SelectedValue = config.AudioConfig.MixingEncoding;
             SelectMixingLayout.SelectedValue = config.AudioConfig.MixingLayout;
             SelectMixingSetting.SelectedValue = config.AudioConfig.MixingSetting.ToString();
-            SelectAudioDevice.SelectedValue = config.AudioConfig.AudioDevice;
+            SelectAudioDevice.SelectedValue = string.Empty; //the default device
+            foreach (var option in SelectAudioDevice.Options)
+            {
+                //the audio device id can change after a driver update
+                if (option.Value == config.AudioConfig.AudioDevice)
+                {
+                    SelectAudioDevice.SelectedValue = config.AudioConfig.AudioDevice;
+                    break;
+                }
+            }
             SelectSpeakerLayout.SelectedValue = config.AudioConfig.SpeakerLayout;
 
             SldDRCLevel.Value = config.AudioConfig.DRCLevel;

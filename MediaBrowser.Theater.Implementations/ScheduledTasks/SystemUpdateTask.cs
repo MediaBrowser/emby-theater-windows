@@ -90,7 +90,10 @@ namespace MediaBrowser.Theater.Implementations.ScheduledTasks
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            if (!_appHost.CanSelfUpdate) return;
+            if (!_appHost.CanSelfUpdate)
+            {
+                return;
+            }
 
             if (ConfigurationManager.CommonConfiguration.EnableAutoUpdate)
             {

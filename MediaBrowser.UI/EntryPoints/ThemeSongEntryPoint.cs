@@ -1,5 +1,6 @@
 ﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
+using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
@@ -19,17 +20,19 @@ namespace MediaBrowser.UI.EntryPoints
         private readonly IPlaybackManager _playback;
         private readonly ISessionManager _session;
         private readonly IConnectionManager _connectionManager;
+        private readonly ILogger _logger;
 
         private string _currentPlayingOwnerId;
 
         private string _lastPlayedOwnerId;
 
-        public ThemeSongEntryPoint(INavigationService nav, IPlaybackManager playback, ISessionManager session, IConnectionManager connectionManager)
+        public ThemeSongEntryPoint(INavigationService nav, IPlaybackManager playback, ISessionManager session, IConnectionManager connectionManager, ILogger logger)
         {
             _nav = nav;
             _playback = playback;
             _session = session;
             _connectionManager = connectionManager;
+            _logger = logger;
         }
 
         public void Run()
@@ -44,6 +47,18 @@ namespace MediaBrowser.UI.EntryPoints
         }
 
         async void _nav_Navigated(object sender, NavigationEventArgs e)
+        {
+            try
+            {
+                await OnNavigated(e);
+            }
+            catch (Exception ex)
+            {
+                _logger.ErrorException("Error playing theme songs", ex);
+            }
+        }
+
+        private async Task OnNavigated(NavigationEventArgs e)
         {
             // If something is already playing, and it's not a theme song, leave it alone
             if (string.IsNullOrEmpty(_currentPlayingOwnerId) && _playback.MediaPlayers.Any(i => i.PlayState != PlayState.Idle))

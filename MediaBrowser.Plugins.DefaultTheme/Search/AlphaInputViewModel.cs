@@ -23,8 +23,8 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         private readonly Func<AlphaInputViewModel, Task<Boolean>> _alphaItemSelectedDelegate;
         public ICommand ClickCommand { get; private set; }
 
-        public AlphaInputViewModel(Func<AlphaInputViewModel, Task<Boolean>> alphaItemSelectedDelegate, IPresentationManager presentationManager, IImageManager imageManager, IApiClient apiClient, INavigationService navigationService, IPlaybackManager playbackManager, ILogger logger, IServerEvents serverEvents)
-            : base(null, presentationManager, imageManager, apiClient, navigationService, playbackManager, logger, serverEvents)
+        public AlphaInputViewModel(Func<AlphaInputViewModel, Task<Boolean>> alphaItemSelectedDelegate, IPresentationManager presentationManager, IImageManager imageManager, IApiClient apiClient, INavigationService navigationService, IPlaybackManager playbackManager, ILogger logger)
+            : base(null, presentationManager, imageManager, apiClient, navigationService, playbackManager, logger)
         {
            _alphaItemSelectedDelegate = alphaItemSelectedDelegate;     // SWA TODO should proably set up a event for this
 

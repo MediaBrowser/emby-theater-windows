@@ -9,24 +9,6 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
     public class ApplicationConfiguration : BaseApplicationConfiguration
     {
         /// <summary>
-        /// Gets or sets the server address.
-        /// </summary>
-        /// <value>The server address.</value>
-        public string ServerAddress { get; set; }
-
-        /// <summary>
-        /// Gets or sets the auto-login user details.
-        /// </summary>
-        /// <value>The auto-login details.</value>
-        public AutoLoginConfiguration AutoLoginConfiguration { get; set; }
-
-        /// <summary>
-        /// Gets or Sets the WOL configuration
-        /// </summary>
-        /// <value>The WOL Configuration.</value>
-        public WolConfiguration WolConfiguration { get; set; }
-
-        /// <summary>
         /// Gets or sets the player configurations.
         /// </summary>
         /// <value>The player configurations.</value>
@@ -66,13 +48,13 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
 
         public bool EnableBackdrops { get; set; }
 
-        public bool DownloadCompressedImages { get; set; }
-
         public InternalPlayerConfiguration InternalPlayerConfiguration { get; set; }
 
         public int MaxStreamingBitrate { get; set; }
 
         public VlcConfiguration VlcConfiguration { get; set; }
+
+        public bool RememberLogin { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApplicationConfiguration" /> class.
@@ -80,9 +62,6 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
         public ApplicationConfiguration()
             : base()
         {
-            ServerAddress = "http://localhost:8096";
-            AutoLoginConfiguration = new AutoLoginConfiguration();
-
             EnableBackdrops = true;
             MediaPlayers = new PlayerConfiguration[] { };
 

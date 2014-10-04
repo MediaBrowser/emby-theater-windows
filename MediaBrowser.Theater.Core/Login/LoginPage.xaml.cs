@@ -17,20 +17,20 @@ namespace MediaBrowser.Theater.Core.Login
     /// </summary>
     public partial class LoginPage : BasePage, ILoginPage
     {
-        protected IApiClient ApiClient { get; private set; }
+        protected IConnectionManager ConnectionManager { get; private set; }
         protected IImageManager ImageManager { get; private set; }
         protected INavigationService NavigationManager { get; private set; }
         protected ISessionManager SessionManager { get; private set; }
         protected IPresentationManager PresentationManager { get; private set; }
         protected ITheaterConfigurationManager ConfigurationManager { get; private set; }
 
-        public LoginPage(IApiClient apiClient, IImageManager imageManager, INavigationService navigationManager, ISessionManager sessionManager, IPresentationManager presentationManager, ITheaterConfigurationManager configManager)
+        public LoginPage(IConnectionManager connectionManager, IImageManager imageManager, INavigationService navigationManager, ISessionManager sessionManager, IPresentationManager presentationManager, ITheaterConfigurationManager configManager)
         {
             PresentationManager = presentationManager;
             SessionManager = sessionManager;
             NavigationManager = navigationManager;
             ImageManager = imageManager;
-            ApiClient = apiClient;
+            ConnectionManager = connectionManager;
             ConfigurationManager = configManager;
 
             InitializeComponent();
@@ -40,7 +40,7 @@ namespace MediaBrowser.Theater.Core.Login
         {
             base.OnInitialized(e);
 
-            DataContext = new UserListViewModel(PresentationManager, ApiClient, ImageManager, SessionManager, NavigationManager);
+            DataContext = new UserListViewModel(PresentationManager, ConnectionManager, ImageManager, SessionManager, NavigationManager);
 
             LstUsers.ItemInvoked += ItemsList_ItemInvoked;
             Loaded += LoginPage_Loaded;
@@ -69,7 +69,7 @@ namespace MediaBrowser.Theater.Core.Login
 
             try
             {
-                await SessionManager.Login(user.Name, string.Empty, (bool)ChkAutoLogin.IsChecked);
+                await SessionManager.LoginToServer(user.Name, string.Empty, (bool)ChkAutoLogin.IsChecked);
             }
             catch (Exception ex)
             {

@@ -21,27 +21,23 @@ namespace MediaBrowser.Plugins.DefaultTheme.Search
     /// </summary>
     public partial class SearchPage : BasePage, ISearchPage, ISupportsItemThemeMedia, IItemPage
     {
-        private readonly IApiClient _apiClient;
-        private readonly IImageManager _imageManager;
         private readonly INavigationService _navigationService;
         private readonly ILogger _logger;
         
         private readonly BaseItemDto _parentItem;
         private readonly SearchViewModel _searchViewModel;
 
-        public SearchPage(BaseItemDto parent, IApiClient apiClient, ISessionManager sessionManager, IImageManager imageManager, IPresentationManager presentation, INavigationService navigatioService, IPlaybackManager playbackManager, ILogger logger, IServerEvents serverEvents)
+        public SearchPage(BaseItemDto parent, IApiClient apiClient, ISessionManager sessionManager, IImageManager imageManager, IPresentationManager presentation, INavigationService navigatioService, IPlaybackManager playbackManager, ILogger logger)
         {
             _logger = logger;
-            _imageManager = imageManager;
             _navigationService = navigatioService;
-            _apiClient = apiClient;
             _parentItem = parent;
            
             InitializeComponent();
 
             this.Loaded += SearchPage_Loaded;
 
-            _searchViewModel = new SearchViewModel(presentation, _imageManager, _apiClient, sessionManager, navigatioService, playbackManager, _logger, serverEvents);
+            _searchViewModel = new SearchViewModel(presentation, imageManager, apiClient, sessionManager, navigatioService, playbackManager, _logger);
 
             _searchViewModel.MatchedItemsViewModel.PropertyChanged += PropertyChanged;
             _searchViewModel.MatchedPeopleViewModel.PropertyChanged += PropertyChanged;

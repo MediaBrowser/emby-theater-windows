@@ -70,11 +70,13 @@ namespace MediaBrowser.Plugins.DefaultTheme.Osd
 
             if (media != null)
             {
+                var apiClient = viewModel.ConnectionManager.GetApiClient(media);
+
                 if (media.SeriesPrimaryImageTag != null)
                 {
                     try
                     {
-                        ImgPrimary.Source = await viewModel.ImageManager.GetRemoteBitmapAsync(viewModel.ApiClient.GetImageUrl(media.SeriesId, new ImageOptions
+                        ImgPrimary.Source = await viewModel.ImageManager.GetRemoteBitmapAsync(apiClient.GetImageUrl(media.SeriesId, new ImageOptions
                         {
                             Height = 350,
                             Tag = media.SeriesPrimaryImageTag,
@@ -93,7 +95,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Osd
                 {
                     try
                     {
-                        ImgPrimary.Source = await viewModel.ImageManager.GetRemoteBitmapAsync(viewModel.ApiClient.GetImageUrl(media, new ImageOptions
+                        ImgPrimary.Source = await viewModel.ImageManager.GetRemoteBitmapAsync(apiClient.GetImageUrl(media, new ImageOptions
                         {
                             Height = 600,
                             ImageType = ImageType.Primary

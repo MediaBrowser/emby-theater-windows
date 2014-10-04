@@ -32,7 +32,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
         private readonly IPlaybackManager _playback;
         private readonly INavigationService _navigation;
         private readonly ILogger _logger;
-        private readonly IServerEvents _serverEvents;
 
         private ItemViewModel _itemViewModel;
         public ItemViewModel ItemViewModel
@@ -50,7 +49,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
         public ViewType Context { get; private set; }
 
-        public DetailPageViewModel(ItemViewModel item, IApiClient apiClient, ISessionManager sessionManager, IImageManager imageManager, IPresentationManager presentationManager, IPlaybackManager playback, INavigationService navigation, ILogger logger, IServerEvents serverEvents, ViewType context)
+        public DetailPageViewModel(ItemViewModel item, IApiClient apiClient, ISessionManager sessionManager, IImageManager imageManager, IPresentationManager presentationManager, IPlaybackManager playback, INavigationService navigation, ILogger logger, ViewType context)
         {
             _apiClient = apiClient;
             _sessionManager = sessionManager;
@@ -59,7 +58,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             _playback = playback;
             _navigation = navigation;
             _logger = logger;
-            _serverEvents = serverEvents;
             Context = context;
             ItemViewModel = item;
         }
@@ -498,7 +496,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             }
             if (string.Equals(section, "similar"))
             {
-                return new ItemListViewModel(GetSimilarItemsAsync, _presentationManager, _imageManager, _apiClient, _navigation, _playback, _logger, _serverEvents)
+                return new ItemListViewModel(GetSimilarItemsAsync, _presentationManager, _imageManager, _apiClient, _navigation, _playback, _logger)
                 {
                     ImageDisplayWidth = GetSimilarItemsImageDisplayWidth(),
                     EnableBackdropsForCurrentItem = false,
@@ -507,7 +505,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             }
             if (string.Equals(section, "special features"))
             {
-                return new ItemListViewModel(GetSpecialFeatures, _presentationManager, _imageManager, _apiClient, _navigation, _playback, _logger, _serverEvents)
+                return new ItemListViewModel(GetSpecialFeatures, _presentationManager, _imageManager, _apiClient, _navigation, _playback, _logger)
                 {
                     ImageDisplayWidth = 505,
                     EnableBackdropsForCurrentItem = false,
@@ -523,7 +521,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             }
             if (string.Equals(section, "episodes"))
             {
-                return new ItemListViewModel(GetSeriesEpisodes, _presentationManager, _imageManager, _apiClient, _navigation, _playback, _logger, _serverEvents)
+                return new ItemListViewModel(GetSeriesEpisodes, _presentationManager, _imageManager, _apiClient, _navigation, _playback, _logger)
                 {
                     ImageDisplayWidth = 505,
                     EnableBackdropsForCurrentItem = false,
@@ -539,7 +537,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             }
             if (string.Equals(section, "themes"))
             {
-                return new ItemListViewModel(GetConvertedThemeMediaResult, _presentationManager, _imageManager, _apiClient, _navigation, _playback, _logger, _serverEvents)
+                return new ItemListViewModel(GetConvertedThemeMediaResult, _presentationManager, _imageManager, _apiClient, _navigation, _playback, _logger)
                 {
                     ImageDisplayWidth = 600,
                     EnableBackdropsForCurrentItem = false,
@@ -555,7 +553,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             }
             if (string.Equals(section, "soundtrack") || string.Equals(section, "soundtracks"))
             {
-                return new ItemListViewModel(GetSoundtracks, _presentationManager, _imageManager, _apiClient, _navigation, _playback, _logger, _serverEvents)
+                return new ItemListViewModel(GetSoundtracks, _presentationManager, _imageManager, _apiClient, _navigation, _playback, _logger)
                 {
                     ImageDisplayWidth = 400,
                     EnableBackdropsForCurrentItem = false,
@@ -565,7 +563,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             }
             if (string.Equals(section, "seasons"))
             {
-                return new ItemListViewModel(GetSeasons, _presentationManager, _imageManager, _apiClient, _navigation, _playback, _logger, _serverEvents)
+                return new ItemListViewModel(GetSeasons, _presentationManager, _imageManager, _apiClient, _navigation, _playback, _logger)
                 {
                     ImageDisplayWidth = 300,
                     EnableBackdropsForCurrentItem = false,
@@ -574,7 +572,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             }
             if (string.Equals(section, "songs"))
             {
-                return new ItemListViewModel(GetAlbumSongs, _presentationManager, _imageManager, _apiClient, _navigation, _playback, _logger, _serverEvents)
+                return new ItemListViewModel(GetAlbumSongs, _presentationManager, _imageManager, _apiClient, _navigation, _playback, _logger)
                 {
                     ImageDisplayWidth = 40,
                     EnableBackdropsForCurrentItem = false,
@@ -584,7 +582,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             }
             if (string.Equals(section, "trailers"))
             {
-                return new ItemListViewModel(GetTrailers, _presentationManager, _imageManager, _apiClient, _navigation, _playback, _logger, _serverEvents)
+                return new ItemListViewModel(GetTrailers, _presentationManager, _imageManager, _apiClient, _navigation, _playback, _logger)
                 {
                     ImageDisplayWidth = 600,
                     EnableBackdropsForCurrentItem = false,
@@ -642,7 +640,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
         {
             Func<ItemListViewModel, Task<ItemsResult>> itemGenerator = (vm) => GetItemByNameItemsAsync(type);
 
-            var viewModel = new ItemListViewModel(itemGenerator, _presentationManager, _imageManager, _apiClient, _navigation, _playback, _logger, _serverEvents)
+            var viewModel = new ItemListViewModel(itemGenerator, _presentationManager, _imageManager, _apiClient, _navigation, _playback, _logger)
             {
                 ViewType = ListViewTypes.Poster,
                 ImageDisplayWidth = width,

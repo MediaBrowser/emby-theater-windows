@@ -6,7 +6,7 @@ using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Presentation.Pages;
 using System;
 using System.Globalization;
-using System.Net.Http;
+using System.Threading;
 using System.Windows;
 
 namespace MediaBrowser.Theater.Core.NetworkSettings
@@ -17,18 +17,18 @@ namespace MediaBrowser.Theater.Core.NetworkSettings
     public partial class NetworkSettingsPage : BasePage
     {
         private readonly ITheaterConfigurationManager _config;
-        private readonly IApiClient _apiClient;
+        private readonly IConnectionManager _connectionManager;
         private readonly IPresentationManager _presentationManager;
         private readonly ISessionManager _session;
 
         private readonly CultureInfo _usCulture = new CultureInfo("en-US");
 
-        public NetworkSettingsPage(ITheaterConfigurationManager config, IApiClient apiClient, ISessionManager session, IPresentationManager presentationManager)
+        public NetworkSettingsPage(ITheaterConfigurationManager config, ISessionManager session, IPresentationManager presentationManager, IConnectionManager connectionManager)
         {
             _config = config;
-            _apiClient = apiClient;
             _session = session;
             _presentationManager = presentationManager;
+            _connectionManager = connectionManager;
             InitializeComponent();
         }
 
@@ -46,9 +46,11 @@ namespace MediaBrowser.Theater.Core.NetworkSettings
             TxtHost.Text = string.Empty;
             TxtPort.Text = string.Empty;
 
-            if (!string.IsNullOrEmpty(_config.Configuration.ServerAddress))
+            var apiClient = _session.ActiveApiClient;
+
+            if (!string.IsNullOrEmpty(apiClient.ServerAddress))
             {
-                var uri = new Uri(_config.Configuration.ServerAddress);
+                var uri = new Uri(apiClient.ServerAddress);
 
                 TxtHost.Text = uri.Host;
 
@@ -73,15 +75,13 @@ namespace MediaBrowser.Theater.Core.NetworkSettings
 
                 try
                 {
-                    using (var client = new HttpClient())
+                    var connectionResult = await _connectionManager.Connect(serverAddress, CancellationToken.None);
+
+                    if (connectionResult.State == ConnectionState.Unavailable)
                     {
-                        var json = await client.GetStringAsync(serverAddress + "/mediabrowser");
+                        ShowUnavailableMessage();
+                        return;
                     }
-
-                    _apiClient.ChangeServerLocation(serverAddress);
-
-                    _config.Configuration.ServerAddress = serverAddress;
-                    _config.SaveConfiguration();
 
                     _presentationManager.HideModalLoadingAnimation();
 
@@ -99,15 +99,20 @@ namespace MediaBrowser.Theater.Core.NetworkSettings
                 {
                     _presentationManager.HideModalLoadingAnimation();
 
-                    _presentationManager.ShowMessage(new MessageBoxInfo
-                    {
-                        Button = MessageBoxButton.OK,
-                        Caption = "Error",
-                        Icon = MessageBoxIcon.Error,
-                        Text = "Unable to establish a connection with the server. Please check your connection information and try again."
-                    });
+                    ShowUnavailableMessage();
                 }
             }
+        }
+
+        private void ShowUnavailableMessage()
+        {
+            _presentationManager.ShowMessage(new MessageBoxInfo
+            {
+                Button = MessageBoxButton.OK,
+                Caption = "Error",
+                Icon = MessageBoxIcon.Error,
+                Text = "Unable to establish a connection with the server. Please check your connection information and try again."
+            });
         }
 
         private bool ValidateInput()

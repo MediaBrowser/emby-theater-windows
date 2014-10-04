@@ -27,7 +27,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         private readonly INavigationService _navService;
         private readonly IPlaybackManager _playbackManager;
         private readonly ILogger _logger;
-        private readonly IServerEvents _serverEvents;
 
         public ItemListViewModel LatestTrailersViewModel { get; private set; }
         public ItemListViewModel LatestMoviesViewModel { get; private set; }
@@ -47,7 +46,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         public string ParentId { get; private set; }
         
-        public MoviesViewModel(IPresentationManager presentation, IImageManager imageManager, IApiClient apiClient, ISessionManager session, INavigationService nav, IPlaybackManager playback, ILogger logger, double tileWidth, double tileHeight, IServerEvents serverEvents, string parentId)
+        public MoviesViewModel(IPresentationManager presentation, IImageManager imageManager, IApiClient apiClient, ISessionManager session, INavigationService nav, IPlaybackManager playback, ILogger logger, double tileWidth, double tileHeight, string parentId)
             : base(presentation, apiClient)
         {
             _sessionManager = session;
@@ -55,7 +54,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             _navService = nav;
             _playbackManager = playback;
             _logger = logger;
-            _serverEvents = serverEvents;
             ParentId = parentId;
 
             TileWidth = tileWidth;
@@ -163,7 +161,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         private void LoadLatestMoviesViewModel(MoviesView view)
         {
-            LatestMoviesViewModel = new ItemListViewModel(GetLatestMoviesAsync, PresentationManager, _imageManager, ApiClient, _navService, _playbackManager, _logger, _serverEvents)
+            LatestMoviesViewModel = new ItemListViewModel(GetLatestMoviesAsync, PresentationManager, _imageManager, ApiClient, _navService, _playbackManager, _logger)
             {
                 ImageDisplayWidth = _posterTileWidth,
                 ImageDisplayHeightGenerator = v => _posterTileHeight,
@@ -180,7 +178,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         private void LoadLatestTrailersViewModel(MoviesView view)
         {
-            LatestTrailersViewModel = new ItemListViewModel(GetLatestTrailersAsync, PresentationManager, _imageManager, ApiClient, _navService, _playbackManager, _logger, _serverEvents)
+            LatestTrailersViewModel = new ItemListViewModel(GetLatestTrailersAsync, PresentationManager, _imageManager, ApiClient, _navService, _playbackManager, _logger)
             {
                 ImageDisplayWidth = _posterTileWidth,
                 ImageDisplayHeightGenerator = v => _posterTileHeight,
@@ -229,7 +227,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 });
             };
 
-            MiniSpotlightsViewModel = new ItemListViewModel(getItems, PresentationManager, _imageManager, ApiClient, _navService, _playbackManager, _logger, _serverEvents)
+            MiniSpotlightsViewModel = new ItemListViewModel(getItems, PresentationManager, _imageManager, ApiClient, _navService, _playbackManager, _logger)
             {
                 ImageDisplayWidth = TileWidth + (TileMargin / 4) - 1,
                 ImageDisplayHeightGenerator = v => TileHeight,
@@ -352,7 +350,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             SetDefaults(options);
 
-            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
+            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, PresentationManager, _navService, _playbackManager, _logger, options)
             {
                 ViewType = ViewType.Movies
             };
@@ -385,7 +383,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             options.DefaultViewType = ListViewTypes.PosterStrip;
 
-            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
+            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, PresentationManager, _navService, _playbackManager, _logger, options)
             {
                 ViewType = ViewType.Movies
             };
@@ -501,7 +499,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             SetDefaults(options);
 
-            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
+            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, PresentationManager, _navService, _playbackManager, _logger, options)
             {
                 ViewType = ViewType.Movies
             };

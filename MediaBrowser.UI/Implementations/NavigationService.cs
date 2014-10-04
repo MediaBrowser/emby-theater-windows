@@ -1,7 +1,6 @@
 ﻿using MediaBrowser.Common;
 using MediaBrowser.Common.Updates;
 using MediaBrowser.Model.ApiClient;
-using MediaBrowser.Model.Configuration;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
@@ -19,6 +18,7 @@ using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Interfaces.UserInput;
 using MediaBrowser.Theater.Interfaces.ViewModels;
+using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,7 +26,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using MediaBrowser.Theater.Presentation.ViewModels;
 using TabItem = MediaBrowser.Theater.Presentation.ViewModels.TabItem;
 
 namespace MediaBrowser.UI.Implementations
@@ -66,8 +65,6 @@ namespace MediaBrowser.UI.Implementations
         /// </summary>
         private readonly Func<IPlaybackManager> _playbackManagerFactory;
 
-        private readonly IApiClient _apiClient;
-
         private readonly IPresentationManager _presentationManager;
 
         private readonly ITheaterConfigurationManager _config;
@@ -78,23 +75,15 @@ namespace MediaBrowser.UI.Implementations
 
         private readonly IImageManager _imageManager;
         private readonly ILogger _logger;
-        private readonly IServerEvents _serverEvents;
 
         private readonly Func<IUserInputManager> _userInputManagerFactory;
         private readonly IHiddenWindow _hiddenWindow;
+        private readonly IConnectionManager _connectionManager;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NavigationService" /> class.
-        /// </summary>
-        /// <param name="themeManager">The theme manager.</param>
-        /// <param name="playbackManagerFactory">The playback manager factory.</param>
-        /// <param name="apiClient">The API client.</param>
-        /// <param name="presentationManager">The presentation manager.</param>
-        public NavigationService(IThemeManager themeManager, Func<IPlaybackManager> playbackManagerFactory, IApiClient apiClient, IPresentationManager presentationManager, ITheaterConfigurationManager config, Func<ISessionManager> sessionFactory, IApplicationHost appHost, IInstallationManager installationManager, IImageManager imageManager, ILogger logger, Func<IUserInputManager> userInputManagerFactory, IServerEvents serverEvents, IHiddenWindow hiddenWindow)
+        public NavigationService(IThemeManager themeManager, Func<IPlaybackManager> playbackManagerFactory, IPresentationManager presentationManager, ITheaterConfigurationManager config, Func<ISessionManager> sessionFactory, IApplicationHost appHost, IInstallationManager installationManager, IImageManager imageManager, ILogger logger, Func<IUserInputManager> userInputManagerFactory, IHiddenWindow hiddenWindow, IConnectionManager connectionManager)
         {
             _themeManager = themeManager;
             _playbackManagerFactory = playbackManagerFactory;
-            _apiClient = apiClient;
             _presentationManager = presentationManager;
             _config = config;
             _sessionFactory = sessionFactory;
@@ -103,8 +92,8 @@ namespace MediaBrowser.UI.Implementations
             _imageManager = imageManager;
             _logger = logger;
             _userInputManagerFactory = userInputManagerFactory;
-            _serverEvents = serverEvents;
             _hiddenWindow = hiddenWindow;
+            _connectionManager = connectionManager;
 
             presentationManager.WindowLoaded += presentationManager_WindowLoaded;
         }
@@ -156,7 +145,9 @@ namespace MediaBrowser.UI.Implementations
         {
             try
             {
-                var users = await _apiClient.GetPublicUsersAsync();
+                var apiClient = _sessionFactory().ActiveApiClient;
+
+                var users = await apiClient.GetPublicUsersAsync();
 
                 if (users.Length == 0)
                 {
@@ -181,7 +172,7 @@ namespace MediaBrowser.UI.Implementations
             App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(async () =>
             {
 
-                await Navigate(new LoginPage(_apiClient, _imageManager, this, _sessionFactory(), _presentationManager, _config));
+                await Navigate(new LoginPage(_connectionManager, _imageManager, this, _sessionFactory(), _presentationManager, _config));
 
                 task.TrySetResult(true);
 
@@ -214,7 +205,7 @@ namespace MediaBrowser.UI.Implementations
 
             App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(async () =>
             {
-                var page = new FullscreenVideoPage(_userInputManagerFactory(), _playbackManagerFactory(), this, _presentationManager, _apiClient, _imageManager, _logger, _serverEvents, _hiddenWindow);
+                var page = new FullscreenVideoPage(_userInputManagerFactory(), _playbackManagerFactory(), this, _presentationManager, _connectionManager, _imageManager, _logger, _hiddenWindow);
 
                 new InternalPlayerPageBehavior(page).AdjustPresentationForPlayback();
 
@@ -234,6 +225,7 @@ namespace MediaBrowser.UI.Implementations
         public Task NavigateToHomePage()
         {
              var task = new TaskCompletionSource<bool>();
+             var apiClient = _sessionFactory().ActiveApiClient;
 
              App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(async () =>
              {
@@ -250,7 +242,7 @@ namespace MediaBrowser.UI.Implementations
                                           homePages.FirstOrDefault(i => string.Equals(i.Name, "Default")) ??
                                           homePages.First();
 
-                     var rootItem = await _apiClient.GetRootFolderAsync(userId);
+                     var rootItem = await apiClient.GetRootFolderAsync(userId);
 
                      await Navigate(homePage.GetHomePage(rootItem));
 
@@ -295,8 +287,10 @@ namespace MediaBrowser.UI.Implementations
 
         private async Task NavigateToItemInternal(BaseItemDto item, ViewType context)
         {
+            var apiClient = _connectionManager.GetApiClient(item);
+            
             // Grab it fresh from the server to make sure we have the full record
-            item = await _apiClient.GetItemAsync(item.Id, _apiClient.CurrentUserId);
+            item = await apiClient.GetItemAsync(item.Id, apiClient.CurrentUserId);
 
             if (item.IsFolder)
             {
@@ -346,13 +340,17 @@ namespace MediaBrowser.UI.Implementations
 
         private async Task NavigateToPersonInternal(string name, ViewType context, string mediaItemId = null)
         {
-            var item = await _apiClient.GetPersonAsync(name, _sessionFactory().CurrentUser.Id);
+            var apiClient = _sessionFactory().ActiveApiClient;
+
+            var item = await apiClient.GetPersonAsync(name, _sessionFactory().CurrentUser.Id);
 
             await App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(async () => await Navigate(_themeManager.CurrentTheme.GetPersonPage(item, context, mediaItemId)));
         }
 
         private Task<ItemsResult> GetMoviesByGenre(ItemListViewModel viewModel, DisplayPreferences displayPreferences)
         {
+            var apiClient = _sessionFactory().ActiveApiClient;
+
             var query = new ItemQuery
             {
                 Fields = FolderPage.QueryFields,
@@ -377,11 +375,13 @@ namespace MediaBrowser.UI.Implementations
                 query.Genres = new[] { indexOption.Name };
             }
 
-            return _apiClient.GetItemsAsync(query, CancellationToken.None);
+            return apiClient.GetItemsAsync(query, CancellationToken.None);
         }
 
         private Task<ItemsResult> GetSeriesByGenre(ItemListViewModel viewModel, DisplayPreferences displayPreferences)
         {
+            var apiClient = _sessionFactory().ActiveApiClient;
+
             var query = new ItemQuery
             {
                 Fields = FolderPage.QueryFields,
@@ -406,16 +406,18 @@ namespace MediaBrowser.UI.Implementations
                 query.Genres = new[] { indexOption.Name };
             }
 
-            return _apiClient.GetItemsAsync(query, CancellationToken.None);
+            return apiClient.GetItemsAsync(query, CancellationToken.None);
         }
 
         private async Task NavigateToGenreInternal(string itemType, string includeItemType, string pageTitle, Func<ItemListViewModel, DisplayPreferences, Task<ItemsResult>> query, string selectedGenre)
         {
-            var root = await _apiClient.GetRootFolderAsync(_apiClient.CurrentUserId);
+            var apiClient = _sessionFactory().ActiveApiClient;
+
+            var root = await apiClient.GetRootFolderAsync(apiClient.CurrentUserId);
 
             var displayPreferences = await _presentationManager.GetDisplayPreferences(itemType + "Genres", CancellationToken.None);
 
-            var genres = await _apiClient.GetGenresAsync(new ItemsByNameQuery
+            var genres = await apiClient.GetGenresAsync(new ItemsByNameQuery
             {
                 IncludeItemTypes = new[] { includeItemType },
                 SortBy = new[] { ItemSortBy.SortName },
@@ -439,7 +441,7 @@ namespace MediaBrowser.UI.Implementations
 
             options.DefaultViewType = ListViewTypes.PosterStrip;
 
-            var page = new FolderPage(root, displayPreferences, _apiClient, _imageManager, _presentationManager, this, _playbackManagerFactory(), _logger, _serverEvents, options)
+            var page = new FolderPage(root, displayPreferences, apiClient, _imageManager, _presentationManager, this, _playbackManagerFactory(), _logger, options)
             {
                 ViewType = ViewType.Movies
             };
@@ -487,7 +489,9 @@ namespace MediaBrowser.UI.Implementations
 
         public async Task NavigateToSearchPage()
         {
-            var item = await _apiClient.GetRootFolderAsync(_apiClient.CurrentUserId);
+            var apiClient = _sessionFactory().ActiveApiClient;
+
+            var item = await apiClient.GetRootFolderAsync(apiClient.CurrentUserId);
 
             await App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(async () => await Navigate(_themeManager.CurrentTheme.GetSearchPage(item)));
         }

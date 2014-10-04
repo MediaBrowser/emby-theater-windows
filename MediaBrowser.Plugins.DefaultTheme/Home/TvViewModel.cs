@@ -27,7 +27,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         private readonly IImageManager _imageManager;
         private readonly INavigationService _navService;
         private readonly ILogger _logger;
-        private readonly IServerEvents _serverEvents;
 
         public ItemListViewModel LatestEpisodesViewModel { get; private set; }
         public ItemListViewModel NextUpViewModel { get; private set; }
@@ -44,7 +43,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         public string ParentId { get; private set; }
         
-        public TvViewModel(IPresentationManager presentation, IImageManager imageManager, IApiClient apiClient, ISessionManager session, INavigationService nav, IPlaybackManager playback, ILogger logger, double tileWidth, double tileHeight, IServerEvents serverEvents, string parentId)
+        public TvViewModel(IPresentationManager presentation, IImageManager imageManager, IApiClient apiClient, ISessionManager session, INavigationService nav, IPlaybackManager playback, ILogger logger, double tileWidth, double tileHeight, string parentId)
             : base(presentation, apiClient)
         {
             _sessionManager = session;
@@ -52,7 +51,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             _imageManager = imageManager;
             _navService = nav;
             _logger = logger;
-            _serverEvents = serverEvents;
             ParentId = parentId;
 
             TileWidth = tileWidth;
@@ -171,7 +169,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         private void LoadResumableViewModel(TvView view)
         {
-            ResumeViewModel = new ItemListViewModel(GetResumeablesAsync, PresentationManager, _imageManager, ApiClient, _navService, _playbackManager, _logger, _serverEvents)
+            ResumeViewModel = new ItemListViewModel(GetResumeablesAsync, PresentationManager, _imageManager, ApiClient, _navService, _playbackManager, _logger)
             {
                 ImageDisplayWidth = TileWidth,
                 ImageDisplayHeightGenerator = v => TileHeight,
@@ -190,7 +188,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         private void LoadLatestEpisodesViewModel(TvView view)
         {
-            LatestEpisodesViewModel = new ItemListViewModel(GetLatestEpisodes, PresentationManager, _imageManager, ApiClient, _navService, _playbackManager, _logger, _serverEvents)
+            LatestEpisodesViewModel = new ItemListViewModel(GetLatestEpisodes, PresentationManager, _imageManager, ApiClient, _navService, _playbackManager, _logger)
             {
                 ImageDisplayWidth = TileWidth,
                 ImageDisplayHeightGenerator = v => TileHeight,
@@ -209,7 +207,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         private void LoadNextUpViewModel(TvView view)
         {
-            NextUpViewModel = new ItemListViewModel(GetNextUpAsync, PresentationManager, _imageManager, ApiClient, _navService, _playbackManager, _logger, _serverEvents)
+            NextUpViewModel = new ItemListViewModel(GetNextUpAsync, PresentationManager, _imageManager, ApiClient, _navService, _playbackManager, _logger)
             {
                 ImageDisplayWidth = TileWidth,
                 ImageDisplayHeightGenerator = v => TileHeight,
@@ -239,7 +237,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 });
             };
 
-            MiniSpotlightsViewModel = new ItemListViewModel(getItems, PresentationManager, _imageManager, ApiClient, _navService, _playbackManager, _logger, _serverEvents)
+            MiniSpotlightsViewModel = new ItemListViewModel(getItems, PresentationManager, _imageManager, ApiClient, _navService, _playbackManager, _logger)
             {
                 ImageDisplayWidth = TileWidth + (TileMargin / 4) - 1,
                 ImageDisplayHeightGenerator = v => TileHeight,
@@ -380,7 +378,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             SetDefaults(options);
 
-            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
+            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, PresentationManager, _navService, _playbackManager, _logger, options)
             {
                 ViewType = ViewType.Tv
             };
@@ -416,7 +414,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             SetDefaults(options);
 
-            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
+            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, PresentationManager, _navService, _playbackManager, _logger, options)
             {
                 ViewType = ViewType.Tv
             };

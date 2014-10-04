@@ -31,7 +31,6 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         private readonly INavigationService _navigationService;
         private readonly IPlaybackManager _playbackManager;
         private readonly ILogger _logger;
-        private readonly IServerEvents _serverEvents;
 
         private Timer _indexSelectionChangeTimer;
         private Timer _selectionChangeTimer;
@@ -57,7 +56,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         public bool EnableServerImageEnhancers { get; set; }
 
-        public ItemListViewModel(Func<ItemListViewModel, Task<ItemsResult>> getItemsDelegate, IPresentationManager presentationManager, IImageManager imageManager, IApiClient apiClient, INavigationService navigationService, IPlaybackManager playbackManager, ILogger logger, IServerEvents serverEvents)
+        public ItemListViewModel(Func<ItemListViewModel, Task<ItemsResult>> getItemsDelegate, IPresentationManager presentationManager, IImageManager imageManager, IApiClient apiClient, INavigationService navigationService, IPlaybackManager playbackManager, ILogger logger)
         {
             EnableBackdropsForCurrentItem = true;
 
@@ -65,7 +64,6 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             _navigationService = navigationService;
             _playbackManager = playbackManager;
             _logger = logger;
-            _serverEvents = serverEvents;
             _apiClient = apiClient;
             _imageManager = imageManager;
             _dispatcher = Dispatcher.CurrentDispatcher;
@@ -470,7 +468,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                     i =>
                     {
                         var vm = new ItemViewModel(i, _apiClient, _imageManager, _playbackManager,
-                                                   _presentationManager, _logger, _serverEvents)
+                                                   _presentationManager, _logger)
                         {
                             DownloadPrimaryImageAtExactSize = DownloadImageAtExactSize ?? IsCloseToMedianPrimaryImageAspectRatio(i),
                             ImageHeight = imageDisplayHeight,

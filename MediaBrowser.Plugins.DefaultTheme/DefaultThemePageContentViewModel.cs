@@ -24,14 +24,14 @@ namespace MediaBrowser.Plugins.DefaultTheme
         private readonly IImageManager _imageManager;
         private readonly ITheaterConfigurationManager _config;
 
-        public DefaultThemePageContentViewModel(INavigationService navigationService, ISessionManager sessionManager, IApiClient apiClient, IImageManager imageManager, 
-            IPresentationManager presentation, IPlaybackManager playbackManager, ILogger logger, ITheaterApplicationHost appHost, IServerEvents serverEvents, ITheaterConfigurationManager config)
-            : base(navigationService, sessionManager, playbackManager, logger, appHost, apiClient, presentation, serverEvents)
+        public DefaultThemePageContentViewModel(INavigationService navigationService, ISessionManager sessionManager, IConnectionManager connectionManager, IImageManager imageManager, 
+            IPresentationManager presentation, IPlaybackManager playbackManager, ILogger logger, ITheaterApplicationHost appHost, ITheaterConfigurationManager config)
+            : base(navigationService, sessionManager, playbackManager, logger, appHost, connectionManager, presentation)
         {
             _imageManager = imageManager;
             _config = config;
 
-            MasterCommands = new DefaultThemePageMasterCommandsViewModel(navigationService, sessionManager, presentation, apiClient, logger, appHost, serverEvents, imageManager, config);
+            MasterCommands = new DefaultThemePageMasterCommandsViewModel(navigationService, sessionManager, presentation, connectionManager, logger, appHost, imageManager, config);
 
             NavigationService.Navigated += NavigationService_Navigated;
             SessionManager.UserLoggedIn += SessionManager_UserLoggedIn;
@@ -69,7 +69,9 @@ namespace MediaBrowser.Plugins.DefaultTheme
 
             if (user.HasPrimaryImage)
             {
-                var imageUrl = ApiClient.GetUserImageUrl(user, new ImageOptions
+                var apiClient = SessionManager.ActiveApiClient;
+
+                var imageUrl = apiClient.GetUserImageUrl(user, new ImageOptions
                 {
                     ImageType = ImageType.Primary
                 });
@@ -290,7 +292,9 @@ namespace MediaBrowser.Plugins.DefaultTheme
         {
             if (item.HasLogo || !string.IsNullOrEmpty(item.ParentLogoItemId))
             {
-                var url = ApiClient.GetLogoImageUrl(item, new ImageOptions
+                var apiClient = ConnectionManager.GetApiClient(item);
+
+                var url = apiClient.GetLogoImageUrl(item, new ImageOptions
                 {
                 });
 

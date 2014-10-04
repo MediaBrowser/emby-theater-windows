@@ -96,7 +96,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Osd
             {
                 try
                 {
-                    ImgLogo.Source = await viewModel.ImageManager.GetRemoteBitmapAsync(viewModel.ApiClient.GetLogoImageUrl(media, new ImageOptions
+                    ImgLogo.Source = await viewModel.ImageManager.GetRemoteBitmapAsync(viewModel.ConnectionManager.GetApiClient(media).GetLogoImageUrl(media, new ImageOptions
                     {
                     }));
 

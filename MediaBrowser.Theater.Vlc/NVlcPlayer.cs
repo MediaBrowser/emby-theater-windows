@@ -1,8 +1,4 @@
-﻿using System.Diagnostics;
-using System.IO;
-using MediaBrowser.Common.Configuration;
-using MediaBrowser.Common.Events;
-using MediaBrowser.Model.ApiClient;
+﻿using MediaBrowser.Common.Events;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
@@ -12,6 +8,8 @@ using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.UserInput;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -40,7 +38,6 @@ namespace MediaBrowser.Theater.Vlc
         private readonly IPlaybackManager _playbackManager;
         private readonly ITheaterConfigurationManager _config;
         private readonly IUserInputManager _userInput;
-        private readonly IApiClient _apiClient;
         private readonly IPresentationManager _presentation;
 
         private VlcControl _vlcControl;
@@ -56,13 +53,12 @@ namespace MediaBrowser.Theater.Vlc
         /// <param name="hiddenWindow">The hidden window.</param>
         /// <param name="logManager">The log manager.</param>
         /// <param name="playbackManager">The playback manager.</param>
-        public NVlcPlayer(IHiddenWindow hiddenWindow, ILogManager logManager, IPlaybackManager playbackManager, ITheaterConfigurationManager config, IUserInputManager userInput, IApiClient apiClient, IPresentationManager presentation)
+        public NVlcPlayer(IHiddenWindow hiddenWindow, ILogManager logManager, IPlaybackManager playbackManager, ITheaterConfigurationManager config, IUserInputManager userInput, IPresentationManager presentation)
         {
             _hiddenWindow = hiddenWindow;
             _playbackManager = playbackManager;
             _config = config;
             _userInput = userInput;
-            _apiClient = apiClient;
             _presentation = presentation;
 
             _logger = logManager.GetLogger(Name);

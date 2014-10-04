@@ -21,13 +21,12 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
     [TypeDescriptionProvider(typeof(HyperTypeDescriptionProvider))]
     public class TransportOsdViewModel : BaseViewModel, IDisposable
     {
-        public IApiClient ApiClient { get; private set; }
+        public IConnectionManager ConnectionManager { get; private set; }
         public IImageManager ImageManager { get; private set; }
         public IPlaybackManager PlaybackManager { get; set; }
         public IPresentationManager PresentationManager { get; set; }
         public ILogger Logger { get; set; }
         public INavigationService NavigationService { get; set; }
-        private readonly IServerEvents _serverEvents;
 
         public ICommand PauseCommand { get; private set; }
         public ICommand NextChapterCommand { get; private set; }
@@ -82,7 +81,9 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
                 if (changed)
                 {
-                    NowPlayingItemViewModel = new ItemViewModel(ApiClient, ImageManager, PlaybackManager, PresentationManager, Logger, _serverEvents)
+                    var apiClient = GetApiClient(value);
+
+                    NowPlayingItemViewModel = new ItemViewModel(apiClient, ImageManager, PlaybackManager, PresentationManager, Logger)
                     {
                         Item = value
                     };
@@ -90,6 +91,11 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                     OnPropertyChanged("NowPlayingItem");
                 }
             }
+        }
+
+        private IApiClient GetApiClient(BaseItemDto item)
+        {
+            return ConnectionManager.GetApiClient(item);
         }
 
         private ItemViewModel _nowPlayingItemViewModel;
@@ -344,15 +350,14 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
-        public TransportOsdViewModel(IPlaybackManager playbackManager, IApiClient apiClient, IImageManager imageManager, IPresentationManager presentationManager, ILogger logger, INavigationService nav, IServerEvents serverEvents)
+        public TransportOsdViewModel(IPlaybackManager playbackManager, IImageManager imageManager, IPresentationManager presentationManager, ILogger logger, INavigationService nav, IConnectionManager connectionManager)
         {
             Logger = logger;
             PresentationManager = presentationManager;
             ImageManager = imageManager;
-            ApiClient = apiClient;
             PlaybackManager = playbackManager;
             NavigationService = nav;
-            _serverEvents = serverEvents;
+            ConnectionManager = connectionManager;
 
             _currentDispatcher = Dispatcher.CurrentDispatcher;
 
@@ -390,7 +395,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         public ChapterInfoListViewModel CreateChaptersViewModel()
         {
-            var vm = new ChapterInfoListViewModel(ApiClient, ImageManager, PlaybackManager, PresentationManager)
+            var vm = new ChapterInfoListViewModel(GetApiClient(NowPlayingItem), ImageManager, PlaybackManager, PresentationManager)
             {
                 Item = NowPlayingItem,
                 StartPositionTicks = PositionTicks
@@ -401,7 +406,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         public ItemPersonListViewModel CreatePeopleViewModel()
         {
-            var vm = new ItemPersonListViewModel(ApiClient, ImageManager, PresentationManager, NavigationService)
+            var vm = new ItemPersonListViewModel(GetApiClient(NowPlayingItem), ImageManager, PresentationManager, NavigationService)
             {
                 Item = NowPlayingItem
             };

@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-using System.Windows.Documents;
-using MediaBrowser.Common.Configuration;
+﻿using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Extensions;
 using MediaBrowser.Common.IO;
 using MediaBrowser.Model.ApiClient;
@@ -31,7 +29,7 @@ namespace MediaBrowser.Theater.Implementations.Presentation
         /// <summary>
         /// The _api client
         /// </summary>
-        private readonly IApiClient _apiClient;
+        private readonly Func<IApiClient> _apiClient;
 
         private readonly ITheaterConfigurationManager _config;
 
@@ -46,7 +44,7 @@ namespace MediaBrowser.Theater.Implementations.Presentation
         /// <param name="apiClient">The API client.</param>
         /// <param name="paths">The paths.</param>
         /// <param name="config"></param>
-        public ImageManager(IApiClient apiClient, IApplicationPaths paths, ITheaterConfigurationManager config)
+        public ImageManager(Func<IApiClient> apiClient, IApplicationPaths paths, ITheaterConfigurationManager config)
         {
             _apiClient = apiClient;
             _config = config;
@@ -135,7 +133,7 @@ namespace MediaBrowser.Theater.Implementations.Presentation
 
             try
             {
-                using (var httpStream = await _apiClient.GetImageStreamAsync(url, cancellationToken).ConfigureAwait(false))
+                using (var httpStream = await _apiClient().GetImageStreamAsync(url, cancellationToken).ConfigureAwait(false))
                 {
                     var parentPath = Path.GetDirectoryName(cachePath);
 

@@ -12,16 +12,16 @@ namespace MediaBrowser.Theater.Implementations.Playback
 {
     public class PlaybackProgressReporter : IDisposable
     {
-        private readonly IApiClient _apiClient;
+        private readonly IConnectionManager _connectionManager;
         private readonly IMediaPlayer _mediaPlayer;
         private readonly ILogger _logger;
         private readonly IPlaybackManager _playback;
 
         private Timer _timer;
 
-        public PlaybackProgressReporter(IApiClient apiClient, IMediaPlayer mediaPlayer, ILogger logger,  IPlaybackManager playback)
+        public PlaybackProgressReporter(IConnectionManager connectionManager, IMediaPlayer mediaPlayer, ILogger logger, IPlaybackManager playback)
         {
-            _apiClient = apiClient;
+            _connectionManager = connectionManager;
             _mediaPlayer = mediaPlayer;
             _logger = logger;
             _playback = playback;
@@ -63,7 +63,9 @@ namespace MediaBrowser.Theater.Implementations.Playback
                     PlayMethod = PlayMethod.DirectPlay
                 };
 
-                await _apiClient.ReportPlaybackStartAsync(info);
+                var apiClient = _connectionManager.GetApiClient(item);
+
+                await apiClient.ReportPlaybackStartAsync(info);
 
                 if (_mediaPlayer.CanTrackProgress)
                 {
@@ -105,9 +107,11 @@ namespace MediaBrowser.Theater.Implementations.Playback
                     PositionTicks = e.EndingPositionTicks
                 };
 
+                var apiClient = _connectionManager.GetApiClient(e.EndingMedia);
+
                 try
                 {
-                    await _apiClient.ReportPlaybackStoppedAsync(info);
+                    await apiClient.ReportPlaybackStoppedAsync(info);
                 }
                 catch (Exception ex)
                 {
@@ -131,9 +135,11 @@ namespace MediaBrowser.Theater.Implementations.Playback
                     PositionTicks = e.EndingPositionTicks
                 };
 
+                var apiClient = _connectionManager.GetApiClient(e.PreviousMedia);
+
                 try
                 {
-                    await _apiClient.ReportPlaybackStoppedAsync(info);
+                    await apiClient.ReportPlaybackStoppedAsync(info);
                 }
                 catch (Exception ex)
                 {
@@ -160,7 +166,9 @@ namespace MediaBrowser.Theater.Implementations.Playback
                         PlayMethod = PlayMethod.DirectPlay
                     };
 
-                    await _apiClient.ReportPlaybackStartAsync(info);
+                    var apiClient = _connectionManager.GetApiClient(e.NewMedia);
+
+                    await apiClient.ReportPlaybackStartAsync(info);
                 }
                 catch (Exception ex)
                 {
@@ -198,9 +206,11 @@ namespace MediaBrowser.Theater.Implementations.Playback
                 PlayMethod = PlayMethod.DirectPlay, // todo remove hard coding
             };
 
+            var apiClient = _connectionManager.GetApiClient(item);
+
             try
             {
-                await _apiClient.ReportPlaybackProgressAsync(info);
+                await apiClient.ReportPlaybackProgressAsync(info);
             }
             catch (Exception ex)
             {

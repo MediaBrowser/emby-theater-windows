@@ -1,7 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using MediaBrowser.Common;
-using MediaBrowser.Model.ApiClient;
+﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Channels;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
@@ -18,12 +15,13 @@ using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.Theming;
-using MediaBrowser.Theater.Interfaces.UserInput;
 using MediaBrowser.Theater.Interfaces.ViewModels;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -38,10 +36,6 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// The _playback manager
         /// </summary>
         private readonly IPlaybackManager _playbackManager;
-        /// <summary>
-        /// The _api client
-        /// </summary>
-        private readonly IApiClient _apiClient;
         /// <summary>
         /// The _image manager
         /// </summary>
@@ -62,25 +56,24 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// The _logger
         /// </summary>
         private readonly ILogger _logger;
-        private readonly IServerEvents _serverEvents;
         private readonly ITheaterApplicationHost _appHost;
         private readonly ITheaterConfigurationManager _config;
+        private readonly IConnectionManager _connectionManager;
 
         public static DefaultTheme Current;
 
-        public DefaultTheme(IPlaybackManager playbackManager, IImageManager imageManager, IApiClient apiClient, INavigationService navService, ISessionManager sessionManager, IPresentationManager presentationManager, ILogManager logManager, IServerEvents serverEvents, ITheaterApplicationHost appHost, ITheaterConfigurationManager config)
+        public DefaultTheme(IPlaybackManager playbackManager, IImageManager imageManager, INavigationService navService, ISessionManager sessionManager, IPresentationManager presentationManager, ILogManager logManager, ITheaterApplicationHost appHost, ITheaterConfigurationManager config, IConnectionManager connectionManager)
         {
             Current = this;
 
             _playbackManager = playbackManager;
             _imageManager = imageManager;
-            _apiClient = apiClient;
             _navService = navService;
             _sessionManager = sessionManager;
             _presentationManager = presentationManager;
-            _serverEvents = serverEvents;
             _appHost = appHost;
             _config = config;
+            _connectionManager = connectionManager;
             _logger = logManager.GetLogger(GetType().Name);
         }
 
@@ -101,7 +94,9 @@ namespace MediaBrowser.Plugins.DefaultTheme
 
         public Page GetSearchPage(BaseItemDto item)
         {
-            return new SearchPage(item, _apiClient, _sessionManager, _imageManager, _presentationManager, _navService, _playbackManager, _logger, _serverEvents);
+            var apiClient = _connectionManager.GetApiClient(item);
+
+            return new SearchPage(item, apiClient, _sessionManager, _imageManager, _presentationManager, _navService, _playbackManager, _logger);
         }
 
         /// <summary>
@@ -112,7 +107,9 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// <returns>Page.</returns>
         public Page GetItemPage(BaseItemDto item, ViewType context)
         {
-            var itemViewModel = new ItemViewModel(_apiClient, _imageManager, _playbackManager, _presentationManager, _logger, _serverEvents)
+            var apiClient = _connectionManager.GetApiClient(item);
+
+            var itemViewModel = new ItemViewModel(apiClient, _imageManager, _playbackManager, _presentationManager, _logger)
             {
                 Item = item,
                 ImageWidth = 550,
@@ -121,7 +118,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
 
             return new DetailPage(itemViewModel, _presentationManager)
             {
-                DataContext = new DetailPageViewModel(itemViewModel, _apiClient, _sessionManager, _imageManager, _presentationManager, _playbackManager, _navService, _logger, _serverEvents, context)
+                DataContext = new DetailPageViewModel(itemViewModel, apiClient, _sessionManager, _imageManager, _presentationManager, _playbackManager, _navService, _logger, context)
             };
         }
 
@@ -136,19 +133,21 @@ namespace MediaBrowser.Plugins.DefaultTheme
         /// <returns>Page.</returns>
         public Page GetFolderPage(BaseItemDto item, ViewType context, DisplayPreferences displayPreferences)
         {
+            var apiClient = _connectionManager.GetApiClient(item);
+
             if (item.IsType("channel") || item.IsType("channelfolderitem"))
             {
                 var options = GetChannelPageConfig(item, context);
 
-                return new FolderPage(item, displayPreferences, _apiClient, _imageManager, _presentationManager, _navService, _playbackManager, _logger, _serverEvents, options);
+                return new FolderPage(item, displayPreferences, apiClient, _imageManager, _presentationManager, _navService, _playbackManager, _logger, options);
             }
 
             if (context == ViewType.Folders || !_folderTypesWithDetailPages.Contains(item.Type, StringComparer.OrdinalIgnoreCase))
             {
                 var options = GetListPageConfig(item, context);
 
-                return new FolderPage(item, displayPreferences, _apiClient, _imageManager, _presentationManager,
-                    _navService, _playbackManager, _logger, _serverEvents, options);
+                return new FolderPage(item, displayPreferences, apiClient, _imageManager, _presentationManager,
+                    _navService, _playbackManager, _logger, options);
             }
 
             return GetItemPage(item, context);
@@ -156,11 +155,13 @@ namespace MediaBrowser.Plugins.DefaultTheme
 
         private ListPageConfig GetChannelPageConfig(BaseItemDto item, ViewType context)
         {
+            var apiClient = _connectionManager.GetApiClient(item);
+
             var config = new ListPageConfig();
 
             config.CustomItemQuery = (vm, displayPreferences) =>
             {
-                return GetChannelItems(new ChannelItemQuery
+                return GetChannelItems(apiClient, new ChannelItemQuery
                 {
                     UserId = _sessionManager.CurrentUser.Id,
                     ChannelId = item.IsType("channel") ? item.Id : item.ChannelId,
@@ -173,13 +174,13 @@ namespace MediaBrowser.Plugins.DefaultTheme
             return config;
         }
 
-        private async Task<ItemsResult> GetChannelItems(ChannelItemQuery query, CancellationToken cancellationToken)
+        private async Task<ItemsResult> GetChannelItems(IApiClient apiClient, ChannelItemQuery query, CancellationToken cancellationToken)
         {
             var startIndex = 0;
             var callLimit = 3;
             var currentCall = 1;
 
-            var result = await GetChannelItems(query, startIndex, null, CancellationToken.None);
+            var result = await GetChannelItems(apiClient, query, startIndex, null, CancellationToken.None);
 
             var queryLimit = result.Items.Length;
             
@@ -187,7 +188,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
             {
                 startIndex += queryLimit;
 
-                var innerResult = await GetChannelItems(query, startIndex, queryLimit, CancellationToken.None);
+                var innerResult = await GetChannelItems(apiClient, query, startIndex, queryLimit, CancellationToken.None);
 
                 var list = result.Items.ToList();
                 list.AddRange(innerResult.Items);
@@ -203,12 +204,12 @@ namespace MediaBrowser.Plugins.DefaultTheme
             };
         }
 
-        private async Task<ItemsResult> GetChannelItems(ChannelItemQuery query, int start, int? limit, CancellationToken cancellationToken)
+        private async Task<ItemsResult> GetChannelItems(IApiClient apiClient, ChannelItemQuery query, int start, int? limit, CancellationToken cancellationToken)
         {
             query.StartIndex = start;
             query.Limit = limit;
 
-            var result = await _apiClient.GetChannelItems(query, CancellationToken.None);
+            var result = await apiClient.GetChannelItems(query, CancellationToken.None);
 
             return new ItemsResult
             {
@@ -219,6 +220,8 @@ namespace MediaBrowser.Plugins.DefaultTheme
 
         private ListPageConfig GetListPageConfig(BaseItemDto item, ViewType context)
         {
+            var apiClient = _connectionManager.GetApiClient(item);
+
             var config = new ListPageConfig();
 
             if (item.IsType("playlist"))
@@ -254,7 +257,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
 
                     if (item.IsType("series"))
                     {
-                        return _apiClient.GetSeasonsAsync(new SeasonQuery
+                        return apiClient.GetSeasonsAsync(new SeasonQuery
                         {
                             UserId = _sessionManager.CurrentUser.Id,
                             SeriesId = item.Id,
@@ -265,7 +268,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
 
                     if (item.IsType("season"))
                     {
-                        return _apiClient.GetEpisodesAsync(new EpisodeQuery
+                        return apiClient.GetEpisodesAsync(new EpisodeQuery
                         {
                             UserId = _sessionManager.CurrentUser.Id,
                             SeriesId = item.SeriesId,
@@ -290,7 +293,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
                         query.SortOrder = displayPreferences.SortOrder;
                     }
 
-                    return _apiClient.GetItemsAsync(query, CancellationToken.None);
+                    return apiClient.GetItemsAsync(query, CancellationToken.None);
                 };
 
                 if (item.IsType("season") && item.IndexNumber.HasValue && item.IndexNumber.Value > 0)
@@ -340,7 +343,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
 
         public PageContentViewModel CreatePageContentDataContext()
         {
-            PageContentDataContext = new DefaultThemePageContentViewModel(_navService, _sessionManager, _apiClient, _imageManager, _presentationManager, _playbackManager, _logger, _appHost, _serverEvents, _config);
+            PageContentDataContext = new DefaultThemePageContentViewModel(_navService, _sessionManager, _connectionManager, _imageManager, _presentationManager, _playbackManager, _logger, _appHost, _config);
 
             return PageContentDataContext;
         }

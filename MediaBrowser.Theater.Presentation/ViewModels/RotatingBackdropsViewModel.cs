@@ -20,11 +20,11 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
     {
         private readonly Dispatcher _dispatcher;
         private readonly IImageManager _imageManager;
-        private readonly IApiClient _apiClient;
         private readonly IPlaybackManager _playbackManager;
         private readonly ITheaterConfigurationManager _config;
         private readonly ILogger _logger;
         private readonly IScreensaverManager _screensaverManager;
+        private readonly IConnectionManager _connectionManager;
 
         private readonly object _rotationTimerLock = new object();
         private readonly object _initialSetTimerLock = new object();
@@ -34,14 +34,14 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         private string[] _currentBackdrops;
 
-        public RotatingBackdropsViewModel(IApiClient apiClient, ITheaterConfigurationManager config, IImageManager imageManager, IPlaybackManager playbackManager, ILogger logger, IScreensaverManager screensaverManager)
+        public RotatingBackdropsViewModel(ITheaterConfigurationManager config, IImageManager imageManager, IPlaybackManager playbackManager, ILogger logger, IScreensaverManager screensaverManager, IConnectionManager connectionManager)
         {
-            _apiClient = apiClient;
             _config = config;
             _imageManager = imageManager;
             _playbackManager = playbackManager;
             _logger = logger;
             _screensaverManager = screensaverManager;
+            _connectionManager = connectionManager;
             _dispatcher = Dispatcher.CurrentDispatcher;
         }
 
@@ -84,7 +84,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         /// <param name="item">The item.</param>
         public void SetBackdrops(BaseItemDto item)
         {
-            var urls = _apiClient.GetBackdropImageUrls(item, new ImageOptions
+            var urls = _connectionManager.GetApiClient(item).GetBackdropImageUrls(item, new ImageOptions
             {
                 Width = Convert.ToInt32(SystemParameters.VirtualScreenWidth)
             });

@@ -30,7 +30,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Search
         private readonly INavigationService _navService;
         private readonly IPlaybackManager _playbackManager;
         private readonly ILogger _logger;
-        private readonly IServerEvents _serverEvents;
 
         private readonly ImageType[] _preferredImageTypes = new[] { ImageType.Backdrop, ImageType.Primary, ImageType.Thumb };
         private readonly ItemsResult _emptyItemsResult = new ItemsResult { TotalRecordCount = 0, Items = new BaseItemDto[0] };
@@ -43,7 +42,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Search
         public ItemListViewModel MatchedPeopleViewModel { get; private set; }
         public AlphaInputViewModel AlphaInputViewModel { get; private set; }
 
-        public SearchViewModel(IPresentationManager presentationManager, IImageManager imageManager, IApiClient apiClient, ISessionManager sessionManager, INavigationService navService, IPlaybackManager playbackManager, ILogger logger, IServerEvents serverEvents)
+        public SearchViewModel(IPresentationManager presentationManager, IImageManager imageManager, IApiClient apiClient, ISessionManager sessionManager, INavigationService navService, IPlaybackManager playbackManager, ILogger logger)
         {
 
             _presentationManager = presentationManager;
@@ -53,13 +52,12 @@ namespace MediaBrowser.Plugins.DefaultTheme.Search
             _navService = navService;
             _playbackManager = playbackManager;
             _logger = logger;
-            _serverEvents = serverEvents;
             _dispatcher = Dispatcher.CurrentDispatcher;
 
             LoadMatchedItemsViewModel();
             LoadMatchedPeopleViewModel();
 
-            AlphaInputViewModel = new AlphaInputViewModel(UpdateSearchText, presentationManager, _imageManager, _apiClient, _navService, _playbackManager, _logger, _serverEvents);
+            AlphaInputViewModel = new AlphaInputViewModel(UpdateSearchText, presentationManager, _imageManager, _apiClient, _navService, _playbackManager, _logger);
 
         }
 
@@ -69,7 +67,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Search
 
         private void LoadMatchedItemsViewModel()
         {
-            MatchedItemsViewModel = new ItemListViewModel(s => Task.FromResult(_searchedItemsResult), _presentationManager, _imageManager, _apiClient, _navService, _playbackManager, _logger, _serverEvents)
+            MatchedItemsViewModel = new ItemListViewModel(s => Task.FromResult(_searchedItemsResult), _presentationManager, _imageManager, _apiClient, _navService, _playbackManager, _logger)
             {
                 ImageDisplayWidth = TileWidth,
                 ImageDisplayHeightGenerator = vm => TileHeight,
@@ -98,7 +96,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Search
 
         private void LoadMatchedPeopleViewModel()
         {
-            MatchedPeopleViewModel = new ItemListViewModel(s => Task.FromResult(_searchedPeopleItemsResult), _presentationManager, _imageManager, _apiClient, _navService, _playbackManager, _logger, _serverEvents)
+            MatchedPeopleViewModel = new ItemListViewModel(s => Task.FromResult(_searchedPeopleItemsResult), _presentationManager, _imageManager, _apiClient, _navService, _playbackManager, _logger)
             {
                 ImageDisplayWidth = (TileWidth + 20) / 4,
                 ImageDisplayHeightGenerator = vm => 89,

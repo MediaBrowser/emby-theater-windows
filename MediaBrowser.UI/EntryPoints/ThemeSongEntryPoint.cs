@@ -18,18 +18,18 @@ namespace MediaBrowser.UI.EntryPoints
         private readonly INavigationService _nav;
         private readonly IPlaybackManager _playback;
         private readonly ISessionManager _session;
-        private readonly IApiClient _apiClient;
+        private readonly IConnectionManager _connectionManager;
 
         private string _currentPlayingOwnerId;
 
         private string _lastPlayedOwnerId;
 
-        public ThemeSongEntryPoint(INavigationService nav, IPlaybackManager playback, IApiClient apiClient, ISessionManager session)
+        public ThemeSongEntryPoint(INavigationService nav, IPlaybackManager playback, ISessionManager session, IConnectionManager connectionManager)
         {
             _nav = nav;
             _playback = playback;
-            _apiClient = apiClient;
             _session = session;
+            _connectionManager = connectionManager;
         }
 
         public void Run()
@@ -64,7 +64,9 @@ namespace MediaBrowser.UI.EntryPoints
 
             var itemId = itemPage.ThemeMediaItemId;
 
-            var themeMediaResult = await GetThemeMedia(itemId).ConfigureAwait(false);
+            var apiClient = _session.ActiveApiClient;
+
+            var themeMediaResult = await GetThemeMedia(apiClient, itemId).ConfigureAwait(false);
 
             if (string.Equals(_currentPlayingOwnerId, themeMediaResult.OwnerId))
             {
@@ -116,9 +118,9 @@ namespace MediaBrowser.UI.EntryPoints
             });
         }
 
-        private async Task<ThemeMediaResult> GetThemeMedia(string itemId)
+        private async Task<ThemeMediaResult> GetThemeMedia(IApiClient apiClient, string itemId)
         {
-            var themeMediaResult = await _apiClient.GetAllThemeMediaAsync(_session.CurrentUser.Id, itemId, true, CancellationToken.None).ConfigureAwait(false);
+            var themeMediaResult = await apiClient.GetAllThemeMediaAsync(_session.CurrentUser.Id, itemId, true, CancellationToken.None).ConfigureAwait(false);
 
             if (themeMediaResult.ThemeVideosResult.Items.Length > 0)
             {

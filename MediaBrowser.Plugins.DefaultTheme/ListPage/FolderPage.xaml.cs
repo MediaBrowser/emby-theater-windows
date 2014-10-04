@@ -33,7 +33,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
 
         private readonly ListPageConfig _options;
 
-        public FolderPage(BaseItemDto parent, DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, IPresentationManager presentation, INavigationService navigationManager, IPlaybackManager playbackManager, ILogger logger, IServerEvents serverEvents, ListPageConfig options)
+        public FolderPage(BaseItemDto parent, DisplayPreferences displayPreferences, IApiClient apiClient, IImageManager imageManager, IPresentationManager presentation, INavigationService navigationManager, IPlaybackManager playbackManager, ILogger logger, ListPageConfig options)
         {
             _logger = logger;
             _presentationManager = presentation;
@@ -51,7 +51,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.ListPage
 
             var playAllFromHere = parent.IsType("playlist") || parent.IsType("musicalbum");
 
-            _viewModel = new ItemListViewModel(vm => options.CustomItemQuery(vm, displayPreferences), _presentationManager, _imageManager, _apiClient, navigationManager, playbackManager, _logger, serverEvents)
+            _viewModel = new ItemListViewModel(vm => options.CustomItemQuery(vm, displayPreferences), _presentationManager, _imageManager, _apiClient, navigationManager, playbackManager, _logger)
             {
                 ImageDisplayHeightGenerator = GetImageDisplayHeight,
                 DisplayNameGenerator = options.DisplayNameGenerator ?? GetDisplayName,

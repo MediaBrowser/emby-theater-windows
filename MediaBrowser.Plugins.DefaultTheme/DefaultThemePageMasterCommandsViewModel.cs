@@ -78,8 +78,8 @@ namespace MediaBrowser.Plugins.DefaultTheme
         }
 
         public DefaultThemePageMasterCommandsViewModel(INavigationService navigationService, ISessionManager sessionManager, IPresentationManager presentationManager, 
-            IApiClient apiClient, ILogger logger, ITheaterApplicationHost appHost, IServerEvents serverEvents, IImageManager imageManager, ITheaterConfigurationManager configurationManager) 
-            : base(navigationService, sessionManager, presentationManager, apiClient, logger, appHost, serverEvents)
+            IConnectionManager connectionManager, ILogger logger, ITheaterApplicationHost appHost, IImageManager imageManager, ITheaterConfigurationManager configurationManager)
+            : base(navigationService, sessionManager, presentationManager, connectionManager, logger, appHost)
         {
             ImageManager = imageManager;
             ConfigurationManager = configurationManager;
@@ -109,8 +109,10 @@ namespace MediaBrowser.Plugins.DefaultTheme
                 options = page.GetListPageConfig();
             }
 
+            var apiClient = SessionManager.ActiveApiClient;
+
             var userProfileWindow = new UserProfileWindow(this, SessionManager, PresentationManager, ImageManager,
-                ApiClient, ConfigurationManager, displayPreferences, options);
+                apiClient, ConfigurationManager, displayPreferences, options);
             userProfileWindow.Closed += userProfileWindow_Closed;
 
             userProfileWindow.ShowModal(PresentationManager.Window);

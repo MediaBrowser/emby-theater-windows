@@ -1,17 +1,17 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using System.Windows.Threading;
+﻿using MediaBrowser.Common;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.Theming;
-using MediaBrowser.Common;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Threading;
 
 namespace MediaBrowser.Theater.Interfaces.ViewModels
 {
@@ -26,10 +26,9 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
         protected readonly INavigationService NavigationService;
         protected readonly ISessionManager SessionManager;
         protected readonly IPresentationManager PresentationManager;
-        protected readonly IApiClient ApiClient;
+        protected readonly IConnectionManager ConnectionManager;
         protected readonly ILogger Logger;
         protected readonly IApplicationHost AppHost;
-        protected readonly IServerEvents ServerEvents;
         protected readonly Dispatcher Dispatcher;
 
         public ICommand HomeCommand { get; private set; }
@@ -97,21 +96,17 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
 
         public event EventHandler<EventArgs> PageNavigated;
 
-        public MasterCommandsViewModel(INavigationService navigationService, ISessionManager sessionManager, IPresentationManager presentationManager, IApiClient apiClient, ILogger logger, ITheaterApplicationHost appHost, IServerEvents serverEvents)
+        public MasterCommandsViewModel(INavigationService navigationService, ISessionManager sessionManager, IPresentationManager presentationManager, IConnectionManager connectionManager, ILogger logger, ITheaterApplicationHost appHost)
         {
             Dispatcher = Dispatcher.CurrentDispatcher;
 
             NavigationService = navigationService;
             SessionManager = sessionManager;
             PresentationManager = presentationManager;
-            ApiClient = apiClient;
+            ConnectionManager = connectionManager;
             Logger = logger;
             AppHost = appHost;
-            ServerEvents = serverEvents;
 
-            ServerEvents.RestartRequired += ServerEvents_RestartRequired;
-            ServerEvents.ServerRestarting += ServerEvents_ServerRestarting;
-            ServerEvents.ServerShuttingDown += ServerEvents_ServerShuttingDown;
             AppHost.HasPendingRestartChanged += AppHostHasPendingRestartChanged;
             SessionManager.UserLoggedIn += SessionManager_UserLoggedIn;
             SessionManager.UserLoggedOut += SessionManager_UserLoggedOut;
@@ -122,7 +117,10 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
             FullscreenVideoCommand = new RelayCommand(i => NavigationService.NavigateToInternalPlayerPage());
             SettingsCommand = new RelayCommand(i => GoSettings());
             GoBackCommand = new RelayCommand(i => GoBack());
-            RestartServerCommand = new RelayCommand(i => RestartServer());
+
+            RestartServerCommand = new RelayCommand(i => { });
+            //RestartServerCommand = new RelayCommand(i => RestartServer());
+
             RestartApplicationCommand = new RelayCommand(i => RestartApplication());
             ShutdownApplicationCommand = new RelayCommand(i => ShutdownApplication());
             ShutdownSystemCommand = new RelayCommand(i => appHost.ShutdownSystem());
@@ -134,7 +132,7 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
 
         public void RefreshRestartApplicationNotification()
         {
-            Dispatcher.InvokeAsync(() => ShowRestartApplicationNotification = AppHost.HasPendingRestart && SessionManager.CurrentUser != null && SessionManager.CurrentUser.Configuration.IsAdministrator);
+            Dispatcher.InvokeAsync(() => ShowRestartApplicationNotification = AppHost.HasPendingRestart && SessionManager.CurrentUser != null);
         }
 
         public void RefreshRestartServerNotification()
@@ -152,13 +150,25 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
         {
             if (dispose)
             {
-                ServerEvents.RestartRequired -= ServerEvents_RestartRequired;
-                ServerEvents.ServerRestarting -= ServerEvents_ServerRestarting;
-                ServerEvents.ServerShuttingDown -= ServerEvents_ServerShuttingDown;
                 AppHost.HasPendingRestartChanged -= AppHostHasPendingRestartChanged;
                 SessionManager.UserLoggedIn -= SessionManager_UserLoggedIn;
                 SessionManager.UserLoggedOut -= SessionManager_UserLoggedOut;
             }
+        }
+
+        private void BindEvents(IApiClient client)
+        {
+            UnbindEvents(client);
+            client.RestartRequired += ServerEvents_RestartRequired;
+            client.ServerRestarting += ServerEvents_ServerRestarting;
+            client.ServerShuttingDown += ServerEvents_ServerShuttingDown;
+        }
+
+        private void UnbindEvents(IApiClient client)
+        {
+            client.RestartRequired -= ServerEvents_RestartRequired;
+            client.ServerRestarting -= ServerEvents_ServerRestarting;
+            client.ServerShuttingDown -= ServerEvents_ServerShuttingDown;
         }
 
         /// <summary>
@@ -236,7 +246,7 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
         /// <summary>
         /// Restarts the server.
         /// </summary>
-        private async void RestartServer()
+        private async void RestartServer(IApiClient apiClient)
         {
             if (!_serverCanSelfRestart)
             {
@@ -262,13 +272,13 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
             if (result != MessageBoxResult.OK) return;
             try
             {
-                var systemInfo = await ApiClient.GetSystemInfoAsync(CancellationToken.None);
+                var systemInfo = await apiClient.GetSystemInfoAsync(CancellationToken.None);
 
                 if (systemInfo.HasPendingRestart)
                 {
-                    await ApiClient.RestartServerAsync();
+                    await apiClient.RestartServerAsync();
 
-                    WaitForServerToRestart();
+                    WaitForServerToRestart(apiClient);
                 }
 
                 _serverHasPendingRestart = false;
@@ -308,13 +318,13 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
             }
         }
 
-        private async void WaitForServerToRestart()
+        private async void WaitForServerToRestart(IApiClient apiClient)
         {
             PresentationManager.ShowModalLoadingAnimation();
 
             try
             {
-                await WaitForServerToRestartInternal();
+                await WaitForServerToRestartInternal(apiClient);
             }
             finally
             {
@@ -324,7 +334,7 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
             }
         }
 
-        private async Task WaitForServerToRestartInternal()
+        private async Task WaitForServerToRestartInternal(IApiClient apiClient)
         {
             var count = 0;
 
@@ -334,7 +344,7 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
 
                 try
                 {
-                    await ApiClient.GetPublicSystemInfoAsync(CancellationToken.None);
+                    await apiClient.GetPublicSystemInfoAsync(CancellationToken.None);
                     break;
                 }
                 catch (Exception)
@@ -348,16 +358,19 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
 
         protected virtual void SessionManager_UserLoggedIn(object sender, EventArgs e)
         {
+            var apiClient = SessionManager.ActiveApiClient;
+            BindEvents(apiClient);
+
             RefreshHomeButton(NavigationService.CurrentPage);
 
-            RefreshRestartData();
+            RefreshRestartData(apiClient);
         }
 
-        private async void RefreshRestartData()
+        private async void RefreshRestartData(IApiClient apiClient)
         {
             try
             {
-                var systemInfo = await ApiClient.GetSystemInfoAsync(CancellationToken.None);
+                var systemInfo = await apiClient.GetSystemInfoAsync(CancellationToken.None);
                 _serverHasPendingRestart = systemInfo.HasPendingRestart;
                 _serverCanSelfRestart = systemInfo.CanSelfRestart;
                 RefreshRestartServerNotification();

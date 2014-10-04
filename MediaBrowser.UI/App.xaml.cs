@@ -1,27 +1,22 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Net.Sockets;
-using MediaBrowser.ApiInteraction;
-using MediaBrowser.Common.Constants;
+﻿using MediaBrowser.ApiInteraction;
+using MediaBrowser.Common.Implementations.Archiving;
 using MediaBrowser.Common.Implementations.Logging;
-using MediaBrowser.Common.Implementations.Updates;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.System;
 using MediaBrowser.Theater.Implementations.Configuration;
-using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.System;
-using MediaBrowser.UI.Networking;
 using MediaBrowser.UI.StartupWizard;
 using Microsoft.Win32;
 using System;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
-using MediaBrowser.Common.Implementations.Archiving;
 
 namespace MediaBrowser.UI
 {
@@ -144,9 +139,9 @@ namespace MediaBrowser.UI
         /// </summary>
         private void ShowApplicationWindow()
         {
-            var win = new MainWindow(_logger, _appHost.PlaybackManager, _appHost.ApiClient, _appHost.ImageManager,
+            var win = new MainWindow(_logger, _appHost.PlaybackManager, _appHost.ImageManager,
                 _appHost, _appHost.PresentationManager, _appHost.UserInputManager, _appHost.TheaterConfigurationManager,
-                _appHost.NavigationService, _appHost.ScreensaverManager);
+                _appHost.NavigationService, _appHost.ScreensaverManager, _appHost.ConnectionManager);
 
             var config = _appHost.TheaterConfigurationManager.Configuration;
 
@@ -530,123 +525,45 @@ namespace MediaBrowser.UI
         /// <returns>Task.</returns>
         private async Task LoadInitialPresentation()
         {
-            var foundServer = false;
+            var mediaFilters = _appHost.MediaFilters;
+            if (!AreRequiredMediaFiltersInstalled(mediaFilters))
+            {
+                LoadStartupWizard(mediaFilters);
+                return;
+            }
+            
             _appHost.PresentationManager.ShowModalLoadingAnimation();
+            var cancellationToken = CancellationToken.None;
 
-            PublicSystemInfo systemInfo = null;
-
-            try
-            {
-                //Try and send WOL now to give system time to wake
-                await _appHost.SendWolCommand();
-            }
-            catch (Exception ex)
-            {
-                _logger.ErrorException("Error sending wake on lan command", ex);
-            }
-
-            try
-            {
-                systemInfo = await _appHost.ApiClient.GetPublicSystemInfoAsync(CancellationToken.None).ConfigureAwait(false);
-
-                foundServer = true;
-            }
-            catch (Exception ex)
-            {
-                _logger.ErrorException(
-                    "Error connecting to server using saved connection information. Host: {0}, Port {1}", ex,
-                    _appHost.ApiClient.ServerAddress);
-            }
-
-            //Try and wait for WOL if its configured
-            if (!foundServer && _appHost.TheaterConfigurationManager.Configuration.WolConfiguration != null
-                && _appHost.TheaterConfigurationManager.Configuration.WolConfiguration.HostMacAddresses.Count > 0)
-            {
-                for (var i = 0; i < _appHost.TheaterConfigurationManager.Configuration.WolConfiguration.WakeAttempts; i++)
-                {
-                    try
-                    {
-                        systemInfo = await _appHost.ApiClient.GetPublicSystemInfoAsync(CancellationToken.None).ConfigureAwait(false);
-                    }
-                    catch (Exception)
-                    {
-                    }
-
-                    if (systemInfo != null)
-                    {
-                        foundServer = true;
-                        break;
-                    }
-                }
-            }
-
-            //Try and find server
-            if (!foundServer)
-            {
-                try
-                {
-                    var info = (await new ServerLocator(_logger).FindServers(500, CancellationToken.None).ConfigureAwait(false)).FirstOrDefault();
-
-                    if (info != null)
-                    {
-                        _appHost.ApiClient.ChangeServerLocation(info.Address);
-
-                        systemInfo = await _appHost.ApiClient.GetPublicSystemInfoAsync(CancellationToken.None).ConfigureAwait(false);
-
-                        foundServer = true;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _logger.ErrorException("Error attempting to locate server.", ex);
-                }
-            }
+            var connectionResult = await _appHost.ConnectionManager.Connect(cancellationToken);
 
             _appHost.PresentationManager.HideModalLoadingAnimation();
-            var mediaFilters = _appHost.MediaFilters;
 
-            if (!foundServer || !AreRequiredMediaFiltersInstalled(mediaFilters))
+            if (connectionResult.State == ConnectionState.Unavailable)
             {
-                // Show connection wizard
-                await Dispatcher.InvokeAsync(async () => await _appHost.NavigationService.Navigate(new StartupWizardPage(_appHost.NavigationService, _appHost.TheaterConfigurationManager, _appHost.ApiClient, _appHost.PresentationManager, _logger, mediaFilters)));
+                LoadStartupWizard(mediaFilters);
                 return;
             }
 
-            //Do final login
-            await Dispatcher.InvokeAsync(async () => await Login(systemInfo));
+            await Dispatcher.InvokeAsync(async () => await Login(connectionResult));
         }
 
-        private async Task Login(PublicSystemInfo systemInfo)
+        private async void LoadStartupWizard(IMediaFilters mediaFilters)
         {
-            //Check for auto-login credientials
-            var config = _appHost.TheaterConfigurationManager.Configuration;
+            // Show connection wizard
+            await Dispatcher.InvokeAsync(async () => await _appHost.NavigationService.Navigate(new StartupWizardPage(_appHost.NavigationService, _appHost.TheaterConfigurationManager, _appHost.ConnectionManager, _appHost.PresentationManager, _logger, mediaFilters)));
+        }
 
-            try
+        private async Task Login(ConnectionResult connectionResult)
+        {
+            if (connectionResult.State == ConnectionState.ServerSignIn)
             {
-                if (systemInfo != null && string.Equals(systemInfo.Id, config.AutoLoginConfiguration.ServerId))
-                {
-                    await _appHost.SessionManager.ValidateSavedLogin(config.AutoLoginConfiguration);
-                    return;
-                }
+                await _appHost.NavigationService.NavigateToLoginPage();
             }
-            catch (UnauthorizedAccessException ex)
+            else
             {
-                //Login failed, redirect to login page and clear the auto-login
-                _logger.ErrorException("Auto-login failed", ex);
-
-                config.AutoLoginConfiguration = new AutoLoginConfiguration();
-                _appHost.TheaterConfigurationManager.SaveConfiguration();
+                await _appHost.SessionManager.ValidateSavedLogin(connectionResult);
             }
-            catch (FormatException ex)
-            {
-                //Login failed, redirect to login page and clear the auto-login
-                _logger.ErrorException("Auto-login password hash corrupt", ex);
-
-                config.AutoLoginConfiguration = new AutoLoginConfiguration();
-                _appHost.TheaterConfigurationManager.SaveConfiguration();
-            }
-
-            await _appHost.NavigationService.NavigateToLoginPage();
         }
 
         private bool AreRequiredMediaFiltersInstalled(IMediaFilters mediaFilters)

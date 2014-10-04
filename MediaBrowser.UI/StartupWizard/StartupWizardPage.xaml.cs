@@ -18,15 +18,15 @@ namespace MediaBrowser.UI.StartupWizard
         private readonly IPresentationManager _presentation;
         private readonly INavigationService _nav;
         private readonly ITheaterConfigurationManager _config;
-        private readonly IApiClient _apiClient;
+        private readonly IConnectionManager _connectionManager;
         private readonly ILogger _logger;
         private readonly IMediaFilters _mediaFilters;
 
-        public StartupWizardPage(INavigationService nav, ITheaterConfigurationManager config, IApiClient apiClient, IPresentationManager presentation, ILogger logger, IMediaFilters mediaFilters)
+        public StartupWizardPage(INavigationService nav, ITheaterConfigurationManager config, IConnectionManager connectionManager, IPresentationManager presentation, ILogger logger, IMediaFilters mediaFilters)
         {
             _nav = nav;
             _config = config;
-            _apiClient = apiClient;
+            _connectionManager = connectionManager;
             _presentation = presentation;
             _logger = logger;
             _mediaFilters = mediaFilters;
@@ -43,7 +43,7 @@ namespace MediaBrowser.UI.StartupWizard
 
         async void BtnNext_Click(object sender, RoutedEventArgs e)
         {
-            await _nav.Navigate(new StartupWizardPage2(_nav, _config, _apiClient, _presentation, _logger, _mediaFilters));
+            await _nav.Navigate(new StartupWizardPage2(_nav, _config, _connectionManager, _presentation, _logger, _mediaFilters));
         }
 
         void StartupWizardPage_Loaded(object sender, RoutedEventArgs e)

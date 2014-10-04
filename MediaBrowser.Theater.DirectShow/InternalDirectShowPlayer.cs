@@ -27,7 +27,6 @@ namespace MediaBrowser.Theater.DirectShow
         private readonly IHiddenWindow _hiddenWindow;
         private readonly IPresentationManager _presentation;
         private readonly ISessionManager _sessionManager;
-        private readonly IApiClient _apiClient;
         private readonly IPlaybackManager _playbackManager;
         private readonly ITheaterConfigurationManager _config;
         private readonly IIsoManager _isoManager;
@@ -35,6 +34,7 @@ namespace MediaBrowser.Theater.DirectShow
         private readonly IHttpClient _httpClient;
         private readonly IZipClient _zipClient;
         private URCOMLoader _privateCom = null;
+        private readonly IConnectionManager _connectionManager;
 
         public event EventHandler<MediaChangeEventArgs> MediaChanged;
 
@@ -50,14 +50,14 @@ namespace MediaBrowser.Theater.DirectShow
 
         private List<BaseItemDto> _playlist = new List<BaseItemDto>();
 
-        public InternalDirectShowPlayer(ILogManager logManager, IHiddenWindow hiddenWindow, IPresentationManager presentation, ISessionManager sessionManager, IApiClient apiClient, IPlaybackManager playbackManager, ITheaterConfigurationManager config, IIsoManager isoManager, IUserInputManager inputManager, IZipClient zipClient, IHttpClient httpClient)
+        public InternalDirectShowPlayer(ILogManager logManager, IHiddenWindow hiddenWindow, IPresentationManager presentation, ISessionManager sessionManager, IPlaybackManager playbackManager, ITheaterConfigurationManager config, IIsoManager isoManager, IUserInputManager inputManager, IZipClient zipClient, IHttpClient httpClient, IConnectionManager connectionManager)
         {
             _logger = logManager.GetLogger("InternalDirectShowPlayer");
             _hiddenWindow = hiddenWindow;
             _presentation = presentation;
             _sessionManager = sessionManager;
-            _apiClient = apiClient;
             _httpClient = httpClient;
+            _connectionManager = connectionManager;
             _playbackManager = playbackManager;
             _config = config;
             _isoManager = isoManager;
@@ -290,7 +290,10 @@ namespace MediaBrowser.Theater.DirectShow
                 {
                     //create a fresh DS Player everytime we want one
                     DisposePlayer();
-                    _mediaPlayer = new DirectShowPlayer(_logger, _hiddenWindow, this, _presentation.WindowHandle, _sessionManager, _config, _inputManager, _apiClient, _zipClient, _httpClient);
+
+                    var apiClient = _connectionManager.GetApiClient(playableItem.OriginalItem);
+
+                    _mediaPlayer = new DirectShowPlayer(_logger, _hiddenWindow, this, _presentation.WindowHandle, _sessionManager, _config, _inputManager, apiClient, _zipClient, _httpClient);
                     _mediaPlayer.Play(playableItem, enableMadVr, false);
 
                 }, true);
@@ -344,7 +347,9 @@ namespace MediaBrowser.Theater.DirectShow
                 }
             }
 
-            return PlayablePathBuilder.GetPlayableItem(item, mountedIso, _apiClient, startTimeTicks, _config.Configuration.MaxStreamingBitrate);
+            var apiClient = _connectionManager.GetApiClient(item);
+
+            return PlayablePathBuilder.GetPlayableItem(item, mountedIso, apiClient, startTimeTicks, _config.Configuration.MaxStreamingBitrate);
         }
 
         /// <summary>
@@ -533,9 +538,11 @@ namespace MediaBrowser.Theater.DirectShow
             // If streaming video, stop the transcoder
             if (media.IsVideo && media.PlayablePath.IndexOf("://", StringComparison.OrdinalIgnoreCase) != -1)
             {
+                var apiClient = _connectionManager.GetApiClient(media.OriginalItem);
+
                 try
                 {
-                    await _apiClient.StopTranscodingProcesses(_apiClient.DeviceId);
+                    await apiClient.StopTranscodingProcesses(apiClient.DeviceId);
                 }
                 catch
                 {

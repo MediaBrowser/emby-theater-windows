@@ -1,11 +1,8 @@
-﻿using MediaBrowser.Theater.Interfaces.Configuration;
-using MediaBrowser.Theater.Interfaces.Presentation;
+﻿using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Presentation.Pages;
 using System;
-using System.Security.Cryptography;
-using System.Text;
 using System.Windows;
 
 namespace MediaBrowser.Theater.Core.Login
@@ -54,7 +51,8 @@ namespace MediaBrowser.Theater.Core.Login
             {
                 string password = TxtPassword.Text;
                 bool isRememberCredentials = (bool)ChkAutoLogin.IsChecked;
-                await SessionManager.Login(TxtUsername.Text, password, isRememberCredentials);
+
+                await SessionManager.LoginToServer(TxtUsername.Text, password, isRememberCredentials);
             }
             catch (Exception ex)
             {

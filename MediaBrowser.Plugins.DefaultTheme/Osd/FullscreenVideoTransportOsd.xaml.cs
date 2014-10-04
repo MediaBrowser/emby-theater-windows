@@ -110,8 +110,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Osd
                 try
                 {
                     ImgLogo.Source =
-                        await
-                            viewModel.ImageManager.GetRemoteBitmapAsync(viewModel.ApiClient.GetLogoImageUrl(media,
+                        await viewModel.ImageManager.GetRemoteBitmapAsync(viewModel.ConnectionManager.GetApiClient(media).GetLogoImageUrl(media,
                                 new ImageOptions
                                 {
                                 }));
@@ -147,9 +146,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Osd
         }
 
         // Handles the PreviewMouseDown event of the CurrentPositionSlider control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="MouseButtonEventArgs" /> instance containing the event data.</param>
         private void CurrentPositionSlider_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             _isPositionSliderUpdating = true;

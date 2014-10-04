@@ -15,10 +15,9 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
     public class UserListViewModel : BaseViewModel, IDisposable
     {
         public IPresentationManager PresentationManager { get; private set; }
-        public IApiClient ApiClient { get; private set; }
+        protected IConnectionManager ConnectionManager { get; private set; }
         public IImageManager ImageManager { get; private set; }
         public ISessionManager SessionManager { get; private set; }
-        private readonly INavigationService _navigation;
 
         private readonly RangeObservableCollection<UserDtoViewModel> _listItems =
             new RangeObservableCollection<UserDtoViewModel>();
@@ -68,12 +67,11 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
-        public UserListViewModel(IPresentationManager presentationManager, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigation)
+        public UserListViewModel(IPresentationManager presentationManager, IConnectionManager connectionManager, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigation)
         {
             SessionManager = sessionManager;
-            _navigation = navigation;
             ImageManager = imageManager;
-            ApiClient = apiClient;
+            ConnectionManager = connectionManager;
             PresentationManager = presentationManager;
         }
 
@@ -82,9 +80,11 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             // Record the current item
             var currentItem = _listCollectionView.CurrentItem as UserDtoViewModel;
 
+            var apiClient = SessionManager.ActiveApiClient;
+
             try
             {
-                var users = await ApiClient.GetPublicUsersAsync();
+                var users = await apiClient.GetPublicUsersAsync();
 
                 int? selectedIndex = null;
 
@@ -104,7 +104,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
                 _listItems.Clear();
 
-                _listItems.AddRange(users.Select(i => new UserDtoViewModel(ApiClient, ImageManager, SessionManager) { User = i }));
+                _listItems.AddRange(users.Select(i => new UserDtoViewModel(apiClient, ImageManager, SessionManager) { User = i }));
 
                 if (selectedIndex.HasValue)
                 {

@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.Dto;
+﻿using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Dto;
 using MediaBrowser.Theater.Interfaces.Configuration;
 using System;
 using System.Threading.Tasks;
@@ -37,13 +38,18 @@ namespace MediaBrowser.Theater.Interfaces.Session
         /// <param name="password">The password.</param>
         /// <param name="rememberCredentials">if set to <c>true</c> [remember credentials].</param>
         /// <returns>Task.</returns>
-        Task Login(string username, string password, bool rememberCredentials);
+        Task LoginToServer(string username, string password, bool rememberCredentials);
 
         /// <summary>
         /// Validates the saved login.
         /// </summary>
-        /// <param name="configuration">The configuration.</param>
+        /// <param name="result">The result.</param>
         /// <returns>Task.</returns>
-        Task ValidateSavedLogin(AutoLoginConfiguration configuration);
+        Task ValidateSavedLogin(ConnectionResult result);
+        /// <summary>
+        /// Gets or sets the active API client.
+        /// </summary>
+        /// <value>The active API client.</value>
+        IApiClient ActiveApiClient { get; }
     }
 }

@@ -1,9 +1,6 @@
-﻿using MediaBrowser.ApiInteraction;
-using MediaBrowser.ApiInteraction.WebSocket;
-using MediaBrowser.Common;
+﻿using MediaBrowser.Common;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
-using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Events;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Querying;
@@ -25,10 +22,9 @@ using NavigationEventArgs = MediaBrowser.Theater.Interfaces.Navigation.Navigatio
 
 namespace MediaBrowser.UI.EntryPoints
 {
-    public class WebSocketEntryPoint : IStartupEntryPoint, IDisposable
+    public class WebSocketEntryPoint : IStartupEntryPoint
     {
         private readonly ISessionManager _sessionManager;
-        private readonly IApiClient _apiClient;
         private readonly ILogger _logger;
         private readonly ApplicationHost _appHost;
         private readonly IImageManager _imageManager;
@@ -36,20 +32,12 @@ namespace MediaBrowser.UI.EntryPoints
         private readonly IPlaybackManager _playbackManager;
         private readonly IPresentationManager _presentationManager;
         private readonly ICommandManager _commandManager;
-        private readonly IServerEvents _serverEvents;
         private readonly IUserInputManager _userInputManager;
+        private readonly IConnectionManager _connectionManager;
 
-        private bool _isDisposed;
-
-        private ApiClient ApiWebSocket
+        public WebSocketEntryPoint(ISessionManager sessionManager, ILogManager logManager, IApplicationHost appHost, IImageManager imageManager, INavigationService navigationService, IPlaybackManager playbackManager, IPresentationManager presentationManager, ICommandManager commandManager, IUserInputManager userInputManager, IConnectionManager connectionManager)
         {
-            get { return _appHost.ApiClient; }
-        }
-
-        public WebSocketEntryPoint(ISessionManager sessionManagerManager, IApiClient apiClient, ILogManager logManager, IApplicationHost appHost, IImageManager imageManager, INavigationService navigationService, IPlaybackManager playbackManager, IPresentationManager presentationManager, ICommandManager commandManager, IServerEvents serverEvents, IUserInputManager userInputManager)
-        {
-            _sessionManager = sessionManagerManager;
-            _apiClient = apiClient;
+            _sessionManager = sessionManager;
             _logger = logManager.GetLogger(GetType().Name);
             _appHost = (ApplicationHost)appHost;
             _imageManager = imageManager;
@@ -58,29 +46,59 @@ namespace MediaBrowser.UI.EntryPoints
             _presentationManager = presentationManager;
             _commandManager = commandManager;
             _userInputManager = userInputManager;
-            _serverEvents = serverEvents;
+            _connectionManager = connectionManager;
         }
 
         public void Run()
         {
-            _sessionManager.UserLoggedIn += SessionManagerUserLoggedIn;
             _navigationService.Navigated += NavigationServiceNavigated;
 
-            var socket = ApiWebSocket;
+            var client = _sessionManager.ActiveApiClient;
+            if (client != null)
+            {
+                BindEvents(client);
+            }
 
-            socket.BrowseCommand += _apiWebSocket_BrowseCommand;
-            socket.UserDeleted += _apiWebSocket_UserDeleted;
-            socket.UserUpdated += _apiWebSocket_UserUpdated;
-            socket.PlaystateCommand += _apiWebSocket_PlaystateCommand;
-            socket.GeneralCommand += socket_GeneralCommand;
-            socket.MessageCommand += socket_MessageCommand;
-            socket.PlayCommand += _apiWebSocket_PlayCommand;
-            socket.SendStringCommand += socket_SendStringCommand;
-            socket.SetAudioStreamIndexCommand += socket_SetAudioStreamIndexCommand;
-            socket.SetSubtitleStreamIndexCommand += socket_SetSubtitleStreamIndexCommand;
-            socket.SetVolumeCommand += socket_SetVolumeCommand;
+            _connectionManager.Connected += _connectionManager_Connected;
         }
 
+        void _connectionManager_Connected(object sender, GenericEventArgs<ConnectionResult> e)
+        {
+            BindEvents(e.Argument.ApiClient);
+        }
+
+        private void BindEvents(IApiClient client)
+        {
+            UnindEvents(client);
+
+            client.BrowseCommand += _apiWebSocket_BrowseCommand;
+            client.UserDeleted += _apiWebSocket_UserDeleted;
+            client.UserUpdated += _apiWebSocket_UserUpdated;
+            client.PlaystateCommand += _apiWebSocket_PlaystateCommand;
+            client.GeneralCommand += socket_GeneralCommand;
+            client.MessageCommand += socket_MessageCommand;
+            client.PlayCommand += _apiWebSocket_PlayCommand;
+            client.SendStringCommand += socket_SendStringCommand;
+            client.SetAudioStreamIndexCommand += socket_SetAudioStreamIndexCommand;
+            client.SetSubtitleStreamIndexCommand += socket_SetSubtitleStreamIndexCommand;
+            client.SetVolumeCommand += socket_SetVolumeCommand;
+        }
+
+        private void UnindEvents(IApiClient client)
+        {
+            client.BrowseCommand -= _apiWebSocket_BrowseCommand;
+            client.UserDeleted -= _apiWebSocket_UserDeleted;
+            client.UserUpdated -= _apiWebSocket_UserUpdated;
+            client.PlaystateCommand -= _apiWebSocket_PlaystateCommand;
+            client.GeneralCommand -= socket_GeneralCommand;
+            client.MessageCommand -= socket_MessageCommand;
+            client.PlayCommand -= _apiWebSocket_PlayCommand;
+            client.SendStringCommand -= socket_SendStringCommand;
+            client.SetAudioStreamIndexCommand -= socket_SetAudioStreamIndexCommand;
+            client.SetSubtitleStreamIndexCommand -= socket_SetSubtitleStreamIndexCommand;
+            client.SetVolumeCommand -= socket_SetVolumeCommand;
+        }
+        
         void socket_SetVolumeCommand(object sender, GenericEventArgs<int> e)
         {
             _playbackManager.SetVolume(e.Argument);
@@ -99,16 +117,6 @@ namespace MediaBrowser.UI.EntryPoints
         void socket_SendStringCommand(object sender, GenericEventArgs<string> e)
         {
             _userInputManager.SendTextInputToFocusedElement(e.Argument);
-        }
-
-        void SessionManagerUserLoggedIn(object sender, EventArgs e)
-        {
-            if (_isDisposed)
-            {
-                return;
-            }
-
-            ApiWebSocket.OpenWebSocket(() => ClientWebSocketFactory.CreateWebSocket(_logger));
         }
 
         void socket_MessageCommand(object sender, GenericEventArgs<MessageCommand> e)
@@ -363,7 +371,9 @@ namespace MediaBrowser.UI.EntryPoints
 
             try
             {
-                var result = await _apiClient.GetItemsAsync(new ItemQuery
+                var apiClient = _sessionManager.ActiveApiClient;
+
+                var result = await apiClient.GetItemsAsync(new ItemQuery
                 {
                     Ids = e.Argument.ItemIds,
                     UserId = _sessionManager.CurrentUser.Id,
@@ -495,42 +505,16 @@ namespace MediaBrowser.UI.EntryPoints
             {
                 var item = itemPage.PageItem;
 
-                if (ApiWebSocket.IsWebSocketConnected)
+                var apiClient = _connectionManager.GetApiClient(item);
+
+                try
                 {
-                    try
-                    {
-                        await ApiWebSocket.SendContextMessageAsync(item.Type, item.Id, item.Name, itemPage.ViewType.ToString(), CancellationToken.None).ConfigureAwait(false);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.ErrorException("Error sending context message", ex);
-                    }
+                    await apiClient.SendContextMessageAsync(item.Type, item.Id, item.Name, itemPage.ViewType.ToString(), CancellationToken.None).ConfigureAwait(false);
                 }
-            }
-        }
-
-        public void Dispose()
-        {
-            _isDisposed = true;
-            _sessionManager.UserLoggedIn -= SessionManagerUserLoggedIn;
-            DisposeSocket();
-        }
-
-        private void DisposeSocket()
-        {
-            var socket = ApiWebSocket;
-
-            if (socket != null)
-            {
-                socket.BrowseCommand -= _apiWebSocket_BrowseCommand;
-                socket.UserDeleted -= _apiWebSocket_UserDeleted;
-                socket.UserUpdated -= _apiWebSocket_UserUpdated;
-                socket.PlaystateCommand -= _apiWebSocket_PlaystateCommand;
-                socket.GeneralCommand -= socket_GeneralCommand;
-                socket.MessageCommand -= socket_MessageCommand;
-                socket.PlayCommand -= _apiWebSocket_PlayCommand;
-
-                socket.Dispose();
+                catch (Exception ex)
+                {
+                    _logger.ErrorException("Error sending context message", ex);
+                }
             }
         }
     }

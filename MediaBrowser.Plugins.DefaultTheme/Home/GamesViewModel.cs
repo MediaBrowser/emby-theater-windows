@@ -28,7 +28,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         private readonly IImageManager _imageManager;
         private readonly INavigationService _navService;
         private readonly ILogger _logger;
-        private readonly IServerEvents _serverEvents;
 
         public ImageViewerViewModel SpotlightViewModel { get; private set; }
 
@@ -42,7 +41,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         public string ParentId { get; private set; }
 
-        public GamesViewModel(IPresentationManager presentation, IImageManager imageManager, IApiClient apiClient, ISessionManager session, INavigationService nav, IPlaybackManager playback, ILogger logger, double tileWidth, double tileHeight, IServerEvents serverEvents, string parentId)
+        public GamesViewModel(IPresentationManager presentation, IImageManager imageManager, IApiClient apiClient, ISessionManager session, INavigationService nav, IPlaybackManager playback, ILogger logger, double tileWidth, double tileHeight, string parentId)
             : base(presentation, apiClient)
         {
             _sessionManager = session;
@@ -50,7 +49,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             _imageManager = imageManager;
             _navService = nav;
             _logger = logger;
-            _serverEvents = serverEvents;
             ParentId = parentId;
 
             TileWidth = tileWidth;
@@ -240,7 +238,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         private void LoadGameSystemsViewModel(GamesView view)
         {
-            GameSystemsViewModel = new ItemListViewModel(GetGameSystems, PresentationManager, _imageManager, ApiClient, _navService, _playbackManager, _logger, _serverEvents)
+            GameSystemsViewModel = new ItemListViewModel(GetGameSystems, PresentationManager, _imageManager, ApiClient, _navService, _playbackManager, _logger)
             {
                 ImageDisplayWidth = TileWidth,
                 ImageDisplayHeightGenerator = v => TileHeight,
@@ -260,7 +258,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         private void LoadRecentlyPlayedViewModel(GamesView view)
         {
-            RecentlyPlayedViewModel = new ItemListViewModel(GetRecentlyPlayedAsync, PresentationManager, _imageManager, ApiClient, _navService, _playbackManager, _logger, _serverEvents)
+            RecentlyPlayedViewModel = new ItemListViewModel(GetRecentlyPlayedAsync, PresentationManager, _imageManager, ApiClient, _navService, _playbackManager, _logger)
             {
                 ImageDisplayWidth = TileWidth * 13 / 16,
                 ImageDisplayHeightGenerator = v => TileHeight,
@@ -317,7 +315,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             SetDefaults(options, null);
 
-            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
+            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, PresentationManager, _navService, _playbackManager, _logger, options)
             {
                 ViewType = ViewType.Games
             };
@@ -381,7 +379,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             options.DefaultViewType = ListViewTypes.PosterStrip;
 
-            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
+            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, PresentationManager, _navService, _playbackManager, _logger, options)
             {
                 ViewType = ViewType.Games
             };
@@ -475,7 +473,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             SetDefaults(options, null);
 
-            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, PresentationManager, _navService, _playbackManager, _logger, _serverEvents, options)
+            var page = new FolderPage(item, displayPreferences, ApiClient, _imageManager, PresentationManager, _navService, _playbackManager, _logger, options)
             {
                 ViewType = ViewType.Games
             };

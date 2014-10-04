@@ -25,7 +25,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
     {
         private readonly ITheaterConfigurationManager _configurationManager;
         private readonly ILogger _logger;
-        private readonly IApiClient _apiClient;
+        private readonly IConnectionManager _connectionManager;
         private readonly INavigationService _nav;
         private readonly IPresentationManager _presentationManager;
         private int _isStarting;
@@ -43,11 +43,11 @@ namespace MediaBrowser.Theater.Implementations.Playback
 
         private readonly List<IMediaPlayer> _mediaPlayers = new List<IMediaPlayer>();
 
-        public PlaybackManager(ITheaterConfigurationManager configurationManager, ILogger logger, IApiClient apiClient, INavigationService nav, IPresentationManager presentationManager)
+        public PlaybackManager(ITheaterConfigurationManager configurationManager, ILogger logger, IConnectionManager connectionManager, INavigationService nav, IPresentationManager presentationManager)
         {
             _configurationManager = configurationManager;
             _logger = logger;
-            _apiClient = apiClient;
+            _connectionManager = connectionManager;
             _nav = nav;
             _presentationManager = presentationManager;
         }
@@ -122,10 +122,12 @@ namespace MediaBrowser.Theater.Implementations.Playback
 
                 if (query != null)
                 {
-                    query.UserId = _apiClient.CurrentUserId;
+                    var apiClient = _connectionManager.GetApiClient(options.Items[0]);
+
+                    query.UserId = apiClient.CurrentUserId;
                     query.Fields = new[] { ItemFields.Path, ItemFields.Chapters, ItemFields.MediaSources };
 
-                    var result = await _apiClient.GetItemsAsync(query);
+                    var result = await apiClient.GetItemsAsync(query);
 
                     options.Items = result.Items.ToList();
                 }
@@ -175,9 +177,11 @@ namespace MediaBrowser.Theater.Implementations.Playback
 
                     if (options.StartPositionTicks == 0 && player.SupportsMultiFilePlayback && firstItem.IsVideo && firstItem.LocationType == LocationType.FileSystem && options.GoFullScreen)
                     {
+                        var apiClient = _connectionManager.GetApiClient(firstItem);
+
                         try
                         {
-                            var intros = await _apiClient.GetIntrosAsync(firstItem.Id, _apiClient.CurrentUserId);
+                            var intros = await apiClient.GetIntrosAsync(firstItem.Id, apiClient.CurrentUserId);
 
                             options.Items.InsertRange(0, intros.Items);
                         }
@@ -235,7 +239,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
                 }
             }
 
-            _reporter = new PlaybackProgressReporter(_apiClient, player, _logger, this);
+            _reporter = new PlaybackProgressReporter(_connectionManager, player, _logger, this);
             await _reporter.Start().ConfigureAwait(false);
         }
 

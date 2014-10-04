@@ -36,7 +36,7 @@ namespace MediaBrowser.Theater.Core.General
 
         public bool IsVisible(UserDto user)
         {
-            return user != null && user.Configuration.IsAdministrator;
+            return user != null;
         }
 
         public Type PageType

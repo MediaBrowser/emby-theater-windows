@@ -16,7 +16,6 @@
             <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="auto"></RowDefinition>
-            <RowDefinition Height="auto"></RowDefinition>
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
@@ -28,10 +27,6 @@
 
         <CheckBox x:Name="ChkEnableBackdrops" Margin="0 50 0 0" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center">
             <TextBlock Style="{StaticResource TextBlockStyle}">Enable backdrops</TextBlock>
-        </CheckBox>
-
-        <CheckBox x:Name="ChkDownloadCompressedImages" Margin="0 30 0 0" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center">
-            <TextBlock Style="{StaticResource TextBlockStyle}">Download compressed images</TextBlock>
         </CheckBox>
 
         <CheckBox x:Name="ChkEnableHighQualityImageScaling" Margin="0 30 0 0" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center">

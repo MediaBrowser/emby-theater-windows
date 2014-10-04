@@ -28,24 +28,20 @@ namespace MediaBrowser.Theater.Implementations.Presentation
         private readonly IPresentationManager _presentationManager;
         private readonly IPlaybackManager _playback;
         private readonly ISessionManager _session;
-        private readonly IApiClient _apiClient;
         private readonly ITheaterConfigurationManager _theaterConfigurationManager;
         private readonly ILogger _logger;
-        private readonly IServerEvents _serverEvents;
 
         private DateTime _lastInputTime;
         private Timer _timer;
 
-        public ScreensaverManager(IUserInputManager userInput, IPresentationManager presentationManager, IPlaybackManager playback, ISessionManager session, IApiClient apiClient, ITheaterConfigurationManager theaterConfigurationManager, ILogManager logManager, IServerEvents serverEvents)
+        public ScreensaverManager(IUserInputManager userInput, IPresentationManager presentationManager, IPlaybackManager playback, ISessionManager session, ITheaterConfigurationManager theaterConfigurationManager, ILogManager logManager)
         {
             _userInput = userInput;
             _presentationManager = presentationManager;
             _playback = playback;
             _session = session;
-            _apiClient = apiClient;
             _theaterConfigurationManager = theaterConfigurationManager;
             _logger = logManager.GetLogger(GetType().Name);
-            _serverEvents = serverEvents;
 
             _session.UserLoggedIn += session_UserChanged;
             _session.UserLoggedOut += session_UserChanged;
@@ -53,15 +49,36 @@ namespace MediaBrowser.Theater.Implementations.Presentation
             _playback.PlaybackCompleted += _playback_PlaybackCompleted;
             _playback.PlaybackStarted += _playback_PlaybackStarted;
 
-            _serverEvents.BrowseCommand += _serverEvents_BrowseCommand;
-            _serverEvents.MessageCommand += _serverEvents_MessageCommand;
-            _serverEvents.PlayCommand += _serverEvents_PlayCommand;
-            _serverEvents.PlaystateCommand += _serverEvents_PlaystateCommand;
-            _serverEvents.GeneralCommand += _serverEvents_GeneralCommand; 
-
             SystemEvents.PowerModeChanged += SystemEvents_PowerModeChanged;
 
             StartTimer();
+
+            _session.UserLoggedIn += _session_UserLoggedIn;
+        }
+
+        void _session_UserLoggedIn(object sender, EventArgs e)
+        {
+            BindEvents(_session.ActiveApiClient);
+        }
+
+        private void BindEvents(IApiClient client)
+        {
+            UnbindEvents(client);
+
+            client.BrowseCommand += _serverEvents_BrowseCommand;
+            client.MessageCommand += _serverEvents_MessageCommand;
+            client.PlayCommand += _serverEvents_PlayCommand;
+            client.PlaystateCommand += _serverEvents_PlaystateCommand;
+            client.GeneralCommand += _serverEvents_GeneralCommand;
+        }
+
+        private void UnbindEvents(IApiClient client)
+        {
+            client.BrowseCommand -= _serverEvents_BrowseCommand;
+            client.MessageCommand -= _serverEvents_MessageCommand;
+            client.PlayCommand -= _serverEvents_PlayCommand;
+            client.PlaystateCommand -= _serverEvents_PlaystateCommand;
+            client.GeneralCommand -= _serverEvents_GeneralCommand;
         }
 
         private void SetDefaultCurrentScreenSaverName()
@@ -184,7 +201,7 @@ namespace MediaBrowser.Theater.Implementations.Presentation
                 ShowScreensaver(false);
             }
         }
-       
+
         /// <summary>
         /// Show  the current selected screen saver
         /// <param name="forceShowShowScreensaver">Show the Screensave even regardless of screensave timeout</param>
@@ -240,11 +257,11 @@ namespace MediaBrowser.Theater.Implementations.Presentation
                         _logger.Debug("Show screen saver - skip, none selected");
                     }
                 }
-                finally 
+                finally
                 {
                     StartTimer();
                 }
-                
+
             });
         }
 
@@ -271,15 +288,9 @@ namespace MediaBrowser.Theater.Implementations.Presentation
         {
             _playback.PlaybackCompleted -= _playback_PlaybackCompleted;
             _playback.PlaybackStarted -= _playback_PlaybackStarted;
-            
-            _serverEvents.BrowseCommand -= _serverEvents_BrowseCommand;
-            _serverEvents.MessageCommand -= _serverEvents_MessageCommand;
-            _serverEvents.PlayCommand -= _serverEvents_PlayCommand;
-            _serverEvents.PlaystateCommand -= _serverEvents_PlaystateCommand;
-            _serverEvents.GeneralCommand -= _serverEvents_GeneralCommand; 
 
             SystemEvents.PowerModeChanged -= SystemEvents_PowerModeChanged;
-            
+
             StopTimer();
         }
 

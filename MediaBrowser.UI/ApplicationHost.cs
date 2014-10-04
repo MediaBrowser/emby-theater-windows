@@ -1,14 +1,8 @@
-﻿using System.Diagnostics;
-using System.Net;
-using System.Net.NetworkInformation;
-using System.Net.Sockets;
-using System.Windows.Forms;
-using MediaBrowser.ApiInteraction;
+﻿using MediaBrowser.ApiInteraction;
+using MediaBrowser.ApiInteraction.Network;
 using MediaBrowser.ApiInteraction.WebSocket;
 using MediaBrowser.Common.Configuration;
-using MediaBrowser.Common.Constants;
 using MediaBrowser.Common.Implementations;
-using MediaBrowser.Common.Implementations.Devices;
 using MediaBrowser.Common.Implementations.ScheduledTasks;
 using MediaBrowser.Common.Net;
 using MediaBrowser.IsoMounter;
@@ -41,17 +35,18 @@ using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Interfaces.UserInput;
 using MediaBrowser.Theater.Presentation.Playback;
 using MediaBrowser.Theater.Vlc;
-using MediaBrowser.UI.EntryPoints;
 using MediaBrowser.UI.Implementations;
 using MediaBrowser.UI.Networking;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Win32;
+using System.Windows.Forms;
 
 namespace MediaBrowser.UI
 {
@@ -63,14 +58,9 @@ namespace MediaBrowser.UI
         public ApplicationHost(ApplicationPaths applicationPaths, ILogManager logManager)
             : base(applicationPaths, logManager)
         {
-            SystemEvents.PowerModeChanged += SystemEvents_PowerModeChanged;
         }
 
-        /// <summary>
-        /// Gets the API client.
-        /// </summary>
-        /// <value>The API client.</value>
-        public ApiClient ApiClient { get; private set; }
+        public IConnectionManager ConnectionManager { get; private set; }
 
         public IThemeManager ThemeManager { get; private set; }
         public IPlaybackManager PlaybackManager { get; private set; }
@@ -141,7 +131,7 @@ namespace MediaBrowser.UI
             ThemeManager = new ThemeManager(() => PresentationManager, Logger);
             RegisterSingleInstance(ThemeManager);
 
-            PresentationManager = new TheaterApplicationWindow(Logger, ThemeManager, ApiClient, () => SessionManager, TheaterConfigurationManager);
+            PresentationManager = new TheaterApplicationWindow(Logger, ThemeManager, () => SessionManager, TheaterConfigurationManager);
             RegisterSingleInstance(PresentationManager);
 
             RegisterSingleInstance(ApplicationPaths);
@@ -150,32 +140,29 @@ namespace MediaBrowser.UI
          
             var hiddenWindow = new AppHiddenWIndow();
 
-            ImageManager = new ImageManager(ApiClient, ApplicationPaths, TheaterConfigurationManager);
+            ImageManager = new ImageManager(() => SessionManager.ActiveApiClient, ApplicationPaths, TheaterConfigurationManager);
             RegisterSingleInstance(ImageManager);
 
-            NavigationService = new NavigationService(ThemeManager, () => PlaybackManager, ApiClient, PresentationManager, TheaterConfigurationManager, () => SessionManager, this, InstallationManager, ImageManager, Logger, () => UserInputManager, ApiClient, hiddenWindow);
+            NavigationService = new NavigationService(ThemeManager, () => PlaybackManager, PresentationManager, TheaterConfigurationManager, () => SessionManager, this, InstallationManager, ImageManager, Logger, () => UserInputManager, hiddenWindow, ConnectionManager);
             RegisterSingleInstance(NavigationService);
 
             UserInputManager = new UserInputManager(PresentationManager, NavigationService, hiddenWindow, LogManager);
             RegisterSingleInstance(UserInputManager);
 
-            PlaybackManager = new PlaybackManager(TheaterConfigurationManager, Logger, ApiClient, NavigationService, PresentationManager);
+            PlaybackManager = new PlaybackManager(TheaterConfigurationManager, Logger, ConnectionManager, NavigationService, PresentationManager);
             RegisterSingleInstance(PlaybackManager);
 
             CommandManager = new CommandManager(PresentationManager, PlaybackManager, NavigationService, UserInputManager, LogManager);
             RegisterSingleInstance(CommandManager);
 
-            SessionManager = new SessionManager(NavigationService, ApiClient, Logger, ThemeManager, TheaterConfigurationManager, PlaybackManager);
+            SessionManager = new SessionManager(NavigationService, Logger, ThemeManager, TheaterConfigurationManager, PlaybackManager, ConnectionManager);
             RegisterSingleInstance(SessionManager);
 
-            ScreensaverManager = new ScreensaverManager(UserInputManager, PresentationManager, PlaybackManager, SessionManager, ApiClient, TheaterConfigurationManager, LogManager, ApiClient);
+            ScreensaverManager = new ScreensaverManager(UserInputManager, PresentationManager, PlaybackManager, SessionManager, TheaterConfigurationManager, LogManager);
             RegisterSingleInstance(ScreensaverManager);
 
-            RegisterSingleInstance<IApiClient>(ApiClient);
-
             RegisterSingleInstance<IHiddenWindow>(hiddenWindow);
-
-            RegisterSingleInstance<IServerEvents>(ApiClient);
+            RegisterSingleInstance(ConnectionManager);
         }
 
         /// <summary>
@@ -207,7 +194,6 @@ namespace MediaBrowser.UI
 
             var capabilities = new ClientCapabilities
             {
-
                 PlayableMediaTypes = new List<string>
                 {
                     MediaType.Audio,
@@ -219,41 +205,26 @@ namespace MediaBrowser.UI
 
                 // MBT should be able to implement them all
                 SupportedCommands = Enum.GetNames(typeof (GeneralCommandType)).ToList()
-
             };
 
-            var apiClient = new ApiClient(new HttpWebRequestClient(logger), logger, TheaterConfigurationManager.Configuration.ServerAddress, "Media Browser Theater", deviceName, SystemId, ApplicationVersion.ToString(), capabilities)
+            var device = new Device
             {
-                JsonSerializer = JsonSerializer,
-                ImageQuality = TheaterConfigurationManager.Configuration.DownloadCompressedImages
-                                                       ? 90
-                                                       : 100
+                DeviceName = deviceName,
+                DeviceId = SystemId
             };
 
-            ApiClient = apiClient;
-            ApiClient.HttpResponseReceived += ApiClient_HttpResponseReceived;
-        }
-
-        async void ApiClient_HttpResponseReceived(object sender, HttpResponseEventArgs e)
-        {
-            if (e.StatusCode == HttpStatusCode.Unauthorized)
+            ConnectionManager = new ConnectionManager(logger,
+                new CredentialProvider(TheaterConfigurationManager, JsonSerializer),
+                new NetworkConnection(Logger),
+                new ServerLocator(logger),
+                "Media Browser Theater",
+                ApplicationVersion.ToString(),
+                device,
+                capabilities,
+                ClientWebSocketFactory.CreateWebSocket)
             {
-                try
-                {
-                    await SessionManager.Logout();
-                }
-                catch (Exception ex)
-                {
-                    Logger.ErrorException("Error logging out", ex);
-                }
-            }
-        }
-
-        public override Task Restart()
-        {
-            PlaybackManager.StopAllPlayback();
-
-            return Task.Run(() => App.Instance.Dispatcher.Invoke(() => App.Instance.Restart()));
+                JsonSerializer = JsonSerializer
+            };
         }
 
         /// <summary>
@@ -332,20 +303,28 @@ namespace MediaBrowser.UI
             }
         }
 
-        public override Task Shutdown()
+        private async Task BeforeShutdown()
         {
             PlaybackManager.StopAllPlayback();
 
-            return Task.Run(() => App.Instance.Dispatcher.Invoke(() => App.Instance.Shutdown()));
+            if (!TheaterConfigurationManager.Configuration.RememberLogin && SessionManager.CurrentUser != null)
+            {
+                await ConnectionManager.Logout();
+            }
         }
 
-        protected override void OnConfigurationUpdated(object sender, EventArgs e)
+        public override async Task Restart()
         {
-            base.OnConfigurationUpdated(sender, e);
+            await BeforeShutdown();
 
-            ((ApiClient)ApiClient).ImageQuality = TheaterConfigurationManager.Configuration.DownloadCompressedImages
-                                                       ? 90
-                                                       : 100;
+            await Task.Run(() => App.Instance.Dispatcher.Invoke(() => App.Instance.Restart()));
+        }
+
+        public override async Task Shutdown()
+        {
+            await BeforeShutdown();
+
+            await Task.Run(() => App.Instance.Dispatcher.Invoke(() => App.Instance.Shutdown()));
         }
 
         protected override IConfigurationManager GetConfigurationManager()
@@ -362,11 +341,11 @@ namespace MediaBrowser.UI
         public override async Task<CheckForUpdateResult> CheckForApplicationUpdate(CancellationToken cancellationToken,
                                                                     IProgress<double> progress)
         {
-            var serverInfo = await ApiClient.GetPublicSystemInfoAsync(cancellationToken).ConfigureAwait(false);
-
             var availablePackages = await InstallationManager.GetAvailablePackagesWithoutRegistrationInfo(cancellationToken).ConfigureAwait(false);
 
-            var serverVersion = new Version(serverInfo.Version);
+            // Fake this with a really high number
+            // With the idea of multiple servers there's no point in making server version a part of this
+            var serverVersion = new Version(10, 0, 0, 0);
 
             var version = InstallationManager.GetLatestCompatibleVersion(availablePackages, "MBTheater", null, serverVersion, ConfigurationManager.CommonConfiguration.SystemUpdateLevel);
 
@@ -422,90 +401,6 @@ namespace MediaBrowser.UI
         {
             PlaybackManager.StopAllPlayback();
             Application.SetSuspendState(PowerState.Suspend, false, false);
-        }
-
-        private void SystemEvents_PowerModeChanged(object sender, PowerModeChangedEventArgs e)
-        {
-            // ReSharper disable once CSharpWarnings::CS4014
-            SendWolCommand();
-        }
-
-        public async Task SendWolCommand()
-        {
-            const int payloadSize = 102;
-            var wolConfig = TheaterConfigurationManager.Configuration.WolConfiguration;
-
-            if (wolConfig == null)
-            {
-                return;
-            }
-
-            bool invalidConfiguration = false;
-
-            //Send magic packets to each address
-            foreach (var macAddress in wolConfig.HostMacAddresses)
-            {
-                byte[] macBytes;
-
-                try
-                {
-                    macBytes = PhysicalAddress.Parse(macAddress).GetAddressBytes();
-                }
-                catch (FormatException)
-                {
-                    // invalid mac address stored in the config file, reset our configuration to invalidate it
-                    invalidConfiguration = true;
-                    continue;
-                }
-
-                Logger.Log(LogSeverity.Debug, String.Format("Sending magic packet to {0}", macAddress));
-
-                //Construct magic packet
-                var payload = new byte[payloadSize];
-                Buffer.BlockCopy(new byte[] { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF }, 0, payload, 0, 6);
-
-                for (var i = 1; i < 17; i++)
-                    Buffer.BlockCopy(macBytes, 0, payload, 6 * i, 6);
-
-                //Send packet LAN
-                using (var udp = new UdpClient())
-                {
-                    try
-                    {
-                        udp.Connect(IPAddress.Broadcast, wolConfig.Port);
-                        await udp.SendAsync(payload, payloadSize);
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Error(String.Format("Magic packet send failed: {0}", ex.Message));
-                    }
-                }
-
-                var hostname = TheaterConfigurationManager.Configuration.WolConfiguration.HostName;
-
-                if (!string.IsNullOrEmpty(hostname))
-                {
-                    //Send packet WAN
-                    using (var udp = new UdpClient())
-                    {
-                        try
-                        {
-                            udp.Connect(hostname, wolConfig.Port);
-                            await udp.SendAsync(payload, payloadSize);
-                        }
-                        catch (Exception ex)
-                        {
-                            Logger.Error(String.Format("Magic packet send failed: {0}", ex.Message));
-                        }
-                    }
-                }
-            }
-
-            if (invalidConfiguration)
-            {
-                TheaterConfigurationManager.Configuration.WolConfiguration = null;
-                TheaterConfigurationManager.SaveConfiguration();
-            }
         }
 
         public override string Name

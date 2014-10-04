@@ -30,7 +30,6 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         private readonly IPlaybackManager _playbackManager;
         private readonly IPresentationManager _presentation;
         private readonly ILogger _logger;
-        private readonly IServerEvents _serverEvents;
 
         public ICommand PlayCommand { get; private set; }
         public ICommand ResumeCommand { get; private set; }
@@ -41,14 +40,13 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         public ICommand ToggleDislikesCommand { get; private set; }
         public ICommand ToggleIsFavoriteCommand { get; private set; }
 
-        public ItemViewModel(IApiClient apiClient, IImageManager imageManager, IPlaybackManager playbackManager, IPresentationManager presentation, ILogger logger, IServerEvents serverEvents)
+        public ItemViewModel(IApiClient apiClient, IImageManager imageManager, IPlaybackManager playbackManager, IPresentationManager presentation, ILogger logger)
         {
             _apiClient = apiClient;
             _imageManager = imageManager;
             _playbackManager = playbackManager;
             _presentation = presentation;
             _logger = logger;
-            _serverEvents = serverEvents;
             EnableServerImageEnhancers = true;
 
             PlayCommand = new RelayCommand(o => Play());
@@ -60,11 +58,11 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             ToggleIsFavoriteCommand = new RelayCommand(ToggleIsFavorite);
             ToggleIsPlayedCommand = new RelayCommand(ToggleIsPlayed);
 
-            _serverEvents.UserDataChanged += _serverEvents_UserDataChanged;
+            apiClient.UserDataChanged += _serverEvents_UserDataChanged;
         }
 
-        public ItemViewModel(BaseItemDto item, IApiClient apiClient, IImageManager imageManager, IPlaybackManager playbackManager, IPresentationManager presentation, ILogger logger, IServerEvents serverEvents)
-            : this(apiClient, imageManager, playbackManager, presentation, logger, serverEvents)
+        public ItemViewModel(BaseItemDto item, IApiClient apiClient, IImageManager imageManager, IPlaybackManager playbackManager, IPresentationManager presentation, ILogger logger)
+            : this(apiClient, imageManager, playbackManager, presentation, logger)
         {
             _item = item;
         }
@@ -1372,7 +1370,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         public void Dispose()
         {
-            _serverEvents.UserDataChanged -= _serverEvents_UserDataChanged;
+            _apiClient.UserDataChanged -= _serverEvents_UserDataChanged;
             DisposeCancellationTokenSource();
             Image = null;
         }

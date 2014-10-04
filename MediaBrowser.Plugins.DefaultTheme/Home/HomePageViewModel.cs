@@ -1,5 +1,4 @@
-﻿using System.Threading;
-using MediaBrowser.Model.ApiClient;
+﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Channels;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
@@ -13,6 +12,7 @@ using MediaBrowser.Theater.Presentation.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -21,32 +21,32 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
     public class HomePageViewModel : TabbedViewModel, IAcceptsPlayCommand
     {
         private readonly IPresentationManager _presentationManager;
-        private readonly IApiClient _apiClient;
         private readonly ISessionManager _sessionManager;
         private readonly ILogger _logger;
         private readonly IImageManager _imageManager;
         private readonly INavigationService _nav;
         private readonly IPlaybackManager _playbackManager;
-        private readonly IServerEvents _serverEvents;
+        private readonly IConnectionManager _connectionManager;
 
         private const double TileWidth = 336;
         private const double TileHeight = TileWidth * 9 / 16;
 
-        public HomePageViewModel(IPresentationManager presentationManager, IApiClient apiClient, ISessionManager sessionManager, ILogger logger, IImageManager imageManager, INavigationService nav, IPlaybackManager playbackManager, IServerEvents serverEvents)
+        public HomePageViewModel(IPresentationManager presentationManager, ISessionManager sessionManager, ILogger logger, IImageManager imageManager, INavigationService nav, IPlaybackManager playbackManager, IConnectionManager connectionManager)
         {
             _presentationManager = presentationManager;
-            _apiClient = apiClient;
             _sessionManager = sessionManager;
             _logger = logger;
             _imageManager = imageManager;
             _nav = nav;
             _playbackManager = playbackManager;
-            _serverEvents = serverEvents;
+            _connectionManager = connectionManager;
         }
 
         protected override async Task<IEnumerable<TabItem>> GetSections()
         {
-            var userViews = await _apiClient.GetUserViews(_sessionManager.CurrentUser.Id, CancellationToken.None);
+            var apiClient = _sessionManager.ActiveApiClient;
+
+            var userViews = await apiClient.GetUserViews(_sessionManager.CurrentUser.Id, CancellationToken.None);
 
             var views = userViews.Items.Select(i =>
             {
@@ -135,7 +135,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             CurrentItem = null;
 
             var tab = (TabItem)Sections.CurrentItem;
-            
+            var apiClient = _sessionManager.ActiveApiClient;
+
             if (string.Equals(section, "apps", StringComparison.OrdinalIgnoreCase))
             {
                 return new AppListViewModel(_presentationManager, _sessionManager, _logger);
@@ -143,7 +144,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             if (string.Equals(section, "playlists", StringComparison.OrdinalIgnoreCase))
             {
                 // Eventually when people have enough playlists we'll need to do something different
-                var vm = new ItemListViewModel(i => GetFolderItems(i, tab.Item.Id), _presentationManager, _imageManager, _apiClient, _nav, _playbackManager, _logger, _serverEvents)
+                var vm = new ItemListViewModel(i => GetFolderItems(i, tab.Item.Id), _presentationManager, _imageManager, apiClient, _nav, _playbackManager, _logger)
                 {
                     ImageDisplayWidth = 330,
                     ImageDisplayHeightGenerator = v => 330,
@@ -160,7 +161,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             }
             if (string.Equals(section, "folders", StringComparison.OrdinalIgnoreCase))
             {
-                var vm = new ItemListViewModel(i => GetFolderItems(i, tab.Item.Id), _presentationManager, _imageManager, _apiClient, _nav, _playbackManager, _logger, _serverEvents)
+                var vm = new ItemListViewModel(i => GetFolderItems(i, tab.Item.Id), _presentationManager, _imageManager, apiClient, _nav, _playbackManager, _logger)
                 {
                     ImageDisplayWidth = 480,
                     ImageDisplayHeightGenerator = v => 270,
@@ -177,7 +178,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             }
             if (string.Equals(section, CollectionType.LiveTv, StringComparison.OrdinalIgnoreCase))
             {
-                var vm = new ItemListViewModel(i => GetFolderItems(i, tab.Item.Id), _presentationManager, _imageManager, _apiClient, _nav, _playbackManager, _logger, _serverEvents)
+                var vm = new ItemListViewModel(i => GetFolderItems(i, tab.Item.Id), _presentationManager, _imageManager, apiClient, _nav, _playbackManager, _logger)
                 {
                     ImageDisplayWidth = 270,
                     ImageDisplayHeightGenerator = v => 270,
@@ -194,8 +195,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             }
             if (string.Equals(section, CollectionType.Games, StringComparison.OrdinalIgnoreCase))
             {
-                return new GamesViewModel(_presentationManager, _imageManager, _apiClient, _sessionManager, _nav,
-                                       _playbackManager, _logger, TileWidth, TileHeight, _serverEvents, tab.Item.Id);
+                return new GamesViewModel(_presentationManager, _imageManager, apiClient, _sessionManager, _nav,
+                                       _playbackManager, _logger, TileWidth, TileHeight, tab.Item.Id);
             }
             if (string.Equals(section, CollectionType.TvShows, StringComparison.OrdinalIgnoreCase))
             {
@@ -211,7 +212,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             }
             if (string.Equals(section, CollectionType.Channels, StringComparison.OrdinalIgnoreCase))
             {
-                var vm = new ItemListViewModel(GetChannelsAsync, _presentationManager, _imageManager, _apiClient, _nav, _playbackManager, _logger, _serverEvents)
+                var vm = new ItemListViewModel(GetChannelsAsync, _presentationManager, _imageManager, apiClient, _nav, _playbackManager, _logger)
                 {
                     ImageDisplayWidth = 480,
                     ImageDisplayHeightGenerator = v => 270,
@@ -234,23 +235,29 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
         private TvViewModel GetTvViewModel(string parentId)
         {
-            return new TvViewModel(_presentationManager, _imageManager, _apiClient, _sessionManager, _nav, _playbackManager, _logger, TileWidth, TileHeight, _serverEvents, parentId);
+            var apiClient = _sessionManager.ActiveApiClient;
+
+            return new TvViewModel(_presentationManager, _imageManager, apiClient, _sessionManager, _nav, _playbackManager, _logger, TileWidth, TileHeight, parentId);
         }
 
         private MoviesViewModel GetMoviesViewModel(string parentId)
         {
-            return new MoviesViewModel(_presentationManager, _imageManager, _apiClient, _sessionManager, _nav,
-                                       _playbackManager, _logger, TileWidth, TileHeight, _serverEvents, parentId);
+            var apiClient = _sessionManager.ActiveApiClient;
+
+            return new MoviesViewModel(_presentationManager, _imageManager, apiClient, _sessionManager, _nav,
+                                       _playbackManager, _logger, TileWidth, TileHeight, parentId);
         }
 
         private async Task<ItemsResult> GetChannelsAsync(ItemListViewModel viewModel)
         {
+            var apiClient = _sessionManager.ActiveApiClient;
+
             var query = new ChannelQuery
             {
                 UserId = _sessionManager.CurrentUser.Id
             };
 
-            var result = await _apiClient.GetChannels(query, CancellationToken.None);
+            var result = await apiClient.GetChannels(query, CancellationToken.None);
 
             return new ItemsResult
             {
@@ -259,8 +266,10 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             };
         }
 
-        private Task<ItemsResult> GetFolderItems(ItemListViewModel viewModel,string parentId)
+        private Task<ItemsResult> GetFolderItems(ItemListViewModel viewModel, string parentId)
         {
+            var apiClient = _sessionManager.ActiveApiClient;
+
             var query = new ItemQuery
             {
                 Fields = new[]
@@ -279,7 +288,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 ParentId = parentId
             };
 
-            return _apiClient.GetItemsAsync(query, CancellationToken.None);
+            return apiClient.GetItemsAsync(query, CancellationToken.None);
         }
 
         public void SetBackdrops()

@@ -33,24 +33,21 @@ namespace MediaBrowser.UI.Implementations
         /// </summary>
         private readonly ILogger _logger;
         private readonly IThemeManager _themeManager;
-        private readonly IApiClient _apiClient;
         private readonly Func<ISessionManager> _sessionFactory;
         private readonly ITheaterConfigurationManager _configurationManager;
 
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TheaterApplicationWindow"/> class.
+        /// Initializes a new instance of the <see cref="TheaterApplicationWindow" /> class.
         /// </summary>
         /// <param name="logger">The logger.</param>
         /// <param name="themeManager">The theme manager.</param>
-        /// <param name="apiClient">The API client.</param>
         /// <param name="sessionFactory">The session factory.</param>
         /// <param name="configurationManager">The configuration manager.</param>
-        public TheaterApplicationWindow(ILogger logger, IThemeManager themeManager, IApiClient apiClient, Func<ISessionManager> sessionFactory, ITheaterConfigurationManager configurationManager)
+        public TheaterApplicationWindow(ILogger logger, IThemeManager themeManager, Func<ISessionManager> sessionFactory, ITheaterConfigurationManager configurationManager)
         {
             _logger = logger;
             _themeManager = themeManager;
-            _apiClient = apiClient;
             _sessionFactory = sessionFactory;
             _configurationManager = configurationManager;
 
@@ -289,7 +286,9 @@ namespace MediaBrowser.UI.Implementations
 
         public async Task<DisplayPreferences> GetDisplayPreferences(string displayPreferencesId, CancellationToken cancellationToken)
         {
-            var displayPreferences = await _apiClient.GetDisplayPreferencesAsync(displayPreferencesId, _sessionFactory().CurrentUser.Id, "MBT-" + _themeManager.CurrentTheme.Name, cancellationToken);
+            var apiClient = _sessionFactory().ActiveApiClient;
+
+            var displayPreferences = await apiClient.GetDisplayPreferencesAsync(displayPreferencesId, _sessionFactory().CurrentUser.Id, "MBT-" + _themeManager.CurrentTheme.Name, cancellationToken);
             var userConfig = _configurationManager.GetUserTheaterConfiguration(_sessionFactory().CurrentUser.Id);
 
             //Reset to name ascending if config option is turned off
@@ -304,7 +303,9 @@ namespace MediaBrowser.UI.Implementations
 
         public Task UpdateDisplayPreferences(DisplayPreferences displayPreferences, CancellationToken cancellationToken)
         {
-            return _apiClient.UpdateDisplayPreferencesAsync(displayPreferences, _sessionFactory().CurrentUser.Id, "MBT-" + _themeManager.CurrentTheme.Name, cancellationToken);
+            var apiClient = _sessionFactory().ActiveApiClient;
+
+            return apiClient.UpdateDisplayPreferencesAsync(displayPreferences, _sessionFactory().CurrentUser.Id, "MBT-" + _themeManager.CurrentTheme.Name, cancellationToken);
         }
 
         private LoadingWindow _loadingWindow;

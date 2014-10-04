@@ -22,25 +22,23 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
         protected readonly IPlaybackManager PlaybackManager;
         protected readonly ILogger Logger;
         protected readonly IApplicationHost AppHost;
-        protected readonly IApiClient ApiClient;
+        protected readonly IConnectionManager ConnectionManager;
         protected readonly IPresentationManager PresentationManager;
-        protected readonly IServerEvents ServerEvents;
 
         private readonly Timer _clockTimer;
         private readonly Dispatcher _dispatcher;
 
-        public PageContentViewModel(INavigationService navigationService, ISessionManager sessionManager, IPlaybackManager playbackManager, ILogger logger, ITheaterApplicationHost appHost, IApiClient apiClient, IPresentationManager presentationManager, IServerEvents serverEvents)
+        public PageContentViewModel(INavigationService navigationService, ISessionManager sessionManager, IPlaybackManager playbackManager, ILogger logger, ITheaterApplicationHost appHost, IConnectionManager connectionManager, IPresentationManager presentationManager)
         {
             NavigationService = navigationService;
             SessionManager = sessionManager;
             PlaybackManager = playbackManager;
             Logger = logger;
             AppHost = appHost;
-            ApiClient = apiClient;
+            ConnectionManager = connectionManager;
             PresentationManager = presentationManager;
-            ServerEvents = serverEvents;
 
-            MasterCommands = new MasterCommandsViewModel(navigationService, sessionManager, presentationManager, apiClient, logger, appHost, serverEvents);
+            MasterCommands = new MasterCommandsViewModel(navigationService, sessionManager, presentationManager, connectionManager, logger, appHost);
 
             NavigationService.Navigated += NavigationServiceNavigated;
             SessionManager.UserLoggedIn += SessionManagerUserLoggedIn;

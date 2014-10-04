@@ -11,26 +11,24 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 {
     public class HomePageInfo : IHomePageInfo
     {
-        private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
         private readonly ISessionManager _sessionManager;
         private readonly IPresentationManager _presentationManager;
         private readonly INavigationService _navigationManager;
         private readonly IPlaybackManager _playbackManager;
-        private readonly IServerEvents _serverEvents;
 
         private readonly ILogger _logger;
+        private readonly IConnectionManager _connectionManager;
 
-        public HomePageInfo(IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, IPresentationManager presentationManager, INavigationService navigationManager, ILogger logger, IPlaybackManager playbackManager, IServerEvents serverEvents)
+        public HomePageInfo(IImageManager imageManager, ISessionManager sessionManager, IPresentationManager presentationManager, INavigationService navigationManager, ILogger logger, IPlaybackManager playbackManager, IConnectionManager connectionManager)
         {
-            _apiClient = apiClient;
             _imageManager = imageManager;
             _sessionManager = sessionManager;
             _presentationManager = presentationManager;
             _navigationManager = navigationManager;
             _logger = logger;
             _playbackManager = playbackManager;
-            _serverEvents = serverEvents;
+            _connectionManager = connectionManager;
         }
 
         public string Name
@@ -42,7 +40,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         {
             return new HomePage(rootFolder, _presentationManager)
             {
-                DataContext = new HomePageViewModel(_presentationManager, _apiClient, _sessionManager, _logger, _imageManager, _navigationManager, _playbackManager, _serverEvents)
+                DataContext = new HomePageViewModel(_presentationManager, _sessionManager, _logger, _imageManager, _navigationManager, _playbackManager, _connectionManager)
             };
         }
     }

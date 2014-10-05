@@ -2,6 +2,8 @@
 using MediaBrowser.Model.Serialization;
 using MediaBrowser.Theater.Interfaces.Configuration;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace MediaBrowser.UI
 {
@@ -22,12 +24,15 @@ namespace MediaBrowser.UI
         }
 
         private ServerCredentialConfiguration _servers;
-        private readonly object _syncLock = new object();
-        public ServerCredentialConfiguration GetServerCredentials()
+        private readonly SemaphoreSlim _asyncLock = new SemaphoreSlim(1, 1);
+
+        public async Task<ServerCredentialConfiguration> GetServerCredentials()
         {
             if (_servers == null)
             {
-                lock (_syncLock)
+                await _asyncLock.WaitAsync().ConfigureAwait(false);
+
+                try
                 {
                     if (_servers == null)
                     {
@@ -41,18 +46,28 @@ namespace MediaBrowser.UI
                         }
                     }
                 }
+                finally
+                {
+                    _asyncLock.Release();
+                }
             }
             return _servers;
         }
 
-        public void SaveServerCredentials(ServerCredentialConfiguration configuration)
+        public async Task SaveServerCredentials(ServerCredentialConfiguration configuration)
         {
             var path = Path;
             Directory.CreateDirectory(System.IO.Path.GetDirectoryName(path));
 
-            lock (_syncLock)
+            await _asyncLock.WaitAsync().ConfigureAwait(false);
+
+            try
             {
                 _json.SerializeToFile(configuration, path);
+            }
+            finally
+            {
+                _asyncLock.Release();
             }
         }
     }

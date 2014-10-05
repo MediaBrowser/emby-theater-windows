@@ -24,18 +24,16 @@ namespace MediaBrowser.Theater.Core.Appearance
         private readonly ITheaterConfigurationManager _config;
         private readonly ISessionManager _session;
         private readonly IImageManager _imageManager;
-        private readonly IApiClient _apiClient;
         private readonly IPresentationManager _presentation;
         private readonly IThemeManager _themeManager;
         private readonly INavigationService _nav;
         private readonly IScreensaverManager _screensaverManager;
 
-        public AppearancePage(ITheaterConfigurationManager config, ISessionManager session, IImageManager imageManager, IApiClient apiClient, IPresentationManager presentation, IThemeManager themeManager, INavigationService nav, IScreensaverManager screensaverManager)
+        public AppearancePage(ITheaterConfigurationManager config, ISessionManager session, IImageManager imageManager, IPresentationManager presentation, IThemeManager themeManager, INavigationService nav, IScreensaverManager screensaverManager)
         {
             _config = config;
             _session = session;
             _imageManager = imageManager;
-            _apiClient = apiClient;
             _presentation = presentation;
             _themeManager = themeManager;
             _nav = nav;
@@ -114,9 +112,11 @@ namespace MediaBrowser.Theater.Core.Appearance
         {
             if (_session.CurrentUser.HasPrimaryImage)
             {
+                var apiClient = _session.ActiveApiClient;
+
                 try
                 {
-                    UserImage.Source = await _imageManager.GetRemoteBitmapAsync(_apiClient.GetUserImageUrl(_session.CurrentUser, new ImageOptions
+                    UserImage.Source = await _imageManager.GetRemoteBitmapAsync(apiClient.GetUserImageUrl(_session.CurrentUser, new ImageOptions
                     {
                     }));
 

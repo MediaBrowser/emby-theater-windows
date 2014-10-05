@@ -1,10 +1,10 @@
-﻿using MediaBrowser.Model.ApiClient;
-using MediaBrowser.Model.Dto;
+﻿using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
+using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.Pages;
@@ -31,24 +31,24 @@ namespace MediaBrowser.Theater.Core.MediaPlayers
         private readonly ITheaterConfigurationManager _config;
         private readonly IPresentationManager _presentation;
         private readonly INavigationService _nav;
-        private readonly IApiClient _apiClient;
+        private readonly ISessionManager _session;
 
         private List<GameSystemSummary> _gameSystems;
 
-        public ConfigureMediaPlayerPage(IPlaybackManager playbackManager, ITheaterConfigurationManager config, IPresentationManager presentation, INavigationService nav, IApiClient apiClient)
-            : this(new PlayerConfiguration(), playbackManager, config, presentation, nav, apiClient)
+        public ConfigureMediaPlayerPage(IPlaybackManager playbackManager, ITheaterConfigurationManager config, IPresentationManager presentation, INavigationService nav, ISessionManager session)
+            : this(new PlayerConfiguration(), playbackManager, config, presentation, nav, session)
         {
             _isNew = true;
         }
 
-        public ConfigureMediaPlayerPage(PlayerConfiguration playerConfig, IPlaybackManager playbackManager, ITheaterConfigurationManager config, IPresentationManager presentation, INavigationService nav, IApiClient apiClient)
+        public ConfigureMediaPlayerPage(PlayerConfiguration playerConfig, IPlaybackManager playbackManager, ITheaterConfigurationManager config, IPresentationManager presentation, INavigationService nav, ISessionManager session)
         {
             _playerConfig = playerConfig;
             _playbackManager = playbackManager;
             _config = config;
             _presentation = presentation;
             _nav = nav;
-            _apiClient = apiClient;
+            _session = session;
 
             InitializeComponent();
         }
@@ -134,7 +134,9 @@ namespace MediaBrowser.Theater.Core.MediaPlayers
 
             try
             {
-                var systems = await _apiClient.GetGameSystemSummariesAsync(CancellationToken.None);
+                var apiClient = _session.ActiveApiClient;
+
+                var systems = await apiClient.GetGameSystemSummariesAsync(CancellationToken.None);
 
                 _gameSystems = systems.Where(i => i.GameFileExtensions.Count > 0).OrderBy(i => i.DisplayName).ToList();
 
@@ -261,7 +263,7 @@ namespace MediaBrowser.Theater.Core.MediaPlayers
 
             _config.SaveConfiguration();
 
-            await _nav.Navigate(new MediaPlayersPage(_nav, _playbackManager, _config, _presentation, _apiClient));
+            await _nav.Navigate(new MediaPlayersPage(_nav, _playbackManager, _config, _presentation, _session));
 
             _nav.RemovePagesFromHistory(2);
         }

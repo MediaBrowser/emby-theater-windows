@@ -1,9 +1,9 @@
-﻿using MediaBrowser.Model.ApiClient;
-using MediaBrowser.Theater.Interfaces;
+﻿using MediaBrowser.Theater.Interfaces;
 using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
+using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.ViewModels;
 using MediaBrowser.Theater.Presentation.Pages;
 using System;
@@ -23,15 +23,15 @@ namespace MediaBrowser.Theater.Core.MediaPlayers
         private readonly IPlaybackManager _playbackManager;
         private readonly ITheaterConfigurationManager _config;
         private readonly IPresentationManager _presentation;
-        private readonly IApiClient _apiClient;
+        private readonly ISessionManager _session;
 
-        public MediaPlayersPage(INavigationService nav, IPlaybackManager playbackManager, ITheaterConfigurationManager config, IPresentationManager presentation, IApiClient apiClient)
+        public MediaPlayersPage(INavigationService nav, IPlaybackManager playbackManager, ITheaterConfigurationManager config, IPresentationManager presentation, ISessionManager session)
         {
             _nav = nav;
             _playbackManager = playbackManager;
             _config = config;
             _presentation = presentation;
-            _apiClient = apiClient;
+            _session = session;
             InitializeComponent();
         }
 
@@ -53,12 +53,12 @@ namespace MediaBrowser.Theater.Core.MediaPlayers
         {
             var player = (MediaPlayerViewModel)e.Argument;
 
-            await _nav.Navigate(new ConfigureMediaPlayerPage(player.PlayerConfiguration, _playbackManager, _config, _presentation, _nav, _apiClient));
+            await _nav.Navigate(new ConfigureMediaPlayerPage(player.PlayerConfiguration, _playbackManager, _config, _presentation, _nav, _session));
         }
 
         async void BtnAddPlayer_Click(object sender, RoutedEventArgs e)
         {
-            await _nav.Navigate(new ConfigureMediaPlayerPage(_playbackManager, _config, _presentation, _nav, _apiClient));
+            await _nav.Navigate(new ConfigureMediaPlayerPage(_playbackManager, _config, _presentation, _nav, _session));
         }
     }
 

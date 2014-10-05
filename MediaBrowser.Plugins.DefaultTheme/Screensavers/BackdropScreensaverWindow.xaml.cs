@@ -40,15 +40,13 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
     public partial class BackdropScreensaverWindow : ScreensaverWindowBase
     {
         private readonly ISessionManager _session;
-        private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
 
-        public BackdropScreensaverWindow(ISessionManager session, IApiClient apiClient, IPresentationManager presentationManager, IScreensaverManager screensaverManager, IImageManager imageManager, ILogger logger)
+        public BackdropScreensaverWindow(ISessionManager session, IPresentationManager presentationManager, IScreensaverManager screensaverManager, IImageManager imageManager, ILogger logger)
             : base(presentationManager, screensaverManager, logger)
         {
             
             _session = session;
-            _apiClient = apiClient;
             _imageManager = imageManager;
             InitializeComponent();
 
@@ -61,8 +59,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
         {
             MainGrid.Children.Clear();
 
-           
-            var items = await _apiClient.GetItemsAsync(new ItemQuery
+            var apiClient = _session.ActiveApiClient;
+
+            var items = await apiClient.GetItemsAsync(new ItemQuery
             {
                 UserId = _session.CurrentUser.Id,
                 ImageTypes = new[] { ImageType.Backdrop },
@@ -81,7 +80,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
             var images = items.Items.Select(i => new ImageViewerImage
             {
                 Caption = i.Name,
-                Url = _apiClient.GetImageUrl(i, new ImageOptions
+                Url = apiClient.GetImageUrl(i, new ImageOptions
                 {
                     ImageType = ImageType.Backdrop
                 })

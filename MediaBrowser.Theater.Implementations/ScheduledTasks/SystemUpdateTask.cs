@@ -56,7 +56,7 @@ namespace MediaBrowser.Theater.Implementations.ScheduledTasks
                 new StartupTrigger(),
 
                 // Every so often
-                new IntervalTrigger { Interval = TimeSpan.FromHours(24)}
+                new IntervalTrigger { Interval = TimeSpan.FromHours(3)}
             };
         }
 

@@ -10,10 +10,9 @@ namespace MediaBrowser.Theater.Api.Commands
     public class CommandManager : ICommandManager
     {
         private readonly ILogger _logger;
-        private readonly IUserInputManager _userInputManager;
         private readonly InputCommandMaps _inputCommandMaps;
 
-        private WindowsInput.Key _lastKeyDown;
+        private Key _lastKeyDown;
         private DateTime _lastKeyDownTime;
         private AppCommand _lastCmd;
         private DateTime _lastCmdTime;
@@ -22,27 +21,35 @@ namespace MediaBrowser.Theater.Api.Commands
 
         public CommandManager(IUserInputManager userInputManager, ILogManager logManager)
         {
-            _userInputManager = userInputManager;
             _inputCommandMaps = new InputCommandMaps();
 
-            _userInputManager.KeyDown += input_KeyDown;
-            _userInputManager.AppCommand += input_AppCommand;
+            userInputManager.KeyDown += input_KeyDown;
+            userInputManager.AppCommand += input_AppCommand;
 
             _logger = logManager.GetLogger(GetType().Name);
         }
 
-        private event CommandEventHandler _commandReceived;
-        public event CommandEventHandler CommandReceived
+        public event CommandEventHandler CommandReceived;
+
+        protected virtual void OnCommandReceived(CommandEventArgs commandeventargs)
         {
-            add
-            {
-                _commandReceived += value;
-            }
-            remove
-            {
-                _commandReceived -= value;
+            CommandEventHandler handler = CommandReceived;
+            if (handler != null) {
+                handler(this, commandeventargs);
             }
         }
+
+//        public event CommandEventHandler CommandReceived
+//        {
+//            add
+//            {
+//                _commandReceived += value;
+//            }
+//            remove
+//            {
+//                _commandReceived -= value;
+//            }
+//        }
 
         // We need to handle 2 case of multiple key sequences for a single commmand
         //
@@ -82,7 +89,7 @@ namespace MediaBrowser.Theater.Api.Commands
                    cmd == AppCommand.APPCOMMAND_MEDIA_PLAY_PAUSE;
         }
 
-        private bool IsMediaCommand(WindowsInput.Key key)
+        private bool IsMediaCommand(Key key)
         {
             return key == Key.MediaNextTrack ||
                    key == Key.MediaPreviousTrack ||
@@ -107,7 +114,7 @@ namespace MediaBrowser.Theater.Api.Commands
             }
         }
 
-        private bool MatchCommandWithWindowsKey(WindowsInput.Key key)
+        private bool MatchCommandWithWindowsKey(Key key)
         {
             if ((_lastCmd == AppCommand.APPCOMMAND_MEDIA_NEXTTRACK && key == Key.MediaNextTrack) ||
                 (_lastCmd == AppCommand.APPCOMMAND_MEDIA_PREVIOUSTRACK && key == Key.MediaPreviousTrack) ||
@@ -130,7 +137,7 @@ namespace MediaBrowser.Theater.Api.Commands
             return IsMediaCommand(cmd) && MatchCommandWithWindowsKey(cmd);
         }
 
-        private bool IsDuplicateMediaKeyEvent(WindowsInput.Key key)
+        private bool IsDuplicateMediaKeyEvent(Key key)
         {
             return IsMediaCommand(key) && MatchCommandWithWindowsKey(key);
         }
@@ -163,20 +170,14 @@ namespace MediaBrowser.Theater.Api.Commands
 
             if (appCommand != null)
             {
-                if (IsDuplicateMediaKeyEvent(appCommand.Value))
-                {
+                if (IsDuplicateMediaKeyEvent(appCommand.Value)) {
                     _logger.Debug("input_AppCommand: IsDuplicate - cmd {0} after key {1}", appCommand, _lastKeyDown);
                     appCommandEventArgs.Handled = false;
-                }
-                else
-                {
-                    if (_commandReceived != null)
-                    {
-                        var command = _inputCommandMaps.GetMappedCommand(appCommand.Value);
-                        var commandEventArgs = new CommandEventArgs { Command = command, Handled = appCommandEventArgs.Handled };
-                        _commandReceived.Invoke(null, commandEventArgs);
-                        appCommandEventArgs.Handled = commandEventArgs.Handled;
-                    }
+                } else {
+                    var command = _inputCommandMaps.GetMappedCommand(appCommand.Value);
+                    var commandEventArgs = new CommandEventArgs { Command = command, Handled = appCommandEventArgs.Handled };
+                    OnCommandReceived(commandEventArgs);
+                    appCommandEventArgs.Handled = commandEventArgs.Handled;
                 }
 
                 if (appCommandEventArgs.Handled)
@@ -190,25 +191,19 @@ namespace MediaBrowser.Theater.Api.Commands
                 }
             }
         }
-
-
+        
         /// <summary>
         /// Responds to key down in application
         /// </summary>
-        void input_KeyDown(object sender, WindowsInput.KeyEventArgs e)
+        void input_KeyDown(object sender, KeyEventArgs e)
         {
             _logger.Debug("input_KeyDown {0} Ctrl({1}) Shift({2})", e.Key, IsControlKeyDown(), IsShiftKeyDown());
-            if (IsDuplicateMediaKeyEvent(e.Key))
-            {
+
+            if (IsDuplicateMediaKeyEvent(e.Key)) {
                 _logger.Debug("KeyDown IsDuplicateMediaKeyEvent true:- Key {0} after cmd {1}", e.Key, _lastCmd);
-            }
-            else
-            {
-                if (_commandReceived != null)
-                {
-                    var command = _inputCommandMaps.GetMappedCommand(e.Key, IsControlKeyDown(), IsShiftKeyDown());
-                    _commandReceived.Invoke(null, new CommandEventArgs { Command = command });
-                }
+            } else {
+                var command = _inputCommandMaps.GetMappedCommand(e.Key, IsControlKeyDown(), IsShiftKeyDown());
+                ExecuteCommand(command, null);
             }
 
             _lastKeyDown = e.Key;
@@ -217,19 +212,20 @@ namespace MediaBrowser.Theater.Api.Commands
 
         private bool IsShiftKeyDown()
         {
-            return Keyboard.IsKeyDown(WindowsInput.Key.LeftShift) || Keyboard.IsKeyDown(WindowsInput.Key.RightShift);
+            return Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift);
         }
 
         private bool IsControlKeyDown()
         {
-            return Keyboard.IsKeyDown(WindowsInput.Key.LeftCtrl) || Keyboard.IsKeyDown(WindowsInput.Key.RightCtrl);
+            return Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl);
         }
 
-        public bool ExecuteCommand(Command command, Object args)
+        public bool ExecuteCommand(Command command, object args)
         {
             _logger.Debug("ExecuteCommand {0} {1}", command, args);
             var commandEventArgs = new CommandEventArgs { Command = command, Args = args, Handled = false };
-            _commandReceived.Invoke(null, commandEventArgs);
+            OnCommandReceived(commandEventArgs);
+
             return commandEventArgs.Handled;
         }
     }

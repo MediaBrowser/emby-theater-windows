@@ -36,7 +36,10 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
         private BaseItemDto _nowPlayingItem;
         private long _positionTicks;
         private bool _supportsChapters;
+        private bool _showOsd;
 
+        private System.Windows.Forms.Timer _timer;
+        
         public OsdViewModel(IPlaybackManager playbackManager, IApiClient apiClient, IImageManager imageManager, IPresenter presentationManager, ILogger logger, INavigator nav, IServerEvents serverEvents, IEventAggregator events)
         {
             Logger = logger;
@@ -79,6 +82,37 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
                 ShowCommandBar = false,
                 ShowMediaBrowserLogo = false
             };
+            
+//            Action flipShowOsd = null;
+//            flipShowOsd = () => Delay(TimeSpan.FromSeconds(3), () => {
+//                ShowOsd = !ShowOsd;
+//                flipShowOsd();
+//            });
+//
+//            flipShowOsd();
+        }
+
+        private void Delay(TimeSpan duration, Action action)
+        {
+            using (_timer) { }
+
+            if (duration == TimeSpan.Zero) {
+                action();
+            } else {
+                Action execute = () => {
+                    var timer = _timer = new System.Windows.Forms.Timer();
+                    _timer.Interval = (int) duration.TotalMilliseconds;
+                    _timer.Tick += (s, e) => {
+                        action();
+                        timer.Stop();
+                    };
+                    _timer.Enabled = true;
+
+                    _timer.Start();
+                };
+
+                execute.OnUiThread();
+            }
         }
 
         public IApiClient ApiClient { get; private set; }
@@ -96,6 +130,20 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
         public ICommand StopCommand { get; private set; }
         public ICommand PlayCommand { get; private set; }
         public ICommand PlayPauseCommand { get; private set; }
+
+        public bool ShowOsd
+        {
+            get { return _showOsd; }
+            set
+            {
+                if (Equals(_showOsd, value)) {
+                    return;
+                }
+
+                _showOsd = value;
+                OnPropertyChanged();
+            }
+        }
 
         public IMediaPlayer MediaPlayer
         {
@@ -373,6 +421,27 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
         private void player_PlayStateChanged(object sender, EventArgs e)
         {
             UpdatePauseValues(MediaPlayer);
+
+            if (MediaPlayer.PlayState == PlayState.Playing) {
+                Delay(TimeSpan.FromSeconds(1), () => ShowOsd = false);
+            }
+
+            if (MediaPlayer.PlayState == PlayState.Paused) {
+                Delay(TimeSpan.Zero, () => ShowOsd = true);
+            }
+        }
+
+        public void ToggleOsd()
+        {
+            Delay(TimeSpan.Zero, () => ShowOsd = !ShowOsd);
+        }
+
+        public void TemporarilyShowOsd()
+        {
+            Delay(TimeSpan.FromSeconds(0), () => {
+                ShowOsd = true;
+                Delay(TimeSpan.FromSeconds(3), () => ShowOsd = false);
+            });
         }
 
         private void UpdatePlayerCapabilities(IMediaPlayer player, BaseItemDto media)

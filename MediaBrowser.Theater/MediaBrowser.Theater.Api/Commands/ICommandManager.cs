@@ -35,7 +35,7 @@ namespace MediaBrowser.Theater.Api.Commands
         public Command Command { get;set;}
         public object Args { get; set; }
 
-        public CommandRoutedEventArgs(RoutedEvent routedEvent, object source) : base(routedEvent, source) { }
+        public CommandRoutedEventArgs(RoutedEvent routedEvent) : base(routedEvent) { }
     }
 
     public delegate void CommandRoutedEventHandler(object sender, CommandRoutedEventArgs e);

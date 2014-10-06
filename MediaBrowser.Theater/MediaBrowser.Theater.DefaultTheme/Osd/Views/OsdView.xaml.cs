@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using MediaBrowser.Theater.Api.Commands;
 using MediaBrowser.Theater.DefaultTheme.Osd.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.Osd.Views
@@ -31,6 +32,24 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.Views
             DataContextChanged += FullscreenVideoTransportOsd_DataContextChanged;
             Loaded += FullscreenVideoTransportOsd_Loaded;
             Unloaded += FullscreenVideoTransportOsd_Unloaded;
+            PlayPauseButton.IsVisibleChanged += OsdView_IsVisibleChanged;
+            MouseMove += OsdView_MouseMove;
+        }
+
+        void OsdView_MouseMove(object sender, MouseEventArgs e)
+        {
+            var viewModel = DataContext as OsdViewModel;
+            if (viewModel != null) {
+                viewModel.TemporarilyShowOsd();
+            }
+        }
+
+        void OsdView_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (PlayPauseButton.Visibility == Visibility.Visible) {
+                Container.Focus();
+                PlayPauseButton.Focus();
+            }
         }
 
         /// <summary>

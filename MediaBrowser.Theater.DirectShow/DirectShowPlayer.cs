@@ -163,7 +163,7 @@ namespace MediaBrowser.Theater.DirectShow
                 if (_hiddenWindow.ContentPixelSize.Height == scrRect.Bottom && _hiddenWindow.ContentPixelSize.Width == scrRect.Right)
                     isFS = true;
 
-                _logger.Debug("IsFullScreen: W: {0} H: {1} Top: {2} Bottom: {3} Left: {4} Right: {5}", _hiddenWindow.ContentPixelSize.Height, _hiddenWindow.ContentPixelSize.Width, scrRect.Top, scrRect.Bottom, scrRect.Left, scrRect.Right);
+                _logger.Debug("IsFullScreen: W: {0} H: {1} Top: {2} Bottom: {3} Left: {4} Right: {5}", _hiddenWindow.ContentPixelSize.Width, _hiddenWindow.ContentPixelSize.Height, scrRect.Top, scrRect.Bottom, scrRect.Left, scrRect.Right);
 
                 return isFS;
             }

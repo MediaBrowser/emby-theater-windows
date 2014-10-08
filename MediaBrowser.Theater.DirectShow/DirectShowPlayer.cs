@@ -153,6 +153,22 @@ namespace MediaBrowser.Theater.DirectShow
 
         #endregion
 
+        public VideoScalingScheme VideoScaling
+        {
+            get
+            {
+                return _iVideoScaling;
+            }
+            set
+            {
+                if (value != _iVideoScaling)
+                {
+                    _iVideoScaling = value;
+                    SetAspectRatio();
+                }
+            }
+        }
+
         public bool IsFullScreen
         {
             get
@@ -320,6 +336,8 @@ namespace MediaBrowser.Theater.DirectShow
                 TimeSpan itemDuration = TimeSpan.MaxValue;
                 if (item.OriginalItem.RunTimeTicks > 0)
                     itemDuration = TimeSpan.FromTicks((long)item.OriginalItem.RunTimeTicks);
+
+                _iVideoScaling = (VideoScalingScheme)_mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig.ScalingMode;
 
                 if (item.IsVideo
                     && IsFullScreen
@@ -2710,6 +2728,19 @@ namespace MediaBrowser.Theater.DirectShow
                     DsError.ThrowExceptionForHR(hr);
                 }
             }
+        }
+
+        public void ToggleVideoScaling()
+        {
+            VideoScalingScheme cScheme = VideoScaling;
+            int iScheme = (int)cScheme;
+            iScheme++;
+
+            var vsVals = Enum.GetValues(typeof(VideoScalingScheme));
+            if (iScheme >= vsVals.Length)
+                iScheme = 0;
+
+            VideoScaling = (VideoScalingScheme)iScheme;
         }
       
         private void LoadActiveExternalSubtitles()

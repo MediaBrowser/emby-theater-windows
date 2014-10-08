@@ -440,6 +440,17 @@ namespace MediaBrowser.Theater.DirectShow
             }
         }
 
+        public void ToggleVideoScaling()
+        {
+            lock (_commandLock)
+            {
+                if (_mediaPlayer != null)
+                {
+                    InvokeOnPlayerThread(_mediaPlayer.ToggleVideoScaling);
+                }
+            }
+        }
+
         private readonly object _commandLock = new object();
 
         public void Stop()

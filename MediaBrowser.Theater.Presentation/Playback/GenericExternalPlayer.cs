@@ -329,6 +329,10 @@ namespace MediaBrowser.Theater.Presentation.Playback
             OnPlayerLaunched();
         }
 
+        public void ToggleVideoScaling()
+        {
+        }
+
         private async Task<IIsoMount> GetIsoMount(BaseItemDto item, CancellationToken cancellationToken)
         {
             IIsoMount mountedIso = null;

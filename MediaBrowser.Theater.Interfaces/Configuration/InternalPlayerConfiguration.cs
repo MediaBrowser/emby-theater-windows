@@ -28,6 +28,8 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
 
         public bool PublishGraph { get; set; }
 
+        public string FilterSet { get; set; }
+
         public InternalPlayerConfiguration()
         {
             //set defaults if necessary
@@ -37,6 +39,7 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
             COMConfig = new KnownCOMObjectConfiguration();
             UsePrivateObjects = true;
             PublishGraph = false;
+            FilterSet = string.Empty;
         }
     }
 

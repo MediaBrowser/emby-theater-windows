@@ -30,6 +30,10 @@
             <TextBlock Style="{StaticResource TextBlockStyle}" Margin="0 0 0 0"><Run Text="Max Streaming Bitrate:"/></TextBlock>
             <controls:SelectList x:Name="SelectMaxStreamingBitrate" Margin="130 0 0 0"/>
         </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="0 10 0 0">
+            <TextBlock Style="{StaticResource TextBlockStyle}" Margin="0 0 0 0"><Run Text="Filter Set:"/></TextBlock>
+            <controls:SelectList x:Name="SelectFilterSet" Margin="130 0 0 0"/>
+        </StackPanel>
         <!--<CheckBox x:Name="ChkEnableReclock" Margin="0 30 0 0" VerticalAlignment="Center">
             <TextBlock Style="{StaticResource TextBlockStyle}">Enable Reclock *</TextBlock>
         </CheckBox>-->

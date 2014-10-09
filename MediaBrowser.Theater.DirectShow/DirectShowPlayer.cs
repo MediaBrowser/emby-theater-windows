@@ -1392,10 +1392,10 @@ namespace MediaBrowser.Theater.DirectShow
                         if (hr > -1)
                         {
                             _customEvrPresenterLoaded = true;
-                            IEVRCPSettings cp = pPresenter as IEVRCPSettings;
+                            IEVRCPConfig cp = pPresenter as IEVRCPConfig;
                             if (cp != null)
                             {
-                                hr = cp.SetNominalRange((MFNominalRange)_mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig.NominalRange);
+                                hr = cp.SetInt(EVRCPSetting.NOMINAL_RANGE, _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig.NominalRange);
                                 DsError.ThrowExceptionForHR(hr);
                             }
                         }

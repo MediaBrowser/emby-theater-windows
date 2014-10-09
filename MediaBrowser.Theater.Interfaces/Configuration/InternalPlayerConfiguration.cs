@@ -122,6 +122,7 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
         public bool EnableMadvr { get; set; }
         public bool AutoChangeRefreshRate { get; set; }
         public int MinRefreshRateMin { get; set; }
+        public int ScalingMode { get; set; }
 
         public VideoConfiguration()
         {
@@ -139,6 +140,7 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
 
             AutoChangeRefreshRate = false;
             MinRefreshRateMin = 5;
+            ScalingMode = 4;
         }
 
         public void SetDefaults()

@@ -154,6 +154,15 @@ namespace MediaBrowser.Theater.DirectShow
                                                 byte[] comBin = fd.DownloadData(comPath);
                                                 if (comBin.Length > 0)
                                                 {
+                                                    try
+                                                    {
+                                                        string dirPath = Path.Combine(dlPath, Path.GetFileNameWithoutExtension(toCheck));
+                                                        Directory.Delete(dirPath, true);
+                                                    }
+                                                    catch (Exception ex)
+                                                    {
+                                                        Debug.WriteLine(ex.Message);
+                                                    }
                                                     using (MemoryStream ms = new MemoryStream(comBin))
                                                     {
                                                         zipClient.ExtractAll(ms, dlPath, true);

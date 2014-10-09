@@ -17,5 +17,11 @@
             <TextBlock Style="{StaticResource TextBlockStyle}" Margin="0 0 0 0">Smooth Motion Mode:</TextBlock>
             <controls:SelectList x:Name="SelectSmoothMode" Margin="40 0 0 0"></controls:SelectList>
         </StackPanel>
+        <TextBlock Style="{StaticResource Heading1TextBlockStyle}" Margin="0,50,0,0">EVR Settings</TextBlock>
+        <StackPanel Orientation="Horizontal" Margin="0 50 0 0">
+            <TextBlock Style="{StaticResource TextBlockStyle}" Margin="0 0 0 0">Scaling Mode:</TextBlock>
+            <controls:SelectList x:Name="SelectScalingMode" Margin="40 0 0 0"></controls:SelectList>
+        </StackPanel>
+
     </StackPanel>
 </Page>

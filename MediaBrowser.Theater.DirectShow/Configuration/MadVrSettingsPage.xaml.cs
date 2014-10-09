@@ -58,6 +58,18 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
                  new SelectListItem{ Text = "Almost Always", Value="almostAlways"},
                  new SelectListItem{ Text = "always", Value="always"}
             };
+
+            SelectScalingMode.Options = new List<SelectListItem>
+            {
+                 new SelectListItem{ Text = "Half", Value="0"},
+                 new SelectListItem{ Text = "Normal", Value="1"},
+                 new SelectListItem{ Text = "Double", Value="2"},
+                 new SelectListItem{ Text = "Stretch", Value="3"},
+                 new SelectListItem{ Text = "From Inside", Value="4"},
+                 new SelectListItem{ Text = "From Outside", Value="5"},
+                 new SelectListItem{ Text = "Zoom 1", Value="6"},
+                 new SelectListItem{ Text = "Zoom 2", Value="7"}
+            };
         }
 
         void GeneralSettingsPage_Loaded(object sender, RoutedEventArgs e)
@@ -66,6 +78,7 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
 
             ChkEnableSmoothMotion.IsChecked = config.VideoConfig.UseMadVrSmoothMotion;
             SelectSmoothMode.SelectedValue = config.VideoConfig.MadVrSmoothMotionMode;
+            SelectScalingMode.SelectedValue = config.VideoConfig.ScalingMode.ToString();
         }
 
         void GeneralSettingsPage_Unloaded(object sender, RoutedEventArgs e)
@@ -74,6 +87,7 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
 
             config.VideoConfig.UseMadVrSmoothMotion = ChkEnableSmoothMotion.IsChecked ?? false;
             config.VideoConfig.MadVrSmoothMotionMode = SelectSmoothMode.SelectedValue;
+            config.VideoConfig.ScalingMode = int.Parse(SelectScalingMode.SelectedValue);
 
             _config.SaveConfiguration();
         }

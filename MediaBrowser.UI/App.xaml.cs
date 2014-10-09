@@ -570,7 +570,7 @@ namespace MediaBrowser.UI
         {
             try
             {
-                MediaBrowser.Theater.DirectShow.URCOMLoader.EnsureObjects(_appHost.TheaterConfigurationManager, false);
+                MediaBrowser.Theater.DirectShow.URCOMLoader.EnsureObjects(_appHost.TheaterConfigurationManager, _appHost.GetZipClient(), false);
                 return true;
                 //return mediaFilters.IsLavSplitterInstalled() && mediaFilters.IsLavAudioInstalled() && mediaFilters.IsLavVideoInstalled() && mediaFilters.IsXyVsFilterInstalled();
             }

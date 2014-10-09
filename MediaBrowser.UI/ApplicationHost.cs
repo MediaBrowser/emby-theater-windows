@@ -3,11 +3,13 @@ using MediaBrowser.ApiInteraction.Network;
 using MediaBrowser.ApiInteraction.WebSocket;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Implementations;
+using MediaBrowser.Common.Implementations.IO;
 using MediaBrowser.Common.Implementations.ScheduledTasks;
 using MediaBrowser.Common.Net;
 using MediaBrowser.IsoMounter;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Entities;
+using MediaBrowser.Model.IO;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Session;
 using MediaBrowser.Model.System;
@@ -57,7 +59,7 @@ namespace MediaBrowser.UI
     internal class ApplicationHost : BaseApplicationHost<ApplicationPaths>, ITheaterApplicationHost
     {
         public ApplicationHost(ApplicationPaths applicationPaths, ILogManager logManager)
-            : base(applicationPaths, logManager)
+            : base(applicationPaths, logManager, new CommonFileSystem(logManager.GetLogger("Logger"), true, false))
         {
         }
 
@@ -73,6 +75,11 @@ namespace MediaBrowser.UI
         public IUserInputManager UserInputManager { get; private set; }
         public ICommandManager CommandManager { get; private set; }
         public IMediaFilters MediaFilters { get; private set; }
+
+        public IZipClient GetZipClient()
+        {
+            return ZipClient;
+        }
 
         public ConfigurationManager TheaterConfigurationManager
         {

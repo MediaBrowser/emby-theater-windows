@@ -10,7 +10,6 @@ using DirectShowLib.Utils;
 using MediaBrowser.Model.IO;
 using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces;
-using MediaBrowser.Common.Implementations.Archiving;
 using System.Reflection;
 using System.Net;
 using System.Threading;
@@ -63,19 +62,18 @@ namespace MediaBrowser.Theater.DirectShow
             }
         }
 
-        public static void EnsureObjects(ITheaterConfigurationManager mbtConfig, bool block)
+        public static void EnsureObjects(ITheaterConfigurationManager mbtConfig, IZipClient zipClient, bool block)
         {
-            EnsureObjects(mbtConfig, block, false);
+            EnsureObjects(mbtConfig, zipClient, block, false);
         }
 
-        public static void EnsureObjects(ITheaterConfigurationManager mbtConfig, bool block, bool redownload)
+        public static void EnsureObjects(ITheaterConfigurationManager mbtConfig, IZipClient zipClient, bool block, bool redownload)
         {
             try
             {
                 string objPath = Path.Combine(mbtConfig.CommonApplicationPaths.ProgramDataPath, OJB_FOLDER);
                 string lastCheckedPath = Path.Combine(objPath, LAST_CHECKED);
                 bool needsCheck = true;
-                IZipClient zipClient = new ZipClient();
 
                 if (!Directory.Exists(objPath))
                 {
@@ -202,10 +200,10 @@ namespace MediaBrowser.Theater.DirectShow
             private set;
         }
 
-        public URCOMLoader(ITheaterConfigurationManager mbtConfig)
+        public URCOMLoader(ITheaterConfigurationManager mbtConfig, IZipClient zipClient)
         {
             //this should be called on app load, but this will make sure it gets done.
-            URCOMLoader.EnsureObjects(mbtConfig, true);
+            URCOMLoader.EnsureObjects(mbtConfig, zipClient, true);
 
             _knownObjects = mbtConfig.Configuration.InternalPlayerConfiguration.COMConfig.FilterList;
             SearchPath = Path.Combine(mbtConfig.CommonApplicationPaths.ProgramDataPath, OJB_FOLDER);

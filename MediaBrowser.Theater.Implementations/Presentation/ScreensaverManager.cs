@@ -69,7 +69,12 @@ namespace MediaBrowser.Theater.Implementations.Presentation
             client.MessageCommand += _serverEvents_MessageCommand;
             client.PlayCommand += _serverEvents_PlayCommand;
             client.PlaystateCommand += _serverEvents_PlaystateCommand;
-            client.GeneralCommand += _serverEvents_GeneralCommand;
+            client.GeneralCommand += client_GeneralCommand;
+        }
+
+        void client_GeneralCommand(object sender, GenericEventArgs<GeneralCommandEventArgs> e)
+        {
+            _presentationManager.Window.Dispatcher.InvokeAsync(OnRemoteControlCommand, DispatcherPriority.Background);
         }
 
         private void UnbindEvents(IApiClient client)
@@ -78,7 +83,7 @@ namespace MediaBrowser.Theater.Implementations.Presentation
             client.MessageCommand -= _serverEvents_MessageCommand;
             client.PlayCommand -= _serverEvents_PlayCommand;
             client.PlaystateCommand -= _serverEvents_PlaystateCommand;
-            client.GeneralCommand -= _serverEvents_GeneralCommand;
+            client.GeneralCommand -= client_GeneralCommand;
         }
 
         private void SetDefaultCurrentScreenSaverName()
@@ -132,12 +137,6 @@ namespace MediaBrowser.Theater.Implementations.Presentation
             {
                 screenSaver.Close();
             }
-        }
-
-
-        void _serverEvents_GeneralCommand(object sender, GeneralCommandEventArgs e)
-        {
-            _presentationManager.Window.Dispatcher.InvokeAsync(OnRemoteControlCommand, DispatcherPriority.Background);
         }
 
         void _serverEvents_PlaystateCommand(object sender, GenericEventArgs<PlaystateRequest> e)

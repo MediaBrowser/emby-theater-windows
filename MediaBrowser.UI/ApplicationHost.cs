@@ -19,6 +19,7 @@ using MediaBrowser.Theater.Implementations.Commands;
 using MediaBrowser.Theater.Implementations.Configuration;
 using MediaBrowser.Theater.Implementations.Playback;
 using MediaBrowser.Theater.Implementations.Presentation;
+using MediaBrowser.Theater.Implementations.ScheduledTasks;
 using MediaBrowser.Theater.Implementations.Session;
 using MediaBrowser.Theater.Implementations.System;
 using MediaBrowser.Theater.Implementations.Theming;
@@ -273,6 +274,9 @@ namespace MediaBrowser.UI
             // Presentation player assembly
             yield return typeof(GenericExternalPlayer).Assembly;
 
+            // Implementations assembly
+            yield return typeof(SystemUpdateTask).Assembly;
+            
             // Core assembly
             yield return typeof(LoginPage).Assembly;
 

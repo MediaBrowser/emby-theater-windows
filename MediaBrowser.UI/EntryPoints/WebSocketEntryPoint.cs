@@ -75,7 +75,7 @@ namespace MediaBrowser.UI.EntryPoints
             client.UserDeleted += _apiWebSocket_UserDeleted;
             client.UserUpdated += _apiWebSocket_UserUpdated;
             client.PlaystateCommand += _apiWebSocket_PlaystateCommand;
-            client.GeneralCommand += socket_GeneralCommand;
+            client.GeneralCommand += client_GeneralCommand;
             client.MessageCommand += socket_MessageCommand;
             client.PlayCommand += _apiWebSocket_PlayCommand;
             client.SendStringCommand += socket_SendStringCommand;
@@ -84,13 +84,18 @@ namespace MediaBrowser.UI.EntryPoints
             client.SetVolumeCommand += socket_SetVolumeCommand;
         }
 
+        void client_GeneralCommand(object sender, GenericEventArgs<GeneralCommandEventArgs> e)
+        {
+            socket_GeneralCommand(sender, e.Argument);
+        }
+
         private void UnindEvents(IApiClient client)
         {
             client.BrowseCommand -= _apiWebSocket_BrowseCommand;
             client.UserDeleted -= _apiWebSocket_UserDeleted;
             client.UserUpdated -= _apiWebSocket_UserUpdated;
             client.PlaystateCommand -= _apiWebSocket_PlaystateCommand;
-            client.GeneralCommand -= socket_GeneralCommand;
+            client.GeneralCommand -= client_GeneralCommand;
             client.MessageCommand -= socket_MessageCommand;
             client.PlayCommand -= _apiWebSocket_PlayCommand;
             client.SendStringCommand -= socket_SendStringCommand;

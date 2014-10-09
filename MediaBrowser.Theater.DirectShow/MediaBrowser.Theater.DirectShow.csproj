@@ -104,6 +104,9 @@
     <Compile Include="Configuration\MadVrSettingsPage.xaml.cs">
       <DependentUpon>MadVrSettingsPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Configuration\SplitterSettingsPage.xaml.cs">
+      <DependentUpon>SplitterSettingsPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="CustomCursor.cs" />
     <Compile Include="DirectShowPlayer.cs" />
     <Compile Include="Configuration\ConfigurationPageFactory.cs" />
@@ -193,6 +196,10 @@
     <Page Include="Configuration\MadVrSettingsPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Configuration\SplitterSettingsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
   <ItemGroup>

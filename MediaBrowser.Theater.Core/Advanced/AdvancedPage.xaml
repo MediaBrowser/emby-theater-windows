@@ -29,11 +29,11 @@
             <TextBlock Style="{StaticResource TextBlockStyle}">Enable backdrops</TextBlock>
         </CheckBox>
 
-        <CheckBox x:Name="ChkEnableHighQualityImageScaling" Margin="0 30 0 0" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center">
+        <CheckBox x:Name="ChkEnableHighQualityImageScaling" Margin="0 30 0 0" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center">
             <TextBlock Style="{StaticResource TextBlockStyle}">Enable high quality image scaling</TextBlock>
         </CheckBox>
 
-        <CheckBox x:Name="ChkEnableDebugLogging" Margin="0 30 0 0" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center">
+        <CheckBox x:Name="ChkEnableDebugLogging" Margin="0 30 0 0" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center">
             <TextBlock Style="{StaticResource TextBlockStyle}">Enable debug logging</TextBlock>
         </CheckBox>
     </Grid>

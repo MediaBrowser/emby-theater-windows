@@ -701,5 +701,9 @@ namespace MediaBrowser.Theater.Vlc
         public void RemoveSubtitles()
         {
         }
+
+        public void ToggleVideoScaling()
+        {
+        }
     }
 }

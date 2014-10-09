@@ -77,16 +77,17 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
             };
         }
 
-        void BtnConfigureSubtitles_Click(object sender, RoutedEventArgs e)
+        async void BtnConfigureSubtitles_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                _mediaFilters.LaunchLavSplitterConfiguration();
-            }
-            catch
-            {
-                _presentation.ShowDefaultErrorMessage();
-            }
+            //try
+            //{
+            //    _mediaFilters.LaunchLavSplitterConfiguration();
+            //}
+            //catch
+            //{
+            //    _presentation.ShowDefaultErrorMessage();
+            //}
+            await _nav.Navigate(new SplitterSettingsPage(_nav, _config, _presentation, _mediaFilters));
         }
 
         async void BtnConfigureAudio_Click(object sender, RoutedEventArgs e)

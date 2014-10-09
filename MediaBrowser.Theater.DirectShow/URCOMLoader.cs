@@ -10,9 +10,11 @@ using DirectShowLib.Utils;
 using MediaBrowser.Model.IO;
 using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces;
+using MediaBrowser.Common.Implementations.Archiving;
 using System.Reflection;
 using System.Net;
 using System.Threading;
+using System.Diagnostics;
 
 namespace MediaBrowser.Theater.DirectShow
 {
@@ -61,17 +63,36 @@ namespace MediaBrowser.Theater.DirectShow
             }
         }
 
-        public static void EnsureObjects(ITheaterConfigurationManager mbtConfig, bool block, IZipClient zipClient)
+        public static void EnsureObjects(ITheaterConfigurationManager mbtConfig, bool block)
+        {
+            EnsureObjects(mbtConfig, block, false);
+        }
+
+        public static void EnsureObjects(ITheaterConfigurationManager mbtConfig, bool block, bool redownload)
         {
             try
             {
                 string objPath = Path.Combine(mbtConfig.CommonApplicationPaths.ProgramDataPath, OJB_FOLDER);
                 string lastCheckedPath = Path.Combine(objPath, LAST_CHECKED);
                 bool needsCheck = true;
+                IZipClient zipClient = new ZipClient();
 
                 if (!Directory.Exists(objPath))
                 {
                     Directory.CreateDirectory(objPath);
+                }
+                else if (redownload)
+                {
+                    foreach (string file in Directory.EnumerateFiles(objPath))
+                    {
+                        try
+                        {
+                            File.Delete(file);
+                        }
+                        catch (Exception ex)
+                        {
+                        }
+                    }
                 }
 
                 DateAndVersion lastCheck = new DateAndVersion(lastCheckedPath);
@@ -83,9 +104,9 @@ namespace MediaBrowser.Theater.DirectShow
                 if (needsCheck)
                 {
                     if (block)
-                        CheckObjects(objPath, zipClient);
+                        CheckObjects(objPath, zipClient, mbtConfig);
                     else
-                        ThreadPool.QueueUserWorkItem(o => CheckObjects(o, zipClient), objPath);
+                        ThreadPool.QueueUserWorkItem(o => CheckObjects(o, zipClient, mbtConfig), objPath);
                 }
             }
             catch (Exception ex)
@@ -94,11 +115,12 @@ namespace MediaBrowser.Theater.DirectShow
             }
         }
 
-        private static void CheckObjects(object objDlPath, IZipClient zipClient)
+        private static void CheckObjects(object objDlPath, IZipClient zipClient, ITheaterConfigurationManager mbtConfig)
         {
             try
             {
-                Uri objManifest = new Uri(Path.Combine(System.Configuration.ConfigurationSettings.AppSettings["PrivateObjectsManifest"], "manifest.txt"));
+                string dsDlPath = Path.Combine(System.Configuration.ConfigurationSettings.AppSettings["PrivateObjectsManifest"], mbtConfig.Configuration.InternalPlayerConfiguration.FilterSet);
+                Uri objManifest = new Uri(Path.Combine(dsDlPath, "manifest.txt"));
                 string dlPath = objDlPath.ToString();
                 string lastCheckedPath = Path.Combine(dlPath, LAST_CHECKED);
 
@@ -110,36 +132,52 @@ namespace MediaBrowser.Theater.DirectShow
                         string[] objToCheck = dlList.Split(new string[] { System.Environment.NewLine, "\n" }, StringSplitOptions.RemoveEmptyEntries);
                         foreach (string toCheck in objToCheck)
                         {
-                            string txtPath = Path.Combine(dlPath, Path.ChangeExtension(toCheck, "txt"));
-                            DateAndVersion lastUpdate = new DateAndVersion(txtPath);
-                            Uri comPath = new Uri(Path.Combine(Path.Combine(System.Configuration.ConfigurationSettings.AppSettings["PrivateObjectsManifest"], toCheck)));
-                            WebRequest request = WebRequest.Create(comPath);
-                            request.Method = "HEAD";
-
-                            using (WebResponse wr = request.GetResponse())
+                            try
                             {
-                                DateTime lmDate;
-                                if (DateTime.TryParse(wr.Headers[HttpResponseHeader.LastModified], out lmDate))
-                                {
-                                    if (lmDate > lastUpdate.StoredDate)
-                                    {
-                                        //download the updated component
-                                        using (WebClient fd = new WebClient())
-                                        {
-                                            fd.DownloadProgressChanged += fd_DownloadProgressChanged;
-                                            byte[] comBin = fd.DownloadData(comPath);
-                                            if (comBin.Length > 0)
-                                            {
-                                                using (MemoryStream ms = new MemoryStream(comBin))
-                                                {
-                                                    zipClient.ExtractAll(ms, dlPath, true);
-                                                }
+                                string txtPath = Path.Combine(dlPath, Path.ChangeExtension(toCheck, "txt"));
+                                DateAndVersion lastUpdate = new DateAndVersion(txtPath);
+                                Uri comPath = new Uri(Path.Combine(dsDlPath, toCheck));
+                                WebRequest request = WebRequest.Create(comPath);
+                                request.Method = "HEAD";
 
-                                                DateAndVersion.Write(new DateAndVersion(txtPath, lmDate, ExeVersion));
+                                using (WebResponse wr = request.GetResponse())
+                                {
+                                    DateTime lmDate;
+                                    if (DateTime.TryParse(wr.Headers[HttpResponseHeader.LastModified], out lmDate))
+                                    {
+                                        if (lmDate > lastUpdate.StoredDate)
+                                        {
+                                            //download the updated component
+                                            using (WebClient fd = new WebClient())
+                                            {
+                                                fd.DownloadProgressChanged += fd_DownloadProgressChanged;
+                                                byte[] comBin = fd.DownloadData(comPath);
+                                                if (comBin.Length > 0)
+                                                {
+                                                    try
+                                                    {
+                                                        string dirPath = Path.Combine(dlPath, Path.GetFileNameWithoutExtension(toCheck));
+                                                        Directory.Delete(dirPath, true);
+                                                    }
+                                                    catch (Exception ex)
+                                                    {
+                                                        Debug.WriteLine(ex.Message);
+                                                    }
+                                                    using (MemoryStream ms = new MemoryStream(comBin))
+                                                    {
+                                                        zipClient.ExtractAll(ms, dlPath, true);
+                                                    }
+
+                                                    DateAndVersion.Write(new DateAndVersion(txtPath, lmDate, ExeVersion));
+                                                }
                                             }
                                         }
                                     }
                                 }
+                            }
+                            catch (Exception ex)
+                            {
+                                Debug.WriteLine(ex.Message);
                             }
                         }
                     }
@@ -149,6 +187,7 @@ namespace MediaBrowser.Theater.DirectShow
             }
             catch (Exception ex)
             {
+                Debug.WriteLine(ex.Message);
             }
         }
 
@@ -163,10 +202,10 @@ namespace MediaBrowser.Theater.DirectShow
             private set;
         }
 
-        public URCOMLoader(ITheaterConfigurationManager mbtConfig, IZipClient zipClient)
+        public URCOMLoader(ITheaterConfigurationManager mbtConfig)
         {
             //this should be called on app load, but this will make sure it gets done.
-            URCOMLoader.EnsureObjects(mbtConfig, true, zipClient);
+            URCOMLoader.EnsureObjects(mbtConfig, true);
 
             _knownObjects = mbtConfig.Configuration.InternalPlayerConfiguration.COMConfig.FilterList;
             SearchPath = Path.Combine(mbtConfig.CommonApplicationPaths.ProgramDataPath, OJB_FOLDER);

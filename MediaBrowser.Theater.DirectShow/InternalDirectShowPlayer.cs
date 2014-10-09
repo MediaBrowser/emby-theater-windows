@@ -71,7 +71,7 @@ namespace MediaBrowser.Theater.DirectShow
 
             //use a static object so we keep the libraries in the same place. Doesn't usually matter, but the EVR Presenter does some COM hooking that has problems if we change the lib address.
             if (_privateCom == null)
-                _privateCom = new URCOMLoader(_config, zipClient);
+                _privateCom = new URCOMLoader(_config);
         }
 
         public IReadOnlyList<BaseItemDto> Playlist
@@ -436,6 +436,17 @@ namespace MediaBrowser.Theater.DirectShow
                 if (_mediaPlayer != null)
                 {
                     InvokeOnPlayerThread(_mediaPlayer.Unpause);
+                }
+            }
+        }
+
+        public void ToggleVideoScaling()
+        {
+            lock (_commandLock)
+            {
+                if (_mediaPlayer != null)
+                {
+                    InvokeOnPlayerThread(_mediaPlayer.ToggleVideoScaling);
                 }
             }
         }

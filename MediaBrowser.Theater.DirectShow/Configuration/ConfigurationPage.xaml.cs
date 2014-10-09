@@ -69,18 +69,25 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
             {
                 SelectMaxStreamingBitrate.Options.Add(new SelectListItem { Text = i.ToString(CultureInfo.InvariantCulture) + " Mbps", Value = i.ToString(CultureInfo.InvariantCulture) });
             }
+
+            SelectFilterSet.Options = new List<SelectListItem>
+            {
+                 new SelectListItem{ Text = "Stable", Value=""},
+                 new SelectListItem{ Text = "Edge", Value="edge"}
+            };
         }
 
-        void BtnConfigureSubtitles_Click(object sender, RoutedEventArgs e)
+        async void BtnConfigureSubtitles_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                _mediaFilters.LaunchLavSplitterConfiguration();
-            }
-            catch
-            {
-                _presentation.ShowDefaultErrorMessage();
-            }
+            //try
+            //{
+            //    _mediaFilters.LaunchLavSplitterConfiguration();
+            //}
+            //catch
+            //{
+            //    _presentation.ShowDefaultErrorMessage();
+            //}
+            await _nav.Navigate(new SplitterSettingsPage(_nav, _config, _presentation, _mediaFilters));
         }
 
         async void BtnConfigureAudio_Click(object sender, RoutedEventArgs e)
@@ -108,11 +115,13 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
             SelectAudioRenderer.SelectedValue = config.AudioConfig.Renderer.ToString();
             SelectMaxStreamingBitrate.SelectedValue = (_config.Configuration.MaxStreamingBitrate / 1000000).ToString(CultureInfo.InvariantCulture);
             ChkEnableAutoRes.IsChecked = config.VideoConfig.AutoChangeRefreshRate;
+            SelectFilterSet.SelectedValue = config.FilterSet;
         }
 
         void GeneralSettingsPage_Unloaded(object sender, RoutedEventArgs e)
         {
             var config = _config.Configuration.InternalPlayerConfiguration;
+            bool redownloadFilters = false;
 
             //config.EnableReclock = ChkEnableReclock.IsChecked ?? false;
             config.VideoConfig.EnableMadvr = ChkEnableMadvr.IsChecked ?? false;
@@ -124,8 +133,14 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
             config.VideoConfig.HwaMode = int.Parse(SelectHwaMode.SelectedValue);
             config.VideoConfig.AutoChangeRefreshRate = ChkEnableAutoRes.IsChecked ?? false;
             _config.Configuration.MaxStreamingBitrate = int.Parse(SelectMaxStreamingBitrate.SelectedValue) * 1000000;
-
+            if (config.FilterSet != SelectFilterSet.SelectedValue)
+            {
+                redownloadFilters = true;
+                config.FilterSet = SelectFilterSet.SelectedValue;
+            }
             _config.SaveConfiguration();
+            if (redownloadFilters)
+                URCOMLoader.EnsureObjects(_config, false, true);
         }
 
         async void BtnConfigureMadVr_Click(object sender, RoutedEventArgs e)

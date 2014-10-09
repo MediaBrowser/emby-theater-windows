@@ -221,5 +221,10 @@ namespace MediaBrowser.Theater.Interfaces.Playback
         /// Advances to the next Audio Stream, Wraps at the end
         /// </summary>
         void NextAudioStream();
+
+        /// <summary>
+        /// Advances to the next video scaling scheme
+        /// </summary>
+        void ToggleVideoScaling();
     }
 }

@@ -491,6 +491,84 @@ namespace MediaBrowser.Theater.DirectShow
 
                     if (_sourceFilter != null)
                     {
+                        ILAVSplitterSettings lss = _sourceFilter as ILAVSplitterSettings;
+                        if (lss != null)
+                        {
+                            _logger.Debug("Configure LAV Splitter");
+                                    
+                            hr = lss.SetRuntimeConfig(true);
+                            DsError.ThrowExceptionForHR(hr);
+
+                            if (!string.IsNullOrWhiteSpace(_mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.PreferredAudioLanguages))
+                            {   
+                                _logger.Debug("Set preferred audio lang: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.PreferredAudioLanguages);
+                                hr = lss.SetPreferredLanguages(_mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.PreferredAudioLanguages);
+                                DsError.ThrowExceptionForHR(hr);
+                            }
+
+                            if (!string.IsNullOrWhiteSpace(_mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.PreferredSubtitleLanguages))
+                            {
+                                _logger.Debug("Set preferred subs lang: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.PreferredSubtitleLanguages);
+                                hr = lss.SetPreferredLanguages(_mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.PreferredSubtitleLanguages);
+                                DsError.ThrowExceptionForHR(hr);
+                            }
+
+                            if (!string.IsNullOrWhiteSpace(_mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.AdvancedSubtitleConfig))
+                            {
+                                _logger.Debug("Set preferred subs lang: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.AdvancedSubtitleConfig);
+                                hr = lss.SetPreferredLanguages(_mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.AdvancedSubtitleConfig);
+                                DsError.ThrowExceptionForHR(hr);
+                            }
+
+                            _logger.Debug("SetSubtitleMode: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.PreferredSubtitleLanguages);
+                            hr = lss.SetSubtitleMode((LAVSubtitleMode)Enum.Parse(typeof(LAVSubtitleMode), _mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.SubtitleMode));
+                            DsError.ThrowExceptionForHR(hr);
+
+                            _logger.Debug("SetPGSForcedStream: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.PGSForcedStream);
+                            hr = lss.SetPGSForcedStream(_mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.PGSForcedStream);
+                            DsError.ThrowExceptionForHR(hr);
+
+                            _logger.Debug("SetPGSOnlyForced: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.PGSOnlyForced);
+                            hr = lss.SetPGSOnlyForced(_mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.PGSOnlyForced);
+                            DsError.ThrowExceptionForHR(hr);
+
+                            _logger.Debug("SetVC1TimestampMode: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.VC1TimestampMode);
+                            hr = lss.SetVC1TimestampMode((short)Enum.Parse(typeof(VC1TimestampMode), _mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.VC1TimestampMode));
+                            DsError.ThrowExceptionForHR(hr);
+
+                            _logger.Debug("SetSubstreamsEnabled: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.SubstreamsEnabled);
+                            hr = lss.SetSubstreamsEnabled(_mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.SubstreamsEnabled);
+                            DsError.ThrowExceptionForHR(hr);
+
+                            _logger.Debug("SetStreamSwitchRemoveAudio: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.StreamSwitchRemoveAudio);
+                            hr = lss.SetStreamSwitchRemoveAudio(_mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.StreamSwitchRemoveAudio);
+                            DsError.ThrowExceptionForHR(hr);
+
+                            _logger.Debug("SetUseAudioForHearingVisuallyImpaired: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.UseAudioForHearingVisuallyImpaired);
+                            hr = lss.SetUseAudioForHearingVisuallyImpaired(_mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.UseAudioForHearingVisuallyImpaired);
+                            DsError.ThrowExceptionForHR(hr);
+
+                            _logger.Debug("SetMaxQueueMemSize: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.MaxQueueMemSize);
+                            hr = lss.SetMaxQueueMemSize(_mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.MaxQueueMemSize);
+                            DsError.ThrowExceptionForHR(hr);
+
+                            _logger.Debug("SetTrayIcon: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.ShowTrayIcon);
+                            hr = lss.SetTrayIcon(_mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.ShowTrayIcon);
+                            DsError.ThrowExceptionForHR(hr);
+
+                            _logger.Debug("SetPreferHighQualityAudioStreams: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.PreferHighQualityAudioStreams);
+                            hr = lss.SetPreferHighQualityAudioStreams(_mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.PreferHighQualityAudioStreams);
+                            DsError.ThrowExceptionForHR(hr);
+
+                            _logger.Debug("SetLoadMatroskaExternalSegments: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.LoadMatroskaExternalSegments);
+                            hr = lss.SetLoadMatroskaExternalSegments(_mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.LoadMatroskaExternalSegments);
+                            DsError.ThrowExceptionForHR(hr);
+
+                            _logger.Debug("SetNetworkStreamAnalysisDuration: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.NetworkStreamAnalysisDuration);
+                            hr = lss.SetNetworkStreamAnalysisDuration(_mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.NetworkStreamAnalysisDuration);
+                            DsError.ThrowExceptionForHR(hr);
+                        }
+
                         hr = ((IFileSourceFilter) _sourceFilter).Load(path, null);
                         if (hr < 0)
                         {

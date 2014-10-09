@@ -59,7 +59,7 @@
         </Button>
 
         <Button Margin="0 20 0 0" x:Name="BtnConfigureSubtitles">
-            <TextBlock Style="{StaticResource TextBlockStyle}">Configure Subtitles</TextBlock>
+            <TextBlock Style="{StaticResource TextBlockStyle}">Configure Splitter</TextBlock>
         </Button>
     </StackPanel>
 </pages:BasePage>

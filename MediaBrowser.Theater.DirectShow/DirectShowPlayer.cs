@@ -416,6 +416,8 @@ namespace MediaBrowser.Theater.DirectShow
                 _streams = GetStreams();
 
                 LoadActiveExternalSubtitles();
+
+                _logger.Debug("DSPlayer Done in play");
             }
             catch (Exception ex)
             {
@@ -2823,6 +2825,8 @@ namespace MediaBrowser.Theater.DirectShow
       
         private void LoadActiveExternalSubtitles()
         {
+            _logger.Debug("LoadActiveExternalSubtitles");
+
             var stream =
                 _streams.FirstOrDefault(
                     i => i.Type == MediaStreamType.Subtitle && i.Identifier == "external" && i.IsActive);
@@ -2884,6 +2888,8 @@ namespace MediaBrowser.Theater.DirectShow
         
         private async void LoadExternalSubtitleFromStream(SelectableMediaStream stream)
         {
+            _logger.Debug("LoadExternalSubtitleFromStream: {0}", stream);
+
             // get a url for the stream
             var url = _apiClient.GetSubtitleUrl(new SubtitleDownloadOptions
             {
@@ -2915,6 +2921,8 @@ namespace MediaBrowser.Theater.DirectShow
         
         private async void SetExternalSubtitleStream(SelectableMediaStream stream)
         {
+            _logger.Debug("SetExternalSubtitleStream: {0}", stream);
+
             if (stream.Name.ToLower().Contains("no subtitles"))
             {
                 ToggleHideSubtitles(true);

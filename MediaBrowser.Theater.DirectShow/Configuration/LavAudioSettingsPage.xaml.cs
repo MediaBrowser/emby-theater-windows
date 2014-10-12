@@ -167,6 +167,8 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
                     config.AudioConfig.EnabledCodecs.Add(codec.Tag.ToString());
             }
 
+            config.AudioConfig.Delay = int.Parse(TxtDelay.Text);
+
             _config.SaveConfiguration();
         }
     }

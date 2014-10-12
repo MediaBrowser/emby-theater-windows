@@ -98,7 +98,7 @@ namespace MediaBrowser.UI.StartupWizard
                         return;
                     }
 
-                    await _nav.Navigate(new StartupWizardXyVsFilter(_nav, _presentation, _mediaFilters));
+                    await _nav.Navigate(new StartupWizardFinish(_nav, _presentation));
                 }
                 catch (Exception)
                 {

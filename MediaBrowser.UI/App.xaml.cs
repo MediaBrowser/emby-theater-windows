@@ -537,6 +537,12 @@ namespace MediaBrowser.UI
 
             var connectionResult = await _appHost.ConnectionManager.Connect(cancellationToken);
 
+            // We don't have a server selection screen y et
+            if (connectionResult.State == ConnectionState.ServerSelection)
+            {
+                connectionResult = await _appHost.ConnectionManager.Connect(connectionResult.Servers[0], cancellationToken);
+            }
+
             _appHost.PresentationManager.HideModalLoadingAnimation();
 
             if (connectionResult.State == ConnectionState.Unavailable)

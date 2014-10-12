@@ -12,6 +12,8 @@ namespace MediaBrowser.Theater.DirectShow.Streaming
 
             MaxStreamingBitrate = 8000000;
             MaxStaticBitrate = 8000000;
+
+            SupportsDirectRemoteContent = true;
             
             TranscodingProfiles = new[]
             {

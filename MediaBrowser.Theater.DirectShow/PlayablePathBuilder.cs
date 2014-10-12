@@ -163,12 +163,19 @@ namespace MediaBrowser.Theater.DirectShow
                         MediaSource = info.MediaSource
                     };
                 }
-                return new PlayableItem
+                var playable = new PlayableItem
                 {
                     OriginalItem = item,
-                    PlayablePath = info.ToUrl(apiClient.ServerAddress + "/mediabrowser") + "&EnableAdaptiveBitrateStreaming=false",
+                    PlayablePath = info.ToUrl(apiClient.ServerAddress + "/mediabrowser"),
                     MediaSource = info.MediaSource
                 };
+
+                if (!info.IsDirectStream)
+                {
+                    playable.PlayablePath += "&EnableAdaptiveBitrateStreaming=false";
+                }
+
+                return playable;
             }
         }
 

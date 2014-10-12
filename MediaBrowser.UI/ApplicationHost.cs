@@ -45,7 +45,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -145,7 +144,7 @@ namespace MediaBrowser.UI
             RegisterSingleInstance(ApplicationPaths);
 
             RegisterSingleInstance<ITheaterConfigurationManager>(TheaterConfigurationManager);
-         
+
             var hiddenWindow = new AppHiddenWIndow();
 
             ImageManager = new ImageManager(() => SessionManager.ActiveApiClient, ApplicationPaths, TheaterConfigurationManager);
@@ -212,7 +211,7 @@ namespace MediaBrowser.UI
                 },
 
                 // MBT should be able to implement them all
-                SupportedCommands = Enum.GetNames(typeof (GeneralCommandType)).ToList()
+                SupportedCommands = Enum.GetNames(typeof(GeneralCommandType)).ToList()
             };
 
             var device = new Device
@@ -283,14 +282,14 @@ namespace MediaBrowser.UI
 
             // Implementations assembly
             yield return typeof(SystemUpdateTask).Assembly;
-            
+
             // Core assembly
             yield return typeof(LoginPage).Assembly;
 
             yield return typeof(PismoIsoManager).Assembly;
 
             yield return typeof(NVlcPlayer).Assembly;
-            
+
             // Default theme assembly
             yield return typeof(DefaultTheme).Assembly;
         }
@@ -361,7 +360,7 @@ namespace MediaBrowser.UI
             var version = InstallationManager.GetLatestCompatibleVersion(availablePackages, "MBTheater", null, serverVersion, ConfigurationManager.CommonConfiguration.SystemUpdateLevel);
 
             var versionObject = version == null || string.IsNullOrWhiteSpace(version.versionStr) ? null : new Version(version.versionStr);
-            
+
             return versionObject != null ? new CheckForUpdateResult { AvailableVersion = versionObject.ToString(), IsUpdateAvailable = versionObject > ApplicationVersion, Package = version } :
                        new CheckForUpdateResult { AvailableVersion = ApplicationVersion.ToString(), IsUpdateAvailable = false };
         }

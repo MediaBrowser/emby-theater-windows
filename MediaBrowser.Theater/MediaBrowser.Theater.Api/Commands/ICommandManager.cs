@@ -17,7 +17,7 @@ namespace MediaBrowser.Theater.Api.Commands
     public interface ICommandManager
     {
         /// <summary>
-        /// subscribe to commands. It up to teh subscribe to decide how to exeute teh command.
+        /// subscribe to commands. It up to teh subscribe to decide how to exeute the command.
         /// if  the subscribe executes the command they should set handed to true
         /// </summary>
         event CommandEventHandler CommandReceived;
@@ -28,6 +28,12 @@ namespace MediaBrowser.Theater.Api.Commands
         /// <param name="command">The command to send</param>
         /// <param name="args">The command arguments</param>
         bool ExecuteCommand(Command command, Object args);
+    }
+
+    public interface ICommandRouter
+    {
+        event CommandEventHandler CommandReceived;
+        bool RouteCommand(Command command, Object args);
     }
 
     public class CommandRoutedEventArgs : RoutedEventArgs

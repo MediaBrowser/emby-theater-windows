@@ -147,6 +147,7 @@ namespace MediaBrowser.Theater
             Container.RegisterSingle(typeof (IPlaybackManager), typeof (PlaybackManager));
             Container.RegisterSingle(typeof (IUserInputManager), typeof (UserInputManager));
             Container.RegisterSingle(typeof (ICommandManager), typeof (CommandManager));
+            Container.RegisterSingle(typeof (ICommandRouter), typeof (CommandRouter));
 
             // temp bindings until it is possible for the theme to bind these
             Container.RegisterSingle(typeof (IPresenter), typeof (Presenter));

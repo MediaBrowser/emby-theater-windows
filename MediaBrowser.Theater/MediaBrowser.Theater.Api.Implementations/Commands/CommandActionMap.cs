@@ -3,14 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using MediaBrowser.Model.Logging;
-using MediaBrowser.Theater.Api;
-using MediaBrowser.Theater.Api.Commands;
 using MediaBrowser.Theater.Api.Events;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.UserInterface;
 
-namespace MediaBrowser.Theater.EntryPoints.CommandActions
+namespace MediaBrowser.Theater.Api.Commands
 {
 
     internal delegate void ActionDelagate(Object sender, CommandEventArgs args);

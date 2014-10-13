@@ -23,7 +23,7 @@ namespace MediaBrowser.Theater.Api.Playback
     {
         private readonly ITheaterConfigurationManager _configurationManager;
         private readonly ILogger _logger;
-        private readonly IApiClient _apiClient;
+        private readonly IConnectionManager _connectionManager;
         private readonly INavigator _nav;
         private readonly IPresenter _presentationManager;
         private readonly IEventBus<PlaybackStartEventArgs> _playbackStart;
@@ -40,11 +40,11 @@ namespace MediaBrowser.Theater.Api.Playback
 
         private readonly List<IMediaPlayer> _mediaPlayers = new List<IMediaPlayer>();
 
-        public PlaybackManager(ITheaterConfigurationManager configurationManager, ILogger logger, IApiClient apiClient, INavigator nav, IPresenter presentationManager, IEventAggregator events)
+        public PlaybackManager(ITheaterConfigurationManager configurationManager, ILogger logger, IConnectionManager connectionManager, INavigator nav, IPresenter presentationManager, IEventAggregator events)
         {
             _configurationManager = configurationManager;
             _logger = logger;
-            _apiClient = apiClient;
+            _connectionManager = connectionManager;
             _nav = nav;
             _presentationManager = presentationManager;
             _playbackStart = events.Get<PlaybackStartEventArgs>();
@@ -123,9 +123,9 @@ namespace MediaBrowser.Theater.Api.Playback
 
                     if (options.StartPositionTicks == 0 && player.SupportsMultiFilePlayback && firstItem.IsVideo && firstItem.LocationType == LocationType.FileSystem && options.GoFullScreen)
                     {
-                        try
-                        {
-                            var intros = await _apiClient.GetIntrosAsync(firstItem.Id, _apiClient.CurrentUserId);
+                        try {
+                            var apiClient = _connectionManager.GetApiClient(firstItem);
+                            var intros = await apiClient.GetIntrosAsync(firstItem.Id, apiClient.CurrentUserId);
 
                             options.Items.InsertRange(0, intros.Items);
                         }
@@ -134,8 +134,7 @@ namespace MediaBrowser.Theater.Api.Playback
                             _logger.ErrorException("Error retrieving intros", ex);
                         }
                     }
-
-
+                    
                     options.Configuration = configuration;
 
                     var playTask = player.Play(options);
@@ -174,7 +173,7 @@ namespace MediaBrowser.Theater.Api.Playback
                 }
             }
 
-            _reporter = new PlaybackProgressReporter(_apiClient, player, _logger, this);
+            _reporter = new PlaybackProgressReporter(_connectionManager, player, _logger, this);
             await _reporter.Start().ConfigureAwait(false);
         }
 

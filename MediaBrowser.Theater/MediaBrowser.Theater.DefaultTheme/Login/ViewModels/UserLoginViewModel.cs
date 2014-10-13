@@ -55,7 +55,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Login.ViewModels
             LoginCommand = new RelayCommand(async arg => {
                 try {
                     IsInvalidLoginDetails = false;
-                    await sessionManager.Login(Username, Password, RememberLogin);
+                    await sessionManager.LoginToServer(Username, Password, RememberLogin);
                 } catch (UnauthorizedAccessException) {
                     IsInvalidLoginDetails = true;
                 } catch (Exception e) {

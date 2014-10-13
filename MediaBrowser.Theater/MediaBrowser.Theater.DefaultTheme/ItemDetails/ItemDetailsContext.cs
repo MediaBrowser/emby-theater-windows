@@ -10,31 +10,23 @@ using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels;
-using MediaBrowser.Theater.DefaultTheme.ItemList;
-using MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.ItemDetails
 {
     public class ItemDetailsContext
         : NavigationContext
     {
-        private readonly IApiClient _apiClient;
-        private readonly IImageManager _imageManager;
-        private readonly INavigator _navigator;
+        private readonly IConnectionManager _connectionManager;
         private readonly IPresenter _presenter;
         private readonly ISessionManager _sessionManager;
-        private readonly IServerEvents _serverEvents;
         private readonly IEnumerable<IItemDetailSectionGenerator> _generators;
 
         private ItemDetailsViewModel _viewModel;
 
-        public ItemDetailsContext(IApplicationHost appHost, IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator, IPresenter presenter, ISessionManager sessionManager)
+        public ItemDetailsContext(IApplicationHost appHost, IConnectionManager connectionManager, IPresenter presenter, ISessionManager sessionManager)
             : base(appHost)
         {
-            _apiClient = apiClient;
-            _imageManager = imageManager;
-            _serverEvents = serverEvents;
-            _navigator = navigator;
+            _connectionManager = connectionManager;
             _presenter = presenter;
             _sessionManager = sessionManager;
             _generators = appHost.GetExports<IItemDetailSectionGenerator>();
@@ -44,8 +36,10 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails
 
         public override async Task Activate()
         {
+            var apiClient = _connectionManager.GetApiClient(Item);
+
             if (_viewModel == null || !_viewModel.IsActive) {
-                var item = await _apiClient.GetItemAsync(Item.Id, _sessionManager.CurrentUser.Id);
+                var item = await apiClient.GetItemAsync(Item.Id, _sessionManager.CurrentUser.Id);
 
                 var allSections = new List<IItemDetailSection>();
                 foreach (var generator in _generators.Where(g => g.HasSection(item))) {

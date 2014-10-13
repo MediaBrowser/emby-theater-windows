@@ -20,31 +20,27 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd
     {
         private readonly ILogger _logger;
         private readonly IPlaybackManager _playbackManager;
-        private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
         private readonly IPresenter _presentationManager;
         private readonly INavigator _nav;
-        private readonly IServerEvents _serverEvents;
         private readonly IEventAggregator _events;
         private OsdViewModel _viewModel;
 
-        public FullScreenPlaybackContext(ITheaterApplicationHost appHost, IPlaybackManager playbackManager, IApiClient apiClient, IImageManager imageManager, IPresenter presentationManager, ILogManager logManager, INavigator nav, IServerEvents serverEvents, IEventAggregator events)
+        public FullScreenPlaybackContext(ITheaterApplicationHost appHost, IPlaybackManager playbackManager, IImageManager imageManager, IPresenter presentationManager, ILogManager logManager, INavigator nav, IEventAggregator events)
             : base(appHost)
         {
             _logger = logManager.GetLogger("OSD");
             _playbackManager = playbackManager;
-            _apiClient = apiClient;
             _imageManager = imageManager;
             _presentationManager = presentationManager;
             _nav = nav;
-            _serverEvents = serverEvents;
             _events = events;
         }
 
         public override async Task Activate()
         {
             if (_viewModel == null || !_viewModel.IsActive) {
-                _viewModel = new OsdViewModel(_playbackManager, _apiClient, _imageManager, _presentationManager, _logger, _nav, _serverEvents, _events);
+                _viewModel = new OsdViewModel(_playbackManager, _imageManager, _presentationManager, _logger, _nav, _events);
             }
 
             await _presentationManager.ShowPage(_viewModel);

@@ -23,20 +23,19 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels
     public class UserViewsPageGenerator
         : IHomePageGenerator
     {
-        private readonly IApiClient _apiClient;
         private readonly ISessionManager _sessionManager;
         private readonly IEnumerable<IUserViewHomePageGenerator> _generators;
 
-        public UserViewsPageGenerator(IApiClient apiClient, ISessionManager sessionManager, ITheaterApplicationHost appHost)
+        public UserViewsPageGenerator(ISessionManager sessionManager, ITheaterApplicationHost appHost)
         {
-            _apiClient = apiClient;
             _sessionManager = sessionManager;
             _generators = appHost.GetExports<IUserViewHomePageGenerator>();
         }
 
         public async Task<IEnumerable<IHomePage>> GetHomePages()
         {
-            var views = await _apiClient.GetUserViews(_sessionManager.CurrentUser.Id, CancellationToken.None);
+            var apiClient = _sessionManager.ActiveApiClient; // todo enumerate over all connections
+            var views = await apiClient.GetUserViews(_sessionManager.CurrentUser.Id, CancellationToken.None);
 
             var tasks = new List<Task<IEnumerable<IHomePage>>>();
 

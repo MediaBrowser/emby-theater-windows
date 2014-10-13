@@ -1,6 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using MediaBrowser.Common.Plugins;
-using MediaBrowser.Theater.Api.Navigation;
 
 namespace MediaBrowser.Theater.Api.UserInterface
 {
@@ -16,5 +16,7 @@ namespace MediaBrowser.Theater.Api.UserInterface
         /// </summary>
         /// <returns>An a representing the asynchronous operation.</returns>
         Task Shutdown();
+
+        event Action ApplicationStarted;
     }
 }

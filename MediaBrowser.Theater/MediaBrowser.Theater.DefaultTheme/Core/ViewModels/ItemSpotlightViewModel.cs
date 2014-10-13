@@ -15,15 +15,15 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
     public class ItemSpotlightViewModel
         : BaseViewModel
     {
-        private readonly IApiClient _apiClient;
+        private readonly IConnectionManager _connectionManager;
         private string _currentCaption;
         private ImageType _imageType;
         private IEnumerable<BaseItemDto> _items;
         private Dictionary<string, BaseItemDto> _urlsToItems;
 
-        public ItemSpotlightViewModel(IImageManager imageManager, IApiClient apiClient)
+        public ItemSpotlightViewModel(IImageManager imageManager, IConnectionManager connectionManager)
         {
-            _apiClient = apiClient;
+            _connectionManager = connectionManager;
             _urlsToItems = new Dictionary<string, BaseItemDto>();
             Images = new ImageSlideshowViewModel(imageManager, Enumerable.Empty<string>()) {
                 ImageStretch = Stretch.UniformToFill
@@ -129,8 +129,9 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
                 Height = Convert.ToInt32(tileHeight),
                 ImageType = ImageType
             };
-
-            _urlsToItems = Items.ToDictionary(i => _apiClient.GetImageUrl(i, imageOptions));
+            
+            var apiClient = _connectionManager.GetApiClient(Items.First());
+            _urlsToItems = Items.ToDictionary(i => apiClient.GetImageUrl(i, imageOptions));
 
             Images.Images.Clear();
             Images.Images.AddRange(_urlsToItems.Keys);

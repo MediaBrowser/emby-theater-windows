@@ -26,7 +26,7 @@ namespace MediaBrowser.Theater.DirectShow
 
         private readonly ILogger _logger;
         private readonly ISessionManager _sessionManager;
-        private readonly IApiClient _apiClient;
+        private readonly IConnectionManager _connectionManager;
         private readonly IPlaybackManager _playbackManager;
         private readonly ITheaterConfigurationManager _config;
         private readonly IIsoManager _isoManager;
@@ -51,14 +51,14 @@ namespace MediaBrowser.Theater.DirectShow
             get { return _privateCom; }
         }
 
-        public InternalDirectShowPlayer(ILogManager logManager, IInternalPlayerWindowManager windowManager, IPresenter presentation, ISessionManager sessionManager, IApiClient apiClient, IPlaybackManager playbackManager, ITheaterConfigurationManager config, IIsoManager isoManager, IUserInputManager inputManager, IZipClient zipClient, IHttpClient httpClient)
+        public InternalDirectShowPlayer(ILogManager logManager, IInternalPlayerWindowManager windowManager, IPresenter presentation, ISessionManager sessionManager, IConnectionManager connectionManager, IPlaybackManager playbackManager, ITheaterConfigurationManager config, IIsoManager isoManager, IUserInputManager inputManager, IZipClient zipClient, IHttpClient httpClient)
         {
             _logger = logManager.GetLogger("InternalDirectShowPlayer");
             _windowManager = windowManager;
             _hiddenWindow = windowManager.Window;
             _presentation = presentation;
             _sessionManager = sessionManager;
-            _apiClient = apiClient;
+            _connectionManager = connectionManager;
             _playbackManager = playbackManager;
             _config = config;
             _isoManager = isoManager;
@@ -255,13 +255,6 @@ namespace MediaBrowser.Theater.DirectShow
 
             try
             {
-                InvokeOnPlayerThreadAsync(() =>
-                {
-                    _mediaPlayer = new DirectShowPlayer(_logger, _windowManager, this, _presentation.MainApplicationWindowHandle, _sessionManager, _config, _inputManager, _apiClient, _zipClient, _httpClient);
-
-                    //HideCursor();
-                });
-
                 await PlayTrack(0, options.StartPositionTicks);
             }
             catch (Exception ex)
@@ -291,7 +284,9 @@ namespace MediaBrowser.Theater.DirectShow
 
                 InvokeOnPlayerThread(() => {
                     DisposePlayer();
-                    _mediaPlayer = new DirectShowPlayer(_logger, _windowManager, this, _presentation.MainApplicationWindowHandle, _sessionManager, _config, _inputManager, _apiClient, _zipClient, _httpClient);
+
+                    var apiClient = _connectionManager.GetApiClient(playableItem.OriginalItem);
+                    _mediaPlayer = new DirectShowPlayer(_logger, _windowManager, this, _presentation.MainApplicationWindowHandle, _sessionManager, _config, _inputManager, apiClient, _zipClient, _httpClient);
 
                     _mediaPlayer.Play(playableItem, enableMadVr, false);
                 }, true);
@@ -344,7 +339,8 @@ namespace MediaBrowser.Theater.DirectShow
                 }
             }
 
-            return PlayablePathBuilder.GetPlayableItem(item, mountedIso, _apiClient, startTimeTicks, _config.Configuration.MaxStreamingBitrate);
+            var apiClient = _connectionManager.GetApiClient(item);
+            return PlayablePathBuilder.GetPlayableItem(item, mountedIso, apiClient, startTimeTicks, _config.Configuration.MaxStreamingBitrate);
         }
 
         /// <summary>
@@ -494,12 +490,7 @@ namespace MediaBrowser.Theater.DirectShow
             }
 
             DisposePlayer();
-
-            try {
-                await _apiClient.StopTranscodingProcesses(_apiClient.DeviceId);
-            }
-            catch { }
-
+            
             StopTranscoding(media);
 
             var args = new PlaybackStopEventArgs
@@ -520,8 +511,10 @@ namespace MediaBrowser.Theater.DirectShow
         {
             // If streaming video, stop the transcoder
             if (media.IsVideo && media.PlayablePath.IndexOf("://", StringComparison.OrdinalIgnoreCase) != -1) {
+                var apiClient = _connectionManager.GetApiClient(media.OriginalItem);
+
                 try {
-                    await _apiClient.StopTranscodingProcesses(_apiClient.DeviceId);
+                    await apiClient.StopTranscodingProcesses(apiClient.DeviceId);
                 }
                 catch { }
             }

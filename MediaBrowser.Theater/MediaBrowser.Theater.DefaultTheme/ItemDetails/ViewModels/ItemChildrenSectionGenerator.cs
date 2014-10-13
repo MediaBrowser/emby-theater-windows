@@ -14,13 +14,13 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
     public class ItemChildrenSectionGenerator
         : BaseItemsListSectionGenerator
     {
-        private readonly IApiClient _apiClient;
+        private readonly IConnectionManager _connectionManager;
         private readonly ISessionManager _sessionManager;
 
-        public ItemChildrenSectionGenerator(IApiClient apiClient, ISessionManager sessionManager, IImageManager imageManager, INavigator navigator, IServerEvents serverEvents, IPlaybackManager playbackManager)
-            : base(apiClient, sessionManager, imageManager, navigator, serverEvents, playbackManager)
+        public ItemChildrenSectionGenerator(IConnectionManager connectionManager, ISessionManager sessionManager, IImageManager imageManager, INavigator navigator, IPlaybackManager playbackManager)
+            : base(connectionManager, sessionManager, imageManager, navigator, playbackManager)
         {
-            _apiClient = apiClient;
+            _connectionManager = connectionManager;
             _sessionManager = sessionManager;
         }
 
@@ -31,7 +31,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
         public override async Task<IEnumerable<IItemDetailSection>> GetSections(BaseItemDto item)
         {
-            ItemsResult result = await ItemChildren.Get(_apiClient, _sessionManager, item);
+            ItemsResult result = await ItemChildren.Get(_connectionManager, _sessionManager, item);
             return new[] { await GetItemsSection(result) };
         }
     }

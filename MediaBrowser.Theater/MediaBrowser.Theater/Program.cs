@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using MediaBrowser.Common.Constants;
 using MediaBrowser.Common.Implementations.Logging;
 using MediaBrowser.Common.Implementations.Updates;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Api.Configuration;
 using MessageBox = System.Windows.MessageBox;
@@ -86,7 +87,7 @@ namespace MediaBrowser.Theater
             using (var appHost = new ApplicationHost(appPaths, logManager)) {
                 appHost.Init(new Progress<double>()).Wait();
 
-                if (!appHost.TheaterConfigurationManager.Configuration.IsStartupWizardCompleted) {
+                if (!appHost.TheaterConfigurationManager.Configuration.IsStartupWizardCompleted || appHost.ConnectToServer().Result.State == ConnectionState.Unavailable) {
                     bool completed = appHost.RunStartupWizard();
 
                     if (completed) {

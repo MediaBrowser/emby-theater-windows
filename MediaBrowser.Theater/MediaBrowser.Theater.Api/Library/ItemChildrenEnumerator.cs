@@ -39,13 +39,14 @@ namespace MediaBrowser.Theater.Api.Library
             ItemFields.MediaSources
         };
 
-        public static async Task<ItemsResult> Get(IApiClient apiClient, ISessionManager sessionManager, BaseItemDto item, ChildrenQueryParams parameters = null)
+        public static async Task<ItemsResult> Get(IConnectionManager connectionManager, ISessionManager sessionManager, BaseItemDto item, ChildrenQueryParams parameters = null)
         {
             parameters = parameters ?? new ChildrenQueryParams();
 
+            var apiClient = connectionManager.GetApiClient(item);
             var children = await GetChildrenInternal(item, parameters, apiClient, sessionManager);
             if (children.TotalRecordCount == 1 && parameters.ExpandSingleItems && children.Items[0].IsFolder) {
-                return await Get(apiClient, sessionManager, children.Items[0], parameters);
+                return await Get(connectionManager, sessionManager, children.Items[0], parameters);
             }
 
             return children;

@@ -25,9 +25,8 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
         private const double PosterHeight = 350 - HomeViewModel.TileMargin * 0.5;
 
         private readonly BaseItemDto _item;
-        private readonly IApiClient _apiClient;
+        private readonly IConnectionManager _connectionManager;
         private readonly IImageManager _imageManager;
-        private readonly IServerEvents _serverEvents;
         private readonly INavigator _navigator;
         private readonly ISessionManager _sessionManager;
         private readonly IPlaybackManager _playbackManager;
@@ -38,12 +37,11 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
         public RangeObservableCollection<ItemTileViewModel> Items { get; private set; }
 
-        public RecommendationsViewModel(BaseItemDto item, IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator, ISessionManager sessionManager, IPlaybackManager playbackManager)
+        public RecommendationsViewModel(BaseItemDto item, IConnectionManager connectionManager, IImageManager imageManager, INavigator navigator, ISessionManager sessionManager, IPlaybackManager playbackManager)
         {
             _item = item;
-            _apiClient = apiClient;
+            _connectionManager = connectionManager;
             _imageManager = imageManager;
-            _serverEvents = serverEvents;
             _navigator = navigator;
             _sessionManager = sessionManager;
             _playbackManager = playbackManager;
@@ -95,21 +93,22 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
         private async void LoadItems()
         {
             var query = new SimilarItemsQuery { Id = _item.Id, UserId = _sessionManager.CurrentUser.Id, Limit = 6 };
+            var apiClient = _connectionManager.GetApiClient(_item);
 
             switch (_item.Type) {
                 case "Movie":
-                    LoadItems(await _apiClient.GetSimilarMoviesAsync(query));
+                    LoadItems(await apiClient.GetSimilarMoviesAsync(query));
                     break;
                 case "Series":
                 case "Season":
                 case "Episode":
-                    LoadItems(await _apiClient.GetSimilarSeriesAsync(query));
+                    LoadItems(await apiClient.GetSimilarSeriesAsync(query));
                     break;
                 case "Game":
-                    LoadItems(await _apiClient.GetSimilarGamesAsync(query));
+                    LoadItems(await apiClient.GetSimilarGamesAsync(query));
                     break;
                 case "Album":
-                    LoadItems(await _apiClient.GetSimilarAlbumsAsync(query));
+                    LoadItems(await apiClient.GetSimilarAlbumsAsync(query));
                     break;
                 default:
                     IsVisible = false;
@@ -148,7 +147,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
         private ItemTileViewModel CreateItem()
         {
-            return new ItemTileViewModel(_apiClient, _imageManager, _serverEvents, _navigator, _playbackManager, null)
+            return new ItemTileViewModel(_connectionManager, _imageManager, _navigator, _playbackManager, null)
             {
                 DesiredImageHeight = PosterHeight,
                 PreferredImageTypes = new[] { ImageType.Primary, ImageType.Backdrop, ImageType.Thumb }
@@ -159,18 +158,16 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
     public class RecommendationsSectionGenerator
         : IItemDetailSectionGenerator
     {
-        private readonly IApiClient _apiClient;
+        private readonly IConnectionManager _connectionManager;
         private readonly IImageManager _imageManager;
-        private readonly IServerEvents _serverEvents;
         private readonly INavigator _navigator;
         private readonly ISessionManager _sessionManager;
         private readonly IPlaybackManager _playbackManager;
 
-        public RecommendationsSectionGenerator(IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator, ISessionManager sessionManager, IPlaybackManager playbackManager)
+        public RecommendationsSectionGenerator(IConnectionManager connectionManager, IImageManager imageManager, INavigator navigator, ISessionManager sessionManager, IPlaybackManager playbackManager)
         {
-            _apiClient = apiClient;
+            _connectionManager = connectionManager;
             _imageManager = imageManager;
-            _serverEvents = serverEvents;
             _navigator = navigator;
             _sessionManager = sessionManager;
             _playbackManager = playbackManager;
@@ -183,7 +180,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
         public Task<IEnumerable<IItemDetailSection>> GetSections(BaseItemDto item)
         {
-            IItemDetailSection section = new RecommendationsViewModel(item, _apiClient, _imageManager, _serverEvents, _navigator, _sessionManager, _playbackManager);
+            IItemDetailSection section = new RecommendationsViewModel(item, _connectionManager, _imageManager, _navigator, _sessionManager, _playbackManager);
             return Task.FromResult<IEnumerable<IItemDetailSection>>(new[] { section });
         }
     }

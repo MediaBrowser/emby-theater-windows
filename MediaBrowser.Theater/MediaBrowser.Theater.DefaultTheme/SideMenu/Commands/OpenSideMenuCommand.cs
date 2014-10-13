@@ -19,19 +19,17 @@ namespace MediaBrowser.Theater.DefaultTheme.SideMenu.Commands
     {
         private readonly ISessionManager _sessionManager;
         private readonly IImageManager _imageManager;
-        private readonly IApiClient _apiClient;
 
-        public OpenSideMenuMenuCommand(INavigator navigator, ISessionManager sessionManager,IImageManager imageManager, IApiClient apiClient)
+        public OpenSideMenuMenuCommand(INavigator navigator, ISessionManager sessionManager,IImageManager imageManager)
         {
             _sessionManager = sessionManager;
             _imageManager = imageManager;
-            _apiClient = apiClient;
             ExecuteCommand = new RelayCommand(arg => navigator.Navigate(Go.To.SideMenu()));
         }
 
         public IViewModel IconViewModel 
         {
-            get { return new OpenSideMenuCommandViewModel(_sessionManager, _imageManager, _apiClient); }
+            get { return new OpenSideMenuCommandViewModel(_sessionManager, _imageManager); }
         }
 
         public string DisplayName
@@ -62,8 +60,8 @@ namespace MediaBrowser.Theater.DefaultTheme.SideMenu.Commands
         private UserDto _user;
         private CancellationTokenSource _imageCancellationTokenSource;
 
+        private readonly ISessionManager _session;
         private readonly IImageManager _imageManager;
-        private readonly IApiClient _apiClient;
         private BitmapImage _image;
 
         public BitmapImage Image
@@ -94,10 +92,10 @@ namespace MediaBrowser.Theater.DefaultTheme.SideMenu.Commands
             get { return Image != null; }
         }
 
-        public OpenSideMenuCommandViewModel(ISessionManager session, IImageManager imageManager, IApiClient apiClient)
+        public OpenSideMenuCommandViewModel(ISessionManager session, IImageManager imageManager)
         {
+            _session = session;
             _imageManager = imageManager;
-            _apiClient = apiClient;
 
             session.UserLoggedOut += (s, e) => Image = null;
             session.UserLoggedIn += (s, e) => {
@@ -119,7 +117,7 @@ namespace MediaBrowser.Theater.DefaultTheme.SideMenu.Commands
 
             try {
                 var options = new ImageOptions { ImageType = ImageType.Primary };
-                Image = await _imageManager.GetRemoteBitmapAsync(_apiClient.GetUserImageUrl(_user, options), _imageCancellationTokenSource.Token);
+                Image = await _imageManager.GetRemoteBitmapAsync(_session.ActiveApiClient.GetUserImageUrl(_user, options), _imageCancellationTokenSource.Token);
             }
             finally {
                 _imageCancellationTokenSource.Dispose();

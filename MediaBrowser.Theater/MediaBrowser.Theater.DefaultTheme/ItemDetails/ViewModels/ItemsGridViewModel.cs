@@ -21,9 +21,8 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
         private const double PosterHeight = 350 - HomeViewModel.TileMargin * 0.5;
 
         private readonly ItemsResult _itemsResult;
-        private readonly IApiClient _apiClient;
+        private readonly IConnectionManager _connectionManager;
         private readonly IImageManager _imageManager;
-        private readonly IServerEvents _serverEvents;
         private readonly INavigator _navigator;
         private readonly IPlaybackManager _playbackManager;
         private readonly ImageType[] _preferredImageTypes;
@@ -34,12 +33,11 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
         public RangeObservableCollection<ItemTileViewModel> Items { get; private set; }
 
-        public ItemsGridViewModel(ItemsResult itemsResult, IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator, IPlaybackManager playbackManager)
+        public ItemsGridViewModel(ItemsResult itemsResult, IConnectionManager connectionManager, IImageManager imageManager, INavigator navigator, IPlaybackManager playbackManager)
         {
             _itemsResult = itemsResult;
-            _apiClient = apiClient;
+            _connectionManager = connectionManager;
             _imageManager = imageManager;
-            _serverEvents = serverEvents;
             _navigator = navigator;
             _playbackManager = playbackManager;
 
@@ -111,7 +109,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
         private ItemTileViewModel CreateItem()
         {
-            return new ItemTileViewModel(_apiClient, _imageManager, _serverEvents, _navigator, _playbackManager, null)
+            return new ItemTileViewModel(_connectionManager, _imageManager, _navigator, _playbackManager, null)
             {
                 DesiredImageHeight = PosterHeight,
                 PreferredImageTypes = _preferredImageTypes

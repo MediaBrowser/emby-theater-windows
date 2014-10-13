@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -24,13 +25,12 @@ namespace MediaBrowser.Theater.DefaultTheme
         private readonly WindowManager _windowManager;
         private readonly IEventAggregator _events;
         private readonly INavigator _navigator;
-        private readonly IServerConnectionManager _serverManager;
         private readonly RootContext _rootContext;
         private App _application;
 
         public static Theme Instance { get; private set; }
 
-        public Theme(ITheaterApplicationHost appHost, IApplicationPaths applicationPaths, IXmlSerializer xmlSerializer, WindowManager windowManager, IEventAggregator events, INavigator navigator, IServerConnectionManager serverManager, RootContext rootContext)
+        public Theme(ITheaterApplicationHost appHost, IApplicationPaths applicationPaths, IXmlSerializer xmlSerializer, WindowManager windowManager, IEventAggregator events, INavigator navigator, RootContext rootContext)
             : base(applicationPaths, xmlSerializer)
         {
             _running = new TaskCompletionSource<object>();
@@ -38,7 +38,6 @@ namespace MediaBrowser.Theater.DefaultTheme
             _windowManager = windowManager;
             _events = events;
             _navigator = navigator;
-            _serverManager = serverManager;
             _rootContext = rootContext;
 
             Instance = this;
@@ -54,9 +53,11 @@ namespace MediaBrowser.Theater.DefaultTheme
             _application = new App();
             ApplyPalette(_application);
 
+            _application.Startup += (s, e) => OnApplicationStarted();
+
             UIDispatchExtensions.ResetDispatcher();
 
-            MainWindow mainWindow = _windowManager.CreateMainWindow(Configuration, new RootViewModel(_events, _navigator, _appHost, _serverManager, _rootContext));
+            MainWindow mainWindow = _windowManager.CreateMainWindow(Configuration, new RootViewModel(_events, _navigator, _appHost, _rootContext));
             _application.Run(mainWindow);
 
             Cleanup();
@@ -73,6 +74,16 @@ namespace MediaBrowser.Theater.DefaultTheme
             }
 
             return _running.Task;
+        }
+
+        public event Action ApplicationStarted;
+
+        protected virtual void OnApplicationStarted()
+        {
+            Action handler = ApplicationStarted;
+            if (handler != null) {
+                handler();
+            }
         }
 
         private void Cleanup()

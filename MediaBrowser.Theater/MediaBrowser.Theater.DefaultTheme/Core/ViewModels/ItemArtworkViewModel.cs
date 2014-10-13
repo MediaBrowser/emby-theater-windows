@@ -15,8 +15,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
     public class ItemArtworkViewModel
         : BaseViewModel, IKnownSize
     {
-        private readonly IApiClient _apiClient;
         private BaseItemDto _item;
+        private readonly IConnectionManager _connectionManager;
         private double? _desiredImageHeight;
         private double? _desiredImageWidth;
         private bool _downloadImagesAtExactSize;
@@ -27,10 +27,10 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
         private ImageType[] _preferredImageTypes;
         private bool _imageInvalid;
 
-        public ItemArtworkViewModel(BaseItemDto item, IApiClient apiClient, IImageManager imageManager)
+        public ItemArtworkViewModel(BaseItemDto item, IConnectionManager connectionManager, IImageManager imageManager)
         {
             _item = item;
-            _apiClient = apiClient;
+            _connectionManager = connectionManager;
 
             _image = new ImageViewerViewModel(imageManager, Enumerable.Empty<ImageViewerImage>());
             _image.PropertyChanged += (senger, args) => {
@@ -47,7 +47,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
                 }
             };
 
-            PreferredImageTypes = new ImageType[] { ImageType.Primary };
+            PreferredImageTypes = new[] { ImageType.Primary };
             _imageInvalid = true;
         }
 
@@ -262,11 +262,13 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
                 }
             }
 
+            var apiClient = _connectionManager.GetApiClient(_item);
+
             if (imageType == ImageType.Thumb) {
-                return _apiClient.GetThumbImageUrl(_item, imageOptions);
+                return apiClient.GetThumbImageUrl(_item, imageOptions);
             }
 
-            return _apiClient.GetImageUrl(_item, imageOptions);
+            return apiClient.GetImageUrl(_item, imageOptions);
         }
 
         public void DownloadImage()

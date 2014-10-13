@@ -1,15 +1,18 @@
-﻿using System.Threading.Tasks;
-using MediaBrowser.ApiInteraction;
-using MediaBrowser.ApiInteraction.WebSocket;
+﻿// _events.Get<PageLoadedEvent>().Subscribe(PageLoaded);
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Windows;
+using System.Windows.Input;
 using MediaBrowser.Common;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
-using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Events;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Model.Session;
-using MediaBrowser.Theater;
 using MediaBrowser.Theater.Api.Commands;
 using MediaBrowser.Theater.Api.Events;
 using MediaBrowser.Theater.Api.Navigation;
@@ -17,21 +20,13 @@ using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.System;
 using MediaBrowser.Theater.Api.UserInput;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Windows;
-using System.Windows.Input;
 using MediaBrowser.Theater.Api.UserInterface;
-using NavigationEventArgs = MediaBrowser.Theater.Api.Navigation.NavigationEventArgs;
 
-namespace MediaBrowser.UI.EntryPoints
+namespace MediaBrowser.Theater.EntryPoints
 {
-    public class WebSocketEntryPoint : IStartupEntryPoint, IDisposable
+    public class WebSocketEntryPoint : IStartupEntryPoint
     {
         private readonly ISessionManager _sessionManager;
-        private readonly IApiClient _apiClient;
         private readonly ILogger _logger;
         private readonly ApplicationHost _appHost;
         private readonly IImageManager _imageManager;
@@ -39,21 +34,13 @@ namespace MediaBrowser.UI.EntryPoints
         private readonly IPlaybackManager _playbackManager;
         private readonly IPresenter _presentationManager;
         private readonly ICommandManager _commandManager;
-        private readonly IServerEvents _serverEvents;
         private readonly IUserInputManager _userInputManager;
         private readonly IEventAggregator _events;
+        private readonly IConnectionManager _connectionManager;
 
-        private bool _isDisposed;
-
-        private ApiWebSocket ApiWebSocket
+        public WebSocketEntryPoint(ISessionManager sessionManager, ILogManager logManager, IApplicationHost appHost, IImageManager imageManager, INavigator navigationService, IPlaybackManager playbackManager, IPresenter presentationManager, ICommandManager commandManager, IUserInputManager userInputManager, IConnectionManager connectionManager, IEventAggregator events)
         {
-            get { return _appHost.ApiWebSocket; }
-        }
-
-        public WebSocketEntryPoint(ISessionManager sessionManagerManager, IApiClient apiClient, ILogManager logManager, IApplicationHost appHost, IImageManager imageManager, INavigator navigationService, IPlaybackManager playbackManager, IPresenter presentationManager, ICommandManager commandManager, IServerEvents serverEvents, IUserInputManager userInputManager, IEventAggregator events)
-        {
-            _sessionManager = sessionManagerManager;
-            _apiClient = apiClient;
+            _sessionManager = sessionManager;
             _logger = logManager.GetLogger(GetType().Name);
             _appHost = (ApplicationHost)appHost;
             _imageManager = imageManager;
@@ -62,33 +49,20 @@ namespace MediaBrowser.UI.EntryPoints
             _presentationManager = presentationManager;
             _commandManager = commandManager;
             _userInputManager = userInputManager;
-            _serverEvents = serverEvents;
             _events = events;
+            _connectionManager = connectionManager;
         }
 
         public void Run()
         {
-            _sessionManager.UserLoggedIn += SessionManagerUserLoggedIn;
-            _apiClient.ServerLocationChanged += _apiClient_ServerLocationChanged;
-
             _events.Get<PageLoadedEvent>().Subscribe(PageLoaded);
 
-            var socket = ApiWebSocket;
+            var client = _sessionManager.ActiveApiClient;
+            if (client != null) {
+                BindEvents(client);
+            }
 
-            socket.BrowseCommand += _apiWebSocket_BrowseCommand;
-            socket.UserDeleted += _apiWebSocket_UserDeleted;
-            socket.UserUpdated += _apiWebSocket_UserUpdated;
-            socket.PlaystateCommand += _apiWebSocket_PlaystateCommand;
-            socket.GeneralCommand += socket_GeneralCommand;
-            socket.MessageCommand += socket_MessageCommand;
-            socket.PlayCommand += _apiWebSocket_PlayCommand;
-            socket.SendStringCommand += socket_SendStringCommand;
-            socket.SetAudioStreamIndexCommand += socket_SetAudioStreamIndexCommand;
-            socket.SetSubtitleStreamIndexCommand += socket_SetSubtitleStreamIndexCommand;
-            socket.SetVolumeCommand += socket_SetVolumeCommand;
-
-            socket.Closed += socket_Closed;
-            socket.Connected += socket_Connected;
+            _connectionManager.Connected += _connectionManager_Connected;
         }
 
         async void PageLoaded(PageLoadedEvent e)
@@ -101,13 +75,51 @@ namespace MediaBrowser.UI.EntryPoints
 
                 try
                 {
-                    await ApiWebSocket.SendContextMessageAsync(item.Type, item.Id, item.Name, "Folder", CancellationToken.None).ConfigureAwait(false);
+                    var apiClient = _connectionManager.GetApiClient(item);
+                    await apiClient.SendContextMessageAsync(item.Type, item.Id, item.Name, "Folder", CancellationToken.None).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
                     _logger.ErrorException("Error sending context message", ex);
                 }
             }
+        }
+
+        void _connectionManager_Connected(object sender, GenericEventArgs<ConnectionResult> e)
+        {
+            BindEvents(e.Argument.ApiClient);
+        }
+
+        private void BindEvents(IApiClient client)
+        {
+            UnindEvents(client);
+
+            client.BrowseCommand += _apiWebSocket_BrowseCommand;
+            client.UserDeleted += _apiWebSocket_UserDeleted;
+            client.UserUpdated += _apiWebSocket_UserUpdated;
+            client.PlaystateCommand += _apiWebSocket_PlaystateCommand;
+            client.GeneralCommand += socket_GeneralCommand;
+            client.MessageCommand += socket_MessageCommand;
+            client.PlayCommand += _apiWebSocket_PlayCommand;
+            client.SendStringCommand += socket_SendStringCommand;
+            client.SetAudioStreamIndexCommand += socket_SetAudioStreamIndexCommand;
+            client.SetSubtitleStreamIndexCommand += socket_SetSubtitleStreamIndexCommand;
+            client.SetVolumeCommand += socket_SetVolumeCommand;
+        }
+
+        private void UnindEvents(IApiClient client)
+        {
+            client.BrowseCommand -= _apiWebSocket_BrowseCommand;
+            client.UserDeleted -= _apiWebSocket_UserDeleted;
+            client.UserUpdated -= _apiWebSocket_UserUpdated;
+            client.PlaystateCommand -= _apiWebSocket_PlaystateCommand;
+            client.GeneralCommand -= socket_GeneralCommand;
+            client.MessageCommand -= socket_MessageCommand;
+            client.PlayCommand -= _apiWebSocket_PlayCommand;
+            client.SendStringCommand -= socket_SendStringCommand;
+            client.SetAudioStreamIndexCommand -= socket_SetAudioStreamIndexCommand;
+            client.SetSubtitleStreamIndexCommand -= socket_SetSubtitleStreamIndexCommand;
+            client.SetVolumeCommand -= socket_SetVolumeCommand;
         }
 
         void socket_SetVolumeCommand(object sender, GenericEventArgs<int> e)
@@ -128,84 +140,6 @@ namespace MediaBrowser.UI.EntryPoints
         void socket_SendStringCommand(object sender, GenericEventArgs<string> e)
         {
             _userInputManager.SendTextInputToFocusedElement(e.Argument);
-        }
-
-        void socket_Connected(object sender, EventArgs e)
-        {
-            ReportCapabilities(CancellationToken.None);
-        }
-
-        private async void ReportCapabilities(CancellationToken cancellationToken)
-        {
-            try
-            {
-                await _apiClient.ReportCapabilities(new ClientCapabilities
-                {
-
-                    PlayableMediaTypes = new List<string>
-                    {
-                        MediaType.Audio,
-                        MediaType.Video,
-                        MediaType.Game,
-                        MediaType.Photo,
-                        MediaType.Book
-                    },
-
-                    // MBT should be able to implement them all
-                    SupportedCommands = Enum.GetNames(typeof(GeneralCommandType)).ToList()
-
-                }, cancellationToken);
-            }
-            catch (Exception ex)
-            {
-                _logger.ErrorException("Error reporting capabilities", ex);
-            }
-        }
-
-        void _apiClient_ServerLocationChanged(object sender, EventArgs e)
-        {
-            //UpdateServerLocation();
-        }
-
-        private async void UpdateServerLocation()
-        {
-            try
-            {
-                var socket = ApiWebSocket;
-
-                await socket.ChangeServerLocation(((ApiClient)_apiClient).ApiUrl, CancellationToken.None).ConfigureAwait(false);
-
-                socket.StartEnsureConnectionTimer(5000);
-            }
-            catch (Exception ex)
-            {
-                _logger.ErrorException("Error establishing web socket connection", ex);
-            }
-        }
-
-        void SessionManagerUserLoggedIn(object sender, EventArgs e)
-        {
-            if (_isDisposed)
-            {
-                return;
-            }
-
-            UpdateServerLocation();
-        }
-
-        private async void EnsureWebSocket()
-        {
-            try {
-                await ApiWebSocket.EnsureConnectionAsync(CancellationToken.None).ConfigureAwait(false);
-            }
-            catch (Exception ex) {
-                _logger.ErrorException("Error connecting to web socket", ex);
-            }
-        }
-
-        void socket_Closed(object sender, EventArgs e)
-        {
-            EnsureWebSocket();
         }
 
         void socket_MessageCommand(object sender, GenericEventArgs<MessageCommand> e)
@@ -272,7 +206,7 @@ namespace MediaBrowser.UI.EntryPoints
                 throw new ArgumentException(String.Format("ExecuteSendStringCommand: Argument '{0}' must be a Single Char or a Windows Key literial (i.e Key.A)  or the Integer value for Key literial", input));
             }
         }
-
+        
         private string DictToString(Dictionary<String, String> dict)
         {
             return string.Join(";", dict.Select(i => String.Format("{0}={1}", i.Key, i.Value)));
@@ -281,44 +215,19 @@ namespace MediaBrowser.UI.EntryPoints
         private async void ExecuteDisplayContent(Dictionary<string, string> args)
         {
             _logger.Debug("ExecuteDisplayContent {0}", DictToString(args));
-
-            string itemId, itemType, itemName;
-            args.TryGetValue("ItemId", out itemId);
-            args.TryGetValue("ItemType", out itemType);
-            args.TryGetValue("ItemName", out itemName);
-
-            await Browse(itemId, itemName, itemType);
-        }
-
-        private async Task Browse(string itemId, string itemName, string itemType)
-        {
-            if (!string.IsNullOrEmpty(itemId)) {
-                if (!string.IsNullOrEmpty(itemName) && !string.IsNullOrEmpty(itemType)) {
-                    if (itemType == "Genre") {
-                        var genre = await _apiClient.GetGenreAsync(itemName, _sessionManager.CurrentUser.Id);
-                        await _navigationService.Navigate(Go.To.Item(genre));
-                        return;
-                    }
-
-                    if (itemType == "Person") {
-                        var person = await _apiClient.GetPersonAsync(itemName, _sessionManager.CurrentUser.Id);
-                        await _navigationService.Navigate(Go.To.Item(person));
-                        return;
-                    }
-                }
-
-                BaseItemDto dto = await _apiClient.GetItemAsync(itemId, _sessionManager.CurrentUser.Id);
-                await _navigationService.Navigate(Go.To.Item(dto));
+            var itemId = args["ItemId"];
+            if (!String.IsNullOrEmpty(itemId)) {
+                await _navigationService.Navigate(Go.To.Item(new BaseItemDto { Id = itemId }));
             }
         }
 
-        void socket_GeneralCommand(object sender, GeneralCommandEventArgs e)
+        void socket_GeneralCommand(object sender, GenericEventArgs<GeneralCommandEventArgs> e)
         {
-            _logger.Debug("socket_GeneralCommand {0} {1}", e.KnownCommandType, e.Command.Arguments);
+            _logger.Debug("socket_GeneralCommand {0} {1}", e.Argument.KnownCommandType, e.Argument.Command.Arguments);
 
-            if (e.KnownCommandType.HasValue)
+            if (e.Argument.KnownCommandType.HasValue)
             {
-                switch (e.KnownCommandType.Value)
+                switch (e.Argument.KnownCommandType.Value)
                 {
                     case GeneralCommandType.MoveUp:
                         _userInputManager.SendKeyDownEventToFocusedElement(Key.Up);
@@ -370,7 +279,7 @@ namespace MediaBrowser.UI.EntryPoints
                         break;
 
                     case GeneralCommandType.SendKey:
-                        ExecuteSendSendKeyCommand(sender, e);
+                        ExecuteSendSendKeyCommand(sender, e.Argument);
                         break;
 
                     case GeneralCommandType.GoHome:
@@ -406,10 +315,10 @@ namespace MediaBrowser.UI.EntryPoints
                         break;
 
                     case GeneralCommandType.DisplayContent:
-                        ExecuteDisplayContent(e.Command.Arguments);
+                        ExecuteDisplayContent(e.Argument.Command.Arguments);
                         break;
                     default:
-                        _logger.Warn("Unrecognized command: " + e.KnownCommandType.Value);
+                        _logger.Warn("Unrecognized command: " + e.Argument.KnownCommandType.Value);
                         break;
                 }
             }
@@ -426,7 +335,9 @@ namespace MediaBrowser.UI.EntryPoints
 
             try
             {
-                var result = await _apiClient.GetItemsAsync(new ItemQuery
+                var apiClient = _sessionManager.ActiveApiClient;
+
+                var result = await apiClient.GetItemsAsync(new ItemQuery
                 {
                     Ids = e.Argument.ItemIds,
                     UserId = _sessionManager.CurrentUser.Id,
@@ -440,7 +351,7 @@ namespace MediaBrowser.UI.EntryPoints
                         ItemFields.People,
                         ItemFields.MediaSources
                     }
-                });
+                }, CancellationToken.None);
 
                 await _playbackManager.Play(new PlayOptions
                 {
@@ -521,9 +432,16 @@ namespace MediaBrowser.UI.EntryPoints
                 return;
             }
 
-            try 
+            try
             {
-                await Browse(e.Argument.ItemId, e.Argument.ItemName, e.Argument.ItemType);
+                var dto = new BaseItemDto
+                {
+                    Name = e.Argument.ItemName,
+                    Type = e.Argument.ItemType,
+                    Id = e.Argument.ItemId
+                };
+
+                await _navigationService.Navigate(Go.To.Item(dto));
             }
             catch (Exception ex)
             {
@@ -541,33 +459,6 @@ namespace MediaBrowser.UI.EntryPoints
                 Icon = MessageBoxIcon.Error,
                 Text = "Please sign in before attempting to use remote control"
             });
-        }
-        
-        public void Dispose()
-        {
-            _isDisposed = true;
-            _sessionManager.UserLoggedIn -= SessionManagerUserLoggedIn;
-            DisposeSocket();
-        }
-
-        private void DisposeSocket()
-        {
-            var socket = ApiWebSocket;
-
-            if (socket != null)
-            {
-                socket.BrowseCommand -= _apiWebSocket_BrowseCommand;
-                socket.UserDeleted -= _apiWebSocket_UserDeleted;
-                socket.UserUpdated -= _apiWebSocket_UserUpdated;
-                socket.PlaystateCommand -= _apiWebSocket_PlaystateCommand;
-                socket.GeneralCommand -= socket_GeneralCommand;
-                socket.MessageCommand -= socket_MessageCommand;
-                socket.PlayCommand -= _apiWebSocket_PlayCommand;
-                socket.Closed -= socket_Closed;
-                socket.Connected -= socket_Connected;
-
-                socket.Dispose();
-            }
         }
     }
 }

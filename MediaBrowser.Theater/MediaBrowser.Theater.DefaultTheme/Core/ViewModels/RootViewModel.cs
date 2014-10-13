@@ -14,7 +14,6 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
         : BaseViewModel
     {
         private readonly INavigator _navigator;
-        private readonly IServerConnectionManager _serverManager;
         private readonly RootContext _rootContext;
         private IViewModel _activePage;
         private IViewModel _backgroundMedia;
@@ -24,10 +23,9 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
         private ClockViewModel _clock;
         private bool _isInternalMediaPlaying;
 
-        public RootViewModel(IEventAggregator events, INavigator navigator, ITheaterApplicationHost appHost, IServerConnectionManager serverManager, RootContext rootContext)
+        public RootViewModel(IEventAggregator events, INavigator navigator, ITheaterApplicationHost appHost, RootContext rootContext)
         {
             _navigator = navigator;
-            _serverManager = serverManager;
             _rootContext = rootContext;
             Notifications = new NotificationTrayViewModel(events);
             Commands = new CommandBarViewModel(appHost, navigator);

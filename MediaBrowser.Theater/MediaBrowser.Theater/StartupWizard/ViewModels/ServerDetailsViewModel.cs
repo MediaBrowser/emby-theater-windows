@@ -26,25 +26,23 @@ namespace MediaBrowser.Theater.StartupWizard.ViewModels
     {
         private readonly AsyncLock _validationLock = new AsyncLock();
 
-        private readonly IApiClient _apiClient;
-        private readonly ITheaterConfigurationManager _config;
-        private string _hostName;
-        private int _port;
+        private readonly IConnectionManager _connectionManager;
         private ConnectionStatus _status;
         private bool _isSearchingForServer;
         private string _address;
 
-        public ServerDetailsViewModel(ILogManager logManager, IApiClient apiClient, ITheaterConfigurationManager config)
+        private CancellationTokenSource _validationToken;
+
+        public ServerDetailsViewModel(ILogManager logManager, IConnectionManager connectionManager)
         {
-            _apiClient = apiClient;
-            _config = config;
+            _connectionManager = connectionManager;
 
             IsSearchingForServer = true;
             Address = "http://localhost:8096";
 
             Task.Run(async () => {
                 try {
-                    var info = (await new ServerLocator().FindServers(500, CancellationToken.None).ConfigureAwait(false)).FirstOrDefault();
+                    var info = (await new ServerLocator().FindServers(500, CancellationToken.None).ConfigureAwait(false)).First();
                     Address = info.Address;
                 }
                 catch (Exception e) {
@@ -108,28 +106,33 @@ namespace MediaBrowser.Theater.StartupWizard.ViewModels
         {
             Debug.WriteLine("Validating");
 
+            if (_validationToken != null) {
+                _validationToken.Cancel();
+            }
+            
             using (await _validationLock.LockAsync()) {
                 if (!await base.Validate().ConfigureAwait(false)) {
                     return false;
                 }
 
+                _validationToken = new CancellationTokenSource();
+
                 Status = ConnectionStatus.Checking;
-
-                var url = string.Format("{0}/mediabrowser/system/info", Address);
-
+                
                 try {
-                    using (var client = new HttpClient()) {
-                        await client.GetStringAsync(url).ConfigureAwait(false);
+                    var result = await _connectionManager.Connect(Address, _validationToken.Token);
+                    if (result.State == ConnectionState.Unavailable) {
+                        Status = ConnectionStatus.Failed;
+                        return false;
                     }
-
-                    _apiClient.ChangeServerLocation(Address);
-
-                    _config.Configuration.ServerAddress = Address;
-                    _config.SaveConfiguration();
 
                     Status = ConnectionStatus.Ok;
                     return true;
 
+                }
+                catch (TaskCanceledException) {
+                    Status = ConnectionStatus.Checking;
+                    return true;
                 }
                 catch (Exception) {
                     Status = ConnectionStatus.Failed;

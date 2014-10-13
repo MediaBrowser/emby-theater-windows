@@ -13,20 +13,18 @@ namespace MediaBrowser.Theater.DefaultTheme.Login.ViewModels
     public class LoginViewModel
         : BaseViewModel
     {
-        private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
         private readonly ILogManager _logManager;
         private readonly ISessionManager _session;
 
         private readonly ObservableCollection<IViewModel> _users;
 
-        public LoginViewModel(ISessionManager session, ILogManager logManager, IImageManager imageManager, IApiClient apiClient)
+        public LoginViewModel(ISessionManager session, ILogManager logManager, IImageManager imageManager)
         {
             _session = session;
             _logManager = logManager;
             _imageManager = imageManager;
-            _apiClient = apiClient;
-            _users = new ObservableCollection<IViewModel> { new UserLoginViewModel(null, _apiClient, _imageManager, _session, _logManager) };
+            _users = new ObservableCollection<IViewModel> { new UserLoginViewModel(null, session.ActiveApiClient, _imageManager, _session, _logManager) };
 
             LoadUsers();
         }
@@ -38,10 +36,11 @@ namespace MediaBrowser.Theater.DefaultTheme.Login.ViewModels
 
         private async void LoadUsers()
         {
-            UserDto[] users = await _apiClient.GetPublicUsersAsync();
+            var apiClient = _session.ActiveApiClient;
+            UserDto[] users = await apiClient.GetPublicUsersAsync();
 
             Action action = () => {
-                foreach (UserLoginViewModel user in users.Select(u => new UserLoginViewModel(u, _apiClient, _imageManager, _session, _logManager))) {
+                foreach (UserLoginViewModel user in users.Select(u => new UserLoginViewModel(u, apiClient, _imageManager, _session, _logManager))) {
                     _users.Add(user);
                 }
             };

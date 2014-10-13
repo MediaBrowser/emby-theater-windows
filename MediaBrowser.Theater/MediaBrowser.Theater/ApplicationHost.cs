@@ -11,16 +11,20 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using MediaBrowser.ApiInteraction;
+using MediaBrowser.ApiInteraction.Network;
 using MediaBrowser.ApiInteraction.WebSocket;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Constants;
 using MediaBrowser.Common.Implementations;
 using MediaBrowser.Common.Implementations.Archiving;
+using MediaBrowser.Common.Implementations.IO;
 using MediaBrowser.Common.Implementations.ScheduledTasks;
 using MediaBrowser.Common.Net;
 using MediaBrowser.Common.Plugins;
 using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
+using MediaBrowser.Model.Session;
 using MediaBrowser.Model.System;
 using MediaBrowser.Model.Updates;
 using MediaBrowser.Theater.Api;
@@ -49,10 +53,11 @@ namespace MediaBrowser.Theater
     internal class ApplicationHost : BaseApplicationHost<ApplicationPaths>, IDisposable, ITheaterApplicationHost
     {
         public ApplicationHost(ApplicationPaths applicationPaths, ILogManager logManager)
-            : base(applicationPaths, logManager) { }
+            : base(applicationPaths, logManager, new CommonFileSystem(logManager.GetLogger("Logger"), true, false)) { }
 
-        public IApiClient ApiClient { get; private set; }
-        internal ApiWebSocket ApiWebSocket { get; set; }
+        public IConnectionManager ConnectionManager { get; private set; }
+
+        //internal ApiWebSocket ApiWebSocket { get; set; }
         public ITheme Theme { get; private set; }
         public bool RestartOnExit { get; private set; }
 
@@ -64,6 +69,7 @@ namespace MediaBrowser.Theater
         public INavigator Navigator { get; private set; }
         public IPresenter Presenter { get; private set; }
         public IUserInputManager UserInputManager { get; private set; }
+        public ISessionManager SessionManager { get; private set; }
 
         public override bool CanSelfRestart
         {
@@ -109,10 +115,15 @@ namespace MediaBrowser.Theater
             };
 
             Presenter.MainWindowLoaded += mainWindowLoaded;
-
+            
             Logger.Info("Core startup complete");
         }
 
+        public Task<ConnectionResult> ConnectToServer()
+        {
+            return ConnectionManager.Connect(CancellationToken.None);
+        }
+        
         /// <summary>
         ///     Registers resources that classes will depend on
         /// </summary>
@@ -123,9 +134,8 @@ namespace MediaBrowser.Theater
             await base.RegisterResources(progress).ConfigureAwait(false);
 
             RegisterSingleInstance(ApplicationPaths);
-            RegisterSingleInstance(ApiClient);
-            RegisterSingleInstance<IServerEvents>(ApiWebSocket);
             RegisterSingleInstance(TheaterConfigurationManager);
+            RegisterSingleInstance(ConnectionManager);
             RegisterSingleInstance<ITheaterApplicationHost>(this);
 
             Container.RegisterSingle(typeof (ITheme), FindTheme());
@@ -135,7 +145,6 @@ namespace MediaBrowser.Theater
             Container.RegisterSingle(typeof (IImageManager), typeof (ImageManager));
             Container.RegisterSingle(typeof (IInternalPlayerWindowManager), typeof (InternalPlayerWindowManager));
             Container.RegisterSingle(typeof (IPlaybackManager), typeof (PlaybackManager));
-            Container.RegisterSingle(typeof (IServerConnectionManager), typeof (ServerConnectionManager));
             Container.RegisterSingle(typeof (IUserInputManager), typeof (UserInputManager));
             Container.RegisterSingle(typeof (ICommandManager), typeof (CommandManager));
 
@@ -154,6 +163,7 @@ namespace MediaBrowser.Theater
             Navigator = Resolve<INavigator>();
             Presenter = Resolve<IPresenter>();
             UserInputManager = Resolve<IUserInputManager>();
+            SessionManager = Resolve<ISessionManager>();
         }
 
         public void StartEntryPoints()
@@ -203,6 +213,16 @@ namespace MediaBrowser.Theater
 
         public void RunUserInterface()
         {
+            Theme.ApplicationStarted += () => {
+                if (Application.Current != null) {
+                    Application.Current.Exit += (s, e) => {
+                        if (!TheaterConfigurationManager.Configuration.RememberLogin && SessionManager.CurrentUser != null) {
+                            ConnectionManager.Logout();
+                        }
+                    };
+                }
+            };
+
             Theme.Run();
         }
 
@@ -218,24 +238,50 @@ namespace MediaBrowser.Theater
         {
             ILogger logger = LogManager.GetLogger("ApiClient");
 
-            var apiClient = new ApiClient(new HttpWebRequestClient(logger), logger, TheaterConfigurationManager.Configuration.ServerAddress, "Media Browser Theater", Environment.MachineName, Environment.MachineName, ApplicationVersion.ToString()) {
-                JsonSerializer = JsonSerializer,
-                ImageQuality = TheaterConfigurationManager.Configuration.DownloadCompressedImages
-                                   ? 90
-                                   : 100
+            var deviceName = Environment.MachineName;
+
+            var capabilities = new ClientCapabilities
+            {
+                PlayableMediaTypes = new List<string>
+                {
+                    MediaType.Audio,
+                    MediaType.Video,
+                    MediaType.Game,
+                    MediaType.Photo,
+                    MediaType.Book
+                },
+
+                // MBT should be able to implement them all
+                SupportedCommands = Enum.GetNames(typeof(GeneralCommandType)).ToList()
             };
 
-            ApiClient = apiClient;
-            ApiClient.HttpResponseReceived += ApiClient_HttpResponseReceived;
+            var device = new Device
+            {
+                DeviceName = deviceName,
+                DeviceId = SystemId
+            };
 
-            logger = LogManager.GetLogger("ApiWebSocket");
+            ConnectionManager = new ConnectionManager(logger,
+                new CredentialProvider(TheaterConfigurationManager, JsonSerializer),
+                new NetworkConnection(Logger),
+                new ServerLocator(logger),
+                "Media Browser Theater",
+                ApplicationVersion.ToString(),
+                device,
+                capabilities,
+                ClientWebSocketFactory.CreateWebSocket)
+            {
+                JsonSerializer = JsonSerializer
+            };
 
-            // WebSocketEntry point will handle figuring out the port and connecting
-            ApiWebSocket = new ApiWebSocket(logger, JsonSerializer, apiClient.ServerAddress,
-                                            ApiClient.DeviceId, apiClient.ApplicationVersion,
-                                            apiClient.ClientName, apiClient.DeviceName, () => ClientWebSocketFactory.CreateWebSocket(logger));
-
-            apiClient.WebSocketConnection = ApiWebSocket;
+            ConnectionManager.Connected += (s, e) => {
+                if (e.Argument.State == ConnectionState.SignedIn) {
+                    Navigator.Navigate(Go.To.Home());
+                }
+                if (e.Argument.State == ConnectionState.ServerSignIn) {
+                    Navigator.Navigate(Go.To.Login());
+                }
+            };
         }
 
         private async void ApiClient_HttpResponseReceived(object sender, HttpResponseEventArgs e)
@@ -321,15 +367,6 @@ namespace MediaBrowser.Theater
             }
         }
 
-        protected override void OnConfigurationUpdated(object sender, EventArgs e)
-        {
-            base.OnConfigurationUpdated(sender, e);
-
-            ((ApiClient) ApiClient).ImageQuality = TheaterConfigurationManager.Configuration.DownloadCompressedImages
-                                                       ? 90
-                                                       : 100;
-        }
-
         protected override IConfigurationManager GetConfigurationManager()
         {
             return new ConfigurationManager(ApplicationPaths, LogManager, XmlSerializer);
@@ -344,13 +381,13 @@ namespace MediaBrowser.Theater
         public override async Task<CheckForUpdateResult> CheckForApplicationUpdate(CancellationToken cancellationToken,
                                                                                    IProgress<double> progress)
         {
-            var serverInfo = await ApiClient.GetPublicSystemInfoAsync(cancellationToken).ConfigureAwait(false);
+            var availablePackages = await InstallationManager.GetAvailablePackagesWithoutRegistrationInfo(cancellationToken).ConfigureAwait(false);
 
-            IEnumerable<PackageInfo> availablePackages = await InstallationManager.GetAvailablePackagesWithoutRegistrationInfo(cancellationToken).ConfigureAwait(false);
+            // Fake this with a really high number
+            // With the idea of multiple servers there's no point in making server version a part of this
+            var serverVersion = new Version(10, 0, 0, 0);
 
-            var serverVersion = new Version(serverInfo.Version);
-
-            PackageVersionInfo version = InstallationManager.GetLatestCompatibleVersion(availablePackages, Program.PackageName, null, serverVersion, ConfigurationManager.CommonConfiguration.SystemUpdateLevel);
+            var version = InstallationManager.GetLatestCompatibleVersion(availablePackages, Program.PackageName, null, serverVersion, ConfigurationManager.CommonConfiguration.SystemUpdateLevel);
 
             var versionObject = version == null || string.IsNullOrWhiteSpace(version.versionStr) ? null : new Version(version.versionStr);
 
@@ -407,7 +444,7 @@ namespace MediaBrowser.Theater
             var wizard = new WizardViewModel(new List<IWizardPage> {
                 Resolve<IntroductionViewModel>(),
                 Resolve<ServerDetailsViewModel>(),
-                Resolve<PrerequisitesViewModel>(),
+                //Resolve<PrerequisitesViewModel>(),
             });
 
             bool completed = false;

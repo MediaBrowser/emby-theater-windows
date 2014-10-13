@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
@@ -21,20 +20,18 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
     public class LatestEpisodesViewModel
         : BaseViewModel, IKnownSize, IHomePage
     {
-        private readonly IApiClient _apiClient;
+        private readonly IConnectionManager _connectionManager;
         private readonly IImageManager _imageManager;
         private readonly INavigator _navigator;
         private readonly ISessionManager _sessionManager;
         private readonly IPlaybackManager _playbackManager;
-        private readonly IServerEvents _serverEvents;
 
         private bool _isVisible;
 
-        public LatestEpisodesViewModel(BaseItemDto tvFolder, IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator, ISessionManager sessionManager, IPlaybackManager playbackManager)
+        public LatestEpisodesViewModel(BaseItemDto tvFolder, IConnectionManager connectionManager, IImageManager imageManager, INavigator navigator, ISessionManager sessionManager, IPlaybackManager playbackManager)
         {
-            _apiClient = apiClient;
+            _connectionManager = connectionManager;
             _imageManager = imageManager;
-            _serverEvents = serverEvents;
             _navigator = navigator;
             _sessionManager = sessionManager;
             _playbackManager = playbackManager;
@@ -90,7 +87,9 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
 
         private async void LoadItems(BaseItemDto tvFolder)
         {
-            var result = await _apiClient.GetLatestItems(new LatestItemsQuery {
+            var apiClient = _connectionManager.GetApiClient(tvFolder);
+
+            var result = await apiClient.GetLatestItems(new LatestItemsQuery {
                 UserId = _sessionManager.CurrentUser.Id,
                 ParentId = tvFolder.Id,
                 GroupItems = true,
@@ -119,7 +118,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
 
         private ItemTileViewModel CreateEpisodeItem()
         {
-            return new ItemTileViewModel(_apiClient, _imageManager, _serverEvents, _navigator, _playbackManager, null) {
+            return new ItemTileViewModel(_connectionManager, _imageManager, _navigator, _playbackManager, null) {
                 DesiredImageWidth = HomeViewModel.TileWidth,
                 DesiredImageHeight = HomeViewModel.TileHeight,
                 PreferredImageTypes = new[] { ImageType.Backdrop, ImageType.Screenshot, ImageType.Thumb, ImageType.Primary },

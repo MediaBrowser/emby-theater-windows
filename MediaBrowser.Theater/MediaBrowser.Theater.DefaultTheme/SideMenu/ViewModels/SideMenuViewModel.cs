@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
-using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Theater.Api;
 using MediaBrowser.Theater.Api.Commands;
 using MediaBrowser.Theater.Api.Session;
@@ -15,10 +14,10 @@ namespace MediaBrowser.Theater.DefaultTheme.SideMenu.ViewModels
     {
         private readonly ISessionManager _sessionManager;
 
-        public SideMenuViewModel(ITheaterApplicationHost appHost, ISessionManager sessionManager, IImageManager imageManager, IApiClient apiClient)
+        public SideMenuViewModel(ITheaterApplicationHost appHost, ISessionManager sessionManager, IImageManager imageManager)
         {
             _sessionManager = sessionManager;
-            Users = new SideMenuUsersViewModel(sessionManager, imageManager, apiClient);
+            Users = new SideMenuUsersViewModel(sessionManager, imageManager);
             CommandGroups = new RangeObservableCollection<SideMenuGroupViewModel>();
             UserCommandGroups = new RangeObservableCollection<SideMenuGroupViewModel>();
 

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -19,7 +18,6 @@ using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
-using MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies;
 using MediaBrowser.Theater.DefaultTheme.ItemList;
 using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.ViewModels;
@@ -29,22 +27,20 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Generic
     public class GenericFolderSpotlightViewModel
         : BaseViewModel, IKnownSize, IHomePage
     {
-        private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
         private readonly ILogger _logger;
         private readonly double _miniSpotlightWidth;
         private readonly INavigator _navigator;
+        private readonly IConnectionManager _connectionManager;
         private readonly IPlaybackManager _playbackManager;
-        private readonly IServerEvents _serverEvents;
         private readonly ISessionManager _sessionManager;
         private CancellationTokenSource _mainViewCancellationTokenSource;
 
-        public GenericFolderSpotlightViewModel(BaseItemDto folder, IImageManager imageManager, INavigator navigator, IApiClient apiClient, IServerEvents serverEvents, ISessionManager sessionManager, ILogManager logManager, IPlaybackManager playbackManager)
+        public GenericFolderSpotlightViewModel(BaseItemDto folder, IImageManager imageManager, INavigator navigator, IConnectionManager connectionManager, ISessionManager sessionManager, ILogManager logManager, IPlaybackManager playbackManager)
         {
             _imageManager = imageManager;
             _navigator = navigator;
-            _apiClient = apiClient;
-            _serverEvents = serverEvents;
+            _connectionManager = connectionManager;
             _playbackManager = playbackManager;
             _sessionManager = sessionManager;
             _logger = logManager.GetLogger(folder.Name + " Spotlight");
@@ -57,7 +53,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Generic
 
             BrowseItemsCommand = new RelayCommand(arg => {
                 var itemParams = new ItemListParameters {
-                    Items = ItemChildren.Get(apiClient, sessionManager, folder),
+                    Items = ItemChildren.Get(connectionManager, sessionManager, folder),
                     Title = "Browse All" //todo localize
                 };
 
@@ -145,7 +141,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Generic
             _mainViewCancellationTokenSource = new CancellationTokenSource();
 
             try {
-                var spotlight = await ItemChildren.Get(_apiClient, _sessionManager, folder, new ChildrenQueryParams
+                var spotlight = await ItemChildren.Get(_connectionManager, _sessionManager, folder, new ChildrenQueryParams
                 {
                     Filters = new[] { ItemFilter.IsRecentlyAdded },
                     SortBy = new[] { ItemSortBy.CommunityRating },
@@ -156,7 +152,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Generic
 
                 if (spotlight.TotalRecordCount < 2)
                 {
-                    spotlight = await ItemChildren.Get(_apiClient, _sessionManager, folder, new ChildrenQueryParams
+                    spotlight = await ItemChildren.Get(_connectionManager, _sessionManager, folder, new ChildrenQueryParams
                     {
                         SortBy = new[] { ItemSortBy.CommunityRating },
                         SortOrder = SortOrder.Descending,
@@ -178,7 +174,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Generic
 
         private ItemTileViewModel CreateMiniSpotlightItem(double width, double height)
         {
-            return new ItemTileViewModel(_apiClient, _imageManager, _serverEvents, _navigator, _playbackManager, null) {
+            return new ItemTileViewModel(_connectionManager, _imageManager, _navigator, _playbackManager, null) {
                 DesiredImageWidth = width,
                 DesiredImageHeight = height,
                 PreferredImageTypes = new[] { ImageType.Backdrop, ImageType.Thumb },
@@ -219,7 +215,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Generic
             if (folderImage != null) {
                 AllItemsImagesViewModel.Images.Add(folderImage);
             } else {
-                var items = await ItemChildren.Get(_apiClient, _sessionManager, folder);
+                var items = await ItemChildren.Get(_connectionManager, _sessionManager, folder);
 
                 IEnumerable<string> images = items.Items.Select(DownloadImage)
                                                   .Where(img => img != null);
@@ -248,8 +244,9 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Generic
                 Width = (int)SpotlightWidth,
                 EnableImageEnhancers = false
             };
-            
-            return _apiClient.GetImageUrl(item, imageOptions);
+
+            var apiClient = _connectionManager.GetApiClient(item);
+            return apiClient.GetImageUrl(item, imageOptions);
         }
 
         public string DownloadImage(BaseItemDto item)

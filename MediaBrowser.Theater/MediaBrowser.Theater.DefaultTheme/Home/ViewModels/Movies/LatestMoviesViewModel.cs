@@ -24,20 +24,20 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
         private const double PosterHeight = (HomeViewModel.TileHeight*1.5) + HomeViewModel.TileMargin;
         private const double PosterWidth = PosterHeight*2/3.0;
 
-        private readonly IApiClient _apiClient;
+        private readonly IConnectionManager _connectionManager;
         private readonly IImageManager _imageManager;
         private readonly INavigator _navigator;
         private readonly ISessionManager _sessionManager;
         private readonly IPlaybackManager _playbackManager;
-        private readonly IServerEvents _serverEvents;
+        private readonly IApiClient _apiClient;
 
         private bool _isVisible;
 
-        public LatestMoviesViewModel(BaseItemDto movieFolder, IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator, ISessionManager sessionManager, IPlaybackManager playbackManager)
+        public LatestMoviesViewModel(BaseItemDto movieFolder, IConnectionManager connectionManager, IImageManager imageManager, INavigator navigator, ISessionManager sessionManager, IPlaybackManager playbackManager)
         {
-            _apiClient = apiClient;
+            _apiClient = connectionManager.GetApiClient(movieFolder);
+            _connectionManager = connectionManager;
             _imageManager = imageManager;
-            _serverEvents = serverEvents;
             _navigator = navigator;
             _sessionManager = sessionManager;
             _playbackManager = playbackManager;
@@ -128,7 +128,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
 
         private ItemTileViewModel CreateMovieItem()
         {
-            return new ItemTileViewModel(_apiClient, _imageManager, _serverEvents, _navigator, _playbackManager, null) {
+            return new ItemTileViewModel(_connectionManager, _imageManager, _navigator, _playbackManager, null) {
                 DesiredImageWidth = PosterWidth,
                 DesiredImageHeight = PosterHeight,
                 ShowCaptionBar = false,

@@ -22,20 +22,18 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
     public class ResumeEpisodesViewModel
        : BaseViewModel, IKnownSize, IHomePage
     {
-        private readonly IApiClient _apiClient;
+        private readonly IConnectionManager _connectionManager;
         private readonly IImageManager _imageManager;
         private readonly INavigator _navigator;
         private readonly ISessionManager _sessionManager;
         private readonly IPlaybackManager _playbackManager;
-        private readonly IServerEvents _serverEvents;
 
         private bool _isVisible;
 
-        public ResumeEpisodesViewModel(BaseItemDto tvFolder, IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator, ISessionManager sessionManager, IPlaybackManager playbackManager)
+        public ResumeEpisodesViewModel(BaseItemDto tvFolder, IConnectionManager connectionManager, IImageManager imageManager, INavigator navigator, ISessionManager sessionManager, IPlaybackManager playbackManager)
         {
-            _apiClient = apiClient;
+            _connectionManager = connectionManager;
             _imageManager = imageManager;
-            _serverEvents = serverEvents;
             _navigator = navigator;
             _sessionManager = sessionManager;
             _playbackManager = playbackManager;
@@ -77,7 +75,9 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
 
         private async void LoadItems(BaseItemDto tvFolder)
         {
-            var result = await _apiClient.GetItemsAsync(new ItemQuery {
+            var apiClient = _connectionManager.GetApiClient(tvFolder);
+
+            var result = await apiClient.GetItemsAsync(new ItemQuery {
                 UserId = _sessionManager.CurrentUser.Id,
                 ParentId = tvFolder.Id,
                 IncludeItemTypes = new[] { "Episode" },
@@ -112,7 +112,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
 
         private ItemTileViewModel CreateEpisodeItem()
         {
-            return new ItemTileViewModel(_apiClient, _imageManager, _serverEvents, _navigator, _playbackManager, null) {
+            return new ItemTileViewModel(_connectionManager, _imageManager, _navigator, _playbackManager, null) {
                 DesiredImageWidth = HomeViewModel.TileWidth,
                 DesiredImageHeight = HomeViewModel.TileHeight,
                 PreferredImageTypes = new[] { ImageType.Primary, ImageType.Screenshot, ImageType.Thumb, ImageType.Backdrop },

@@ -50,7 +50,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
             get { return (!_item.IsFolder && _item.Type != "Person") || !string.IsNullOrEmpty(_item.Overview); }
         }
 
-        public ItemOverviewViewModel(BaseItemDto item, IApiClient apiClient, IImageManager imageManager, IPlaybackManager playbackManager, ISessionManager sessionManager, INavigator navigator)
+        public ItemOverviewViewModel(BaseItemDto item, IConnectionManager connectionManager, IImageManager imageManager, IPlaybackManager playbackManager, ISessionManager sessionManager, INavigator navigator)
         {
             _item = item;
 
@@ -59,7 +59,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
                 ShowParentText = false
             };
 
-            PosterArtwork = new ItemArtworkViewModel(item, apiClient, imageManager) { DesiredImageHeight = 700 };
+            PosterArtwork = new ItemArtworkViewModel(item, connectionManager, imageManager) { DesiredImageHeight = 700 };
 
             if (item.Type == "Episode")
                 PosterArtwork.PreferredImageTypes = new[] { ImageType.Screenshot, ImageType.Art, ImageType.Primary };
@@ -70,7 +70,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
                 }
             };
 
-            BackgroundArtwork = new ItemArtworkViewModel(item, apiClient, imageManager) {
+            BackgroundArtwork = new ItemArtworkViewModel(item, connectionManager, imageManager) {
                 DesiredImageWidth = 800,
                 PreferredImageTypes = new[] { ImageType.Backdrop, ImageType.Art, ImageType.Banner, ImageType.Screenshot, ImageType.Primary }
             };
@@ -78,7 +78,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
             PlayCommand = new RelayCommand(o => playbackManager.Play(new PlayOptions(item) { GoFullScreen = true, EnableCustomPlayers = true, Resume = false }));
             ResumeCommand = new RelayCommand(o => playbackManager.Play(new PlayOptions(item) { GoFullScreen = true, EnableCustomPlayers = true, Resume = true }));
             PlayAllCommand = new RelayCommand(async o => {
-                var items = await ItemChildren.Get(apiClient, sessionManager, item, new ChildrenQueryParams {
+                var items = await ItemChildren.Get(connectionManager, sessionManager, item, new ChildrenQueryParams {
                     Recursive = true,
                     IncludeItemTypes = new[] { "Movie", "Episode", "Audio" }
                 });
@@ -89,7 +89,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
             });
 
             BrowseAllCommand = new RelayCommand(o => navigator.Navigate(Go.To.ItemList(new ItemListParameters {
-                Items = ItemChildren.Get(apiClient, sessionManager, item, new ChildrenQueryParams { ExpandSingleItems = true }),
+                Items = ItemChildren.Get(connectionManager, sessionManager, item, new ChildrenQueryParams { ExpandSingleItems = true }),
                 Title = item.Name
             })));
         }
@@ -110,15 +110,15 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
     public class ItemOverviewSectionGenerator
         : IItemDetailSectionGenerator
     {
-        private readonly IApiClient _apiClient;
+        private readonly IConnectionManager _connectionManager;
         private readonly IImageManager _imageManager;
         private readonly IPlaybackManager _playbackManager;
         private readonly ISessionManager _sessionManager;
         private readonly INavigator _navigator;
 
-        public ItemOverviewSectionGenerator(IApiClient apiClient, IImageManager imageManager, IPlaybackManager playbackManager, ISessionManager sessionManager, INavigator navigator)
+        public ItemOverviewSectionGenerator(IConnectionManager connectionManager, IImageManager imageManager, IPlaybackManager playbackManager, ISessionManager sessionManager, INavigator navigator)
         {
-            _apiClient = apiClient;
+            _connectionManager = connectionManager;
             _imageManager = imageManager;
             _playbackManager = playbackManager;
             _sessionManager = sessionManager;
@@ -132,7 +132,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
         public Task<IEnumerable<IItemDetailSection>> GetSections(BaseItemDto item)
         {
-            IItemDetailSection section = new ItemOverviewViewModel(item, _apiClient, _imageManager, _playbackManager, _sessionManager, _navigator);
+            IItemDetailSection section = new ItemOverviewViewModel(item, _connectionManager, _imageManager, _playbackManager, _sessionManager, _navigator);
             return Task.FromResult<IEnumerable<IItemDetailSection>>(new[] { section });
         }
     }

@@ -22,16 +22,16 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
     public class PeopleListViewModel
         : BaseViewModel, IItemDetailSection, IKnownSize
     {
-        private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
         private readonly BaseItemDto _item;
+        private readonly IConnectionManager _connectionManager;
         private readonly INavigator _navigator;
         private readonly ISessionManager _sessionManager;
 
-        public PeopleListViewModel(BaseItemDto item, IApiClient apiClient, ISessionManager sessionManager, IImageManager imageManager, INavigator navigator)
+        public PeopleListViewModel(BaseItemDto item, IConnectionManager connectionManager, ISessionManager sessionManager, IImageManager imageManager, INavigator navigator)
         {
             _item = item;
-            _apiClient = apiClient;
+            _connectionManager = connectionManager;
             _sessionManager = sessionManager;
             _imageManager = imageManager;
             _navigator = navigator;
@@ -63,7 +63,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
         private void LoadItems()
         {
-            IEnumerable<IViewModel> items = _item.People.Select(p => new PersonListItemViewModel(p, _apiClient, _imageManager, _sessionManager, _navigator));
+            IEnumerable<IViewModel> items = _item.People.Select(p => new PersonListItemViewModel(p, _imageManager, _sessionManager, _navigator));
 
             People.Clear();
             People.AddRange(items);
@@ -73,7 +73,6 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
     public class PersonListItemViewModel
         : BaseViewModel, IDisposable
     {
-        private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
         private readonly ISessionManager _sessionManager;
         private readonly INavigator _navigator;
@@ -82,10 +81,9 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
         private Image _image;
         private CancellationTokenSource _imageCancellationTokenSource;
 
-        public PersonListItemViewModel(BaseItemPerson person, IApiClient apiClient, IImageManager imageManager, ISessionManager sessionManager, INavigator navigator)
+        public PersonListItemViewModel(BaseItemPerson person, IImageManager imageManager, ISessionManager sessionManager, INavigator navigator)
         {
             _person = person;
-            _apiClient = apiClient;
             _imageManager = imageManager;
             _sessionManager = sessionManager;
             _navigator = navigator;
@@ -95,7 +93,8 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
         private async void NavigateToPerson()
         {
-            var person = await _apiClient.GetPersonAsync(_person.Name, _sessionManager.CurrentUser.Id);
+            var apiClient = _sessionManager.ActiveApiClient;
+            var person = await apiClient.GetPersonAsync(_person.Name, _sessionManager.CurrentUser.Id);
             await _navigator.Navigate(Go.To.Item(person));
         }
 
@@ -163,7 +162,8 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
                     Tag = _person.PrimaryImageTag
                 };
 
-                Artwork = await _imageManager.GetRemoteImageAsync(_apiClient.GetPersonImageUrl(_person, options), _imageCancellationTokenSource.Token);
+                var apiClient = _sessionManager.ActiveApiClient;
+                Artwork = await _imageManager.GetRemoteImageAsync(apiClient.GetPersonImageUrl(_person, options), _imageCancellationTokenSource.Token);
             }
         }
 
@@ -180,14 +180,14 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
     public class PeopleListSectionGenerator
         : IItemDetailSectionGenerator
     {
-        private readonly IApiClient _apiClient;
+        private readonly IConnectionManager _connectionManager;
         private readonly IImageManager _imageManager;
         private readonly INavigator _navigator;
         private readonly ISessionManager _sessionManager;
 
-        public PeopleListSectionGenerator(IApiClient apiClient, IImageManager imageManager, INavigator navigator, ISessionManager sessionManager)
+        public PeopleListSectionGenerator(IConnectionManager connectionManager, IImageManager imageManager, INavigator navigator, ISessionManager sessionManager)
         {
-            _apiClient = apiClient;
+            _connectionManager = connectionManager;
             _imageManager = imageManager;
             _navigator = navigator;
             _sessionManager = sessionManager;
@@ -200,7 +200,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
         public Task<IEnumerable<IItemDetailSection>> GetSections(BaseItemDto item)
         {
-            IItemDetailSection section = new PeopleListViewModel(item, _apiClient, _sessionManager, _imageManager, _navigator);
+            IItemDetailSection section = new PeopleListViewModel(item, _connectionManager, _sessionManager, _imageManager, _navigator);
             return Task.FromResult<IEnumerable<IItemDetailSection>>(new[] { section });
         }
     }

@@ -20,17 +20,17 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
     public class ChaptersViewModel
         : BaseViewModel, IItemDetailSection, IKnownSize
     {
-        private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
         private readonly IPlaybackManager _playbackManager;
         private readonly BaseItemDto _item;
+        private readonly IConnectionManager _connectionManager;
 
         private bool _isVisible;
 
-        public ChaptersViewModel(BaseItemDto item, IApiClient apiClient, IImageManager imageManager, IPlaybackManager playbackManager)
+        public ChaptersViewModel(BaseItemDto item, IConnectionManager connectionManager, IImageManager imageManager, IPlaybackManager playbackManager)
         {
             _item = item;
-            _apiClient = apiClient;
+            _connectionManager = connectionManager;
             _imageManager = imageManager;
             _playbackManager = playbackManager;
 
@@ -79,7 +79,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
             Items.Clear();
 
             if (_item.Chapters != null) {
-                IEnumerable<ChapterViewModel> items = _item.Chapters.Select(c => new ChapterViewModel(_item, c, _apiClient, _imageManager, _playbackManager));
+                IEnumerable<ChapterViewModel> items = _item.Chapters.Select(c => new ChapterViewModel(_item, c, _connectionManager, _imageManager, _playbackManager));
                 Items.AddRange(items);
             }
 
@@ -91,18 +91,18 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
     public class ChapterViewModel
         : BaseViewModel, IDisposable
     {
-        private readonly IApiClient _apiClient;
         private readonly ChapterInfoDto _chapter;
+        private readonly IConnectionManager _connectionManager;
         private readonly IImageManager _imageManager;
         private readonly BaseItemDto _item;
         private Image _image;
         private CancellationTokenSource _imageCancellationTokenSource;
 
-        public ChapterViewModel(BaseItemDto item, ChapterInfoDto chapter, IApiClient apiClient, IImageManager imageManager, IPlaybackManager playbackManager)
+        public ChapterViewModel(BaseItemDto item, ChapterInfoDto chapter, IConnectionManager connectionManager, IImageManager imageManager, IPlaybackManager playbackManager)
         {
             _item = item;
             _chapter = chapter;
-            _apiClient = apiClient;
+            _connectionManager = connectionManager;
             _imageManager = imageManager;
 
             PlayCommand = new RelayCommand(o => playbackManager.Play(new PlayOptions(item) {
@@ -195,7 +195,8 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
                     Tag = _chapter.ImageTag
                 };
 
-                Image = await _imageManager.GetRemoteImageAsync(_apiClient.GetImageUrl(_item, options), _imageCancellationTokenSource.Token);
+                var apiClient = _connectionManager.GetApiClient(_item);
+                Image = await _imageManager.GetRemoteImageAsync(apiClient.GetImageUrl(_item, options), _imageCancellationTokenSource.Token);
             }
         }
 
@@ -212,13 +213,13 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
     public class ChapterSectionGenerator
         : IItemDetailSectionGenerator
     {
-        private readonly IApiClient _apiClient;
+        private readonly IConnectionManager _connectionManager;
         private readonly IImageManager _imageManager;
         private readonly IPlaybackManager _playbackManager;
 
-        public ChapterSectionGenerator(IApiClient apiClient, IImageManager imageManager, IPlaybackManager playbackManager)
+        public ChapterSectionGenerator(IConnectionManager connectionManager, IImageManager imageManager, IPlaybackManager playbackManager)
         {
-            _apiClient = apiClient;
+            _connectionManager = connectionManager;
             _imageManager = imageManager;
             _playbackManager = playbackManager;
         }
@@ -230,7 +231,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
         public Task<IEnumerable<IItemDetailSection>> GetSections(BaseItemDto item)
         {
-            var section = new ChaptersViewModel(item, _apiClient, _imageManager, _playbackManager);
+            var section = new ChaptersViewModel(item, _connectionManager, _imageManager, _playbackManager);
             return Task.FromResult<IEnumerable<IItemDetailSection>>(new[] { section });
         }
     }

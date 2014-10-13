@@ -17,21 +17,19 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
     public class TvHomePageGenerator
         : IUserViewHomePageGenerator
     {
-        private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
         private readonly ILogManager _logManager;
         private readonly INavigator _navigator;
-        private readonly IServerEvents _serverEvents;
+        private readonly IConnectionManager _connectionManager;
         private readonly ISessionManager _sessionManager;
         private readonly IPlaybackManager _playbackManager;
 
-        public TvHomePageGenerator(IImageManager imageManager, INavigator navigator, IApiClient apiClient, ISessionManager sessionManager, IServerEvents serverEvents, IPlaybackManager playbackManager, ILogManager logManager)
+        public TvHomePageGenerator(IImageManager imageManager, INavigator navigator, IConnectionManager connectionManager, ISessionManager sessionManager, IPlaybackManager playbackManager, ILogManager logManager)
         {
             _imageManager = imageManager;
             _navigator = navigator;
-            _apiClient = apiClient;
+            _connectionManager = connectionManager;
             _sessionManager = sessionManager;
-            _serverEvents = serverEvents;
             _playbackManager = playbackManager;
             _logManager = logManager;
         }
@@ -46,9 +44,9 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
             }
 
             IEnumerable<IHomePage> pages = new IHomePage[] {
-                new TvSpotlightViewModel(mediaFolder, _imageManager, _navigator, _apiClient, _serverEvents, _sessionManager, _logManager, _playbackManager),
-                new ResumeEpisodesViewModel(mediaFolder, _apiClient, _imageManager, _serverEvents, _navigator, _sessionManager, _playbackManager),
-                new LatestEpisodesViewModel(mediaFolder, _apiClient, _imageManager, _serverEvents, _navigator, _sessionManager, _playbackManager)
+                new TvSpotlightViewModel(mediaFolder, _imageManager, _navigator, _connectionManager, _sessionManager, _logManager, _playbackManager),
+                new ResumeEpisodesViewModel(mediaFolder, _connectionManager, _imageManager, _navigator, _sessionManager, _playbackManager),
+                new LatestEpisodesViewModel(mediaFolder, _connectionManager, _imageManager, _navigator, _sessionManager, _playbackManager)
             };
 
             return Task.FromResult(pages);

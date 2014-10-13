@@ -2,6 +2,7 @@
 using MediaBrowser.Model.System;
 using MediaBrowser.Theater.Api;
 using MediaBrowser.Theater.Api.Navigation;
+using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.System;
 using MediaBrowser.Theater.DefaultTheme.Home;
 using MediaBrowser.Theater.DefaultTheme.ItemDetails;
@@ -17,12 +18,12 @@ namespace MediaBrowser.Theater.DefaultTheme.Core
         : NavigationContext
     {
         private readonly INavigator _navigator;
-        private readonly IServerConnectionManager _serverConnectionManager;
+        private readonly ISessionManager _sessionManager;
 
-        public RootContext(ITheaterApplicationHost appHost, INavigator navigator, IServerConnectionManager serverConnectionManager) : base(appHost)
+        public RootContext(ITheaterApplicationHost appHost, INavigator navigator, ISessionManager sessionManager) : base(appHost)
         {
             _navigator = navigator;
-            _serverConnectionManager = serverConnectionManager;
+            _sessionManager = sessionManager;
 
             // create root navigation bindings
             Binder.Bind<LoginPath, LoginContext>();
@@ -47,19 +48,25 @@ namespace MediaBrowser.Theater.DefaultTheme.Core
 
         public override Task Activate()
         {
-            AttemptLogin();
+            //AttemptLogin();
+            if (_sessionManager.CurrentUser == null) {
+                _navigator.Navigate(Go.To.Login());
+            } else {
+                _navigator.Navigate(Go.To.Home());
+            }
+
             return Task.FromResult(0);
         }
-
-        private async void AttemptLogin()
-        {
-            PublicSystemInfo serverInfo = await _serverConnectionManager.AttemptServerConnection();
-            if (serverInfo != null) {
-                bool autoLoggedIn = await _serverConnectionManager.AttemptAutoLogin(serverInfo);
-                if (!autoLoggedIn && !(_navigator.CurrentLocation is LoginPath)) {
-                    await _navigator.Navigate(Go.To.Login());
-                }
-            }
-        }
+//
+//        private async void AttemptLogin()
+//        {
+//            PublicSystemInfo serverInfo = await _serverConnectionManager.AttemptServerConnection();
+//            if (serverInfo != null) {
+//                bool autoLoggedIn = await _serverConnectionManager.AttemptAutoLogin(serverInfo);
+//                if (!autoLoggedIn && !(_navigator.CurrentLocation is LoginPath)) {
+//                    await _navigator.Navigate(Go.To.Login());
+//                }
+//            }
+//        }
     }
 }

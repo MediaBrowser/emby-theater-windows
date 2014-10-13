@@ -19,7 +19,6 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
 {
     public class OsdViewModel : BaseViewModel, IDisposable, IHasRootPresentationOptions
     {
-        private readonly IServerEvents _serverEvents;
         private readonly Action<PlaybackStopEventArgs> _playbackStopHandler;
         private readonly Action<PlaybackStartEventArgs> _playbackStartHandler;
         private bool _canPause;
@@ -40,15 +39,13 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
 
         private System.Windows.Forms.Timer _timer;
         
-        public OsdViewModel(IPlaybackManager playbackManager, IApiClient apiClient, IImageManager imageManager, IPresenter presentationManager, ILogger logger, INavigator nav, IServerEvents serverEvents, IEventAggregator events)
+        public OsdViewModel(IPlaybackManager playbackManager, IImageManager imageManager, IPresenter presentationManager, ILogger logger, INavigator nav, IEventAggregator events)
         {
             Logger = logger;
             PresentationManager = presentationManager;
             ImageManager = imageManager;
-            ApiClient = apiClient;
             PlaybackManager = playbackManager;
             NavigationService = nav;
-            _serverEvents = serverEvents;
 
             PauseCommand = new RelayCommand(Pause);
             StopCommand = new RelayCommand(Stop);

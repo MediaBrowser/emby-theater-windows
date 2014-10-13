@@ -22,9 +22,8 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
         private const int TileHeight = 200;
 
         private readonly ItemsResult _itemsResult;
-        private readonly IApiClient _apiClient;
+        private readonly IConnectionManager _connectionManager;
         private readonly IImageManager _imageManager;
-        private readonly IServerEvents _serverEvents;
         private readonly INavigator _navigator;
         private readonly IPlaybackManager _playbackManager;
         private readonly ImageType[] _preferredImageTypes;
@@ -67,12 +66,11 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
             }
         }
 
-        public ItemsListViewModel(ItemsResult itemsResult, IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents, INavigator navigator, IPlaybackManager playbackManager)
+        public ItemsListViewModel(ItemsResult itemsResult, IConnectionManager connectionManager, IImageManager imageManager, INavigator navigator, IPlaybackManager playbackManager)
         {
             _itemsResult = itemsResult;
-            _apiClient = apiClient;
+            _connectionManager = connectionManager;
             _imageManager = imageManager;
-            _serverEvents = serverEvents;
             _navigator = navigator;
             _playbackManager = playbackManager;
 
@@ -90,7 +88,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
         private void LoadItems()
         {
-            IEnumerable<ItemTileViewModel> items = _itemsResult.Items.Select(i => new ItemTileViewModel(_apiClient, _imageManager, _serverEvents, _navigator, _playbackManager, i)
+            IEnumerable<ItemTileViewModel> items = _itemsResult.Items.Select(i => new ItemTileViewModel(_connectionManager, _imageManager, _navigator, _playbackManager, i)
             {
                 DesiredImageHeight = TileHeight,
                 PreferredImageTypes = _preferredImageTypes

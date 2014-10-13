@@ -11,16 +11,36 @@ namespace MediaBrowser.Theater.DirectShow
 
     #region Custom EVR Presenter
 
-    [ComImport,
-    Guid("D54059EF-CA38-46A5-9123-0249770482EE"),
+    public enum EVRCPSetting
+    {
+        NOMINAL_RANGE = 0,
+        SUBTITLE_ALPHA,
+        USE_MF_TIME_CALC,
+        FRAME_DROP_THRESHOLD,
+        EVRCP_SETTING_CORRECT_AR
+    }
+
+    [ComImport, System.Security.SuppressUnmanagedCodeSecurity,
+    Guid("759B5834-8F83-4855-9484-DC183B381D84"),
     InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    public interface IEVRCPSettings
+    public interface IEVRCPConfig
     {
         [PreserveSig]
-        int SetNominalRange(MFNominalRange range);
-
+        int GetInt(EVRCPSetting setting, out int value);
         [PreserveSig]
-        MFNominalRange GetNominalRange();
+        int SetInt(EVRCPSetting setting, int value);
+        [PreserveSig]
+        int GetFloat(EVRCPSetting setting, out float value);
+        [PreserveSig]
+        int SetFloat(EVRCPSetting setting, float value);
+        [PreserveSig]
+        int GetBool(EVRCPSetting setting, out bool value);
+        [PreserveSig]
+        int SetBool(EVRCPSetting setting, bool value);
+        [PreserveSig]
+        int GetString(EVRCPSetting setting, [Out, MarshalAs(UnmanagedType.LPWStr)] StringBuilder value);
+        [PreserveSig]
+        int SetString(EVRCPSetting setting, [In, MarshalAs(UnmanagedType.LPWStr)] string value);
     }
 
     #endregion

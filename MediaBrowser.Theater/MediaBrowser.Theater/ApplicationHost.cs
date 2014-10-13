@@ -106,7 +106,7 @@ namespace MediaBrowser.Theater
             await base.Init(progress).ConfigureAwait(false);
             await RunStartupTasks().ConfigureAwait(false);
 
-            URCOMLoader.EnsureObjects(TheaterConfigurationManager, false, new ZipClient());
+            URCOMLoader.EnsureObjects(TheaterConfigurationManager, new ZipClient(), false);
 
             Action<Window> mainWindowLoaded = null;
             mainWindowLoaded = w => {

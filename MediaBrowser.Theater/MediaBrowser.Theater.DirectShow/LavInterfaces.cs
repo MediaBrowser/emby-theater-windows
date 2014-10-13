@@ -585,7 +585,7 @@ InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
         [PreserveSig]
         int GetMixingLevels(out int dwCenterLevel, out int dwSurroundLevel, out int dwLFELevel);
 
-          // Toggle Tray Icon
+        // Toggle Tray Icon
         [PreserveSig]
         int SetTrayIcon(bool bEnabled);
         [PreserveSig]
@@ -629,14 +629,22 @@ InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
 
     #endregion
 
-#region Splitter
+    #region Splitter
+
     public enum LAVSubtitleMode
     {
-        LAVSubtitleMode_NoSubs = 0,
-        LAVSubtitleMode_ForcedOnly,
-        LAVSubtitleMode_Default,
-        LAVSubtitleMode_Advanced
+        NoSubs = 0,
+        ForcedOnly,
+        Default,
+        Advanced
     };
+
+    public enum VC1TimestampMode : short
+    {
+        None = 0,
+        Always,
+        Auto
+    }
 
     [ComVisible(true), ComImport, SuppressUnmanagedCodeSecurity,
 Guid("774A919D-EA95-4A87-8A1E-F48ABE8499C7"),
@@ -779,6 +787,58 @@ InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
         [PreserveSig]
         int SetAdvancedSubtitleConfig([MarshalAs(UnmanagedType.LPWStr)]string config);
 
+        // Set if LAV Splitter should prefer audio streams for the hearing or visually impaired
+        [PreserveSig]
+        int SetUseAudioForHearingVisuallyImpaired(bool bEnabled);
+
+        // Get if LAV Splitter should prefer audio streams for the hearing or visually impaired
+        [PreserveSig]
+        bool GetUseAudioForHearingVisuallyImpaired();
+
+        // Set the maximum queue size, in megabytes
+        [PreserveSig]
+        int SetMaxQueueMemSize(int dwMaxSize);
+
+        // Get the maximum queue size, in megabytes
+        [PreserveSig]
+        int GetMaxQueueMemSize();
+
+        // Toggle Tray Icon
+        [PreserveSig]
+        int SetTrayIcon(bool bEnabled);
+
+        // Get Tray Icon
+        [PreserveSig]
+        bool GetTrayIcon();
+
+        // Toggle whether higher quality audio streams are preferred
+        [PreserveSig]
+        int SetPreferHighQualityAudioStreams(bool bEnabled);
+
+        // Toggle whether higher quality audio streams are preferred
+        [PreserveSig]
+        bool GetPreferHighQualityAudioStreams();
+
+        // Toggle whether Matroska Linked Segments should be loaded from other files
+        [PreserveSig]
+        int SetLoadMatroskaExternalSegments(bool bEnabled);
+
+        // Get whether Matroska Linked Segments should be loaded from other files
+        [PreserveSig]
+        bool GetLoadMatroskaExternalSegments();
+
+        // Get the list of available formats
+        // Memory for the string array will be allocated, and has to be free'ed by the caller with CoTaskMemFree
+        [PreserveSig]
+        int GetFormats(IntPtr formats, out uint nFormats);
+
+        // Set the duration (in ms) of analysis for network streams (to find the streams and codec parameters)
+        [PreserveSig]
+        int SetNetworkStreamAnalysisDuration(int dwDuration);
+
+        // Get the duration (in ms) of analysis for network streams (to find the streams and codec parameters)
+        [PreserveSig]
+        int GetNetworkStreamAnalysisDuration();
     }
-#endregion
+    #endregion
 }

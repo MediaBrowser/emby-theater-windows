@@ -24,9 +24,13 @@ namespace MediaBrowser.Theater.Api.Configuration
 
         public SubtitleConfiguration SubtitleConfig { get; set; }
 
+        public SplitterConfiguration SplitterConfig { get; set; }
+
         public KnownCOMObjectConfiguration COMConfig { get; set; }
 
         public bool PublishGraph { get; set; }
+
+        public string FilterSet { get; set; }
 
         public InternalPlayerConfiguration()
         {
@@ -34,9 +38,11 @@ namespace MediaBrowser.Theater.Api.Configuration
             VideoConfig = new VideoConfiguration();
             AudioConfig = new AudioConfiguration();
             SubtitleConfig = new SubtitleConfiguration();
+            SplitterConfig = new SplitterConfiguration();
             COMConfig = new KnownCOMObjectConfiguration();
             UsePrivateObjects = true;
             PublishGraph = false;
+            FilterSet = string.Empty;
         }
     }
 
@@ -122,6 +128,8 @@ namespace MediaBrowser.Theater.Api.Configuration
 
         public int MinRefreshRateMin { get; set; }
 
+        public int ScalingMode { get; set; }
+
         public VideoConfiguration()
         {
             HwaEnabledCodecs = new List<string>();
@@ -138,6 +146,7 @@ namespace MediaBrowser.Theater.Api.Configuration
 
             AutoChangeRefreshRate = false;
             MinRefreshRateMin = 5;
+            ScalingMode = 4;
         }
 
         public void SetDefaults()
@@ -327,6 +336,186 @@ namespace MediaBrowser.Theater.Api.Configuration
                 EnabledCodecs.Add("Truespeech");
                 EnabledCodecs.Add("TAK");
             }
+        }
+    }
+
+    #endregion
+
+    #region SplitterConfig
+
+    public class SplitterConfiguration
+    {
+        public string PreferredAudioLanguages { get; set; }
+        public string PreferredSubtitleLanguages { get; set; }
+        public string AdvancedSubtitleConfig { get; set; }
+        public string SubtitleMode { get; set; }
+        public bool PGSForcedStream { get; set; }
+        public bool PGSOnlyForced { get; set; }
+        public string VC1TimestampMode { get; set; }
+        public bool SubstreamsEnabled { get; set; }
+        public bool StreamSwitchRemoveAudio { get; set; }
+        public bool UseAudioForHearingVisuallyImpaired { get; set; }
+        public int MaxQueueMemSize { get; set; }
+        public bool ShowTrayIcon { get; set; }
+        public bool PreferHighQualityAudioStreams { get; set; }
+        public bool LoadMatroskaExternalSegments { get; set; }
+        public int NetworkStreamAnalysisDuration { get; set; }
+
+        //public List<string> EnabledFormats { get; set; }
+
+
+        public SplitterConfiguration()
+        {
+            PreferredAudioLanguages = string.Empty;
+            PreferredSubtitleLanguages = string.Empty;
+            AdvancedSubtitleConfig = string.Empty;
+            SubtitleMode = "Default";
+            PGSForcedStream = true;
+            PGSOnlyForced = false;
+            VC1TimestampMode = "Auto";
+            SubstreamsEnabled = true;
+            StreamSwitchRemoveAudio = false;
+            UseAudioForHearingVisuallyImpaired = false;
+            MaxQueueMemSize = 256;
+            ShowTrayIcon = false;
+            PreferHighQualityAudioStreams = true;
+            LoadMatroskaExternalSegments = true;
+            NetworkStreamAnalysisDuration = 1000;
+        }
+
+        public void SetDefaults()
+        {
+            //if (EnabledFormats.Count == 0)
+            //{
+            //    EnabledFormats.Add("4xm");
+            //    EnabledFormats.Add("aac");
+            //    EnabledFormats.Add("ac3");
+            //    EnabledFormats.Add("act");
+            //    EnabledFormats.Add("adf");
+            //    EnabledFormats.Add("adp");
+            //    EnabledFormats.Add("adx");
+            //    EnabledFormats.Add("aea");
+            //    EnabledFormats.Add("afc");
+            //    EnabledFormats.Add("aiff");
+            //    EnabledFormats.Add("alaw");
+            //    EnabledFormats.Add("alias_pix");
+            //    EnabledFormats.Add("amr");
+            //    EnabledFormats.Add("anm");
+            //    EnabledFormats.Add("apc");
+            //    EnabledFormats.Add("ape");
+            //    EnabledFormats.Add("aqtitle");
+            //    EnabledFormats.Add("asf");
+            //    EnabledFormats.Add("ass");
+            //    EnabledFormats.Add("ast");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //    EnabledFormats.Add("");
+            //}
         }
     }
 

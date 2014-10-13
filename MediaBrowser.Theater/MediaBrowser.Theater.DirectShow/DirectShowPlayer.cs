@@ -40,12 +40,11 @@ namespace MediaBrowser.Theater.DirectShow
         private const int WM_DVD_EVENT = 0x00008002;
 
         private readonly ILogger _logger;
+        private IInternalPlayerWindow _hiddenWindow;
         private readonly InternalDirectShowPlayer _playerWrapper;
         private readonly ISessionManager _sessionManager;
         private readonly IApiClient _apiClient;
         private readonly IHttpClient _httpClient;
-
-        private IInternalPlayerWindow _hiddenWindow;
 
         private DirectShowLib.IGraphBuilder m_graph = null;
         private DirectShowLib.FilterGraphNoThread m_filterGraph = null;
@@ -101,7 +100,6 @@ namespace MediaBrowser.Theater.DirectShow
         private bool _customEvrPresenterLoaded = false;
         private IUserInputManager _input = null;
         //private MMDevice _audioDevice = null;
-
         private Resolution _startResolution = null;
         VideoScalingScheme _iVideoScaling = VideoScalingScheme.FROMINSIDE;
 
@@ -156,6 +154,22 @@ namespace MediaBrowser.Theater.DirectShow
 
         #endregion
 
+        public VideoScalingScheme VideoScaling
+        {
+            get
+            {
+                return _iVideoScaling;
+            }
+            set
+            {
+                if (value != _iVideoScaling)
+                {
+                    _iVideoScaling = value;
+                    SetAspectRatio();
+                }
+            }
+        }
+
         public bool IsFullScreen
         {
             get
@@ -166,7 +180,7 @@ namespace MediaBrowser.Theater.DirectShow
                 if (_hiddenWindow.ContentPixelSize.Height == scrRect.Bottom && _hiddenWindow.ContentPixelSize.Width == scrRect.Right)
                     isFS = true;
 
-                _logger.Debug("IsFullScreen: W: {0} H: {1} Top: {2} Bottom: {3} Left: {4} Right: {5}", _hiddenWindow.ContentPixelSize.Height, _hiddenWindow.ContentPixelSize.Width, scrRect.Top, scrRect.Bottom, scrRect.Left, scrRect.Right);
+                _logger.Debug("IsFullScreen: W: {0} H: {1} Top: {2} Bottom: {3} Left: {4} Right: {5}", _hiddenWindow.ContentPixelSize.Width, _hiddenWindow.ContentPixelSize.Height, scrRect.Top, scrRect.Bottom, scrRect.Left, scrRect.Right);
 
                 return isFS;
             }
@@ -312,93 +326,107 @@ namespace MediaBrowser.Theater.DirectShow
 
         public void Play(PlayableItem item, bool enableMadvr, bool enableMadvrExclusiveMode)
         {
-            _logger.Info("Playing {0}. Audio Renderer: {1}, Madvr: {2}, xySubFilter: {3}, ParentID: {4}", item.OriginalItem.Name,
-                         _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.Renderer, enableMadvr,
-                         _mbtConfig.Configuration.InternalPlayerConfiguration.SubtitleConfig.EnableXySubFilter,
-                         item.OriginalItem.ParentId);
-            _logger.Info("Playing Path {0}", item.PlayablePath);
-
-            _item = item;
-            _isInExclusiveMode = false;
-            TimeSpan itemDuration = TimeSpan.MaxValue;
-            if (item.OriginalItem.RunTimeTicks > 0)
-                itemDuration = TimeSpan.FromTicks((long)item.OriginalItem.RunTimeTicks);
-
-            if (IsFullScreen
-                && item.IsVideo
-                && !string.IsNullOrWhiteSpace(item.OriginalItem.ParentId)
-                && _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig.AutoChangeRefreshRate
-                && _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig.MinRefreshRateMin < itemDuration.TotalMinutes
-                )
+            try
             {
-                if (item.MediaStreams == null)
+                _logger.Info("Playing {0}. Audio Renderer: {1}, Madvr: {2}, xySubFilter: {3}, ParentID: {4}", item.OriginalItem.Name,
+                    _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.Renderer, enableMadvr,
+                    _mbtConfig.Configuration.InternalPlayerConfiguration.SubtitleConfig.EnableXySubFilter,
+                    item.OriginalItem.ParentId);
+                _logger.Info("Playing Path {0}", item.PlayablePath);
+
+                _item = item;
+                _isInExclusiveMode = false;
+                TimeSpan itemDuration = TimeSpan.MaxValue;
+                if (item.OriginalItem.RunTimeTicks > 0)
+                    itemDuration = TimeSpan.FromTicks((long)item.OriginalItem.RunTimeTicks);
+
+                _iVideoScaling = (VideoScalingScheme)_mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig.ScalingMode;
+
+                if (item.IsVideo
+                    && IsFullScreen
+                    && !string.IsNullOrWhiteSpace(item.OriginalItem.ParentId)
+                    && _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig.AutoChangeRefreshRate
+                    && _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig.MinRefreshRateMin < itemDuration.TotalMinutes
+                    )
                 {
-                    _logger.Warn("item.MediaStreams is null, cannot detect framerate");
-                }
-                else
-                {
-                    //find the video stream (assume that the first one is the main one)
-                    foreach (var ms in item.MediaStreams)
+                    if (item.MediaStreams == null)
                     {
-                        if (ms.Type == MediaStreamType.Video)
+                        _logger.Warn("item.MediaStreams is null, cannot detect framerate");
+                    }
+                    else
+                    {
+                        //find the video stream (assume that the first one is the main one)
+                        foreach (var ms in item.MediaStreams)
                         {
-                            _startResolution = Display.GetCurrentResolution();
-                            int videoRate = (int)ms.RealFrameRate;
-
-                            if (videoRate == 25 || videoRate == 29 || videoRate == 30 || ms.IsInterlaced) // ms.IsInterlaced doesn't appear to be accurate
+                            if (ms.Type == MediaStreamType.Video)
                             {
-                                //Every display/GPU should be able to display @2x FPS and it's quite likely that 2x is the rendered FPS anyway
-                                videoRate = (int)(ms.RealFrameRate * 2);
-                            }
+                                _startResolution = Display.GetCurrentResolution();
+                                int videoRate = (int)ms.RealFrameRate;
 
-                            _logger.Info("RealFrameRate: {0} videoRate: {1} startRate: {2}", ms.RealFrameRate, videoRate, _startResolution);
-
-                            if (videoRate != _startResolution.Rate)
-                            {
-                                Resolution desiredRes = new Resolution(_startResolution.ToString());
-                                desiredRes.Rate = videoRate;
-                                if (Display.ChangeResolution(desiredRes, false))
-                                    _logger.Info("Changed resolution from {0} to {1}", _startResolution, desiredRes);
-                                else
+                                if (videoRate == 25 || videoRate == 29 || videoRate == 30 || ms.IsInterlaced) // ms.IsInterlaced doesn't appear to be accurate
                                 {
-                                    _logger.Info("Couldn't change resolution from {0} to {1}", _startResolution, desiredRes);
-                                    _startResolution = null;
+                                    //Every display/GPU should be able to display @2x FPS and it's quite likely that 2x is the rendered FPS anyway
+                                    videoRate = (int)(ms.RealFrameRate * 2);
                                 }
+
+                                _logger.Info("RealFrameRate: {0} videoRate: {1} startRate: {2}", ms.RealFrameRate, videoRate, _startResolution);
+
+                                if (videoRate != _startResolution.Rate)
+                                {
+                                    Resolution desiredRes = new Resolution(_startResolution.ToString());
+                                    desiredRes.Rate = videoRate;
+                                    if (Display.ChangeResolution(desiredRes, false))
+                                        _logger.Info("Changed resolution from {0} to {1}", _startResolution, desiredRes);
+                                    else
+                                    {
+                                        _logger.Info("Couldn't change resolution from {0} to {1}", _startResolution, desiredRes);
+                                        _startResolution = null;
+                                    }
+                                }
+                                else
+                                    _startResolution = null;
+
+                                break;
                             }
                             else
                                 _startResolution = null;
-
-                            break;
                         }
-                        else
-                            _startResolution = null;
                     }
                 }
+
+                var isDvd = ((item.OriginalItem.VideoType ?? VideoType.VideoFile) == VideoType.Dvd ||
+                             (item.OriginalItem.IsoType ?? IsoType.BluRay) == IsoType.Dvd) &&
+                            item.PlayablePath.IndexOf("http://", StringComparison.OrdinalIgnoreCase) == -1;
+
+                Initialize(item.PlayablePath, enableMadvr, enableMadvrExclusiveMode,
+                    _mbtConfig.Configuration.InternalPlayerConfiguration.SubtitleConfig.EnableXySubFilter, isDvd);
+
+                _hiddenWindow.OnWMGRAPHNOTIFY = HandleGraphEvent;
+                _hiddenWindow.OnDVDEVENT = HandleDvdEvent;
+
+                //pre-roll the graph
+                _logger.Debug("pre-roll the graph");
+                var hr = _mediaControl.Pause();
+                DsError.ThrowExceptionForHR(hr);
+
+                _logger.Debug("run the graph");
+                hr = _mediaControl.Run();
+                DsError.ThrowExceptionForHR(hr);
+
+                PlayState = PlayState.Playing;
+                _currentPlaybackRate = 1.0;
+
+                _streams = GetStreams();
+
+                LoadActiveExternalSubtitles();
+
+                _logger.Debug("DSPlayer Done in play");
             }
-
-            var isDvd = ((item.OriginalItem.VideoType ?? VideoType.VideoFile) == VideoType.Dvd ||
-                         (item.OriginalItem.IsoType ?? IsoType.BluRay) == IsoType.Dvd) &&
-                        item.PlayablePath.IndexOf("http://", StringComparison.OrdinalIgnoreCase) == -1;
-
-            Initialize(item.PlayablePath, enableMadvr, enableMadvrExclusiveMode,
-                _mbtConfig.Configuration.InternalPlayerConfiguration.SubtitleConfig.EnableXySubFilter, isDvd);
-
-            _hiddenWindow.OnWMGRAPHNOTIFY = HandleGraphEvent;
-            _hiddenWindow.OnDVDEVENT = HandleDvdEvent;
-
-            //pre-roll the graph
-            var hr = _mediaControl.Pause();
-            DsError.ThrowExceptionForHR(hr);
-
-            hr = _mediaControl.Run();
-            DsError.ThrowExceptionForHR(hr);
-
-            PlayState = PlayState.Playing;
-            _currentPlaybackRate = 1.0;
-
-            _streams = GetStreams();
-
-            LoadActiveExternalSubtitles();
+            catch (Exception ex)
+            {
+                CloseInterfaces();
+                throw ex;
+            }
         }
 
         private void InitializeGraph(bool isDvd)
@@ -468,6 +496,84 @@ namespace MediaBrowser.Theater.DirectShow
 
                     if (_sourceFilter != null)
                     {
+                        ILAVSplitterSettings lss = _sourceFilter as ILAVSplitterSettings;
+                        if (lss != null)
+                        {
+                            _logger.Debug("Configure LAV Splitter");
+
+                            hr = lss.SetRuntimeConfig(true);
+                            DsError.ThrowExceptionForHR(hr);
+
+                            if (!string.IsNullOrWhiteSpace(_mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.PreferredAudioLanguages))
+                            {
+                                _logger.Debug("Set preferred audio lang: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.PreferredAudioLanguages);
+                                hr = lss.SetPreferredLanguages(_mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.PreferredAudioLanguages);
+                                DsError.ThrowExceptionForHR(hr);
+                            }
+
+                            if (!string.IsNullOrWhiteSpace(_mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.PreferredSubtitleLanguages))
+                            {
+                                _logger.Debug("Set preferred subs lang: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.PreferredSubtitleLanguages);
+                                hr = lss.SetPreferredLanguages(_mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.PreferredSubtitleLanguages);
+                                DsError.ThrowExceptionForHR(hr);
+                            }
+
+                            if (!string.IsNullOrWhiteSpace(_mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.AdvancedSubtitleConfig))
+                            {
+                                _logger.Debug("Set preferred subs lang: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.AdvancedSubtitleConfig);
+                                hr = lss.SetPreferredLanguages(_mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.AdvancedSubtitleConfig);
+                                DsError.ThrowExceptionForHR(hr);
+                            }
+
+                            _logger.Debug("SetSubtitleMode: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.PreferredSubtitleLanguages);
+                            hr = lss.SetSubtitleMode((LAVSubtitleMode)Enum.Parse(typeof(LAVSubtitleMode), _mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.SubtitleMode));
+                            DsError.ThrowExceptionForHR(hr);
+
+                            _logger.Debug("SetPGSForcedStream: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.PGSForcedStream);
+                            hr = lss.SetPGSForcedStream(_mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.PGSForcedStream);
+                            DsError.ThrowExceptionForHR(hr);
+
+                            _logger.Debug("SetPGSOnlyForced: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.PGSOnlyForced);
+                            hr = lss.SetPGSOnlyForced(_mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.PGSOnlyForced);
+                            DsError.ThrowExceptionForHR(hr);
+
+                            _logger.Debug("SetVC1TimestampMode: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.VC1TimestampMode);
+                            hr = lss.SetVC1TimestampMode((short)Enum.Parse(typeof(VC1TimestampMode), _mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.VC1TimestampMode));
+                            DsError.ThrowExceptionForHR(hr);
+
+                            _logger.Debug("SetSubstreamsEnabled: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.SubstreamsEnabled);
+                            hr = lss.SetSubstreamsEnabled(_mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.SubstreamsEnabled);
+                            DsError.ThrowExceptionForHR(hr);
+
+                            _logger.Debug("SetStreamSwitchRemoveAudio: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.StreamSwitchRemoveAudio);
+                            hr = lss.SetStreamSwitchRemoveAudio(_mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.StreamSwitchRemoveAudio);
+                            DsError.ThrowExceptionForHR(hr);
+
+                            _logger.Debug("SetUseAudioForHearingVisuallyImpaired: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.UseAudioForHearingVisuallyImpaired);
+                            hr = lss.SetUseAudioForHearingVisuallyImpaired(_mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.UseAudioForHearingVisuallyImpaired);
+                            DsError.ThrowExceptionForHR(hr);
+
+                            _logger.Debug("SetMaxQueueMemSize: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.MaxQueueMemSize);
+                            hr = lss.SetMaxQueueMemSize(_mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.MaxQueueMemSize);
+                            DsError.ThrowExceptionForHR(hr);
+
+                            _logger.Debug("SetTrayIcon: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.ShowTrayIcon);
+                            hr = lss.SetTrayIcon(_mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.ShowTrayIcon);
+                            DsError.ThrowExceptionForHR(hr);
+
+                            _logger.Debug("SetPreferHighQualityAudioStreams: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.PreferHighQualityAudioStreams);
+                            hr = lss.SetPreferHighQualityAudioStreams(_mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.PreferHighQualityAudioStreams);
+                            DsError.ThrowExceptionForHR(hr);
+
+                            _logger.Debug("SetLoadMatroskaExternalSegments: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.LoadMatroskaExternalSegments);
+                            hr = lss.SetLoadMatroskaExternalSegments(_mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.LoadMatroskaExternalSegments);
+                            DsError.ThrowExceptionForHR(hr);
+
+                            _logger.Debug("SetNetworkStreamAnalysisDuration: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.NetworkStreamAnalysisDuration);
+                            hr = lss.SetNetworkStreamAnalysisDuration(_mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.NetworkStreamAnalysisDuration);
+                            DsError.ThrowExceptionForHR(hr);
+                        }
+
                         hr = ((IFileSourceFilter)_sourceFilter).Load(path, null);
                         if (hr < 0)
                         {
@@ -494,6 +600,8 @@ namespace MediaBrowser.Theater.DirectShow
             // Get the seeking capabilities.
             hr = _mediaSeeking.GetCapabilities(out _mSeekCaps);
             DsError.ThrowExceptionForHR(hr);
+
+            _logger.Debug("Retrieved seeking capabilities: {0}", _mSeekCaps);
         }
 
         private void InitializeDvd(string path)
@@ -556,45 +664,57 @@ namespace MediaBrowser.Theater.DirectShow
 
             if (_item.MediaStreams == null)
                 hasAudio = true; //no way to tell for sure, better to assume that it's there
-            else {
-                foreach (var stream in _item.MediaStreams) {
-                    if (stream.Type == MediaStreamType.Audio) {
+            else
+            {
+                foreach (var stream in _item.MediaStreams)
+                {
+                    if (stream.Type == MediaStreamType.Audio)
+                    {
                         hasAudio = true;
                         break;
                     }
                 }
             }
 
-            if (hasAudio) {
+            if (hasAudio)
+            {
 
-                switch (_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.Renderer) {
+                switch (_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.Renderer)
+                {
                     case AudioRendererChoice.Reclock:
-                        try {
+                        try
+                        {
                             _reclockAudioRenderer = new ReclockAudioRenderer();
                             var aRenderer = _reclockAudioRenderer as DirectShowLib.IBaseFilter;
-                            if (aRenderer != null) {
+                            if (aRenderer != null)
+                            {
                                 hr = m_graph.AddFilter(aRenderer, "Reclock Audio Renderer");
                                 DsError.ThrowExceptionForHR(hr);
                                 useDefaultRenderer = false;
 
                                 _logger.Debug("Added reclock audio renderer");
                             }
-                        } catch (Exception ex) {
+                        }
+                        catch (Exception ex)
+                        {
                             _logger.ErrorException("Error adding reclock filter", ex);
                         }
                         break;
                     case AudioRendererChoice.WASAPI:
-                        try {
+                        try
+                        {
                             _wasapiAR = _playerWrapper.PrivateCom.GetObject(typeof(MPAudioFilter).GUID, true);
                             var aRenderer = _wasapiAR as DirectShowLib.IBaseFilter;
-                            if (aRenderer != null) {
+                            if (aRenderer != null)
+                            {
                                 hr = m_graph.AddFilter(aRenderer, "WASAPI Audio Renderer");
                                 DsError.ThrowExceptionForHR(hr);
                                 useDefaultRenderer = false;
                                 _logger.Debug("Added WASAPI audio renderer");
 
                                 IMPAudioRendererConfig arSett = aRenderer as IMPAudioRendererConfig;
-                                if (arSett != null) {
+                                if (arSett != null)
+                                {
                                     arSett.SetInt(MPARSetting.WASAPI_MODE, (int)AUDCLNT_SHAREMODE.EXCLUSIVE);
                                     arSett.SetBool(MPARSetting.WASAPI_EVENT_DRIVEN, _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.UseWasapiEventMode);
                                     _logger.Debug("Set WASAPI use event mode: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.UseWasapiEventMode);
@@ -615,39 +735,18 @@ namespace MediaBrowser.Theater.DirectShow
                                     _logger.Debug("Set WASAPI use time stretching: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.EnableTimeStretching);
                                     arSett.SetInt(MPARSetting.OUTPUT_BUFFER_LENGTH, _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.OutputBufferSize);
                                     _logger.Debug("Set WASAPI buffer: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.OutputBufferSize);
-                                } else {   //try the old way
-                                    IMPAudioSettings audSett = aRenderer as IMPAudioSettings;
-                                    if (audSett != null) {
-                                        audSett.SetWASAPIMode(AUDCLNT_SHAREMODE.EXCLUSIVE);
-                                        audSett.SetUseWASAPIEventMode(_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.UseWasapiEventMode);
-                                        _logger.Debug("Set WASAPI use event mode: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.UseWasapiEventMode);
-                                        audSett.SetAudioDeviceById(_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.AudioDevice);
-                                        _logger.Debug("Set WASAPI audio device: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.AudioDevice);
-                                        SpeakerConfig sc = SpeakerConfig.Stereo; //use stereo for maxium compat
-                                        Enum.TryParse<SpeakerConfig>(_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.SpeakerLayout, out sc);
-                                        audSett.SetSpeakerConfig(sc);
-                                        _logger.Debug("Set WASAPI speaker config: {0}", sc);
-                                        //audSett.SetSpeakerMatchOutput(true);
-                                        audSett.SetAllowBitStreaming(true);
-                                        audSett.SetUseFilters(_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.WasapiARFilters);
-                                        _logger.Debug("Set WASAPI filter config: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.WasapiARFilters);
-                                        AC3Encoding a3 = (AC3Encoding)_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.Ac3EncodingMode;
-                                        audSett.SetAC3EncodingMode(a3);
-                                        _logger.Debug("Set WASAPI AC3 encoding: {0}", a3);
-                                        audSett.SetUseTimeStretching(_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.EnableTimeStretching);
-                                        _logger.Debug("Set WASAPI use time stretching: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.EnableTimeStretching);
-                                        audSett.SetOutputBuffer(_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.OutputBufferSize);
-                                        _logger.Debug("Set WASAPI buffer: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.OutputBufferSize);
-                                    }
                                 }
                             }
-                        } catch (Exception ex) {
+                        }
+                        catch (Exception ex)
+                        {
                             _logger.ErrorException("Error adding WASAPI audio filter", ex);
                         }
                         break;
                 }
 
-                if (useDefaultRenderer) {
+                if (useDefaultRenderer)
+                {
                     AddDefaultAudioRenderer();
                 }
             }
@@ -662,7 +761,7 @@ namespace MediaBrowser.Theater.DirectShow
 
                     try
                     {
-                        _madvr =  _playerWrapper.PrivateCom.GetObject(typeof(MadVR).GUID, true); // new MadVR();
+                        _madvr = _playerWrapper.PrivateCom.GetObject(typeof(MadVR).GUID, true); // new MadVR();
                         var vmadvr = _madvr as DirectShowLib.IBaseFilter;
                         if (vmadvr != null)
                         {
@@ -737,7 +836,7 @@ namespace MediaBrowser.Theater.DirectShow
                 {
                     try
                     {
-                        _xySubFilter =  _playerWrapper.PrivateCom.GetObject(typeof(XySubFilter).GUID, true); //new XySubFilter();
+                        _xySubFilter = _playerWrapper.PrivateCom.GetObject(typeof(XySubFilter).GUID, true); //new XySubFilter();
                         var vxySubFilter = _xySubFilter as DirectShowLib.IBaseFilter;
                         if (vxySubFilter != null)
                         {
@@ -774,7 +873,7 @@ namespace MediaBrowser.Theater.DirectShow
 
                 try
                 {
-                    _lavvideo =  _playerWrapper.PrivateCom.GetObject(typeof(LAVVideo).GUID, true); //new LAVVideo();
+                    _lavvideo = _playerWrapper.PrivateCom.GetObject(typeof(LAVVideo).GUID, true); //new LAVVideo();
                     var vlavvideo = _lavvideo as DirectShowLib.IBaseFilter;
                     if (vlavvideo != null)
                     {
@@ -886,7 +985,7 @@ namespace MediaBrowser.Theater.DirectShow
 
             try
             {
-                _lavaudio =  _playerWrapper.PrivateCom.GetObject(typeof(LAVAudio).GUID, true); // new LAVAudio();
+                _lavaudio = _playerWrapper.PrivateCom.GetObject(typeof(LAVAudio).GUID, true); // new LAVAudio();
                 var vlavaudio = _lavaudio as DirectShowLib.IBaseFilter;
                 if (vlavaudio != null)
                 {
@@ -1177,7 +1276,7 @@ namespace MediaBrowser.Theater.DirectShow
                                     if (hr == -2004287474 && _wasapiAR != null) //AUDCLNT_E_EXCLUSIVE_MODE_NOT_ALLOWED
                                     {
                                         IMPAudioRendererConfig arSett = _wasapiAR as IMPAudioRendererConfig;
-                                        if (arSett != null) 
+                                        if (arSett != null)
                                         {
                                             arSett.SetInt(MPARSetting.WASAPI_MODE, (int)AUDCLNT_SHAREMODE.SHARED);
                                             _logger.Warn("WASAPI AR failed to connected in exclusive mode, check device properties");
@@ -1366,7 +1465,7 @@ namespace MediaBrowser.Theater.DirectShow
             if (_mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig.UseCustomPresenter)
             {
                 IMFVideoRenderer pRenderer = pEvr as IMFVideoRenderer;
-                pPresenter =  _playerWrapper.PrivateCom.GetObject("EVR Presenter (babgvant)", false) as IMFVideoPresenter;
+                pPresenter = _playerWrapper.PrivateCom.GetObject("EVR Presenter (babgvant)", false) as IMFVideoPresenter;
 
                 try
                 {
@@ -1376,10 +1475,10 @@ namespace MediaBrowser.Theater.DirectShow
                         if (hr > -1)
                         {
                             _customEvrPresenterLoaded = true;
-                            IEVRCPSettings cp = pPresenter as IEVRCPSettings;
+                            IEVRCPConfig cp = pPresenter as IEVRCPConfig;
                             if (cp != null)
                             {
-                                hr = cp.SetNominalRange((MFNominalRange)_mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig.NominalRange);
+                                hr = cp.SetInt(EVRCPSetting.NOMINAL_RANGE, _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig.NominalRange);
                                 DsError.ThrowExceptionForHR(hr);
                             }
                         }
@@ -1839,8 +1938,7 @@ namespace MediaBrowser.Theater.DirectShow
 
         public void Pause()
         {
-            lock (_commandLock)
-            {
+            lock (_commandLock) {
                 if (_mediaControl == null)
                     return;
 
@@ -1851,8 +1949,7 @@ namespace MediaBrowser.Theater.DirectShow
 
         public void Unpause()
         {
-            lock (_commandLock)
-            {
+            lock (_commandLock) {
                 if (_mediaControl == null)
                     return;
 
@@ -1863,8 +1960,7 @@ namespace MediaBrowser.Theater.DirectShow
 
         public void Stop(TrackCompletionReason reason, int? newTrackIndex)
         {
-            lock (_commandLock)
-            {
+            lock (_commandLock) {
                 var hr = 0;
 
                 var pos = CurrentPositionTicks;
@@ -1873,8 +1969,7 @@ namespace MediaBrowser.Theater.DirectShow
                 if (_mediaControl != null)
                     hr = _mediaControl.Stop();
 
-                if (_startResolution != null)
-                {
+                if (_startResolution != null) {
                     _logger.Info("Change resolution back to {0}", _startResolution);
                     Display.ChangeResolution(_startResolution, false);
                 }
@@ -2031,24 +2126,20 @@ namespace MediaBrowser.Theater.DirectShow
 
         public void SetRate(double rate)
         {
-            lock (_commandLock)
-            {
+            lock (_commandLock) {
                 int hr = 0;
                 //_currentPlaybackRate = rate;
                 SetupGraphForRateChange(rate, AudioRenderer);
 
-                if (_mDvdControl != null)
-                {
+                if (_mDvdControl != null) {
                     if (rate < 0)
                         hr = _mDvdControl.PlayBackwards(Math.Abs(rate), DvdCmdFlags.SendEvents, out _mDvdCmdOption);
                     else
                         hr = _mDvdControl.PlayForwards(rate, DvdCmdFlags.SendEvents, out _mDvdCmdOption);
                     //DsError.ThrowExceptionForHR(hr);
-                    if (hr >= 0)
-                    {
+                    if (hr >= 0) {
                         _currentPlaybackRate = rate;
-                        if (_mDvdCmdOption != null)
-                        {
+                        if (_mDvdCmdOption != null) {
                             _pendingDvdCmd = true;
                         }
                     }
@@ -2060,21 +2151,15 @@ namespace MediaBrowser.Theater.DirectShow
                     //{
                     //    _pendingDvdCmd = true;
                     //}
-                }
-                else if (_mediaSeeking != null)
-                {
+                } else if (_mediaSeeking != null) {
                     hr = _mediaSeeking.SetRate(rate);
                     //DsError.ThrowExceptionForHR(hr);
-                    if (hr >= 0)
-                    {
+                    if (hr >= 0) {
                         _currentPlaybackRate = rate;
-                    }
-                    else
-                    {
+                    } else {
                         _logger.Debug("SetRate: changing rate failed");
                         hr = _mediaSeeking.GetRate(out _currentPlaybackRate);
-                        if (hr >= 0)
-                        {
+                        if (hr >= 0) {
                             SetupGraphForRateChange(_currentPlaybackRate, AudioRenderer);
                         }
                     }
@@ -2084,10 +2169,8 @@ namespace MediaBrowser.Theater.DirectShow
 
         public void Seek(long ticks)
         {
-            lock (_commandLock)
-            {
-                if (_mediaSeeking != null)
-                {
+            lock (_commandLock) {
+                if (_mediaSeeking != null) {
                     long duration;
 
                     var hr = _mediaSeeking.GetDuration(out duration);
@@ -2099,17 +2182,15 @@ namespace MediaBrowser.Theater.DirectShow
 
                     // Seek to the position
                     hr = _mediaSeeking.SetPositions(new DsLong(ticks), AMSeekingSeekingFlags.AbsolutePositioning,
-                        new DsLong(duration), AMSeekingSeekingFlags.AbsolutePositioning);
+                                                    new DsLong(duration), AMSeekingSeekingFlags.AbsolutePositioning);
                 }
             }
         }
 
         public void SeekRelative(long ticks)
         {
-            lock (_commandLock)
-            {
-                if (_mediaSeeking != null)
-                {
+            lock (_commandLock) {
+                if (_mediaSeeking != null) {
                     long position;
 
                     var hr = _mediaSeeking.GetCurrentPosition(out position);
@@ -2270,8 +2351,9 @@ namespace MediaBrowser.Theater.DirectShow
                         Stop(TrackCompletionReason.Ended, null);
                     }
                     else if (evCode == EventCode.ErrorAbort ||
-                             evCode == EventCode.ErrorStPlaying ||
-                             evCode == EventCode.StErrStopped) 
+                        evCode == EventCode.ErrorStPlaying ||
+                        evCode == EventCode.StErrStopped ||
+                        evCode == EventCode.ErrorStPlaying)
                     {
                         Stop(TrackCompletionReason.Failure, null);
                     }
@@ -2469,135 +2551,144 @@ namespace MediaBrowser.Theater.DirectShow
 
         private List<SelectableMediaStream> GetInternalStreams()
         {
+            _logger.Debug("GetInternalStreams");
+
             var streams = new List<SelectableMediaStream>();
 
-            IEnumFilters enumFilters;
-            var hr = m_graph.EnumFilters(out enumFilters);
-
-            DsError.ThrowExceptionForHR(hr);
-
-            var filters = new DirectShowLib.IBaseFilter[1];
-
-            while (enumFilters.Next(filters.Length, filters, IntPtr.Zero) == 0)
+            IEnumFilters enumFilters = null;
+            try
             {
-                FilterInfo filterInfo;
+                var hr = m_graph.EnumFilters(out enumFilters);
 
-                hr = filters[0].QueryFilterInfo(out filterInfo);
                 DsError.ThrowExceptionForHR(hr);
 
-                Guid cl;
-                filters[0].GetClassID(out cl);
+                var filters = new DirectShowLib.IBaseFilter[1];
 
-                if (filterInfo.pGraph != null)
+                while (enumFilters.Next(filters.Length, filters, IntPtr.Zero) == 0)
                 {
-                    Marshal.ReleaseComObject(filterInfo.pGraph);
-                }
+                    FilterInfo filterInfo;
 
-                var iss = filters[0] as IAMStreamSelect;
-
-                if (iss != null)
-                {
-                    int count;
-
-                    hr = iss.Count(out count);
+                    hr = filters[0].QueryFilterInfo(out filterInfo);
                     DsError.ThrowExceptionForHR(hr);
 
-                    for (int i = 0; i < count; i++)
+                    Guid cl;
+                    filters[0].GetClassID(out cl);
+
+                    if (filterInfo.pGraph != null)
                     {
-                        DirectShowLib.AMMediaType type;
-                        AMStreamSelectInfoFlags flags;
-                        int plcid, pwdGrp; // language
-                        String pzname;
+                        Marshal.ReleaseComObject(filterInfo.pGraph);
+                    }
 
-                        object ppobject, ppunk;
+                    var iss = filters[0] as IAMStreamSelect;
 
-                        hr = iss.Info(i, out type, out flags, out plcid, out pwdGrp, out pzname, out ppobject, out ppunk);
+                    if (iss != null)
+                    {
+                        int count;
+
+                        hr = iss.Count(out count);
                         DsError.ThrowExceptionForHR(hr);
 
-                        if (ppobject != null)
+                        for (int i = 0; i < count; i++)
                         {
-                            Marshal.ReleaseComObject(ppobject);
-                        }
+                            DirectShowLib.AMMediaType type;
+                            AMStreamSelectInfoFlags flags;
+                            int plcid, pwdGrp; // language
+                            String pzname;
 
-                        if (type != null)
-                        {
-                            DsUtils.FreeAMMediaType(type);
-                        }
+                            object ppobject, ppunk;
 
-                        if (ppunk != null)
-                        {
-                            Marshal.ReleaseComObject(ppunk);
-                        }
+                            hr = iss.Info(i, out type, out flags, out plcid, out pwdGrp, out pzname, out ppobject, out ppunk);
+                            DsError.ThrowExceptionForHR(hr);
 
-                        if (pwdGrp == 2)
-                        {
-                            if (_grp2Selector == Guid.Empty)
+                            if (ppobject != null)
                             {
-                                filters[0].GetClassID(out _grp2Selector);
+                                Marshal.ReleaseComObject(ppobject);
                             }
 
-                            var stream = new SelectableMediaStream
+                            if (type != null)
                             {
-                                Index = i,
-                                Name = pzname,
-                                Type = MediaStreamType.Subtitle
-                            };
-
-                            if ((AMStreamSelectInfoFlags.Enabled & flags) == AMStreamSelectInfoFlags.Enabled)
-                            {
-                                stream.IsActive = true;
-                            }
-                            streams.Add(stream);
-                        }
-
-                        if (pwdGrp == 1)
-                        {
-                            if (_audioSelector == Guid.Empty)
-                            {
-                                filters[0].GetClassID(out _audioSelector);
-                            }
-                            var stream = new SelectableMediaStream
-                            {
-                                Index = i,
-                                Name = pzname,
-                                Type = MediaStreamType.Audio
-                            };
-                            if ((AMStreamSelectInfoFlags.Enabled & flags) == AMStreamSelectInfoFlags.Enabled)
-                            {
-                                stream.IsActive = true;
-                            }
-                            streams.Add(stream);
-                        }
-
-                        if (pwdGrp == 6590033)
-                        {
-                            if (_vobsubSelector == Guid.Empty)
-                            {
-                                filters[0].GetClassID(out _vobsubSelector);
+                                DsUtils.FreeAMMediaType(type);
                             }
 
-                            var stream = new SelectableMediaStream
+                            if (ppunk != null)
                             {
-                                Index = i,
-                                Name = pzname,
-                                Type = MediaStreamType.Subtitle,
-                                Identifier = "Vobsub"
-                            };
-
-                            if ((AMStreamSelectInfoFlags.Enabled & flags) == AMStreamSelectInfoFlags.Enabled)
-                            {
-                                stream.IsActive = true;
+                                Marshal.ReleaseComObject(ppunk);
                             }
-                            streams.Add(stream);
+
+                            if (pwdGrp == 2)
+                            {
+                                if (_grp2Selector == Guid.Empty)
+                                {
+                                    filters[0].GetClassID(out _grp2Selector);
+                                }
+
+                                var stream = new SelectableMediaStream
+                                {
+                                    Index = i,
+                                    Name = pzname,
+                                    Type = MediaStreamType.Subtitle
+                                };
+
+                                if ((AMStreamSelectInfoFlags.Enabled & flags) == AMStreamSelectInfoFlags.Enabled)
+                                {
+                                    stream.IsActive = true;
+                                }
+                                streams.Add(stream);
+                            }
+
+                            if (pwdGrp == 1)
+                            {
+                                if (_audioSelector == Guid.Empty)
+                                {
+                                    filters[0].GetClassID(out _audioSelector);
+                                }
+                                var stream = new SelectableMediaStream
+                                {
+                                    Index = i,
+                                    Name = pzname,
+                                    Type = MediaStreamType.Audio
+                                };
+                                if ((AMStreamSelectInfoFlags.Enabled & flags) == AMStreamSelectInfoFlags.Enabled)
+                                {
+                                    stream.IsActive = true;
+                                }
+                                streams.Add(stream);
+                            }
+
+                            if (pwdGrp == 6590033)
+                            {
+                                if (_vobsubSelector == Guid.Empty)
+                                {
+                                    filters[0].GetClassID(out _vobsubSelector);
+                                }
+
+                                var stream = new SelectableMediaStream
+                                {
+                                    Index = i,
+                                    Name = pzname,
+                                    Type = MediaStreamType.Subtitle,
+                                    Identifier = "Vobsub"
+                                };
+
+                                if ((AMStreamSelectInfoFlags.Enabled & flags) == AMStreamSelectInfoFlags.Enabled)
+                                {
+                                    stream.IsActive = true;
+                                }
+                                streams.Add(stream);
+                            }
                         }
                     }
-                }
 
-                Marshal.ReleaseComObject(filters[0]);
+                    Marshal.ReleaseComObject(filters[0]);
+                }
+            }
+            finally
+            {
+                if (enumFilters != null)
+                    Marshal.ReleaseComObject(enumFilters);
             }
 
-            Marshal.ReleaseComObject(enumFilters);
-
+            _logger.Debug("Return InternalStreamCount: {0}", streams.Count);
             return streams;
         }
 
@@ -2671,6 +2762,8 @@ namespace MediaBrowser.Theater.DirectShow
 
         private List<SelectableMediaStream> GetStreams()
         {
+            _logger.Debug("GetStreams()");
+
             var streams = GetInternalStreams();
             var externalSubtitleStreams = GetExternalSubtitleStreams(streams);
             if (externalSubtitleStreams != null && externalSubtitleStreams.Any())
@@ -2720,8 +2813,23 @@ namespace MediaBrowser.Theater.DirectShow
             }
         }
 
+        public void ToggleVideoScaling()
+        {
+            VideoScalingScheme cScheme = VideoScaling;
+            int iScheme = (int)cScheme;
+            iScheme++;
+
+            var vsVals = Enum.GetValues(typeof(VideoScalingScheme));
+            if (iScheme >= vsVals.Length)
+                iScheme = 0;
+
+            VideoScaling = (VideoScalingScheme)iScheme;
+        }
+
         private void LoadActiveExternalSubtitles()
         {
+            _logger.Debug("LoadActiveExternalSubtitles");
+
             var stream =
                 _streams.FirstOrDefault(
                     i => i.Type == MediaStreamType.Subtitle && i.Identifier == "external" && i.IsActive);
@@ -2780,19 +2888,21 @@ namespace MediaBrowser.Theater.DirectShow
 
             ToggleHideSubtitles(stream.Name.ToLower().Contains("no subtitles"));
         }
-        
+
         private async void LoadExternalSubtitleFromStream(SelectableMediaStream stream)
         {
+            _logger.Debug("LoadExternalSubtitleFromStream: {0}", stream);
+
             // get a url for the stream
             var url = _apiClient.GetSubtitleUrl(new SubtitleDownloadOptions
             {
                 ItemId = _item.OriginalItem.Id,
                 StreamIndex = stream.Index,
-               
-                // todo MBT hasn't implemented MediaSources yet. Will be handled by migration to StreamBuilder library.
+
+                // MBT hasn't implemented MediaSources yet. Will be handled by migration to StreamBuilder library.
                 // For now, this knowledge of the ID isn't great, but should work
                 MediaSourceId = _item.OriginalItem.Id,
-                
+
                 Format = "srt"
             });
 
@@ -2814,6 +2924,8 @@ namespace MediaBrowser.Theater.DirectShow
 
         private async void SetExternalSubtitleStream(SelectableMediaStream stream)
         {
+            _logger.Debug("SetExternalSubtitleStream: {0}", stream);
+
             if (stream.Name.ToLower().Contains("no subtitles"))
             {
                 ToggleHideSubtitles(true);

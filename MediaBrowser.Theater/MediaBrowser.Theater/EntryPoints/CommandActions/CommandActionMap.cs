@@ -84,7 +84,7 @@ namespace MediaBrowser.Theater.EntryPoints.CommandActions
                 new CommandActionMapping( Command.Seek,            Seek),
                 new CommandActionMapping( Command.Left,            NullAction),
                 new CommandActionMapping( Command.Right,           NullAction),
-                new CommandActionMapping( Command.Up,              NullAction),
+                new CommandActionMapping( Command.Up,              ToggleVideoScaling),
                 new CommandActionMapping( Command.PageUp,          NullAction),
                 new CommandActionMapping( Command.PageDown,        NullAction),
                 new CommandActionMapping( Command.FirstPage,       NullAction),
@@ -189,6 +189,19 @@ namespace MediaBrowser.Theater.EntryPoints.CommandActions
         private IInternalMediaPlayer GetActiveInternalMediaPlayer()
         {
             return _playback.MediaPlayers.OfType<IInternalMediaPlayer>().FirstOrDefault(i => i.PlayState != PlayState.Idle);
+        }
+
+        private void ToggleVideoScaling(Object sender, CommandEventArgs args)
+        {
+            var activePlayer = GetActiveInternalMediaPlayer();
+
+            if (activePlayer != null)
+            {
+                activePlayer.ToggleVideoScaling();
+
+                //ShowOsd(sender, args);
+            }
+            args.Handled = true;
         }
 
         private void Play(Object sender, CommandEventArgs args)

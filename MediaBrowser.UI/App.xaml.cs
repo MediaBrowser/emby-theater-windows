@@ -525,12 +525,7 @@ namespace MediaBrowser.UI
         /// <returns>Task.</returns>
         private async Task LoadInitialPresentation()
         {
-            var mediaFilters = _appHost.MediaFilters;
-            if (!AreRequiredMediaFiltersInstalled(mediaFilters))
-            {
-                LoadStartupWizard(mediaFilters);
-                return;
-            }
+            EnsureMediaFilters();
             
             _appHost.PresentationManager.ShowModalLoadingAnimation();
             var cancellationToken = CancellationToken.None;
@@ -547,43 +542,32 @@ namespace MediaBrowser.UI
 
             if (connectionResult.State == ConnectionState.Unavailable)
             {
-                LoadStartupWizard(mediaFilters);
+                LoadStartupWizard();
                 return;
             }
 
-            await Dispatcher.InvokeAsync(async () => await Login(connectionResult));
+            LoadStartupWizard();
+            //await Dispatcher.InvokeAsync(async () => await Login(connectionResult));
         }
 
-        private async void LoadStartupWizard(IMediaFilters mediaFilters)
+        private async void LoadStartupWizard()
         {
             // Show connection wizard
-            await Dispatcher.InvokeAsync(async () => await _appHost.NavigationService.Navigate(new StartupWizardPage(_appHost.NavigationService, _appHost.TheaterConfigurationManager, _appHost.ConnectionManager, _appHost.PresentationManager, _logger, mediaFilters)));
+            await Dispatcher.InvokeAsync(async () => await _appHost.NavigationService.Navigate(new StartupWizardPage(_appHost.NavigationService, _appHost.ConnectionManager, _appHost.PresentationManager, _logger)));
         }
 
-        private async Task Login(ConnectionResult connectionResult)
+        private void EnsureMediaFilters()
         {
-            if (connectionResult.State == ConnectionState.ServerSignIn)
+            Task.Run(() =>
             {
-                await _appHost.NavigationService.NavigateToLoginPage();
-            }
-            else
-            {
-                await _appHost.SessionManager.ValidateSavedLogin(connectionResult);
-            }
-        }
-
-        private bool AreRequiredMediaFiltersInstalled(IMediaFilters mediaFilters)
-        {
-            try
-            {
-                MediaBrowser.Theater.DirectShow.URCOMLoader.EnsureObjects(_appHost.TheaterConfigurationManager, _appHost.GetZipClient(), false);
-                return true;
-                //return mediaFilters.IsLavSplitterInstalled() && mediaFilters.IsLavAudioInstalled() && mediaFilters.IsLavVideoInstalled() && mediaFilters.IsXyVsFilterInstalled();
-            }
-            catch
-            {
-                return false;
-            }
+                try
+                {
+                    MediaBrowser.Theater.DirectShow.URCOMLoader.EnsureObjects(_appHost.TheaterConfigurationManager, _appHost.GetZipClient(), false);
+                }
+                catch
+                {
+                }
+            });
         }
 
         /// <summary>

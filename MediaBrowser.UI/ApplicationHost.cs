@@ -1,4 +1,5 @@
 ﻿using MediaBrowser.ApiInteraction;
+using MediaBrowser.ApiInteraction.Cryptography;
 using MediaBrowser.ApiInteraction.Network;
 using MediaBrowser.ApiInteraction.WebSocket;
 using MediaBrowser.Common.Configuration;
@@ -228,6 +229,7 @@ namespace MediaBrowser.UI
                 ApplicationVersion.ToString(),
                 device,
                 capabilities,
+                new CryptographyProvider(),
                 ClientWebSocketFactory.CreateWebSocket)
             {
                 JsonSerializer = JsonSerializer

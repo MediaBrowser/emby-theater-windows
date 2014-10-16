@@ -17,24 +17,32 @@
             <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <TextBlock Style="{StaticResource Heading1TextBlockStyle}" Grid.Row="0">Locate Media Browser Server</TextBlock>
-        <TextBlock Style="{StaticResource TextBlockStyle}" Grid.Row="1" Margin="0 40 0 0">Please confirm the location of your server.</TextBlock>
+        <TextBlock Style="{StaticResource Heading1TextBlockStyle}" Grid.Row="0">Sign In with Media Browser Connect</TextBlock>
+        <TextBlock Style="{StaticResource TextBlockStyle}" Grid.Row="1" Margin="0 40 0 0">With Media Browser Connect you can easily access your Media Browser Server wherever you are and share with your family and friends.</TextBlock>
+        <TextBlock Style="{StaticResource TextBlockStyle}" Grid.Row="2" Margin="0 40 0 0">To sign in with Media Browser Connect, visit http://mediabrowser.tv/pin and enter the following pin code:</TextBlock>
 
-        <StackPanel Orientation="Vertical" Grid.Row="2" Margin="0 40 0 0">
-            <TextBlock Style="{StaticResource TextBlockStyle}">Host name or IP address:</TextBlock>
-            <osk:TextField x:Name="TxtHost" Title="Server Address"  Margin="0 10 0 0"></osk:TextField>
-            <TextBlock Margin="0 30 0 0" Style="{StaticResource TextBlockStyle}">Port number:</TextBlock>
-            <osk:TextField x:Name="TxtPort" Title="Server Port"  Margin="0 10 0 0"></osk:TextField>
+        <TextBlock x:Name="TxtPin" Style="{StaticResource Heading1TextBlockStyle}" Grid.Row="3" Margin="0 50 0 20" HorizontalAlignment="Center" FontSize="80"></TextBlock>
+
+        <StackPanel x:Name="PinError" Grid.Row="4" Orientation="Vertical" Margin="0 40 0 0" HorizontalAlignment="Stretch">
+
+            <TextBlock x:Name="TxtPinError" Style="{StaticResource TextBlockStyle}"></TextBlock>
+
+            <Button x:Name="BtnResetPin" Margin="0 20 0 0">
+                <TextBlock Style="{StaticResource TextBlockStyle}">Generate New Pin</TextBlock>
+            </Button>
         </StackPanel>
+        
 
-        <StackPanel Grid.Row="4" Orientation="Horizontal" Margin="0 40 0 0" HorizontalAlignment="Right">
+        <StackPanel Grid.Row="5" Orientation="Horizontal" Margin="0 80 0 0" HorizontalAlignment="Right">
             <Button x:Name="BtnBack">
                 <TextBlock Style="{StaticResource TextBlockStyle}">Back</TextBlock>
             </Button>
-            <Button x:Name="BtnNext" Margin="30 0 0 0">
-                <TextBlock Style="{StaticResource TextBlockStyle}">Next</TextBlock>
+            <Button x:Name="BtnSkip" Margin="30 0 0 0">
+                <TextBlock Style="{StaticResource TextBlockStyle}">Skip</TextBlock>
             </Button>
         </StackPanel>
 

@@ -1,15 +1,11 @@
-﻿using MediaBrowser.ApiInteraction;
-using MediaBrowser.Model.ApiClient;
+﻿using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Connect;
 using MediaBrowser.Model.Logging;
-using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
-using MediaBrowser.Theater.Interfaces.System;
-using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Presentation.Pages;
 using System;
 using System.Globalization;
-using System.Linq;
 using System.Threading;
 using System.Windows;
 
@@ -22,21 +18,20 @@ namespace MediaBrowser.UI.StartupWizard
     {
         private readonly IPresentationManager _presentation;
         private readonly INavigationService _nav;
-        private readonly ITheaterConfigurationManager _config;
         private readonly IConnectionManager _connectionManager;
         private readonly ILogger _logger;
-        private readonly IMediaFilters _mediaFilters;
 
         private readonly CultureInfo _usCulture = new CultureInfo("en-US");
 
-        public StartupWizardPage2(INavigationService nav, ITheaterConfigurationManager config, IConnectionManager connectionManager, IPresentationManager presentation, ILogger logger, IMediaFilters mediaFilters)
+        private PinCreationResult _pinResult;
+        private Timer _pinTimer;
+
+        public StartupWizardPage2(INavigationService nav, IConnectionManager connectionManager, IPresentationManager presentation, ILogger logger)
         {
             _nav = nav;
-            _config = config;
             _connectionManager = connectionManager;
             _presentation = presentation;
             _logger = logger;
-            _mediaFilters = mediaFilters;
             InitializeComponent();
         }
 
@@ -44,78 +39,114 @@ namespace MediaBrowser.UI.StartupWizard
         {
             base.OnInitialized(e);
 
-            TxtHost.Text = string.Empty;
-            TxtPort.Text = string.Empty;
-            
-            try
-            {
-                var result = (await new ServerLocator(_logger).FindServers(500, CancellationToken.None).ConfigureAwait(false)).FirstOrDefault();
-
-                if (result != null)
-                {
-                    var uri = new Uri(result.Address);
-
-                    TxtHost.Text = uri.Host;
-
-                    if (!uri.IsDefaultPort)
-                    {
-                        TxtPort.Text = uri.Port.ToString(CultureInfo.InvariantCulture);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.ErrorException("Error attempting to locate server.", ex);
-            }
+            LoadPin();
 
             Loaded += StartupWizardPage_Loaded;
-            BtnNext.Click += BtnNext_Click;
+            BtnSkip.Click += BtnSkip_Click;
             BtnBack.Click += BtnBack_Click;
+            BtnResetPin.Click += BtnResetPin_Click;
+        }
+
+        void BtnResetPin_Click(object sender, RoutedEventArgs e)
+        {
+            LoadPin();
+        }
+
+        private async void LoadPin()
+        {
+            Dispatcher.InvokeAsync(() =>
+            {
+                TxtPin.Visibility = Visibility.Visible;
+                PinError.Visibility = Visibility.Collapsed;
+            });
+
+            StopPinTimer();
+            TxtPin.Text = string.Empty;
+
+            try
+            {
+                _pinResult = await _connectionManager.CreatePin().ConfigureAwait(false);
+
+                Dispatcher.InvokeAsync(() => TxtPin.Text = _pinResult.Pin);
+
+                StartPinTimer();
+            }
+            catch (Exception)
+            {
+                OnPinError();
+            }
+        }
+
+        private void OnPinError()
+        {
+            Dispatcher.InvokeAsync(() =>
+            {
+                TxtPin.Visibility = Visibility.Collapsed;
+                PinError.Visibility = Visibility.Visible;
+
+                TxtPinError.Text = "An error has occurred while attempting to communicate with mediabrowser.tv. Click the button below to try again or skip to connect to your server manually.";
+            });
+        }
+
+        private void OnPinExpired()
+        {
+            Dispatcher.InvokeAsync(() =>
+            {
+                TxtPin.Visibility = Visibility.Collapsed;
+                PinError.Visibility = Visibility.Visible;
+
+                TxtPinError.Text = "Your pin has expired. Click the button below to generate a new pin or skip to connect to your server manually.";
+            });
+        }
+
+        private async void PollForPinUpdate()
+        {
+            try
+            {
+                var pinStatus = await _connectionManager.GetPinStatus(_pinResult);
+
+                if (pinStatus.IsExpired)
+                {
+                    OnPinExpired();
+                }
+                else if (pinStatus.IsConfirmed)
+                {
+                    OnPinConfirmed();
+                }
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        private void StartPinTimer()
+        {
+            _pinTimer = new Timer(TimerCallback, null, TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10));
+        }
+
+        private void TimerCallback(object state)
+        {
+            PollForPinUpdate();
+        }
+
+        private void StopPinTimer()
+        {
+            if (_pinTimer != null)
+            {
+                _pinTimer.Dispose();
+                _pinTimer = null;
+            }
         }
 
         async void BtnBack_Click(object sender, RoutedEventArgs e)
         {
+            StopPinTimer();
             await _nav.NavigateBack();
         }
 
-        async void BtnNext_Click(object sender, RoutedEventArgs e)
+        void BtnSkip_Click(object sender, RoutedEventArgs e)
         {
-            if (ValidateInput())
-            {
-                var serverAddress = string.Format("http://{0}", TxtHost.Text);
-                if (!string.IsNullOrEmpty(TxtPort.Text))
-                {
-                    serverAddress += ":" + TxtPort.Text;
-                }
-
-                try
-                {
-                    var connectionResult = await _connectionManager.Connect(serverAddress, CancellationToken.None);
-
-                    if (connectionResult.State == ConnectionState.Unavailable)
-                    {
-                        ShowUnavailableMessage();
-                        return;
-                    }
-
-                    await _nav.Navigate(new StartupWizardFinish(_nav, _presentation));
-                }
-                catch (Exception)
-                {
-                    ShowUnavailableMessage();
-                }
-            }
-        }
-
-        private void ShowUnavailableMessage()
-        {
-            _presentation.ShowMessage(new MessageBoxInfo
-            {
-                Button = MessageBoxButton.OK,
-                Caption = "Error",
-                Icon = MessageBoxIcon.Error,
-                Text = "Unable to establish a connection with the server. Please check your connection information and try again."
-            });
+            GoNext();
         }
 
         void StartupWizardPage_Loaded(object sender, RoutedEventArgs e)
@@ -123,26 +154,40 @@ namespace MediaBrowser.UI.StartupWizard
             _presentation.SetDefaultPageTitle();
         }
 
-        private bool ValidateInput()
+        private async void OnPinConfirmed()
         {
-            int port;
+            StopPinTimer();
 
-            if (!string.IsNullOrEmpty(TxtPort.Text) && !int.TryParse(TxtPort.Text, NumberStyles.Integer, _usCulture, out port))
+            try
             {
-                TxtPort.Focus();
+                await _connectionManager.ExchangePin(_pinResult).ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                OnPinError();
+            }
+        }
 
-                _presentation.ShowMessage(new MessageBoxInfo
+        private async void GoNext()
+        {
+            StopPinTimer();
+
+            try
+            {
+                var connectionResult = await _connectionManager.Connect(CancellationToken.None);
+
+                if (connectionResult.State != ConnectionState.Unavailable)
                 {
-                    Button = MessageBoxButton.OK,
-                    Caption = "Error",
-                    Icon = MessageBoxIcon.Error,
-                    Text = "Please enter a valid port number."
-                });
+                    await _nav.Navigate(new StartupWizardFinish(_nav, _presentation));
+                    return;
+                }
 
-                return false;
+            }
+            catch (Exception)
+            {
             }
 
-            return true;
+            await _nav.Navigate(new StartupWizardPage3(_nav, _connectionManager, _presentation, _logger));
         }
     }
 }

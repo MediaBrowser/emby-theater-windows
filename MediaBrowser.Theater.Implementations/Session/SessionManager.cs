@@ -9,8 +9,6 @@ using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.Theming;
 using System;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace MediaBrowser.Theater.Implementations.Session
@@ -88,12 +86,9 @@ namespace MediaBrowser.Theater.Implementations.Session
                 password = string.Empty;
             }
 
-            //Compute hash then pass to main login routine
-            var hash = ComputeHash(password);
-
             try
             {
-                var result = await apiClient.AuthenticateUserAsync(username, hash);
+                var result = await apiClient.AuthenticateUserAsync(username, password);
 
                 CurrentUser = result.User;
 
@@ -106,15 +101,6 @@ namespace MediaBrowser.Theater.Implementations.Session
             }
 
             await AfterLogin();
-        }
-
-        protected byte[] ComputeHash(string data)
-        {
-            using (var provider = SHA1.Create())
-            {
-                var hash = provider.ComputeHash(Encoding.UTF8.GetBytes(data ?? string.Empty));
-                return hash;
-            }
         }
 
         public async Task ValidateSavedLogin(ConnectionResult result)

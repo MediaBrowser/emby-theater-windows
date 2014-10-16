@@ -37,29 +37,26 @@
         <!--<CheckBox x:Name="ChkEnableReclock" Margin="0 30 0 0" VerticalAlignment="Center">
             <TextBlock Style="{StaticResource TextBlockStyle}">Enable Reclock *</TextBlock>
         </CheckBox>-->
-        <StackPanel Orientation="Horizontal" Margin="0 10 0 0">
-            <CheckBox x:Name="ChkEnableMadvr" Margin="0 30 0 0" VerticalAlignment="Center">
-                <TextBlock Style="{StaticResource TextBlockStyle}" >Enable madVR *</TextBlock>
-            </CheckBox>
-            <Button Margin="85,60,0,0" x:Name="BtnConfigureMadVr" Click="BtnConfigureMadVr_Click" HorizontalAlignment="Center" VerticalAlignment="Center">
-                <TextBlock Style="{StaticResource TextBlockStyle}">Video Renderer Settings</TextBlock>
-            </Button>
-        </StackPanel>
+        <CheckBox x:Name="ChkEnableMadvr" Margin="0 30 0 0" VerticalAlignment="Center">
+            <TextBlock Style="{StaticResource TextBlockStyle}" >Enable madVR</TextBlock>
+        </CheckBox>
         <CheckBox x:Name="ChkEnableAutoRes" Margin="0 30 0 0" VerticalAlignment="Center">
             <TextBlock Style="{StaticResource TextBlockStyle}">Change Refresh Rate to Match Video</TextBlock>
         </CheckBox>
         <CheckBox x:Name="ChkEnableXySubFilter" Margin="0 30 0 0" VerticalAlignment="Center">
-            <TextBlock Style="{StaticResource TextBlockStyle}">Enable XySubFilter *</TextBlock>
-        </CheckBox>
+            <TextBlock Style="{StaticResource TextBlockStyle}">Enable XySubFilter</TextBlock>
+        </CheckBox>   
         
-        <TextBlock Style="{StaticResource Heading2TextBlockStyle}" Margin="0 60 0 0">* Separate installation required</TextBlock>
-
         <Button Margin="0 60 0 0" x:Name="BtnConfigureAudio">
             <TextBlock Style="{StaticResource TextBlockStyle}">Configure Audio</TextBlock>
         </Button>
 
         <Button Margin="0 20 0 0" x:Name="BtnConfigureSubtitles">
             <TextBlock Style="{StaticResource TextBlockStyle}">Configure Splitter</TextBlock>
+        </Button>
+
+        <Button Margin="0 20 0 0" x:Name="BtnConfigureMadVr" Click="BtnConfigureMadVr_Click" >
+            <TextBlock Style="{StaticResource TextBlockStyle}">Configure Video Renderer</TextBlock>
         </Button>
     </StackPanel>
 </pages:BasePage>

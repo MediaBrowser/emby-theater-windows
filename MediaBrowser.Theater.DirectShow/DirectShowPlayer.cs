@@ -2782,8 +2782,42 @@ namespace MediaBrowser.Theater.DirectShow
                 var extSubSource = subtitleFilter as IDirectVobSub;
                 if (extSubSource != null)
                 {
+                    string subName = Path.GetFileNameWithoutExtension(subtitleFile);
+
                     var hr = extSubSource.put_FileName(subtitleFile);
                     DsError.ThrowExceptionForHR(hr);
+
+                    int iCount;
+
+                    hr = extSubSource.get_LanguageCount(out iCount);
+                    DsError.ThrowExceptionForHR(hr);
+                    _logger.Debug("LoadExternalSubtitle Count: {0}", iCount);
+
+                    for (int i = 0; i < iCount; i++)
+                    {
+                        string ppName;
+
+                        hr = extSubSource.get_LanguageName(i, out ppName);
+                        DsError.ThrowExceptionForHR(hr);
+
+                        _logger.Debug("LoadExternalSubtitle SubName {0}", ppName);
+
+                        if (subName == ppName)
+                        {
+                            _logger.Debug("LoadExternalSubtitle Select Stream {0}", i);
+
+                            hr = extSubSource.put_SelectedLanguage(i);
+                            DsError.ThrowExceptionForHR(hr);
+
+                            int iSelected = 0;
+                            hr = extSubSource.get_SelectedLanguage(ref iSelected);
+                            DsError.ThrowExceptionForHR(hr);
+
+                            _logger.Debug("LoadExternalSubtitle Select Result: {0}", iSelected);
+
+                            break;
+                        }
+                    }
                 }
             }
         }

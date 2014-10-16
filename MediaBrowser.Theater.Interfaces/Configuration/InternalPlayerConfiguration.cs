@@ -573,6 +573,7 @@ namespace MediaBrowser.Theater.Interfaces.Configuration
             FilterList[new Guid("{2DFCB782-EC20-4A7C-B530-4577ADB33F21}")] = new KnownCOMObject("XySubFilter", "XySubFilter\\XySubFilter.dll", new Guid("{2DFCB782-EC20-4A7C-B530-4577ADB33F21}"));
             FilterList[new Guid("{5325DF1C-6F10-4292-B8FB-BE855F99F88A}")] = new KnownCOMObject("EVR Presenter (babgvant)", "babgvant\\EVRPresenter.dll", new Guid("{5325DF1C-6F10-4292-B8FB-BE855F99F88A}"));
             FilterList[new Guid("{EC9ED6FC-7B03-4CB6-8C01-4EABE109F26B}")] = new KnownCOMObject("MP Audio Renderer", "mpaudio\\mpaudiorenderer.ax", new Guid("{EC9ED6FC-7B03-4CB6-8C01-4EABE109F26B}"));
+            FilterList[new Guid("{93A22E7A-5091-45EF-BA61-6DA26156A5D0}")] = new KnownCOMObject("XYVSFilter", "xy-VSFilter\\VSFilter.dll", new Guid("{93A22E7A-5091-45EF-BA61-6DA26156A5D0}"));
         }
 
         public static bool IsGuid(string candidate, out Guid output)

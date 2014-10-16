@@ -61,7 +61,7 @@ namespace MediaBrowser.Theater.DirectShow
         private bool _isDvd = false;
         private DirectShowLib.IPin m_adecOut = null;
 
-        private XYVSFilter _xyVsFilter = null;
+        private object _xyVsFilter = null;
         private object _xySubFilter = null;
 
         private object _lavaudio = null;
@@ -850,11 +850,11 @@ namespace MediaBrowser.Theater.DirectShow
                 }
 
                 // Fallback to xyVsFilter
-                if (!xySubFilterSucceeded && enableXySubFilter)
+                if (!xySubFilterSucceeded )//&& enableXySubFilter) //doesn't make sense that this is here...
                 {
                     try
                     {
-                        _xyVsFilter = new XYVSFilter();
+                        _xyVsFilter = _playerWrapper.PrivateCom.GetObject(typeof(XYVSFilter).GUID, true); //new XYVSFilter();
                         var vxyVsFilter = _xyVsFilter as DirectShowLib.IBaseFilter;
                         if (vxyVsFilter != null)
                         {

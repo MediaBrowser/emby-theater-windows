@@ -176,18 +176,14 @@ namespace MediaBrowser.UI.StartupWizard
             {
                 var connectionResult = await _connectionManager.Connect(CancellationToken.None);
 
-                if (connectionResult.State != ConnectionState.Unavailable)
-                {
-                    await _nav.Navigate(new StartupWizardFinish(_nav, _presentation));
-                    return;
-                }
-
+                App.Instance.NavigateFromConnectionResult(connectionResult);
+                return;
             }
             catch (Exception)
             {
             }
 
-            await _nav.Navigate(new StartupWizardPage3(_nav, _connectionManager, _presentation, _logger));
+            await _nav.Navigate(new StartupPageServerEntry(_nav, _connectionManager, _presentation, _logger));
         }
     }
 }

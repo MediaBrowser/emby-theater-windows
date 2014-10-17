@@ -21,7 +21,7 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
         private readonly ITheaterConfigurationManager _config;
         private readonly IMediaFilters _mediaFilters;
         private readonly IPresentationManager _presentation;
-        private readonly IZipClient zipClient;
+        private readonly IZipClient _zipClient;
 
         public ConfigurationPage(INavigationService nav, ITheaterConfigurationManager config, IPresentationManager presentation, IMediaFilters mediaFilters, IZipClient zipClient)
         {
@@ -29,7 +29,7 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
             _config = config;
             _presentation = presentation;
             _mediaFilters = mediaFilters;
-            this.zipClient = zipClient;
+            this._zipClient = zipClient;
             InitializeComponent();
         }
 
@@ -143,7 +143,7 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
             }
             _config.SaveConfiguration();
             if (redownloadFilters)
-                URCOMLoader.EnsureObjects(_config, zipClient, false, true);
+                URCOMLoader.EnsureObjects(_config, _zipClient, false, true);
         }
 
         async void BtnConfigureMadVr_Click(object sender, RoutedEventArgs e)

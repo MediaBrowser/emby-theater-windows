@@ -1,17 +1,12 @@
-﻿using MediaBrowser.ApiInteraction;
-using MediaBrowser.Common.Implementations.Archiving;
-using MediaBrowser.Common.Implementations.Logging;
+﻿using MediaBrowser.Common.Implementations.Logging;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Logging;
-using MediaBrowser.Model.System;
 using MediaBrowser.Theater.Implementations.Configuration;
-using MediaBrowser.Theater.Interfaces.System;
 using MediaBrowser.UI.StartupWizard;
 using Microsoft.Win32;
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -525,49 +520,39 @@ namespace MediaBrowser.UI
         /// <returns>Task.</returns>
         private async Task LoadInitialPresentation()
         {
-            EnsureMediaFilters();
-            
             _appHost.PresentationManager.ShowModalLoadingAnimation();
             var cancellationToken = CancellationToken.None;
 
             var connectionResult = await _appHost.ConnectionManager.Connect(cancellationToken);
 
-            // We don't have a server selection screen y et
-            if (connectionResult.State == ConnectionState.ServerSelection)
-            {
-                connectionResult = await _appHost.ConnectionManager.Connect(connectionResult.Servers[0], cancellationToken);
-            }
-
             _appHost.PresentationManager.HideModalLoadingAnimation();
 
-            if (connectionResult.State == ConnectionState.Unavailable)
+            NavigateFromConnectionResult(connectionResult);
+        }
+
+        public async void NavigateFromConnectionResult(ConnectionResult result)
+        {
+            // Startup wizard
+            if (result.State == ConnectionState.Unavailable)
             {
-                LoadStartupWizard();
-                return;
+                await Dispatcher.InvokeAsync(async () => await _appHost.NavigationService.Navigate(new StartupWizardPage(_appHost.NavigationService, _appHost.ConnectionManager, _appHost.PresentationManager, _logger)));
             }
 
-            LoadStartupWizard();
-            //await Dispatcher.InvokeAsync(async () => await Login(connectionResult));
-        }
-
-        private async void LoadStartupWizard()
-        {
-            // Show connection wizard
-            await Dispatcher.InvokeAsync(async () => await _appHost.NavigationService.Navigate(new StartupWizardPage(_appHost.NavigationService, _appHost.ConnectionManager, _appHost.PresentationManager, _logger)));
-        }
-
-        private void EnsureMediaFilters()
-        {
-            Task.Run(() =>
+            else if (result.State == ConnectionState.ServerSelection)
             {
-                try
-                {
-                    MediaBrowser.Theater.DirectShow.URCOMLoader.EnsureObjects(_appHost.TheaterConfigurationManager, _appHost.GetZipClient(), false);
-                }
-                catch
-                {
-                }
-            });
+                await Dispatcher.InvokeAsync(async () => await _appHost.NavigationService.Navigate(new ServerSelectionPage(_appHost.ConnectionManager, _appHost.PresentationManager, result.Servers)));
+            }
+
+            else if (result.State == ConnectionState.ServerSignIn)
+            {
+                //await Dispatcher.InvokeAsync(async () => await _appHost.NavigationService.Navigate(new ServerSelectionPage(_appHost.ConnectionManager, _appHost.PresentationManager, result.Servers)));
+                await _appHost.NavigationService.NavigateToLoginPage();
+            }
+
+            else if (result.State == ConnectionState.SignedIn)
+            {
+                await _appHost.SessionManager.ValidateSavedLogin(result);
+            }
         }
 
         /// <summary>

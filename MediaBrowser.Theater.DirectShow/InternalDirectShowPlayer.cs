@@ -72,6 +72,22 @@ namespace MediaBrowser.Theater.DirectShow
             //use a static object so we keep the libraries in the same place. Doesn't usually matter, but the EVR Presenter does some COM hooking that has problems if we change the lib address.
             if (_privateCom == null)
                 _privateCom = new URCOMLoader(_config, _zipClient);
+
+            EnsureMediaFilters();
+        }
+
+        private void EnsureMediaFilters()
+        {
+            Task.Run(() =>
+            {
+                try
+                {
+                    MediaBrowser.Theater.DirectShow.URCOMLoader.EnsureObjects(_config, _zipClient, false);
+                }
+                catch
+                {
+                }
+            });
         }
 
         public IReadOnlyList<BaseItemDto> Playlist

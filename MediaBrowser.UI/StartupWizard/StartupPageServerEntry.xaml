@@ -1,4 +1,4 @@
-﻿<pages:BasePage x:Class="MediaBrowser.UI.StartupWizard.StartupWizardPage3"
+﻿<pages:BasePage x:Class="MediaBrowser.UI.StartupWizard.StartupPageServerEntry"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -8,7 +8,7 @@
                 xmlns:osk="clr-namespace:MediaBrowser.Theater.Presentation.Controls.Osk;assembly=MediaBrowser.Theater.Presentation"
                 mc:Ignorable="d" 
       d:DesignHeight="300" d:DesignWidth="300"
-	Title="StartupWizardPage3">
+	Title="StartupPageServerEntry">
 
     <Grid HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0 70 0 0" Width="1200">
 

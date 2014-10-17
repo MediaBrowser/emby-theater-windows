@@ -19,9 +19,10 @@
             <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <TextBlock Style="{StaticResource Heading1TextBlockStyle}" Grid.Row="0">Sign In with Media Browser Connect</TextBlock>
+        <TextBlock Style="{StaticResource Heading1TextBlockStyle}" Grid.Row="0">Sign in with Media Browser Connect</TextBlock>
         <TextBlock Style="{StaticResource TextBlockStyle}" Grid.Row="1" Margin="0 40 0 0">With Media Browser Connect you can easily access your Media Browser Server wherever you are and share with your family and friends.</TextBlock>
         <TextBlock Style="{StaticResource TextBlockStyle}" Grid.Row="2" Margin="0 40 0 0">To sign in with Media Browser Connect, visit http://mediabrowser.tv/pin and enter the following pin code:</TextBlock>
 
@@ -35,9 +36,10 @@
                 <TextBlock Style="{StaticResource TextBlockStyle}">Generate New Pin</TextBlock>
             </Button>
         </StackPanel>
-        
 
-        <StackPanel Grid.Row="5" Orientation="Horizontal" Margin="0 80 0 0" HorizontalAlignment="Right">
+        <TextBlock Style="{StaticResource SmallTextBlockStyle}" Grid.Row="5" Margin="0 60 0 0" HorizontalAlignment="Right">Skip to connect to your server manually</TextBlock>
+
+        <StackPanel Grid.Row="6" Orientation="Horizontal" Margin="0 40 0 0" HorizontalAlignment="Right">
             <Button x:Name="BtnBack">
                 <TextBlock Style="{StaticResource TextBlockStyle}">Back</TextBlock>
             </Button>

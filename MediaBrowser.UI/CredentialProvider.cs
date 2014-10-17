@@ -1,4 +1,5 @@
 ﻿using MediaBrowser.ApiInteraction;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Serialization;
 using MediaBrowser.Theater.Interfaces.Configuration;
 using System.IO;
@@ -23,10 +24,10 @@ namespace MediaBrowser.UI
             get { return System.IO.Path.Combine(_config.CommonApplicationPaths.ConfigurationDirectoryPath, "servers.json"); }
         }
 
-        private ServerCredentialConfiguration _servers;
+        private ServerCredentials _servers;
         private readonly SemaphoreSlim _asyncLock = new SemaphoreSlim(1, 1);
 
-        public async Task<ServerCredentialConfiguration> GetServerCredentials()
+        public async Task<ServerCredentials> GetServerCredentials()
         {
             if (_servers == null)
             {
@@ -38,11 +39,11 @@ namespace MediaBrowser.UI
                     {
                         try
                         {
-                            _servers = _json.DeserializeFromFile<ServerCredentialConfiguration>(Path);
+                            _servers = _json.DeserializeFromFile<ServerCredentials>(Path);
                         }
                         catch (IOException)
                         {
-                            _servers = new ServerCredentialConfiguration();
+                            _servers = new ServerCredentials();
                         }
                     }
                 }
@@ -54,7 +55,7 @@ namespace MediaBrowser.UI
             return _servers;
         }
 
-        public async Task SaveServerCredentials(ServerCredentialConfiguration configuration)
+        public async Task SaveServerCredentials(ServerCredentials configuration)
         {
             var path = Path;
             Directory.CreateDirectory(System.IO.Path.GetDirectoryName(path));

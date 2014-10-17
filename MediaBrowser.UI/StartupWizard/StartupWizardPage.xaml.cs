@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.ApiClient;
+﻿using System.Threading;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
@@ -37,7 +38,36 @@ namespace MediaBrowser.UI.StartupWizard
 
         async void BtnNext_Click(object sender, RoutedEventArgs e)
         {
-            await _nav.Navigate(new StartupWizardPage2(_nav, _connectionManager, _presentation, _logger));
+            var supportsPin = true;
+
+            if (supportsPin)
+            {
+                await _nav.Navigate(new StartupWizardPage2(_nav, _connectionManager, _presentation, _logger));
+            }
+            else
+            {
+                Dispatcher.InvokeAsync(() => _presentation.ShowModalLoadingAnimation());
+
+                try
+                {
+                    var connectionResult = await _connectionManager.Connect(CancellationToken.None);
+
+                    Dispatcher.InvokeAsync(() => _presentation.HideModalLoadingAnimation());
+
+                    if (connectionResult.State == ConnectionState.Unavailable)
+                    {
+                        await _nav.Navigate(new StartupPageServerEntry(_nav, _connectionManager, _presentation, _logger));
+                    }
+                    else
+                    {
+                        App.Instance.NavigateFromConnectionResult(connectionResult);
+                    }
+                }
+                catch (Exception)
+                {
+                    Dispatcher.InvokeAsync(() => _presentation.HideModalLoadingAnimation());
+                }
+            }
         }
 
         void StartupWizardPage_Loaded(object sender, RoutedEventArgs e)

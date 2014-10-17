@@ -1,9 +1,7 @@
-﻿using MediaBrowser.Common;
-using MediaBrowser.Model.ApiClient;
+﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
-using MediaBrowser.Plugins.DefaultTheme.UserProfileMenu;
 using MediaBrowser.Theater.Interfaces;
 using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Navigation;
@@ -12,9 +10,6 @@ using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.ViewModels;
 using System;
-using System.Globalization;
-using System.Windows.Controls;
-using System.Windows.Input;
 using System.Windows.Media.Imaging;
 
 namespace MediaBrowser.Plugins.DefaultTheme
@@ -108,7 +103,6 @@ namespace MediaBrowser.Plugins.DefaultTheme
                 MasterCommands.SortEnabled = hasDisplayPreferences.HasSortOptions;
 
                 //Check if remember sort is checked
-
             }
 
             var isLoginPage = e.NewPage as ILoginPage;
@@ -119,7 +113,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
             }
             else
             {
-                ShowSettingsButton = true;
+                ShowSettingsButton = SessionManager.CurrentUser != null;
             }
 
             ShowSearchButton = (e.NewPage as ISupportSearch) != null;

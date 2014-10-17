@@ -1,7 +1,7 @@
 ﻿using MediaBrowser.Model.ApiClient;
-using MediaBrowser.Theater.Interfaces.Configuration;
+using MediaBrowser.Model.Logging;
+using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
-using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Presentation.Pages;
 using System;
@@ -9,59 +9,47 @@ using System.Globalization;
 using System.Threading;
 using System.Windows;
 
-namespace MediaBrowser.Theater.Core.NetworkSettings
+namespace MediaBrowser.UI.StartupWizard
 {
     /// <summary>
-    /// Interaction logic for NetworkSettingsPage.xaml
+    /// Interaction logic for StartupWizardPage3.xaml
     /// </summary>
-    public partial class NetworkSettingsPage : BasePage
+    public partial class StartupPageServerEntry : BasePage
     {
-        private readonly ITheaterConfigurationManager _config;
+        private readonly IPresentationManager _presentation;
+        private readonly INavigationService _nav;
         private readonly IConnectionManager _connectionManager;
-        private readonly IPresentationManager _presentationManager;
-        private readonly ISessionManager _session;
+        private readonly ILogger _logger;
 
         private readonly CultureInfo _usCulture = new CultureInfo("en-US");
 
-        public NetworkSettingsPage(ITheaterConfigurationManager config, ISessionManager session, IPresentationManager presentationManager, IConnectionManager connectionManager)
+        public StartupPageServerEntry(INavigationService nav, IConnectionManager connectionManager, IPresentationManager presentation, ILogger logger)
         {
-            _config = config;
-            _session = session;
-            _presentationManager = presentationManager;
+            _nav = nav;
             _connectionManager = connectionManager;
+            _presentation = presentation;
+            _logger = logger;
             InitializeComponent();
         }
 
-        protected override void OnInitialized(EventArgs e)
+        protected override async void OnInitialized(EventArgs e)
         {
             base.OnInitialized(e);
 
-            BtnApply.Click += BtnApply_Click;
-
-            Loaded += NetworkSettingsPage_Loaded;
-        }
-
-        void NetworkSettingsPage_Loaded(object sender, RoutedEventArgs e)
-        {
             TxtHost.Text = string.Empty;
             TxtPort.Text = string.Empty;
 
-            var apiClient = _session.ActiveApiClient;
-
-            if (!string.IsNullOrEmpty(apiClient.ServerAddress))
-            {
-                var uri = new Uri(apiClient.ServerAddress);
-
-                TxtHost.Text = uri.Host;
-
-                if (!uri.IsDefaultPort)
-                {
-                    TxtPort.Text = uri.Port.ToString(CultureInfo.InvariantCulture);
-                }
-            }
+            Loaded += StartupWizardPage_Loaded;
+            BtnNext.Click += BtnNext_Click;
+            BtnBack.Click += BtnBack_Click;
         }
 
-        async void BtnApply_Click(object sender, RoutedEventArgs e)
+        async void BtnBack_Click(object sender, RoutedEventArgs e)
+        {
+            await _nav.NavigateBack();
+        }
+
+        async void BtnNext_Click(object sender, RoutedEventArgs e)
         {
             if (ValidateInput())
             {
@@ -70,8 +58,6 @@ namespace MediaBrowser.Theater.Core.NetworkSettings
                 {
                     serverAddress += ":" + TxtPort.Text;
                 }
-
-                _presentationManager.ShowModalLoadingAnimation();
 
                 try
                 {
@@ -83,22 +69,10 @@ namespace MediaBrowser.Theater.Core.NetworkSettings
                         return;
                     }
 
-                    _presentationManager.HideModalLoadingAnimation();
-
-                    _presentationManager.ShowMessage(new MessageBoxInfo
-                    {
-                        Button = MessageBoxButton.OK,
-                        Caption = "Connection Confirmed",
-                        Icon = MessageBoxIcon.Information,
-                        Text = "The new server location has been confirmed. Press OK to login."
-                    });
-
-                    await _session.Logout();
+                    App.Instance.NavigateFromConnectionResult(connectionResult);
                 }
                 catch (Exception)
                 {
-                    _presentationManager.HideModalLoadingAnimation();
-
                     ShowUnavailableMessage();
                 }
             }
@@ -106,7 +80,7 @@ namespace MediaBrowser.Theater.Core.NetworkSettings
 
         private void ShowUnavailableMessage()
         {
-            _presentationManager.ShowMessage(new MessageBoxInfo
+            _presentation.ShowMessage(new MessageBoxInfo
             {
                 Button = MessageBoxButton.OK,
                 Caption = "Error",
@@ -115,15 +89,35 @@ namespace MediaBrowser.Theater.Core.NetworkSettings
             });
         }
 
+        void StartupWizardPage_Loaded(object sender, RoutedEventArgs e)
+        {
+            _presentation.SetDefaultPageTitle();
+        }
+
         private bool ValidateInput()
         {
             int port;
 
+            if (string.IsNullOrEmpty(TxtHost.Text))
+            {
+                TxtHost.Focus();
+
+                _presentation.ShowMessage(new MessageBoxInfo
+                {
+                    Button = MessageBoxButton.OK,
+                    Caption = "Error",
+                    Icon = MessageBoxIcon.Error,
+                    Text = "Please enter a valid server address."
+                });
+
+                return false;
+            }
+            
             if (!string.IsNullOrEmpty(TxtPort.Text) && !int.TryParse(TxtPort.Text, NumberStyles.Integer, _usCulture, out port))
             {
                 TxtPort.Focus();
 
-                _presentationManager.ShowMessage(new MessageBoxInfo
+                _presentation.ShowMessage(new MessageBoxInfo
                 {
                     Button = MessageBoxButton.OK,
                     Caption = "Error",

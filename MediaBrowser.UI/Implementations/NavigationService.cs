@@ -158,11 +158,12 @@ namespace MediaBrowser.UI.Implementations
                     await NavigateToVisualLoginPage();
                 }
 
+                return;
             }
             catch
             {
-                 NavigateToManualLoginPage();
             }
+            await NavigateToManualLoginPage();
         }
 
         private Task NavigateToVisualLoginPage()

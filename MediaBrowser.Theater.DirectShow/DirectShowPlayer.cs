@@ -2698,9 +2698,9 @@ namespace MediaBrowser.Theater.DirectShow
                     ? internalStreams.FirstOrDefault(i => i.Type == MediaStreamType.Subtitle && i.IsActive)
                     : null) != null;
                 var activeSubtitlePreference = (hasActiveInternalSubtitleStream ||
-                                                _sessionManager.CurrentUser.Configuration.UseForcedSubtitlesOnly)
+                                                _sessionManager.UserConfiguration.UseForcedSubtitlesOnly)
                     ? String.Empty
-                    : _sessionManager.CurrentUser.Configuration.SubtitleLanguagePreference;
+                    : _sessionManager.UserConfiguration.SubtitleLanguagePreference;
 
                 if (_item != null && _item.MediaStreams != null)
                 {

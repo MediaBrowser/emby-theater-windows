@@ -37,12 +37,43 @@
         </controls:ExtendedScrollViewer>
 
         <Grid Grid.Row="2">
+
+            <Grid.Style>
+                <Style TargetType="{x:Type Grid}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding CurrentItem.Id}" Value="ChangeServer">
+                            <Setter Property="Visibility" Value="Hidden" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding CurrentItem.Id}" Value="Connect">
+                            <Setter Property="Visibility" Value="Hidden" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+            
             <TextBlock Style="{StaticResource Heading1TextBlockStyle}" HorizontalAlignment="Center" Margin="50 0 50 0" Text="{Binding Username}" DataContext="{Binding CurrentItem}" FontFamily="Segoe UI" FontSize="100"></TextBlock>
         </Grid>
         
         <Grid Grid.Row="3">
+
+            <Grid.Style>
+                <Style TargetType="{x:Type Grid}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding CurrentItem.Id}" Value="ChangeServer">
+                            <Setter Property="Visibility" Value="Hidden" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding CurrentItem.Id}" Value="Connect">
+                            <Setter Property="Visibility" Value="Hidden" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+
             <CheckBox x:Name="ChkAutoLogin" HorizontalAlignment="Center" Margin="0 50 0 0">
-                <TextBlock Style="{StaticResource TextBlockStyle}">Remember me</TextBlock>
+                
+                <TextBlock Style="{StaticResource TextBlockStyle}" Text="Remember me">
+                    
+                </TextBlock>
             </CheckBox>
         </Grid>
     </Grid>

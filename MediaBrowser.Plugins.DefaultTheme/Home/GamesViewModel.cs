@@ -143,7 +143,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             try
             {
-                var view = await ApiClient.GetGamesView(_sessionManager.CurrentUser.Id, ParentId, cancellationSource.Token);
+                var view = await ApiClient.GetGamesView(_sessionManager.LocalUserId, ParentId, cancellationSource.Token);
 
                 _gamesView = view;
 
@@ -298,7 +298,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             var displayPreferences = await PresentationManager.GetDisplayPreferences("MultiPlayerGames", CancellationToken.None);
 
-            var playerIndex = await ApiClient.GetGamePlayerIndex(_sessionManager.CurrentUser.Id, CancellationToken.None);
+            var playerIndex = await ApiClient.GetGamePlayerIndex(_sessionManager.LocalUserId, CancellationToken.None);
 
             var indexOptions = playerIndex.Where(i => !string.IsNullOrEmpty(i.Name) && int.Parse(i.Name) > 1).Select(i => new TabItem
             {
@@ -329,7 +329,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 Fields = FolderPage.QueryFields,
 
-                UserId = _sessionManager.CurrentUser.Id,
+                UserId = _sessionManager.LocalUserId,
 
                 IncludeItemTypes = new[] { "Game" },
 
@@ -360,7 +360,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             var displayPreferences = await PresentationManager.GetDisplayPreferences("GameYears", CancellationToken.None);
 
-            var yearIndex = await ApiClient.GetYearIndex(_sessionManager.CurrentUser.Id, new[] { "Game" }, CancellationToken.None);
+            var yearIndex = await ApiClient.GetYearIndex(_sessionManager.LocalUserId, new[] { "Game" }, CancellationToken.None);
 
             var indexOptions = yearIndex.Where(i => !string.IsNullOrEmpty(i.Name)).OrderByDescending(i => i.Name).Select(i => new TabItem
             {
@@ -393,7 +393,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 Fields = FolderPage.QueryFields,
 
-                UserId = _sessionManager.CurrentUser.Id,
+                UserId = _sessionManager.LocalUserId,
 
                 IncludeItemTypes = new[] { "Game" },
 
@@ -453,7 +453,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 IncludeItemTypes = new[] { "Game" },
                 SortBy = new[] { ItemSortBy.SortName },
                 Recursive = true,
-                UserId = _sessionManager.CurrentUser.Id,
+                UserId = _sessionManager.LocalUserId,
                 ParentId = ParentId
 
             });
@@ -487,7 +487,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 Fields = FolderPage.QueryFields,
 
-                UserId = _sessionManager.CurrentUser.Id,
+                UserId = _sessionManager.LocalUserId,
 
                 IncludeItemTypes = new[] { "Game" },
 

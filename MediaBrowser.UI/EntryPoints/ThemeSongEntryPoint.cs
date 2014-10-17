@@ -68,7 +68,7 @@ namespace MediaBrowser.UI.EntryPoints
 
             var itemPage = e.NewPage as ISupportsItemThemeMedia;
 
-            if (itemPage == null || _session.CurrentUser == null || string.IsNullOrEmpty(itemPage.ThemeMediaItemId))
+            if (itemPage == null || _session.LocalUserId == null || string.IsNullOrEmpty(itemPage.ThemeMediaItemId))
             {
                 if (!string.IsNullOrEmpty(_currentPlayingOwnerId) && !(e.NewPage is ISupportsThemeMedia))
                 {
@@ -135,7 +135,7 @@ namespace MediaBrowser.UI.EntryPoints
 
         private async Task<ThemeMediaResult> GetThemeMedia(IApiClient apiClient, string itemId)
         {
-            var themeMediaResult = await apiClient.GetAllThemeMediaAsync(_session.CurrentUser.Id, itemId, true, CancellationToken.None).ConfigureAwait(false);
+            var themeMediaResult = await apiClient.GetAllThemeMediaAsync(_session.LocalUserId, itemId, true, CancellationToken.None).ConfigureAwait(false);
 
             if (themeMediaResult.ThemeVideosResult.Items.Length > 0)
             {

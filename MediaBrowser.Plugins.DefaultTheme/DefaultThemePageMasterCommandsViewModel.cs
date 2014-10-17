@@ -121,11 +121,6 @@ namespace MediaBrowser.Plugins.DefaultTheme
 
         protected async void Logout()
         {
-            if (SessionManager.CurrentUser == null)
-            {
-                throw new InvalidOperationException("The user is not logged in.");
-            }
-
             await SessionManager.Logout();
 
             OnPageNavigated(this, new EventArgs());

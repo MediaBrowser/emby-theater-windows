@@ -1,8 +1,7 @@
-﻿using System;
+﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Presentation.ViewModels;
-using MediaBrowser.Model.ApiClient;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Models
 {
@@ -33,11 +32,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Models
         /// </summary>
         protected override void Logout()
         {
-            if (!string.Equals(User.Id, Session.CurrentUser.Id))
-            {
-                throw new InvalidOperationException("The user is not logged in.");
-            }
-
             MasterCommands.LogoutCommand.Execute(null);
         }
     }

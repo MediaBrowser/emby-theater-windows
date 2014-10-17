@@ -26,6 +26,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using MediaBrowser.UI.StartupWizard;
 using TabItem = MediaBrowser.Theater.Presentation.ViewModels.TabItem;
 
 namespace MediaBrowser.UI.Implementations
@@ -225,39 +226,39 @@ namespace MediaBrowser.UI.Implementations
         /// <returns>DispatcherOperation.</returns>
         public Task NavigateToHomePage()
         {
-             var task = new TaskCompletionSource<bool>();
-             var apiClient = _sessionFactory().ActiveApiClient;
+            var task = new TaskCompletionSource<bool>();
+            var apiClient = _sessionFactory().ActiveApiClient;
 
-             App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(async () =>
-             {
-                 _presentationManager.ShowLoadingAnimation();
-                 try
-                 {
-                     var userId = _sessionFactory().CurrentUser.Id;
+            App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(async () =>
+            {
+                _presentationManager.ShowLoadingAnimation();
+                try
+                {
+                    var userId = _sessionFactory().LocalUserId;
 
-                     var userConfig = _config.GetUserTheaterConfiguration(userId);
+                    var userConfig = _config.GetUserTheaterConfiguration(userId);
 
-                     var homePages = _presentationManager.HomePages.ToList();
+                    var homePages = _presentationManager.HomePages.ToList();
 
-                     var homePage = homePages.FirstOrDefault(i => string.Equals(i.Name, userConfig.HomePage)) ??
-                                          homePages.FirstOrDefault(i => string.Equals(i.Name, "Default")) ??
-                                          homePages.First();
+                    var homePage = homePages.FirstOrDefault(i => string.Equals(i.Name, userConfig.HomePage)) ??
+                                         homePages.FirstOrDefault(i => string.Equals(i.Name, "Default")) ??
+                                         homePages.First();
 
-                     var rootItem = await apiClient.GetRootFolderAsync(userId);
+                    var rootItem = await apiClient.GetRootFolderAsync(userId);
 
-                     await Navigate(homePage.GetHomePage(rootItem));
+                    await Navigate(homePage.GetHomePage(rootItem));
 
-                     //Clear history on home page navigate so that backspace on home page can lead to system options
-                     ClearHistory();
-                 }
-                 finally
-                 {
-                     _presentationManager.HideLoadingAnimation();
-                     task.TrySetResult(true);
-                 }
-             });
+                    //Clear history on home page navigate so that backspace on home page can lead to system options
+                    ClearHistory();
+                }
+                finally
+                {
+                    _presentationManager.HideLoadingAnimation();
+                    task.TrySetResult(true);
+                }
+            });
 
-             return task.Task;
+            return task.Task;
         }
 
         /// <summary>
@@ -289,7 +290,7 @@ namespace MediaBrowser.UI.Implementations
         private async Task NavigateToItemInternal(BaseItemDto item, ViewType context)
         {
             var apiClient = _connectionManager.GetApiClient(item);
-            
+
             // Grab it fresh from the server to make sure we have the full record
             item = await apiClient.GetItemAsync(item.Id, apiClient.CurrentUserId);
 
@@ -343,7 +344,7 @@ namespace MediaBrowser.UI.Implementations
         {
             var apiClient = _sessionFactory().ActiveApiClient;
 
-            var item = await apiClient.GetPersonAsync(name, _sessionFactory().CurrentUser.Id);
+            var item = await apiClient.GetPersonAsync(name, _sessionFactory().LocalUserId);
 
             await App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(async () => await Navigate(_themeManager.CurrentTheme.GetPersonPage(item, context, mediaItemId)));
         }
@@ -356,7 +357,7 @@ namespace MediaBrowser.UI.Implementations
             {
                 Fields = FolderPage.QueryFields,
 
-                UserId = _sessionFactory().CurrentUser.Id,
+                UserId = _sessionFactory().LocalUserId,
 
                 IncludeItemTypes = new[] { "Movie" },
 
@@ -387,7 +388,7 @@ namespace MediaBrowser.UI.Implementations
             {
                 Fields = FolderPage.QueryFields,
 
-                UserId = _sessionFactory().CurrentUser.Id,
+                UserId = _sessionFactory().LocalUserId,
 
                 IncludeItemTypes = new[] { "Series" },
 
@@ -423,7 +424,7 @@ namespace MediaBrowser.UI.Implementations
                 IncludeItemTypes = new[] { includeItemType },
                 SortBy = new[] { ItemSortBy.SortName },
                 Recursive = true,
-                UserId = _sessionFactory().CurrentUser.Id
+                UserId = _sessionFactory().LocalUserId
             });
 
             var indexOptions = genres.Items.Select(i => new TabItem
@@ -549,6 +550,37 @@ namespace MediaBrowser.UI.Implementations
         public Task NavigateToImageViewer(ImageViewerViewModel viewModel)
         {
             return Navigate(new ImageViewerPage(_presentationManager, viewModel));
+        }
+
+
+        public Task NavigateToServerSelection()
+        {
+            var task = new TaskCompletionSource<bool>();
+
+            App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(async () =>
+            {
+
+                await Navigate(new ServerSelectionPage(_connectionManager, _presentationManager, this, _logger));
+
+                task.TrySetResult(true);
+            });
+
+            return task.Task;
+        }
+
+        public Task NavigateToConnectLogin()
+        {
+            var task = new TaskCompletionSource<bool>();
+
+            App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(async () =>
+            {
+
+                await Navigate(new StartupWizardPage2(this, _connectionManager, _presentationManager, _logger));
+
+                task.TrySetResult(true);
+            });
+
+            return task.Task;
         }
     }
 }

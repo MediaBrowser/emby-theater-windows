@@ -138,7 +138,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             try
             {
-                var view = await ApiClient.GetTvView(_sessionManager.CurrentUser.Id, ParentId, cancellationSource.Token);
+                var view = await ApiClient.GetTvView(_sessionManager.LocalUserId, ParentId, cancellationSource.Token);
 
                 _tvView = view;
 
@@ -358,7 +358,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 IncludeItemTypes = new[] { "Series" },
                 SortBy = new[] { ItemSortBy.SortName },
                 Recursive = true,
-                UserId = _sessionManager.CurrentUser.Id,
+                UserId = _sessionManager.LocalUserId,
                 ParentId = ParentId
 
             });
@@ -428,7 +428,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 Fields = FolderPage.QueryFields,
 
-                UserId = _sessionManager.CurrentUser.Id,
+                UserId = _sessionManager.LocalUserId,
 
                 IncludeItemTypes = new[] { "Series" },
 
@@ -466,7 +466,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 Fields = FolderPage.QueryFields,
 
-                UserId = _sessionManager.CurrentUser.Id,
+                UserId = _sessionManager.LocalUserId,
 
                 IncludeItemTypes = new[] { "Series" },
 

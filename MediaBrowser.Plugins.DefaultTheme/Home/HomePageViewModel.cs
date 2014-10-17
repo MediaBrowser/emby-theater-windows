@@ -46,7 +46,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         {
             var apiClient = _sessionManager.ActiveApiClient;
 
-            var userViews = await apiClient.GetUserViews(_sessionManager.CurrentUser.Id, CancellationToken.None);
+            var userViews = await apiClient.GetUserViews(_sessionManager.LocalUserId, CancellationToken.None);
 
             var views = userViews.Items.Select(i =>
             {
@@ -254,7 +254,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             var query = new ChannelQuery
             {
-                UserId = _sessionManager.CurrentUser.Id
+                UserId = _sessionManager.LocalUserId
             };
 
             var result = await apiClient.GetChannels(query, CancellationToken.None);
@@ -279,7 +279,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                             ItemFields.DisplayPreferencesId
                         },
 
-                UserId = _sessionManager.CurrentUser.Id,
+                UserId = _sessionManager.LocalUserId,
 
                 SortBy = new[] { ItemSortBy.SortName },
 

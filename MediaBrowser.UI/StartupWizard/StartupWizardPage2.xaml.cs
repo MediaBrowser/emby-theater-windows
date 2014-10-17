@@ -161,6 +161,8 @@ namespace MediaBrowser.UI.StartupWizard
             try
             {
                 await _connectionManager.ExchangePin(_pinResult).ConfigureAwait(false);
+
+                GoNext();
             }
             catch (Exception)
             {

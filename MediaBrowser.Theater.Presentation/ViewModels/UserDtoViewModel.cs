@@ -42,7 +42,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         protected virtual async void Logout()
         {
-            if (Session.CurrentUser == null || !string.Equals(User.Id, Session.CurrentUser.Id))
+            if (Session.LocalUserId == null || !string.Equals(User.Id, Session.LocalUserId))
             {
                 throw new InvalidOperationException("The user is not logged in.");
             }
@@ -50,6 +50,11 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             await Session.Logout();
         }
 
+        public string Id
+        {
+            get { return _item == null ? null : _item.Id; }
+        }
+        
         public string Username
         {
             get { return _item == null ? null : _item.Name; }
@@ -71,6 +76,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 {
                     OnPropertyChanged("User");
                     OnPropertyChanged("Username");
+                    OnPropertyChanged("Id");
                 }
             }
         }

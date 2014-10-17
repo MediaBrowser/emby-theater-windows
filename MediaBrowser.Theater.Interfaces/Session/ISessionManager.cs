@@ -1,4 +1,5 @@
 ﻿using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Configuration;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Theater.Interfaces.Configuration;
 using System;
@@ -25,6 +26,36 @@ namespace MediaBrowser.Theater.Interfaces.Session
         /// </summary>
         /// <value>The current user.</value>
         UserDto CurrentUser { get; }
+
+        /// <summary>
+        /// Gets or sets the local user identifier.
+        /// </summary>
+        /// <value>The local user identifier.</value>
+        string LocalUserId { get; }
+
+        /// <summary>
+        /// Gets or sets the connect user identifier.
+        /// </summary>
+        /// <value>The connect user identifier.</value>
+        string ConnectUserId { get; }
+
+        /// <summary>
+        /// Gets or sets the name of the user.
+        /// </summary>
+        /// <value>The name of the user.</value>
+        string UserName { get; }
+
+        /// <summary>
+        /// Gets or sets the user image URL.
+        /// </summary>
+        /// <value>The user image URL.</value>
+        string UserImageUrl { get; }
+
+        /// <summary>
+        /// Gets or sets the user configuration.
+        /// </summary>
+        /// <value>The user configuration.</value>
+        UserConfiguration UserConfiguration { get; }
 
         /// <summary>
         /// Logouts this instance.

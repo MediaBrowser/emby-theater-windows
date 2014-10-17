@@ -156,7 +156,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
         {
             var items = await _apiClient.GetItemsAsync(new ItemQuery
             {
-                UserId = _session.CurrentUser.Id,
+                UserId = _session.LocalUserId,
                 ImageTypes = new[] { ImageType.Primary },
                 IncludeItemTypes = new[] { "Photo" },
                 Fields = new[] { ItemFields.PrimaryImageAspectRatio },

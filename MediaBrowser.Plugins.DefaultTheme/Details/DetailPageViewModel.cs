@@ -690,7 +690,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
             var query = new ItemQuery
             {
-                UserId = _sessionManager.CurrentUser.Id,
+                UserId = _sessionManager.LocalUserId,
                 Fields = new[]
                         {
                                  ItemFields.PrimaryImageAspectRatio,
@@ -751,7 +751,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
             try
             {
-                return await _apiClient.GetAllThemeMediaAsync(_sessionManager.CurrentUser.Id, item.Id, false, CancellationToken.None);
+                return await _apiClient.GetAllThemeMediaAsync(_sessionManager.LocalUserId, item.Id, false, CancellationToken.None);
             }
             catch
             {
@@ -777,7 +777,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
             var query = new SimilarItemsQuery
             {
-                UserId = _sessionManager.CurrentUser.Id,
+                UserId = _sessionManager.LocalUserId,
                 Limit = item.IsGame || item.IsType("musicalbum") ? 6 : 12,
                 Fields = new[]
                         {
@@ -815,7 +815,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
             var query = new ItemQuery
             {
-                UserId = _sessionManager.CurrentUser.Id,
+                UserId = _sessionManager.LocalUserId,
                 Fields = new[]
                         {
                                  ItemFields.PrimaryImageAspectRatio,
@@ -832,7 +832,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
         {
             var item = ItemViewModel.Item;
 
-            var items = await _apiClient.GetLocalTrailersAsync(_sessionManager.CurrentUser.Id, item.Id);
+            var items = await _apiClient.GetLocalTrailersAsync(_sessionManager.LocalUserId, item.Id);
 
             return new ItemsResult
             {
@@ -847,7 +847,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
             var query = new ItemQuery
             {
-                UserId = _sessionManager.CurrentUser.Id,
+                UserId = _sessionManager.LocalUserId,
                 Fields = new[]
                         {
                                  ItemFields.PrimaryImageAspectRatio,
@@ -867,7 +867,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
             var query = new SeasonQuery
             {
-                UserId = _sessionManager.CurrentUser.Id,
+                UserId = _sessionManager.LocalUserId,
                 Fields = new[]
                         {
                                  ItemFields.PrimaryImageAspectRatio,
@@ -884,7 +884,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
         {
             return _apiClient.GetEpisodesAsync(new EpisodeQuery
             {
-                UserId = _sessionManager.CurrentUser.Id,
+                UserId = _sessionManager.LocalUserId,
                 Fields = new[]
                         {
                                  ItemFields.PrimaryImageAspectRatio,
@@ -903,7 +903,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
             var query = new ItemQuery
             {
-                UserId = _sessionManager.CurrentUser.Id,
+                UserId = _sessionManager.LocalUserId,
                 Fields = new[]
                         {
                                  ItemFields.PrimaryImageAspectRatio,
@@ -925,7 +925,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
         {
             var item = ItemViewModel.Item;
 
-            var items = await _apiClient.GetSpecialFeaturesAsync(_sessionManager.CurrentUser.Id, item.Id);
+            var items = await _apiClient.GetSpecialFeaturesAsync(_sessionManager.LocalUserId, item.Id);
 
             return new ItemsResult
             {

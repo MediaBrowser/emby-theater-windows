@@ -368,7 +368,7 @@ namespace MediaBrowser.UI.EntryPoints
         async void _apiWebSocket_PlayCommand(object sender, GenericEventArgs<PlayRequest> e)
         {
             _logger.Debug("_apiWebSocket_PlayCommand {0} {1}", e.Argument.ItemIds, e.Argument.StartPositionTicks);
-            if (_sessionManager.CurrentUser == null)
+            if (_sessionManager.LocalUserId == null)
             {
                 OnAnonymousRemoteControlCommand();
                 return;
@@ -381,7 +381,7 @@ namespace MediaBrowser.UI.EntryPoints
                 var result = await apiClient.GetItemsAsync(new ItemQuery
                 {
                     Ids = e.Argument.ItemIds,
-                    UserId = _sessionManager.CurrentUser.Id,
+                    UserId = _sessionManager.LocalUserId,
 
                     Fields = new[]
                     {
@@ -413,7 +413,7 @@ namespace MediaBrowser.UI.EntryPoints
 
             _logger.Debug("_apiWebSocket_PlaystateCommand {0} {1}", request.Command, request.SeekPositionTicks);
 
-            if (_sessionManager.CurrentUser == null)
+            if (_sessionManager.LocalUserId == null)
             {
                 OnAnonymousRemoteControlCommand();
                 return;
@@ -459,7 +459,7 @@ namespace MediaBrowser.UI.EntryPoints
 
         async void _apiWebSocket_UserDeleted(object sender, GenericEventArgs<string> e)
         {
-            if (_sessionManager.CurrentUser != null && string.Equals(e.Argument, _sessionManager.CurrentUser.Id))
+            if (_sessionManager.LocalUserId != null && string.Equals(e.Argument, _sessionManager.LocalUserId))
             {
                 await _sessionManager.Logout();
             }
@@ -467,7 +467,7 @@ namespace MediaBrowser.UI.EntryPoints
 
         async void _apiWebSocket_BrowseCommand(object sender, GenericEventArgs<BrowseRequest> e)
         {
-            if (_sessionManager.CurrentUser == null)
+            if (_sessionManager.LocalUserId == null)
             {
                 OnAnonymousRemoteControlCommand();
                 return;

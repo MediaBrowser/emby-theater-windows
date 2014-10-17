@@ -40,7 +40,12 @@ namespace MediaBrowser.Theater.Core.Login
         {
             base.OnInitialized(e);
 
-            DataContext = new UserListViewModel(PresentationManager, ConnectionManager, ImageManager, SessionManager, NavigationManager);
+            DataContext = new UserListViewModel(PresentationManager, ConnectionManager, ImageManager, SessionManager,
+                NavigationManager)
+            {
+                AddMediaBrowserConnectEntry = true,
+                AddSwitchServerEntry = true
+            };
 
             LstUsers.ItemInvoked += ItemsList_ItemInvoked;
             Loaded += LoginPage_Loaded;
@@ -61,6 +66,18 @@ namespace MediaBrowser.Theater.Core.Login
             var model = (UserDtoViewModel)e.Argument;
             var user = model.User;
 
+            if (user.Id == "ChangeServer")
+            {
+                await NavigationManager.NavigateToServerSelection();
+                return;
+            }
+
+            if (user.Id == "Connect")
+            {
+                await NavigationManager.NavigateToConnectLogin();
+                return;
+            }
+            
             if (user.HasPassword)
             {
                 await NavigationManager.Navigate(new ManualLoginPage(user.Name, ChkAutoLogin.IsChecked, SessionManager, PresentationManager));

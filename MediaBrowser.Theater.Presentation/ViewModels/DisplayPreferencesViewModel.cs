@@ -32,7 +32,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             _presentation = presentation;
             _configurationManager = configurationManager;
             _sessionManager = sessionManager;
-            _userConfig = configurationManager.GetUserTheaterConfiguration(sessionManager.CurrentUser.Id);
+            _userConfig = configurationManager.GetUserTheaterConfiguration(sessionManager.LocalUserId);
 
             SaveCommand = new RelayCommand(obj => Save());
             IncreaseImageSizeCommand = new RelayCommand(obj => IncreaseImageSize());
@@ -159,7 +159,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 {
                     DisplayPreferences.RememberSorting = false;
 
-                    await _configurationManager.UpdateUserTheaterConfiguration(_sessionManager.CurrentUser.Id, _userConfig);
+                    await _configurationManager.UpdateUserTheaterConfiguration(_sessionManager.LocalUserId, _userConfig);
                     await _presentation.UpdateDisplayPreferences(DisplayPreferences, CancellationToken.None);
                 }    
             }

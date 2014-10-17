@@ -39,6 +39,18 @@ namespace MediaBrowser.Theater.Interfaces.Navigation
         Task NavigateToSettingsPage();
 
         /// <summary>
+        /// Navigates to server selection.
+        /// </summary>
+        /// <returns>Task.</returns>
+        Task NavigateToServerSelection();
+
+        /// <summary>
+        /// Navigates to connect login.
+        /// </summary>
+        /// <returns>Task.</returns>
+        Task NavigateToConnectLogin();
+        
+        /// <summary>
         /// Navigates to login page.
         /// </summary>
         Task NavigateToLoginPage();

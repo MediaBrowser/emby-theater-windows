@@ -163,7 +163,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
             {
                 return GetChannelItems(apiClient, new ChannelItemQuery
                 {
-                    UserId = _sessionManager.CurrentUser.Id,
+                    UserId = _sessionManager.LocalUserId,
                     ChannelId = item.IsType("channel") ? item.Id : item.ChannelId,
                     FolderId = item.IsType("channel") ? null : item.Id,
                     Fields = FolderPage.QueryFields
@@ -259,7 +259,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
                     {
                         return apiClient.GetSeasonsAsync(new SeasonQuery
                         {
-                            UserId = _sessionManager.CurrentUser.Id,
+                            UserId = _sessionManager.LocalUserId,
                             SeriesId = item.Id,
                             Fields = FolderPage.QueryFields
                         }, CancellationToken.None);
@@ -270,7 +270,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
                     {
                         return apiClient.GetEpisodesAsync(new EpisodeQuery
                         {
-                            UserId = _sessionManager.CurrentUser.Id,
+                            UserId = _sessionManager.LocalUserId,
                             SeriesId = item.SeriesId,
                             SeasonId = item.Id,
                             Fields = FolderPage.QueryFields
@@ -279,7 +279,7 @@ namespace MediaBrowser.Plugins.DefaultTheme
 
                     var query = new ItemQuery
                     {
-                        UserId = _sessionManager.CurrentUser.Id,
+                        UserId = _sessionManager.LocalUserId,
 
                         ParentId = item.Id,
 

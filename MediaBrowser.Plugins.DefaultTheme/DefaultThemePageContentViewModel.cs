@@ -1,6 +1,5 @@
 ﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
-using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Interfaces;
 using MediaBrowser.Theater.Interfaces.Configuration;
@@ -53,39 +52,16 @@ namespace MediaBrowser.Plugins.DefaultTheme
 
         private void UpdateUserConfiguredValues()
         {
-            var config = _config.GetUserTheaterConfiguration(SessionManager.CurrentUser.Id);
+            var config = _config.GetUserTheaterConfiguration(SessionManager.LocalUserId);
 
             ShowBackButton = config.ShowBackButton;
         }
 
         private async void UpdateUserImage()
         {
-            var user = SessionManager.CurrentUser;
+            UserImageUrl = SessionManager.UserImageUrl;
 
-            if (user.HasPrimaryImage)
-            {
-                var apiClient = SessionManager.ActiveApiClient;
-
-                var imageUrl = apiClient.GetUserImageUrl(user, new ImageOptions
-                {
-                    ImageType = ImageType.Primary
-                });
-
-                try
-                {
-                    UserImage = await _imageManager.GetRemoteBitmapAsync(imageUrl);
-
-                    ShowDefaultUserImage = false;
-                }
-                catch (Exception ex)
-                {
-                    ShowDefaultUserImage = true;
-                }
-            }
-            else
-            {
-                ShowDefaultUserImage = true;
-            }
+            ShowDefaultUserImage = string.IsNullOrEmpty(UserImageUrl);
         }
 
         void NavigationService_Navigated(object sender, NavigationEventArgs e)
@@ -119,16 +95,16 @@ namespace MediaBrowser.Plugins.DefaultTheme
             ShowSearchButton = (e.NewPage as ISupportSearch) != null;
         }
 
-        private BitmapImage _userImage;
-        public BitmapImage UserImage
+        private string _userImageUrl;
+        public string UserImageUrl
         {
-            get { return _userImage; }
+            get { return _userImageUrl; }
 
             set
             {
-                _userImage = value;
+                _userImageUrl = value;
 
-                OnPropertyChanged("UserImage");
+                OnPropertyChanged("UserImageUrl");
             }
         }
 

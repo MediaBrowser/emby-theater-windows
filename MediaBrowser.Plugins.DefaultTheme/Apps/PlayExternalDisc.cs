@@ -38,7 +38,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Apps
         public IEnumerable<IApp> GetApps()
         {
             // dont return an app if we dont have a cdrom dive or if we are configured not to show
-            var conf = _theaterConfigurationManager.GetUserTheaterConfiguration(_sessionManager.CurrentUser.Id);
+            var conf = _theaterConfigurationManager.GetUserTheaterConfiguration(_sessionManager.LocalUserId);
 
             if (conf.ShowExternalDiscApp && SystemHasCdRom())
                 return new List<IApp> { new PlayExternalDiscApp(_playbackManager, _imageManager, _logManager) };

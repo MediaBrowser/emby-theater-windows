@@ -88,9 +88,9 @@ namespace MediaBrowser.Theater.Implementations.Presentation
 
         private void SetDefaultCurrentScreenSaverName()
         {
-            if (_session.CurrentUser != null)
+            if (_session.LocalUserId != null)
             {
-                var conf = _theaterConfigurationManager.GetUserTheaterConfiguration(_session.CurrentUser.Id);
+                var conf = _theaterConfigurationManager.GetUserTheaterConfiguration(_session.LocalUserId);
                 CurrentScreensaverName = conf != null ? conf.Screensaver : "Backdrop";
             }
             else
@@ -224,7 +224,7 @@ namespace MediaBrowser.Theater.Implementations.Presentation
 
         private IScreensaverFactory GetSelectedScreensaverFactory(string overRideScreenSaverName)
         {
-            var screensaverName = _session.CurrentUser == null ? "Logo" : overRideScreenSaverName ?? CurrentScreensaverName;
+            var screensaverName = _session.LocalUserId == null ? "Logo" : overRideScreenSaverName ?? CurrentScreensaverName;
 
             return ScreensaverFactories.FirstOrDefault(i => string.Equals(i.Name, screensaverName));
         }

@@ -319,9 +319,9 @@ namespace MediaBrowser.UI
         {
             PlaybackManager.StopAllPlayback();
 
-            if (!TheaterConfigurationManager.Configuration.RememberLogin && SessionManager.CurrentUser != null)
+            if (!TheaterConfigurationManager.Configuration.RememberLogin)
             {
-                await ConnectionManager.Logout();
+                await SessionManager.Logout();
             }
         }
 

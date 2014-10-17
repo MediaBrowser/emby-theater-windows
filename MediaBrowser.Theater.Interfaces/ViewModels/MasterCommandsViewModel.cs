@@ -132,12 +132,12 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
 
         public void RefreshRestartApplicationNotification()
         {
-            Dispatcher.InvokeAsync(() => ShowRestartApplicationNotification = AppHost.HasPendingRestart && SessionManager.CurrentUser != null);
+            Dispatcher.InvokeAsync(() => ShowRestartApplicationNotification = AppHost.HasPendingRestart && SessionManager.LocalUserId != null);
         }
 
         public void RefreshRestartServerNotification()
         {
-            Dispatcher.InvokeAsync(() => ShowRestartServerNotification = _serverHasPendingRestart && SessionManager.CurrentUser != null && SessionManager.CurrentUser.Configuration.IsAdministrator);
+            Dispatcher.InvokeAsync(() => ShowRestartServerNotification = _serverHasPendingRestart && SessionManager.LocalUserId != null && SessionManager.CurrentUser.Configuration.IsAdministrator);
         }
 
         public void Dispose()
@@ -220,7 +220,7 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
 
         protected void RefreshHomeButton(Page currentPage)
         {
-            HomeEnabled = SessionManager.CurrentUser != null && !(currentPage is IHomePage) && !(currentPage is ILoginPage);
+            HomeEnabled = SessionManager.LocalUserId != null && !(currentPage is IHomePage) && !(currentPage is ILoginPage);
         }
 
         protected virtual void OnPageNavigated(object sender, EventArgs e)

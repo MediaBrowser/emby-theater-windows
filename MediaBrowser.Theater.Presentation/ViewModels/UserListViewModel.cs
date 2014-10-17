@@ -1,4 +1,6 @@
-﻿using MediaBrowser.Model.ApiClient;
+﻿using System.Collections.Generic;
+using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Dto;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Reflection;
@@ -21,7 +23,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
         private readonly RangeObservableCollection<UserDtoViewModel> _listItems =
             new RangeObservableCollection<UserDtoViewModel>();
-        
+
         private ListCollectionView _listCollectionView;
         public ListCollectionView ListCollectionView
         {
@@ -67,6 +69,9 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
+        public bool AddMediaBrowserConnectEntry { get; set; }
+        public bool AddSwitchServerEntry { get; set; }
+
         public UserListViewModel(IPresentationManager presentationManager, IConnectionManager connectionManager, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigation)
         {
             SessionManager = sessionManager;
@@ -110,11 +115,37 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 {
                     ListCollectionView.MoveCurrentToPosition(selectedIndex.Value);
                 }
+
+                AddCustomEntries();
             }
             catch (Exception)
             {
                 PresentationManager.ShowDefaultErrorMessage();
             }
+        }
+
+        private void AddCustomEntries()
+        {
+            var list = new List<UserDto>();
+
+            if (AddMediaBrowserConnectEntry)
+            {
+                list.Add(new UserDto
+                {
+                    Name = "Sign in with Media Browser Connect",
+                    Id = "Connect"
+                });
+            }
+            if (AddSwitchServerEntry)
+            {
+                list.Add(new UserDto
+                {
+                    Name = "Change Server",
+                    Id = "ChangeServer"
+                });
+            }
+
+            _listItems.AddRange(list.Select(i => new UserDtoViewModel(SessionManager.ActiveApiClient, ImageManager, SessionManager) { User = i }));
         }
 
         void ListCollectionViewCurrentChanged(object sender, EventArgs e)

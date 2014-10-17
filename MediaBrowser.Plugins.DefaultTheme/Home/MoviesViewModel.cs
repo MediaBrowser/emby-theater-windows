@@ -133,7 +133,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             try
             {
-                var view = await ApiClient.GetMovieView(_sessionManager.CurrentUser.Id, ParentId, cancellationSource.Token);
+                var view = await ApiClient.GetMovieView(_sessionManager.LocalUserId, ParentId, cancellationSource.Token);
 
                 _moviesView = view;
 
@@ -330,7 +330,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 IncludeItemTypes = new[] { "Movie" },
                 SortBy = new[] { ItemSortBy.SortName },
                 Recursive = true,
-                UserId = _sessionManager.CurrentUser.Id,
+                UserId = _sessionManager.LocalUserId,
                 ParentId = ParentId
 
             });
@@ -364,7 +364,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             var displayPreferences = await PresentationManager.GetDisplayPreferences("MovieYears", CancellationToken.None);
 
-            var yearIndex = await ApiClient.GetYearIndex(_sessionManager.CurrentUser.Id, new[] { "Movie" }, CancellationToken.None);
+            var yearIndex = await ApiClient.GetYearIndex(_sessionManager.LocalUserId, new[] { "Movie" }, CancellationToken.None);
 
             var indexOptions = yearIndex.Where(i => !string.IsNullOrEmpty(i.Name)).OrderByDescending(i => i.Name).Select(i => new TabItem
             {
@@ -415,7 +415,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             var displayPreferences = await PresentationManager.GetDisplayPreferences("Movies", CancellationToken.None);
 
-            var view = _moviesView ?? await ApiClient.GetMovieView(_sessionManager.CurrentUser.Id, ParentId, CancellationToken.None);
+            var view = _moviesView ?? await ApiClient.GetMovieView(_sessionManager.LocalUserId, ParentId, CancellationToken.None);
 
             var tabs = new List<TabItem>();
 
@@ -513,7 +513,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 Fields = FolderPage.QueryFields,
 
-                UserId = _sessionManager.CurrentUser.Id,
+                UserId = _sessionManager.LocalUserId,
 
                 IncludeItemTypes = new[] { "Movie" },
 
@@ -620,7 +620,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 Fields = FolderPage.QueryFields,
 
-                UserId = _sessionManager.CurrentUser.Id,
+                UserId = _sessionManager.LocalUserId,
 
                 IncludeItemTypes = new[] { "Movie" },
 
@@ -651,7 +651,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             {
                 Fields = FolderPage.QueryFields,
 
-                UserId = _sessionManager.CurrentUser.Id,
+                UserId = _sessionManager.LocalUserId,
 
                 IncludeItemTypes = new[] { "Movie" },
 

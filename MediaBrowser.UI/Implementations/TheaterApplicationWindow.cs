@@ -288,8 +288,8 @@ namespace MediaBrowser.UI.Implementations
         {
             var apiClient = _sessionFactory().ActiveApiClient;
 
-            var displayPreferences = await apiClient.GetDisplayPreferencesAsync(displayPreferencesId, _sessionFactory().CurrentUser.Id, "MBT-" + _themeManager.CurrentTheme.Name, cancellationToken);
-            var userConfig = _configurationManager.GetUserTheaterConfiguration(_sessionFactory().CurrentUser.Id);
+            var displayPreferences = await apiClient.GetDisplayPreferencesAsync(displayPreferencesId, _sessionFactory().LocalUserId, "MBT-" + _themeManager.CurrentTheme.Name, cancellationToken);
+            var userConfig = _configurationManager.GetUserTheaterConfiguration(_sessionFactory().LocalUserId);
 
             //Reset to name ascending if config option is turned off
             if (!userConfig.RememberSortOrder)
@@ -305,7 +305,7 @@ namespace MediaBrowser.UI.Implementations
         {
             var apiClient = _sessionFactory().ActiveApiClient;
 
-            return apiClient.UpdateDisplayPreferencesAsync(displayPreferences, _sessionFactory().CurrentUser.Id, "MBT-" + _themeManager.CurrentTheme.Name, cancellationToken);
+            return apiClient.UpdateDisplayPreferencesAsync(displayPreferences, _sessionFactory().LocalUserId, "MBT-" + _themeManager.CurrentTheme.Name, cancellationToken);
         }
 
         private LoadingWindow _loadingWindow;

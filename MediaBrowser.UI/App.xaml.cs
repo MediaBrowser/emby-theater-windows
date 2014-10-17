@@ -540,12 +540,12 @@ namespace MediaBrowser.UI
 
             else if (result.State == ConnectionState.ServerSelection)
             {
-                await Dispatcher.InvokeAsync(async () => await _appHost.NavigationService.Navigate(new ServerSelectionPage(_appHost.ConnectionManager, _appHost.PresentationManager, result.Servers)));
+                await Dispatcher.InvokeAsync(async () => await _appHost.NavigationService.Navigate(new ServerSelectionPage(_appHost.ConnectionManager, _appHost.PresentationManager, result.Servers, _appHost.NavigationService, _logger)));
             }
 
             else if (result.State == ConnectionState.ServerSignIn)
             {
-                //await Dispatcher.InvokeAsync(async () => await _appHost.NavigationService.Navigate(new ServerSelectionPage(_appHost.ConnectionManager, _appHost.PresentationManager, result.Servers)));
+                //await Dispatcher.InvokeAsync(async () => await _appHost.NavigationService.Navigate(new ServerSelectionPage(_appHost.ConnectionManager, _appHost.PresentationManager, result.Servers, _appHost.NavigationService, _logger)));
                 await _appHost.NavigationService.NavigateToLoginPage();
             }
 

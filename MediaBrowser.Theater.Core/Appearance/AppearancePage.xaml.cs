@@ -142,7 +142,7 @@ namespace MediaBrowser.Theater.Core.Appearance
 
         private void LoadConfiguration()
         {
-            var userConfig = _config.GetUserTheaterConfiguration(_session.CurrentUser.Id);
+            var userConfig = _config.GetUserTheaterConfiguration(_session.LocalUserId);
 
             var homePageOption = SelectHomePage.Options.FirstOrDefault(i => string.Equals(i.Text, userConfig.HomePage, StringComparison.OrdinalIgnoreCase)) ??
                 SelectHomePage.Options.FirstOrDefault(i => string.Equals(i.Text, "Default")) ??
@@ -169,7 +169,7 @@ namespace MediaBrowser.Theater.Core.Appearance
 
         private async Task SaveConfiguration()
         {
-            var userConfig = _config.GetUserTheaterConfiguration(_session.CurrentUser.Id);
+            var userConfig = _config.GetUserTheaterConfiguration(_session.LocalUserId);
 
             userConfig.HomePage = SelectHomePage.SelectedValue;
             userConfig.Theme = SelectTheme.SelectedValue;
@@ -177,7 +177,7 @@ namespace MediaBrowser.Theater.Core.Appearance
             userConfig.ShowBackButton = ChkShowBackButton.IsChecked ?? false;
             userConfig.ShowExternalDiscApp = ChkShowExternalDiscApp.IsChecked ?? false;
 
-            await _config.UpdateUserTheaterConfiguration(_session.CurrentUser.Id, userConfig);
+            await _config.UpdateUserTheaterConfiguration(_session.LocalUserId, userConfig);
         }
     }
 }

@@ -1,5 +1,7 @@
 ﻿using MediaBrowser.Common.Events;
 using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Configuration;
+using MediaBrowser.Model.Connect;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Net;
@@ -47,6 +49,7 @@ namespace MediaBrowser.Theater.Implementations.Session
         }
 
         public UserDto CurrentUser { get; private set; }
+        public ConnectUser ConnectUser { get; private set; }
 
         public IApiClient ActiveApiClient
         {
@@ -117,6 +120,60 @@ namespace MediaBrowser.Theater.Implementations.Session
             await _navService.NavigateToHomePage();
 
             _navService.ClearHistory();
+        }
+
+
+        public string LocalUserId
+        {
+            get { return CurrentUser == null ? null : CurrentUser.Id; }
+        }
+
+        public string ConnectUserId
+        {
+            get { return ConnectUser == null ? null : ConnectUser.Id; }
+        }
+
+        public string UserName
+        {
+            get
+            {
+                return CurrentUser == null ?
+                    (ConnectUser == null ? null : ConnectUser.Name) :
+                    CurrentUser.Name;
+            }
+        }
+
+        public string UserImageUrl
+        {
+            get
+            {
+                return CurrentUser == null ?
+                    (ConnectUser == null ? null : ConnectUser.ImageUrl) :
+                    GetLocalUserImageUrl();
+            }
+        }
+
+        public UserConfiguration UserConfiguration
+        {
+            get
+            {
+                return CurrentUser == null ?
+                    (ConnectUser == null ? null : new UserConfiguration()) : 
+                    CurrentUser.Configuration;
+            }
+        }
+
+        private string GetLocalUserImageUrl()
+        {
+            if (CurrentUser != null && CurrentUser.HasPrimaryImage)
+            {
+                return ActiveApiClient.GetUserImageUrl(CurrentUser, new ImageOptions
+                {
+                     
+                });
+            }
+
+            return null;
         }
     }
 }

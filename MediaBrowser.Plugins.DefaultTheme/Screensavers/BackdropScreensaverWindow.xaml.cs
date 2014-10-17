@@ -63,7 +63,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
 
             var items = await apiClient.GetItemsAsync(new ItemQuery
             {
-                UserId = _session.CurrentUser.Id,
+                UserId = _session.LocalUserId,
                 ImageTypes = new[] { ImageType.Backdrop },
                 IncludeItemTypes = new[] { "Movie", "Boxset", "Trailer", "Game", "Series", "MusicArtist" },
                 Limit = 1000,

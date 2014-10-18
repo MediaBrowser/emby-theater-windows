@@ -552,7 +552,10 @@ namespace MediaBrowser.UI.Implementations
             return Navigate(new ImageViewerPage(_presentationManager, viewModel));
         }
 
-
+        /// <summary>
+        /// Navigates to server selection.
+        /// </summary>
+        /// <returns>Task.</returns>
         public Task NavigateToServerSelection()
         {
             var task = new TaskCompletionSource<bool>();
@@ -568,6 +571,10 @@ namespace MediaBrowser.UI.Implementations
             return task.Task;
         }
 
+        /// <summary>
+        /// Navigates to connect login.
+        /// </summary>
+        /// <returns>Task.</returns>
         public Task NavigateToConnectLogin()
         {
             var task = new TaskCompletionSource<bool>();

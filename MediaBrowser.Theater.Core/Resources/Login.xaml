@@ -13,6 +13,10 @@
                             <DataTrigger Binding="{Binding HasImage}" Value="True">
                                 <Setter Property="Visibility" Value="Collapsed" />
                             </DataTrigger>
+                            <DataTrigger Binding="{Binding Id}" Value="Connect">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Setter Property="Background" Value="Black" />
+                            </DataTrigger>
                         </Style.Triggers>
                     </Style>
                 </Grid.Style>
@@ -42,6 +46,21 @@
                     </Path.Style>
                 </Path>
             </Grid>
+
+            <Image Stretch="Uniform" Source="Images/logo.png" VerticalAlignment="Top">
+                <Image.Style>
+                    <Style TargetType="{x:Type Image}">
+
+                        <Setter Property="Visibility" Value="Collapsed" />
+                        
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Id}" Value="Connect">
+                                <Setter Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Image.Style>
+            </Image>
 
             <Image Stretch="Uniform" Source="{Binding Image}" VerticalAlignment="Bottom">
                 <Image.Style>

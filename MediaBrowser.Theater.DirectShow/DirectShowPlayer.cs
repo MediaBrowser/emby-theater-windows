@@ -511,14 +511,14 @@ namespace MediaBrowser.Theater.DirectShow
                             if (!string.IsNullOrWhiteSpace(_mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.PreferredSubtitleLanguages))
                             {
                                 _logger.Debug("Set preferred subs lang: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.PreferredSubtitleLanguages);
-                                hr = lss.SetPreferredLanguages(_mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.PreferredSubtitleLanguages);
+                                hr = lss.SetPreferredSubtitleLanguages(_mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.PreferredSubtitleLanguages);
                                 DsError.ThrowExceptionForHR(hr);
                             }
 
                             if (!string.IsNullOrWhiteSpace(_mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.AdvancedSubtitleConfig))
                             {
                                 _logger.Debug("Set preferred subs lang: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.AdvancedSubtitleConfig);
-                                hr = lss.SetPreferredLanguages(_mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.AdvancedSubtitleConfig);
+                                hr = lss.SetAdvancedSubtitleConfig(_mbtConfig.Configuration.InternalPlayerConfiguration.SplitterConfig.AdvancedSubtitleConfig);
                                 DsError.ThrowExceptionForHR(hr);
                             }
 
@@ -828,43 +828,46 @@ namespace MediaBrowser.Theater.DirectShow
                     InitializeEvr(_mPEvr, _isDvd ? 2 : 1);
                 }
 
-                // Load xySubFilter if configured and if madvr succeeded
-                if (enableXySubFilter && (madVrSucceded || _customEvrPresenterLoaded))
+                if (enableXySubFilter) //this flag indicates whether we should handle subtitle rendering
                 {
-                    try
+                    // Load xySubFilter if configured and if madvr succeeded
+                    if (madVrSucceded || _customEvrPresenterLoaded)
                     {
-                        _xySubFilter = _playerWrapper.PrivateCom.GetObject(typeof (XySubFilter).GUID, true); //new XySubFilter();
-                        var vxySubFilter = _xySubFilter as DirectShowLib.IBaseFilter;
-                        if (vxySubFilter != null)
+                        try
                         {
-                            hr = m_graph.AddFilter(vxySubFilter, "xy-SubFilter");
-                            DsError.ThrowExceptionForHR(hr);
+                            _xySubFilter = _playerWrapper.PrivateCom.GetObject(typeof(XySubFilter).GUID, true); //new XySubFilter();
+                            var vxySubFilter = _xySubFilter as DirectShowLib.IBaseFilter;
+                            if (vxySubFilter != null)
+                            {
+                                hr = m_graph.AddFilter(vxySubFilter, "xy-SubFilter");
+                                DsError.ThrowExceptionForHR(hr);
+                            }
+
+                            xySubFilterSucceeded = true;
                         }
-
-                        xySubFilterSucceeded = true;
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.ErrorException("Error adding xy-SubFilter filter", ex);
-                    }
-                }
-
-                // Fallback to xyVsFilter
-                if (!xySubFilterSucceeded )//&& enableXySubFilter) //doesn't make sense that this is here...
-                {
-                    try
-                    {
-                        _xyVsFilter = _playerWrapper.PrivateCom.GetObject(typeof(XYVSFilter).GUID, true); //new XYVSFilter();
-                        var vxyVsFilter = _xyVsFilter as DirectShowLib.IBaseFilter;
-                        if (vxyVsFilter != null)
+                        catch (Exception ex)
                         {
-                            hr = m_graph.AddFilter(vxyVsFilter, "xy-VSFilter");
-                            DsError.ThrowExceptionForHR(hr);
+                            _logger.ErrorException("Error adding xy-SubFilter filter", ex);
                         }
                     }
-                    catch (Exception ex)
+
+                    // Fallback to xyVsFilter
+                    if (!xySubFilterSucceeded)
                     {
-                        _logger.ErrorException("Error adding xy-VSFilter filter", ex);
+                        try
+                        {
+                            _xyVsFilter = _playerWrapper.PrivateCom.GetObject(typeof(XYVSFilter).GUID, true); //new XYVSFilter();
+                            var vxyVsFilter = _xyVsFilter as DirectShowLib.IBaseFilter;
+                            if (vxyVsFilter != null)
+                            {
+                                hr = m_graph.AddFilter(vxyVsFilter, "xy-VSFilter");
+                                DsError.ThrowExceptionForHR(hr);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.ErrorException("Error adding xy-VSFilter filter", ex);
+                        }
                     }
                 }
 

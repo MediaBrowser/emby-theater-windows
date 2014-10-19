@@ -72,7 +72,6 @@ namespace MediaBrowser.UI.EntryPoints
             UnindEvents(client);
 
             client.BrowseCommand += _apiWebSocket_BrowseCommand;
-            client.UserDeleted += _apiWebSocket_UserDeleted;
             client.UserUpdated += _apiWebSocket_UserUpdated;
             client.PlaystateCommand += _apiWebSocket_PlaystateCommand;
             client.GeneralCommand += client_GeneralCommand;
@@ -92,7 +91,6 @@ namespace MediaBrowser.UI.EntryPoints
         private void UnindEvents(IApiClient client)
         {
             client.BrowseCommand -= _apiWebSocket_BrowseCommand;
-            client.UserDeleted -= _apiWebSocket_UserDeleted;
             client.UserUpdated -= _apiWebSocket_UserUpdated;
             client.PlaystateCommand -= _apiWebSocket_PlaystateCommand;
             client.GeneralCommand -= client_GeneralCommand;
@@ -455,14 +453,6 @@ namespace MediaBrowser.UI.EntryPoints
 
         void _apiWebSocket_UserUpdated(object sender, GenericEventArgs<UserDto> e)
         {
-        }
-
-        async void _apiWebSocket_UserDeleted(object sender, GenericEventArgs<string> e)
-        {
-            if (_sessionManager.LocalUserId != null && string.Equals(e.Argument, _sessionManager.LocalUserId))
-            {
-                await _sessionManager.Logout();
-            }
         }
 
         async void _apiWebSocket_BrowseCommand(object sender, GenericEventArgs<BrowseRequest> e)

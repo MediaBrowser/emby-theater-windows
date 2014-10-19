@@ -134,7 +134,7 @@ namespace MediaBrowser.UI
         void NavigationManager_Navigated(object sender, NavigationEventArgs e)
         {
             App.Instance.HiddenWindow.MouseMove -= _userInput_MouseMove;
-            
+
             if (e.NewPage is IFullscreenVideoPage)
             {
                 App.Instance.HiddenWindow.MouseMove += _userInput_MouseMove;
@@ -161,7 +161,7 @@ namespace MediaBrowser.UI
             _lastMouseMovePoint = e.Location;
             OnMouseMove();
         }
-        
+
         protected override void OnClosing(CancelEventArgs e)
         {
             Navigated -= NavigationManager_Navigated;
@@ -230,7 +230,7 @@ namespace MediaBrowser.UI
                 task.TrySetResult(true);
 
                 _logger.Debug("Navigation complete to " + page.GetType().Name);
-                
+
                 EventHelper.FireEventIfNotNull(Navigated, this, new NavigationEventArgs
                 {
                     NewPage = page,
@@ -319,15 +319,18 @@ namespace MediaBrowser.UI
 
         internal void ClearNavigationHistory()
         {
-            var frame = PageFrame;
-
-            if (frame.CanGoBack)
+            Dispatcher.Invoke(() =>
             {
-                while (frame.RemoveBackEntry() != null)
-                {
+                var frame = PageFrame;
 
+                if (frame.CanGoBack)
+                {
+                    while (frame.RemoveBackEntry() != null)
+                    {
+
+                    }
                 }
-            }
+            });
         }
 
         /// <summary>

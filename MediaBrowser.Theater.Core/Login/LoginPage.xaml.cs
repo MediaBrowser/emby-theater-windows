@@ -43,7 +43,7 @@ namespace MediaBrowser.Theater.Core.Login
             DataContext = new UserListViewModel(PresentationManager, ConnectionManager, ImageManager, SessionManager,
                 NavigationManager)
             {
-                AddMediaBrowserConnectEntry = true,
+                AddMediaBrowserConnectEntry = false,
                 AddSwitchServerEntry = true
             };
 

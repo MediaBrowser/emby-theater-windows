@@ -22,9 +22,9 @@
             <RowDefinition Height="auto"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <TextBlock Style="{StaticResource Heading1TextBlockStyle}" Grid.Row="0">Sign in with Media Browser Connect</TextBlock>
+        <TextBlock Style="{StaticResource Heading1TextBlockStyle}" Grid.Row="0">Sign in with <TextBlock Foreground="{StaticResource MediaBrowserAccent}" Style="{StaticResource Heading1TextBlockStyle}">Media Browser Connect</TextBlock></TextBlock>
         <TextBlock Style="{StaticResource TextBlockStyle}" Grid.Row="1" Margin="0 40 0 0">With Media Browser Connect you can easily access your Media Browser Server wherever you are and share servers with your family and friends.</TextBlock>
-        <TextBlock Style="{StaticResource TextBlockStyle}" Grid.Row="2" Margin="0 40 0 0">To sign in with Media Browser Connect, visit http://mediabrowser.tv/pin and enter the following pin code:</TextBlock>
+        <TextBlock Style="{StaticResource TextBlockStyle}" Grid.Row="2" Margin="0 40 0 0">To sign in with Media Browser Connect, visit <TextBlock Foreground="{StaticResource MediaBrowserAccent}" Style="{StaticResource TextBlockStyle}">http://mediabrowser.tv/pin</TextBlock> and enter the following pin code:</TextBlock>
 
         <TextBlock x:Name="TxtPin" Style="{StaticResource Heading1TextBlockStyle}" Grid.Row="3" Margin="0 50 0 20" HorizontalAlignment="Center" FontSize="80"></TextBlock>
 

@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Common.Events;
+﻿using System.Linq;
+using MediaBrowser.Common.Events;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Configuration;
 using MediaBrowser.Model.Connect;
@@ -109,6 +110,13 @@ namespace MediaBrowser.Theater.Implementations.Session
         public async Task ValidateSavedLogin(ConnectionResult result)
         {
             CurrentUser = await result.ApiClient.GetUserAsync(result.ApiClient.CurrentUserId);
+
+            // TODO: Switch to check for ConnectUser
+            if (result.Servers.Any(i => !string.IsNullOrEmpty(i.ExchangeToken)))
+            {
+                _config.Configuration.RememberLogin = true;
+                _config.SaveConfiguration();
+            }
             
             await AfterLogin();
         }
@@ -121,7 +129,6 @@ namespace MediaBrowser.Theater.Implementations.Session
 
             _navService.ClearHistory();
         }
-
 
         public string LocalUserId
         {

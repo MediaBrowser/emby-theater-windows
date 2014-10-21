@@ -121,7 +121,8 @@ namespace MediaBrowser.UI.StartupWizard
 
         private void StartPinTimer()
         {
-            _pinTimer = new Timer(TimerCallback, null, TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10));
+            var intervalSeconds = 7;
+            _pinTimer = new Timer(TimerCallback, null, TimeSpan.FromSeconds(intervalSeconds), TimeSpan.FromSeconds(intervalSeconds));
         }
 
         private void TimerCallback(object state)

@@ -279,7 +279,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 SortOrder = SortOrder.Descending,
                 IsPlayed = false,
                 UserId = userId,
-                Limit = 16,
+                Limit = 32,
                 Recursive = true,
                 ParentId = parentId
 

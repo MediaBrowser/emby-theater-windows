@@ -64,7 +64,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                     CollectionType.Games,
                     CollectionType.TvShows,
                     CollectionType.Playlists,
-                    CollectionType.LiveTv
+                    CollectionType.LiveTv,
+                    CollectionType.Photos,
+                    CollectionType.Music
                 };
 
                 if (!supportedViews.Contains(i.CollectionType, StringComparer.OrdinalIgnoreCase))
@@ -148,6 +150,40 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 {
                     ImageDisplayWidth = 330,
                     ImageDisplayHeightGenerator = v => 330,
+                    DisplayNameGenerator = GetDisplayName,
+
+                    OnItemCreated = v =>
+                    {
+                        v.DisplayNameVisibility = Visibility.Visible;
+                    }
+                };
+
+                return vm;
+
+            }
+            if (string.Equals(section, CollectionType.Music, StringComparison.OrdinalIgnoreCase))
+            {
+                var vm = new ItemListViewModel(i => GetFolderItems(i, tab.Item.Id), _presentationManager, _imageManager, apiClient, _nav, _playbackManager, _logger)
+                {
+                    ImageDisplayWidth = 270,
+                    ImageDisplayHeightGenerator = v => 270,
+                    DisplayNameGenerator = GetDisplayName,
+
+                    OnItemCreated = v =>
+                    {
+                        v.DisplayNameVisibility = Visibility.Visible;
+                    }
+                };
+
+                return vm;
+
+            }
+            if (string.Equals(section, CollectionType.Photos, StringComparison.OrdinalIgnoreCase))
+            {
+                var vm = new ItemListViewModel(i => GetFolderItems(i, tab.Item.Id), _presentationManager, _imageManager, apiClient, _nav, _playbackManager, _logger)
+                {
+                    ImageDisplayWidth = 270,
+                    ImageDisplayHeightGenerator = v => 270,
                     DisplayNameGenerator = GetDisplayName,
 
                     OnItemCreated = v =>

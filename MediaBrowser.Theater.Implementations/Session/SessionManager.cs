@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using MediaBrowser.Common.Events;
+﻿using MediaBrowser.Common.Events;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Configuration;
 using MediaBrowser.Model.Connect;
@@ -12,6 +11,7 @@ using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.Theming;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace MediaBrowser.Theater.Implementations.Session
@@ -38,7 +38,7 @@ namespace MediaBrowser.Theater.Implementations.Session
             _playback = playback;
             _connectionManager = connectionManager;
 
-            _connectionManager.RemoteLoggedOut += _connectionManager_RemoteLoggedOut;
+            //_connectionManager.RemoteLoggedOut += _connectionManager_RemoteLoggedOut;
         }
 
         async void _connectionManager_RemoteLoggedOut(object sender, EventArgs e)

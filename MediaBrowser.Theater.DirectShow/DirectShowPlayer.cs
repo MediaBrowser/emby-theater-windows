@@ -415,8 +415,6 @@ namespace MediaBrowser.Theater.DirectShow
 
                 _streams = GetStreams();
 
-                LoadActiveExternalSubtitles();
-
                 _logger.Debug("DSPlayer Done in play");
             }
             catch (Exception ex)
@@ -2859,19 +2857,6 @@ namespace MediaBrowser.Theater.DirectShow
 
             VideoScaling = (VideoScalingScheme)iScheme;
         }
-      
-        private void LoadActiveExternalSubtitles()
-        {
-            _logger.Debug("LoadActiveExternalSubtitles");
-
-            var stream =
-                _streams.FirstOrDefault(
-                    i => i.Type == MediaStreamType.Subtitle && i.Identifier == "external" && i.IsActive);
-            if (stream != null)
-            {
-                SetExternalSubtitleStream(stream);
-            }
-        }
 
         public void SetAudioTrack(SelectableMediaStream stream)
         {
@@ -2880,15 +2865,27 @@ namespace MediaBrowser.Theater.DirectShow
         
         public void SetSubtitleStreamIndex(int subtitleStreamIndex)
         {
-            _logger.Debug("SetSubtitleStreamIndex {0}", subtitleStreamIndex);
-            var subtitleStreams = _streams.Where(i => i.Type == MediaStreamType.Subtitle).ToArray();
-            if (subtitleStreams.Any() && subtitleStreamIndex < subtitleStreams.Count())
+            // subtitleStreamIndex is based on server metadata
+
+            if (subtitleStreamIndex == -1)
             {
-                SetSubtitleStream(subtitleStreams[subtitleStreamIndex]);
+                var stream = _streams
+                    .FirstOrDefault(i => i.Type == MediaStreamType.Subtitle && i.Name.ToLower().Contains("no subtitles"));
+
+                if (stream != null)
+                {
+                    SetSubtitleStream(stream);
+                }
             }
             else
             {
-                throw new ApplicationException(String.Format("Invalid subtitleStreamIndex {0}", subtitleStreamIndex));
+                var stream = _streams
+                    .FirstOrDefault(i => i.Type == MediaStreamType.Subtitle && i.Index == subtitleStreamIndex);
+
+                if (stream != null)
+                {
+                    SetSubtitleStream(stream);
+                }
             }
         }
 
@@ -3063,11 +3060,14 @@ namespace MediaBrowser.Theater.DirectShow
 
         public void SetAudioStreamIndex(int audioStreamIndex)
         {
+            // audioStreamIndex is based on server metadata
+
             _logger.Debug("SetAudioStreamIndex {0}", audioStreamIndex);
-            var audioStreams = _streams.Where(i => i.Type == MediaStreamType.Audio).ToArray();
-            if (audioStreams.Any() && audioStreamIndex < audioStreams.Count())
+            var stream = _streams.FirstOrDefault(i => i.Type == MediaStreamType.Audio && i.Index == audioStreamIndex);
+
+            if (stream != null)
             {
-                SetInternalStream(audioStreams[audioStreamIndex]);
+                SetInternalStream(stream);
             }
             else
             {

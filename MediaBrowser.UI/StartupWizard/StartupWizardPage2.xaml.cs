@@ -145,9 +145,9 @@ namespace MediaBrowser.UI.StartupWizard
             await _nav.NavigateBack();
         }
 
-        void BtnSkip_Click(object sender, RoutedEventArgs e)
+        async void BtnSkip_Click(object sender, RoutedEventArgs e)
         {
-            GoNext();
+            await Dispatcher.InvokeAsync(async () => await _nav.Navigate(new ServerSelectionPage(_connectionManager, _presentation, _nav, _logger)));
         }
 
         void StartupWizardPage_Loaded(object sender, RoutedEventArgs e)
@@ -175,15 +175,24 @@ namespace MediaBrowser.UI.StartupWizard
         {
             StopPinTimer();
 
+            _presentation.ShowModalLoadingAnimation();
+
             try
             {
                 var connectionResult = await _connectionManager.Connect(CancellationToken.None);
+                _presentation.HideModalLoadingAnimation();
+
+                if (connectionResult.State == ConnectionState.Unavailable)
+                {
+                    connectionResult.State = ConnectionState.ServerSelection;
+                }
 
                 App.Instance.NavigateFromConnectionResult(connectionResult);
                 return;
             }
             catch (Exception)
             {
+                _presentation.HideModalLoadingAnimation();
             }
 
             await _nav.Navigate(new StartupPageServerEntry(_nav, _connectionManager, _presentation, _logger));

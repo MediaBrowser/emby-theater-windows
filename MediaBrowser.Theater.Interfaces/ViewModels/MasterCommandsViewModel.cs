@@ -361,9 +361,12 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
             var apiClient = SessionManager.ActiveApiClient;
             BindEvents(apiClient);
 
-            RefreshHomeButton(NavigationService.CurrentPage);
+            Dispatcher.InvokeAsync(() =>
+            {
+                RefreshHomeButton(NavigationService.CurrentPage);
 
-            RefreshRestartData(apiClient);
+                RefreshRestartData(apiClient);
+            });
         }
 
         private async void RefreshRestartData(IApiClient apiClient)

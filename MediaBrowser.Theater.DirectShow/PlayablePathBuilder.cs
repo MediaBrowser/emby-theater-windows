@@ -163,6 +163,12 @@ namespace MediaBrowser.Theater.DirectShow
                         MediaSource = info.MediaSource
                     };
                 }
+
+                //info.Container = "ts";
+                //info.VideoCodec = "copy";
+                //info.AudioCodec = "copy";
+                //info.Protocol = "http";
+
                 var playable = new PlayableItem
                 {
                     OriginalItem = item,

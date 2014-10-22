@@ -328,6 +328,18 @@ namespace MediaBrowser.Theater.DirectShow
                 InvokeOnPlayerThread(() => _mediaPlayer.Seek(startPositionTicks.Value));
             }
 
+            if (playableItem.OriginalItem.IsVideo)
+            {
+                var audioIndex = playableItem.MediaSource.DefaultAudioStreamIndex;
+                var subtitleIndex = playableItem.MediaSource.DefaultSubtitleStreamIndex;
+
+                if (audioIndex.HasValue && audioIndex.Value != -1)
+                {
+                    SetAudioStreamIndex(audioIndex.Value);
+                }
+                SetSubtitleStreamIndex(subtitleIndex ?? -1);
+            }
+
             if (previousMedia != null && MediaChanged != null)
             {
                 var args = new MediaChangeEventArgs

@@ -38,7 +38,7 @@ namespace MediaBrowser.UI.StartupWizard
 
         async void BtnNext_Click(object sender, RoutedEventArgs e)
         {
-            var supportsPin = false;
+            var supportsPin = true;
 
             if (supportsPin)
             {

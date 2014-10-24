@@ -161,8 +161,9 @@ namespace MediaBrowser.UI.Implementations
 
                 return;
             }
-            catch
+            catch (Exception ex)
             {
+                var b = true;
             }
             await NavigateToManualLoginPage();
         }

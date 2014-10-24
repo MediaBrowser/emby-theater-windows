@@ -56,7 +56,7 @@ namespace MediaBrowser.Theater.Implementations.Session
         {
             get
             {
-                return _connectionManager.GetApiClient(new BaseItemDto());
+                return _connectionManager.CurrentApiClient;
             }
         }
 

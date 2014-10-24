@@ -128,20 +128,20 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         {
             var list = new List<UserDto>();
 
-            if (AddMediaBrowserConnectEntry)
-            {
-                list.Add(new UserDto
-                {
-                    Name = "Sign in with Media Browser Connect",
-                    Id = "Connect"
-                });
-            }
             if (AddSwitchServerEntry)
             {
                 list.Add(new UserDto
                 {
                     Name = "Change Server",
                     Id = "ChangeServer"
+                });
+            }
+            if (AddMediaBrowserConnectEntry)
+            {
+                list.Add(new UserDto
+                {
+                    Name = "Sign in with Media Browser Connect",
+                    Id = "Connect"
                 });
             }
 

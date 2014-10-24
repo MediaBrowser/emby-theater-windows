@@ -175,7 +175,12 @@ namespace MediaBrowser.Theater.Implementations.Playback
                     var firstItem = options.Items[0];
 
 
-                    if (options.StartPositionTicks == 0 && player.SupportsMultiFilePlayback && firstItem.IsVideo && firstItem.LocationType == LocationType.FileSystem && options.GoFullScreen)
+                    if (options.StartPositionTicks == 0 && 
+                        player.SupportsMultiFilePlayback && 
+                        firstItem.IsVideo && 
+                        firstItem.LocationType == LocationType.FileSystem && 
+                        options.GoFullScreen
+                        && !string.IsNullOrEmpty(firstItem.Id))
                     {
                         var apiClient = _connectionManager.GetApiClient(firstItem);
 

@@ -37,6 +37,10 @@ namespace MediaBrowser.Theater.DirectShow
         private const int WM_GRAPHNOTIFY = WM_APP + 1;
         private const int WM_KEYDOWN = 0x0100;
         private const int WM_DVD_EVENT = 0x00008002;
+        private static Guid DvdEncryptedMediaType = new Guid("{ed0b916a-044d-11d1-aa78-00c04fc31d60}");
+        private static Guid SubtitleMediaType = new Guid("E487EB08-6B26-4be9-9DD3-993434D313FD");
+        private static Guid DvdSubpictureMediaType = new Guid("e06d802d-db46-11cf-b4d1-00805f6cbbea");
+
 
         private readonly ILogger _logger;
         private readonly IHiddenWindow _hiddenWindow;
@@ -653,531 +657,7 @@ namespace MediaBrowser.Theater.DirectShow
                 throw new Exception("Could not QueryInterface for the IFilterGraph2");
             }
 
-            // Add audio renderer
             var useDefaultRenderer = true;
-            bool hasAudio = false;
-
-           if (_item.MediaStreams == null)
-                hasAudio = true; //no way to tell for sure, better to assume that it's there
-            else
-            {
-                foreach (var stream in _item.MediaStreams)
-                {
-                    if (stream.Type == MediaStreamType.Audio)
-                    {
-                        hasAudio = true;
-                        break;
-                    }
-                }
-            }
-
-            if (hasAudio)
-            {
-
-                switch (_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.Renderer)
-                {
-                    case AudioRendererChoice.Reclock:
-                        try
-                        {
-                            _reclockAudioRenderer = new ReclockAudioRenderer();
-                            var aRenderer = _reclockAudioRenderer as DirectShowLib.IBaseFilter;
-                            if (aRenderer != null)
-                            {
-                                hr = m_graph.AddFilter(aRenderer, "Reclock Audio Renderer");
-                                DsError.ThrowExceptionForHR(hr);
-                                useDefaultRenderer = false;
-
-                                _logger.Debug("Added reclock audio renderer");
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            _logger.ErrorException("Error adding reclock filter", ex);
-                        }
-                        break;
-                    case AudioRendererChoice.WASAPI:
-                        try
-                        {
-                            _wasapiAR = _playerWrapper.PrivateCom.GetObject(typeof(MPAudioFilter).GUID, true);
-                            var aRenderer = _wasapiAR as DirectShowLib.IBaseFilter;
-                            if (aRenderer != null)
-                            {
-                                hr = m_graph.AddFilter(aRenderer, "WASAPI Audio Renderer");
-                                DsError.ThrowExceptionForHR(hr);
-                                useDefaultRenderer = false;
-                                _logger.Debug("Added WASAPI audio renderer");
-
-                                IMPAudioRendererConfig arSett = aRenderer as IMPAudioRendererConfig;
-                                if (arSett != null)
-                                {
-                                    arSett.SetInt(MPARSetting.WASAPI_MODE, (int)AUDCLNT_SHAREMODE.EXCLUSIVE);
-                                    arSett.SetBool(MPARSetting.WASAPI_EVENT_DRIVEN, _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.UseWasapiEventMode);
-                                    _logger.Debug("Set WASAPI use event mode: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.UseWasapiEventMode);
-                                    arSett.SetString(MPARSetting.SETTING_AUDIO_DEVICE, _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.AudioDevice);
-                                    _logger.Debug("Set WASAPI audio device: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.AudioDevice);
-                                    SpeakerConfig sc = SpeakerConfig.Stereo; //use stereo for maxium compat
-                                    Enum.TryParse<SpeakerConfig>(_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.SpeakerLayout, out sc);
-                                    arSett.SetInt(MPARSetting.SPEAKER_CONFIG, (int)sc);
-                                    _logger.Debug("Set WASAPI speaker config: {0}", sc);
-                                    //audSett.SetSpeakerMatchOutput(true);
-                                    arSett.SetBool(MPARSetting.ALLOW_BITSTREAMING, true);
-                                    arSett.SetInt(MPARSetting.USE_FILTERS, _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.WasapiARFilters);
-                                    _logger.Debug("Set WASAPI filter config: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.WasapiARFilters);
-                                    AC3Encoding a3 = (AC3Encoding)_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.Ac3EncodingMode;
-                                    arSett.SetInt(MPARSetting.AC3_ENCODING, (int)a3);
-                                    _logger.Debug("Set WASAPI AC3 encoding: {0}", a3);
-                                    arSett.SetBool(MPARSetting.ENABLE_TIME_STRETCHING, _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.EnableTimeStretching);
-                                    _logger.Debug("Set WASAPI use time stretching: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.EnableTimeStretching);
-                                    arSett.SetInt(MPARSetting.OUTPUT_BUFFER_LENGTH, _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.OutputBufferSize);
-                                    _logger.Debug("Set WASAPI buffer: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.OutputBufferSize);
-                                }
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            _logger.ErrorException("Error adding WASAPI audio filter", ex);
-                        }
-                        break;
-                }
-
-                if (useDefaultRenderer)
-                {
-                    AddDefaultAudioRenderer();
-                }
-            }
-
-            if (_item.IsVideo)
-            {
-                var xySubFilterSucceeded = false;
-                var madVrSucceded = false;
-                //add the video renderer first so we know whether to enable DXVA2 in "Auto" mode.
-                if (enableMadvr)
-                {
-
-                    try
-                    {
-                        _madvr = _playerWrapper.PrivateCom.GetObject(typeof (MadVR).GUID, true); // new MadVR();
-                        var vmadvr = _madvr as DirectShowLib.IBaseFilter;
-                        if (vmadvr != null)
-                        {
-                            hr = m_graph.AddFilter(vmadvr, "MadVR Video Renderer");
-                            DsError.ThrowExceptionForHR(hr);
-
-                            try
-                            {
-                                MadVRSettings msett = new MadVRSettings(_madvr);
-
-                                bool smoothMotion = msett.GetBool("smoothMotionEnabled");
-
-                                if (smoothMotion !=
-                                    _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig
-                                        .UseMadVrSmoothMotion)
-                                    msett.SetBool("smoothMotionEnabled",
-                                        _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig
-                                            .UseMadVrSmoothMotion);
-
-                                if (
-                                    string.Compare(msett.GetString("smoothMotionMode"),
-                                        _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig
-                                            .MadVrSmoothMotionMode, true) != 0)
-                                {
-                                    bool success = msett.SetString("smoothMotionMode",
-                                        _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig
-                                            .MadVrSmoothMotionMode);
-                                }
-                                MFNominalRange levels = (MFNominalRange)_mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig.NominalRange;
-                                //string madVrLevelInitial = msett.GetString("levels");
-                                //switch (levels)
-                                //{
-                                //    case MFNominalRange.MFNominalRange_0_255:
-                                //        msett.SetString("levels", "PC Levels");
-                                //        break;
-                                //    case MFNominalRange.MFNominalRange_16_235:
-                                //        msett.SetString("levels", "TV Levels");
-                                //        break;
-                                //}
-                                //string madVrLevel = msett.GetString("levels");
-
-                                //if (string.Compare(madVrLevel, madVrLevelInitial, false) != 0)
-                                //    _logger.Debug("Changed madVR levels from {0} to {1}", madVrLevelInitial, madVrLevel);
-                            }
-                            catch (Exception ex)
-                            {
-                                _logger.ErrorException("Error configuring madVR", ex);
-                            }
-
-                            madVrSucceded = true;
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.ErrorException("Error adding MadVR filter", ex);
-                    }
-                }
-
-                // Add video renderer
-                if (!madVrSucceded)
-                {
-                    _mPEvr = (DirectShowLib.IBaseFilter) new EnhancedVideoRenderer();
-                    hr = m_graph.AddFilter(_mPEvr, "EVR");
-                    DsError.ThrowExceptionForHR(hr);
-
-                    //we only need 2 input pins on the EVR if LAV Video isn't used for DVDs, but it doesn't hurt to have them
-                    InitializeEvr(_mPEvr, _isDvd ? 2 : 1);
-                }
-
-                if (enableXySubFilter) //this flag indicates whether we should handle subtitle rendering
-                {
-                    // Load xySubFilter if configured and if madvr succeeded
-                    if (madVrSucceded || _customEvrPresenterLoaded)
-                    {
-                        try
-                        {
-                            _xySubFilter = _playerWrapper.PrivateCom.GetObject(typeof(XySubFilter).GUID, true); //new XySubFilter();
-                            var vxySubFilter = _xySubFilter as DirectShowLib.IBaseFilter;
-                            if (vxySubFilter != null)
-                            {
-                                hr = m_graph.AddFilter(vxySubFilter, "xy-SubFilter");
-                                DsError.ThrowExceptionForHR(hr);
-                            }
-
-                            xySubFilterSucceeded = true;
-                        }
-                        catch (Exception ex)
-                        {
-                            _logger.ErrorException("Error adding xy-SubFilter filter", ex);
-                        }
-                    }
-
-                    // Fallback to xyVsFilter
-                    if (!xySubFilterSucceeded)
-                    {
-                        try
-                        {
-                            _xyVsFilter = _playerWrapper.PrivateCom.GetObject(typeof(XYVSFilter).GUID, true); //new XYVSFilter();
-                            var vxyVsFilter = _xyVsFilter as DirectShowLib.IBaseFilter;
-                            if (vxyVsFilter != null)
-                            {
-                                hr = m_graph.AddFilter(vxyVsFilter, "xy-VSFilter");
-                                DsError.ThrowExceptionForHR(hr);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            _logger.ErrorException("Error adding xy-VSFilter filter", ex);
-                        }
-                    }
-                }
-
-                try
-                {
-                    _lavvideo = _playerWrapper.PrivateCom.GetObject(typeof (LAVVideo).GUID, true); //new LAVVideo();
-                    var vlavvideo = _lavvideo as DirectShowLib.IBaseFilter;
-                    if (vlavvideo != null)
-                    {
-                        hr = m_graph.AddFilter(vlavvideo, "LAV Video Decoder");
-                        DsError.ThrowExceptionForHR(hr);
-
-                        ILAVVideoSettings vsett = vlavvideo as ILAVVideoSettings;
-                        if (vsett != null)
-                        {
-                            //we only want to set it for MB
-                            hr = vsett.SetRuntimeConfig(true);
-                            DsError.ThrowExceptionForHR(hr);
-
-                            _logger.Debug("GPU Model: {0}", VideoConfigurationUtils.GpuModel);
-
-                            LAVHWAccel configuredMode =
-                                VideoConfigurationUtils.GetHwaMode(
-                                    _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig,
-                                    _customEvrPresenterLoaded);
-
-                            LAVHWAccel testme = vsett.GetHWAccel();
-                            _logger.Debug("Current HWA Mode: {0} Desired Mode: {1}", testme, configuredMode);
-                            if (testme != configuredMode)
-                            {
-                                hr = vsett.SetHWAccel(configuredMode);
-                                DsError.ThrowExceptionForHR(hr);
-                            }
-
-                            foreach (string c in DirectShowPlayer.GetLAVVideoCodecs())
-                            {
-                                LAVVideoCodec codec = (LAVVideoCodec) Enum.Parse(typeof (LAVVideoCodec), c);
-
-                                bool isEnabled = vsett.GetFormatConfiguration(codec);
-                                if (
-                                    _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig.EnabledCodecs
-                                        .Contains(c))
-                                {
-                                    if (!isEnabled)
-                                    {
-                                        _logger.Debug("Enable support for: {0}", c);
-                                        hr = vsett.SetFormatConfiguration(codec, true);
-                                        DsError.ThrowExceptionForHR(hr);
-                                    }
-                                }
-                                else if (isEnabled)
-                                {
-                                    _logger.Debug("Disable support for: {0}", c);
-                                    hr = vsett.SetFormatConfiguration(codec, false);
-                                    DsError.ThrowExceptionForHR(hr);
-                                }
-                            }
-
-                            foreach (string hwaCodec in DirectShowPlayer.GetLAVVideoHwaCodecs())
-                            {
-                                LAVVideoHWCodec codec = (LAVVideoHWCodec) Enum.Parse(typeof (LAVVideoHWCodec), hwaCodec);
-                                bool hwaIsEnabled = vsett.GetHWAccelCodec(codec);
-
-                                if (
-                                    _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig.HwaEnabledCodecs
-                                        .Contains(hwaCodec))
-                                {
-                                    if (!hwaIsEnabled)
-                                    {
-                                        _logger.Debug("Enable HWA support for: {0}", hwaCodec);
-                                        hr = vsett.SetHWAccelCodec(codec, true);
-                                        DsError.ThrowExceptionForHR(hr);
-                                    }
-                                }
-                                else if (hwaIsEnabled)
-                                {
-                                    _logger.Debug("Disable HWA support for: {0}", hwaCodec);
-                                    hr = vsett.SetHWAccelCodec(codec, false);
-                                    DsError.ThrowExceptionForHR(hr);
-                                }
-                            }
-
-                            if (!vsett.GetDVDVideoSupport())
-                            {
-                                _logger.Debug("Enable DVD support.");
-                                hr = vsett.SetDVDVideoSupport(true);
-                                DsError.ThrowExceptionForHR(hr);
-                            }
-
-                            int hwaRes = vsett.GetHWAccelResolutionFlags();
-                            if (hwaRes != _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig.HwaResolution 
-                                && _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig.HwaResolution > 0)
-                            {
-                                _logger.Debug("Change HWA resolution support from {0} to {1}.", hwaRes,
-                                    _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig.HwaResolution);
-                                hr =
-                                    vsett.SetHWAccelResolutionFlags(
-                                        VideoConfigurationUtils.GetHwaResolutions(
-                                            _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig));
-                                DsError.ThrowExceptionForHR(hr);
-                            }
-
-                            hr =
-                                vsett.SetTrayIcon(
-                                    _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig.ShowTrayIcon);
-                            DsError.ThrowExceptionForHR(hr);
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _logger.ErrorException("Error adding LAV Video filter", ex);
-                }
-            }
-
-            try
-            {
-                _lavaudio = _playerWrapper.PrivateCom.GetObject(typeof (LAVAudio).GUID, true); // new LAVAudio();
-                var vlavaudio = _lavaudio as DirectShowLib.IBaseFilter;
-                if (vlavaudio != null)
-                {
-                    _logger.Debug("Add LAVAudio to the graph.");
-
-                    hr = m_graph.AddFilter(vlavaudio, "LAV Audio Decoder");
-                    DsError.ThrowExceptionForHR(hr);
-
-                    ILAVAudioSettings asett = vlavaudio as ILAVAudioSettings;
-                    if (asett != null)
-                    {
-                        _logger.Debug("Enable LAVAudio Runtime Config");
-
-                        //we only want to set it for MB
-                        hr = asett.SetRuntimeConfig(true);
-                        DsError.ThrowExceptionForHR(hr);
-
-                        foreach (string c in DirectShowPlayer.GetLAVAudioCodecs())
-                        {
-                            LAVAudioCodec codec = (LAVAudioCodec) Enum.Parse(typeof (LAVAudioCodec), c);
-
-                            bool isEnabled = asett.GetFormatConfiguration(codec);
-                            if (
-                                _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.EnabledCodecs.Contains(
-                                    c))
-                            {
-                                if (!isEnabled)
-                                {
-                                    _logger.Debug("Enable support for: {0}", c);
-                                    hr = asett.SetFormatConfiguration(codec, true);
-                                    DsError.ThrowExceptionForHR(hr);
-                                }
-                            }
-                            else if (isEnabled)
-                            {
-                                _logger.Debug("Disable support for: {0}", c);
-                                hr = asett.SetFormatConfiguration(codec, false);
-                                DsError.ThrowExceptionForHR(hr);
-                            }
-                        }
-
-                        //enable/disable bitstreaming
-                        if ((_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.AudioBitstreaming &
-                             BitstreamChoice.SPDIF) == BitstreamChoice.SPDIF)
-                        {
-                            _logger.Debug("Enable LAVAudio S/PDIF bitstreaming");
-
-                            hr = asett.SetBitstreamConfig(LAVBitstreamCodec.AC3, true);
-                            DsError.ThrowExceptionForHR(hr);
-
-                            hr = asett.SetBitstreamConfig(LAVBitstreamCodec.DTS, true);
-                            DsError.ThrowExceptionForHR(hr);
-                        }
-
-                        if ((_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.AudioBitstreaming &
-                             BitstreamChoice.HDMI) == BitstreamChoice.HDMI)
-                        {
-                            _logger.Debug("Enable LAVAudio HDMI bitstreaming");
-
-                            hr = asett.SetBitstreamConfig(LAVBitstreamCodec.EAC3, true);
-                            DsError.ThrowExceptionForHR(hr);
-
-                            hr = asett.SetBitstreamConfig(LAVBitstreamCodec.TRUEHD, true);
-                            DsError.ThrowExceptionForHR(hr);
-
-                            hr = asett.SetBitstreamConfig(LAVBitstreamCodec.DTSHD, true);
-                            DsError.ThrowExceptionForHR(hr);
-
-                        }
-
-                        if (_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.Delay > 0)
-                        {
-                            _logger.Debug("Set LAVAudio audio delay: {0}",
-                                _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.Delay);
-
-                            hr = asett.SetAudioDelay(true,
-                                _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.Delay);
-                            DsError.ThrowExceptionForHR(hr);
-                        }
-
-                        _logger.Debug("Set LAVAudio auto AV Sync: {0}",
-                            _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.EnableAutoSync);
-                        hr =
-                            asett.SetAutoAVSync(
-                                _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.EnableAutoSync);
-                        DsError.ThrowExceptionForHR(hr);
-
-                        _logger.Debug("Set LAVAudio Expand61: {0}",
-                            _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.Expand61);
-                        hr = asett.SetExpand61(_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.Expand61);
-                        DsError.ThrowExceptionForHR(hr);
-
-                        _logger.Debug("Set LAVAudio ExpandMono: {0}",
-                            _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.ExpandMono);
-                        hr =
-                            asett.SetExpandMono(
-                                _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.ExpandMono);
-                        DsError.ThrowExceptionForHR(hr);
-
-                        _logger.Debug("Set LAVAudio ConvertToStandardLayout: {0}",
-                            _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.ConvertToStandardLayout);
-                        hr =
-                            asett.SetOutputStandardLayout(
-                                _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.ConvertToStandardLayout);
-                        DsError.ThrowExceptionForHR(hr);
-
-                        _logger.Debug("Set LAVAudio audio EnableDRC: {0}",
-                            _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.EnableDRC);
-                        hr = asett.SetDRC(_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.EnableDRC,
-                            _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.DRCLevel);
-                        DsError.ThrowExceptionForHR(hr);
-
-                        _logger.Debug("Set LAVAudio audio ShowTrayIcon: {0}",
-                            _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.ShowTrayIcon);
-                        hr =
-                            asett.SetTrayIcon(
-                                _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.ShowTrayIcon);
-                        DsError.ThrowExceptionForHR(hr);
-
-                        bool mixingEnabled = asett.GetMixingEnabled();
-                        if (mixingEnabled !=
-                            _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.EnablePCMMixing)
-                        {
-                            _logger.Debug("Set LAVAudio EnablePCMMixing: {0}",
-                                _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.EnablePCMMixing);
-                            hr = asett.SetMixingEnabled(!mixingEnabled);
-                            DsError.ThrowExceptionForHR(hr);
-                        }
-
-                        if (_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.EnablePCMMixing)
-                        {
-                            _logger.Debug("Set LAVAudio MixingSetting: {0}",
-                                _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.MixingSetting);
-                            LAVAudioMixingFlag amf =
-                                (LAVAudioMixingFlag)
-                                    _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.MixingSetting;
-                            hr = asett.SetMixingFlags(amf);
-                            DsError.ThrowExceptionForHR(hr);
-
-                            _logger.Debug("Set LAVAudio MixingEncoding: {0}",
-                                _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.MixingEncoding);
-                            LAVAudioMixingMode amm =
-                                (LAVAudioMixingMode)
-                                    Enum.Parse(typeof (LAVAudioMixingMode),
-                                        _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.MixingEncoding);
-                            hr = asett.SetMixingMode(amm);
-                            DsError.ThrowExceptionForHR(hr);
-
-                            _logger.Debug("Set LAVAudio MixingLayout: {0}",
-                                _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.MixingLayout);
-                            LAVAudioMixingLayout aml =
-                                (LAVAudioMixingLayout)
-                                    Enum.Parse(typeof (LAVAudioMixingLayout),
-                                        _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.MixingLayout);
-                            hr = asett.SetMixingLayout(aml);
-                            DsError.ThrowExceptionForHR(hr);
-
-                            _logger.Debug(
-                                "Set LAVAudio LfeMixingLevel: {0} CenterMixingLevel: {1} SurroundMixingLevel: {2}",
-                                _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.LfeMixingLevel,
-                                _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.CenterMixingLevel,
-                                _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.SurroundMixingLevel);
-                            int lfe, center, surround;
-                            //convert to the # that LAV Audio expects
-                            lfe =
-                                (int)
-                                    (_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.LfeMixingLevel*
-                                     10000.01);
-                            center =
-                                (int)
-                                    (_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.CenterMixingLevel*
-                                     10000.01);
-                            surround =
-                                (int)
-                                    (_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig
-                                        .SurroundMixingLevel*10000.01);
-
-                            hr = asett.SetMixingLevels(center, surround, lfe);
-                            DsError.ThrowExceptionForHR(hr);
-                        }
-
-                        for (int i = 0; i < (int) LAVBitstreamCodec.NB; i++)
-                        {
-                            LAVBitstreamCodec codec = (LAVBitstreamCodec) i;
-                            bool isEnabled = asett.GetBitstreamConfig(codec);
-                            _logger.Log(LogSeverity.Debug, "{0} bitstreaming: {1}", codec, isEnabled);
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.ErrorException("Error adding LAV Audio filter", ex);
-            }
 
             DirectShowLib.IEnumPins pEnum;
             hr = pSource.EnumPins(out pEnum);
@@ -1202,40 +682,209 @@ namespace MediaBrowser.Theater.DirectShow
 
                     try
                     {
-                        if (mediaTypes[m] == DirectShowLib.MediaType.Video && _lavvideo != null)
+                        if (mediaTypes[m] == DirectShowLib.MediaType.Video)
                         {
-                            decIn = DsFindPin.ByDirection((DirectShowLib.IBaseFilter) _lavvideo, PinDirection.Input, 0);
+                            #region Video
+
+                            //add the video renderer first so we know whether to enable DXVA2 in "Auto" mode.
+                            if (enableMadvr)
+                            {
+                                try
+                                {
+                                    _madvr = _playerWrapper.PrivateCom.GetObject(typeof(MadVR).GUID, true); // new MadVR();
+                                    var vmadvr = _madvr as DirectShowLib.IBaseFilter;
+                                    if (vmadvr != null)
+                                    {
+                                        hr = m_graph.AddFilter(vmadvr, "MadVR Video Renderer");
+                                        DsError.ThrowExceptionForHR(hr);
+
+                                        try
+                                        {
+                                            MadVRSettings msett = new MadVRSettings(_madvr);
+
+                                            bool smoothMotion = msett.GetBool("smoothMotionEnabled");
+
+                                            if (smoothMotion !=
+                                                _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig
+                                                    .UseMadVrSmoothMotion)
+                                                msett.SetBool("smoothMotionEnabled",
+                                                    _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig
+                                                        .UseMadVrSmoothMotion);
+
+                                            if (
+                                                string.Compare(msett.GetString("smoothMotionMode"),
+                                                    _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig
+                                                        .MadVrSmoothMotionMode, true) != 0)
+                                            {
+                                                bool success = msett.SetString("smoothMotionMode",
+                                                    _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig
+                                                        .MadVrSmoothMotionMode);
+                                            }
+                                            MFNominalRange levels = (MFNominalRange)_mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig.NominalRange;
+                                            //string madVrLevelInitial = msett.GetString("levels");
+                                            //switch (levels)
+                                            //{
+                                            //    case MFNominalRange.MFNominalRange_0_255:
+                                            //        msett.SetString("levels", "PC Levels");
+                                            //        break;
+                                            //    case MFNominalRange.MFNominalRange_16_235:
+                                            //        msett.SetString("levels", "TV Levels");
+                                            //        break;
+                                            //}
+                                            //string madVrLevel = msett.GetString("levels");
+
+                                            //if (string.Compare(madVrLevel, madVrLevelInitial, false) != 0)
+                                            //    _logger.Debug("Changed madVR levels from {0} to {1}", madVrLevelInitial, madVrLevel);
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            _logger.ErrorException("Error configuring madVR", ex);
+                                        }
+
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    _logger.ErrorException("Error adding MadVR filter", ex);
+                                }
+                            }
+                            else // Add default video renderer
+                            {
+                                _mPEvr = (DirectShowLib.IBaseFilter)new EnhancedVideoRenderer();
+                                hr = m_graph.AddFilter(_mPEvr, "EVR");
+                                DsError.ThrowExceptionForHR(hr);
+
+                                //we only need 2 input pins on the EVR if LAV Video isn't used for DVDs, but it doesn't hurt to have them
+                                InitializeEvr(_mPEvr, _isDvd ? 2 : 1);
+                            }
+
+                            try
+                            {
+                                _lavvideo = _playerWrapper.PrivateCom.GetObject(typeof(LAVVideo).GUID, true); //new LAVVideo();
+                                var vlavvideo = _lavvideo as DirectShowLib.IBaseFilter;
+                                if (vlavvideo != null)
+                                {
+                                    hr = m_graph.AddFilter(vlavvideo, "LAV Video Decoder");
+                                    DsError.ThrowExceptionForHR(hr);
+
+                                    ILAVVideoSettings vsett = vlavvideo as ILAVVideoSettings;
+                                    if (vsett != null)
+                                    {
+                                        //we only want to set it for MB
+                                        hr = vsett.SetRuntimeConfig(true);
+                                        DsError.ThrowExceptionForHR(hr);
+
+                                        _logger.Debug("GPU Model: {0}", VideoConfigurationUtils.GpuModel);
+
+                                        LAVHWAccel configuredMode =
+                                            VideoConfigurationUtils.GetHwaMode(
+                                                _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig,
+                                                _customEvrPresenterLoaded);
+
+                                        LAVHWAccel testme = vsett.GetHWAccel();
+                                        _logger.Debug("Current HWA Mode: {0} Desired Mode: {1}", testme, configuredMode);
+                                        if (testme != configuredMode)
+                                        {
+                                            hr = vsett.SetHWAccel(configuredMode);
+                                            DsError.ThrowExceptionForHR(hr);
+                                        }
+
+                                        foreach (string c in DirectShowPlayer.GetLAVVideoCodecs())
+                                        {
+                                            LAVVideoCodec codec = (LAVVideoCodec)Enum.Parse(typeof(LAVVideoCodec), c);
+
+                                            bool isEnabled = vsett.GetFormatConfiguration(codec);
+                                            if (
+                                                _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig.EnabledCodecs
+                                                    .Contains(c))
+                                            {
+                                                if (!isEnabled)
+                                                {
+                                                    _logger.Debug("Enable support for: {0}", c);
+                                                    hr = vsett.SetFormatConfiguration(codec, true);
+                                                    DsError.ThrowExceptionForHR(hr);
+                                                }
+                                            }
+                                            else if (isEnabled)
+                                            {
+                                                _logger.Debug("Disable support for: {0}", c);
+                                                hr = vsett.SetFormatConfiguration(codec, false);
+                                                DsError.ThrowExceptionForHR(hr);
+                                            }
+                                        }
+
+                                        foreach (string hwaCodec in DirectShowPlayer.GetLAVVideoHwaCodecs())
+                                        {
+                                            LAVVideoHWCodec codec = (LAVVideoHWCodec)Enum.Parse(typeof(LAVVideoHWCodec), hwaCodec);
+                                            bool hwaIsEnabled = vsett.GetHWAccelCodec(codec);
+
+                                            if (
+                                                _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig.HwaEnabledCodecs
+                                                    .Contains(hwaCodec))
+                                            {
+                                                if (!hwaIsEnabled)
+                                                {
+                                                    _logger.Debug("Enable HWA support for: {0}", hwaCodec);
+                                                    hr = vsett.SetHWAccelCodec(codec, true);
+                                                    DsError.ThrowExceptionForHR(hr);
+                                                }
+                                            }
+                                            else if (hwaIsEnabled)
+                                            {
+                                                _logger.Debug("Disable HWA support for: {0}", hwaCodec);
+                                                hr = vsett.SetHWAccelCodec(codec, false);
+                                                DsError.ThrowExceptionForHR(hr);
+                                            }
+                                        }
+
+                                        if (!vsett.GetDVDVideoSupport())
+                                        {
+                                            _logger.Debug("Enable DVD support.");
+                                            hr = vsett.SetDVDVideoSupport(true);
+                                            DsError.ThrowExceptionForHR(hr);
+                                        }
+
+                                        int hwaRes = vsett.GetHWAccelResolutionFlags();
+                                        if (hwaRes != _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig.HwaResolution
+                                            && _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig.HwaResolution > 0)
+                                        {
+                                            _logger.Debug("Change HWA resolution support from {0} to {1}.", hwaRes,
+                                                _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig.HwaResolution);
+                                            hr =
+                                                vsett.SetHWAccelResolutionFlags(
+                                                    VideoConfigurationUtils.GetHwaResolutions(
+                                                        _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig));
+                                            DsError.ThrowExceptionForHR(hr);
+                                        }
+
+                                        hr =
+                                            vsett.SetTrayIcon(
+                                                _mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig.ShowTrayIcon);
+                                        DsError.ThrowExceptionForHR(hr);
+                                    }
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                _logger.ErrorException("Error adding LAV Video filter", ex);
+                            }
+
+                            decIn = DsFindPin.ByDirection((DirectShowLib.IBaseFilter)_lavvideo, PinDirection.Input, 0);
                             if (decIn != null)
                             {
                                 hr = _filterGraph.ConnectDirect(pins[0], decIn, null);
                                 DsError.ThrowExceptionForHR(hr);
-                                decOut = DsFindPin.ByDirection((DirectShowLib.IBaseFilter) _lavvideo,
+                                decOut = DsFindPin.ByDirection((DirectShowLib.IBaseFilter)_lavvideo,
                                     PinDirection.Output, 0);
-
-                                if (_xyVsFilter != null)
-                                {
-                                    //insert xyVsFilter b/w LAV Video and the renderer
-                                    rendIn = DsFindPin.ByName((DirectShowLib.IBaseFilter) _xyVsFilter, "Video");
-                                    if (decOut != null && rendIn != null)
-                                    {
-                                        hr = _filterGraph.ConnectDirect(decOut, rendIn, null);
-                                        DsError.ThrowExceptionForHR(hr);
-                                        CleanUpInterface(decOut);
-                                        CleanUpInterface(rendIn);
-                                        //grab xyVsFilter's output pin so it can be connected to the renderer
-                                        decOut = DsFindPin.ByDirection((DirectShowLib.IBaseFilter) _xyVsFilter,
-                                            PinDirection.Output, 0);
-                                    }
-                                }
 
                                 if (_madvr != null)
                                 {
-                                    rendIn = DsFindPin.ByDirection((DirectShowLib.IBaseFilter) _madvr,
+                                    rendIn = DsFindPin.ByDirection((DirectShowLib.IBaseFilter)_madvr,
                                         PinDirection.Input, 0);
                                 }
                                 else
                                 {
-                                    rendIn = DsFindPin.ByDirection((DirectShowLib.IBaseFilter) _mPEvr,
+                                    rendIn = DsFindPin.ByDirection((DirectShowLib.IBaseFilter)_mPEvr,
                                         PinDirection.Input, 0);
                                 }
 
@@ -1248,10 +897,282 @@ namespace MediaBrowser.Theater.DirectShow
                                     break;
                                 }
                             }
+                            #endregion
                         }
-                        else if (mediaTypes[m] == DirectShowLib.MediaType.Audio && _lavaudio != null)
+                        else if (mediaTypes[m] == DirectShowLib.MediaType.Audio)
                         {
-                            decIn = DsFindPin.ByDirection((DirectShowLib.IBaseFilter) _lavaudio, PinDirection.Input, 0);
+                            #region Audio
+                            //we have an audio pin so add a renderer and decoder
+                            switch (_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.Renderer)
+                            {
+                                case AudioRendererChoice.Reclock:
+                                    try
+                                    {
+                                        _reclockAudioRenderer = new ReclockAudioRenderer();
+                                        var aRenderer = _reclockAudioRenderer as DirectShowLib.IBaseFilter;
+                                        if (aRenderer != null)
+                                        {
+                                            hr = m_graph.AddFilter(aRenderer, "Reclock Audio Renderer");
+                                            DsError.ThrowExceptionForHR(hr);
+                                            useDefaultRenderer = false;
+
+                                            _logger.Debug("Added reclock audio renderer");
+                                        }
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        _logger.ErrorException("Error adding reclock filter", ex);
+                                    }
+                                    break;
+                                case AudioRendererChoice.WASAPI:
+                                    try
+                                    {
+                                        _wasapiAR = _playerWrapper.PrivateCom.GetObject(typeof(MPAudioFilter).GUID, true);
+                                        var aRenderer = _wasapiAR as DirectShowLib.IBaseFilter;
+                                        if (aRenderer != null)
+                                        {
+                                            hr = m_graph.AddFilter(aRenderer, "WASAPI Audio Renderer");
+                                            DsError.ThrowExceptionForHR(hr);
+                                            useDefaultRenderer = false;
+                                            _logger.Debug("Added WASAPI audio renderer");
+
+                                            IMPAudioRendererConfig arSett = aRenderer as IMPAudioRendererConfig;
+                                            if (arSett != null)
+                                            {
+                                                arSett.SetInt(MPARSetting.WASAPI_MODE, (int)AUDCLNT_SHAREMODE.EXCLUSIVE);
+                                                arSett.SetBool(MPARSetting.WASAPI_EVENT_DRIVEN, _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.UseWasapiEventMode);
+                                                _logger.Debug("Set WASAPI use event mode: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.UseWasapiEventMode);
+                                                arSett.SetString(MPARSetting.SETTING_AUDIO_DEVICE, _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.AudioDevice);
+                                                _logger.Debug("Set WASAPI audio device: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.AudioDevice);
+                                                SpeakerConfig sc = SpeakerConfig.Stereo; //use stereo for maxium compat
+                                                Enum.TryParse<SpeakerConfig>(_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.SpeakerLayout, out sc);
+                                                arSett.SetInt(MPARSetting.SPEAKER_CONFIG, (int)sc);
+                                                _logger.Debug("Set WASAPI speaker config: {0}", sc);
+                                                //audSett.SetSpeakerMatchOutput(true);
+                                                arSett.SetBool(MPARSetting.ALLOW_BITSTREAMING, true);
+                                                arSett.SetInt(MPARSetting.USE_FILTERS, _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.WasapiARFilters);
+                                                _logger.Debug("Set WASAPI filter config: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.WasapiARFilters);
+                                                AC3Encoding a3 = (AC3Encoding)_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.Ac3EncodingMode;
+                                                arSett.SetInt(MPARSetting.AC3_ENCODING, (int)a3);
+                                                _logger.Debug("Set WASAPI AC3 encoding: {0}", a3);
+                                                arSett.SetBool(MPARSetting.ENABLE_TIME_STRETCHING, _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.EnableTimeStretching);
+                                                _logger.Debug("Set WASAPI use time stretching: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.EnableTimeStretching);
+                                                arSett.SetInt(MPARSetting.OUTPUT_BUFFER_LENGTH, _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.OutputBufferSize);
+                                                _logger.Debug("Set WASAPI buffer: {0}", _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.OutputBufferSize);
+                                            }
+                                        }
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        _logger.ErrorException("Error adding WASAPI audio filter", ex);
+                                    }
+                                    break;
+                            }
+
+                            if (useDefaultRenderer)
+                            {
+                                AddDefaultAudioRenderer();
+                            }
+
+                            try
+                            {
+                                _lavaudio = _playerWrapper.PrivateCom.GetObject(typeof(LAVAudio).GUID, true); // new LAVAudio();
+                                var vlavaudio = _lavaudio as DirectShowLib.IBaseFilter;
+                                if (vlavaudio != null)
+                                {
+                                    _logger.Debug("Add LAVAudio to the graph.");
+
+                                    hr = m_graph.AddFilter(vlavaudio, "LAV Audio Decoder");
+                                    DsError.ThrowExceptionForHR(hr);
+
+                                    ILAVAudioSettings asett = vlavaudio as ILAVAudioSettings;
+                                    if (asett != null)
+                                    {
+                                        _logger.Debug("Enable LAVAudio Runtime Config");
+
+                                        //we only want to set it for MB
+                                        hr = asett.SetRuntimeConfig(true);
+                                        DsError.ThrowExceptionForHR(hr);
+
+                                        foreach (string c in DirectShowPlayer.GetLAVAudioCodecs())
+                                        {
+                                            LAVAudioCodec codec = (LAVAudioCodec)Enum.Parse(typeof(LAVAudioCodec), c);
+
+                                            bool isEnabled = asett.GetFormatConfiguration(codec);
+                                            if (
+                                                _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.EnabledCodecs.Contains(
+                                                    c))
+                                            {
+                                                if (!isEnabled)
+                                                {
+                                                    _logger.Debug("Enable support for: {0}", c);
+                                                    hr = asett.SetFormatConfiguration(codec, true);
+                                                    DsError.ThrowExceptionForHR(hr);
+                                                }
+                                            }
+                                            else if (isEnabled)
+                                            {
+                                                _logger.Debug("Disable support for: {0}", c);
+                                                hr = asett.SetFormatConfiguration(codec, false);
+                                                DsError.ThrowExceptionForHR(hr);
+                                            }
+                                        }
+
+                                        //enable/disable bitstreaming
+                                        if ((_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.AudioBitstreaming &
+                                             BitstreamChoice.SPDIF) == BitstreamChoice.SPDIF)
+                                        {
+                                            _logger.Debug("Enable LAVAudio S/PDIF bitstreaming");
+
+                                            hr = asett.SetBitstreamConfig(LAVBitstreamCodec.AC3, true);
+                                            DsError.ThrowExceptionForHR(hr);
+
+                                            hr = asett.SetBitstreamConfig(LAVBitstreamCodec.DTS, true);
+                                            DsError.ThrowExceptionForHR(hr);
+                                        }
+
+                                        if ((_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.AudioBitstreaming &
+                                             BitstreamChoice.HDMI) == BitstreamChoice.HDMI)
+                                        {
+                                            _logger.Debug("Enable LAVAudio HDMI bitstreaming");
+
+                                            hr = asett.SetBitstreamConfig(LAVBitstreamCodec.EAC3, true);
+                                            DsError.ThrowExceptionForHR(hr);
+
+                                            hr = asett.SetBitstreamConfig(LAVBitstreamCodec.TRUEHD, true);
+                                            DsError.ThrowExceptionForHR(hr);
+
+                                            hr = asett.SetBitstreamConfig(LAVBitstreamCodec.DTSHD, true);
+                                            DsError.ThrowExceptionForHR(hr);
+
+                                        }
+
+                                        if (_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.Delay > 0)
+                                        {
+                                            _logger.Debug("Set LAVAudio audio delay: {0}",
+                                                _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.Delay);
+
+                                            hr = asett.SetAudioDelay(true,
+                                                _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.Delay);
+                                            DsError.ThrowExceptionForHR(hr);
+                                        }
+
+                                        _logger.Debug("Set LAVAudio auto AV Sync: {0}",
+                                            _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.EnableAutoSync);
+                                        hr =
+                                            asett.SetAutoAVSync(
+                                                _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.EnableAutoSync);
+                                        DsError.ThrowExceptionForHR(hr);
+
+                                        _logger.Debug("Set LAVAudio Expand61: {0}",
+                                            _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.Expand61);
+                                        hr = asett.SetExpand61(_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.Expand61);
+                                        DsError.ThrowExceptionForHR(hr);
+
+                                        _logger.Debug("Set LAVAudio ExpandMono: {0}",
+                                            _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.ExpandMono);
+                                        hr =
+                                            asett.SetExpandMono(
+                                                _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.ExpandMono);
+                                        DsError.ThrowExceptionForHR(hr);
+
+                                        _logger.Debug("Set LAVAudio ConvertToStandardLayout: {0}",
+                                            _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.ConvertToStandardLayout);
+                                        hr =
+                                            asett.SetOutputStandardLayout(
+                                                _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.ConvertToStandardLayout);
+                                        DsError.ThrowExceptionForHR(hr);
+
+                                        _logger.Debug("Set LAVAudio audio EnableDRC: {0}",
+                                            _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.EnableDRC);
+                                        hr = asett.SetDRC(_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.EnableDRC,
+                                            _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.DRCLevel);
+                                        DsError.ThrowExceptionForHR(hr);
+
+                                        _logger.Debug("Set LAVAudio audio ShowTrayIcon: {0}",
+                                            _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.ShowTrayIcon);
+                                        hr =
+                                            asett.SetTrayIcon(
+                                                _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.ShowTrayIcon);
+                                        DsError.ThrowExceptionForHR(hr);
+
+                                        bool mixingEnabled = asett.GetMixingEnabled();
+                                        if (mixingEnabled !=
+                                            _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.EnablePCMMixing)
+                                        {
+                                            _logger.Debug("Set LAVAudio EnablePCMMixing: {0}",
+                                                _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.EnablePCMMixing);
+                                            hr = asett.SetMixingEnabled(!mixingEnabled);
+                                            DsError.ThrowExceptionForHR(hr);
+                                        }
+
+                                        if (_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.EnablePCMMixing)
+                                        {
+                                            _logger.Debug("Set LAVAudio MixingSetting: {0}",
+                                                _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.MixingSetting);
+                                            LAVAudioMixingFlag amf =
+                                                (LAVAudioMixingFlag)
+                                                    _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.MixingSetting;
+                                            hr = asett.SetMixingFlags(amf);
+                                            DsError.ThrowExceptionForHR(hr);
+
+                                            _logger.Debug("Set LAVAudio MixingEncoding: {0}",
+                                                _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.MixingEncoding);
+                                            LAVAudioMixingMode amm =
+                                                (LAVAudioMixingMode)
+                                                    Enum.Parse(typeof(LAVAudioMixingMode),
+                                                        _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.MixingEncoding);
+                                            hr = asett.SetMixingMode(amm);
+                                            DsError.ThrowExceptionForHR(hr);
+
+                                            _logger.Debug("Set LAVAudio MixingLayout: {0}",
+                                                _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.MixingLayout);
+                                            LAVAudioMixingLayout aml =
+                                                (LAVAudioMixingLayout)
+                                                    Enum.Parse(typeof(LAVAudioMixingLayout),
+                                                        _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.MixingLayout);
+                                            hr = asett.SetMixingLayout(aml);
+                                            DsError.ThrowExceptionForHR(hr);
+
+                                            _logger.Debug(
+                                                "Set LAVAudio LfeMixingLevel: {0} CenterMixingLevel: {1} SurroundMixingLevel: {2}",
+                                                _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.LfeMixingLevel,
+                                                _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.CenterMixingLevel,
+                                                _mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.SurroundMixingLevel);
+                                            int lfe, center, surround;
+                                            //convert to the # that LAV Audio expects
+                                            lfe =
+                                                (int)
+                                                    (_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.LfeMixingLevel *
+                                                     10000.01);
+                                            center =
+                                                (int)
+                                                    (_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig.CenterMixingLevel *
+                                                     10000.01);
+                                            surround =
+                                                (int)
+                                                    (_mbtConfig.Configuration.InternalPlayerConfiguration.AudioConfig
+                                                        .SurroundMixingLevel * 10000.01);
+
+                                            hr = asett.SetMixingLevels(center, surround, lfe);
+                                            DsError.ThrowExceptionForHR(hr);
+                                        }
+
+                                        for (int i = 0; i < (int)LAVBitstreamCodec.NB; i++)
+                                        {
+                                            LAVBitstreamCodec codec = (LAVBitstreamCodec)i;
+                                            bool isEnabled = asett.GetBitstreamConfig(codec);
+                                            _logger.Log(LogSeverity.Debug, "{0} bitstreaming: {1}", codec, isEnabled);
+                                        }
+                                    }
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                _logger.ErrorException("Error adding LAV Audio filter", ex);
+                            }
+
+                            decIn = DsFindPin.ByDirection((DirectShowLib.IBaseFilter)_lavaudio, PinDirection.Input, 0);
                             if (decIn != null)
                             {
                                 hr = _filterGraph.ConnectDirect(pins[0], decIn, null);
@@ -1267,7 +1188,7 @@ namespace MediaBrowser.Theater.DirectShow
                                 }
 
                                 rendIn = DsFindPin.ByDirection(AudioRenderer, PinDirection.Input, 0);
-                                
+
                                 if (decOut != null && rendIn != null)
                                 {
                                     hr = _filterGraph.ConnectDirect(decOut, rendIn, null);
@@ -1287,20 +1208,107 @@ namespace MediaBrowser.Theater.DirectShow
                                     break;
                                 }
                             }
+                            #endregion
                         }
-                        else if (mediaTypes[m] == new Guid("E487EB08-6B26-4be9-9DD3-993434D313FD")
-                            /*DirectShowLib.MediaType.Subtitle*/
-                                 && (_xySubFilter != null || _xyVsFilter != null))
+                        else if (mediaTypes[m] == SubtitleMediaType
+                            /*DirectShowLib.MediaType.Subtitle*/)
                         {
+                            #region subtitles
+
+                            var xySubFilterSucceeded = false;
+
+                            if (enableXySubFilter) //this flag indicates whether we should handle subtitle rendering
+                            {
+                                // Load xySubFilter if configured and if madvr succeeded
+                                if (enableMadvr || _customEvrPresenterLoaded)
+                                {
+                                    try
+                                    {
+                                        _xySubFilter = _playerWrapper.PrivateCom.GetObject(typeof(XySubFilter).GUID, true); //new XySubFilter();
+                                        var vxySubFilter = _xySubFilter as DirectShowLib.IBaseFilter;
+                                        if (vxySubFilter != null)
+                                        {
+                                            hr = m_graph.AddFilter(vxySubFilter, "xy-SubFilter");
+                                            DsError.ThrowExceptionForHR(hr);
+                                        }
+
+                                        xySubFilterSucceeded = true;
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        _logger.ErrorException("Error adding xy-SubFilter filter", ex);
+                                    }
+                                }
+
+                                // Fallback to xyVsFilter
+                                if (!xySubFilterSucceeded)
+                                {
+                                    try
+                                    {
+                                        _xyVsFilter = _playerWrapper.PrivateCom.GetObject(typeof(XYVSFilter).GUID, true); //new XYVSFilter();
+                                        var vxyVsFilter = _xyVsFilter as DirectShowLib.IBaseFilter;
+                                        if (vxyVsFilter != null)
+                                        {
+                                            hr = m_graph.AddFilter(vxyVsFilter, "xy-VSFilter");
+                                            DsError.ThrowExceptionForHR(hr);
+                                        }
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        _logger.ErrorException("Error adding xy-VSFilter filter", ex);
+                                    }
+                                }
+                            }
 
                             if (_xySubFilter != null)
                             {
-                                rendIn = DsFindPin.ByDirection((DirectShowLib.IBaseFilter) _xySubFilter,
+                                rendIn = DsFindPin.ByDirection((DirectShowLib.IBaseFilter)_xySubFilter,
                                     PinDirection.Input, 0);
                             }
                             else
                             {
-                                rendIn = DsFindPin.ByName((DirectShowLib.IBaseFilter) _xyVsFilter, "Input");
+                                //insert xyVsFilter b/w LAV Video and the renderer
+                                rendIn = DsFindPin.ByName((DirectShowLib.IBaseFilter)_xyVsFilter, "Video");
+                                decOut = DsFindPin.ByDirection((DirectShowLib.IBaseFilter)_lavvideo,
+                                    PinDirection.Output, 0);
+
+                                hr = decOut.Disconnect(); //disconnect the video out pin from the renderer
+                                DsError.ThrowExceptionForHR(hr);
+
+                                //connect it to VSFilter
+                                if (decOut != null && rendIn != null)
+                                {
+                                    hr = _filterGraph.ConnectDirect(decOut, rendIn, null);
+                                    DsError.ThrowExceptionForHR(hr);
+
+                                    CleanUpInterface(rendIn);
+                                    CleanUpInterface(decOut);
+                                }
+
+                                if (_madvr != null)
+                                {
+                                    rendIn = DsFindPin.ByDirection((DirectShowLib.IBaseFilter)_madvr,
+                                        PinDirection.Input, 0);
+                                }
+                                else
+                                {
+                                    rendIn = DsFindPin.ByDirection((DirectShowLib.IBaseFilter)_mPEvr,
+                                        PinDirection.Input, 0);
+                                }
+
+                                //grab xyVsFilter's output pin so it can be connected to the renderer
+                                decOut = DsFindPin.ByDirection((DirectShowLib.IBaseFilter)_xyVsFilter,
+                                        PinDirection.Output, 0);
+
+                                if (decOut != null && rendIn != null)
+                                {
+                                    hr = _filterGraph.ConnectDirect(decOut, rendIn, null);
+                                    DsError.ThrowExceptionForHR(hr);
+                                    CleanUpInterface(decOut);
+                                    CleanUpInterface(rendIn);
+                                }
+
+                                rendIn = DsFindPin.ByName((DirectShowLib.IBaseFilter)_xyVsFilter, "Input");
                             }
 
                             if (rendIn != null)
@@ -1311,6 +1319,24 @@ namespace MediaBrowser.Theater.DirectShow
                                 needsRender = false;
                                 break;
                             }
+                            #endregion
+                        }
+                        else if (mediaTypes[m] == DvdSubpictureMediaType)
+                        {
+                            #region DVD Subpicture
+                            if (_lavvideo != null)
+                            {
+                                rendIn = DsFindPin.ByName((DirectShowLib.IBaseFilter)_lavvideo, "Subtitle Input");
+                                if (rendIn != null)
+                                {
+                                    hr = _filterGraph.ConnectDirect(pins[0], rendIn, null);
+                                    DsError.ThrowExceptionForHR(hr);
+
+                                    needsRender = false;
+                                    break;
+                                }
+                            }
+                            #endregion
                         }
                     }
                     finally
@@ -1440,7 +1466,21 @@ namespace MediaBrowser.Theater.DirectShow
 
                 if (j != 0)
                 {
-                    mt.Add(amtDvr[0].majorType);
+                    if (amtDvr[0].majorType == DvdEncryptedMediaType)
+                    {
+                        if (amtDvr[0].subType == DirectShowLib.MediaSubType.Mpeg2Video)
+                        {
+                            mt.Add(DirectShowLib.MediaType.Video);
+                        }
+                        else if (amtDvr[0].subType == DirectShowLib.MediaSubType.DolbyAC3)
+                        {
+                            mt.Add(DirectShowLib.MediaType.Audio);
+                        }
+                        else
+                            mt.Add(amtDvr[0].subType);
+                    }
+                    else
+                        mt.Add(amtDvr[0].majorType);
 
                     DsUtils.FreeAMMediaType(amtDvr[0]);
                     amtDvr[0] = null;
@@ -3071,7 +3111,8 @@ namespace MediaBrowser.Theater.DirectShow
             }
             else
             {
-                throw new ApplicationException(String.Format("Invalid audioStreamIndex {0}", audioStreamIndex));
+                _logger.Debug("Invalid audioStreamIndex {0}", audioStreamIndex);
+                //throw new ApplicationException(String.Format("Invalid audioStreamIndex {0}", audioStreamIndex));
             }
         }
 

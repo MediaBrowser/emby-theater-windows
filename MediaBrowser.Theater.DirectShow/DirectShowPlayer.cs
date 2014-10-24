@@ -335,11 +335,14 @@ namespace MediaBrowser.Theater.DirectShow
                     item.OriginalItem.ParentId);
                 _logger.Info("Playing Path {0}", item.PlayablePath);
 
+                var mediaSource = item.MediaSource;
+
                 _item = item;
                 _isInExclusiveMode = false;
                 TimeSpan itemDuration = TimeSpan.MaxValue;
-                if (item.OriginalItem.RunTimeTicks > 0)
-                    itemDuration = TimeSpan.FromTicks((long)item.OriginalItem.RunTimeTicks);
+
+                if (mediaSource.RunTimeTicks.HasValue && mediaSource.RunTimeTicks.Value > 0)
+                    itemDuration = TimeSpan.FromTicks(mediaSource.RunTimeTicks.Value);
 
                 _iVideoScaling = (VideoScalingScheme)_mbtConfig.Configuration.InternalPlayerConfiguration.VideoConfig.ScalingMode;
 
@@ -362,32 +365,35 @@ namespace MediaBrowser.Theater.DirectShow
                             if (ms.Type == MediaStreamType.Video)
                             {
                                 _startResolution = Display.GetCurrentResolution();
-                                int videoRate = (int)ms.RealFrameRate;
-
-                                if (videoRate == 25 || videoRate == 29 || videoRate == 30 || ms.IsInterlaced) // ms.IsInterlaced doesn't appear to be accurate
+                                if (ms.RealFrameRate.HasValue)
                                 {
-                                    //Every display/GPU should be able to display @2x FPS and it's quite likely that 2x is the rendered FPS anyway
-                                    videoRate = (int)(ms.RealFrameRate * 2);
-                                }
+                                    int videoRate = (int)ms.RealFrameRate;
 
-                                _logger.Info("RealFrameRate: {0} videoRate: {1} startRate: {2}", ms.RealFrameRate, videoRate, _startResolution);
-
-                                if (videoRate != _startResolution.Rate)
-                                {
-                                    Resolution desiredRes = new Resolution(_startResolution.ToString());
-                                    desiredRes.Rate = videoRate;
-                                    if (Display.ChangeResolution(desiredRes, false))
-                                        _logger.Info("Changed resolution from {0} to {1}", _startResolution, desiredRes);
-                                    else
+                                    if (videoRate == 25 || videoRate == 29 || videoRate == 30 || ms.IsInterlaced) // ms.IsInterlaced doesn't appear to be accurate
                                     {
-                                        _logger.Info("Couldn't change resolution from {0} to {1}", _startResolution, desiredRes);
-                                        _startResolution = null;
+                                        //Every display/GPU should be able to display @2x FPS and it's quite likely that 2x is the rendered FPS anyway
+                                        videoRate = (int)(ms.RealFrameRate * 2);
                                     }
-                                }
-                                else
-                                    _startResolution = null;
 
-                                break;
+                                    _logger.Info("RealFrameRate: {0} videoRate: {1} startRate: {2}", ms.RealFrameRate, videoRate, _startResolution);
+
+                                    if (videoRate != _startResolution.Rate)
+                                    {
+                                        Resolution desiredRes = new Resolution(_startResolution.ToString());
+                                        desiredRes.Rate = videoRate;
+                                        if (Display.ChangeResolution(desiredRes, false))
+                                            _logger.Info("Changed resolution from {0} to {1}", _startResolution, desiredRes);
+                                        else
+                                        {
+                                            _logger.Info("Couldn't change resolution from {0} to {1}", _startResolution, desiredRes);
+                                            _startResolution = null;
+                                        }
+                                    }
+                                    else
+                                        _startResolution = null;
+
+                                    break;
+                                }
                             }
                             else
                                 _startResolution = null;
@@ -395,9 +401,9 @@ namespace MediaBrowser.Theater.DirectShow
                     }
                 }
 
-                var isDvd = ((item.OriginalItem.VideoType ?? VideoType.VideoFile) == VideoType.Dvd ||
-                             (item.OriginalItem.IsoType ?? IsoType.BluRay) == IsoType.Dvd) &&
-                            item.PlayablePath.IndexOf("http://", StringComparison.OrdinalIgnoreCase) == -1;
+                var isDvd = ((item.MediaSource.VideoType ?? VideoType.VideoFile) == VideoType.Dvd ||
+                             (item.MediaSource.IsoType ?? IsoType.BluRay) == IsoType.Dvd) &&
+                            item.StreamInfo == null;
 
                 Initialize(item.PlayablePath, enableMadvr, enableMadvrExclusiveMode,
                     _mbtConfig.Configuration.InternalPlayerConfiguration.SubtitleConfig.EnableXySubFilter, isDvd);
@@ -2970,9 +2976,7 @@ namespace MediaBrowser.Theater.DirectShow
                 ItemId = _item.OriginalItem.Id,
                 StreamIndex = stream.Index,
 
-                // MBT hasn't implemented MediaSources yet. Will be handled by migration to StreamBuilder library.
-                // For now, this knowledge of the ID isn't great, but should work
-                MediaSourceId = _item.OriginalItem.Id,
+                MediaSourceId = _item.MediaSource.Id,
 
                 Format = "srt"
             });

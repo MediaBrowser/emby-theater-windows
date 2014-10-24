@@ -123,7 +123,8 @@ namespace MediaBrowser.Theater.DirectShow
                     {
                         OriginalItem = item,
                         PlayablePath = info.MediaSource.Path,
-                        MediaSource = info.MediaSource
+                        MediaSource = info.MediaSource,
+                        StreamInfo = info
                     };
                 }
 
@@ -131,7 +132,8 @@ namespace MediaBrowser.Theater.DirectShow
                 {
                     OriginalItem = item,
                     PlayablePath = info.ToUrl(apiClient.ServerAddress + "/mediabrowser"),
-                    MediaSource = info.MediaSource
+                    MediaSource = info.MediaSource,
+                    StreamInfo = info
                 };
             }
             else
@@ -160,7 +162,8 @@ namespace MediaBrowser.Theater.DirectShow
                     {
                         OriginalItem = item,
                         PlayablePath = info.MediaSource.Path,
-                        MediaSource = info.MediaSource
+                        MediaSource = info.MediaSource,
+                        StreamInfo = info
                     };
                 }
 
@@ -173,7 +176,8 @@ namespace MediaBrowser.Theater.DirectShow
                 {
                     OriginalItem = item,
                     PlayablePath = info.ToUrl(apiClient.ServerAddress + "/mediabrowser"),
-                    MediaSource = info.MediaSource
+                    MediaSource = info.MediaSource,
+                    StreamInfo = info
                 };
 
                 if (!info.IsDirectStream)

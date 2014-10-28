@@ -318,11 +318,6 @@ namespace MediaBrowser.UI
         private async Task BeforeShutdown()
         {
             PlaybackManager.StopAllPlayback();
-
-            if (!TheaterConfigurationManager.Configuration.RememberLogin)
-            {
-                await SessionManager.Logout();
-            }
         }
 
         public override async Task Restart()

@@ -38,7 +38,7 @@ namespace MediaBrowser.Theater.Implementations.Session
             _playback = playback;
             _connectionManager = connectionManager;
 
-            //_connectionManager.RemoteLoggedOut += _connectionManager_RemoteLoggedOut;
+            _connectionManager.RemoteLoggedOut += _connectionManager_RemoteLoggedOut;
         }
 
         async void _connectionManager_RemoteLoggedOut(object sender, EventArgs e)
@@ -89,6 +89,8 @@ namespace MediaBrowser.Theater.Implementations.Session
             {
                 password = string.Empty;
             }
+
+            _connectionManager.SaveLocalCredentials = rememberCredentials;
 
             try
             {

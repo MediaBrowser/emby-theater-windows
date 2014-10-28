@@ -2744,10 +2744,6 @@ namespace MediaBrowser.Theater.DirectShow
                 var hasActiveInternalSubtitleStream = (internalStreams != null
                     ? internalStreams.FirstOrDefault(i => i.Type == MediaStreamType.Subtitle && i.IsActive)
                     : null) != null;
-                var activeSubtitlePreference = (hasActiveInternalSubtitleStream ||
-                                                _sessionManager.UserConfiguration.UseForcedSubtitlesOnly)
-                    ? String.Empty
-                    : _sessionManager.UserConfiguration.SubtitleLanguagePreference;
 
                 if (_item != null && _item.MediaStreams != null)
                 {
@@ -2760,12 +2756,12 @@ namespace MediaBrowser.Theater.DirectShow
                             Path = s.Path,
                             Type = MediaStreamType.Subtitle,
                             Identifier = "external",
-                            IsActive = (!String.IsNullOrEmpty(s.Language)) && (s.Language == activeSubtitlePreference)
+                            IsActive = !String.IsNullOrEmpty(s.Language)
                         });
                     }
                 }
 
-                if (externalSubtitleStreams.Any() && (internalStreams == null || ! internalStreams.Any(i => i.Type == MediaStreamType.Subtitle)))
+                if (externalSubtitleStreams.Any() && (internalStreams == null || internalStreams.All(i => i.Type != MediaStreamType.Subtitle)))
                 {
                     // have to add a nosubtitle stream, so the user can turn subS  off
                     externalSubtitleStreams.Add(new SelectableMediaStream

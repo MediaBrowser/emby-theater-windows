@@ -1289,6 +1289,8 @@ namespace MediaBrowser.Theater.DirectShow
 
                                     CleanUpInterface(rendIn);
                                     CleanUpInterface(decOut);
+                                    rendIn = null;
+                                    decOut = null;
                                 }
 
                                 if (_madvr != null)
@@ -1308,10 +1310,15 @@ namespace MediaBrowser.Theater.DirectShow
 
                                 if (decOut != null && rendIn != null)
                                 {
+                                    hr = rendIn.Disconnect(); // this shouldn't be necessary, but whatevah
+
                                     hr = _filterGraph.ConnectDirect(decOut, rendIn, null);
                                     DsError.ThrowExceptionForHR(hr);
                                     CleanUpInterface(decOut);
                                     CleanUpInterface(rendIn);
+
+                                    rendIn = null;
+                                    decOut = null;
                                 }
 
                                 rendIn = DsFindPin.ByName((DirectShowLib.IBaseFilter)_xyVsFilter, "Input");

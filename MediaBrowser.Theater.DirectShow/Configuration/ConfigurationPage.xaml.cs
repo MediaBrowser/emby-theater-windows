@@ -78,6 +78,13 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
                  new SelectListItem{ Text = "Stable", Value=""},
                  new SelectListItem{ Text = "Edge", Value="edge"}
             };
+
+            SelectVideoRenderer.Options = new List<SelectListItem>
+            {
+                 new SelectListItem{ Text = "EVR+", Value="EVRCP"},
+                 new SelectListItem{ Text = "madVR", Value="madVR"},
+                 new SelectListItem{ Text = "EVR", Value="EVR"}
+            };
         }
 
         async void BtnConfigureSubtitles_Click(object sender, RoutedEventArgs e)
@@ -111,7 +118,14 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
             var config = _config.Configuration.InternalPlayerConfiguration;
 
             //ChkEnableReclock.IsChecked = config.EnableReclock;
-            ChkEnableMadvr.IsChecked = config.VideoConfig.EnableMadvr;
+            //ChkEnableMadvr.IsChecked = config.VideoConfig.EnableMadvr;
+            if (config.VideoConfig.EnableMadvr)
+                SelectVideoRenderer.SelectedValue = "madVR";
+            else if (config.VideoConfig.UseCustomPresenter)
+                SelectVideoRenderer.SelectedValue = "EVRCP";
+            else
+                SelectVideoRenderer.SelectedValue = "EVR";
+
             ChkEnableXySubFilter.IsChecked = config.SubtitleConfig.EnableXySubFilter;
             SelectAudioBitstreamingMode.SelectedValue = config.AudioConfig.AudioBitstreaming.ToString();
             SelectHwaMode.SelectedValue = config.VideoConfig.HwaMode.ToString();
@@ -127,7 +141,22 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
             bool redownloadFilters = false;
 
             //config.EnableReclock = ChkEnableReclock.IsChecked ?? false;
-            config.VideoConfig.EnableMadvr = ChkEnableMadvr.IsChecked ?? false;
+            //config.VideoConfig.EnableMadvr = ChkEnableMadvr.IsChecked ?? false;
+            switch (SelectVideoRenderer.SelectedValue)
+            {
+                case "madVR":
+                    config.VideoConfig.EnableMadvr = true;
+                    config.VideoConfig.UseCustomPresenter = true;
+                    break;
+                case "EVRCP":
+                    config.VideoConfig.EnableMadvr = false;
+                    config.VideoConfig.UseCustomPresenter = true;
+                    break;
+                case "EVR":
+                    config.VideoConfig.EnableMadvr = false;
+                    config.VideoConfig.UseCustomPresenter = false;
+                    break;
+            }
             config.SubtitleConfig.EnableXySubFilter = ChkEnableXySubFilter.IsChecked ?? false;
 
             config.AudioConfig.AudioBitstreaming = (BitstreamChoice)Enum.Parse(typeof(BitstreamChoice), SelectAudioBitstreamingMode.SelectedValue);

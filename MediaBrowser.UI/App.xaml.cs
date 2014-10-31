@@ -533,7 +533,7 @@ namespace MediaBrowser.UI
         public async void NavigateFromConnectionResult(ConnectionResult result)
         {
             // Startup wizard
-            if (result.State == ConnectionState.Unavailable)
+            if (result.State == ConnectionState.Unavailable || result.State == ConnectionState.ConnectSignIn)
             {
                 await Dispatcher.InvokeAsync(async () => await _appHost.NavigationService.Navigate(new StartupWizardPage(_appHost.NavigationService, _appHost.ConnectionManager, _appHost.PresentationManager, _logger)));
             }

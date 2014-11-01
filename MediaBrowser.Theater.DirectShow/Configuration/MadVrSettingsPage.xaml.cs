@@ -61,12 +61,12 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
 
             SelectScalingMode.Options = new List<SelectListItem>
             {
-                 new SelectListItem{ Text = "Half", Value="0"},
-                 new SelectListItem{ Text = "Normal", Value="1"},
-                 new SelectListItem{ Text = "Double", Value="2"},
+                 new SelectListItem{ Text = "Half Size", Value="0"},
+                 new SelectListItem{ Text = "Original Size", Value="1"},
+                 new SelectListItem{ Text = "Double Size", Value="2"},
                  new SelectListItem{ Text = "Stretch", Value="3"},
-                 new SelectListItem{ Text = "From Inside", Value="4"},
-                 new SelectListItem{ Text = "From Outside", Value="5"},
+                 new SelectListItem{ Text = "Touch Inside", Value="4"},
+                 new SelectListItem{ Text = "Touch Outside", Value="5"},
                  new SelectListItem{ Text = "Zoom 1", Value="6"},
                  new SelectListItem{ Text = "Zoom 2", Value="7"}
             };

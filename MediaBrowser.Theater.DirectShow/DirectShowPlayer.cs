@@ -1817,6 +1817,8 @@ namespace MediaBrowser.Theater.DirectShow
                     double dVRWidth = dWRHeight * dVideoAR;
                     double dVRHeight;
 
+                    _logger.Debug("Scale: {0} Video Width: {1} Video Height: {2} X-AR: {3} Y-AR: {4}", _iVideoScaling, vSize.Width, vSize.Height, vAR.cx, vAR.cy);
+
                     switch (_iVideoScaling)
                     {
                         case VideoScalingScheme.HALF:

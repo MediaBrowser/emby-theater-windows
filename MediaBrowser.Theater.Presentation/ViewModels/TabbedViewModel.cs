@@ -67,18 +67,13 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
             set
             {
-                var changed = !string.Equals(_currentSection, value);
-
                 _currentSection = value;
 
-                if (changed)
-                {
-                    ContentViewModel = null;
+                ContentViewModel = null;
 
-                    OnPropertyChanged("CurrentSection");
+                OnPropertyChanged("CurrentSection");
 
-                    ContentViewModel = GetContentViewModel(CurrentSection);
-                }
+                ContentViewModel = GetContentViewModel(CurrentSection);
             }
         }
 

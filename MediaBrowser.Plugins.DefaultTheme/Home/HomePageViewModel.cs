@@ -50,11 +50,9 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             var views = userViews.Items.Select(i =>
             {
-                // Mixed folder type.
-                if (string.IsNullOrEmpty(i.CollectionType))
-                {
-                    return null;
-                }
+                var collectionType = string.IsNullOrEmpty(i.CollectionType)
+                    ? "Folders"
+                    : i.CollectionType;
 
                 var supportedViews = new List<string>
                 {
@@ -69,7 +67,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                     CollectionType.Music
                 };
 
-                if (!supportedViews.Contains(i.CollectionType, StringComparer.OrdinalIgnoreCase))
+                if (!supportedViews.Contains(collectionType, StringComparer.OrdinalIgnoreCase))
                 {
                     return null;
                 }
@@ -77,7 +75,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                 return new TabItem
                 {
                     DisplayName = i.Name,
-                    Name = i.CollectionType,
+                    Name = collectionType,
                     Item = i
                 };
 

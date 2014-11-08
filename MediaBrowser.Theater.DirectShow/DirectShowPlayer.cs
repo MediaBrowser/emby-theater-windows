@@ -3014,6 +3014,16 @@ namespace MediaBrowser.Theater.DirectShow
             }
             else
             {
+                //make sure the splitter isn't providing a subtitle
+                int subIndex = (int)CurrentSubtitleStreamIndex;
+                if (subIndex > 0)
+                {
+                    var iss = _sourceFilter as IAMStreamSelect;
+                    if (iss != null)
+                    {
+                        int hr = iss.Enable(subIndex, AMStreamSelectEnableFlags.DisableAll);
+                    }
+                }
                 // if not, we need to copy the stream to the local system and play form there (xyfilter issue)
                 LoadExternalSubtitleFromStream(stream);
 
@@ -3096,8 +3106,8 @@ namespace MediaBrowser.Theater.DirectShow
 
                 var iss = filters[0] as IAMStreamSelect;
 
-               
-                iss.Enable(stream.Index, AMStreamSelectEnableFlags.Enable);
+                if(iss != null)
+                    iss.Enable(stream.Index, AMStreamSelectEnableFlags.Enable);
 
                 Marshal.ReleaseComObject(filters[0]);
             }

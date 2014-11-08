@@ -76,6 +76,7 @@
         Logoff,            // Logoff the current User
         ShowScreensaver,   // display the screen saver
         // MoveItemUp etc,        // play list management
-        ScreenDump
+        ScreenDump,
+        ToggleVideoScaling
     }
 }

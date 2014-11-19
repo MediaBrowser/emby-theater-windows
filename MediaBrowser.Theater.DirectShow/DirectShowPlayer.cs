@@ -3018,6 +3018,7 @@ namespace MediaBrowser.Theater.DirectShow
                 int subIndex = (int)CurrentSubtitleStreamIndex;
                 if (subIndex > 0)
                 {
+                    _logger.Debug("Clear internal subtitle");
                     var iss = _sourceFilter as IAMStreamSelect;
                     if (iss != null)
                     {

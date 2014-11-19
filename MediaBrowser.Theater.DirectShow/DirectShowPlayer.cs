@@ -869,40 +869,108 @@ namespace MediaBrowser.Theater.DirectShow
                                         DsError.ThrowExceptionForHR(hr);
                                     }
                                 }
+
+                                decIn = DsFindPin.ByDirection((DirectShowLib.IBaseFilter)_lavvideo, PinDirection.Input, 0);
+                                if (decIn != null)
+                                {
+                                    hr = _filterGraph.ConnectDirect(pins[0], decIn, null);
+                                    DsError.ThrowExceptionForHR(hr);
+                                    decOut = DsFindPin.ByDirection((DirectShowLib.IBaseFilter)_lavvideo,
+                                        PinDirection.Output, 0);
+                                    
+                                    if (enableXySubFilter) //this flag indicates whether we should handle subtitle rendering
+                                    {
+                                        var xySubFilterSucceeded = false;
+
+                                        // Load xySubFilter if configured and if madvr succeeded
+                                        if (enableMadvr || _customEvrPresenterLoaded)
+                                        {
+                                            try
+                                            {
+                                                _xySubFilter = _playerWrapper.PrivateCom.GetObject(typeof(XySubFilter).GUID, true); //new XySubFilter();
+                                                var vxySubFilter = _xySubFilter as DirectShowLib.IBaseFilter;
+                                                if (vxySubFilter != null)
+                                                {
+                                                    hr = m_graph.AddFilter(vxySubFilter, "xy-SubFilter");
+                                                    DsError.ThrowExceptionForHR(hr);
+                                                }
+
+                                                xySubFilterSucceeded = true;
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                                _logger.ErrorException("Error adding xy-SubFilter filter", ex);
+                                            }
+                                        }
+
+                                        // Fallback to xyVsFilter
+                                        if (!xySubFilterSucceeded)
+                                        {
+                                            try
+                                            {
+                                                _xyVsFilter = _playerWrapper.PrivateCom.GetObject(typeof(XYVSFilter).GUID, true); //new XYVSFilter();
+                                                var vxyVsFilter = _xyVsFilter as DirectShowLib.IBaseFilter;
+                                                if (vxyVsFilter != null)
+                                                {
+                                                    hr = m_graph.AddFilter(vxyVsFilter, "xy-VSFilter");
+                                                    DsError.ThrowExceptionForHR(hr);
+                                                }
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                                _logger.ErrorException("Error adding xy-VSFilter filter", ex);
+                                            }
+                                        }
+
+                                        if (_xyVsFilter != null) //If using VSFilter
+                                        {   
+                                            //insert xyVsFilter b/w LAV Video and the renderer
+                                            rendIn = DsFindPin.ByName((DirectShowLib.IBaseFilter)_xyVsFilter, "Video");
+                                            
+                                            //connect it to VSFilter
+                                            if (decOut != null && rendIn != null)
+                                            {
+                                                hr = _filterGraph.ConnectDirect(decOut, rendIn, null);
+                                                DsError.ThrowExceptionForHR(hr);
+
+                                                CleanUpInterface(rendIn);
+                                                CleanUpInterface(decOut);
+                                                rendIn = null;
+                                                decOut = null;
+                                            }
+
+                                            //grab xyVsFilter's output pin so it can be connected to the renderer
+                                            decOut = DsFindPin.ByDirection((DirectShowLib.IBaseFilter)_xyVsFilter,
+                                                    PinDirection.Output, 0);                                            
+                                        }
+                                    }
+
+                                    if (_madvr != null)
+                                    {
+                                        rendIn = DsFindPin.ByDirection((DirectShowLib.IBaseFilter)_madvr,
+                                            PinDirection.Input, 0);
+                                    }
+                                    else
+                                    {
+                                        rendIn = DsFindPin.ByDirection((DirectShowLib.IBaseFilter)_mPEvr,
+                                            PinDirection.Input, 0);
+                                    }
+
+                                    if (decOut != null && rendIn != null)
+                                    {
+                                        hr = _filterGraph.ConnectDirect(decOut, rendIn, null);
+                                        DsError.ThrowExceptionForHR(hr);
+
+                                        needsRender = false;
+                                        break;
+                                    }
+                                }
                             }
                             catch (Exception ex)
                             {
                                 _logger.ErrorException("Error adding LAV Video filter", ex);
                             }
-
-                            decIn = DsFindPin.ByDirection((DirectShowLib.IBaseFilter)_lavvideo, PinDirection.Input, 0);
-                            if (decIn != null)
-                            {
-                                hr = _filterGraph.ConnectDirect(pins[0], decIn, null);
-                                DsError.ThrowExceptionForHR(hr);
-                                decOut = DsFindPin.ByDirection((DirectShowLib.IBaseFilter)_lavvideo,
-                                    PinDirection.Output, 0);
-
-                                if (_madvr != null)
-                                {
-                                    rendIn = DsFindPin.ByDirection((DirectShowLib.IBaseFilter)_madvr,
-                                        PinDirection.Input, 0);
-                                }
-                                else
-                                {
-                                    rendIn = DsFindPin.ByDirection((DirectShowLib.IBaseFilter)_mPEvr,
-                                        PinDirection.Input, 0);
-                                }
-
-                                if (decOut != null && rendIn != null)
-                                {
-                                    hr = _filterGraph.ConnectDirect(decOut, rendIn, null);
-                                    DsError.ThrowExceptionForHR(hr);
-
-                                    needsRender = false;
-                                    break;
-                                }
-                            }
+                            
                             #endregion
                         }
                         else if (mediaTypes[m] == DirectShowLib.MediaType.Audio)
@@ -1219,108 +1287,15 @@ namespace MediaBrowser.Theater.DirectShow
                         else if (mediaTypes[m] == SubtitleMediaType
                             /*DirectShowLib.MediaType.Subtitle*/)
                         {
-                            #region subtitles
-
-                            var xySubFilterSucceeded = false;
-
-                            if (enableXySubFilter) //this flag indicates whether we should handle subtitle rendering
-                            {
-                                // Load xySubFilter if configured and if madvr succeeded
-                                if (enableMadvr || _customEvrPresenterLoaded)
-                                {
-                                    try
-                                    {
-                                        _xySubFilter = _playerWrapper.PrivateCom.GetObject(typeof(XySubFilter).GUID, true); //new XySubFilter();
-                                        var vxySubFilter = _xySubFilter as DirectShowLib.IBaseFilter;
-                                        if (vxySubFilter != null)
-                                        {
-                                            hr = m_graph.AddFilter(vxySubFilter, "xy-SubFilter");
-                                            DsError.ThrowExceptionForHR(hr);
-                                        }
-
-                                        xySubFilterSucceeded = true;
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        _logger.ErrorException("Error adding xy-SubFilter filter", ex);
-                                    }
-                                }
-
-                                // Fallback to xyVsFilter
-                                if (!xySubFilterSucceeded)
-                                {
-                                    try
-                                    {
-                                        _xyVsFilter = _playerWrapper.PrivateCom.GetObject(typeof(XYVSFilter).GUID, true); //new XYVSFilter();
-                                        var vxyVsFilter = _xyVsFilter as DirectShowLib.IBaseFilter;
-                                        if (vxyVsFilter != null)
-                                        {
-                                            hr = m_graph.AddFilter(vxyVsFilter, "xy-VSFilter");
-                                            DsError.ThrowExceptionForHR(hr);
-                                        }
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        _logger.ErrorException("Error adding xy-VSFilter filter", ex);
-                                    }
-                                }
-                            }
+                            #region subtitles                            
 
                             if (_xySubFilter != null)
                             {
                                 rendIn = DsFindPin.ByDirection((DirectShowLib.IBaseFilter)_xySubFilter,
                                     PinDirection.Input, 0);
                             }
-                            else
+                            else if(_xyVsFilter != null)
                             {
-                                //insert xyVsFilter b/w LAV Video and the renderer
-                                rendIn = DsFindPin.ByName((DirectShowLib.IBaseFilter)_xyVsFilter, "Video");
-                                decOut = DsFindPin.ByDirection((DirectShowLib.IBaseFilter)_lavvideo,
-                                    PinDirection.Output, 0);
-
-                                hr = decOut.Disconnect(); //disconnect the video out pin from the renderer
-                                DsError.ThrowExceptionForHR(hr);
-
-                                //connect it to VSFilter
-                                if (decOut != null && rendIn != null)
-                                {
-                                    hr = _filterGraph.ConnectDirect(decOut, rendIn, null);
-                                    DsError.ThrowExceptionForHR(hr);
-
-                                    CleanUpInterface(rendIn);
-                                    CleanUpInterface(decOut);
-                                    rendIn = null;
-                                    decOut = null;
-                                }
-
-                                if (_madvr != null)
-                                {
-                                    rendIn = DsFindPin.ByDirection((DirectShowLib.IBaseFilter)_madvr,
-                                        PinDirection.Input, 0);
-                                }
-                                else
-                                {
-                                    rendIn = DsFindPin.ByDirection((DirectShowLib.IBaseFilter)_mPEvr,
-                                        PinDirection.Input, 0);
-                                }
-
-                                //grab xyVsFilter's output pin so it can be connected to the renderer
-                                decOut = DsFindPin.ByDirection((DirectShowLib.IBaseFilter)_xyVsFilter,
-                                        PinDirection.Output, 0);
-
-                                if (decOut != null && rendIn != null)
-                                {
-                                    hr = rendIn.Disconnect(); // this shouldn't be necessary, but whatevah
-
-                                    hr = _filterGraph.ConnectDirect(decOut, rendIn, null);
-                                    DsError.ThrowExceptionForHR(hr);
-                                    CleanUpInterface(decOut);
-                                    CleanUpInterface(rendIn);
-
-                                    rendIn = null;
-                                    decOut = null;
-                                }
-
                                 rendIn = DsFindPin.ByName((DirectShowLib.IBaseFilter)_xyVsFilter, "Input");
                             }
 
@@ -2832,7 +2807,7 @@ namespace MediaBrowser.Theater.DirectShow
             if (subtitleFilter != null)
             {
                 var extSubSource = subtitleFilter as IDirectVobSub;
-                if (extSubSource != null)
+                if (extSubSource != null && !string.IsNullOrWhiteSpace(subtitleFile))
                 {
                     string subName = Path.GetFileNameWithoutExtension(subtitleFile);
 

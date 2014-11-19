@@ -51,13 +51,13 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             var views = userViews.Items.Select(i =>
             {
                 var collectionType = string.IsNullOrEmpty(i.CollectionType)
-                    ? "Folders"
+                    ? "folders"
                     : i.CollectionType;
 
                 var supportedViews = new List<string>
                 {
                     CollectionType.Movies,
-                    "Folders",
+                    "folders",
                     CollectionType.Channels,
                     CollectionType.Games,
                     CollectionType.TvShows,

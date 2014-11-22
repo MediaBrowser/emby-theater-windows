@@ -17,11 +17,19 @@ namespace MediaBrowser.Theater.StartupWizard.ViewModels
         bool HasCustomNextPage { get; }
         IWizardPage Next();
         Task<bool> Validate();
+        void Initialize(WizardViewModel wizard);
     }
 
     public abstract class BaseWizardPage : BaseValidatingViewModel, IWizardPage
     {
         public virtual bool HasCustomNextPage { get { return false; } }
+
+        public WizardViewModel Wizard { get; private set; }
+
+        public virtual void Initialize(WizardViewModel wizard)
+        {
+            Wizard = wizard;
+        }
         
         public virtual IWizardPage Next()
         {
@@ -113,6 +121,7 @@ namespace MediaBrowser.Theater.StartupWizard.ViewModels
 
                 if (_currentPage != null) {
                     _currentPage.PropertyChanged += CurrentPagePropertyChanged;
+                    _currentPage.Initialize(this);
                     _currentPage.Validate();
                 }
 
@@ -158,7 +167,7 @@ namespace MediaBrowser.Theater.StartupWizard.ViewModels
             CancelCommand = new RelayCommand(arg => Cancel());
         }
 
-        private async void MoveNext()
+        public async void MoveNext()
         {
             if (!await CurrentPage.Validate()) {
                 return;
@@ -180,7 +189,7 @@ namespace MediaBrowser.Theater.StartupWizard.ViewModels
             }
         }
 
-        private void MoveBack()
+        public void MoveBack()
         {
             var run = _runs[_currentRun];
 
@@ -193,7 +202,7 @@ namespace MediaBrowser.Theater.StartupWizard.ViewModels
             }
         }
 
-        private void Cancel()
+        public void Cancel()
         {
             var result = MessageBox.Show("MediaBrowser.Theater:Strings:SetupWizard_CancelConfirmMessage".Localize(),
                                          "MediaBrowser.Theater:Strings:SetupWizard_CancelConfirmTitle".Localize(),

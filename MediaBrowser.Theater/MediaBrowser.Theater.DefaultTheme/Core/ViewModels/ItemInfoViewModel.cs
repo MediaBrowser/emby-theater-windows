@@ -334,6 +334,11 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
             }
         }
 
+        public bool HasOverview
+        {
+            get { return !string.IsNullOrEmpty(Overview); }
+        }
+
         public bool HasRuntime
         {
             get { return !string.IsNullOrEmpty(Runtime); }

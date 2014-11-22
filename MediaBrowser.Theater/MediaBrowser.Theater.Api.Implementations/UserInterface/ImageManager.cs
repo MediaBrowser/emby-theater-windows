@@ -121,7 +121,10 @@ namespace MediaBrowser.Theater.Api.UserInterface
             string cachePath = _remoteImageCache.GetResourcePath(url.GetMD5().ToString());
 
             try {
-                return GetCachedBitmapImage(cachePath);
+                var result = GetCachedBitmapImage(cachePath);
+                if (result != null) {
+                    return result;
+                }
             }
             catch (IOException) {
                 // Cache file doesn't exist or is currently being written to.
@@ -135,8 +138,10 @@ namespace MediaBrowser.Theater.Api.UserInterface
             // Look in the cache again
             try {
                 BitmapImage img = GetCachedBitmapImage(cachePath);
-                semaphore.Release();
-                return img;
+                if (img != null) {
+                    semaphore.Release();
+                    return img;
+                }
             }
             catch (IOException) {
                 // Cache file doesn't exist or is currently being written to.
@@ -180,6 +185,10 @@ namespace MediaBrowser.Theater.Api.UserInterface
         private BitmapImage GetCachedBitmapImage(string cachePath)
         {
             var bitmapImage = new BitmapImage();
+
+            if (!File.Exists(cachePath)) {
+                return null;
+            }
 
             using (var stream = File.OpenRead(cachePath)) {
                 bitmapImage.BeginInit();

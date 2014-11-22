@@ -71,12 +71,9 @@ namespace MediaBrowser.Theater.Api.Session
             if (password == null) {
                 password = string.Empty;
             }
-
-            //Compute hash then pass to main login routine
-            byte[] hash = ComputeHash(password);
-
+            
             try {
-                AuthenticationResult result = await apiClient.AuthenticateUserAsync(username, hash);
+                AuthenticationResult result = await apiClient.AuthenticateUserAsync(username, password);
 
                 CurrentUser = result.User;
 
@@ -101,14 +98,6 @@ namespace MediaBrowser.Theater.Api.Session
         {
             if (CurrentUser != null) {
                 await Logout();
-            }
-        }
-
-        protected byte[] ComputeHash(string data)
-        {
-            using (SHA1 provider = SHA1.Create()) {
-                byte[] hash = provider.ComputeHash(Encoding.UTF8.GetBytes(data ?? string.Empty));
-                return hash;
             }
         }
 

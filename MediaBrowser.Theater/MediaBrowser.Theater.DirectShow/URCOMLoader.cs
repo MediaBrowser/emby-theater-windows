@@ -200,11 +200,8 @@ namespace MediaBrowser.Theater.DirectShow
             private set;
         }
 
-        public URCOMLoader(ITheaterConfigurationManager mbtConfig, IZipClient zipClient)
+        public URCOMLoader(ITheaterConfigurationManager mbtConfig)
         {
-            //this should be called on app load, but this will make sure it gets done.
-            URCOMLoader.EnsureObjects(mbtConfig, zipClient, true);
-
             _knownObjects = mbtConfig.Configuration.InternalPlayerConfiguration.COMConfig.FilterList;
             SearchPath = Path.Combine(mbtConfig.CommonApplicationPaths.ProgramDataPath, OJB_FOLDER);
             _preferURObjects = mbtConfig.Configuration.InternalPlayerConfiguration.UsePrivateObjects;

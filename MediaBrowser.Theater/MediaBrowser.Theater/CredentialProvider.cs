@@ -1,4 +1,6 @@
 ﻿using MediaBrowser.ApiInteraction;
+using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Serialization;
 using MediaBrowser.Theater.Api.Configuration;
 using System.IO;
@@ -11,11 +13,13 @@ namespace MediaBrowser.Theater
     {
         private readonly ITheaterConfigurationManager _config;
         private readonly IJsonSerializer _json;
+        private readonly ILogger _logger;
 
-        public CredentialProvider(ITheaterConfigurationManager config, IJsonSerializer json)
+        public CredentialProvider(ITheaterConfigurationManager config, IJsonSerializer json, ILogger logger)
         {
             _config = config;
             _json = json;
+            _logger = logger;
         }
 
         private string Path
@@ -23,10 +27,10 @@ namespace MediaBrowser.Theater
             get { return System.IO.Path.Combine(_config.CommonApplicationPaths.ConfigurationDirectoryPath, "servers.json"); }
         }
 
-        private ServerCredentialConfiguration _servers;
+        private ServerCredentials _servers;
         private readonly SemaphoreSlim _asyncLock = new SemaphoreSlim(1, 1);
 
-        public async Task<ServerCredentialConfiguration> GetServerCredentials()
+        public async Task<ServerCredentials> GetServerCredentials()
         {
             if (_servers == null)
             {
@@ -38,11 +42,12 @@ namespace MediaBrowser.Theater
                     {
                         try
                         {
-                            _servers = _json.DeserializeFromFile<ServerCredentialConfiguration>(Path);
+                            _servers = _json.DeserializeFromFile<ServerCredentials>(Path);
                         }
-                        catch (IOException)
+                        catch (IOException ex)
                         {
-                            _servers = new ServerCredentialConfiguration();
+                            _logger.ErrorException("Error reading saved credentials", ex);
+                            _servers = new ServerCredentials();
                         }
                     }
                 }
@@ -54,7 +59,7 @@ namespace MediaBrowser.Theater
             return _servers;
         }
 
-        public async Task SaveServerCredentials(ServerCredentialConfiguration configuration)
+        public async Task SaveServerCredentials(ServerCredentials configuration)
         {
             var path = Path;
             Directory.CreateDirectory(System.IO.Path.GetDirectoryName(path));

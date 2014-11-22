@@ -73,7 +73,7 @@ namespace MediaBrowser.Theater.DirectShow
 
             //use a static object so we keep the libraries in the same place. Doesn't usually matter, but the EVR Presenter does some COM hooking that has problems if we change the lib address.
             if (_privateCom == null)
-                _privateCom = new URCOMLoader(_config, _zipClient);
+                _privateCom = new URCOMLoader(_config);
 
             windowManager.WindowLoaded += window => _hiddenWindow = window;
         }

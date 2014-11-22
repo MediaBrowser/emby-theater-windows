@@ -21,6 +21,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
         : BaseViewModel, IKnownSize
     {
         private BaseItemDto _item;
+        private readonly IConnectionManager _connectionManager;
         private readonly IPlaybackManager _playbackManager;
 
         private bool? _showHeader;
@@ -28,6 +29,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
         public ItemTileViewModel(IConnectionManager connectionManager, IImageManager imageManager,
                                  INavigator navigator, IPlaybackManager playbackManager, BaseItemDto item)
         {
+            _connectionManager = connectionManager;
             _playbackManager = playbackManager;
             _item = item;
 
@@ -44,9 +46,6 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
             DisplayNameGenerator = GetDisplayNameWithAiredSpecial;
             GoToDetailsCommand = new RelayCommand(o => navigator.Navigate(Go.To.Item(Item)));
             PlayCommand = new RelayCommand(o => _playbackManager.Play(new PlayOptions(Item) { GoFullScreen = true, EnableCustomPlayers = true, Resume = true }));
-
-            var apiClient = connectionManager.GetApiClient(item);
-            apiClient.UserDataChanged += serverEvents_UserDataChanged;
         }
 
         public BaseItemDto Item
@@ -58,7 +57,18 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
                     return;
                 }
 
+                if (_item != null) {
+                    var apiClient = _connectionManager.GetApiClient(_item);
+                    apiClient.UserDataChanged -= serverEvents_UserDataChanged;
+                }
+
                 _item = value;
+
+                if (_item != null) {
+                    var apiClient = _connectionManager.GetApiClient(_item);
+                    apiClient.UserDataChanged += serverEvents_UserDataChanged;
+                }
+
                 OnPropertyChanged();
                 RefreshItemFields();
                 Image.Item = value;

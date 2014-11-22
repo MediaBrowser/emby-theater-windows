@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using MediaBrowser.ApiInteraction;
+using MediaBrowser.ApiInteraction.Cryptography;
 using MediaBrowser.ApiInteraction.Network;
 using MediaBrowser.ApiInteraction.WebSocket;
 using MediaBrowser.Common.Configuration;
@@ -74,6 +75,11 @@ namespace MediaBrowser.Theater
         public override bool CanSelfRestart
         {
             get { return true; }
+        }
+
+        public override Version ApplicationVersion
+        {
+            get { return GetType().Assembly.GetName().Version; }
         }
 
         /// <summary>
@@ -263,13 +269,14 @@ namespace MediaBrowser.Theater
             };
 
             ConnectionManager = new ConnectionManager(logger,
-                new CredentialProvider(TheaterConfigurationManager, JsonSerializer),
+                new CredentialProvider(TheaterConfigurationManager, JsonSerializer, LogManager.GetLogger("CredentialProvider")),
                 new NetworkConnection(Logger),
                 new ServerLocator(logger),
                 "Media Browser Theater",
                 ApplicationVersion.ToString(),
                 device,
                 capabilities,
+                new CryptographyProvider(),
                 ClientWebSocketFactory.CreateWebSocket)
             {
                 JsonSerializer = JsonSerializer

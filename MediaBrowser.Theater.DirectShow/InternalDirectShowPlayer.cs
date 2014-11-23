@@ -377,7 +377,9 @@ namespace MediaBrowser.Theater.DirectShow
 
             var apiClient = _connectionManager.GetApiClient(item);
 
-            return PlayablePathBuilder.GetPlayableItem(item, mountedIso, apiClient, startTimeTicks, _config.Configuration.MaxStreamingBitrate);
+            //var result = await apiClient.GetLiveMediaInfo(item.Id);
+
+            return PlayablePathBuilder.GetPlayableItem(item, item.MediaSources, mountedIso, apiClient, startTimeTicks, _config.Configuration.MaxStreamingBitrate);
         }
 
         /// <summary>

@@ -111,7 +111,7 @@ using MediaBrowser.Theater.Presentation.Playback;
                 new CommandActionMapping( Command.Step,            SkipForward,        60),     
                 new CommandActionMapping( Command.SmallStepForward,SkipForward,        10),
                 new CommandActionMapping( Command.SmallStepBack,   SkipBackward,       10),
-                new CommandActionMapping( Command.StepForward,     SkipBackward,       60),
+                new CommandActionMapping( Command.StepForward,     SkipForward,        60),
                 new CommandActionMapping( Command.StepBack,        SkipBackward,       60),
                 new CommandActionMapping( Command.BigStepForward,  SkipForward,        300),
                 new CommandActionMapping( Command.BigStepBack,     SkipBackward,       300),

@@ -155,6 +155,22 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Login\Views\ConnectPinView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Login\Views\ServerConnectionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Login\Views\ServerSelectionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Login\Views\WelcomePageView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="SortModeMenu\Views\SortModeCommandView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -408,6 +424,25 @@
     <Compile Include="Home\Views\Generic\GenericFolderSpotlightView.xaml.cs">
       <DependentUpon>GenericFolderSpotlightView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Login\ConnectPinContext.cs" />
+    <Compile Include="Login\ServerSelectionContext.cs" />
+    <Compile Include="Login\ViewModels\ConnectPinViewModel.cs" />
+    <Compile Include="Login\ViewModels\ServerConnectionViewModel.cs" />
+    <Compile Include="Login\ViewModels\ServerSelectionViewModel.cs" />
+    <Compile Include="Login\ViewModels\WelcomePageViewModel.cs" />
+    <Compile Include="Login\Views\ConnectPinView.xaml.cs">
+      <DependentUpon>ConnectPinView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Login\Views\ServerConnectionView.xaml.cs">
+      <DependentUpon>ServerConnectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Login\Views\ServerSelectionView.xaml.cs">
+      <DependentUpon>ServerSelectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Login\Views\WelcomePageView.xaml.cs">
+      <DependentUpon>WelcomePageView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Login\WelcomePageContext.cs" />
     <Compile Include="SortModeMenu\Commands\SortModeCommand.cs" />
     <Compile Include="Core\Commands\RestartMenuCommand.cs" />
     <Compile Include="Core\Commands\ShutdownMenuCommand.cs" />
@@ -549,7 +584,7 @@
     <Compile Include="ItemList\Views\ItemListView.xaml.cs">
       <DependentUpon>ItemListView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Login\LoginContext.cs" />
+    <Compile Include="Login\UserSelectionContext.cs" />
     <Compile Include="Login\ViewModels\LoginViewModel.cs" />
     <Compile Include="Login\ViewModels\UserLoginViewModel.cs" />
     <Compile Include="Login\Views\LoginView.xaml.cs">

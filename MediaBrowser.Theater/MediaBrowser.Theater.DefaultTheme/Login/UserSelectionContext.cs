@@ -9,7 +9,7 @@ using MediaBrowser.Theater.DefaultTheme.Login.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.Login
 {
-    public class LoginContext
+    public class UserSelectionContext
         : NavigationContext
     {
         private readonly ILogManager _logManager;
@@ -19,7 +19,9 @@ namespace MediaBrowser.Theater.DefaultTheme.Login
 
         private LoginViewModel _loginViewModel;
 
-        public LoginContext(IApplicationHost appHost, IPresenter presenter, ISessionManager sessionManager,
+        public IApiClient ApiClient { get; set; }
+
+        public UserSelectionContext(IApplicationHost appHost, IPresenter presenter, ISessionManager sessionManager,
                             ILogManager logManager, IImageManager imageManager) : base(appHost)
         {
             _presenter = presenter;
@@ -31,7 +33,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Login
         public override async Task Activate()
         {
             if (_loginViewModel == null || !_loginViewModel.IsActive) {
-                _loginViewModel = new LoginViewModel(_sessionManager, _logManager, _imageManager);
+                _loginViewModel = new LoginViewModel(_sessionManager, _logManager, _imageManager, ApiClient);
             }
 
             await _presenter.ShowPage(_loginViewModel);

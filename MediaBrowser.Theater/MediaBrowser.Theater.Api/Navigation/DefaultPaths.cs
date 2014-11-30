@@ -1,4 +1,6 @@
-﻿using MediaBrowser.Model.Dto;
+﻿using System.Collections.Generic;
+using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Dto;
 
 namespace MediaBrowser.Theater.Api.Navigation
 {
@@ -8,6 +10,26 @@ namespace MediaBrowser.Theater.Api.Navigation
     ///     The path to the user login page.
     /// </summary>
     public class LoginPath : NavigationPath { }
+
+    /// <summary>
+    ///     The path to the server selection page.
+    /// </summary>
+    public class ServerSelectionPath : NavigationPathArg<IEnumerable<ServerInfo>> { }
+
+    /// <summary>
+    ///     The path to the locate server page.
+    /// </summary>
+    public class LocateServerPath : NavigationPath { }
+
+    /// <summary>
+    ///     The path to the user selection page.
+    /// </summary>
+    public class UserSelectionPath : NavigationPathArg<IApiClient> { }
+
+    /// <summary>
+    ///     The path to the MB Connect login page.
+    /// </summary>
+    public class ConnectLoginPath : NavigationPath { }
 
     /// <summary>
     ///     The path to the home page.
@@ -100,6 +122,48 @@ namespace MediaBrowser.Theater.Api.Navigation
         public static LoginPath Login(this Go go)
         {
             return new LoginPath();
+        }
+
+        /// <summary>
+        ///     Gets a path to the server selection page.
+        /// </summary>
+        /// <param name="go"></param>
+        /// <param name="servers">The available servers, or <code>null</code> to enable auto-discovery.</param>
+        /// <returns>A path to the server selection page.</returns>
+        public static ServerSelectionPath ServerSelection(this Go go, IEnumerable<ServerInfo> servers = null)
+        {
+            return new ServerSelectionPath { Parameter = servers };
+        }
+
+        /// <summary>
+        ///     Gets a path to the locate server page.
+        /// </summary>
+        /// <param name="go"></param>
+        /// <returns>A path to the locate server page.</returns>
+        public static LocateServerPath LocateServer(this Go go)
+        {
+            return new LocateServerPath();
+        }
+
+        /// <summary>
+        ///     Gets a path to the user selection page.
+        /// </summary>
+        /// <param name="go"></param>
+        /// <param name="apiClient">The API client for the local server to log in to.</param>
+        /// <returns>A path to the user selection page.</returns>
+        public static UserSelectionPath UserSelection(this Go go, IApiClient apiClient)
+        {
+            return new UserSelectionPath { Parameter = apiClient };
+        }
+
+        /// <summary>
+        ///     Gets a path to the MB Connect login page.
+        /// </summary>
+        /// <param name="go"></param>
+        /// <returns>A path to the MB Connect login page.</returns>
+        public static ConnectLoginPath ConnectLogin(this Go go)
+        {
+            return new ConnectLoginPath();
         }
 
         /// <summary>

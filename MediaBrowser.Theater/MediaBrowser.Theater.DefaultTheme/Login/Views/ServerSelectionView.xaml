@@ -1,0 +1,41 @@
+﻿<UserControl x:Class="MediaBrowser.Theater.DefaultTheme.Login.Views.ServerSelectionView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:controls="clr-namespace:MediaBrowser.Theater.Presentation.Controls;assembly=MediaBrowser.Theater.Presentation"
+             xmlns:behaviors="clr-namespace:MediaBrowser.Theater.Presentation.Behaviors;assembly=MediaBrowser.Theater.Presentation"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             mc:Ignorable="d" 
+             d:DesignHeight="1080" d:DesignWidth="1920">
+
+<!--    <i:Interaction.Behaviors>-->
+<!--        <behaviors:FocusChildOnLoaded />-->
+<!--    </i:Interaction.Behaviors>-->
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="200"/>
+            <RowDefinition/>
+            <RowDefinition Height="200"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Style="{StaticResource TitleTextBlockStyle}" Text="Select Server" Margin="50, 0, 0, 0"/>
+        <TextBlock Grid.Row="1" Text="Please choose which local server Media Browser Theater should connect to" Margin="50, 0, 0, 0"/>
+
+        <controls:ExtendedScrollViewer x:Name="ScrollViewer" Grid.Row="2" IgnoreAllDirectionKeys="True" IsTabStop="False" Focusable="False" CanContentScroll="True" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" VerticalAlignment="Center">
+            <controls:ScrollingPanel CanHorizontallyScroll="True" CanVerticallyScroll="False">
+                <ItemsControl ItemsSource="{Binding Servers}" VerticalAlignment="Center"
+                              HorizontalAlignment="Center" VerticalContentAlignment="Top"
+                              IsTabStop="False">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+            </controls:ScrollingPanel>
+        </controls:ExtendedScrollViewer>
+    </Grid>
+</UserControl>

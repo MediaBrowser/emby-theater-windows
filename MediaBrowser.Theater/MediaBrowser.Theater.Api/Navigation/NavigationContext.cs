@@ -12,7 +12,7 @@ namespace MediaBrowser.Theater.Api.Navigation
         {
             _binder = new PathBinder(appHost);
         }
-
+        
         public PathBinder Binder
         {
             get { return _binder; }

@@ -26,24 +26,16 @@ namespace MediaBrowser.Theater.DefaultTheme.Core
             _sessionManager = sessionManager;
 
             // create root navigation bindings
-            Binder.Bind<LoginPath, LoginContext>();
+            Binder.Bind<LoginPath, WelcomePageContext>();
+            Binder.Bind<ConnectLoginPath, ConnectPinContext>();
             Binder.Bind<HomePath, HomeContext>();
             Binder.Bind<SideMenuPath, SideMenuContext>();
             Binder.Bind<FullScreenPlaybackPath, FullScreenPlaybackContext>();
 
-            Binder.Bind<ItemListPath>(async path => {
-                var context = appHost.CreateInstance(typeof (ItemListContext)) as ItemListContext;
-                context.Parameters = path.Parameter;
-
-                return context;
-            });
-
-            Binder.Bind<ItemPath>(async path => {
-                var context = appHost.CreateInstance(typeof (ItemDetailsContext)) as ItemDetailsContext;
-                context.Item = path.Parameter;
-
-                return context;
-            });
+            Binder.Bind<ServerSelectionPath, ServerSelectionContext>((path, context) => context.Servers = path.Parameter);
+            Binder.Bind<UserSelectionPath, UserSelectionContext>((path, context) => context.ApiClient = path.Parameter);
+            Binder.Bind<ItemListPath, ItemListContext>((path, context) => context.Parameters = path.Parameter);
+            Binder.Bind<ItemPath, ItemDetailsContext>((path, context) => context.Item = path.Parameter);
         }
 
         public override Task Activate()

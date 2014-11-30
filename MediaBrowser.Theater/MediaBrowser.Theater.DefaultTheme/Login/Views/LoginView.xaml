@@ -16,19 +16,22 @@
              d:DesignHeight="1080" d:DesignWidth="1920"
              IsTabStop="False">
 
-    <i:Interaction.Behaviors>
-        <behaviors:FocusChildOnLoaded />
-    </i:Interaction.Behaviors>
+<!--    <i:Interaction.Behaviors>-->
+<!--        <behaviors:FocusChildOnLoaded />-->
+<!--    </i:Interaction.Behaviors>-->
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition />
-            <RowDefinition Height="800" />
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="200"/>
+            <RowDefinition/>
+            <RowDefinition Height="200"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" Text="{lex:Loc Login_Title}" Style="{StaticResource TitleTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        <TextBlock Grid.Row="0" Text="{lex:Loc Login_Title}" Style="{StaticResource TitleTextBlockStyle}" Margin="50, 0, 0, 0"/>
+        <TextBlock Grid.Row="1" Text="Please select which user to sign in as" Margin="50, 0, 0, 0"/>
 
-        <controls:ExtendedScrollViewer x:Name="ScrollViewer" Grid.Row="1" IgnoreAllDirectionKeys="True" IsTabStop="False" Focusable="False" CanContentScroll="True" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" VerticalAlignment="Top">
+        <controls:ExtendedScrollViewer x:Name="ScrollViewer" Grid.Row="2" IgnoreAllDirectionKeys="True" IsTabStop="False" Focusable="False" CanContentScroll="True" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" VerticalAlignment="Top">
             <controls:ScrollingPanel CanHorizontallyScroll="True" CanVerticallyScroll="False">
                 <ItemsControl ItemsSource="{Binding Users}" VerticalAlignment="Center"
                               HorizontalAlignment="Center" VerticalContentAlignment="Top"

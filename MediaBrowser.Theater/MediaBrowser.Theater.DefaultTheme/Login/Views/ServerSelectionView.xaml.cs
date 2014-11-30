@@ -4,11 +4,11 @@ using System.Windows.Input;
 namespace MediaBrowser.Theater.DefaultTheme.Login.Views
 {
     /// <summary>
-    ///     Interaction logic for LoginView.xaml
+    ///     Interaction logic for ServerSelectionView.xaml
     /// </summary>
-    public partial class LoginView : UserControl
+    public partial class ServerSelectionView : UserControl
     {
-        public LoginView()
+        public ServerSelectionView()
         {
             InitializeComponent();
 

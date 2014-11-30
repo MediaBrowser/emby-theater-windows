@@ -1,0 +1,42 @@
+﻿<UserControl x:Class="MediaBrowser.Theater.DefaultTheme.Login.Views.ConnectPinView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="1080" d:DesignWidth="1920">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        
+        <StackPanel Grid.Row="0" Margin="50, 0, 0, 0">
+            <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Sign in with Media Browser Connect"/>
+            <TextBlock Margin="0 10 0 0">With Media Browser Connect you can easily access your Media Browser Server wherever you are and share with your family and friends.</TextBlock>
+        </StackPanel>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            
+            <TextBlock Grid.Row="1" Grid.Column="0" Width="400" TextWrapping="Wrap" HorizontalAlignment="Center">To sign in with Media Browser Connect, visit http://mediabrowser.tv/pin and enter the following pin code:</TextBlock>
+            <TextBlock Grid.Row="2" Grid.Column="0" x:Name="TxtPin" Style="{StaticResource HeadingTextBlockStyle}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="200" Text="1234"/>
+            
+            <TextBlock Grid.Row="2" Grid.Column="1" Text="Or" VerticalAlignment="Center" HorizontalAlignment="Center" Style="{StaticResource AccentedTextBlockStyle}" FontSize="50"/>
+            
+            <TextBlock Grid.Row="1" Grid.Column="2" Width="400" TextWrapping="Wrap" Text="Scan the following QR code with your phone or tablet." HorizontalAlignment="Center"/>
+            <Rectangle Grid.Row="2" Grid.Column="2" Width="400" Height="400" Fill="{StaticResource ForegroundBrush}"/>
+        </Grid>
+    </Grid>
+</UserControl>

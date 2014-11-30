@@ -287,9 +287,20 @@ namespace MediaBrowser.Theater
                     Navigator.Navigate(Go.To.Home());
                 }
                 if (e.Argument.State == ConnectionState.ServerSignIn) {
+                    Navigator.Navigate(Go.To.UserSelection(e.Argument.ApiClient));
+                }
+                if (e.Argument.State == ConnectionState.ServerSelection) {
+                    Navigator.Navigate(Go.To.ServerSelection(e.Argument.Servers));
+                }
+                if (e.Argument.State == ConnectionState.Unavailable) {
                     Navigator.Navigate(Go.To.Login());
                 }
+                if (e.Argument.State == ConnectionState.ConnectSignIn) {
+                    Navigator.Navigate(Go.To.ConnectLogin());
+                }
             };
+
+            ConnectionManager.RemoteLoggedOut += (s, e) => ConnectToServer();
         }
 
         private async void ApiClient_HttpResponseReceived(object sender, HttpResponseEventArgs e)

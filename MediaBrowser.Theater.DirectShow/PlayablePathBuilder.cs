@@ -173,6 +173,11 @@ namespace MediaBrowser.Theater.DirectShow
                 //info.AudioCodec = "copy";
                 //info.Protocol = "http";
 
+                //if (item.IsType("tvchannel"))
+                //{
+                //    info.VideoCodec = "copy";
+                //}
+
                 var playable = new PlayableItem
                 {
                     OriginalItem = item,

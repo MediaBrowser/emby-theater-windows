@@ -384,15 +384,6 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
                     });
                 }
 
-                if (item.TrailerCount.HasValue && item.TrailerCount.Value > 0)
-                {
-                    views.Add(new TabItem
-                    {
-                        Name = "itemtrailers",
-                        DisplayName = string.Format("Trailers ({0})", item.TrailerCount.Value)
-                    });
-                }
-
                 if (item.GameCount.HasValue && item.GameCount.Value > 0)
                 {
                     views.Add(new TabItem

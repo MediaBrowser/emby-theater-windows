@@ -87,7 +87,7 @@ namespace MediaBrowser.UI
             var appPath = Process.GetCurrentProcess().MainModule.FileName;
 
             // Look for the existence of an update archive
-            var appPaths = new ApplicationPaths(appPath);
+            var appPaths = new ApplicationPaths(GetProgramDataPath(appPath), appPath);
             var logManager = new NlogManager(appPaths.LogDirectoryPath, "theater");
             logManager.ReloadLogger(LogSeverity.Debug);
 
@@ -114,6 +114,40 @@ namespace MediaBrowser.UI
             var application = new App(appPaths, logManager);
 
             application.Run();
+        }
+
+        public static string GetProgramDataPath(string applicationPath)
+        {
+            var useDebugPath = false;
+
+#if DEBUG
+            useDebugPath = true;
+#endif
+
+            var programDataPath = useDebugPath ? 
+                System.Configuration.ConfigurationManager.AppSettings["DebugProgramDataPath"] :
+                System.Configuration.ConfigurationManager.AppSettings["ReleaseProgramDataPath"];
+
+            programDataPath = programDataPath.Replace("%ApplicationData%", Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
+
+            // If it's a relative path, e.g. "..\"
+            if (!Path.IsPathRooted(programDataPath))
+            {
+                var path = Path.GetDirectoryName(applicationPath);
+
+                if (string.IsNullOrEmpty(path))
+                {
+                    throw new ApplicationException("Unable to determine running assembly location");
+                }
+
+                programDataPath = Path.Combine(path, programDataPath);
+
+                programDataPath = Path.GetFullPath(programDataPath);
+            }
+
+            Directory.CreateDirectory(programDataPath);
+
+            return programDataPath;
         }
 
         /// <summary>

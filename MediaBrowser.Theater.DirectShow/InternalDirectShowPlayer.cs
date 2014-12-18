@@ -376,10 +376,19 @@ namespace MediaBrowser.Theater.DirectShow
             }
 
             var apiClient = _connectionManager.GetApiClient(item);
+            var mediaSources = item.MediaSources;
 
-            //var result = await apiClient.GetLiveMediaInfo(item.Id);
+            try
+            {
+                var result = await apiClient.GetLiveMediaInfo(item.Id, apiClient.CurrentUserId);
+                mediaSources = result.MediaSources;
+            }
+            catch
+            {
+                
+            }
 
-            return PlayablePathBuilder.GetPlayableItem(item, item.MediaSources, mountedIso, apiClient, startTimeTicks, _config.Configuration.MaxStreamingBitrate);
+            return PlayablePathBuilder.GetPlayableItem(item, mediaSources, mountedIso, apiClient, startTimeTicks, _config.Configuration.MaxStreamingBitrate);
         }
 
         /// <summary>

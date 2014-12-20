@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.ApiClient;
+﻿using System.Collections.Generic;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dlna;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
@@ -25,7 +26,7 @@ namespace MediaBrowser.Theater.DirectShow
         /// <param name="apiClient">The API client.</param>
         /// <param name="startTimeTicks">The start time ticks.</param>
         /// <returns>System.String.</returns>
-        public static PlayableItem GetPlayableItem(BaseItemDto item, IIsoMount isoMount, IApiClient apiClient, long? startTimeTicks, int? maxBitrate)
+        public static PlayableItem GetPlayableItem(BaseItemDto item, List<MediaSourceInfo> mediaSources, IIsoMount isoMount, IApiClient apiClient, long? startTimeTicks, int? maxBitrate)
         {
             // Check the mounted path first
             if (isoMount != null)
@@ -88,10 +89,10 @@ namespace MediaBrowser.Theater.DirectShow
                 }
             }
 
-            return GetStreamedItem(item, apiClient, startTimeTicks, maxBitrate);
+            return GetStreamedItem(item, mediaSources, apiClient, startTimeTicks, maxBitrate);
         }
 
-        private static PlayableItem GetStreamedItem(BaseItemDto item, IApiClient apiClient, long? startTimeTicks, int? maxBitrate)
+        private static PlayableItem GetStreamedItem(BaseItemDto item, List<MediaSourceInfo> mediaSources, IApiClient apiClient, long? startTimeTicks, int? maxBitrate)
         {
             var profile = new MediaBrowserTheaterProfile();
 
@@ -109,7 +110,7 @@ namespace MediaBrowser.Theater.DirectShow
                     MaxAudioChannels = 6,
 
                     MaxBitrate = maxBitrate,
-                    MediaSources = item.MediaSources,
+                    MediaSources = mediaSources,
 
                     Profile = profile
                 };
@@ -123,7 +124,8 @@ namespace MediaBrowser.Theater.DirectShow
                     {
                         OriginalItem = item,
                         PlayablePath = info.MediaSource.Path,
-                        MediaSource = info.MediaSource
+                        MediaSource = info.MediaSource,
+                        StreamInfo = info
                     };
                 }
 
@@ -131,7 +133,8 @@ namespace MediaBrowser.Theater.DirectShow
                 {
                     OriginalItem = item,
                     PlayablePath = info.ToUrl(apiClient.ServerAddress + "/mediabrowser"),
-                    MediaSource = info.MediaSource
+                    MediaSource = info.MediaSource,
+                    StreamInfo = info
                 };
             }
             else
@@ -146,7 +149,7 @@ namespace MediaBrowser.Theater.DirectShow
                     MaxAudioChannels = 6,
 
                     MaxBitrate = maxBitrate,
-                    MediaSources = item.MediaSources,
+                    MediaSources = mediaSources,
 
                     Profile = profile
                 };
@@ -160,14 +163,16 @@ namespace MediaBrowser.Theater.DirectShow
                     {
                         OriginalItem = item,
                         PlayablePath = info.MediaSource.Path,
-                        MediaSource = info.MediaSource
+                        MediaSource = info.MediaSource,
+                        StreamInfo = info
                     };
                 }
                 return new PlayableItem
                 {
                     OriginalItem = item,
                     PlayablePath = info.ToUrl(apiClient.ServerAddress + "/mediabrowser") + "&EnableAdaptiveBitrateStreaming=false",
-                    MediaSource = info.MediaSource
+                    MediaSource = info.MediaSource,
+                    StreamInfo = info
                 };
             }
         }

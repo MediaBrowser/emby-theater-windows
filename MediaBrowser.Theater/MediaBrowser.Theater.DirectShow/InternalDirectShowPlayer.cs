@@ -73,9 +73,25 @@ namespace MediaBrowser.Theater.DirectShow
 
             //use a static object so we keep the libraries in the same place. Doesn't usually matter, but the EVR Presenter does some COM hooking that has problems if we change the lib address.
             if (_privateCom == null)
-                _privateCom = new URCOMLoader(_config);
+                _privateCom = new URCOMLoader(_config, _zipClient);
 
             windowManager.WindowLoaded += window => _hiddenWindow = window;
+
+            EnsureMediaFilters();
+        }
+
+        private void EnsureMediaFilters()
+        {
+            Task.Run(() =>
+            {
+                try
+                {
+                    URCOMLoader.EnsureObjects(_config, _zipClient, false);
+                }
+                catch
+                {
+                }
+            });
         }
 
         public IReadOnlyList<BaseItemDto> Playlist
@@ -304,6 +320,18 @@ namespace MediaBrowser.Theater.DirectShow
                 InvokeOnPlayerThread(() => _mediaPlayer.Seek(startPositionTicks.Value));
             }
 
+            if (playableItem.OriginalItem.IsVideo)
+            {
+                var audioIndex = playableItem.MediaSource.DefaultAudioStreamIndex;
+                var subtitleIndex = playableItem.MediaSource.DefaultSubtitleStreamIndex;
+
+                if (audioIndex.HasValue && audioIndex.Value != -1)
+                {
+                    SetAudioStreamIndex(audioIndex.Value);
+                }
+                SetSubtitleStreamIndex(subtitleIndex ?? -1);
+            }
+
             if (previousMedia != null)
             {
                 var args = new MediaChangeEventArgs
@@ -340,7 +368,16 @@ namespace MediaBrowser.Theater.DirectShow
             }
 
             var apiClient = _connectionManager.GetApiClient(item);
-            return PlayablePathBuilder.GetPlayableItem(item, mountedIso, apiClient, startTimeTicks, _config.Configuration.MaxStreamingBitrate);
+            var mediaSources = item.MediaSources;
+ 		 
+            try 
+            {
+                var result = await apiClient.GetLiveMediaInfo(item.Id, apiClient.CurrentUserId);
+                mediaSources = result.MediaSources;
+            }
+            catch { }
+
+            return PlayablePathBuilder.GetPlayableItem(item, mediaSources, mountedIso, apiClient, startTimeTicks, _config.Configuration.MaxStreamingBitrate);
         }
 
         /// <summary>

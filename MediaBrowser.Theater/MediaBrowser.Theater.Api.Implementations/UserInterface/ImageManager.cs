@@ -10,9 +10,9 @@ using System.Windows.Media.Imaging;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Extensions;
 using MediaBrowser.Common.IO;
-using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Theater.Api.Configuration;
 using MediaBrowser.Theater.Api.Session;
+using MediaBrowser.Theater.Api.System;
 
 namespace MediaBrowser.Theater.Api.UserInterface
 {
@@ -37,7 +37,6 @@ namespace MediaBrowser.Theater.Api.UserInterface
         /// <summary>
         ///     Initializes a new instance of the <see cref="ImageManager" /> class.
         /// </summary>
-        /// <param name="apiClient">The API client.</param>
         /// <param name="sessionManager"></param>
         /// <param name="paths">The paths.</param>
         /// <param name="config"></param>

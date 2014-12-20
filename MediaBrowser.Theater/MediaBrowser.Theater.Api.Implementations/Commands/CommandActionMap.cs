@@ -6,6 +6,7 @@ using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Api.Events;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Playback;
+using MediaBrowser.Theater.Api.System;
 using MediaBrowser.Theater.Api.UserInterface;
 
 namespace MediaBrowser.Theater.Api.Commands
@@ -82,7 +83,7 @@ namespace MediaBrowser.Theater.Api.Commands
                 new CommandActionMapping( Command.Seek,            Seek),
                 new CommandActionMapping( Command.Left,            NullAction),
                 new CommandActionMapping( Command.Right,           NullAction),
-                new CommandActionMapping( Command.Up,              ToggleVideoScaling),
+                new CommandActionMapping( Command.Up,              NullAction),
                 new CommandActionMapping( Command.PageUp,          NullAction),
                 new CommandActionMapping( Command.PageDown,        NullAction),
                 new CommandActionMapping( Command.FirstPage,       NullAction),
@@ -102,7 +103,7 @@ namespace MediaBrowser.Theater.Api.Commands
                 new CommandActionMapping( Command.Step,            SkipForward,        60),     
                 new CommandActionMapping( Command.SmallStepForward,SkipForward,        10),
                 new CommandActionMapping( Command.SmallStepBack,   SkipBackward,       10),
-                new CommandActionMapping( Command.StepForward,     SkipBackward,       60),
+                new CommandActionMapping( Command.StepForward,     SkipForward,        60),
                 new CommandActionMapping( Command.StepBack,        SkipBackward,       60),
                 new CommandActionMapping( Command.BigStepForward,  SkipForward,        300),
                 new CommandActionMapping( Command.BigStepBack,     SkipBackward,       300),
@@ -128,8 +129,8 @@ namespace MediaBrowser.Theater.Api.Commands
 //                new CommandActionMapping( Command.HideinfoPanel,            HideInfoPanel),
 //                new CommandActionMapping( Command.ToggleInfoPanel,          ToggleInfoPanel),
 //                new CommandActionMapping( Command.ShowScreensaver,          (s, a) => _screensaverManager.ShowScreensaver(true)),
-//                new CommandActionMapping( Command.ScreenDump,               (s, a) => MBTScreenDump.GetAndSaveWindowsImage(_presenation.MainApplicationWindowHandle)),
-
+                new CommandActionMapping( Command.ScreenDump,               (s, a) => MBTScreenDump.GetAndSaveWindowsImage(_presenation.MainApplicationWindowHandle)),
+                new CommandActionMapping( Command.ToggleVideoScaling, ToggleVideoScaling)
 
             };
         }

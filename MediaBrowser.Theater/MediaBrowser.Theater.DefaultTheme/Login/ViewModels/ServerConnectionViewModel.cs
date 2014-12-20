@@ -15,11 +15,11 @@ namespace MediaBrowser.Theater.DefaultTheme.Login.ViewModels
         {
             _info = info;
 
-            ConnectCommand = new RelayCommand(arg => {
+            ConnectCommand = new RelayCommand(async arg => {
                 if (_info == null) {
                     navigator.Navigate(Go.To.LocateServer());
                 } else {
-                    connectionManager.Connect(info, CancellationToken.None);
+                    var result = await connectionManager.Connect(info, CancellationToken.None);
                 }
             });
         }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using MediaBrowser.Model.Dlna;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.IO;
@@ -12,6 +13,8 @@ namespace MediaBrowser.Theater.Api.Playback
         public BaseItemDto OriginalItem { get; set; }
 
         public MediaSourceInfo MediaSource { get; set; }
+
+        public StreamInfo StreamInfo { get; set; }
 
         public bool IsVideo
         {

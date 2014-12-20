@@ -1,13 +1,13 @@
 ﻿using System;
-using System.Security.Cryptography;
-using System.Text;
+using System.Linq;
 using System.Threading.Tasks;
 using MediaBrowser.Common.Events;
 using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Configuration;
+using MediaBrowser.Model.Connect;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Net;
-using MediaBrowser.Model.Users;
 using MediaBrowser.Theater.Api.Configuration;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Playback;
@@ -16,11 +16,15 @@ namespace MediaBrowser.Theater.Api.Session
 {
     public class SessionManager : ISessionManager
     {
-        private readonly ITheaterConfigurationManager _config;
-        private readonly IConnectionManager _connectionManager;
-        private readonly ILogger _logger;
+        public event EventHandler<EventArgs> UserLoggedIn;
+
+        public event EventHandler<EventArgs> UserLoggedOut;
+
         private readonly INavigator _navService;
+        private readonly ILogger _logger;
+        private readonly ITheaterConfigurationManager _config;
         private readonly IPlaybackManager _playback;
+        private readonly IConnectionManager _connectionManager;
 
         public SessionManager(INavigator navService, ILogger logger, ITheaterConfigurationManager config, IPlaybackManager playback, IConnectionManager connectionManager)
         {
@@ -33,15 +37,23 @@ namespace MediaBrowser.Theater.Api.Session
             _connectionManager.RemoteLoggedOut += _connectionManager_RemoteLoggedOut;
         }
 
-        public event EventHandler<EventArgs> UserLoggedIn;
-
-        public event EventHandler<EventArgs> UserLoggedOut;
+        async void _connectionManager_RemoteLoggedOut(object sender, EventArgs e)
+        {
+            if (CurrentUser != null)
+            {
+                await Logout();
+            }
+        }
 
         public UserDto CurrentUser { get; private set; }
+        public ConnectUser ConnectUser { get; private set; }
 
         public IApiClient ActiveApiClient
         {
-            get { return _connectionManager.GetApiClient(new BaseItemDto()); }
+            get
+            {
+                return _connectionManager.CurrentApiClient;
+            }
         }
 
         public async Task Logout()
@@ -50,11 +62,12 @@ namespace MediaBrowser.Theater.Api.Session
 
             await _connectionManager.Logout();
 
-            UserDto previous = CurrentUser;
+            var previous = CurrentUser;
 
             CurrentUser = null;
 
-            if (previous != null) {
+            if (previous != null)
+            {
                 EventHelper.FireEventIfNotNull(UserLoggedOut, this, EventArgs.Empty, _logger);
             }
 
@@ -65,22 +78,27 @@ namespace MediaBrowser.Theater.Api.Session
 
         public async Task LoginToServer(string username, string password, bool rememberCredentials)
         {
-            IApiClient apiClient = ActiveApiClient;
+            var apiClient = ActiveApiClient;
 
             //Check just in case
-            if (password == null) {
+            if (password == null)
+            {
                 password = string.Empty;
             }
-            
-            try {
-                AuthenticationResult result = await apiClient.AuthenticateUserAsync(username, password);
+
+            _connectionManager.SaveLocalCredentials = rememberCredentials;
+
+            try
+            {
+                var result = await apiClient.AuthenticateUserAsync(username, password);
 
                 CurrentUser = result.User;
 
                 _config.Configuration.RememberLogin = rememberCredentials;
                 _config.SaveConfiguration();
             }
-            catch (HttpException ex) {
+            catch (HttpException ex)
+            {
                 throw new UnauthorizedAccessException("Invalid username or password. Please try again.");
             }
 
@@ -91,14 +109,14 @@ namespace MediaBrowser.Theater.Api.Session
         {
             CurrentUser = await result.ApiClient.GetUserAsync(result.ApiClient.CurrentUserId);
 
-            await AfterLogin();
-        }
-
-        private async void _connectionManager_RemoteLoggedOut(object sender, EventArgs e)
-        {
-            if (CurrentUser != null) {
-                await Logout();
+            // TODO: Switch to check for ConnectUser
+            if (result.Servers.Any(i => !string.IsNullOrEmpty(i.ExchangeToken)))
+            {
+                _config.Configuration.RememberLogin = true;
+                _config.SaveConfiguration();
             }
+
+            await AfterLogin();
         }
 
         private async Task AfterLogin()
@@ -108,6 +126,59 @@ namespace MediaBrowser.Theater.Api.Session
             await _navService.Navigate(Go.To.Home());
 
             _navService.ClearNavigationHistory();
+        }
+
+        public string LocalUserId
+        {
+            get { return CurrentUser == null ? null : CurrentUser.Id; }
+        }
+
+        public string ConnectUserId
+        {
+            get { return ConnectUser == null ? null : ConnectUser.Id; }
+        }
+
+        public string UserName
+        {
+            get
+            {
+                return CurrentUser == null ?
+                    (ConnectUser == null ? null : ConnectUser.Name) :
+                    CurrentUser.Name;
+            }
+        }
+
+        public string UserImageUrl
+        {
+            get
+            {
+                return CurrentUser == null ?
+                    (ConnectUser == null ? null : ConnectUser.ImageUrl) :
+                    GetLocalUserImageUrl();
+            }
+        }
+
+        public UserConfiguration UserConfiguration
+        {
+            get
+            {
+                return CurrentUser == null ?
+                    (ConnectUser == null ? null : new UserConfiguration()) :
+                    CurrentUser.Configuration;
+            }
+        }
+
+        private string GetLocalUserImageUrl()
+        {
+            if (CurrentUser != null && CurrentUser.HasPrimaryImage)
+            {
+                return ActiveApiClient.GetUserImageUrl(CurrentUser, new ImageOptions
+                {
+
+                });
+            }
+
+            return null;
         }
     }
 }

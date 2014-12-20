@@ -15,7 +15,6 @@ using MediaBrowser.ApiInteraction.Cryptography;
 using MediaBrowser.ApiInteraction.Network;
 using MediaBrowser.ApiInteraction.WebSocket;
 using MediaBrowser.Common.Configuration;
-using MediaBrowser.Common.Constants;
 using MediaBrowser.Common.Implementations;
 using MediaBrowser.Common.Implementations.Archiving;
 using MediaBrowser.Common.Implementations.IO;
@@ -302,22 +301,7 @@ namespace MediaBrowser.Theater
 
             ConnectionManager.RemoteLoggedOut += (s, e) => ConnectToServer();
         }
-
-        private async void ApiClient_HttpResponseReceived(object sender, HttpResponseEventArgs e)
-        {
-            if (e.StatusCode == HttpStatusCode.Unauthorized)
-            {
-                try {
-                    var sessionManager = Resolve<ISessionManager>();
-                    await sessionManager.Logout();
-                }
-                catch (Exception ex)
-                {
-                    Logger.ErrorException("Error logging out", ex);
-                }
-            }
-        }
-
+        
         public override async Task Restart()
         {
             await Shutdown();
@@ -328,7 +312,7 @@ namespace MediaBrowser.Theater
         ///     Gets the composable part assemblies.
         /// </summary>
         /// <returns>IEnumerable{Assembly}.</returns>
-        protected override IEnumerable<Assembly> GetComposablePartAssemblies()
+        protected override IEnumerable<Assembly> GetComposablePartAssemblies()      
         {
             // Gets all plugin assemblies by first reading all bytes of the .dll and calling Assembly.Load against that
             // This will prevent the .dll file from getting locked, and allow us to replace it when needed
@@ -380,6 +364,10 @@ namespace MediaBrowser.Theater
         public override async Task Shutdown()
         {
             await Theme.Shutdown().ConfigureAwait(false);
+
+            if (!TheaterConfigurationManager.Configuration.RememberLogin) {
+                await SessionManager.Logout().ConfigureAwait(false);
+            }
 
             if (Application.Current != null) {
                 Application.Current.Shutdown();

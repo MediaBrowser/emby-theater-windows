@@ -8,12 +8,12 @@ using DirectShowLib;
 using System.Text.RegularExpressions;
 using DirectShowLib.Utils;
 using MediaBrowser.Model.IO;
-using MediaBrowser.Theater.Api;
-using MediaBrowser.Theater.Api.Configuration;
 using System.Reflection;
 using System.Net;
 using System.Threading;
 using System.Diagnostics;
+using MediaBrowser.Theater.Api;
+using MediaBrowser.Theater.Api.Configuration;
 
 namespace MediaBrowser.Theater.DirectShow
 {
@@ -200,7 +200,7 @@ namespace MediaBrowser.Theater.DirectShow
             private set;
         }
 
-        public URCOMLoader(ITheaterConfigurationManager mbtConfig)
+        public URCOMLoader(ITheaterConfigurationManager mbtConfig, IZipClient zipClient)
         {
             _knownObjects = mbtConfig.Configuration.InternalPlayerConfiguration.COMConfig.FilterList;
             SearchPath = Path.Combine(mbtConfig.CommonApplicationPaths.ProgramDataPath, OJB_FOLDER);

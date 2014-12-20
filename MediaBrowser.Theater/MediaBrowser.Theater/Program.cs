@@ -3,9 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Windows.Forms;
-using MediaBrowser.Common.Constants;
 using MediaBrowser.Common.Implementations.Logging;
-using MediaBrowser.Common.Implementations.Updates;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Api.Configuration;
@@ -33,7 +31,7 @@ namespace MediaBrowser.Theater
                 }
 
                 string appPath = Process.GetCurrentProcess().MainModule.FileName;
-                var appPaths = new ApplicationPaths(appPath);
+                var appPaths = new ApplicationPaths(GetProgramDataPath(appPath), appPath);
                 var logManager = new NlogManager(appPaths.LogDirectoryPath, "theater");
                 logManager.ReloadLogger(LogSeverity.Debug);
 
@@ -53,6 +51,40 @@ namespace MediaBrowser.Theater
             if (restartOnExit) {
                 Application.Restart();
             }
+        }
+
+        public static string GetProgramDataPath(string applicationPath)
+        {
+            var useDebugPath = false;
+
+#if DEBUG
+            useDebugPath = true;
+#endif
+
+            var programDataPath = useDebugPath ?
+                System.Configuration.ConfigurationManager.AppSettings["DebugProgramDataPath"] :
+                System.Configuration.ConfigurationManager.AppSettings["ReleaseProgramDataPath"];
+
+            programDataPath = programDataPath.Replace("%ApplicationData%", Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
+
+            // If it's a relative path, e.g. "..\"
+            if (!Path.IsPathRooted(programDataPath))
+            {
+                var path = Path.GetDirectoryName(applicationPath);
+
+                if (string.IsNullOrEmpty(path))
+                {
+                    throw new ApplicationException("Unable to determine running assembly location");
+                }
+
+                programDataPath = Path.Combine(path, programDataPath);
+
+                programDataPath = Path.GetFullPath(programDataPath);
+            }
+
+            Directory.CreateDirectory(programDataPath);
+
+            return programDataPath;
         }
 
         private static bool InstallUpdatePackage(ApplicationPaths appPaths, NlogManager logManager)

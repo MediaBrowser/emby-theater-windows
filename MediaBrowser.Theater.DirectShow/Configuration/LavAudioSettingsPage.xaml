@@ -65,9 +65,9 @@
             <TextBlock Style="{StaticResource TextBlockStyle}" Margin="0 0 0 0">Mixing Setting:</TextBlock>
             <controls:SelectList x:Name="SelectMixingSetting" Margin="40 0 0 0"></controls:SelectList>
         </StackPanel>
-        <StackPanel Orientation="Horizontal" Margin="0 50 0 0" Grid.Column="1" Grid.Row="7" >
+        <StackPanel Orientation="Horizontal" Margin="0 50 0 0" Grid.Column="1" Grid.Row="7" HorizontalAlignment="Left">
             <TextBlock Style="{StaticResource TextBlockStyle}" Margin="0 0 0 0">Audio Device (WASAPI):</TextBlock>
-            <controls:SelectList x:Name="SelectAudioDevice" Margin="40 0 0 0"></controls:SelectList>
+            <controls:SelectList x:Name="SelectAudioDevice" Margin="40 0 0 0" ></controls:SelectList>
         </StackPanel>
         <CheckBox x:Name="ChkShowTrayIcon" Margin="0 30 0 0" VerticalAlignment="Center" Grid.Column="0" Grid.Row="8" >
             <TextBlock Style="{StaticResource TextBlockStyle}">ShowTrayIcon</TextBlock>

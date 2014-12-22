@@ -23,14 +23,14 @@ namespace MediaBrowser.Theater.DirectShow.Streaming
                     Type = DlnaProfileType.Audio,
                     AudioCodec = "mp3"
                 },
-                new TranscodingProfile
-                {
-                    Protocol = "hls",
-                    Container = "ts",
-                    VideoCodec = "h264",
-                    AudioCodec = "aac,ac3,mp3",
-                    Type = DlnaProfileType.Video
-                },
+                //new TranscodingProfile
+                //{
+                //    Protocol = "hls",
+                //    Container = "ts",
+                //    VideoCodec = "h264",
+                //    AudioCodec = "aac,ac3,mp3",
+                //    Type = DlnaProfileType.Video
+                //},
                 new TranscodingProfile
                 {
                     Container = "ts",

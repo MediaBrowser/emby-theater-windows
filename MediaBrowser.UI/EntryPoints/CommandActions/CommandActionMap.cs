@@ -91,7 +91,7 @@ using MediaBrowser.Theater.Presentation.Playback;
                 new CommandActionMapping( Command.Seek,            Seek),
                 new CommandActionMapping( Command.Left,            NullAction),
                 new CommandActionMapping( Command.Right,           NullAction),
-                new CommandActionMapping( Command.Up,              ToggleVideoScaling),
+                new CommandActionMapping( Command.Up,              NullAction),
                 new CommandActionMapping( Command.PageUp,          NullAction),
                 new CommandActionMapping( Command.PageDown,        NullAction),
                 new CommandActionMapping( Command.FirstPage,       NullAction),
@@ -111,7 +111,7 @@ using MediaBrowser.Theater.Presentation.Playback;
                 new CommandActionMapping( Command.Step,            SkipForward,        60),     
                 new CommandActionMapping( Command.SmallStepForward,SkipForward,        10),
                 new CommandActionMapping( Command.SmallStepBack,   SkipBackward,       10),
-                new CommandActionMapping( Command.StepForward,     SkipBackward,       60),
+                new CommandActionMapping( Command.StepForward,     SkipForward,        60),
                 new CommandActionMapping( Command.StepBack,        SkipBackward,       60),
                 new CommandActionMapping( Command.BigStepForward,  SkipForward,        300),
                 new CommandActionMapping( Command.BigStepBack,     SkipBackward,       300),
@@ -137,8 +137,8 @@ using MediaBrowser.Theater.Presentation.Playback;
                 new CommandActionMapping( Command.HideinfoPanel,            HideInfoPanel),
                 new CommandActionMapping( Command.ToggleInfoPanel,          ToggleInfoPanel),
                 new CommandActionMapping( Command.ShowScreensaver,          (s, a) => _screensaverManager.ShowScreensaver(true)),
-                new CommandActionMapping( Command.ScreenDump,               (s, a) => MBTScreenDump.GetAndSaveWindowsImage(_presentationManager.WindowHandle)),
-
+                new CommandActionMapping( Command.ScreenDump,               (s, a) => MBTScreenDump.GetAndSaveWindowsImage(_presentationManager.WindowHandle)),                
+                new CommandActionMapping( Command.ToggleVideoScaling,          ToggleVideoScaling),
             };
         }
 

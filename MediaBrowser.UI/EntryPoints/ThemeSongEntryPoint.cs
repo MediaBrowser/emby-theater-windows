@@ -129,7 +129,8 @@ namespace MediaBrowser.UI.EntryPoints
             return _playback.Play(new PlayOptions
             {
                 GoFullScreen = false,
-                Items = items.ToList()
+                Items = items.ToList(),
+                EnableCustomPlayers = false
             });
         }
 
@@ -146,7 +147,7 @@ namespace MediaBrowser.UI.EntryPoints
             {
                 return themeMediaResult.ThemeSongsResult;
             }
-            
+
             return themeMediaResult.SoundtrackSongsResult;
         }
 

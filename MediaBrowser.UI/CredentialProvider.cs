@@ -1,7 +1,9 @@
 ﻿using MediaBrowser.ApiInteraction;
 using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Serialization;
 using MediaBrowser.Theater.Interfaces.Configuration;
+using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,11 +14,13 @@ namespace MediaBrowser.UI
     {
         private readonly ITheaterConfigurationManager _config;
         private readonly IJsonSerializer _json;
+        private readonly ILogger _logger;
 
-        public CredentialProvider(ITheaterConfigurationManager config, IJsonSerializer json)
+        public CredentialProvider(ITheaterConfigurationManager config, IJsonSerializer json, ILogger logger)
         {
             _config = config;
             _json = json;
+            _logger = logger;
         }
 
         private string Path
@@ -43,6 +47,11 @@ namespace MediaBrowser.UI
                         }
                         catch (IOException)
                         {
+                            _servers = new ServerCredentials();
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.ErrorException("Error reading saved credentials", ex);
                             _servers = new ServerCredentials();
                         }
                     }

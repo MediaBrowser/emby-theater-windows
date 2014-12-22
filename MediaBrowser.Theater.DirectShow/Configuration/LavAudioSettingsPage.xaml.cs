@@ -74,7 +74,11 @@ namespace MediaBrowser.Theater.DirectShow.Configuration
             Dictionary<string, string> audioDevices = AudioConfigurationUtils.GetAudioDevices();
             foreach (string bsOption in audioDevices.Keys)
             {
-                SelectAudioDevice.Options.Add(new SelectListItem { Text = bsOption, Value = audioDevices[bsOption] });
+                string optionName = bsOption;
+                if (optionName.Length > 20)
+                    optionName = optionName.Substring(0, 19);
+
+                SelectAudioDevice.Options.Add(new SelectListItem { Text = optionName, Value = audioDevices[bsOption] });
             }
 
             SelectSpeakerLayout.Options = new List<SelectListItem>

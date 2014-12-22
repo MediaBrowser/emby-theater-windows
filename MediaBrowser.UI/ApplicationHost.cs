@@ -122,6 +122,11 @@ namespace MediaBrowser.UI
             get { return true; }
         }
 
+        public override Version ApplicationVersion
+        {
+            get { return GetType().Assembly.GetName().Version; }
+        }
+
         /// <summary>
         /// Registers resources that classes will depend on
         /// </summary>
@@ -222,7 +227,7 @@ namespace MediaBrowser.UI
             };
 
             ConnectionManager = new ConnectionManager(logger,
-                new CredentialProvider(TheaterConfigurationManager, JsonSerializer),
+                new CredentialProvider(TheaterConfigurationManager, JsonSerializer, Logger),
                 new NetworkConnection(Logger),
                 new ServerLocator(logger),
                 "Media Browser Theater",

@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Common.Events;
+﻿using System.Net;
+using MediaBrowser.Common.Events;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Configuration;
 using MediaBrowser.Model.Connect;
@@ -94,7 +95,7 @@ namespace MediaBrowser.Theater.Implementations.Session
 
             try
             {
-                var result = await apiClient.AuthenticateUserAsync(username, password);
+                var result = await apiClient.AuthenticateUserAsync(WebUtility.HtmlEncode(username), password);
 
                 CurrentUser = result.User;
 

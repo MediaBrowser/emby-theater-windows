@@ -1,5 +1,4 @@
-﻿using System.Net;
-using MediaBrowser.Common.Events;
+﻿using MediaBrowser.Common.Events;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Configuration;
 using MediaBrowser.Model.Connect;
@@ -13,6 +12,7 @@ using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.Theming;
 using System;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace MediaBrowser.Theater.Implementations.Session

@@ -12,6 +12,7 @@ using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.Theming;
 using System;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace MediaBrowser.Theater.Implementations.Session
@@ -94,7 +95,7 @@ namespace MediaBrowser.Theater.Implementations.Session
 
             try
             {
-                var result = await apiClient.AuthenticateUserAsync(username, password);
+                var result = await apiClient.AuthenticateUserAsync(WebUtility.HtmlEncode(username), password);
 
                 CurrentUser = result.User;
 

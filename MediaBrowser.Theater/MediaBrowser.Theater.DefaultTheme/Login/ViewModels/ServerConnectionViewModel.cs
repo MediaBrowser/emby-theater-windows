@@ -15,18 +15,18 @@ namespace MediaBrowser.Theater.DefaultTheme.Login.ViewModels
         {
             _info = info;
 
-            ConnectCommand = new RelayCommand(async arg => {
+            ConnectCommand = new RelayCommand(arg => {
                 if (_info == null) {
                     navigator.Navigate(Go.To.LocateServer());
                 } else {
-                    var result = await connectionManager.Connect(info, CancellationToken.None);
+                    connectionManager.Connect(info, CancellationToken.None);
                 }
             });
         }
 
         public string Name
         {
-            get { return _info != null ? _info.Name : "Find Server"; }
+            get { return _info != null ? _info.Name : "Add Server"; }
         }
 
         public ICommand ConnectCommand { get; private set; }

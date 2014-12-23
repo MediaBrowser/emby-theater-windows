@@ -8,9 +8,11 @@ using MediaBrowser.Theater.DefaultTheme.Home;
 using MediaBrowser.Theater.DefaultTheme.ItemDetails;
 using MediaBrowser.Theater.DefaultTheme.ItemList;
 using MediaBrowser.Theater.DefaultTheme.Login;
+using MediaBrowser.Theater.DefaultTheme.Login.ViewModels;
 using MediaBrowser.Theater.DefaultTheme.Osd;
 using MediaBrowser.Theater.DefaultTheme.SideMenu;
 using MediaBrowser.Theater.DefaultTheme.SideMenu.ViewModels;
+using MediaBrowser.Theater.Presentation.Navigation;
 
 namespace MediaBrowser.Theater.DefaultTheme.Core
 {
@@ -26,8 +28,9 @@ namespace MediaBrowser.Theater.DefaultTheme.Core
             _sessionManager = sessionManager;
 
             // create root navigation bindings
-            Binder.Bind<LoginPath, WelcomePageContext>();
-            Binder.Bind<ConnectLoginPath, ConnectPinContext>();
+            Binder.Bind<LoginPath, PageContext<WelcomePageViewModel>>();
+            Binder.Bind<ConnectLoginPath, PageContext<ConnectPinViewModel>>();
+            Binder.Bind<LocateServerPath, PageContext<ManualConnectionViewModel>>();
             Binder.Bind<HomePath, HomeContext>();
             Binder.Bind<SideMenuPath, SideMenuContext>();
             Binder.Bind<FullScreenPlaybackPath, FullScreenPlaybackContext>();

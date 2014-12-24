@@ -1,6 +1,8 @@
 ﻿using System.Threading.Tasks;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.System;
 using MediaBrowser.Theater.Api;
+using MediaBrowser.Theater.Api.Library;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.System;
@@ -22,7 +24,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Core
         private readonly INavigator _navigator;
         private readonly ISessionManager _sessionManager;
 
-        public RootContext(ITheaterApplicationHost appHost, INavigator navigator, ISessionManager sessionManager) : base(appHost)
+        public RootContext(ITheaterApplicationHost appHost, INavigator navigator, ISessionManager sessionManager, IConnectionManager connectionManager) : base(appHost)
         {
             _navigator = navigator;
             _sessionManager = sessionManager;
@@ -38,7 +40,25 @@ namespace MediaBrowser.Theater.DefaultTheme.Core
             Binder.Bind<ServerSelectionPath, ServerSelectionContext>((path, context) => context.Servers = path.Parameter);
             Binder.Bind<UserSelectionPath, UserSelectionContext>((path, context) => context.ApiClient = path.Parameter);
             Binder.Bind<ItemListPath, ItemListContext>((path, context) => context.Parameters = path.Parameter);
-            Binder.Bind<ItemPath, ItemDetailsContext>((path, context) => context.Item = path.Parameter);
+
+            //Binder.Bind<ItemPath, ItemDetailsContext>((path, context) => context.Item = path.Parameter);
+
+            Binder.Bind<ItemPath>(async path => {
+                if (path.Parameter.IsFolder && !path.Parameter.IsType("series") && !path.Parameter.IsType("season")) {
+                    var context = appHost.TryResolve<ItemListContext>();
+                    context.Parameters = new ItemListParameters {
+                        Title = path.Parameter.Name,
+                        Items = ItemChildren.Get(connectionManager, sessionManager, path.Parameter)
+                    };
+
+                    return context;
+                } else {
+                    var context = appHost.TryResolve<ItemDetailsContext>();
+                    context.Item = path.Parameter;
+
+                    return context;
+                }
+            });
         }
 
         public override Task Activate()

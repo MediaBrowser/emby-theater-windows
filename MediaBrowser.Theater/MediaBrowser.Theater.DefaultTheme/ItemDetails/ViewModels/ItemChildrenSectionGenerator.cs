@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
@@ -32,7 +33,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
         public override async Task<IEnumerable<IItemDetailSection>> GetSections(BaseItemDto item)
         {
             ItemsResult result = await ItemChildren.Get(_connectionManager, _sessionManager, item);
-            return new[] { await GetItemsSection(result) };
+            return new[] { await GetItemsSection(result) }.Where(s => s != null);
         }
     }
 }

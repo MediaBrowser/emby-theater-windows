@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
@@ -36,7 +34,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
             return new[] {
                 await GetMovies(item),
                 await GetSeries(item)
-            };
+            }.Where(s => s != null);
         }
 
         private async Task<IItemDetailSection> GetMovies(BaseItemDto person)

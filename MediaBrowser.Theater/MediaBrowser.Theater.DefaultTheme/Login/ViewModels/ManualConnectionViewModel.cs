@@ -136,5 +136,14 @@ namespace MediaBrowser.Theater.DefaultTheme.Login.ViewModels
                 }
             }
         }
+
+        protected override void OnClosed()
+        {
+            base.OnClosed();
+
+            if (_cancellationTokenSource != null) {
+                _cancellationTokenSource.Cancel();
+            }
+        }
     }
 }

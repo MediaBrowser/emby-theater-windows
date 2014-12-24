@@ -1,4 +1,6 @@
-﻿using MediaBrowser.Common;
+﻿using System.Threading.Tasks;
+using MediaBrowser.Common;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Theater.Api.Configuration;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.UserInput;
@@ -14,5 +16,6 @@ namespace MediaBrowser.Theater.Api
         INavigator Navigator { get; }
         IPresenter Presenter { get; }
         IUserInputManager UserInputManager { get; }
+        Task HandleConnectionStatus(ConnectionResult result);
     }
 }

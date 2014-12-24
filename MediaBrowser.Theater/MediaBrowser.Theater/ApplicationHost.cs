@@ -281,27 +281,29 @@ namespace MediaBrowser.Theater
                 JsonSerializer = JsonSerializer
             };
 
-            ConnectionManager.Connected += (s, e) => {
-                if (e.Argument.State == ConnectionState.SignedIn) {
-                    Navigator.Navigate(Go.To.Home());
-                }
-                if (e.Argument.State == ConnectionState.ServerSignIn) {
-                    Navigator.Navigate(Go.To.UserSelection(e.Argument.ApiClient));
-                }
-                if (e.Argument.State == ConnectionState.ServerSelection) {
-                    Navigator.Navigate(Go.To.ServerSelection(e.Argument.Servers));
-                }
-                if (e.Argument.State == ConnectionState.Unavailable) {
-                    Navigator.Navigate(Go.To.Login());
-                }
-                if (e.Argument.State == ConnectionState.ConnectSignIn) {
-                    Navigator.Navigate(Go.To.ConnectLogin());
-                }
-            };
-
+            ConnectionManager.Connected += (s, e) => HandleConnectionStatus(e.Argument);
             ConnectionManager.RemoteLoggedOut += (s, e) => ConnectToServer();
         }
-        
+
+        public async Task HandleConnectionStatus(ConnectionResult result)
+        {
+            if (result.State == ConnectionState.SignedIn) {
+                await Navigator.Navigate(Go.To.Home());
+            }
+            if (result.State == ConnectionState.ServerSignIn) {
+                await Navigator.Navigate(Go.To.UserSelection(result.ApiClient));
+            }
+            if (result.State == ConnectionState.ServerSelection) {
+                await Navigator.Navigate(Go.To.ServerSelection(result.Servers));
+            }
+            if (result.State == ConnectionState.Unavailable) {
+                await Navigator.Navigate(Go.To.Login());
+            }
+            if (result.State == ConnectionState.ConnectSignIn) {
+                await Navigator.Navigate(Go.To.ConnectLogin());
+            }
+        }
+
         public override async Task Restart()
         {
             await Shutdown();

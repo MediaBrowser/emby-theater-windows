@@ -4,6 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:viewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.Login.ViewModels"
+             xmlns:lex="http://wpflocalizeextension.codeplex.com"
+             lex:LocalizeDictionary.DesignCulture="en"
+             lex:ResxLocalizationProvider.DefaultAssembly="MediaBrowser.Theater.DefaultTheme"
+             lex:ResxLocalizationProvider.DefaultDictionary="Strings"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance viewModels:ConnectPinViewModel}"
              d:DesignHeight="1080" d:DesignWidth="1920">
@@ -14,8 +18,8 @@
         </Grid.RowDefinitions>
         
         <StackPanel Grid.Row="0" Margin="50, 0, 0, 0">
-            <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Sign in with Media Browser Connect"/>
-            <TextBlock Margin="0 10 0 0">With Media Browser Connect you can easily access your Media Browser Server wherever you are and share with your family and friends.</TextBlock>
+            <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="{lex:Loc Login_Connect_Title}"/>
+            <TextBlock Margin="0 10 0 0" Text="{lex:Loc Login_Connect_Subtitle}"/>
         </StackPanel>
 
         <Grid Grid.Row="1">
@@ -31,18 +35,18 @@
                 <RowDefinition Height="auto"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            
-            <TextBlock Grid.Row="1" Grid.Column="0" Width="550" TextWrapping="Wrap" TextAlignment="Center" HorizontalAlignment="Center">To sign in with Media Browser Connect, visit http://mediabrowser.tv/pin and enter the following pin code:</TextBlock>
-            <TextBlock Grid.Row="2" Grid.Column="0" x:Name="TxtPin" Style="{StaticResource HeadingTextBlockStyle}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="200" Text="{Binding Pin}"/>
-            
-            <TextBlock Grid.Row="2" Grid.Column="1" Text="Or" VerticalAlignment="Center" HorizontalAlignment="Center" Style="{StaticResource AccentedTextBlockStyle}" FontSize="50"/>
 
-            <TextBlock Grid.Row="1" Grid.Column="2" Width="550" TextWrapping="Wrap" TextAlignment="Center" Text="Scan the following QR code with your phone or tablet." HorizontalAlignment="Center"/>
+            <TextBlock Grid.Row="1" Grid.Column="0" Width="550" TextWrapping="Wrap" TextAlignment="Center" HorizontalAlignment="Center" Text="{lex:Loc Login_Connect_ManualInstructions}"/>
+            <TextBlock Grid.Row="2" Grid.Column="0" x:Name="TxtPin" Style="{StaticResource HeadingTextBlockStyle}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="200" Text="{Binding Pin}"/>
+
+            <TextBlock Grid.Row="2" Grid.Column="1" Text="{lex:Loc Login_Connect_Separator}" VerticalAlignment="Center" HorizontalAlignment="Center" Style="{StaticResource AccentedTextBlockStyle}" FontSize="50"/>
+
+            <TextBlock Grid.Row="1" Grid.Column="2" Width="550" TextWrapping="Wrap" TextAlignment="Center" Text="{lex:Loc Login_Connect_QrInstructions}" HorizontalAlignment="Center"/>
             <Rectangle Grid.Row="2" Grid.Column="2" Width="400" Height="400" Fill="{StaticResource ForegroundBrush}"/>
             
             <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Top" Visibility="{Binding HasErrors, Converter={StaticResource BooleanToVisibility}}">
                 <TextBlock Text="{Binding ErrorDescription}" Style="{StaticResource SubtitleTextBlockStyle}" Foreground="Red" HorizontalAlignment="Center" TextAlignment="Center"/>
-                <Button Content="Retry" HorizontalAlignment="Center"/>
+                <Button Content="{lex:Loc Login_Connect_Retry}" HorizontalAlignment="Center" Command="{Binding GeneratePinCommand}"/>
             </StackPanel>
         </Grid>
     </Grid>

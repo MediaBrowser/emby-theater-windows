@@ -8,6 +8,7 @@ using System.Windows.Input;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Connect;
 using MediaBrowser.Theater.Api;
+using MediaBrowser.Theater.Presentation;
 using MediaBrowser.Theater.Presentation.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.Login.ViewModels
@@ -108,13 +109,13 @@ namespace MediaBrowser.Theater.DefaultTheme.Login.ViewModels
 
         private void OnPinError()
         {
-            ErrorDescription = "An error has occurred while attempting to communicate with mediabrowser.tv. Click the button below to try again or skip to connect to your server manually.";
+            ErrorDescription = "MediaBrowser.Theater.DefaultTheme:Strings:Login_Connect_PinError".Localize();
             HasErrors = true;
         }
 
         private void OnPinExpired()
         {
-            ErrorDescription = "Your pin has expired. Click the button below to generate a new pin or skip to connect to your server manually.";
+            ErrorDescription = "MediaBrowser.Theater.DefaultTheme:Strings:Login_Connect_PinExpired".Localize();
             HasErrors = true;
         }
 

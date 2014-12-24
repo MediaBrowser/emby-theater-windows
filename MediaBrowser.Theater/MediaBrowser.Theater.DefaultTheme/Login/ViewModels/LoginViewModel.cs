@@ -26,7 +26,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Login.ViewModels
             _logManager = logManager;
             _imageManager = imageManager;
             _apiClient = apiClient;
-            _users = new ObservableCollection<IViewModel> { new UserLoginViewModel(null, session.ActiveApiClient, _imageManager, _session, _logManager) };
+            _users = new ObservableCollection<IViewModel> { new UserLoginViewModel(null, _session.ActiveApiClient, _imageManager, _session, _logManager) };
 
             LoadUsers();
         }
@@ -42,7 +42,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Login.ViewModels
 
             Action action = () => {
                 foreach (UserLoginViewModel user in users.Select(u => new UserLoginViewModel(u, _apiClient, _imageManager, _session, _logManager))) {
-                    _users.Add(user);
+                    _users.Insert(0, user);
                 }
             };
 

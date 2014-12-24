@@ -23,13 +23,13 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
-            <RowDefinition Height="200"/>
+            <RowDefinition Height="140"/>
             <RowDefinition/>
-            <RowDefinition Height="200"/>
+            <RowDefinition Height="140"/>
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0" Text="{lex:Loc Login_Title}" Style="{StaticResource TitleTextBlockStyle}" Margin="50, 0, 0, 0"/>
-        <TextBlock Grid.Row="1" Text="Please select which user to sign in as" Margin="50, 0, 0, 0"/>
+        <TextBlock Grid.Row="1" Text="{lex:Loc Login_UserSelect_Subtitle}" Margin="50, 0, 0, 0"/>
 
         <controls:ExtendedScrollViewer x:Name="ScrollViewer" Grid.Row="2" IgnoreAllDirectionKeys="True" IsTabStop="False" Focusable="False" CanContentScroll="True" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" VerticalAlignment="Top">
             <controls:ScrollingPanel CanHorizontallyScroll="True" CanVerticallyScroll="False">

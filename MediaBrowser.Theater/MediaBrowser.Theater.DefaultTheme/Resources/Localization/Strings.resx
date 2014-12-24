@@ -349,4 +349,88 @@
     <value>@Sorting_ByNaturalOrder</value>
     <comment>Sort by the item's natural sort order</comment>
   </data>
+  <data name="Login_Connect" xml:space="preserve">
+    <value>@Login_Connect</value>
+    <comment>Menu option to login via MB Connect</comment>
+  </data>
+  <data name="Login_Connect_ManualInstructions" xml:space="preserve">
+    <value>@Login_Connect_ManualInstructions</value>
+    <comment>Instructions explaining how to sign in with pin code</comment>
+  </data>
+  <data name="Login_Connect_QrInstructions" xml:space="preserve">
+    <value>@Login_Connect_QrInstructions</value>
+    <comment>Instructions explaining how to sign in with the QR code</comment>
+  </data>
+  <data name="Login_Connect_Separator" xml:space="preserve">
+    <value>@Login_Connect_Separator</value>
+    <comment>Separator text between manual and QR code login</comment>
+  </data>
+  <data name="Login_Connect_Subtitle" xml:space="preserve">
+    <value>@Login_Connect_Subtitle</value>
+    <comment>The MB Connect pin page subtitle</comment>
+  </data>
+  <data name="Login_Connect_Title" xml:space="preserve">
+    <value>@Login_Connect_Title</value>
+    <comment>The MB Connect pin page title</comment>
+  </data>
+  <data name="Login_Local" xml:space="preserve">
+    <value>@Login_Local</value>
+    <comment>Menu option to login via local server</comment>
+  </data>
+  <data name="Login_ManualConnection_Connect" xml:space="preserve">
+    <value>@Login_ManualConnection_Connect</value>
+    <comment>Connect button text</comment>
+  </data>
+  <data name="Login_ManualConnection_ConnectingStatus" xml:space="preserve">
+    <value>@Login_ManualConnection_ConnectingStatus</value>
+    <comment>Status text displayed while connecting to the server</comment>
+  </data>
+  <data name="Login_ManualConnection_ErrorStatus" xml:space="preserve">
+    <value>@Login_ManualConnection_ErrorStatus</value>
+    <comment>Status text displayed upon server connection error</comment>
+  </data>
+  <data name="Login_ManualConnection_Host" xml:space="preserve">
+    <value>@Login_ManualConnection_Host</value>
+    <comment>Server host name label</comment>
+  </data>
+  <data name="Login_ManualConnection_Port" xml:space="preserve">
+    <value>@Login_ManualConnection_Port</value>
+    <comment>Server port label</comment>
+  </data>
+  <data name="Login_ManualConnection_Subtitle" xml:space="preserve">
+    <value>@Login_ManualConnection_Subtitle</value>
+    <comment>Subtitle for the manual server connection details page</comment>
+  </data>
+  <data name="Login_ManualConnection_Title" xml:space="preserve">
+    <value>@Login_ManualConnection_Title</value>
+    <comment>Title for the manual server connection details page</comment>
+  </data>
+  <data name="Login_ServerSelection_Subtitle" xml:space="preserve">
+    <value>@Login_ServerSelection_Subtitle</value>
+    <comment>Select server page subtitle</comment>
+  </data>
+  <data name="Login_ServerSelection_Title" xml:space="preserve">
+    <value>@Login_ServerSelection_Title</value>
+    <comment>Select server page title</comment>
+  </data>
+  <data name="Login_UserSelect_Subtitle" xml:space="preserve">
+    <value>@Login_UserSelect_Subtitle</value>
+    <comment>The subtitle text on the user selection page</comment>
+  </data>
+  <data name="Login_WelcomeText" xml:space="preserve">
+    <value>@Login_WelcomeText</value>
+    <comment>Welcome message upon starting MBT</comment>
+  </data>
+  <data name="Login_Connect_PinError" xml:space="preserve">
+    <value>@Login_Connect_PinError</value>
+    <comment>Error message given when there is an error communicating with mediabrowser.tv</comment>
+  </data>
+  <data name="Login_Connect_PinExpired" xml:space="preserve">
+    <value>@Login_Connect_PinExpired</value>
+    <comment>Error message given when the pin has expired</comment>
+  </data>
+  <data name="Login_Connect_Retry" xml:space="preserve">
+    <value>@Login_Connect_Retry</value>
+    <comment>Button text for generating a new pin code</comment>
+  </data>
 </root>

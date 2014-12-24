@@ -5,15 +5,19 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:controls1="clr-namespace:MediaBrowser.Theater.DefaultTheme.Controls"
              xmlns:viewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.Login.ViewModels"
+             xmlns:lex="http://wpflocalizeextension.codeplex.com"
+             lex:LocalizeDictionary.DesignCulture="en"
+             lex:ResxLocalizationProvider.DefaultAssembly="MediaBrowser.Theater.DefaultTheme"
+             lex:ResxLocalizationProvider.DefaultDictionary="Strings"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModels:WelcomePageViewModel}"
              d:DesignHeight="1080" d:DesignWidth="1920">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
-            <RowDefinition Height="200" />
+            <RowDefinition Height="140" />
             <RowDefinition />
-            <RowDefinition Height="200" />
+            <RowDefinition Height="140" />
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center">
@@ -25,15 +29,15 @@
         <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Center">
             <TextBlock
                 Text="If you have not already done so, please install Media Browser Server before setting up Media Browser Theater." />
-            <TextBlock Text="www.mediabrowser.tv/download" />
+            <TextBlock Text="www.mediabrowser.tv/download" Foreground="{StaticResource AccentedTextFontForeground}" />
         </StackPanel>
 
-        <StackPanel Grid.Row="2" HorizontalAlignment="Center" Orientation="Horizontal" VerticalAlignment="Center">
+        <StackPanel Grid.Row="2" HorizontalAlignment="Center" Orientation="Horizontal" VerticalAlignment="Top">
             <controls1:TileButton x:Name="LoginConnectButton" Command="{Binding LoginViaConnectCommand}"
                                   Width="400" Height="400"
                                   Margin="10">
                 <controls1:TileButton.Header>
-                    <TextBlock Text="Login via Connect" Margin="10 5 15 10"
+                    <TextBlock Text="{lex:Loc Login_Connect}" Margin="10 5 15 10"
                                Foreground="{Binding Foreground, ElementName=LoginConnectButton}" />
                 </controls1:TileButton.Header>
 
@@ -45,7 +49,7 @@
                                   Width="400" Height="400"
                                   Margin="10">
                 <controls1:TileButton.Header>
-                    <TextBlock Text="Login to Local Server" Margin="10 5 15 10"
+                    <TextBlock Text="{lex:Loc Login_Local}" Margin="10 5 15 10"
                                Foreground="{Binding Foreground, ElementName=LoginDirectButton}" />
                 </controls1:TileButton.Header>
 

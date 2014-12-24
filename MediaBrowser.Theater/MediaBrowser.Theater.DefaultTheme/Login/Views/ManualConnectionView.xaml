@@ -5,6 +5,10 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:viewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.Login.ViewModels"
              xmlns:osk="clr-namespace:MediaBrowser.Theater.Presentation.Controls.Osk;assembly=MediaBrowser.Theater.Presentation"
+             xmlns:lex="http://wpflocalizeextension.codeplex.com"
+             lex:LocalizeDictionary.DesignCulture="en"
+             lex:ResxLocalizationProvider.DefaultAssembly="MediaBrowser.Theater.DefaultTheme"
+             lex:ResxLocalizationProvider.DefaultDictionary="Strings"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModels:ManualConnectionViewModel}"
              d:DesignHeight="1080" d:DesignWidth="1920">
@@ -16,18 +20,18 @@
             <RowDefinition Height="200"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" Style="{StaticResource TitleTextBlockStyle}" Text="Add Server" Margin="50, 0, 0, 0"/>
-        <TextBlock Grid.Row="1" Text="Please confirm the location of your server." Margin="50, 0, 0, 0"/>
+        <TextBlock Grid.Row="0" Style="{StaticResource TitleTextBlockStyle}" Text="{lex:Loc Login_ManualConnection_Title}" Margin="50, 0, 0, 0"/>
+        <TextBlock Grid.Row="1" Text="{lex:Loc Login_ManualConnection_Subtitle}" Margin="50, 0, 0, 0"/>
 
         <StackPanel Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" Width="400">
-            <TextBlock Text="Server host name or IP address:"/>
+            <TextBlock Text="{lex:Loc Login_ManualConnection_Host}"/>
             <osk:TextField x:Name="AddressTextField" Text="{Binding ServerHost}"/>
-            <TextBlock Text="Server port number:" Margin="0,20,0,0"/>
+            <TextBlock Text="{lex:Loc Login_ManualConnection_Port}" Margin="0,20,0,0"/>
             <osk:TextField Text="{Binding ServerPort}"/>
-            <Button Content="Connect" Command="{Binding ConnectCommand}" Margin="0,40,0,0"/>
+            <Button Content="{lex:Loc Login_ManualConnection_Connect}" Command="{Binding ConnectCommand}" Margin="0,40,0,0"/>
         </StackPanel>
-        
-        <TextBlock Grid.Row="2" Visibility="{Binding HasConnectionFailed, Converter={StaticResource BooleanToVisibility}}" VerticalAlignment="Bottom" HorizontalAlignment="Center" Style="{StaticResource SubtitleTextBlockStyle}" Text="Could not connect to the server. Please check your server details and your network connection." Foreground="Red"/>
-        <TextBlock Grid.Row="2" Visibility="{Binding IsConnecting, Converter={StaticResource BooleanToVisibility}}" VerticalAlignment="Bottom" HorizontalAlignment="Center" Style="{StaticResource SubtitleTextBlockStyle}" Text="Connecting..." Foreground="Green"/>
+
+        <TextBlock Grid.Row="2" Visibility="{Binding HasConnectionFailed, Converter={StaticResource BooleanToVisibility}}" VerticalAlignment="Bottom" HorizontalAlignment="Center" Style="{StaticResource SubtitleTextBlockStyle}" Text="{lex:Loc Login_ManualConnection_ErrorStatus}" Foreground="Red"/>
+        <TextBlock Grid.Row="2" Visibility="{Binding IsConnecting, Converter={StaticResource BooleanToVisibility}}" VerticalAlignment="Bottom" HorizontalAlignment="Center" Style="{StaticResource SubtitleTextBlockStyle}" Text="{lex:Loc Login_ManualConnection_ConnectingStatus}" Foreground="Green"/>
     </Grid>
 </UserControl>

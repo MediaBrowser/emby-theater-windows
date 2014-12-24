@@ -291,4 +291,67 @@
   <data name="Sorting_ByNaturalOrder" xml:space="preserve">
     <value>Natural Order</value>
   </data>
+  <data name="Login_Connect" xml:space="preserve">
+    <value>Login via Connect</value>
+  </data>
+  <data name="Login_Connect_ManualInstructions" xml:space="preserve">
+    <value>To sign in with Media Browser Connect, visit http://mediabrowser.tv/pin and enter the following pin code:</value>
+  </data>
+  <data name="Login_Connect_QrInstructions" xml:space="preserve">
+    <value>Scan the following QR code with your phone or tablet.</value>
+  </data>
+  <data name="Login_Connect_Separator" xml:space="preserve">
+    <value>or</value>
+  </data>
+  <data name="Login_Connect_Subtitle" xml:space="preserve">
+    <value>With Media Browser Connect you can easily access your Media Browser Server wherever you are and share with your family and friends.</value>
+  </data>
+  <data name="Login_Connect_Title" xml:space="preserve">
+    <value>Sign in with Media Browser Connect</value>
+  </data>
+  <data name="Login_Local" xml:space="preserve">
+    <value>Login to Local Server</value>
+  </data>
+  <data name="Login_ManualConnection_Connect" xml:space="preserve">
+    <value>Connect</value>
+  </data>
+  <data name="Login_ManualConnection_ConnectingStatus" xml:space="preserve">
+    <value>Connecting...</value>
+  </data>
+  <data name="Login_ManualConnection_ErrorStatus" xml:space="preserve">
+    <value>Could not connect to the server. Please check your server details and your network connection.</value>
+  </data>
+  <data name="Login_ManualConnection_Host" xml:space="preserve">
+    <value>Server host name or IP address:</value>
+  </data>
+  <data name="Login_ManualConnection_Port" xml:space="preserve">
+    <value>Server port number:</value>
+  </data>
+  <data name="Login_ManualConnection_Subtitle" xml:space="preserve">
+    <value>Please confirm the location of your server.</value>
+  </data>
+  <data name="Login_ManualConnection_Title" xml:space="preserve">
+    <value>Add a Media Browser Server Connection</value>
+  </data>
+  <data name="Login_ServerSelection_Subtitle" xml:space="preserve">
+    <value>Please choose which local server you wish to connect to.</value>
+  </data>
+  <data name="Login_ServerSelection_Title" xml:space="preserve">
+    <value>Select Server</value>
+  </data>
+  <data name="Login_UserSelect_Subtitle" xml:space="preserve">
+    <value>Please select which user you wish to sign in with.</value>
+  </data>
+  <data name="Login_WelcomeText" xml:space="preserve">
+    <value>If you have not already done so, please install Media Browser Server before setting up Media Browser Theater.</value>
+  </data>
+  <data name="Login_Connect_PinError" xml:space="preserve">
+    <value>An error has occurred while attempting to communicate with mediabrowser.tv. Click the button below to try again.</value>
+  </data>
+  <data name="Login_Connect_PinExpired" xml:space="preserve">
+    <value>Your pin has expired. Click the button below to generate a new pin.</value>
+  </data>
+  <data name="Login_Connect_Retry" xml:space="preserve">
+    <value>Generate new pin code</value>
+  </data>
 </root>

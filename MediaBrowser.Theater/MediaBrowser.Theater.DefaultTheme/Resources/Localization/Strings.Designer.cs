@@ -313,6 +313,87 @@ namespace MediaBrowser.Theater.DefaultTheme.Resources.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to @Login_Connect.
+        /// </summary>
+        internal static string Login_Connect {
+            get {
+                return ResourceManager.GetString("Login_Connect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @Login_Connect_ManualInstructions.
+        /// </summary>
+        internal static string Login_Connect_ManualInstructions {
+            get {
+                return ResourceManager.GetString("Login_Connect_ManualInstructions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @Login_Connect_PinError.
+        /// </summary>
+        internal static string Login_Connect_PinError {
+            get {
+                return ResourceManager.GetString("Login_Connect_PinError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @Login_Connect_PinExpired.
+        /// </summary>
+        internal static string Login_Connect_PinExpired {
+            get {
+                return ResourceManager.GetString("Login_Connect_PinExpired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @Login_Connect_QrInstructions.
+        /// </summary>
+        internal static string Login_Connect_QrInstructions {
+            get {
+                return ResourceManager.GetString("Login_Connect_QrInstructions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @Login_Connect_Retry.
+        /// </summary>
+        internal static string Login_Connect_Retry {
+            get {
+                return ResourceManager.GetString("Login_Connect_Retry", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @Login_Connect_Separator.
+        /// </summary>
+        internal static string Login_Connect_Separator {
+            get {
+                return ResourceManager.GetString("Login_Connect_Separator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @Login_Connect_Subtitle.
+        /// </summary>
+        internal static string Login_Connect_Subtitle {
+            get {
+                return ResourceManager.GetString("Login_Connect_Subtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @Login_Connect_Title.
+        /// </summary>
+        internal static string Login_Connect_Title {
+            get {
+                return ResourceManager.GetString("Login_Connect_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to @Login_InvalidCredentialsError.
         /// </summary>
         internal static string Login_InvalidCredentialsError {
@@ -322,11 +403,83 @@ namespace MediaBrowser.Theater.DefaultTheme.Resources.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to @Login_Local.
+        /// </summary>
+        internal static string Login_Local {
+            get {
+                return ResourceManager.GetString("Login_Local", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to @Login_Login.
         /// </summary>
         internal static string Login_Login {
             get {
                 return ResourceManager.GetString("Login_Login", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @Login_ManualConnection_Connect.
+        /// </summary>
+        internal static string Login_ManualConnection_Connect {
+            get {
+                return ResourceManager.GetString("Login_ManualConnection_Connect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @Login_ManualConnection_ConnectingStatus.
+        /// </summary>
+        internal static string Login_ManualConnection_ConnectingStatus {
+            get {
+                return ResourceManager.GetString("Login_ManualConnection_ConnectingStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @Login_ManualConnection_ErrorStatus.
+        /// </summary>
+        internal static string Login_ManualConnection_ErrorStatus {
+            get {
+                return ResourceManager.GetString("Login_ManualConnection_ErrorStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @Login_ManualConnection_Host.
+        /// </summary>
+        internal static string Login_ManualConnection_Host {
+            get {
+                return ResourceManager.GetString("Login_ManualConnection_Host", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @Login_ManualConnection_Port.
+        /// </summary>
+        internal static string Login_ManualConnection_Port {
+            get {
+                return ResourceManager.GetString("Login_ManualConnection_Port", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @Login_ManualConnection_Subtitle.
+        /// </summary>
+        internal static string Login_ManualConnection_Subtitle {
+            get {
+                return ResourceManager.GetString("Login_ManualConnection_Subtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @Login_ManualConnection_Title.
+        /// </summary>
+        internal static string Login_ManualConnection_Title {
+            get {
+                return ResourceManager.GetString("Login_ManualConnection_Title", resourceCulture);
             }
         }
         
@@ -349,6 +502,24 @@ namespace MediaBrowser.Theater.DefaultTheme.Resources.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to @Login_ServerSelection_Subtitle.
+        /// </summary>
+        internal static string Login_ServerSelection_Subtitle {
+            get {
+                return ResourceManager.GetString("Login_ServerSelection_Subtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @Login_ServerSelection_Title.
+        /// </summary>
+        internal static string Login_ServerSelection_Title {
+            get {
+                return ResourceManager.GetString("Login_ServerSelection_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to @Login_Title.
         /// </summary>
         internal static string Login_Title {
@@ -363,6 +534,24 @@ namespace MediaBrowser.Theater.DefaultTheme.Resources.Localization {
         internal static string Login_Username {
             get {
                 return ResourceManager.GetString("Login_Username", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @Login_UserSelect_Subtitle.
+        /// </summary>
+        internal static string Login_UserSelect_Subtitle {
+            get {
+                return ResourceManager.GetString("Login_UserSelect_Subtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @Login_WelcomeText.
+        /// </summary>
+        internal static string Login_WelcomeText {
+            get {
+                return ResourceManager.GetString("Login_WelcomeText", resourceCulture);
             }
         }
         

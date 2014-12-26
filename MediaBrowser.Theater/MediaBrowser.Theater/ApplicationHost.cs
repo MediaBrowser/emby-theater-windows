@@ -219,16 +219,6 @@ namespace MediaBrowser.Theater
 
         public void RunUserInterface()
         {
-            Theme.ApplicationStarted += () => {
-                if (Application.Current != null) {
-                    Application.Current.Exit += (s, e) => {
-                        if (!TheaterConfigurationManager.Configuration.RememberLogin && SessionManager.CurrentUser != null) {
-                            ConnectionManager.Logout();
-                        }
-                    };
-                }
-            };
-
             Theme.Run();
         }
 
@@ -289,6 +279,7 @@ namespace MediaBrowser.Theater
         {
             if (result.State == ConnectionState.SignedIn) {
                 await Navigator.Navigate(Go.To.Home());
+                Navigator.ClearNavigationHistory();
             }
             if (result.State == ConnectionState.ServerSignIn) {
                 await Navigator.Navigate(Go.To.UserSelection(result.ApiClient));
@@ -366,10 +357,6 @@ namespace MediaBrowser.Theater
         public override async Task Shutdown()
         {
             await Theme.Shutdown().ConfigureAwait(false);
-
-            if (!TheaterConfigurationManager.Configuration.RememberLogin) {
-                await SessionManager.Logout().ConfigureAwait(false);
-            }
 
             if (Application.Current != null) {
                 Application.Current.Shutdown();

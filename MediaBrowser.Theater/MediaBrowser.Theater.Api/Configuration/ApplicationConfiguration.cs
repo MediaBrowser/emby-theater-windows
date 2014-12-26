@@ -24,9 +24,7 @@ namespace MediaBrowser.Theater.Api.Configuration
         public bool EnableHighQualityImageScaling { get; set; }
 
         public int MaxStreamingBitrate { get; set; }
-
-        public bool RememberLogin { get; set; }
-
+        
         public ApplicationConfiguration()
         {
             // default sever and theme settings

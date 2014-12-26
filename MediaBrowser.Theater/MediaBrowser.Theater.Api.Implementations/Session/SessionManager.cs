@@ -25,6 +25,7 @@ namespace MediaBrowser.Theater.Api.Session
         private readonly ITheaterConfigurationManager _config;
         private readonly IPlaybackManager _playback;
         private readonly IConnectionManager _connectionManager;
+        private UserDto _currentUser;
 
         public SessionManager(INavigator navService, ILogger logger, ITheaterConfigurationManager config, IPlaybackManager playback, IConnectionManager connectionManager)
         {
@@ -34,18 +35,37 @@ namespace MediaBrowser.Theater.Api.Session
             _playback = playback;
             _connectionManager = connectionManager;
 
-            _connectionManager.RemoteLoggedOut += _connectionManager_RemoteLoggedOut;
-        }
+            _connectionManager.LocalUserSignIn += (s, e) => CurrentUser = e.Argument;
+            _connectionManager.LocalUserSignOut += (s, e) => CurrentUser = null;
+            _connectionManager.ConnectUserSignIn += (s, e) => ConnectUser = e.Argument;
+            _connectionManager.ConnectUserSignOut += (s, e) => ConnectUser = null;
+            _connectionManager.RemoteLoggedOut += (s, e) => playback.StopAllPlayback();
 
-        async void _connectionManager_RemoteLoggedOut(object sender, EventArgs e)
+
+        }
+        
+        public UserDto CurrentUser
         {
-            if (CurrentUser != null)
+            get { return _currentUser; }
+            private set
             {
-                await Logout();
+                if (Equals(_currentUser, value)) {
+                    return;
+                }
+
+                var previous = _currentUser;
+                _currentUser = value;
+
+                if (previous != null) {
+                    EventHelper.FireEventIfNotNull(UserLoggedOut, this, EventArgs.Empty, _logger);
+                }
+
+                if (_currentUser != null) {
+                    EventHelper.FireEventIfNotNull(UserLoggedIn, this, EventArgs.Empty, _logger);
+                }
             }
         }
 
-        public UserDto CurrentUser { get; private set; }
         public ConnectUser ConnectUser { get; private set; }
 
         public IApiClient ActiveApiClient
@@ -59,21 +79,7 @@ namespace MediaBrowser.Theater.Api.Session
         public async Task Logout()
         {
             _playback.StopAllPlayback();
-
             await _connectionManager.Logout();
-
-            var previous = CurrentUser;
-
-            CurrentUser = null;
-
-            if (previous != null)
-            {
-                EventHelper.FireEventIfNotNull(UserLoggedOut, this, EventArgs.Empty, _logger);
-            }
-
-            await _navService.Navigate(Go.To.Login());
-
-            _navService.ClearNavigationHistory();
         }
 
         public async Task LoginToServer(string username, string password, bool rememberCredentials)
@@ -85,17 +91,13 @@ namespace MediaBrowser.Theater.Api.Session
             {
                 password = string.Empty;
             }
-
+            
             _connectionManager.SaveLocalCredentials = rememberCredentials;
 
             try
             {
                 var result = await apiClient.AuthenticateUserAsync(username, password);
-
                 CurrentUser = result.User;
-
-                _config.Configuration.RememberLogin = rememberCredentials;
-                _config.SaveConfiguration();
             }
             catch (HttpException ex)
             {
@@ -104,27 +106,10 @@ namespace MediaBrowser.Theater.Api.Session
 
             await AfterLogin();
         }
-
-        public async Task ValidateSavedLogin(ConnectionResult result)
-        {
-            CurrentUser = await result.ApiClient.GetUserAsync(result.ApiClient.CurrentUserId);
-
-            // TODO: Switch to check for ConnectUser
-            if (result.Servers.Any(i => !string.IsNullOrEmpty(i.ExchangeToken)))
-            {
-                _config.Configuration.RememberLogin = true;
-                _config.SaveConfiguration();
-            }
-
-            await AfterLogin();
-        }
-
+        
         private async Task AfterLogin()
         {
-            EventHelper.FireEventIfNotNull(UserLoggedIn, this, EventArgs.Empty, _logger);
-
             await _navService.Navigate(Go.To.Home());
-
             _navService.ClearNavigationHistory();
         }
 

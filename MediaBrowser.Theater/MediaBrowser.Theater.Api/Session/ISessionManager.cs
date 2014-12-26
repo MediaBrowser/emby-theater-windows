@@ -41,12 +41,6 @@ namespace MediaBrowser.Theater.Api.Session
         Task LoginToServer(string username, string password, bool rememberCredentials);
 
         /// <summary>
-        /// Validates the saved login.
-        /// </summary>
-        /// <param name="result">The result.</param>
-        /// <returns>Task.</returns>
-        Task ValidateSavedLogin(ConnectionResult result);
-        /// <summary>
         /// Gets or sets the active API client.
         /// </summary>
         /// <value>The active API client.</value>

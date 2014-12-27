@@ -150,6 +150,11 @@ namespace MediaBrowser.Theater.Presentation.Controls
                 await initializable.Initialize();
             }
 
+            var hasActivity = content as IHasActivityStatus;
+            if (hasActivity != null) {
+                hasActivity.IsActive = true;
+            }
+
             var newContentTransition = TransitionOnNewContent(content);
 
             await oldContentTransition;
@@ -158,6 +163,11 @@ namespace MediaBrowser.Theater.Presentation.Controls
 
         private Task TransitionOffCurrentContent()
         {
+            var hasActivity = ActiveContentPresenter.Content as IHasActivityStatus;
+            if (hasActivity != null) {
+                hasActivity.IsActive = false;
+            }
+
             if (TransitionContentPresenter == null ||
                 TransitionAnimation == null ||
                 TransitionType == null ||

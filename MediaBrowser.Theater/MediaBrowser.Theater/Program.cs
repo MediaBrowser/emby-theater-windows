@@ -119,20 +119,20 @@ namespace MediaBrowser.Theater
             using (var appHost = new ApplicationHost(appPaths, logManager)) {
                 appHost.Init(new Progress<double>()).Wait();
 
-                if (!appHost.TheaterConfigurationManager.Configuration.IsStartupWizardCompleted || appHost.ConnectToServer().Result.State == ConnectionState.Unavailable) {
-                    bool completed = appHost.RunStartupWizard();
-
-                    if (completed) {
-                        appHost.TheaterConfigurationManager.Configuration.IsStartupWizardCompleted = true;
-                        appHost.TheaterConfigurationManager.SaveConfiguration();
-
-                        appHost.Restart().Wait();
-                    } else {
-                        appHost.Shutdown().Wait();
-                    }
-                } else {
+//                if (!appHost.TheaterConfigurationManager.Configuration.IsStartupWizardCompleted || appHost.ConnectToServer().Result.State == ConnectionState.Unavailable) {
+//                    bool completed = appHost.RunStartupWizard();
+//
+//                    if (completed) {
+//                        appHost.TheaterConfigurationManager.Configuration.IsStartupWizardCompleted = true;
+//                        appHost.TheaterConfigurationManager.SaveConfiguration();
+//
+//                        appHost.Restart().Wait();
+//                    } else {
+//                        appHost.Shutdown().Wait();
+//                    }
+//                } else {
                     appHost.RunUserInterface();
-                }
+                //}
 
                 return appHost.RestartOnExit;
             }

@@ -155,7 +155,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
 
             try
             {
-                await _navigation.NavigateToPerson(person.Name, ViewType, Item.Id);
+                await _navigation.NavigateToPerson(person.Id, ViewType, Item.Id);
             }
             catch
             {

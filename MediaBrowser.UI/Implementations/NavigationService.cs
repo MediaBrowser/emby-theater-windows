@@ -272,7 +272,7 @@ namespace MediaBrowser.UI.Implementations
         {
             if (item.IsPerson)
             {
-                await NavigateToPerson(item.Name, context);
+                await NavigateToPerson(item.Id, context);
                 return;
             }
 
@@ -323,17 +323,17 @@ namespace MediaBrowser.UI.Implementations
         /// <summary>
         /// Navigates to person.
         /// </summary>
-        /// <param name="name">The name.</param>
+        /// <param name="id">The identifier.</param>
         /// <param name="context">The context.</param>
         /// <param name="mediaItemId">The media item id.</param>
         /// <returns>Task.</returns>
-        public async Task NavigateToPerson(string name, ViewType context = ViewType.Folders, string mediaItemId = null)
+        public async Task NavigateToPerson(string id, ViewType context = ViewType.Folders, string mediaItemId = null)
         {
             _presentationManager.ShowLoadingAnimation();
 
             try
             {
-                await NavigateToPersonInternal(name, context, mediaItemId);
+                await NavigateToPersonInternal(id, context, mediaItemId);
             }
             finally
             {
@@ -341,11 +341,11 @@ namespace MediaBrowser.UI.Implementations
             }
         }
 
-        private async Task NavigateToPersonInternal(string name, ViewType context, string mediaItemId = null)
+        private async Task NavigateToPersonInternal(string id, ViewType context, string mediaItemId = null)
         {
             var apiClient = _sessionFactory().ActiveApiClient;
 
-            var item = await apiClient.GetPersonAsync(name, _sessionFactory().LocalUserId);
+            var item = await apiClient.GetItemAsync(id, _sessionFactory().LocalUserId);
 
             await App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(async () => await Navigate(_themeManager.CurrentTheme.GetPersonPage(item, context, mediaItemId)));
         }

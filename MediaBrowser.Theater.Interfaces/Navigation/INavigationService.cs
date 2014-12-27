@@ -70,11 +70,11 @@ namespace MediaBrowser.Theater.Interfaces.Navigation
         /// <summary>
         /// Navigates to person.
         /// </summary>
-        /// <param name="name">The name.</param>
+        /// <param name="id">The identifier.</param>
         /// <param name="context">The context.</param>
         /// <param name="mediaItemId">The media item id.</param>
         /// <returns>Task.</returns>
-        Task NavigateToPerson(string name, ViewType context = ViewType.Folders, string mediaItemId = null);
+        Task NavigateToPerson(string id, ViewType context = ViewType.Folders, string mediaItemId = null);
 
         /// <summary>
         /// Navigates to Genre in either a Move, Tv or Game view.

@@ -29,6 +29,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 {
                     OnPropertyChanged("Person");
                     OnPropertyChanged("Name");
+                    OnPropertyChanged("Id");
                     OnPropertyChanged("Role");
                     OnPropertyChanged("PersonType");
                 }
@@ -58,6 +59,10 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             }
         }
 
+        public string Id
+        {
+            get { return _person == null ? null : _person.Id; }
+        }
         public string Name
         {
             get { return _person == null ? null : _person.Name; }

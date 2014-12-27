@@ -245,10 +245,9 @@ namespace MediaBrowser.UI.EntryPoints
                         await _navigationService.NavigateToGenre(selectedGenre, viewType);
                        return;
                     }
-                    else if (String.Equals(itemType, "Person"))
+                    if (String.Equals(itemType, "Person"))
                     {
-                         var selectedPerson = args.ContainsKey("ItemName") ? args["ItemName"] : null;
-                        await _navigationService.NavigateToPerson(selectedPerson, viewType);
+                        await _navigationService.NavigateToPerson(itemId, viewType);
                         return;
                     }
                 }

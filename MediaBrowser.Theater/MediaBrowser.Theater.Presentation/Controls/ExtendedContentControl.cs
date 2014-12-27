@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using Microsoft.Expression.Media.Effects;
@@ -189,18 +190,18 @@ namespace MediaBrowser.Theater.Presentation.Controls
             {
                 if (TransitionContentPresenter.Effect == transitionEffect) {
                     TransitionContentPresenter.Effect = null;
-                    taskSource.SetResult(null);
                 }
+
+                taskSource.SetResult(null);
             };
 
             transitionEffect.OldImage = new ImageBrush(bmp);
-
-            TransitionContentPresenter.Effect = transitionEffect;
-            TransitionContentPresenter.Content = null;
-            ActiveContentPresenter.Content = null;
-
             transitionEffect.BeginAnimation(TransitionEffect.ProgressProperty, da);
 
+            TransitionContentPresenter.Effect = transitionEffect;
+            TransitionContentPresenter.Content = new Rectangle { Width = bmp.Width, Height = bmp.Height, Fill = new SolidColorBrush(Colors.Transparent) };
+            ActiveContentPresenter.Content = null;
+            
             return taskSource.Task;
         }
 
@@ -224,13 +225,15 @@ namespace MediaBrowser.Theater.Presentation.Controls
             {
                 if (ActiveContentPresenter.Effect == transitionEffect) {
                     ActiveContentPresenter.Effect = null;
-                    taskSource.SetResult(null);
                 }
+
+                taskSource.SetResult(null);
             };
 
-            transitionEffect.OldImage = null;
-            ActiveContentPresenter.Effect = transitionEffect;
+            transitionEffect.OldImage = new VisualBrush(new Grid());
             transitionEffect.BeginAnimation(TransitionEffect.ProgressProperty, da);
+
+            ActiveContentPresenter.Effect = transitionEffect;
 
             return taskSource.Task;
         }

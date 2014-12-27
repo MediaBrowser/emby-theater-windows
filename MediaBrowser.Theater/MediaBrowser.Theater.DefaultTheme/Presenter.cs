@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Interop;
+using System.Windows.Media;
 using System.Windows.Threading;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Api;
@@ -15,6 +16,8 @@ using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Configuration;
 using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
 using MediaBrowser.Theater.DirectShow;
+using Microsoft.Win32;
+using Application = System.Windows.Application;
 
 namespace MediaBrowser.Theater.DefaultTheme
 {
@@ -214,7 +217,7 @@ namespace MediaBrowser.Theater.DefaultTheme
             }
 
             FormWindowState state = GetWindowsFormState(_mainWindow.WindowState);
-
+            
             var internalPlayerWindowThread = new Thread(() => ShowHiddenWindow(formWidth, formHeight, formTop, formLeft, startPosition, state));
             internalPlayerWindowThread.Name = "Internal Player Window";
             internalPlayerWindowThread.SetApartmentState(ApartmentState.MTA);
@@ -245,17 +248,19 @@ namespace MediaBrowser.Theater.DefaultTheme
                 playerWindow.StartPosition = startPosition.Value;
             }
 
+            var dpiScale = GetSystemDpiFactor();
+
             if (width.HasValue) {
-                playerWindow.Width = width.Value;
+                playerWindow.Width = (int)(width.Value * dpiScale);
             }
             if (height.HasValue) {
-                playerWindow.Height = height.Value;
+                playerWindow.Height = (int)(height.Value * dpiScale);
             }
             if (top.HasValue) {
-                playerWindow.Top = top.Value;
+                playerWindow.Top = (int)(top.Value * dpiScale);
             }
             if (left.HasValue) {
-                playerWindow.Left = left.Value;
+                playerWindow.Left = (int)(left.Value * dpiScale);
             }
 
             playerWindow.WindowState = windowState;
@@ -278,6 +283,13 @@ namespace MediaBrowser.Theater.DefaultTheme
             Dispatcher.Run();
         }
 
+        private static double GetSystemDpiFactor()
+        {
+            var dpi = (int) Registry.GetValue(@"HKEY_CURRENT_USER\Control Panel\Desktop\WindowMetrics", "AppliedDPI", 96);
+            return dpi/96.0;
+        }
+
+
         private void MovePlayerWindow(InternalPlayerWindow playerWindow)
         {
             double top = _mainWindow.Top;
@@ -287,9 +299,11 @@ namespace MediaBrowser.Theater.DefaultTheme
                 return;
             }
 
+            var dpiScale = GetSystemDpiFactor();
+
             InvokeOnWindow(playerWindow, () => {
-                playerWindow.Top = Convert.ToInt32(top);
-                playerWindow.Left = Convert.ToInt32(left);
+                playerWindow.Top = Convert.ToInt32(top * dpiScale);
+                playerWindow.Left = Convert.ToInt32(left * dpiScale);
             });
         }
 
@@ -318,9 +332,11 @@ namespace MediaBrowser.Theater.DefaultTheme
                 return;
             }
 
+            var dpiScale = GetSystemDpiFactor();
+
             InvokeOnWindow(playerWindow, () => {
-                playerWindow.Width = Convert.ToInt32(width);
-                playerWindow.Height = Convert.ToInt32(height);
+                playerWindow.Width = Convert.ToInt32(width * dpiScale);
+                playerWindow.Height = Convert.ToInt32(height * dpiScale);
             });
         }
 

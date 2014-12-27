@@ -44,6 +44,7 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup />
   <ItemGroup>
     <Reference Include="MediaBrowser.ApiInteraction, Version=3.0.5467.2072, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

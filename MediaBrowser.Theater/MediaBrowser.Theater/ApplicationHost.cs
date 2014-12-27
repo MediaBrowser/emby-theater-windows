@@ -344,6 +344,10 @@ namespace MediaBrowser.Theater
             //todo only load the active external theme assembly
 
             try {
+                if (!Directory.Exists(ApplicationPaths.PluginsPath)) {
+                    return Enumerable.Empty<Assembly>();
+                }
+
                 return Directory.EnumerateFiles(ApplicationPaths.PluginsPath, "*.dll", SearchOption.TopDirectoryOnly)
                                 .Select(LoadAssembly)
                                 .Where(a => a != null)

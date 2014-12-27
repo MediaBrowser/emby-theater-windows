@@ -29,6 +29,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList
     {
         public Task<ItemsResult> Items { get; set; }
         public string Title { get; set; }
+        public bool ForceShowItemNames { get; set; }
     }
 
     #endregion

@@ -140,6 +140,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
     {
         public const double ItemHeight = 500;
 
+        private readonly ItemListParameters _parameters;
         private readonly IConnectionManager _connectionManager;
         private readonly IImageManager _imageManager;
         private readonly Task<ItemsResult> _items;
@@ -156,6 +157,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
         public ItemListViewModel(ItemListParameters parameters, IConnectionManager connectionManager, IImageManager imageManager, INavigator navigator, IPlaybackManager playbackManager)
         {
             _items = parameters.Items;
+            _parameters = parameters;
             _connectionManager = connectionManager;
             _imageManager = imageManager;
             _navigator = navigator;
@@ -298,8 +300,16 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
         private async Task LoadItems(Task<ItemsResult> itemsTask)
         {
             ItemsResult result = await itemsTask;
-            IEnumerable<ItemTileViewModel> viewModels = result.Items.Select(dto => new ItemTileViewModel(_connectionManager, _imageManager, _navigator, _playbackManager, dto) {
-                DesiredImageHeight = ItemHeight
+            IEnumerable<ItemTileViewModel> viewModels = result.Items.Select(dto => {
+                var vm = new ItemTileViewModel(_connectionManager, _imageManager, _navigator, _playbackManager, dto) {
+                    DesiredImageHeight = ItemHeight
+                };
+
+                if (_parameters.ForceShowItemNames) {
+                    vm.ShowCaptionBar = true;
+                }
+
+                return vm;
             });
 
             if (result.Items.Length > 0 && _sortMode == null) {

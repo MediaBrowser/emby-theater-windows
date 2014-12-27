@@ -59,6 +59,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
                 var itemParams = new ItemListParameters {
                     Title = "Browse TV Shows",
                     Items = ItemChildren.Get(_connectionManager, sessionManager, tvFolder, new ChildrenQueryParams {
+                        ExpandSingleItems = true,
                         IncludeItemTypes = new[] { "Series" }, ExcludeItemTypes = new[] { "Playlist" }
                     }),
                 };
@@ -68,7 +69,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
 
             PlaylistsCommand = new RelayCommand(arg => {
                 var itemParams = new ItemListParameters {
-                    Title = "Movie Playlists",
+                    Title = "TV Playlists",
                     Items = ItemChildren.Get(_connectionManager, sessionManager, tvFolder, new ChildrenQueryParams {
                         IncludeItemTypes = new[] { "Playlist" }
                     })

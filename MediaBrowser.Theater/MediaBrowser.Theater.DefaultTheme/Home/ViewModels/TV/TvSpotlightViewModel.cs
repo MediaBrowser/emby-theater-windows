@@ -60,7 +60,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
                     Title = "Browse TV Shows",
                     Items = ItemChildren.Get(_connectionManager, sessionManager, tvFolder, new ChildrenQueryParams {
                         ExpandSingleItems = true,
-                        IncludeItemTypes = new[] { "Series" }, ExcludeItemTypes = new[] { "Playlist" }
+                        ExcludeItemTypes = new[] { "Playlist" }
                     }),
                 };
 
@@ -225,7 +225,10 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
 
         private async Task LoadAllShowsViewModel(BaseItemDto tvFolder)
         {
-            var items = await ItemChildren.Get(_connectionManager, _sessionManager, tvFolder);
+            var items = await ItemChildren.Get(_connectionManager, _sessionManager, tvFolder, new ChildrenQueryParams {
+                Recursive = true,
+                IncludeItemTypes = new[] { "Series" }
+            });
 
             var apiClient = _connectionManager.GetApiClient(tvFolder);
             IEnumerable<string> images = items.Items

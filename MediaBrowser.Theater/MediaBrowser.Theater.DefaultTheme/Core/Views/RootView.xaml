@@ -21,6 +21,7 @@
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding IsInternalMediaPlaying}" Value="True">
                         <Setter Property="Background" Value="Transparent"/>
+<!--                        <Setter Property="Background" Value="#B0FFFFFF"/>-->
                     </DataTrigger>
                 </Style.Triggers>
             </Style>

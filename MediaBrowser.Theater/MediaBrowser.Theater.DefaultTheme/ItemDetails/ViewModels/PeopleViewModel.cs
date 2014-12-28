@@ -44,7 +44,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
         public int SortOrder
         {
-            get { return 4; }
+            get { return 2; }
         }
 
         public Size Size

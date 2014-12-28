@@ -7,6 +7,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using MediaBrowser.Theater.Api.Commands;
 using MediaBrowser.Theater.DefaultTheme.Osd.ViewModels;
+using MediaBrowser.Theater.Presentation.Controls;
 
 namespace MediaBrowser.Theater.DefaultTheme.Osd.Views
 {
@@ -33,7 +34,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.Views
             Loaded += FullscreenVideoTransportOsd_Loaded;
             Unloaded += FullscreenVideoTransportOsd_Unloaded;
             PlayPauseButton.IsVisibleChanged += OsdView_IsVisibleChanged;
-            MouseMove += OsdView_MouseMove;
+            //MouseMove += OsdView_MouseMove;
         }
 
         void OsdView_MouseMove(object sender, MouseEventArgs e)
@@ -69,6 +70,11 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.Views
             if (_previewMouseDown == null) {
                 _previewMouseDown = CurrentPositionSlider_PreviewMouseDown;
                 CurrentPositionSlider.AddHandler(PreviewMouseDownEvent, _previewMouseDown, true);
+            }
+
+            var window = Application.Current.MainWindow as BaseWindow;
+            if (window != null) {
+                window.MouseMove += OsdView_MouseMove;
             }
 
             PlayPauseButton.Focus();

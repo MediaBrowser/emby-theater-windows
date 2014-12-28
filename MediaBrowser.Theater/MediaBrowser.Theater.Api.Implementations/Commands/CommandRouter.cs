@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Input;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Api.Events;
@@ -33,26 +34,30 @@ namespace MediaBrowser.Theater.Api.Commands
 
         public bool RouteCommand(Command command, object args)
         {
-            _logger.Debug("Command received {0} {1}", command, args);
+            Func<bool> action = () => {
+                _logger.Debug("Command received {0} {1}", command, args);
 
-            IInputElement focused = Keyboard.FocusedElement;
-            if (focused != null) {
-                bool handled = SendRoutedEvent(focused, InputCommands.PreviewCommandSentEvent, command, args) ||
-                               SendRoutedEvent(focused, InputCommands.CommandSentEvent, command, args);
+                IInputElement focused = Keyboard.FocusedElement;
+                if (focused != null) {
+                    bool handled = SendRoutedEvent(focused, InputCommands.PreviewCommandSentEvent, command, args) ||
+                                   SendRoutedEvent(focused, InputCommands.CommandSentEvent, command, args);
 
-                if (handled) {
+                    if (handled) {
+                        return true;
+                    }
+                }
+
+                var commandEvent = new CommandEventArgs { Command = command, Args = args };
+                OnCommandReceived(commandEvent);
+
+                if (commandEvent.Handled) {
                     return true;
                 }
-            }
 
-            var commandEvent = new CommandEventArgs { Command = command, Args = args };
-            OnCommandReceived(commandEvent);
+                return _defaultCommandActionMap.ExecuteCommand(command, args);
+            };
 
-            if (commandEvent.Handled) {
-                return true;
-            }
-
-            return _defaultCommandActionMap.ExecuteCommand(command, args);
+            return action.OnUiThreadAsync().Result;
         }
 
         private bool SendRoutedEvent(IInputElement element, RoutedEvent routedEvent, Command command, object arg)

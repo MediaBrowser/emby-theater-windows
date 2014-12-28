@@ -33,7 +33,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
         private bool _isVisible;
 
-        public int SortOrder { get { return 2; } }
+        public int SortOrder { get { return 4; } }
 
         public RangeObservableCollection<ItemTileViewModel> Items { get; private set; }
 

@@ -93,9 +93,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
         private async void NavigateToPerson()
         {
-            var apiClient = _sessionManager.ActiveApiClient;
-            var person = await apiClient.GetPersonAsync(_person.Name, _sessionManager.CurrentUser.Id);
-            await _navigator.Navigate(Go.To.Item(person));
+            await _navigator.Navigate(Go.To.Item(new BaseItemDto { Id = _person.Id }));
         }
 
         public string Name

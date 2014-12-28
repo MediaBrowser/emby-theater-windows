@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Configuration;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Theater.Api.Configuration;
 
@@ -45,5 +46,15 @@ namespace MediaBrowser.Theater.Api.Session
         /// </summary>
         /// <value>The active API client.</value>
         IApiClient ActiveApiClient { get; }
+
+        string LocalUserId { get; }
+
+        string ConnectUserId { get; }
+
+        string UserName { get; }
+
+        string UserImageUrl { get; }
+
+        UserConfiguration UserConfiguration { get; }
     }
 }

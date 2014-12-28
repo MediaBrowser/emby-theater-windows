@@ -12,7 +12,7 @@ using System.Windows;
 using System.Windows.Forms;
 using MediaBrowser.ApiInteraction;
 using MediaBrowser.ApiInteraction.Cryptography;
-using MediaBrowser.ApiInteraction.Network;
+using MediaBrowser.ApiInteraction.Net;
 using MediaBrowser.ApiInteraction.WebSocket;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Implementations;

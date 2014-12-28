@@ -77,7 +77,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
                 IsFullScreenPage = true,
                 ShowClock = false,
                 ShowCommandBar = false,
-                ShowMediaBrowserLogo = false
+                ShowMediaBrowserLogo = false,
+                PlaybackBackgroundOpacity = 0.0
             };
             
 //            Action flipShowOsd = null;

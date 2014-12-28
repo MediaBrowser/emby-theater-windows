@@ -79,12 +79,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
                 }
 
                 OnPropertyChanged();
-                OnPropertyChanged("FullScreenActivePage");
-                OnPropertyChanged("DisplayLogo");
-                OnPropertyChanged("DisplayCommandBar");
-                OnPropertyChanged("DisplayClock");
-                OnPropertyChanged("DisplayTitle");
-                OnPropertyChanged("Title");
+                OnPresentationOptionsChanged();
             }
         }
 
@@ -185,6 +180,11 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
             get { return GetPresentationOptions().Title; }
         }
 
+        public double PlaybackBackgroundOpacity
+        {
+            get { return GetPresentationOptions().PlaybackBackgroundOpacity; }
+        }
+
         private RootPresentationOptions GetPresentationOptions()
         {
             var hasOptions = _activePage as IHasRootPresentationOptions;
@@ -198,13 +198,19 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
         private void ActivePagePropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "PresentationOptions") {
-                OnPropertyChanged("FullScreenActivePage");
-                OnPropertyChanged("DisplayLogo");
-                OnPropertyChanged("DisplayCommandBar");
-                OnPropertyChanged("DisplayClock");
-                OnPropertyChanged("DisplayTitle");
-                OnPropertyChanged("Title");
+                OnPresentationOptionsChanged();
             }
+        }
+
+        private void OnPresentationOptionsChanged()
+        {
+            OnPropertyChanged("FullScreenActivePage");
+            OnPropertyChanged("DisplayLogo");
+            OnPropertyChanged("DisplayCommandBar");
+            OnPropertyChanged("DisplayClock");
+            OnPropertyChanged("DisplayTitle");
+            OnPropertyChanged("Title");
+            OnPropertyChanged("PlaybackBackgroundOpacity");
         }
 
         public override async Task Initialize()

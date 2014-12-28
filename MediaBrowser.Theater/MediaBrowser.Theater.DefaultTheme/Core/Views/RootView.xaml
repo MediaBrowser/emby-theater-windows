@@ -13,186 +13,186 @@
              d:DataContext="{d:DesignInstance viewModels:RootViewModel}"
              d:DesignHeight="480" d:DesignWidth="720"
              IsTabStop="False">
-    <Border>
-        <Border.Style>
-            <Style TargetType="{x:Type Border}">
-                <Setter Property="Background" Value="{StaticResource BackgroundBrush}"/>
-                
-                <Style.Triggers>
-                    <DataTrigger Binding="{Binding IsInternalMediaPlaying}" Value="True">
-                        <Setter Property="Background" Value="Transparent"/>
-<!--                        <Setter Property="Background" Value="#B0FFFFFF"/>-->
-                    </DataTrigger>
-                </Style.Triggers>
-            </Style>
-        </Border.Style>
-        
-        <Grid>
-            <VisualStateManager.VisualStateGroups>
-                <VisualStateGroup Name="VisibilityStates">
-                    <VisualState x:Name="Foreground">
-                        <Storyboard>
-                            <DoubleAnimation Storyboard.TargetName="BlurEffect" Storyboard.TargetProperty="Radius"
-                                             To="0" FillBehavior="HoldEnd" Duration="0:0:0.2" DecelerationRatio="0.5" />
-                            <DoubleAnimation Storyboard.TargetName="FadeOverlay" Storyboard.TargetProperty="Opacity"
-                                             To="0" FillBehavior="HoldEnd" Duration="0:0:0.2" DecelerationRatio="0.5" />
-                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="FadeOverlay"
-                                                           Storyboard.TargetProperty="(UIElement.Visibility)">
-                                <DiscreteObjectKeyFrame KeyTime="0:0:0.2" Value="{x:Static Visibility.Collapsed}" />
-                            </ObjectAnimationUsingKeyFrames>
-                        </Storyboard>
-                    </VisualState>
-                    <VisualState x:Name="Background">
-                        <Storyboard>
-                            <DoubleAnimation Storyboard.TargetName="BlurEffect" Storyboard.TargetProperty="Radius"
-                                             To="3" FillBehavior="HoldEnd" Duration="0:0:0.2" DecelerationRatio="0.5" />
-                            <DoubleAnimation Storyboard.TargetName="FadeOverlay" Storyboard.TargetProperty="Opacity"
-                                             To="0.8" FillBehavior="HoldEnd" Duration="0:0:0.2" DecelerationRatio="0.5" />
-                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="FadeOverlay"
-                                                           Storyboard.TargetProperty="(UIElement.Visibility)">
-                                <DiscreteObjectKeyFrame KeyTime="0:0:0" Value="{x:Static Visibility.Visible}" />
-                            </ObjectAnimationUsingKeyFrames>
-                        </Storyboard>
-                    </VisualState>
-                </VisualStateGroup>
-            </VisualStateManager.VisualStateGroups>
 
-            <i:Interaction.Behaviors>
-                <ei:DataStateBehavior Binding="{Binding IsInFocus}"
+    <Grid>
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup Name="VisibilityStates">
+                <VisualState x:Name="Foreground">
+                    <Storyboard>
+                        <DoubleAnimation Storyboard.TargetName="BlurEffect" Storyboard.TargetProperty="Radius"
+                                             To="0" FillBehavior="HoldEnd" Duration="0:0:0.2" DecelerationRatio="0.5" />
+                        <DoubleAnimation Storyboard.TargetName="FadeOverlay" Storyboard.TargetProperty="Opacity"
+                                             To="0" FillBehavior="HoldEnd" Duration="0:0:0.2" DecelerationRatio="0.5" />
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="FadeOverlay"
+                                                           Storyboard.TargetProperty="(UIElement.Visibility)">
+                            <DiscreteObjectKeyFrame KeyTime="0:0:0.2" Value="{x:Static Visibility.Collapsed}" />
+                        </ObjectAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+                <VisualState x:Name="Background">
+                    <Storyboard>
+                        <DoubleAnimation Storyboard.TargetName="BlurEffect" Storyboard.TargetProperty="Radius"
+                                             To="3" FillBehavior="HoldEnd" Duration="0:0:0.2" DecelerationRatio="0.5" />
+                        <DoubleAnimation Storyboard.TargetName="FadeOverlay" Storyboard.TargetProperty="Opacity"
+                                             To="0.8" FillBehavior="HoldEnd" Duration="0:0:0.2" DecelerationRatio="0.5" />
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="FadeOverlay"
+                                                           Storyboard.TargetProperty="(UIElement.Visibility)">
+                            <DiscreteObjectKeyFrame KeyTime="0:0:0" Value="{x:Static Visibility.Visible}" />
+                        </ObjectAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
+        <i:Interaction.Behaviors>
+            <ei:DataStateBehavior Binding="{Binding IsInFocus}"
                                       Value="True"
                                       TrueState="Foreground"
                                       FalseState="Background" />
-            </i:Interaction.Behaviors>
+        </i:Interaction.Behaviors>
 
-            <Grid.Effect>
-                <BlurEffect x:Name="BlurEffect" Radius="0" KernelType="Gaussian" RenderingBias="Performance" />
-            </Grid.Effect>
+        <Grid.Effect>
+            <BlurEffect x:Name="BlurEffect" Radius="0" KernelType="Gaussian" RenderingBias="Performance" />
+        </Grid.Effect>
 
-            <controls:ExtendedContentControl Focusable="False" Content="{Binding BackgroundMedia}" />
+        <Border>
+            <Border.Style>
+                <Style TargetType="{x:Type Border}">
+                    <Setter Property="Background" Value="{StaticResource BackgroundBrush}"/>
 
-            <controls:ExtendedContentControl Focusable="False" Content="{Binding FullScreenActivePage}" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsInternalMediaPlaying}" Value="True">
+                            <Setter Property="Opacity" Value="{Binding PlaybackBackgroundOpacity}"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+        </Border>
 
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="auto" />
-                    <RowDefinition Height="auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
+        <controls:ExtendedContentControl Focusable="False" Content="{Binding BackgroundMedia}" />
 
-                <controls:DragBar Grid.Row="0" />
-                <controls:WindowCommands Grid.Row="0"
+        <controls:ExtendedContentControl Focusable="False" Content="{Binding FullScreenActivePage}" />
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <controls:DragBar Grid.Row="0" />
+            <controls:WindowCommands Grid.Row="0"
                                          ShowButtons="{Binding IsMouseIdle, Converter={StaticResource BooleanInverter}, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type controls:BaseWindow}}}"
                                          HorizontalAlignment="Right" />
 
-                <StackPanel x:Name="LogoPanel" Grid.Row="1" Orientation="Horizontal" Margin="50,0,0,0">
-                    <StackPanel.RenderTransform>
-                        <TranslateTransform x:Name="PanelTransform" />
-                    </StackPanel.RenderTransform>
+            <StackPanel x:Name="LogoPanel" Grid.Row="1" Orientation="Horizontal" Margin="50,0,0,0">
+                <StackPanel.RenderTransform>
+                    <TranslateTransform x:Name="PanelTransform" />
+                </StackPanel.RenderTransform>
 
-                    <VisualStateManager.VisualStateGroups>
-                        <VisualStateGroup>
-                            <VisualState x:Name="Visible">
-                                <Storyboard>
-                                    <DoubleAnimation Storyboard.TargetName="LogoPanel"
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroup>
+                        <VisualState x:Name="Visible">
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetName="LogoPanel"
                                                      Storyboard.TargetProperty="RenderTransform.(TranslateTransform.X)"
                                                      From="-20" To="0" FillBehavior="HoldEnd" Duration="0:0:0.2"
                                                      DecelerationRatio="0.5" />
-                                    <DoubleAnimation Storyboard.TargetName="LogoPanel"
+                                <DoubleAnimation Storyboard.TargetName="LogoPanel"
                                                      Storyboard.TargetProperty="Opacity" To="1" FillBehavior="HoldEnd"
                                                      Duration="0:0:0.2" DecelerationRatio="0.5" />
-                                </Storyboard>
-                            </VisualState>
-                            <VisualState x:Name="Hidden">
-                                <Storyboard>
-                                    <DoubleAnimation Storyboard.TargetName="LogoPanel"
+                            </Storyboard>
+                        </VisualState>
+                        <VisualState x:Name="Hidden">
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetName="LogoPanel"
                                                      Storyboard.TargetProperty="RenderTransform.(TranslateTransform.X)"
                                                      From="0" To="-20" FillBehavior="HoldEnd" Duration="0:0:0.2"
                                                      AccelerationRatio="0.5" />
-                                    <DoubleAnimation Storyboard.TargetName="LogoPanel"
+                                <DoubleAnimation Storyboard.TargetName="LogoPanel"
                                                      Storyboard.TargetProperty="Opacity" To="0" FillBehavior="HoldEnd"
                                                      Duration="0:0:0.2" DecelerationRatio="0.5" />
-                                </Storyboard>
-                            </VisualState>
-                        </VisualStateGroup>
-                    </VisualStateManager.VisualStateGroups>
+                            </Storyboard>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateManager.VisualStateGroups>
 
-                    <i:Interaction.Behaviors>
-                        <ei:DataStateBehavior Binding="{Binding DisplayLogo}"
+                <i:Interaction.Behaviors>
+                    <ei:DataStateBehavior Binding="{Binding DisplayLogo}"
                                               Value="True"
                                               TrueState="Visible"
                                               FalseState="Hidden" />
-                    </i:Interaction.Behaviors>
+                </i:Interaction.Behaviors>
 
-                    <TextBlock Text="MEDIA" />
-                    <TextBlock Text="BROWSER" Foreground="#52B54B" />
-                </StackPanel>
+                <TextBlock Text="MEDIA" />
+                <TextBlock Text="BROWSER" Foreground="#52B54B" />
+            </StackPanel>
 
-                <StackPanel x:Name="TitlePanel" Grid.Row="1" Grid.RowSpan="2" Orientation="Horizontal" Margin="50,0,0,0">
-                    <StackPanel.RenderTransform>
-                        <TranslateTransform />
-                    </StackPanel.RenderTransform>
+            <StackPanel x:Name="TitlePanel" Grid.Row="1" Grid.RowSpan="2" Orientation="Horizontal" Margin="50,0,0,0">
+                <StackPanel.RenderTransform>
+                    <TranslateTransform />
+                </StackPanel.RenderTransform>
 
-                    <VisualStateManager.VisualStateGroups>
-                        <VisualStateGroup>
-                            <VisualState x:Name="TitleVisible">
-                                <Storyboard>
-                                    <DoubleAnimation Storyboard.TargetName="TitlePanel"
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroup>
+                        <VisualState x:Name="TitleVisible">
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetName="TitlePanel"
                                                      Storyboard.TargetProperty="RenderTransform.(TranslateTransform.X)"
                                                      From="-20" To="0" FillBehavior="HoldEnd" Duration="0:0:0.2"
                                                      DecelerationRatio="0.5" />
-                                    <DoubleAnimation Storyboard.TargetName="TitlePanel"
+                                <DoubleAnimation Storyboard.TargetName="TitlePanel"
                                                      Storyboard.TargetProperty="Opacity" To="1" FillBehavior="HoldEnd"
                                                      Duration="0:0:0.2" DecelerationRatio="0.5" />
-                                </Storyboard>
-                            </VisualState>
-                            <VisualState x:Name="TitleHidden">
-                                <Storyboard>
-                                    <DoubleAnimation Storyboard.TargetName="TitlePanel"
+                            </Storyboard>
+                        </VisualState>
+                        <VisualState x:Name="TitleHidden">
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetName="TitlePanel"
                                                      Storyboard.TargetProperty="RenderTransform.(TranslateTransform.X)"
                                                      From="0" To="-20" FillBehavior="HoldEnd" Duration="0:0:0.2"
                                                      AccelerationRatio="0.5" />
-                                    <DoubleAnimation Storyboard.TargetName="TitlePanel"
+                                <DoubleAnimation Storyboard.TargetName="TitlePanel"
                                                      Storyboard.TargetProperty="Opacity" To="0" FillBehavior="HoldEnd"
                                                      Duration="0:0:0.2" DecelerationRatio="0.5" />
-                                </Storyboard>
-                            </VisualState>
-                        </VisualStateGroup>
-                    </VisualStateManager.VisualStateGroups>
+                            </Storyboard>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateManager.VisualStateGroups>
 
-                    <i:Interaction.Behaviors>
-                        <ei:DataStateBehavior Binding="{Binding DisplayTitle}"
+                <i:Interaction.Behaviors>
+                    <ei:DataStateBehavior Binding="{Binding DisplayTitle}"
                                               Value="True"
                                               TrueState="TitleVisible"
                                               FalseState="TitleHidden" />
-                    </i:Interaction.Behaviors>
+                </i:Interaction.Behaviors>
 
-                    <TextBlock Text="{Binding Title}" Style="{StaticResource TitleTextBlockStyle}" FontSize="60" />
-                </StackPanel>
+                <TextBlock Text="{Binding Title}" Style="{StaticResource TitleTextBlockStyle}" FontSize="60" />
+            </StackPanel>
 
-                <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,0,30,0" HorizontalAlignment="Right" >
-                    <controls:ExtendedContentControl x:Name="CommandBar" Margin="0,0,20,0" VerticalAlignment="Center" Content="{Binding Commands}" IsTabStop="False" Visibility="{Binding DisplayCommandBar, Converter={StaticResource BooleanToVisibility}}"/>
-                    <controls:ExtendedContentControl x:Name="Clock" VerticalAlignment="Center" Content="{Binding Clock}" IsTabStop="False" Visibility="{Binding DisplayClock, Converter={StaticResource BooleanToVisibility}}"/>
-                </StackPanel>
+            <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,0,30,0" HorizontalAlignment="Right" >
+                <controls:ExtendedContentControl x:Name="CommandBar" Margin="0,0,20,0" VerticalAlignment="Center" Content="{Binding Commands}" IsTabStop="False" Visibility="{Binding DisplayCommandBar, Converter={StaticResource BooleanToVisibility}}"/>
+                <controls:ExtendedContentControl x:Name="Clock" VerticalAlignment="Center" Content="{Binding Clock}" IsTabStop="False" Visibility="{Binding DisplayClock, Converter={StaticResource BooleanToVisibility}}"/>
+            </StackPanel>
 
-                <controls:ExtendedContentControl Grid.Row="2" Content="{Binding ActivePage}" IsTabStop="False">
-                    <controls:ExtendedContentControl.TransitionAnimation>
-                        <DoubleAnimation Duration="0:0:0.3" >
-                            <DoubleAnimation.EasingFunction>
-                                <ExponentialEase EasingMode="EaseOut"/>
-                            </DoubleAnimation.EasingFunction>
-                        </DoubleAnimation>
-                    </controls:ExtendedContentControl.TransitionAnimation>
-                    <controls:ExtendedContentControl.TransitionType>
-                        <ee:SlideInTransitionEffect SlideDirection="RightToLeft"/>
-                    </controls:ExtendedContentControl.TransitionType>
-                </controls:ExtendedContentControl>
-                
-                <controls:ExtendedContentControl Grid.Row="2" Content="{Binding Notifications}" IsTabStop="False"
+            <controls:ExtendedContentControl Grid.Row="2" Content="{Binding ActivePage}" IsTabStop="False">
+                <controls:ExtendedContentControl.TransitionAnimation>
+                    <DoubleAnimation Duration="0:0:0.3" >
+                        <DoubleAnimation.EasingFunction>
+                            <ExponentialEase EasingMode="EaseOut"/>
+                        </DoubleAnimation.EasingFunction>
+                    </DoubleAnimation>
+                </controls:ExtendedContentControl.TransitionAnimation>
+                <controls:ExtendedContentControl.TransitionType>
+                    <ee:SlideInTransitionEffect SlideDirection="RightToLeft"/>
+                </controls:ExtendedContentControl.TransitionType>
+            </controls:ExtendedContentControl>
+
+            <controls:ExtendedContentControl Grid.Row="2" Content="{Binding Notifications}" IsTabStop="False"
                                                  HorizontalAlignment="Right" VerticalAlignment="Top" />
-            </Grid>
-
-            <Rectangle x:Name="FadeOverlay" IsHitTestVisible="False" Visibility="Hidden" HorizontalAlignment="Stretch"
-                       VerticalAlignment="Stretch" Fill="{StaticResource BackgroundBrush}" />
         </Grid>
-    </Border>
+
+        <Rectangle x:Name="FadeOverlay" IsHitTestVisible="False" Visibility="Hidden" HorizontalAlignment="Stretch"
+                       VerticalAlignment="Stretch" Fill="{StaticResource BackgroundBrush}" />
+    </Grid>
 </UserControl>

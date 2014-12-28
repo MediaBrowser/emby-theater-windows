@@ -21,7 +21,15 @@ namespace MediaBrowser.Theater.DirectShow.Streaming
                 {
                     Container = "mp3",
                     Type = DlnaProfileType.Audio,
-                    AudioCodec = "mp3"
+                    AudioCodec = "mp3",
+                    Context = EncodingContext.Static
+                },
+                new TranscodingProfile
+                {
+                    Container = "mp3",
+                    Type = DlnaProfileType.Audio,
+                    AudioCodec = "mp3",
+                    Context = EncodingContext.Streaming
                 },
                 //new TranscodingProfile
                 //{
@@ -36,7 +44,16 @@ namespace MediaBrowser.Theater.DirectShow.Streaming
                     Container = "ts",
                     Type = DlnaProfileType.Video,
                     VideoCodec = "h264",
-                    AudioCodec = "aac,ac3,mp3"
+                    AudioCodec = "aac,ac3,mp3",
+                    Context = EncodingContext.Streaming
+                },
+                new TranscodingProfile
+                {
+                    Container = "mp4",
+                    Type = DlnaProfileType.Video,
+                    VideoCodec = "h264",
+                    AudioCodec = "aac",
+                    Context = EncodingContext.Streaming
                 },
                 new TranscodingProfile
                 {

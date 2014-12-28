@@ -18,6 +18,7 @@ using MediaBrowser.Model.Updates;
 using MediaBrowser.Plugins.DefaultTheme;
 using MediaBrowser.Theater.Core.Login;
 using MediaBrowser.Theater.DirectShow;
+using MediaBrowser.Theater.DirectShow.Streaming;
 using MediaBrowser.Theater.Implementations.Commands;
 using MediaBrowser.Theater.Implementations.Configuration;
 using MediaBrowser.Theater.Implementations.Playback;
@@ -50,6 +51,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MediaBrowser.UI.Sync;
 
 namespace MediaBrowser.UI
 {
@@ -100,6 +102,20 @@ namespace MediaBrowser.UI
             await RunStartupTasks().ConfigureAwait(false);
 
             Logger.Info("Core startup complete");
+            //await Sync().ConfigureAwait(false);
+        }
+
+        private async Task Sync()
+        {
+            try
+            {
+                await new SyncRunner(ConnectionManager, Logger, FileSystemManager, ApplicationPaths, JsonSerializer).Run(new Progress<double>(), CancellationToken.None);
+
+            }
+            catch (Exception ex)
+            {
+                Logger.ErrorException("Sync error", ex);
+            }
         }
 
         public void StartEntryPoints()
@@ -217,7 +233,13 @@ namespace MediaBrowser.UI
                 },
 
                 // MBT should be able to implement them all
-                SupportedCommands = Enum.GetNames(typeof(GeneralCommandType)).ToList()
+                SupportedCommands = Enum.GetNames(typeof(GeneralCommandType)).ToList(),
+
+                SupportsSync = true,
+
+                SupportsMediaControl = true,
+                SupportsUniqueIdentifier = true,
+                DeviceProfile = new MediaBrowserTheaterProfile()
             };
 
             var device = new Device

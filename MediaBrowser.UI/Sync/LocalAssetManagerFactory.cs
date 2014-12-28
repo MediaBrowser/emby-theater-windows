@@ -1,4 +1,5 @@
-﻿using MediaBrowser.ApiInteraction.Data;
+﻿using MediaBrowser.ApiInteraction.Cryptography;
+using MediaBrowser.ApiInteraction.Data;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.IO;
 using MediaBrowser.Model.Serialization;
@@ -24,7 +25,7 @@ namespace MediaBrowser.UI.Sync
             var itemRepo = new ItemRepository(_appPaths, _json);
             var fileStorage = new FileStorage(_fileSystem, _appPaths);
 
-            return new LocalAssetManager(userActionRepo, itemRepo, fileStorage);
+            return new LocalAssetManager(userActionRepo, itemRepo, fileStorage, new CryptographyProvider());
         }
     }
 }

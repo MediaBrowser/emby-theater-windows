@@ -1,7 +1,7 @@
 ﻿using MediaBrowser.ApiInteraction.Data;
 using MediaBrowser.Common.Configuration;
-using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Serialization;
+using MediaBrowser.Model.Sync;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -23,9 +23,9 @@ namespace MediaBrowser.UI.Sync
             get { return Path.Combine(_appPaths.ProgramDataPath, "sync", "data"); }
         }
 
-        public Task AddOrUpdate(BaseItemDto item)
+        public Task AddOrUpdate(LocalItem item)
         {
-            var path = GetPath(item.Id);
+            var path = GetPath(item.UniqueId);
 
             Directory.CreateDirectory(Path.GetDirectoryName(path));
             _json.SerializeToFile(item, path);
@@ -33,9 +33,9 @@ namespace MediaBrowser.UI.Sync
             return Task.FromResult(true);
         }
 
-        public Task<BaseItemDto> Get(string id)
+        public Task<LocalItem> Get(string id)
         {
-            return Task.FromResult(_json.DeserializeFromFile<BaseItemDto>(GetPath(id)));
+            return Task.FromResult(_json.DeserializeFromFile<LocalItem>(GetPath(id)));
         }
 
         private string GetPath(string id)

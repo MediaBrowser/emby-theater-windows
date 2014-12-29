@@ -26,35 +26,33 @@ namespace MediaBrowser.UI.Sync
             _appPaths = appPaths;
         }
 
-        private string GetFullPath(IEnumerable<string> path)
+        public string GetFullLocalPath(IEnumerable<string> path)
         {
             var paths = path.ToList();
             paths.Insert(0, SyncRootPath);
             return Path.Combine(paths.ToArray());
         }
 
-        public Task DeleteFile(IEnumerable<string> path)
+        public Task DeleteFile(string path)
         {
-            File.Delete(GetFullPath(path));
+            File.Delete(path);
             return Task.FromResult(true);
         }
 
-        public Task DeleteFolder(IEnumerable<string> path)
+        public Task DeleteFolder(string path)
         {
-            Directory.Delete(GetFullPath(path), true);
+            Directory.Delete(path, true);
             return Task.FromResult(true);
         }
 
-        public Task<List<DeviceFileInfo>> GetFileSystemEntries(IEnumerable<string> path)
+        public Task<List<DeviceFileInfo>> GetFileSystemEntries(string path)
         {
-            var fullPath = GetFullPath(path);
-
-            var entries = new DirectoryInfo(fullPath)
+            var entries = new DirectoryInfo(path)
                 .EnumerateFileSystemInfos()
                 .Select(i => new DeviceFileInfo
                 {
                     Name = i.Name,
-                    Path = GetPathParts(i.FullName)
+                    Path = i.FullName
                 })
                 .ToList();
 
@@ -68,7 +66,7 @@ namespace MediaBrowser.UI.Sync
 
         public async Task SaveFile(Stream stream, IEnumerable<string> path)
         {
-            var fullPath = GetFullPath(path);
+            var fullPath = GetFullLocalPath(path);
 
             Directory.CreateDirectory(Path.GetDirectoryName(fullPath));
 
@@ -83,6 +81,27 @@ namespace MediaBrowser.UI.Sync
             path = path.Substring(SyncRootPath.Length);
             
             return path.Split(new[] { '\\' }, StringSplitOptions.RemoveEmptyEntries);
+        }
+
+
+        public Task<bool> FileExists(string path)
+        {
+            return Task.FromResult(File.Exists(path));
+        }
+
+        public async Task SaveFile(Stream stream, string path)
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(path));
+
+            using (var fs = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.Read))
+            {
+                await stream.CopyToAsync(fs).ConfigureAwait(false);
+            }
+        }
+
+        public string GetParentDirectoryPath(string path)
+        {
+            return Path.GetDirectoryName(path);
         }
     }
 }

@@ -239,6 +239,7 @@ namespace MediaBrowser.UI
 
                 SupportsMediaControl = true,
                 SupportsUniqueIdentifier = true,
+                //SupportsContentUploading = true,
                 DeviceProfile = new MediaBrowserTheaterProfile()
             };
 

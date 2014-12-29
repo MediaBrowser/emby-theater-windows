@@ -29,7 +29,7 @@ namespace MediaBrowser.UI.Sync
 
         public Task Run(IProgress<double> progress, CancellationToken cancellationToken)
         {
-            var manager = new LocalAssetManagerFactory(_fileSystem, _appPaths, _json).GetLocalAssetManager();
+            var manager = new LocalAssetManagerFactory(_fileSystem, _appPaths, _json, _logger).GetLocalAssetManager();
 
             var sync = new MultiServerSync(_connectionManager, _logger, manager);
 

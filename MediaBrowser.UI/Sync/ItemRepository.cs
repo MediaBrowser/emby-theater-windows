@@ -2,6 +2,7 @@
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Model.Serialization;
 using MediaBrowser.Model.Sync;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -41,6 +42,11 @@ namespace MediaBrowser.UI.Sync
         private string GetPath(string id)
         {
             return Path.Combine(SyncRootPath, id + ".json");
+        }
+
+        public Task<List<string>> GetServerItemIds(string serverId)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

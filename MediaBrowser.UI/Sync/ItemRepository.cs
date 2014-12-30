@@ -1,4 +1,5 @@
-﻿using MediaBrowser.ApiInteraction.Data;
+﻿using System.Linq;
+using MediaBrowser.ApiInteraction.Data;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Model.Serialization;
 using MediaBrowser.Model.Sync;
@@ -46,7 +47,28 @@ namespace MediaBrowser.UI.Sync
 
         public Task<List<string>> GetServerItemIds(string serverId)
         {
-            throw new System.NotImplementedException();
+            try
+            {
+                var list = new DirectoryInfo(SyncRootPath).EnumerateFiles("*.json", SearchOption.AllDirectories)
+                    .Select(i => _json.DeserializeFromFile<LocalItem>(i.FullName))
+                    .Where(i => string.Equals(serverId, i.ServerId, System.StringComparison.OrdinalIgnoreCase))
+                    .Select(i => i.ItemId)
+                    .ToList();
+
+                return Task.FromResult(list);
+            }
+            catch (IOException)
+            {
+                var list = new List<string>();
+
+                return Task.FromResult(list);
+            }
+        }
+
+        public Task Delete(string id)
+        {
+            File.Delete(GetPath(id));
+            return Task.FromResult(true);
         }
     }
 }

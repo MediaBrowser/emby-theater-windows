@@ -23,15 +23,11 @@ namespace MediaBrowser.Theater.DefaultTheme.Core
         : NavigationContext
     {
         private readonly ITheaterApplicationHost _appHost;
-        private readonly INavigator _navigator;
-        private readonly ISessionManager _sessionManager;
         private readonly IConnectionManager _connectionManager;
 
-        public RootContext(ITheaterApplicationHost appHost, INavigator navigator, ISessionManager sessionManager, IConnectionManager connectionManager) : base(appHost)
+        public RootContext(ITheaterApplicationHost appHost, ISessionManager sessionManager, IConnectionManager connectionManager) : base(appHost)
         {
             _appHost = appHost;
-            _navigator = navigator;
-            _sessionManager = sessionManager;
             _connectionManager = connectionManager;
 
             // create root navigation bindings
@@ -72,28 +68,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Core
 
         public override async Task Activate()
         {
-            //AttemptLogin();
-//            if (_sessionManager.CurrentUser == null) {
-//                _navigator.Navigate(Go.To.Login());
-//            } else {
-//                _navigator.Navigate(Go.To.Home());
-//            }
-
-           var result = await _connectionManager.Connect(CancellationToken.None);
+            var result = await _connectionManager.Connect(CancellationToken.None);
             await _appHost.HandleConnectionStatus(result);
-
-//            return Task.FromResult(0);
         }
-//
-//        private async void AttemptLogin()
-//        {
-//            PublicSystemInfo serverInfo = await _serverConnectionManager.AttemptServerConnection();
-//            if (serverInfo != null) {
-//                bool autoLoggedIn = await _serverConnectionManager.AttemptAutoLogin(serverInfo);
-//                if (!autoLoggedIn && !(_navigator.CurrentLocation is LoginPath)) {
-//                    await _navigator.Navigate(Go.To.Login());
-//                }
-//            }
-//        }
     }
 }

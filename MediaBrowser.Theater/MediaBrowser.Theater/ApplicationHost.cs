@@ -273,6 +273,15 @@ namespace MediaBrowser.Theater
 
             ConnectionManager.Connected += (s, e) => HandleConnectionStatus(e.Argument);
             ConnectionManager.RemoteLoggedOut += (s, e) => ConnectToServer();
+            ConnectionManager.LocalUserSignOut += (s, e) => HandleLogout();
+            ConnectionManager.ConnectUserSignOut += (s, e) => HandleLogout();
+        }
+
+        private async void HandleLogout()
+        {
+            var result = await ConnectToServer();
+            await HandleConnectionStatus(result);
+            Navigator.ClearNavigationHistory();
         }
 
         public async Task HandleConnectionStatus(ConnectionResult result)

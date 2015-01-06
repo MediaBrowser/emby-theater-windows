@@ -88,14 +88,23 @@ namespace MediaBrowser.Theater.DefaultTheme
 
         public async Task ClosePopup()
         {
-            if (_currentPopup != null) {
-                var context = _currentPopup.DataContext as IViewModel;
-                if (context != null) {
-                    await context.Close();
-                }
+            var tcs = new TaskCompletionSource<object>();
 
-                _currentPopup.Close();
-                _currentPopup = null;
+            if (_currentPopup != null) {
+                Action action = async () => {
+                    var context = _currentPopup.DataContext as IViewModel;
+                    if (context != null) {
+                        await context.Close();
+                    }
+
+                    _currentPopup.Close();
+                    _currentPopup = null;
+
+                    tcs.SetResult(null);
+                };
+
+                await action.OnUiThreadAsync();
+                await tcs.Task;
             }
         }
 

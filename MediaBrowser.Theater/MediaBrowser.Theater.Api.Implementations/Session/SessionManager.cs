@@ -151,6 +151,11 @@ namespace MediaBrowser.Theater.Api.Session
             }
         }
 
+        public bool IsUserSignedIn
+        {
+            get { return CurrentUser != null || ConnectUser != null; }
+        }
+
         private string GetLocalUserImageUrl()
         {
             if (CurrentUser != null && CurrentUser.HasPrimaryImage)

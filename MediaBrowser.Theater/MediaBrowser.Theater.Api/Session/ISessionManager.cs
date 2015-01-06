@@ -56,5 +56,7 @@ namespace MediaBrowser.Theater.Api.Session
         string UserImageUrl { get; }
 
         UserConfiguration UserConfiguration { get; }
+
+        bool IsUserSignedIn { get; }
     }
 }

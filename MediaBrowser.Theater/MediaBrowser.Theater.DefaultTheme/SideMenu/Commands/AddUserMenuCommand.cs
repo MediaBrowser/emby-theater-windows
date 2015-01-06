@@ -7,7 +7,8 @@ using MediaBrowser.Theater.Presentation.ViewModels;
 namespace MediaBrowser.Theater.DefaultTheme.SideMenu.Commands
 {
     public class AddUserMenuCommand
-        : IMenuCommand
+        // disable this command for now
+        //: IMenuCommand 
     {
         public string DisplayName
         {

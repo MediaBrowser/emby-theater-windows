@@ -13,24 +13,26 @@ namespace MediaBrowser.Theater.DefaultTheme.Login.ViewModels
     {
         private readonly IConnectionManager _connectionManager;
         private readonly bool _enableFindServer;
+        private readonly bool _showLoginViaConnect;
         private readonly INavigator _navigator;
         private List<ServerInfo> _servers;
 
-        public ServerSelectionViewModel(IConnectionManager connectionManager, INavigator navigator, IEnumerable<ServerInfo> servers = null)
+        public ServerSelectionViewModel(IConnectionManager connectionManager, INavigator navigator, IEnumerable<ServerInfo> servers, bool isConnectUser)
         {
             _connectionManager = connectionManager;
             _navigator = navigator;
-            _enableFindServer = servers == null;
+            _enableFindServer = !isConnectUser;
+            _showLoginViaConnect = !isConnectUser;
 
-            Servers = new RangeObservableCollection<ServerConnectionViewModel>();
+            Servers = new RangeObservableCollection<BaseViewModel>();
 
             if (servers != null) {
                 _servers = servers.ToList();
             }
         }
 
-        public RangeObservableCollection<ServerConnectionViewModel> Servers { get; private set; }
-
+        public RangeObservableCollection<BaseViewModel> Servers { get; private set; }
+        
         public override async Task Initialize()
         {
             if (_servers == null) {
@@ -38,6 +40,11 @@ namespace MediaBrowser.Theater.DefaultTheme.Login.ViewModels
             }
 
             Servers.Clear();
+
+            if (_showLoginViaConnect) {
+                Servers.Add(new ConnectLoginButtonViewModel(_navigator));
+            }
+
             Servers.AddRange(_servers.Select(s => new ServerConnectionViewModel(_connectionManager, _navigator, s)));
 
             if (_enableFindServer) {

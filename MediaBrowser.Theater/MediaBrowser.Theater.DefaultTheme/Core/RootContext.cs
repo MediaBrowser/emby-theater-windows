@@ -41,10 +41,14 @@ namespace MediaBrowser.Theater.DefaultTheme.Core
             Binder.Bind<HomePath, HomeContext>();
             Binder.Bind<SideMenuPath, SideMenuContext>();
             Binder.Bind<FullScreenPlaybackPath, FullScreenPlaybackContext>();
-
-            Binder.Bind<ServerSelectionPath, ServerSelectionContext>((path, context) => context.Servers = path.Parameter);
+            
             Binder.Bind<UserSelectionPath, UserSelectionContext>((path, context) => context.ApiClient = path.Parameter);
             Binder.Bind<ItemListPath, ItemListContext>((path, context) => context.Parameters = path.Parameter);
+            Binder.Bind<ServerSelectionPath, ServerSelectionContext>((path, context) =>
+            {
+                context.Servers = path.Parameter != null ? path.Parameter.Servers : null;
+                context.IsConnectUser = path.Parameter != null && path.Parameter.IsConnectUser;
+            });
 
             //Binder.Bind<ItemPath, ItemDetailsContext>((path, context) => context.Item = path.Parameter);
 

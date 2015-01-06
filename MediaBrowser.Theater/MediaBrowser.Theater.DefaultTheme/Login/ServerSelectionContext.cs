@@ -25,11 +25,12 @@ namespace MediaBrowser.Theater.DefaultTheme.Login
         }
 
         public IEnumerable<ServerInfo> Servers { get; set; }
+        public bool IsConnectUser { get; set; }
 
         public override async Task Activate()
         {
             if (_serverSelectionViewModel == null || !_serverSelectionViewModel.IsActive) {
-                _serverSelectionViewModel = new ServerSelectionViewModel(_connectionManager, _navigator, Servers);
+                _serverSelectionViewModel = new ServerSelectionViewModel(_connectionManager, _navigator, Servers, IsConnectUser);
             }
 
             await _presenter.ShowPage(_serverSelectionViewModel);

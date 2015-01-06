@@ -103,6 +103,10 @@
         <loginViews:ServerConnectionView/>
     </DataTemplate>
     
+    <DataTemplate DataType="{x:Type loginViewModels:ConnectLoginButtonViewModel}">
+        <loginViews:ConnectLoginButtonView/>
+    </DataTemplate>
+    
     <DataTemplate DataType="{x:Type loginViewModels:ConnectPinViewModel}">
         <loginViews:ConnectPinView/>
     </DataTemplate>

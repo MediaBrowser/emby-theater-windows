@@ -155,6 +155,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Login\Views\ConnectLoginButtonView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Login\Views\ConnectPinView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -430,11 +434,15 @@
     </Compile>
     <Compile Include="Login\ManualConnectionContext.cs" />
     <Compile Include="Login\ServerSelectionContext.cs" />
+    <Compile Include="Login\ViewModels\ConnectLoginButtonViewModel.cs" />
     <Compile Include="Login\ViewModels\ConnectPinViewModel.cs" />
     <Compile Include="Login\ViewModels\ManualConnectionViewModel.cs" />
     <Compile Include="Login\ViewModels\ServerConnectionViewModel.cs" />
     <Compile Include="Login\ViewModels\ServerSelectionViewModel.cs" />
     <Compile Include="Login\ViewModels\WelcomePageViewModel.cs" />
+    <Compile Include="Login\Views\ConnectLoginButtonView.xaml.cs">
+      <DependentUpon>ConnectLoginButtonView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Login\Views\ConnectPinView.xaml.cs">
       <DependentUpon>ConnectPinView.xaml</DependentUpon>
     </Compile>

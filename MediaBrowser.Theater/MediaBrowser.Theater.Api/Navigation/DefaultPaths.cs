@@ -14,7 +14,7 @@ namespace MediaBrowser.Theater.Api.Navigation
     /// <summary>
     ///     The path to the server selection page.
     /// </summary>
-    public class ServerSelectionPath : NavigationPathArg<IEnumerable<ServerInfo>> { }
+    public class ServerSelectionPath : NavigationPathArg<ServerSelectionArguements> { }
 
     /// <summary>
     ///     The path to the locate server page.
@@ -65,6 +65,16 @@ namespace MediaBrowser.Theater.Api.Navigation
     ///     The path to the full screen playback page.
     /// </summary>
     public class FullScreenPlaybackPath : NavigationPath { }
+
+    #region Path Arguements
+
+    public class ServerSelectionArguements
+    {
+        public IEnumerable<ServerInfo> Servers { get; set; }
+        public bool IsConnectUser { get; set; }
+    }
+
+    #endregion
 
     #region Fluent Interface
 
@@ -128,11 +138,11 @@ namespace MediaBrowser.Theater.Api.Navigation
         ///     Gets a path to the server selection page.
         /// </summary>
         /// <param name="go"></param>
-        /// <param name="servers">The available servers, or <code>null</code> to enable auto-discovery.</param>
+        /// <param name="arg">The available servers, or <code>null</code> to enable auto-discovery.</param>
         /// <returns>A path to the server selection page.</returns>
-        public static ServerSelectionPath ServerSelection(this Go go, IEnumerable<ServerInfo> servers = null)
+        public static ServerSelectionPath ServerSelection(this Go go, ServerSelectionArguements arg = null)
         {
-            return new ServerSelectionPath { Parameter = servers };
+            return new ServerSelectionPath { Parameter = arg };
         }
 
         /// <summary>

@@ -334,7 +334,7 @@
     <value>Add a Media Browser Server Connection</value>
   </data>
   <data name="Login_ServerSelection_Subtitle" xml:space="preserve">
-    <value>Please choose which local server you wish to connect to.</value>
+    <value>Please choose which server you wish to connect to. If you do not yet have a media server, please visit mediabrowser.tv to download and set up your Media Browser Server.</value>
   </data>
   <data name="Login_ServerSelection_Title" xml:space="preserve">
     <value>Select Server</value>

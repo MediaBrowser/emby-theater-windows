@@ -285,7 +285,7 @@ namespace MediaBrowser.Theater
                 await Navigator.Navigate(Go.To.UserSelection(result.ApiClient));
             }
             if (result.State == ConnectionState.ServerSelection) {
-                await Navigator.Navigate(Go.To.ServerSelection(result.Servers));
+                await Navigator.Navigate(Go.To.ServerSelection(new ServerSelectionArguements { Servers = result.Servers, IsConnectUser = result.ConnectUser != null }));
             }
             if (result.State == ConnectionState.Unavailable) {
                 await Navigator.Navigate(Go.To.Login());

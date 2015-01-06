@@ -354,4 +354,7 @@
   <data name="Login_Connect_Retry" xml:space="preserve">
     <value>Generate new pin code</value>
   </data>
+  <data name="Login_ChangeServer" xml:space="preserve">
+    <value>Change Server</value>
+  </data>
 </root>

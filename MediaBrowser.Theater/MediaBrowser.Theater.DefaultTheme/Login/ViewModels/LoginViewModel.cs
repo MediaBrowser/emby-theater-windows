@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows.Input;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
+using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.Presentation.ViewModels;
@@ -20,13 +22,15 @@ namespace MediaBrowser.Theater.DefaultTheme.Login.ViewModels
 
         private readonly ObservableCollection<IViewModel> _users;
 
-        public LoginViewModel(ISessionManager session, ILogManager logManager, IImageManager imageManager, IApiClient apiClient)
+        public LoginViewModel(ISessionManager session, ILogManager logManager, IImageManager imageManager, IApiClient apiClient, INavigator navigator)
         {
             _session = session;
             _logManager = logManager;
             _imageManager = imageManager;
             _apiClient = apiClient;
             _users = new ObservableCollection<IViewModel> { new UserLoginViewModel(null, _session.ActiveApiClient, _imageManager, _session, _logManager) };
+
+            ChangeServerCommand = new RelayCommand(arg => navigator.Navigate(Go.To.ServerSelection()));
 
             LoadUsers();
         }
@@ -35,6 +39,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Login.ViewModels
         {
             get { return _users; }
         }
+
+        public ICommand ChangeServerCommand { get; private set; }
 
         private async void LoadUsers()
         {

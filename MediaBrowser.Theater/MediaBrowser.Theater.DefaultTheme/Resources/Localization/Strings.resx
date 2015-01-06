@@ -433,4 +433,8 @@
     <value>@Login_Connect_Retry</value>
     <comment>Button text for generating a new pin code</comment>
   </data>
+  <data name="Login_ChangeServer" xml:space="preserve">
+    <value>@Login_ChangeServer</value>
+    <comment>Button text for the button to change server</comment>
+  </data>
 </root>

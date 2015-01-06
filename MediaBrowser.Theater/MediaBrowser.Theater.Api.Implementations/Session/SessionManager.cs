@@ -40,8 +40,6 @@ namespace MediaBrowser.Theater.Api.Session
             _connectionManager.ConnectUserSignIn += (s, e) => ConnectUser = e.Argument;
             _connectionManager.ConnectUserSignOut += (s, e) => ConnectUser = null;
             _connectionManager.RemoteLoggedOut += (s, e) => playback.StopAllPlayback();
-
-
         }
         
         public UserDto CurrentUser

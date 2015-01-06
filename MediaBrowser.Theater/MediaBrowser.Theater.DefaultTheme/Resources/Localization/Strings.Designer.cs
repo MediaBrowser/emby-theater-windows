@@ -313,6 +313,15 @@ namespace MediaBrowser.Theater.DefaultTheme.Resources.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to @Login_ChangeServer.
+        /// </summary>
+        internal static string Login_ChangeServer {
+            get {
+                return ResourceManager.GetString("Login_ChangeServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to @Login_Connect.
         /// </summary>
         internal static string Login_Connect {

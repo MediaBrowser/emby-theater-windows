@@ -25,6 +25,7 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="140"/>
             <RowDefinition/>
+            <RowDefinition Height="auto"/>
             <RowDefinition Height="140"/>
         </Grid.RowDefinitions>
 
@@ -44,5 +45,7 @@
                 </ItemsControl>
             </controls:ScrollingPanel>
         </controls:ExtendedScrollViewer>
+
+        <Button Grid.Row="3" Margin="50, 0, 0, 0" HorizontalAlignment="Left" Content="{lex:Loc Login_ChangeServer}" Command="{Binding ChangeServerCommand}"/>
     </Grid>
 </UserControl>

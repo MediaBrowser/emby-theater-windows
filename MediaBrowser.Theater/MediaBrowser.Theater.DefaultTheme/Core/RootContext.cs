@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.System;
 using MediaBrowser.Theater.Api;
@@ -21,13 +22,17 @@ namespace MediaBrowser.Theater.DefaultTheme.Core
     public class RootContext
         : NavigationContext
     {
+        private readonly ITheaterApplicationHost _appHost;
         private readonly INavigator _navigator;
         private readonly ISessionManager _sessionManager;
+        private readonly IConnectionManager _connectionManager;
 
         public RootContext(ITheaterApplicationHost appHost, INavigator navigator, ISessionManager sessionManager, IConnectionManager connectionManager) : base(appHost)
         {
+            _appHost = appHost;
             _navigator = navigator;
             _sessionManager = sessionManager;
+            _connectionManager = connectionManager;
 
             // create root navigation bindings
             Binder.Bind<LoginPath, PageContext<WelcomePageViewModel>>();
@@ -61,16 +66,19 @@ namespace MediaBrowser.Theater.DefaultTheme.Core
             });
         }
 
-        public override Task Activate()
+        public override async Task Activate()
         {
             //AttemptLogin();
-            if (_sessionManager.CurrentUser == null) {
-                _navigator.Navigate(Go.To.Login());
-            } else {
-                _navigator.Navigate(Go.To.Home());
-            }
+//            if (_sessionManager.CurrentUser == null) {
+//                _navigator.Navigate(Go.To.Login());
+//            } else {
+//                _navigator.Navigate(Go.To.Home());
+//            }
 
-            return Task.FromResult(0);
+           var result = await _connectionManager.Connect(CancellationToken.None);
+            await _appHost.HandleConnectionStatus(result);
+
+//            return Task.FromResult(0);
         }
 //
 //        private async void AttemptLogin()

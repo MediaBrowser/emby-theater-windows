@@ -97,7 +97,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
                 return item.PremiereDate.Value;
             }
 
-            return int.MaxValue;
+            return DateTime.MaxValue;
         }
 
         public object GetIndexKey(BaseItemDto item)

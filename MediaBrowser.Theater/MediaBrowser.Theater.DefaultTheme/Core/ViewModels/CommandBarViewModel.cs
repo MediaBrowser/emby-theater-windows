@@ -44,7 +44,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
         private async void UpdateCommandVisibility()
         {
             GlobalCommandViewModel[] visibleCommandViewModels = CommandViewModels.ToArray();
-            var commandsToHide = visibleCommandViewModels.Where(v => !v.MenuCommand.EvaluateVisibility(_navigator.CurrentLocation));
+            var commandsToHide = visibleCommandViewModels.Where(v => !v.MenuCommand.EvaluateVisibility(_navigator.CurrentLocation)).ToList();
 
             Action removeAction = () => {
                 foreach (GlobalCommandViewModel viewModel in commandsToHide) {

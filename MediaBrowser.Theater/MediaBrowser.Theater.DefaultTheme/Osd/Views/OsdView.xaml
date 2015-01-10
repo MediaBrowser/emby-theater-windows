@@ -24,7 +24,7 @@
                     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="Now Playing: "
                                Foreground="{StaticResource AccentBrush}" Margin="0 0 10 0" />
                     <TextBlock Text="{Binding DisplayName}" HorizontalAlignment="Center" VerticalAlignment="Center"
-                               MaxWidth="700" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" />
+                               MaxWidth="700" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" Foreground="White" />
                 </StackPanel>
 
                 <TextBlock VerticalAlignment="Center" HorizontalAlignment="Right"

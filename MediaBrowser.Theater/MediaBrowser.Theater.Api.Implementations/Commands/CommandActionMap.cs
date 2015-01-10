@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using MediaBrowser.Model.Logging;
-using MediaBrowser.Theater.Api;
-using MediaBrowser.Theater.Api.Commands;
 using MediaBrowser.Theater.Api.Events;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Playback;
+using MediaBrowser.Theater.Api.System;
 using MediaBrowser.Theater.Api.UserInterface;
 
-namespace MediaBrowser.Theater.EntryPoints.CommandActions
+namespace MediaBrowser.Theater.Api.Commands
 {
 
     internal delegate void ActionDelagate(Object sender, CommandEventArgs args);
@@ -104,7 +103,7 @@ namespace MediaBrowser.Theater.EntryPoints.CommandActions
                 new CommandActionMapping( Command.Step,            SkipForward,        60),     
                 new CommandActionMapping( Command.SmallStepForward,SkipForward,        10),
                 new CommandActionMapping( Command.SmallStepBack,   SkipBackward,       10),
-                new CommandActionMapping( Command.StepForward,     SkipBackward,       60),
+                new CommandActionMapping( Command.StepForward,     SkipForward,        60),
                 new CommandActionMapping( Command.StepBack,        SkipBackward,       60),
                 new CommandActionMapping( Command.BigStepForward,  SkipForward,        300),
                 new CommandActionMapping( Command.BigStepBack,     SkipBackward,       300),
@@ -130,8 +129,8 @@ namespace MediaBrowser.Theater.EntryPoints.CommandActions
 //                new CommandActionMapping( Command.HideinfoPanel,            HideInfoPanel),
 //                new CommandActionMapping( Command.ToggleInfoPanel,          ToggleInfoPanel),
 //                new CommandActionMapping( Command.ShowScreensaver,          (s, a) => _screensaverManager.ShowScreensaver(true)),
-//                new CommandActionMapping( Command.ScreenDump,               (s, a) => MBTScreenDump.GetAndSaveWindowsImage(_presenation.MainApplicationWindowHandle)),
-
+                new CommandActionMapping( Command.ScreenDump,               (s, a) => MBTScreenDump.GetAndSaveWindowsImage(_presenation.MainApplicationWindowHandle)),
+                new CommandActionMapping( Command.ToggleVideoScaling, ToggleVideoScaling)
 
             };
         }
@@ -189,6 +188,19 @@ namespace MediaBrowser.Theater.EntryPoints.CommandActions
         private IInternalMediaPlayer GetActiveInternalMediaPlayer()
         {
             return _playback.MediaPlayers.OfType<IInternalMediaPlayer>().FirstOrDefault(i => i.PlayState != PlayState.Idle);
+        }
+
+        private void ToggleVideoScaling(Object sender, CommandEventArgs args)
+        {
+            var activePlayer = GetActiveInternalMediaPlayer();
+
+            if (activePlayer != null)
+            {
+                activePlayer.ToggleVideoScaling();
+
+                //ShowOsd(sender, args);
+            }
+            args.Handled = true;
         }
 
         private void Play(Object sender, CommandEventArgs args)

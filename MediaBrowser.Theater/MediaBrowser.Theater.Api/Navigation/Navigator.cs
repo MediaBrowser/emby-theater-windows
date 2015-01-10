@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MediaBrowser.Model.Logging;
 
 namespace MediaBrowser.Theater.Api.Navigation
 {
@@ -33,11 +34,13 @@ namespace MediaBrowser.Theater.Api.Navigation
         private readonly Stack<NavigationFrame> _logicalBackStack;
         private readonly Stack<NavigationFrame> _logicalForwardStack;
         private readonly AsyncLock _navigationLock;
+        private readonly ILogger _log;
 
         private NavigationFrame _activeFrame;
 
-        public Navigator()
+        public Navigator(ILogManager logManager)
         {
+            _log = logManager.GetLogger("Navigation");
             _logicalBackStack = new Stack<NavigationFrame>();
             _logicalForwardStack = new Stack<NavigationFrame>();
             _navigationLock = new AsyncLock();
@@ -63,6 +66,8 @@ namespace MediaBrowser.Theater.Api.Navigation
 
         public async Task Navigate(INavigationPath path)
         {
+            _log.Info("Navigating to " + path);
+
             // major problem here: the lock is not re-entrant, and navigating while inside a navigation will deadlock the thread (waiting for itself to exit)
             // todo change navigation code to cancel old nav requests when a new one is started, instead of locking
             using (await _navigationLock.LockAsync().ConfigureAwait(false)) {

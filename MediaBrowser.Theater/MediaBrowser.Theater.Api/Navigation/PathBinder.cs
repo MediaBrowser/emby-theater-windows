@@ -22,12 +22,24 @@ namespace MediaBrowser.Theater.Api.Navigation
             var key = typeof (T);
             _handlers[key] = path => handler((T)path);
         }
-
+        
         public void Bind<TPath, TContext>()
             where TPath : INavigationPath
             where TContext : INavigationContext
         {
             Bind<TPath>(path => Task.FromResult<INavigationContext>(_appHost.Resolve<TContext>()));
+        }
+
+        public void Bind<TPath, TContext>(Action<TPath, TContext> initialize)
+            where TPath : INavigationPath
+            where TContext : INavigationContext
+        {
+            Bind<TPath>(path => {
+                var context = _appHost.Resolve<TContext>();
+                initialize(path, context);
+
+                return Task.FromResult<INavigationContext>(context);
+            });
         }
 
         public PathResolution Resolve(INavigationPath path)

@@ -17,21 +17,19 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
     public class MovieHomePageGenerator
         : IUserViewHomePageGenerator
     {
-        private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
         private readonly ILogManager _logManager;
         private readonly INavigator _navigator;
-        private readonly IServerEvents _serverEvents;
+        private readonly IConnectionManager _connectionManager;
         private readonly ISessionManager _sessionManager;
         private readonly IPlaybackManager _playbackManager;
 
-        public MovieHomePageGenerator(IImageManager imageManager, INavigator navigator, IApiClient apiClient, ISessionManager sessionManager, IServerEvents serverEvents, IPlaybackManager playbackManager, ILogManager logManager)
+        public MovieHomePageGenerator(IImageManager imageManager, INavigator navigator, IConnectionManager connectionManager, ISessionManager sessionManager, IPlaybackManager playbackManager, ILogManager logManager)
         {
             _imageManager = imageManager;
             _navigator = navigator;
-            _apiClient = apiClient;
+            _connectionManager = connectionManager;
             _sessionManager = sessionManager;
-            _serverEvents = serverEvents;
             _playbackManager = playbackManager;
             _logManager = logManager;
         }
@@ -41,8 +39,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
         public Task<IEnumerable<IHomePage>> GetHomePages(BaseItemDto mediaFolder)
         {
             IEnumerable<IHomePage> pages = new IHomePage[] {
-                new MovieSpotlightViewModel(mediaFolder, _imageManager, _navigator, _apiClient, _serverEvents, _playbackManager, _sessionManager, _logManager),
-                new LatestMoviesViewModel(mediaFolder, _apiClient, _imageManager, _serverEvents, _navigator, _sessionManager, _playbackManager)
+                new MovieSpotlightViewModel(mediaFolder, _imageManager, _navigator, _connectionManager, _playbackManager, _sessionManager, _logManager),
+                new LatestMoviesViewModel(mediaFolder, _connectionManager, _imageManager, _navigator, _sessionManager, _playbackManager)
             };
 
             return Task.FromResult(pages);

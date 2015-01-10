@@ -17,7 +17,8 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.Views
             InitializeComponent();
 
             // this is horrible
-            Loaded += (s, e) => {
+            Loaded += async (s, e) => {
+                await Task.Delay(100);
                 MoveFocus(new TraversalRequest(FocusNavigationDirection.First));
 
                 var context = DataContext as ItemListViewModel;
@@ -28,6 +29,11 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.Views
                         MoveFocus(new TraversalRequest(FocusNavigationDirection.First));
                     }
                 };
+            };
+
+            DataContextChanged += async (s, e) => {
+                await Task.Delay(100);
+                MoveFocus(new TraversalRequest(FocusNavigationDirection.First));
             };
 
             Panorama.PropertyChanged += (sender, arg) => {

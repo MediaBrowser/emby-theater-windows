@@ -1,32 +1,23 @@
-﻿using System.Windows.Input;
-using MediaBrowser.Model.Logging;
-using MediaBrowser.Theater.Api;
+﻿using System;
 using MediaBrowser.Theater.Api.Commands;
-using MediaBrowser.Theater.Api.Events;
-using MediaBrowser.Theater.Api.Navigation;
-using MediaBrowser.Theater.Api.Playback;
-using System;
 using MediaBrowser.Theater.Api.System;
-using MediaBrowser.Theater.Api.UserInterface;
-using MediaBrowser.Theater.EntryPoints.CommandActions;
-using WindowsInput = System.Windows.Input;
 
- namespace MediaBrowser.UI.EntryPoints.CommandActions
+namespace MediaBrowser.Theater.EntryPoints.CommandActions
 {
-
-    public class CommandActionsEntryPoint :  IStartupEntryPoint, IDisposable
+    public class CommandActionsEntryPoint : IStartupEntryPoint, IDisposable
     {
-        private readonly ILogger _logger;
         private readonly ICommandManager _commandManager;
-        private readonly DefaultCommandActionMap _defaultCommandActionMap;
+        private readonly ICommandRouter _commandRouter;
 
-
-        public CommandActionsEntryPoint(ICommandManager commandManager, ITheaterApplicationHost appHost, IPresenter presentationManager, IPlaybackManager playbackManager, INavigator navigationService, /*IScreensaverManager screensaverManager,*/ ILogManager logManager, IEventAggregator events)
+        public CommandActionsEntryPoint(ICommandManager commandManager, ICommandRouter commandRouter)
         {
             _commandManager = commandManager;
-            _defaultCommandActionMap = new DefaultCommandActionMap(appHost, presentationManager, playbackManager, navigationService, /*screensaverManager,*/ logManager, events);
-        
-            _logger = logManager.GetLogger(GetType().Name);
+            _commandRouter = commandRouter;
+        }
+
+        public void Dispose()
+        {
+            _commandManager.CommandReceived -= commandManager_CommandReceived;
         }
 
         public void Run()
@@ -36,16 +27,7 @@ using WindowsInput = System.Windows.Input;
 
         private void commandManager_CommandReceived(object sender, CommandEventArgs commandEventArgs)
         {
-            _logger.Debug("commandManager_CommandReceived {0} {1}", commandEventArgs.Command, commandEventArgs.Args);
-            commandEventArgs.Handled = _defaultCommandActionMap.ExecuteCommand(commandEventArgs.Command, commandEventArgs.Args);
-        }
-
-        public void Dispose()
-        {
-            _commandManager.CommandReceived -= commandManager_CommandReceived;
+            commandEventArgs.Handled = _commandRouter.RouteCommand(commandEventArgs.Command, commandEventArgs.Args);
         }
     }
 }
-
-
-

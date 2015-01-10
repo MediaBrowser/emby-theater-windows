@@ -1,6 +1,7 @@
 ﻿using System.Windows.Input;
 using MediaBrowser.Theater.Api.Commands;
 using MediaBrowser.Theater.Api.Navigation;
+using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.Presentation;
 using MediaBrowser.Theater.Presentation.ViewModels;
@@ -10,8 +11,11 @@ namespace MediaBrowser.Theater.DefaultTheme.Search.ViewModels
     public class SearchMenuCommand
         : IGlobalMenuCommand
     {
-        public SearchMenuCommand(INavigator navigator)
+        private readonly ISessionManager _sessionManager;
+
+        public SearchMenuCommand(INavigator navigator, ISessionManager sessionManager)
         {
+            _sessionManager = sessionManager;
             ExecuteCommand = new RelayCommand(arg => navigator.Navigate(Go.To.Search()));
         }
 
@@ -38,7 +42,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Search.ViewModels
         public ICommand ExecuteCommand { get; private set; }
         public bool EvaluateVisibility(INavigationPath currentPath)
         {
-            return !(currentPath is SearchPath) && !(currentPath is LoginPath);
+            return !(currentPath is SearchPath) && _sessionManager.IsUserSignedIn;
         }
     }
 

@@ -5,7 +5,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using MediaBrowser.Theater.Api.Commands;
 using MediaBrowser.Theater.DefaultTheme.Osd.ViewModels;
+using MediaBrowser.Theater.Presentation.Controls;
 
 namespace MediaBrowser.Theater.DefaultTheme.Osd.Views
 {
@@ -31,6 +33,24 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.Views
             DataContextChanged += FullscreenVideoTransportOsd_DataContextChanged;
             Loaded += FullscreenVideoTransportOsd_Loaded;
             Unloaded += FullscreenVideoTransportOsd_Unloaded;
+            PlayPauseButton.IsVisibleChanged += OsdView_IsVisibleChanged;
+            //MouseMove += OsdView_MouseMove;
+        }
+
+        void OsdView_MouseMove(object sender, MouseEventArgs e)
+        {
+            var viewModel = DataContext as OsdViewModel;
+            if (viewModel != null) {
+                viewModel.TemporarilyShowOsd();
+            }
+        }
+
+        void OsdView_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (PlayPauseButton.Visibility == Visibility.Visible) {
+                Container.Focus();
+                PlayPauseButton.Focus();
+            }
         }
 
         /// <summary>
@@ -50,6 +70,11 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.Views
             if (_previewMouseDown == null) {
                 _previewMouseDown = CurrentPositionSlider_PreviewMouseDown;
                 CurrentPositionSlider.AddHandler(PreviewMouseDownEvent, _previewMouseDown, true);
+            }
+
+            var window = Application.Current.MainWindow as BaseWindow;
+            if (window != null) {
+                window.MouseMove += OsdView_MouseMove;
             }
 
             PlayPauseButton.Focus();

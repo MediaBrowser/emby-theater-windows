@@ -234,6 +234,7 @@ namespace MediaBrowser.Theater.Api.Commands
             new InputCommandMapping( Key.F9,             Command.VolumeDown),
             new InputCommandMapping( Key.F8,             Command.ToggleMute),
             new InputCommandMapping( Key.G,              Command.ToggleOsd,               controlKey:true, shiftKey:false),
+            new InputCommandMapping( Key.T,              Command.ToggleVideoScaling),
 
             // APP_COMMANDS
             new InputCommandMapping( AppCommand.APPCOMMAND_INFO,                 Command.Info),

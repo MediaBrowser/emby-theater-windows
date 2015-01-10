@@ -41,6 +41,7 @@
                                     <controls:ExtendedScrollViewer IgnoreAllDirectionKeys="True"
                                                                IsTabStop="False"
                                                                Focusable="False"
+                                                               PanningMode="VerticalOnly"
                                                                CanContentScroll="True"
                                                                VerticalAlignment="Top">
                                         <VirtualizingStackPanel VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" IsItemsHost="True"/>

@@ -1,42 +1,71 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Channels;
 using MediaBrowser.Model.Dto;
+using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Theater.Api.Session;
 
 namespace MediaBrowser.Theater.Api.Library
 {
+    public class ChildrenQueryParams
+    {
+        public bool Recursive { get; set; }
+        public bool ExpandSingleItems { get; set; }
+        public string[] IncludeItemTypes { get; set; }
+        public string[] ExcludeItemTypes { get; set; }
+        public ItemFields[] Fields { get; set; }
+        public ItemFilter[] Filters { get; set; }
+        public string[] SortBy { get; set; }
+        public SortOrder? SortOrder { get; set; }
+        public int? Limit { get; set; }
+    }
+
     public static class ItemChildren
     {
-        public static async Task<ItemsResult> GetChildren(
-            BaseItemDto item, IApiClient apiClient, ISessionManager sessionManager,
-            bool recursive = false, bool expandSingleItems = false, string[] includeItemTypes = null, ItemFields[] fields = null)
+        public static ItemFields[] DefaultQueryFields = {
+            ItemFields.ParentId,
+            ItemFields.PrimaryImageAspectRatio,
+            ItemFields.DateCreated,
+            ItemFields.MediaStreams,
+            ItemFields.Taglines,
+            ItemFields.Genres,
+            ItemFields.Overview,
+            ItemFields.DisplayPreferencesId,
+            ItemFields.MediaSources
+        };
+
+        public static async Task<ItemsResult> Get(IConnectionManager connectionManager, ISessionManager sessionManager, BaseItemDto item, ChildrenQueryParams parameters = null)
         {
-            var children = await GetChildrenInternal(item, apiClient, sessionManager, recursive, includeItemTypes, fields);
-            if (children.TotalRecordCount == 1 && expandSingleItems && children.Items[0].IsFolder) {
-                return await GetChildren(children.Items[0], apiClient, sessionManager, recursive, true, includeItemTypes, fields);
+            parameters = parameters ?? new ChildrenQueryParams();
+
+            var apiClient = connectionManager.GetApiClient(item);
+            var children = await GetChildrenInternal(item, parameters, apiClient, sessionManager);
+            if (children.TotalRecordCount == 1 && parameters.ExpandSingleItems && children.Items[0].IsFolder) {
+                return await Get(connectionManager, sessionManager, children.Items[0], parameters);
             }
 
             return children;
         }
 
         private static async Task<ItemsResult> GetChildrenInternal(
-            BaseItemDto item, IApiClient apiClient, ISessionManager sessionManager,
-            bool recursive, string[] includeItemTypes, ItemFields[] fields)
+            BaseItemDto item, ChildrenQueryParams parameters, IApiClient apiClient, ISessionManager sessionManager)
         {
             if (item.IsType("channel")) {
                 var result = await GetChannelItems(apiClient, new ChannelItemQuery {
                     UserId = sessionManager.CurrentUser.Id,
                     ChannelId = item.Id,
-                    Fields = fields,
-                }, CancellationToken.None);
+                    Filters = parameters.Filters,
+                    Fields = parameters.Fields ?? DefaultQueryFields,
+                    SortBy = parameters.SortBy,
+                    SortOrder = parameters.SortOrder,
+                });
 
-                result.Items = result.Items.Where(i => includeItemTypes.Any(i.IsType)).ToArray();
-                result.TotalRecordCount = result.Items.Length;
+                return FilterResult(parameters, result);
             }
 
             if (item.IsType("ChannelFolderItem") && !string.IsNullOrEmpty(item.ChannelId)) {
@@ -44,39 +73,61 @@ namespace MediaBrowser.Theater.Api.Library
                     UserId = sessionManager.CurrentUser.Id,
                     ChannelId = item.ChannelId,
                     FolderId = item.Id,
-                    Fields = fields
-                }, CancellationToken.None);
-
-                result.Items = result.Items.Where(i => includeItemTypes.Any(i.IsType)).ToArray();
-                result.TotalRecordCount = result.Items.Length;
-            }
-
-            if (item.IsType("Person")) {
-                return await apiClient.GetItemsAsync(new ItemQuery {
-                    Person = item.Name,
-                    UserId = sessionManager.CurrentUser.Id,
-                    Recursive = recursive,
-                    Fields = fields,
-                    IncludeItemTypes = includeItemTypes
+                    Filters = parameters.Filters,
+                    Fields = parameters.Fields ?? DefaultQueryFields,
+                    SortBy = parameters.SortBy,
+                    SortOrder = parameters.SortOrder,
                 });
+
+                return FilterResult(parameters, result);
             }
 
-            var query = new ItemQuery {
-                ParentId = item.Id,
+            return await apiClient.GetItemsAsync(new ItemQuery {
+                ParentId = item.IsType("Person") ? null : item.Id,
+                Person = item.IsType("Person") ? item.Name : null,
                 UserId = sessionManager.CurrentUser.Id,
-                Recursive = recursive,
-                Fields = fields,
-                IncludeItemTypes = includeItemTypes
-            };
-
-            return await apiClient.GetItemsAsync(query);
+                Recursive = parameters.Recursive,
+                Filters = parameters.Filters,
+                Fields = parameters.Fields ?? DefaultQueryFields,
+                SortBy = parameters.SortBy,
+                SortOrder = parameters.SortOrder,
+                IncludeItemTypes = parameters.IncludeItemTypes,
+                ExcludeItemTypes = parameters.ExcludeItemTypes,
+                Limit = parameters.Limit
+            });
         }
 
-        private static async Task<ItemsResult> GetChannelItems(IApiClient apiClient, ChannelItemQuery query, CancellationToken cancellationToken)
+        private static ItemsResult FilterResult(ChildrenQueryParams parameters, ItemsResult result)
         {
-            int? queryLimit = await GetChannelQueryLimit(apiClient, query.ChannelId, cancellationToken);
-            int startIndex = 0;
+            IEnumerable<BaseItemDto> items = result.Items;
+
+            if (parameters.IncludeItemTypes != null) {
+                items = items.Where(i => parameters.IncludeItemTypes.Any(i.IsType));
+            }
+
+            if (parameters.ExcludeItemTypes != null) {
+                items = items.Where(i => !parameters.ExcludeItemTypes.Any(i.IsType));
+            }
+
+            if (parameters.Limit != null) {
+                items = items.Take(parameters.Limit.Value);
+            }
+
+            result.Items = items as BaseItemDto[] ?? items.ToArray();
+            result.TotalRecordCount = result.Items.Length;
+            return result;
+        }
+
+        private static async Task<ItemsResult> GetChannelItems(IApiClient apiClient, ChannelItemQuery query, int? maxItems = null)
+        {
             const int callLimit = 3;
+
+            int? queryLimit = await GetChannelQueryLimit(apiClient, query.ChannelId, CancellationToken.None);
+            if (maxItems != null) {
+                queryLimit = queryLimit == null ? maxItems : Math.Min(queryLimit.Value, maxItems.Value);
+            }
+
+            int startIndex = 0;
             int currentCall = 1;
 
             ItemsResult result = await GetChannelItems(apiClient, query, startIndex, queryLimit, CancellationToken.None);

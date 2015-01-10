@@ -14,26 +14,22 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList
     public class ItemListContext
         : NavigationContext
     {
-        private readonly IApiClient _apiClient;
+        private readonly IConnectionManager _connectionManager;
         private readonly IImageManager _imageManager;
         private readonly INavigator _navigator;
         private readonly IPresenter _presenter;
-        private readonly ISessionManager _sessionManager;
         private readonly IPlaybackManager _playbackManager;
-        private readonly IServerEvents _serverEvents;
 
         private ItemListViewModel _viewModel;
 
-        public ItemListContext(IApplicationHost appHost, IApiClient apiClient, IImageManager imageManager,
-                               IServerEvents serverEvents, INavigator navigator, IPresenter presenter,
-                               ISessionManager sessionManager, IPlaybackManager playbackManager) : base(appHost)
+        public ItemListContext(IApplicationHost appHost, IConnectionManager connectionManager, IImageManager imageManager,
+                               INavigator navigator, IPresenter presenter, IPlaybackManager playbackManager)
+            : base(appHost)
         {
-            _apiClient = apiClient;
+            _connectionManager = connectionManager;
             _imageManager = imageManager;
-            _serverEvents = serverEvents;
             _navigator = navigator;
             _presenter = presenter;
-            _sessionManager = sessionManager;
             _playbackManager = playbackManager;
 
             Binder.Bind<SortModeMenuPath>(async path => {
@@ -49,7 +45,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList
         public override async Task Activate()
         {
             if (_viewModel == null || !_viewModel.IsActive) {
-                _viewModel = new ItemListViewModel(Parameters, _apiClient, _imageManager, _serverEvents, _navigator, _sessionManager, _playbackManager);
+                _viewModel = new ItemListViewModel(Parameters, _connectionManager, _imageManager, _navigator, _playbackManager);
             }
 
             await _presenter.ShowPage(_viewModel);

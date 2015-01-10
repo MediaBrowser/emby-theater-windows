@@ -83,12 +83,36 @@
         <views7:SortOptionView/>
     </DataTemplate>
     
+    <DataTemplate DataType="{x:Type loginViewModels:WelcomePageViewModel}">
+        <loginViews:WelcomePageView/>
+    </DataTemplate>
+    
     <DataTemplate DataType="{x:Type loginViewModels:LoginViewModel}">
         <loginViews:LoginView/>
     </DataTemplate>
     
     <DataTemplate DataType="{x:Type loginViewModels:UserLoginViewModel}">
         <loginViews:UserLoginView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type loginViewModels:ServerSelectionViewModel}">
+        <loginViews:ServerSelectionView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type loginViewModels:ServerConnectionViewModel}">
+        <loginViews:ServerConnectionView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type loginViewModels:ConnectLoginButtonViewModel}">
+        <loginViews:ConnectLoginButtonView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type loginViewModels:ConnectPinViewModel}">
+        <loginViews:ConnectPinView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type loginViewModels:ManualConnectionViewModel}">
+        <loginViews:ManualConnectionView/>
     </DataTemplate>
     
     <DataTemplate DataType="{x:Type viewModels2:HomeViewModel}">

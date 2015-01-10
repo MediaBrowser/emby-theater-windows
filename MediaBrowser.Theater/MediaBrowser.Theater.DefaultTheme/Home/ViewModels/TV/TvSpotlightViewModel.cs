@@ -11,6 +11,8 @@ using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Querying;
+using MediaBrowser.Theater.Api;
+using MediaBrowser.Theater.Api.Library;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.Session;
@@ -26,23 +28,21 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
 {
     public class TvSpotlightViewModel
         : BaseViewModel, IKnownSize, IHomePage
-    {
-        private readonly IApiClient _apiClient;
+    {        
         private readonly IImageManager _imageManager;
         private readonly ILogger _logger;
         private readonly double _miniSpotlightWidth;
         private readonly INavigator _navigator;
+        private readonly IConnectionManager _connectionManager;
         private readonly IPlaybackManager _playbackManager;
-        private readonly IServerEvents _serverEvents;
         private readonly ISessionManager _sessionManager;
         private CancellationTokenSource _mainViewCancellationTokenSource;
 
-        public TvSpotlightViewModel(BaseItemDto tvFolder, IImageManager imageManager, INavigator navigator, IApiClient apiClient, IServerEvents serverEvents, ISessionManager sessionManager, ILogManager logManager, IPlaybackManager playbackManager)
+        public TvSpotlightViewModel(BaseItemDto tvFolder, IImageManager imageManager, INavigator navigator, IConnectionManager connectionManager, ISessionManager sessionManager, ILogManager logManager, IPlaybackManager playbackManager)
         {
             _imageManager = imageManager;
             _navigator = navigator;
-            _apiClient = apiClient;
-            _serverEvents = serverEvents;
+            _connectionManager = connectionManager;
             _playbackManager = playbackManager;
             _sessionManager = sessionManager;
             _logger = logManager.GetLogger("TV Spotlight");
@@ -57,8 +57,11 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
 
             AllShowsCommand = new RelayCommand(arg => {
                 var itemParams = new ItemListParameters {
-                    Items = GetChildren(tvFolder, new[] { "Series" }, new[] { "Playlist" }),
-                    Title = "Browse TV Shows"
+                    Title = "Browse TV Shows",
+                    Items = ItemChildren.Get(_connectionManager, sessionManager, tvFolder, new ChildrenQueryParams {
+                        ExpandSingleItems = true,
+                        ExcludeItemTypes = new[] { "Playlist" }
+                    }),
                 };
 
                 navigator.Navigate(Go.To.ItemList(itemParams));
@@ -66,14 +69,16 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
 
             PlaylistsCommand = new RelayCommand(arg => {
                 var itemParams = new ItemListParameters {
-                    Items = GetChildren(tvFolder, new[] { "Playlist" }),
-                    Title = "Movie Playlists"
+                    Title = "TV Playlists",
+                    Items = ItemChildren.Get(_connectionManager, sessionManager, tvFolder, new ChildrenQueryParams {
+                        IncludeItemTypes = new[] { "Playlist" }
+                    })
                 };
 
                 navigator.Navigate(Go.To.ItemList(itemParams));
             });
 
-            SpotlightViewModel = new ItemSpotlightViewModel(imageManager, apiClient) {
+            SpotlightViewModel = new ItemSpotlightViewModel(imageManager, _connectionManager) {
                 ImageType = ImageType.Backdrop,
                 ItemSelectedAction = i => navigator.Navigate(Go.To.Item(i))
             };
@@ -90,7 +95,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
 
             LoadViewModels(tvFolder);
         }
-        
+
         public double SpotlightWidth { get; private set; }
         public double SpotlightHeight { get; private set; }
 
@@ -148,22 +153,6 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
             return name;
         }
 
-        private Task<ItemsResult> GetChildren(BaseItemDto item, string[] includeItemTypes = null, string[] excludeItemTypes = null)
-        {
-            var query = new ItemQuery
-            {
-                UserId = _sessionManager.CurrentUser.Id,
-                ParentId = item.Id,
-                IncludeItemTypes = includeItemTypes,
-                ExcludeItemTypes = excludeItemTypes,
-                SortBy = new[] { ItemSortBy.SortName },
-                Fields = MovieSpotlightViewModel.QueryFields,
-                Recursive = true
-            };
-
-            return _apiClient.GetItemsAsync(query);
-        }
-
         private async void LoadViewModels(BaseItemDto tvFolder)
         {
             CancellationTokenSource cancellationSource = _mainViewCancellationTokenSource = new CancellationTokenSource();
@@ -171,16 +160,20 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
             try {
                 cancellationSource.Token.ThrowIfCancellationRequested();
 
-                var spotlight = await _apiClient.GetItemsAsync(new ItemQuery
-                {
-                    UserId = _sessionManager.CurrentUser.Id,
-                    ParentId = tvFolder.Id,
+                var spotlight = await ItemChildren.Get(_connectionManager, _sessionManager, tvFolder, new ChildrenQueryParams {
+                    Filters = new[] { ItemFilter.IsUnplayed },
                     IncludeItemTypes = new[] { "Series" },
                     SortBy = new[] { ItemSortBy.CommunityRating },
                     SortOrder = SortOrder.Descending,
-                    Fields = MovieSpotlightViewModel.QueryFields,
+                    Limit = 20,
                     Recursive = true
                 });
+
+                if (spotlight.TotalRecordCount < 10) {
+                    spotlight = await ItemChildren.Get(_connectionManager, _sessionManager, tvFolder, new ChildrenQueryParams {
+                        Recursive = true
+                    });
+                }
 
                 LoadSpotlightViewModel(spotlight);
                 await LoadAllShowsViewModel(tvFolder);
@@ -196,7 +189,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
 
         private ItemTileViewModel CreateMiniSpotlightItem()
         {
-            return new ItemTileViewModel(_apiClient, _imageManager, _serverEvents, _navigator, _playbackManager, null) {
+            return new ItemTileViewModel(_connectionManager, _imageManager, _navigator, _playbackManager, null) {
                 DesiredImageWidth = _miniSpotlightWidth,
                 DesiredImageHeight = HomeViewModel.TileHeight,
                 PreferredImageTypes = new[] { ImageType.Backdrop, ImageType.Thumb },
@@ -206,8 +199,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
 
         private void LoadMiniSpotlightsViewModel(ItemsResult tvItems)
         {
-            var rnd = new Random();
-            BaseItemDto[] items = tvItems.Items.OrderBy(i => rnd.Next()).Take(3).ToArray();
+            BaseItemDto[] items = tvItems.Items.Skip(5).Shuffle().Take(3).ToArray();
 
             for (int i = 0; i < items.Length; i++) {
                 if (MiniSpotlightItems.Count > i) {
@@ -228,24 +220,27 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
 
         private void LoadSpotlightViewModel(ItemsResult tvItems)
         {
-            var first10 = tvItems.Items.Where(i => i.BackdropImageTags.Any()).Take(10).ToArray();
-            SpotlightViewModel.Items = first10;
+            SpotlightViewModel.Items = tvItems.Items.Where(i => i.BackdropImageTags.Any()).Take(5).Shuffle().ToArray(); ;
         }
 
         private async Task LoadAllShowsViewModel(BaseItemDto tvFolder)
         {
-            var items = await GetChildren(tvFolder);
+            var items = await ItemChildren.Get(_connectionManager, _sessionManager, tvFolder, new ChildrenQueryParams {
+                Recursive = true,
+                IncludeItemTypes = new[] { "Series" }
+            });
 
+            var apiClient = _connectionManager.GetApiClient(tvFolder);
             IEnumerable<string> images = items.Items
                                               .Where(i => i.BackdropImageTags.Any())
-                                              .Select(i => _apiClient.GetImageUrl(i.Id, new ImageOptions {
+                                              .Select(i => apiClient.GetImageUrl(i.Id, new ImageOptions {
                                                   ImageType = ImageType.Backdrop,
                                                   Tag = i.BackdropImageTags.First(),
                                                   Height = Convert.ToInt32(HomeViewModel.TileWidth*2),
                                                   EnableImageEnhancers = false
                                               }));
 
-            AllShowsImagesViewModel.Images.AddRange(images);
+            AllShowsImagesViewModel.Images.AddRange(images.Shuffle());
             AllShowsImagesViewModel.StartRotating();
         }
     }

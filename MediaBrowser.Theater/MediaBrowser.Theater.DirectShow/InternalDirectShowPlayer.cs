@@ -26,7 +26,7 @@ namespace MediaBrowser.Theater.DirectShow
 
         private readonly ILogger _logger;
         private readonly ISessionManager _sessionManager;
-        private readonly IApiClient _apiClient;
+        private readonly IConnectionManager _connectionManager;
         private readonly IPlaybackManager _playbackManager;
         private readonly ITheaterConfigurationManager _config;
         private readonly IIsoManager _isoManager;
@@ -51,14 +51,14 @@ namespace MediaBrowser.Theater.DirectShow
             get { return _privateCom; }
         }
 
-        public InternalDirectShowPlayer(ILogManager logManager, IInternalPlayerWindowManager windowManager, IPresenter presentation, ISessionManager sessionManager, IApiClient apiClient, IPlaybackManager playbackManager, ITheaterConfigurationManager config, IIsoManager isoManager, IUserInputManager inputManager, IZipClient zipClient, IHttpClient httpClient)
+        public InternalDirectShowPlayer(ILogManager logManager, IInternalPlayerWindowManager windowManager, IPresenter presentation, ISessionManager sessionManager, IConnectionManager connectionManager, IPlaybackManager playbackManager, ITheaterConfigurationManager config, IIsoManager isoManager, IUserInputManager inputManager, IZipClient zipClient, IHttpClient httpClient)
         {
             _logger = logManager.GetLogger("InternalDirectShowPlayer");
             _windowManager = windowManager;
             _hiddenWindow = windowManager.Window;
             _presentation = presentation;
             _sessionManager = sessionManager;
-            _apiClient = apiClient;
+            _connectionManager = connectionManager;
             _playbackManager = playbackManager;
             _config = config;
             _isoManager = isoManager;
@@ -73,9 +73,25 @@ namespace MediaBrowser.Theater.DirectShow
 
             //use a static object so we keep the libraries in the same place. Doesn't usually matter, but the EVR Presenter does some COM hooking that has problems if we change the lib address.
             if (_privateCom == null)
-                _privateCom = new URCOMLoader(_config, zipClient);
+                _privateCom = new URCOMLoader(_config, _zipClient);
 
             windowManager.WindowLoaded += window => _hiddenWindow = window;
+
+            EnsureMediaFilters();
+        }
+
+        private void EnsureMediaFilters()
+        {
+            Task.Run(() =>
+            {
+                try
+                {
+                    URCOMLoader.EnsureObjects(_config, _zipClient, false);
+                }
+                catch
+                {
+                }
+            });
         }
 
         public IReadOnlyList<BaseItemDto> Playlist
@@ -255,13 +271,6 @@ namespace MediaBrowser.Theater.DirectShow
 
             try
             {
-                InvokeOnPlayerThreadAsync(() =>
-                {
-                    _mediaPlayer = new DirectShowPlayer(_logger, _windowManager, this, _presentation.MainApplicationWindowHandle, _sessionManager, _config, _inputManager, _apiClient, _zipClient, _httpClient);
-
-                    //HideCursor();
-                });
-
                 await PlayTrack(0, options.StartPositionTicks);
             }
             catch (Exception ex)
@@ -291,7 +300,9 @@ namespace MediaBrowser.Theater.DirectShow
 
                 InvokeOnPlayerThread(() => {
                     DisposePlayer();
-                    _mediaPlayer = new DirectShowPlayer(_logger, _windowManager, this, _presentation.MainApplicationWindowHandle, _sessionManager, _config, _inputManager, _apiClient, _zipClient, _httpClient);
+
+                    var apiClient = _connectionManager.GetApiClient(playableItem.OriginalItem);
+                    _mediaPlayer = new DirectShowPlayer(_logger, _windowManager, this, _presentation.MainApplicationWindowHandle, _sessionManager, _config, _inputManager, apiClient, _zipClient, _httpClient);
 
                     _mediaPlayer.Play(playableItem, enableMadVr, false);
                 }, true);
@@ -307,6 +318,18 @@ namespace MediaBrowser.Theater.DirectShow
             if (startPositionTicks.HasValue && startPositionTicks.Value > 0)
             {
                 InvokeOnPlayerThread(() => _mediaPlayer.Seek(startPositionTicks.Value));
+            }
+
+            if (playableItem.OriginalItem.IsVideo)
+            {
+                var audioIndex = playableItem.MediaSource.DefaultAudioStreamIndex;
+                var subtitleIndex = playableItem.MediaSource.DefaultSubtitleStreamIndex;
+
+                if (audioIndex.HasValue && audioIndex.Value != -1)
+                {
+                    SetAudioStreamIndex(audioIndex.Value);
+                }
+                SetSubtitleStreamIndex(subtitleIndex ?? -1);
             }
 
             if (previousMedia != null)
@@ -344,7 +367,19 @@ namespace MediaBrowser.Theater.DirectShow
                 }
             }
 
-            return PlayablePathBuilder.GetPlayableItem(item, mountedIso, _apiClient, startTimeTicks, _config.Configuration.MaxStreamingBitrate);
+            var apiClient = _connectionManager.GetApiClient(item);
+            var mediaSources = item.MediaSources;
+
+            // If it's a server item
+            if (!string.IsNullOrWhiteSpace(item.Id)) {
+                try {
+                    var result = await apiClient.GetLiveMediaInfo(item.Id, apiClient.CurrentUserId);
+                    mediaSources = result.MediaSources;
+                }
+                catch { }
+            }
+
+            return PlayablePathBuilder.GetPlayableItem(item, mediaSources, mountedIso, apiClient, startTimeTicks, _config.Configuration.MaxStreamingBitrate);
         }
 
         /// <summary>
@@ -428,6 +463,14 @@ namespace MediaBrowser.Theater.DirectShow
                 InvokeOnPlayerThreadAsync(_mediaPlayer.Unpause);
             }
         }
+
+        public void ToggleVideoScaling()
+        {
+            if (_mediaPlayer != null) 
+            {
+                InvokeOnPlayerThreadAsync(() => _mediaPlayer.ToggleVideoScaling());
+            }
+        }
         
         public void Stop()
         {
@@ -494,12 +537,7 @@ namespace MediaBrowser.Theater.DirectShow
             }
 
             DisposePlayer();
-
-            try {
-                await _apiClient.StopTranscodingProcesses(_apiClient.DeviceId);
-            }
-            catch { }
-
+            
             StopTranscoding(media);
 
             var args = new PlaybackStopEventArgs
@@ -520,8 +558,10 @@ namespace MediaBrowser.Theater.DirectShow
         {
             // If streaming video, stop the transcoder
             if (media.IsVideo && media.PlayablePath.IndexOf("://", StringComparison.OrdinalIgnoreCase) != -1) {
+                var apiClient = _connectionManager.GetApiClient(media.OriginalItem);
+
                 try {
-                    await _apiClient.StopTranscodingProcesses(_apiClient.DeviceId);
+                    await apiClient.StopTranscodingProcesses(apiClient.DeviceId);
                 }
                 catch { }
             }

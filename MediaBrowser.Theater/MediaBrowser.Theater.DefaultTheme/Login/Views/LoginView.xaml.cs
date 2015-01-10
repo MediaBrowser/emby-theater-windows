@@ -1,4 +1,5 @@
 ﻿using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace MediaBrowser.Theater.DefaultTheme.Login.Views
 {
@@ -10,6 +11,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Login.Views
         public LoginView()
         {
             InitializeComponent();
+
+            Loaded += (s, e) => MoveFocus(new TraversalRequest(FocusNavigationDirection.First));
         }
     }
 }

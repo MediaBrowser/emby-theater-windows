@@ -15,20 +15,18 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
     public abstract class BaseItemsListSectionGenerator
         : IItemDetailSectionGenerator
     {
-        private readonly IApiClient _apiClient;
+        private readonly IConnectionManager _connectionManager;
         private readonly ISessionManager _sessionManager;
         private readonly IImageManager _imageManager;
         private readonly INavigator _navigator;
-        private readonly IServerEvents _serverEvents;
         private readonly IPlaybackManager _playbackManager;
 
-        protected BaseItemsListSectionGenerator(IApiClient apiClient, ISessionManager sessionManager, IImageManager imageManager, INavigator navigator, IServerEvents serverEvents, IPlaybackManager playbackManager)
+        protected BaseItemsListSectionGenerator(IConnectionManager connectionManager, ISessionManager sessionManager, IImageManager imageManager, INavigator navigator, IPlaybackManager playbackManager)
         {
-            _apiClient = apiClient;
+            _connectionManager = connectionManager;
             _sessionManager = sessionManager;
             _imageManager = imageManager;
             _navigator = navigator;
-            _serverEvents = serverEvents;
             _playbackManager = playbackManager;
 
             ListThreshold = 8;
@@ -53,16 +51,22 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
         protected async Task<IItemDetailSection> GetItemsSection(ItemsResult itemsResult, Func<ItemsResult, bool> listCondition, bool expandSingleItem = true)
         {
+            if (itemsResult.Items.Length == 0) {
+                return null;
+            }
+
+            var apiClient = _connectionManager.GetApiClient(itemsResult.Items[0]);
+
             if (itemsResult.Items.Length == 1 && expandSingleItem && itemsResult.Items[0].IsFolder) {
                 var query = new ItemQuery { ParentId = itemsResult.Items[0].Id, UserId = _sessionManager.CurrentUser.Id };
-                return await GetItemsSection(await _apiClient.GetItemsAsync(query), listCondition);
+                return await GetItemsSection(await apiClient.GetItemsAsync(query), listCondition);
             }
 
             if (listCondition(itemsResult)) {
-                return new ItemsListViewModel(itemsResult, _apiClient, _imageManager, _serverEvents, _navigator, _playbackManager);
+                return new ItemsListViewModel(itemsResult, _connectionManager, _imageManager, _navigator, _playbackManager);
             }
 
-            return new ItemsGridViewModel(itemsResult, _apiClient, _imageManager, _serverEvents, _navigator, _playbackManager);
+            return new ItemsGridViewModel(itemsResult, _connectionManager, _imageManager, _navigator, _playbackManager);
         }
     }
 }

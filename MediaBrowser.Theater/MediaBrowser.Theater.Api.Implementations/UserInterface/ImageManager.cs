@@ -10,8 +10,9 @@ using System.Windows.Media.Imaging;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Extensions;
 using MediaBrowser.Common.IO;
-using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Theater.Api.Configuration;
+using MediaBrowser.Theater.Api.Session;
+using MediaBrowser.Theater.Api.System;
 
 namespace MediaBrowser.Theater.Api.UserInterface
 {
@@ -20,11 +21,7 @@ namespace MediaBrowser.Theater.Api.UserInterface
     /// </summary>
     public class ImageManager : IImageManager
     {
-        /// <summary>
-        ///     The _api client
-        /// </summary>
-        private readonly IApiClient _apiClient;
-
+        private readonly ISessionManager _sessionManager;
         private readonly ITheaterConfigurationManager _config;
 
         /// <summary>
@@ -40,12 +37,12 @@ namespace MediaBrowser.Theater.Api.UserInterface
         /// <summary>
         ///     Initializes a new instance of the <see cref="ImageManager" /> class.
         /// </summary>
-        /// <param name="apiClient">The API client.</param>
+        /// <param name="sessionManager"></param>
         /// <param name="paths">The paths.</param>
         /// <param name="config"></param>
-        public ImageManager(IApiClient apiClient, IApplicationPaths paths, ITheaterConfigurationManager config)
+        public ImageManager(ISessionManager sessionManager, IApplicationPaths paths, ITheaterConfigurationManager config)
         {
-            _apiClient = apiClient;
+            _sessionManager = sessionManager;
             _config = config;
 
             _remoteImageCache = new FileSystemRepository(Path.Combine(paths.CachePath, "remote-images"));
@@ -123,7 +120,10 @@ namespace MediaBrowser.Theater.Api.UserInterface
             string cachePath = _remoteImageCache.GetResourcePath(url.GetMD5().ToString());
 
             try {
-                return GetCachedBitmapImage(cachePath);
+                var result = GetCachedBitmapImage(cachePath);
+                if (result != null) {
+                    return result;
+                }
             }
             catch (IOException) {
                 // Cache file doesn't exist or is currently being written to.
@@ -137,15 +137,17 @@ namespace MediaBrowser.Theater.Api.UserInterface
             // Look in the cache again
             try {
                 BitmapImage img = GetCachedBitmapImage(cachePath);
-                semaphore.Release();
-                return img;
+                if (img != null) {
+                    semaphore.Release();
+                    return img;
+                }
             }
             catch (IOException) {
                 // Cache file doesn't exist or is currently being written to.
             }
 
             try {
-                using (Stream httpStream = await _apiClient.GetImageStreamAsync(url, cancellationToken).ConfigureAwait(false)) {
+                using (Stream httpStream = await _sessionManager.ActiveApiClient.GetImageStreamAsync(url, cancellationToken).ConfigureAwait(false)) {
                     string parentPath = Path.GetDirectoryName(cachePath);
 
                     if (!Directory.Exists(parentPath)) {
@@ -181,20 +183,19 @@ namespace MediaBrowser.Theater.Api.UserInterface
         /// <returns>BitmapImage.</returns>
         private BitmapImage GetCachedBitmapImage(string cachePath)
         {
-            var bitmapImage = new BitmapImage {
-                CacheOption = BitmapCacheOption.OnLoad,
-                UriCachePolicy = new RequestCachePolicy(RequestCacheLevel.CacheIfAvailable)
-            };
+            var bitmapImage = new BitmapImage();
 
-            BitmapScalingMode scalingMode = _config.Configuration.EnableHighQualityImageScaling
-                                                ? BitmapScalingMode.Fant
-                                                : BitmapScalingMode.LowQuality;
+            if (!File.Exists(cachePath)) {
+                return null;
+            }
 
-            RenderOptions.SetBitmapScalingMode(bitmapImage, scalingMode);
+            using (var stream = File.OpenRead(cachePath)) {
+                bitmapImage.BeginInit();
+                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                bitmapImage.StreamSource = stream;
+                bitmapImage.EndInit();
+            }
 
-            bitmapImage.BeginInit();
-            bitmapImage.UriSource = new Uri(cachePath);
-            bitmapImage.EndInit();
             bitmapImage.Freeze();
             return bitmapImage;
         }

@@ -15,21 +15,19 @@ namespace MediaBrowser.Theater.DefaultTheme.SideMenu
         private readonly IPresenter _presenter;
         private readonly ISessionManager _sessionManager;
         private readonly IImageManager _imageManager;
-        private readonly IApiClient _apiClient;
 
-        public SideMenuContext(ITheaterApplicationHost appHost, IPresenter presenter, ISessionManager sessionManager, IImageManager imageManager, IApiClient apiClient)
+        public SideMenuContext(ITheaterApplicationHost appHost, IPresenter presenter, ISessionManager sessionManager, IImageManager imageManager)
             : base(appHost)
         {
             _appHost = appHost;
             _presenter = presenter;
             _sessionManager = sessionManager;
             _imageManager = imageManager;
-            _apiClient = apiClient;
         }
 
         public override Task Activate()
         {
-            var viewModel = new SideMenuViewModel(_appHost, _sessionManager, _imageManager, _apiClient);
+            var viewModel = new SideMenuViewModel(_appHost, _sessionManager, _imageManager);
             _presenter.ShowPopup(viewModel);
 
             return Task.FromResult(0);

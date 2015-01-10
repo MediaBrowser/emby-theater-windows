@@ -1,7 +1,11 @@
-﻿using System.Windows;
+﻿using System;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using Microsoft.Expression.Media.Effects;
@@ -11,14 +15,15 @@ namespace MediaBrowser.Theater.Presentation.Controls
     /// <summary>
     /// http://victorcher.blogspot.com/2012/02/wpf-transactions.html
     /// </summary>
-    [TemplatePart(Name = "PART_ContentPresenter", Type = typeof (ContentPresenter))]
+    [TemplatePart(Name = "PART_ActiveContentPresenter", Type = typeof (ContentPresenter))]
+    [TemplatePart(Name = "PART_TransitionContentPresenter", Type = typeof(ContentPresenter))]
     public class ExtendedContentControl
         : ContentControl
     {
-        /// <summary>
-        ///     The _content presenter
-        /// </summary>
-        private ContentPresenter _contentPresenter;
+        private ContentPresenter _activeContentPresenter;
+        private ContentPresenter _transitionContentPresenter;
+
+        private readonly SerialTaskQueue _taskQueue;
 
         /// <summary>
         ///     Initializes static members of the <see cref="ExtendedContentControl" /> class.
@@ -29,12 +34,27 @@ namespace MediaBrowser.Theater.Presentation.Controls
             ContentProperty.OverrideMetadata(typeof (ExtendedContentControl), new FrameworkPropertyMetadata(OnContentPropertyChanged));
         }
 
-        private ContentPresenter ContentPresenter
+        public ExtendedContentControl()
         {
-            get { return _contentPresenter; }
+            _taskQueue = new SerialTaskQueue();
+        }
+
+        private ContentPresenter ActiveContentPresenter
+        {
+            get { return _activeContentPresenter; }
             set
             {
-                _contentPresenter = value;
+                _activeContentPresenter = value;
+                SetContent(Content);
+            }
+        }
+
+        private ContentPresenter TransitionContentPresenter
+        {
+            get { return _transitionContentPresenter; }
+            set
+            {
+                _transitionContentPresenter = value;
                 SetContent(Content);
             }
         }
@@ -89,7 +109,8 @@ namespace MediaBrowser.Theater.Presentation.Controls
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-            ContentPresenter = GetTemplateChild("PART_ContentPresenter") as ContentPresenter;
+            ActiveContentPresenter = GetTemplateChild("PART_ActiveContentPresenter") as ContentPresenter;
+            TransitionContentPresenter = GetTemplateChild("PART_TransitionContentPresenter") as ContentPresenter;
         }
 
         /// <summary>
@@ -105,74 +126,170 @@ namespace MediaBrowser.Theater.Presentation.Controls
             control.SetContent(content);
         }
 
-        private async void SetContent(object content)
+        private void SetContent(object content)
         {
-            if (ContentPresenter == null) {
+//            _taskQueue.Enqueue(async () => {
+//                Task task = null;
+//                Action action = () => task = ChangeContent(content);
+//                await action.OnUiThreadAsync();
+//                await task;
+//            });
+            ChangeContent(content);
+        }
+
+        private async Task ChangeContent(object content)
+        {
+            if (ActiveContentPresenter == null) {
                 return;
             }
+
+            var oldContentTransition = TransitionOffCurrentContent();
 
             var initializable = content as IRequiresInitialization;
             if (initializable != null && !initializable.IsInitialized) {
                 await initializable.Initialize();
             }
 
-            if (Content == content) {
-                var currentActivatable = _contentPresenter.Content as IHasActivityStatus;
-                if (currentActivatable != null) {
-                    currentActivatable.IsActive = false;
-                }
-
-                var activatable = content as IHasActivityStatus;
-                if (activatable != null) {
-                    activatable.IsActive = true;
-                }
-
-                ChangeDisplayedContent(content);
+            var hasActivity = content as IHasActivityStatus;
+            if (hasActivity != null) {
+                hasActivity.IsActive = true;
             }
+
+            var newContentTransition = TransitionOnNewContent(content);
+
+            await oldContentTransition;
+            await newContentTransition;
         }
 
-        private void ChangeDisplayedContent(object content)
+        private Task TransitionOffCurrentContent()
         {
-            if (_contentPresenter.Content == null) {
-                _contentPresenter.Content = content;
-                return;
+            var hasActivity = ActiveContentPresenter.Content as IHasActivityStatus;
+            if (hasActivity != null) {
+                hasActivity.IsActive = false;
             }
 
-            FrameworkElement oldContentVisual;
-
-            try {
-                oldContentVisual = VisualTreeHelper.GetChild(_contentPresenter, 0) as FrameworkElement;
-            }
-            catch {
-                _contentPresenter.Content = content;
-                return;
-            }
-
-            TransitionEffect transitionEffect = TransitionType;
-            int renderingTier = (RenderCapability.Tier >> 16);
-
-            if (renderingTier < 2 || transitionEffect == null) {
-                _contentPresenter.Content = content;
-                return;
+            if (TransitionContentPresenter == null ||
+                TransitionAnimation == null ||
+                TransitionType == null ||
+                VisualTreeHelper.GetChildrenCount(ActiveContentPresenter) == 0) 
+            {
+                ActiveContentPresenter.Content = null;
+                return Task.FromResult<object>(null);
             }
 
-            transitionEffect = (TransitionEffect) transitionEffect.Clone();
+            var content = VisualTreeHelper.GetChild(ActiveContentPresenter, 0) as FrameworkElement;
+            if (content == null) {
+                return Task.FromResult<object>(null);
+            }
+
+            var bmp = new RenderTargetBitmap((int) ActiveContentPresenter.ActualWidth,
+                                             (int) ActiveContentPresenter.ActualHeight,
+                                             96, 96, PixelFormats.Pbgra32);
+
+            bmp.Render(content);
+
+            var taskSource = new TaskCompletionSource<object>();
+
+            var transitionEffect = (TransitionEffect)TransitionType.Clone();
 
             DoubleAnimation da = TransitionAnimation.Clone();
             da.From = 0;
             da.To = 1;
             da.FillBehavior = FillBehavior.HoldEnd;
-            da.Completed += (s, e) => {
-                if (_contentPresenter.Effect == transitionEffect) {
-                    _contentPresenter.Effect = null;
+            da.Completed += (s, e) =>
+            {
+                if (TransitionContentPresenter.Effect == transitionEffect) {
+                    TransitionContentPresenter.Effect = null;
                 }
+
+                taskSource.SetResult(null);
             };
 
-            transitionEffect.OldImage = new VisualBrush(oldContentVisual);
+            transitionEffect.OldImage = new ImageBrush(bmp);
             transitionEffect.BeginAnimation(TransitionEffect.ProgressProperty, da);
 
-            _contentPresenter.Effect = transitionEffect;
-            _contentPresenter.Content = content;
+            TransitionContentPresenter.Effect = transitionEffect;
+            TransitionContentPresenter.Content = new Rectangle { Width = bmp.Width, Height = bmp.Height, Fill = new SolidColorBrush(Colors.Transparent) };
+            ActiveContentPresenter.Content = null;
+            
+            return taskSource.Task;
         }
+
+        private Task TransitionOnNewContent(object content)
+        {
+            ActiveContentPresenter.Content = content;
+
+            if (TransitionAnimation == null || TransitionType == null || content == null) {
+                return Task.FromResult<object>(null);
+            }
+
+            var taskSource = new TaskCompletionSource<object>();
+
+            var transitionEffect = (TransitionEffect)TransitionType.Clone();
+
+            DoubleAnimation da = TransitionAnimation.Clone();
+            da.From = 0;
+            da.To = 1;
+            da.FillBehavior = FillBehavior.HoldEnd;
+            da.Completed += (s, e) =>
+            {
+                if (ActiveContentPresenter.Effect == transitionEffect) {
+                    ActiveContentPresenter.Effect = null;
+                }
+
+                taskSource.SetResult(null);
+            };
+
+            transitionEffect.OldImage = new VisualBrush(new Grid());
+            transitionEffect.BeginAnimation(TransitionEffect.ProgressProperty, da);
+
+            ActiveContentPresenter.Effect = transitionEffect;
+
+            return taskSource.Task;
+        }
+
+//        private void ChangeDisplayedContent(object content)
+//        {
+//            if (_activeContentPresenter.Content == null) {
+//                _activeContentPresenter.Content = content;
+//                return;
+//            }
+//
+//            FrameworkElement oldContentVisual;
+//
+//            try {
+//                oldContentVisual = VisualTreeHelper.GetChild(_activeContentPresenter, 0) as FrameworkElement;
+//            }
+//            catch {
+//                _activeContentPresenter.Content = content;
+//                return;
+//            }
+//
+//            TransitionEffect transitionEffect = TransitionType;
+//            int renderingTier = (RenderCapability.Tier >> 16);
+//
+//            if (renderingTier < 2 || transitionEffect == null) {
+//                _activeContentPresenter.Content = content;
+//                return;
+//            }
+//
+//            transitionEffect = (TransitionEffect) transitionEffect.Clone();
+//
+//            DoubleAnimation da = TransitionAnimation.Clone();
+//            da.From = 0;
+//            da.To = 1;
+//            da.FillBehavior = FillBehavior.HoldEnd;
+//            da.Completed += (s, e) => {
+//                if (_activeContentPresenter.Effect == transitionEffect) {
+//                    _activeContentPresenter.Effect = null;
+//                }
+//            };
+//
+//            transitionEffect.OldImage = new VisualBrush(oldContentVisual);
+//            transitionEffect.BeginAnimation(TransitionEffect.ProgressProperty, da);
+//
+//            _activeContentPresenter.Effect = transitionEffect;
+//            _activeContentPresenter.Content = content;
+//        }
     }
 }

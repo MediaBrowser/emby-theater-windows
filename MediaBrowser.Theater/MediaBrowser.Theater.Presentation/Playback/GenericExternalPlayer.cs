@@ -507,6 +507,10 @@ namespace MediaBrowser.Theater.Presentation.Playback
             throw new NotImplementedException();
         }
 
+        public void ToggleVideoScaling()
+        {
+        }
+
         /// <summary>
         /// Gets the process start info.
         /// </summary>

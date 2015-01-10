@@ -1,49 +1,62 @@
 ﻿using System;
 using System.Threading.Tasks;
+using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Configuration;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Theater.Api.Configuration;
 
 namespace MediaBrowser.Theater.Api.Session
 {
     /// <summary>
-    ///     Interface ISessionManager
+    /// Interface ISessionManager
     /// </summary>
     public interface ISessionManager
     {
         /// <summary>
-        ///     Gets the current user.
+        /// Occurs when [user logged in].
+        /// </summary>
+        event EventHandler<EventArgs> UserLoggedIn;
+        /// <summary>
+        /// Occurs when [user logged out].
+        /// </summary>
+        event EventHandler<EventArgs> UserLoggedOut;
+
+        /// <summary>
+        /// Gets the current user.
         /// </summary>
         /// <value>The current user.</value>
         UserDto CurrentUser { get; }
 
         /// <summary>
-        ///     Occurs when [user logged in].
-        /// </summary>
-        event EventHandler<EventArgs> UserLoggedIn;
-
-        /// <summary>
-        ///     Occurs when [user logged out].
-        /// </summary>
-        event EventHandler<EventArgs> UserLoggedOut;
-
-        /// <summary>
-        ///     Logouts this instance.
+        /// Logouts this instance.
         /// </summary>
         Task Logout();
 
         /// <summary>
-        ///     Logins the specified user.
+        /// Logins the specified user.
         /// </summary>
         /// <param name="username">The username.</param>
         /// <param name="password">The password.</param>
-        /// <param name="rememberCredentials"><c>true</c> if login credentials should be saved; else <c>false</c>.</param>
+        /// <param name="rememberCredentials">if set to <c>true</c> [remember credentials].</param>
         /// <returns>Task.</returns>
-        Task Login(string username, string password, bool rememberCredentials);
+        Task LoginToServer(string username, string password, bool rememberCredentials);
 
         /// <summary>
-        /// Validates the saved login.
+        /// Gets or sets the active API client.
         /// </summary>
-        /// <param name="configuration">The auto login configuration.</param>
-        Task ValidateSavedLogin(AutoLoginConfiguration configuration);
+        /// <value>The active API client.</value>
+        IApiClient ActiveApiClient { get; }
+
+        string LocalUserId { get; }
+
+        string ConnectUserId { get; }
+
+        string UserName { get; }
+
+        string UserImageUrl { get; }
+
+        UserConfiguration UserConfiguration { get; }
+
+        bool IsUserSignedIn { get; }
     }
 }

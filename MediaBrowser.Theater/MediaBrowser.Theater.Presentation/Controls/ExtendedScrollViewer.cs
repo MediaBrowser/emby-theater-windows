@@ -15,6 +15,11 @@ namespace MediaBrowser.Theater.Presentation.Controls
     {
         public bool IgnoreAllDirectionKeys { get; set; }
 
+        public ExtendedScrollViewer()
+        {
+            PanningMode = PanningMode.HorizontalOnly;
+        }
+
         /// <summary>
         /// Responds to specific keyboard input and invokes associated scrolling behavior.
         /// </summary>

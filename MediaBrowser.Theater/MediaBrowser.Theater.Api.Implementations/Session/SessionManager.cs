@@ -1,223 +1,172 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using MediaBrowser.Common.Events;
 using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Configuration;
+using MediaBrowser.Model.Connect;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Net;
-using MediaBrowser.Model.System;
-using MediaBrowser.Model.Users;
 using MediaBrowser.Theater.Api.Configuration;
 using MediaBrowser.Theater.Api.Navigation;
-using MediaBrowser.Theater.Api.Networking;
 using MediaBrowser.Theater.Api.Playback;
-using MediaBrowser.Theater.Api.UserInterface;
 
 namespace MediaBrowser.Theater.Api.Session
 {
     public class SessionManager : ISessionManager
     {
-        private readonly IApiClient _apiClient;
-        private readonly ITheaterConfigurationManager _config;
-        private readonly ILogger _logger;
-        private readonly INavigator _navService;
-        private readonly IPresenter _presenter;
-//        private readonly IPlaybackManager _playback;
-
-        public SessionManager(INavigator navService, IPresenter presenter, IApiClient apiClient, ILogger logger, ITheaterConfigurationManager config) //, IPlaybackManager playback)
-        {
-            _navService = navService;
-            _presenter = presenter;
-            _apiClient = apiClient;
-            _logger = logger;
-            _config = config;
-//            _playback = playback;
-        }
-
-        /// <summary>
-        ///     TODO: Create an ITheaterAppHost and add this property to it
-        /// </summary>
-        private Version RequiredServerVersion
-        {
-            get { return Version.Parse("3.0.5340.21263"); }
-        }
-
         public event EventHandler<EventArgs> UserLoggedIn;
 
         public event EventHandler<EventArgs> UserLoggedOut;
 
-        public UserDto CurrentUser { get; private set; }
+        private readonly INavigator _navService;
+        private readonly ILogger _logger;
+        private readonly ITheaterConfigurationManager _config;
+        private readonly IPlaybackManager _playback;
+        private readonly IConnectionManager _connectionManager;
+        private UserDto _currentUser;
+
+        public SessionManager(INavigator navService, ILogger logger, ITheaterConfigurationManager config, IPlaybackManager playback, IConnectionManager connectionManager)
+        {
+            _navService = navService;
+            _logger = logger;
+            _config = config;
+            _playback = playback;
+            _connectionManager = connectionManager;
+
+            _connectionManager.LocalUserSignIn += (s, e) => CurrentUser = e.Argument;
+            _connectionManager.LocalUserSignOut += (s, e) => CurrentUser = null;
+            _connectionManager.ConnectUserSignIn += (s, e) => ConnectUser = e.Argument;
+            _connectionManager.ConnectUserSignOut += (s, e) => ConnectUser = null;
+            _connectionManager.RemoteLoggedOut += (s, e) => playback.StopAllPlayback();
+        }
+        
+        public UserDto CurrentUser
+        {
+            get { return _currentUser; }
+            private set
+            {
+                if (Equals(_currentUser, value)) {
+                    return;
+                }
+
+                var previous = _currentUser;
+                _currentUser = value;
+
+                if (previous != null) {
+                    EventHelper.FireEventIfNotNull(UserLoggedOut, this, EventArgs.Empty, _logger);
+                }
+
+                if (_currentUser != null) {
+                    EventHelper.FireEventIfNotNull(UserLoggedIn, this, EventArgs.Empty, _logger);
+                }
+            }
+        }
+
+        public ConnectUser ConnectUser { get; private set; }
+
+        public IApiClient ActiveApiClient
+        {
+            get
+            {
+                return _connectionManager.CurrentApiClient;
+            }
+        }
 
         public async Task Logout()
         {
-//            _playback.StopAllPlayback();
-
-            await _apiClient.Logout();
-
-            UserDto previous = CurrentUser;
-
-            CurrentUser = null;
-
-            if (previous != null) {
-                EventHelper.FireEventIfNotNull(UserLoggedOut, this, EventArgs.Empty, _logger);
-            }
-
-            //Clear auto login info
-            _config.Configuration.AutoLoginConfiguration = new AutoLoginConfiguration();
-            _config.SaveConfiguration();
-
-            if (!(_navService.CurrentLocation is LoginPath)) {
-                await _navService.Navigate(Go.To.Login());
-                _navService.ClearNavigationHistory();
-            }
+            _playback.StopAllPlayback();
+            await _connectionManager.Logout();
         }
 
-        public async Task Login(string username, string password, bool rememberCredentials)
+        public async Task LoginToServer(string username, string password, bool rememberCredentials)
         {
+            var apiClient = ActiveApiClient;
+
             //Check just in case
-            if (password == null) {
+            if (password == null)
+            {
                 password = string.Empty;
             }
-
-            //Compute hash then pass to main login routine
-            byte[] hash = ComputeHash(password);
-            await InternalLogin(username, hash, rememberCredentials);
-        }
-
-        protected byte[] ComputeHash(string data)
-        {
-            using (SHA1 provider = SHA1.Create()) {
-                byte[] hash = provider.ComputeHash(Encoding.UTF8.GetBytes(data ?? string.Empty));
-                return hash;
-            }
-        }
-
-        protected async Task InternalLogin(string username, byte[] hash, bool rememberLogin)
-        {
-            try {
-                AuthenticationResult result = await _apiClient.AuthenticateUserAsync(username, hash);
-
-                CurrentUser = result.User;
-                _apiClient.SetAuthenticationInfo(result.AccessToken, result.User.Id);
-
-                UpdateSavedLogin(result.AccessToken, result.User.Id, result.ServerId, rememberLogin);
-            } catch (HttpException ex) {
-                throw new UnauthorizedAccessException("Invalid username or password. Please try again.");
-            }
-
-            AfterLogin();
-        }
-
-        private void UpdateSavedLogin(string accessToken, string userId, string serverId, bool remember)
-        {
-            //Save details if we need to 
-            if (remember)
-            {
-                _config.Configuration.AutoLoginConfiguration.UserId = userId;
-                _config.Configuration.AutoLoginConfiguration.AccessToken = accessToken;
-                _config.Configuration.AutoLoginConfiguration.ServerId = serverId;
-                _config.SaveConfiguration();
-            }
-            else
-            {
-                _config.Configuration.AutoLoginConfiguration = new AutoLoginConfiguration();
-                _config.SaveConfiguration();
-            }
-        }
-
-        public async Task ValidateSavedLogin(AutoLoginConfiguration configuration)
-        {
-            if (string.IsNullOrEmpty(configuration.AccessToken) ||
-                string.IsNullOrEmpty(configuration.ServerId) ||
-                string.IsNullOrEmpty(configuration.UserId))
-            {
-                _apiClient.ClearAuthenticationInfo();
-
-                throw new UnauthorizedAccessException();
-            }
-
-            _apiClient.SetAuthenticationInfo(configuration.AccessToken, configuration.UserId);
+            
+            _connectionManager.SaveLocalCredentials = rememberCredentials;
 
             try
             {
-                CurrentUser = await _apiClient.GetUserAsync(configuration.UserId);
+                var result = await apiClient.AuthenticateUserAsync(username, password);
+                CurrentUser = result.User;
             }
-            catch (Exception ex)
+            catch (HttpException ex)
             {
-                _apiClient.ClearAuthenticationInfo();
-
-                throw;
+                throw new UnauthorizedAccessException("Invalid username or password. Please try again.");
             }
 
             await AfterLogin();
         }
-
+        
         private async Task AfterLogin()
         {
-            EventHelper.FireEventIfNotNull(UserLoggedIn, this, EventArgs.Empty, _logger);
-
-            await UpdateWolInfo();
-
             await _navService.Navigate(Go.To.Home());
             _navService.ClearNavigationHistory();
         }
 
-        private async Task UpdateWolInfo()
+        public string LocalUserId
         {
-            var systemInfo = await _apiClient.GetSystemInfoAsync(CancellationToken.None);
+            get { return CurrentUser == null ? null : CurrentUser.Id; }
+        }
 
-            //Check WOL config
-            if (_config.Configuration.WakeOnLanConfiguration == null)
+        public string ConnectUserId
+        {
+            get { return ConnectUser == null ? null : ConnectUser.Id; }
+        }
+
+        public string UserName
+        {
+            get
             {
-                _config.Configuration.WakeOnLanConfiguration = new WolConfiguration
+                return CurrentUser == null ?
+                    (ConnectUser == null ? null : ConnectUser.Name) :
+                    CurrentUser.Name;
+            }
+        }
+
+        public string UserImageUrl
+        {
+            get
+            {
+                return CurrentUser == null ?
+                    (ConnectUser == null ? null : ConnectUser.ImageUrl) :
+                    GetLocalUserImageUrl();
+            }
+        }
+
+        public UserConfiguration UserConfiguration
+        {
+            get
+            {
+                return CurrentUser == null ?
+                    (ConnectUser == null ? null : new UserConfiguration()) :
+                    CurrentUser.Configuration;
+            }
+        }
+
+        public bool IsUserSignedIn
+        {
+            get { return CurrentUser != null || ConnectUser != null; }
+        }
+
+        private string GetLocalUserImageUrl()
+        {
+            if (CurrentUser != null && CurrentUser.HasPrimaryImage)
+            {
+                return ActiveApiClient.GetUserImageUrl(CurrentUser, new ImageOptions
                 {
-                    Port = 9,
-                    HostMacAddresses = new List<string>(),
-                    HostIpAddresses = new List<string>(),
-                    WakeAttempts = 1
-                };
-                _config.SaveConfiguration();
+
+                });
             }
 
-            var wolConfig = _config.Configuration.WakeOnLanConfiguration;
-
-            try
-            {
-                var uri = new Uri(_apiClient.ServerAddress);
-                var host = uri.Host;
-
-                var currentIpAddresses = await NetworkUtils.ResolveIpAddressesForHostName(host);
-
-                var hasChanged = currentIpAddresses.Any(currentIpAddress => wolConfig.HostIpAddresses.All(x => x != currentIpAddress));
-
-                if (!hasChanged)
-                    hasChanged = wolConfig.HostIpAddresses.Any(hostIpAddress => currentIpAddresses.All(x => x != hostIpAddress));
-
-                if (hasChanged)
-                {
-                    wolConfig.HostMacAddresses =
-                        await NetworkUtils.ResolveMacAddressesForHostName(host);
-
-                    wolConfig.HostIpAddresses = currentIpAddresses;
-
-                    //Always add system info MAC address in case we are in a WAN setting
-                    if (!wolConfig.HostMacAddresses.Contains(systemInfo.MacAddress))
-                        wolConfig.HostMacAddresses.Add(systemInfo.MacAddress);
-
-                    wolConfig.HostName = host;
-
-                    _config.SaveConfiguration();
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.ErrorException("Error attempting to configure WOL.", ex);
-            }
+            return null;
         }
     }
 }

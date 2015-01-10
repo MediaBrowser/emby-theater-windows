@@ -76,6 +76,8 @@ namespace MediaBrowser.Theater.Presentation.Controls
             _transform = new TranslateTransform();
             _toBeArranged = new List<UIElement>();
             RenderTransform = _transform;
+
+            Loaded += (e, s) => EnableSmoothScrolling();
         }
 
         private void EnableSmoothScrolling()

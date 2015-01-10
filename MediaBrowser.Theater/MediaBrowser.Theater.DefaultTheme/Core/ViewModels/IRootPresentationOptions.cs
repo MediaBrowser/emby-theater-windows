@@ -17,6 +17,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
         private bool _showClock;
         private string _title;
         private bool _isFullScreenPage;
+        private double _playbackBackgroundOpacity;
 
         public bool IsFullScreenPage
         {
@@ -88,12 +89,27 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
             }
         }
 
+        public double PlaybackBackgroundOpacity
+        {
+            get { return _playbackBackgroundOpacity; }
+            set
+            {
+                if (value.Equals(_playbackBackgroundOpacity)) {
+                    return;
+                }
+
+                _playbackBackgroundOpacity = value;
+                OnPropertyChanged();
+            }
+        }
+
         public RootPresentationOptions()
         {
             ShowMediaBrowserLogo = true;
             ShowCommandBar = true;
             ShowClock = true;
             Title = null;
+            PlaybackBackgroundOpacity = 0.7;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

@@ -18,7 +18,7 @@ namespace MediaBrowser.Theater.Api.UserInterface
         {
             _dispatcher = Dispatcher.CurrentDispatcher;
         }
-
+        
         /// <summary>
         ///     Executes the specified action on the UI thread.
         /// </summary>
@@ -57,6 +57,37 @@ namespace MediaBrowser.Theater.Api.UserInterface
                 {
                     action();
                     completionSource.SetResult(null);
+                }
+                catch (Exception e)
+                {
+                    completionSource.SetException(e);
+                }
+            };
+
+            Dispatcher.BeginInvoke(wrapper);
+            return completionSource.Task;
+        }
+
+        /// <summary>
+        ///     Asynchronously executes the specified action on the UI thread.
+        /// </summary>
+        /// <param name="action">The action to execute.</param>
+        /// <returns>A task representing the asychronous operation.</returns>
+        public static Task<T> OnUiThreadAsync<T>(this Func<T> action)
+        {
+            if (Dispatcher == null || Dispatcher.CheckAccess()) {
+                var result = action();
+                return Task.FromResult(result);
+            }
+
+            var completionSource = new TaskCompletionSource<T>();
+
+            Action wrapper = () =>
+            {
+                try
+                {
+                    var result = action();
+                    completionSource.SetResult(result);
                 }
                 catch (Exception e)
                 {

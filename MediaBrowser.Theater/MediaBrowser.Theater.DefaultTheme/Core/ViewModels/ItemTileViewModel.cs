@@ -20,22 +20,20 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
     public class ItemTileViewModel
         : BaseViewModel, IKnownSize
     {
-        private readonly IImageManager _imageManager;
-        private readonly INavigator _navigator;
         private BaseItemDto _item;
+        private readonly IConnectionManager _connectionManager;
         private readonly IPlaybackManager _playbackManager;
 
         private bool? _showHeader;
 
-        public ItemTileViewModel(IApiClient apiClient, IImageManager imageManager, IServerEvents serverEvents,
+        public ItemTileViewModel(IConnectionManager connectionManager, IImageManager imageManager,
                                  INavigator navigator, IPlaybackManager playbackManager, BaseItemDto item)
         {
-            _imageManager = imageManager;
-            _navigator = navigator;
+            _connectionManager = connectionManager;
             _playbackManager = playbackManager;
             _item = item;
 
-            Image = new ItemArtworkViewModel(item, apiClient, imageManager);
+            Image = new ItemArtworkViewModel(item, connectionManager, imageManager);
             Image.PreferredImageTypes = new[] { ImageType.Primary, ImageType.Thumb, ImageType.Backdrop };
             Image.EnforcePreferredImageAspectRatio = true;
             Image.PropertyChanged += (senger, args) => {
@@ -46,10 +44,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
             };
 
             DisplayNameGenerator = GetDisplayNameWithAiredSpecial;
-            GoToDetailsCommand = new RelayCommand(async o => navigator.Navigate(Go.To.Item(Item)));
+            GoToDetailsCommand = new RelayCommand(o => navigator.Navigate(Go.To.Item(Item)));
             PlayCommand = new RelayCommand(o => _playbackManager.Play(new PlayOptions(Item) { GoFullScreen = true, EnableCustomPlayers = true, Resume = true }));
-
-            serverEvents.UserDataChanged += serverEvents_UserDataChanged;
         }
 
         public BaseItemDto Item
@@ -61,7 +57,18 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
                     return;
                 }
 
+                if (_item != null) {
+                    var apiClient = _connectionManager.GetApiClient(_item);
+                    apiClient.UserDataChanged -= serverEvents_UserDataChanged;
+                }
+
                 _item = value;
+
+                if (_item != null) {
+                    var apiClient = _connectionManager.GetApiClient(_item);
+                    apiClient.UserDataChanged += serverEvents_UserDataChanged;
+                }
+
                 OnPropertyChanged();
                 RefreshItemFields();
                 Image.Item = value;

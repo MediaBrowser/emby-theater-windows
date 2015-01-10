@@ -11,6 +11,8 @@ using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Querying;
+using MediaBrowser.Theater.Api;
+using MediaBrowser.Theater.Api.Library;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.Session;
@@ -26,23 +28,21 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
     public class MovieSpotlightViewModel
         : BaseViewModel, IKnownSize, IHomePage
     {
-        private readonly IApiClient _apiClient;
         private readonly IImageManager _imageManager;
         private readonly ILogger _logger;
         private readonly double _miniSpotlightWidth;
         private readonly INavigator _navigator;
+        private readonly IConnectionManager _connectionManager;
         private readonly IPlaybackManager _playbackManager;
-        private readonly IServerEvents _serverEvents;
         private readonly ISessionManager _sessionManager;
         private CancellationTokenSource _mainViewCancellationTokenSource;
 
-        public MovieSpotlightViewModel(BaseItemDto movieFolder, IImageManager imageManager, INavigator navigator, IApiClient apiClient, IServerEvents serverEvents,
+        public MovieSpotlightViewModel(BaseItemDto movieFolder, IImageManager imageManager, INavigator navigator, IConnectionManager connectionManager,
                                        IPlaybackManager playbackManager, ISessionManager sessionManager, ILogManager logManager)
         {
             _imageManager = imageManager;
             _navigator = navigator;
-            _apiClient = apiClient;
-            _serverEvents = serverEvents;
+            _connectionManager = connectionManager;
             _playbackManager = playbackManager;
             _sessionManager = sessionManager;
             _logger = logManager.GetLogger("Movies Spotlight");
@@ -58,8 +58,12 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
 
             BrowseMoviesCommand = new RelayCommand(arg => {
                 var itemParams = new ItemListParameters { 
-                    Items = GetChildren(movieFolder, excludeItemTypes: new[] { "Playlist" }),
-                    Title = "Browse Movies"
+                    Title = "Browse Movies",
+                    ForceShowItemNames = true,
+                    Items = ItemChildren.Get(connectionManager, sessionManager, movieFolder, new ChildrenQueryParams {
+                        ExpandSingleItems = true,
+                        ExcludeItemTypes = new[] { "Playlist" }
+                    })
                 };
 
                 navigator.Navigate(Go.To.ItemList(itemParams));
@@ -67,14 +71,16 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
 
             PlaylistsCommand = new RelayCommand(arg => {
                 var itemParams = new ItemListParameters {
-                    Items = GetChildren(movieFolder, new[] { "Playlist" }),
-                    Title = "Movie Playlists"
+                    Title = "Movie Playlists",
+                    Items = ItemChildren.Get(connectionManager, sessionManager, movieFolder, new ChildrenQueryParams {
+                        IncludeItemTypes = new[] { "Playlist" }
+                    })
                 };
 
                 navigator.Navigate(Go.To.ItemList(itemParams));
             });
 
-            SpotlightViewModel = new ItemSpotlightViewModel(imageManager, apiClient) {
+            SpotlightViewModel = new ItemSpotlightViewModel(imageManager, connectionManager) {
                 ImageType = ImageType.Backdrop,
                 ItemSelectedAction = i => navigator.Navigate(Go.To.Item(i))
             };
@@ -91,33 +97,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
 
             LoadViewModels(movieFolder);
         }
-
-        private Task<ItemsResult> GetChildren(BaseItemDto item, string[] includeItemTypes = null, string[] excludeItemTypes = null) 
-        {
-            var query = new ItemQuery {
-                UserId = _sessionManager.CurrentUser.Id,
-                ParentId = item.Id,
-                IncludeItemTypes = includeItemTypes,
-                ExcludeItemTypes = excludeItemTypes,
-                SortBy = new[] { ItemSortBy.SortName },
-                Fields = QueryFields,
-                Recursive = true
-            };
-
-            return _apiClient.GetItemsAsync(query);
-        }
-
-        public static ItemFields[] QueryFields = new[]
-            {
-                ItemFields.PrimaryImageAspectRatio,
-                ItemFields.DateCreated,
-                ItemFields.MediaStreams,
-                ItemFields.Taglines,
-                ItemFields.Genres,
-                ItemFields.Overview,
-                ItemFields.DisplayPreferencesId
-            };
-
+        
         public double SpotlightWidth { get; private set; }
         public double SpotlightHeight { get; private set; }
 
@@ -141,7 +121,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
         {
             get
             {
-                return new Size(SpotlightWidth + _miniSpotlightWidth + 4*HomeViewModel.TileMargin + HomeViewModel.SectionSpacing,
+                int hasMiniSpotlights = MiniSpotlightItems.Count > 0 ? 1 : 0;
+                return new Size(SpotlightWidth + _miniSpotlightWidth * hasMiniSpotlights + 4 * HomeViewModel.TileMargin + HomeViewModel.SectionSpacing,
                                 SpotlightHeight + HomeViewModel.TileHeight + 4*HomeViewModel.TileMargin);
             }
         }
@@ -167,18 +148,20 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
             try {
                 cancellationSource.Token.ThrowIfCancellationRequested();
 
-                var spotlight = await _apiClient.GetItemsAsync(new ItemQuery {
-                    UserId = _sessionManager.CurrentUser.Id,
-                    ParentId = movieFolder.Id,
-                    IsPlayed = false,
+                var spotlight = await ItemChildren.Get(_connectionManager, _sessionManager, movieFolder, new ChildrenQueryParams {
+                    Filters = new[] { ItemFilter.IsUnplayed},
                     SortBy = new[] { ItemSortBy.CommunityRating },
+                    IncludeItemTypes = new [] { "Movie" },
                     SortOrder = SortOrder.Descending,
                     Limit = 20,
                     Recursive = true
                 });
 
                 if (spotlight.TotalRecordCount < 10) {
-                    spotlight = await GetChildren(movieFolder);
+                    spotlight = await ItemChildren.Get(_connectionManager, _sessionManager, movieFolder, new ChildrenQueryParams {
+                        IncludeItemTypes = new[] { "Movie" },
+                        Recursive = true
+                    });
                 }
 
                 LoadSpotlightViewModel(spotlight);
@@ -195,7 +178,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
 
         private ItemTileViewModel CreateMiniSpotlightItem()
         {
-            return new ItemTileViewModel(_apiClient, _imageManager, _serverEvents, _navigator,  _playbackManager, null) {
+            return new ItemTileViewModel(_connectionManager, _imageManager, _navigator,  _playbackManager, null) {
                 DesiredImageWidth = _miniSpotlightWidth,
                 DesiredImageHeight = HomeViewModel.TileHeight,
                 PreferredImageTypes = new[] { ImageType.Backdrop, ImageType.Thumb }
@@ -204,8 +187,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
 
         private async Task LoadMiniSpotlightsViewModel(ItemsResult spotlightItems)
         {
-            var rnd = new Random();
-            BaseItemDto[] items = spotlightItems.Items.Skip(5).OrderBy(i => rnd.Next()).Take(3).ToArray();
+            BaseItemDto[] items = spotlightItems.Items.Skip(5).Shuffle().Take(3).ToArray();
 
             for (int i = 0; i < items.Length; i++) {
                 if (MiniSpotlightItems.Count > i) {
@@ -222,27 +204,33 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies
                 List<ItemTileViewModel> toRemove = MiniSpotlightItems.Skip(items.Length).ToList();
                 MiniSpotlightItems.RemoveRange(toRemove);
             }
+
+            OnPropertyChanged("Size");
         }
 
-        private void LoadSpotlightViewModel(ItemsResult spotlightItemsw)
+        private void LoadSpotlightViewModel(ItemsResult spotlightItems)
         {
-            SpotlightViewModel.Items = spotlightItemsw.Items.Take(5);
+            SpotlightViewModel.Items = spotlightItems.Items.Take(5).Shuffle();
         }
 
         private async Task LoadAllMoviesViewModel(BaseItemDto movieFolder)
         {
-            var items = await GetChildren(movieFolder);
+            var items = await ItemChildren.Get(_connectionManager, _sessionManager, movieFolder, new ChildrenQueryParams {
+                Recursive = true,
+                IncludeItemTypes = new[] { "Movie" }
+            });
 
+            var apiClient = _connectionManager.GetApiClient(movieFolder);
             IEnumerable<string> images = items.Items
                                               .Where(i => i.BackdropImageTags.Any())
-                                              .Select(i => _apiClient.GetImageUrl(i.Id, new ImageOptions {
+                                              .Select(i => apiClient.GetImageUrl(i.Id, new ImageOptions {
                                                   ImageType = ImageType.Backdrop,
                                                   Tag = i.BackdropImageTags.First(),
                                                   Width = Convert.ToInt32(HomeViewModel.TileWidth*2),
                                                   EnableImageEnhancers = false
                                               }));
-
-            AllMoviesImagesViewModel.Images.AddRange(images);
+            
+            AllMoviesImagesViewModel.Images.AddRange(images.Shuffle());
             AllMoviesImagesViewModel.StartRotating();
         }
     }

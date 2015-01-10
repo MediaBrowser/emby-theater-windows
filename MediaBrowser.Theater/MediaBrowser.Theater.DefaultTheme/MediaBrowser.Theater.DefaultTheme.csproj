@@ -43,13 +43,13 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MediaBrowser.Common, Version=3.0.5362.26505, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.Common, Version=3.0.5480.20823, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.3.0.433\lib\net45\MediaBrowser.Common.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.540\lib\net45\MediaBrowser.Common.dll</HintPath>
     </Reference>
-    <Reference Include="MediaBrowser.Model, Version=3.0.5362.26504, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.Model, Version=3.0.5480.20825, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MediaBrowser.Common.3.0.433\lib\net45\MediaBrowser.Model.dll</HintPath>
+      <HintPath>..\packages\MediaBrowser.Common.3.0.540\lib\net45\MediaBrowser.Model.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Expression.Effects, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -154,6 +154,30 @@
     <Page Include="Home\Views\Generic\GenericFolderSpotlightView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Login\Views\ConnectLoginButtonView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Login\Views\ConnectPinView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Login\Views\ManualConnectionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Login\Views\ServerConnectionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Login\Views\ServerSelectionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Login\Views\WelcomePageView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="SortModeMenu\Views\SortModeCommandView.xaml">
       <SubType>Designer</SubType>
@@ -408,6 +432,32 @@
     <Compile Include="Home\Views\Generic\GenericFolderSpotlightView.xaml.cs">
       <DependentUpon>GenericFolderSpotlightView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Login\ManualConnectionContext.cs" />
+    <Compile Include="Login\ServerSelectionContext.cs" />
+    <Compile Include="Login\ViewModels\ConnectLoginButtonViewModel.cs" />
+    <Compile Include="Login\ViewModels\ConnectPinViewModel.cs" />
+    <Compile Include="Login\ViewModels\ManualConnectionViewModel.cs" />
+    <Compile Include="Login\ViewModels\ServerConnectionViewModel.cs" />
+    <Compile Include="Login\ViewModels\ServerSelectionViewModel.cs" />
+    <Compile Include="Login\ViewModels\WelcomePageViewModel.cs" />
+    <Compile Include="Login\Views\ConnectLoginButtonView.xaml.cs">
+      <DependentUpon>ConnectLoginButtonView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Login\Views\ConnectPinView.xaml.cs">
+      <DependentUpon>ConnectPinView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Login\Views\ManualConnectionView.xaml.cs">
+      <DependentUpon>ManualConnectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Login\Views\ServerConnectionView.xaml.cs">
+      <DependentUpon>ServerConnectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Login\Views\ServerSelectionView.xaml.cs">
+      <DependentUpon>ServerSelectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Login\Views\WelcomePageView.xaml.cs">
+      <DependentUpon>WelcomePageView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SortModeMenu\Commands\SortModeCommand.cs" />
     <Compile Include="Core\Commands\RestartMenuCommand.cs" />
     <Compile Include="Core\Commands\ShutdownMenuCommand.cs" />
@@ -477,7 +527,6 @@
       <DependentUpon>StyleCheckView.xaml</DependentUpon>
     </Compile>
     <Compile Include="DependencyModule.cs" />
-    <Compile Include="Home\Api.cs" />
     <Compile Include="Home\HomeContext.cs" />
     <Compile Include="Home\ViewModels\HomeViewModel.cs" />
     <Compile Include="Home\ViewModels\IHomePageGenerator.cs" />
@@ -550,7 +599,7 @@
     <Compile Include="ItemList\Views\ItemListView.xaml.cs">
       <DependentUpon>ItemListView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Login\LoginContext.cs" />
+    <Compile Include="Login\UserSelectionContext.cs" />
     <Compile Include="Login\ViewModels\LoginViewModel.cs" />
     <Compile Include="Login\ViewModels\UserLoginViewModel.cs" />
     <Compile Include="Login\Views\LoginView.xaml.cs">

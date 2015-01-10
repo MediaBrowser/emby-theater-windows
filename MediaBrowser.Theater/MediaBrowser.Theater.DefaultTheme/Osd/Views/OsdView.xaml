@@ -1,7 +1,7 @@
 ﻿<UserControl x:Class="MediaBrowser.Theater.DefaultTheme.Osd.Views.OsdView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:lex="http://wpflocalizeextension.codeplex.com"
              xmlns:viewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.Osd.ViewModels"
@@ -9,19 +9,26 @@
              lex:ResxLocalizationProvider.DefaultAssembly="MediaBrowser.Theater.DefaultTheme"
              lex:ResxLocalizationProvider.DefaultDictionary="Strings"
              mc:Ignorable="d"
+             Background="#01000000"
+             IsHitTestVisible="True"
              d:DataContext="{d:DesignInstance viewModels:OsdViewModel}"
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid>
+    <Grid x:Name="Container" Visibility="{Binding ShowOsd, Converter={StaticResource BooleanToVisibility}}"
+          FocusManager.IsFocusScope="True">
         <Grid Background="#86000000" VerticalAlignment="Top" HorizontalAlignment="Stretch">
             <Grid Margin="25 20 25 20">
-                <Image Name="ImgLogo" Stretch="Uniform" HorizontalAlignment="Left" VerticalAlignment="Center" Height="80" MaxWidth="550"></Image>
+                <Image Name="ImgLogo" Stretch="Uniform" HorizontalAlignment="Left" VerticalAlignment="Center"
+                       Height="80" MaxWidth="550" />
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="Now Playing: " Foreground="{StaticResource AccentBrush}" Margin="0 0 10 0"/>
-                    <TextBlock Text="{Binding DisplayName}" HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="700" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="Now Playing: "
+                               Foreground="{StaticResource AccentBrush}" Margin="0 0 10 0" />
+                    <TextBlock Text="{Binding DisplayName}" HorizontalAlignment="Center" VerticalAlignment="Center"
+                               MaxWidth="700" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" Foreground="White" />
                 </StackPanel>
 
-                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Right" Text="{Binding ClockShortTime, Converter={StaticResource LowercaseConverter}}"></TextBlock>
+                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Right"
+                           Text="{Binding ClockShortTime, Converter={StaticResource LowercaseConverter}}" />
             </Grid>
         </Grid>
 
@@ -54,7 +61,7 @@
                             </Style>
                         </Button.Style>
                     </Button>
-                    
+
                     <Button x:Name="PlayPauseButton" Command="{Binding PlayPauseCommand}">
                         <Button.Style>
                             <Style TargetType="{x:Type Button}" BasedOn="{StaticResource TransportButton}">
@@ -62,7 +69,10 @@
                                     <Setter.Value>
                                         <ControlTemplate TargetType="{x:Type Button}">
                                             <Border Background="{TemplateBinding Background}">
-                                                <Path Fill="{TemplateBinding Foreground}" Data="M27.270001,0L44.310001,0 44.310001,48.643002 27.270001,48.643002z M0,0L17.040001,0 17.040001,48.643002 0,48.643002z" Stretch="Uniform" Width="20" Height="20" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5"/>
+                                                <Path Fill="{TemplateBinding Foreground}"
+                                                      Data="M27.270001,0L44.310001,0 44.310001,48.643002 27.270001,48.643002z M0,0L17.040001,0 17.040001,48.643002 0,48.643002z"
+                                                      Stretch="Uniform" Width="20" Height="20" Margin="0,0,0,0"
+                                                      RenderTransformOrigin="0.5,0.5" />
                                             </Border>
                                         </ControlTemplate>
                                     </Setter.Value>
@@ -73,7 +83,10 @@
                                             <Setter.Value>
                                                 <ControlTemplate TargetType="{x:Type Button}">
                                                     <Border Background="{TemplateBinding Background}">
-                                                        <Path Fill="{TemplateBinding Foreground}" Data="F1M1188.2,1715.23L1169.93,1728.57 1151.66,1741.9 1151.66,1715.23 1151.66,1688.57 1169.93,1701.9 1188.2,1715.23z" Stretch="Uniform" Width="20" Height="20" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5"/>
+                                                        <Path Fill="{TemplateBinding Foreground}"
+                                                              Data="F1M1188.2,1715.23L1169.93,1728.57 1151.66,1741.9 1151.66,1715.23 1151.66,1688.57 1169.93,1701.9 1188.2,1715.23z"
+                                                              Stretch="Uniform" Width="20" Height="20"
+                                                              Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5" />
                                                     </Border>
                                                 </ControlTemplate>
                                             </Setter.Value>
@@ -83,8 +96,9 @@
                             </Style>
                         </Button.Style>
                     </Button>
-                    
-                    <Button x:Name="StopButton" Style="{DynamicResource StopButton}" Command="{Binding StopCommand}"></Button>
+
+                    <Button x:Name="StopButton" Style="{DynamicResource StopButton}"
+                            Command="{Binding StopCommand}" />
 
                     <Button x:Name="SkipForwardButton" Command="{Binding SkipForwardCommand}">
                         <Button.Style>
@@ -115,16 +129,22 @@
                 <Grid x:Name="SeekGrid" Margin="400 10 300 20">
 
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"></ColumnDefinition>
-                        <ColumnDefinition Width="auto"></ColumnDefinition>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="auto" />
                     </Grid.ColumnDefinitions>
 
-                    <Slider x:Name="CurrentPositionSlider" Grid.Column="0" VerticalAlignment="Center" Minimum="0" IsMoveToPointEnabled="True" Maximum="{Binding DurationTicks}" Thumb.DragStarted="CurrentPositionSlider_DragStarted" Thumb.DragCompleted="CurrentPositionSlider_DragCompleted" Focusable="False"></Slider>
+                    <Slider x:Name="CurrentPositionSlider" Grid.Column="0" VerticalAlignment="Center" Minimum="0"
+                            IsMoveToPointEnabled="True" Maximum="{Binding DurationTicks}"
+                            Thumb.DragStarted="CurrentPositionSlider_DragStarted"
+                            Thumb.DragCompleted="CurrentPositionSlider_DragCompleted" Focusable="False" />
 
-                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 0 0 3">
-                        <TextBlock x:Name="TxtCurrentPosition" Style="{StaticResource AccentedTextBlockStyle}" Margin="20 0 0 0" VerticalAlignment="Center" Text="{Binding DisplayPosition}"></TextBlock>
-                        <TextBlock Margin="5 0 0 0" VerticalAlignment="Center" Text=" / "></TextBlock>
-                        <TextBlock x:Name="TxtDuration" Margin="5 0 0 0" VerticalAlignment="Center" Text="{Binding DisplayDuration}"></TextBlock>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right"
+                                Margin="0 0 0 3">
+                        <TextBlock x:Name="TxtCurrentPosition" Style="{StaticResource AccentedTextBlockStyle}"
+                                   Margin="20 0 0 0" VerticalAlignment="Center" Text="{Binding DisplayPosition}" />
+                        <TextBlock Margin="5 0 0 0" VerticalAlignment="Center" Text=" / " />
+                        <TextBlock x:Name="TxtDuration" Margin="5 0 0 0" VerticalAlignment="Center"
+                                   Text="{Binding DisplayDuration}" />
                     </StackPanel>
 
                 </Grid>

@@ -16,11 +16,13 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
     {
         private readonly List<IGlobalMenuCommand> _commands;
         private readonly INavigator _navigator;
+        private readonly AsyncLock _lock;
         private ObservableCollection<GlobalCommandViewModel> _commandViewModels;
 
         public CommandBarViewModel(ITheaterApplicationHost appHost, INavigator navigator)
         {
             _navigator = navigator;
+            _lock = new AsyncLock();
             _commands = appHost.GetExports<IGlobalMenuCommand>().ToList();
             CommandViewModels = new ObservableCollection<GlobalCommandViewModel>();
 
@@ -43,27 +45,29 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
 
         private async void UpdateCommandVisibility()
         {
-            GlobalCommandViewModel[] visibleCommandViewModels = CommandViewModels.ToArray();
-            var commandsToHide = visibleCommandViewModels.Where(v => !v.MenuCommand.EvaluateVisibility(_navigator.CurrentLocation)).ToList();
+            using (await _lock.LockAsync()) {
+                GlobalCommandViewModel[] visibleCommandViewModels = CommandViewModels.ToArray();
+                var commandsToHide = visibleCommandViewModels.Where(v => !v.MenuCommand.EvaluateVisibility(_navigator.CurrentLocation)).ToList();
 
-            Action removeAction = () => {
-                foreach (GlobalCommandViewModel viewModel in commandsToHide) {
-                    RemoveCommandViewModel(viewModel);
-                }
-            };
+                Action removeAction = () => {
+                    foreach (GlobalCommandViewModel viewModel in commandsToHide) {
+                        RemoveCommandViewModel(viewModel);
+                    }
+                };
 
-            await removeAction.OnUiThreadAsync().ConfigureAwait(false);
+                await removeAction.OnUiThreadAsync().ConfigureAwait(false);
 
-            List<IGlobalMenuCommand> visibleCommands = visibleCommandViewModels.Select(c => c.MenuCommand).ToList();
-            List<IGlobalMenuCommand> commandsToShow = _commands.Where(c => !visibleCommands.Contains(c) && c.EvaluateVisibility(_navigator.CurrentLocation)).ToList();
+                List<IGlobalMenuCommand> visibleCommands = CommandViewModels.Select(c => c.MenuCommand).ToList();
+                List<IGlobalMenuCommand> commandsToShow = _commands.Where(c => !visibleCommands.Contains(c) && c.EvaluateVisibility(_navigator.CurrentLocation)).ToList();
 
-            Action addAction = () => {
-                foreach (IGlobalMenuCommand command in commandsToShow) {
-                    AddCommandViewModel(new GlobalCommandViewModel(command));
-                }
-            };
+                Action addAction = () => {
+                    foreach (IGlobalMenuCommand command in commandsToShow) {
+                        AddCommandViewModel(new GlobalCommandViewModel(command));
+                    }
+                };
 
-            await addAction.OnUiThreadAsync().ConfigureAwait(false);
+                await addAction.OnUiThreadAsync().ConfigureAwait(false);
+            }
         }
 
         private void AddCommandViewModel(GlobalCommandViewModel viewModel)

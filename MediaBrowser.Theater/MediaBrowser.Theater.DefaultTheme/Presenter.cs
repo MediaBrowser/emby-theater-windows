@@ -171,11 +171,11 @@ namespace MediaBrowser.Theater.DefaultTheme
             } else {
                 // set first startup size and state
                 if (double.IsNaN(window.Width)) {
-                    window.Width = SystemParameters.VirtualScreenWidth*0.75;
+                    window.Width = SystemParameters.PrimaryScreenWidth*0.75;
                 }
 
                 if (double.IsNaN(window.Height)) {
-                    window.Height = SystemParameters.VirtualScreenHeight*0.75;
+                    window.Height = SystemParameters.PrimaryScreenHeight*0.75;
                 }
 
                 if (double.IsNaN(window.Top)) {

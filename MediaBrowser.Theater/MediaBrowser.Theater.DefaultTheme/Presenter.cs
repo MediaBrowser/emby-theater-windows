@@ -42,12 +42,16 @@ namespace MediaBrowser.Theater.DefaultTheme
         private MainWindow _mainWindow;
         private IntPtr _mainWindowHandle;
 
+        private readonly EventHandler _refocusMainWindow;
+
         public WindowManager(INavigator navigator, IInternalPlayerWindowManager internalPlayerWindowManager, ILogManager logManager, ITheaterApplicationHost appHost)
         {
             _navigator = navigator;
             _internalPlayerWindowManager = internalPlayerWindowManager;
             _appHost = appHost;
             _logger = logManager.GetLogger("WindowManager");
+
+            _refocusMainWindow = (s, e) => FocusMainWindow();
         }
 
         public MainWindow MainWindow
@@ -86,45 +90,30 @@ namespace MediaBrowser.Theater.DefaultTheme
             }
         }
 
-        public async Task ClosePopup()
+        public async Task SilentlyClosePopup()
         {
-            var tcs = new TaskCompletionSource<object>();
-
             if (_currentPopup != null) {
-                Action action = async () => {
-                    var context = _currentPopup.DataContext as IViewModel;
-                    if (context != null) {
-                        await context.Close();
-                    }
+                _currentPopup.Closed -= _refocusMainWindow;
+                _currentPopup.NavigateBackOnClose = false;
 
-                    _currentPopup.Close();
-                    _currentPopup = null;
-
-                    tcs.SetResult(null);
-                };
-
-                await action.OnUiThreadAsync();
-                await tcs.Task;
+                await _currentPopup.ClosePopup();
+                FocusMainWindow();
             }
         }
 
-        public async Task ShowPopup(IViewModel contents)
+        public async Task ShowPopup(IViewModel contents, bool unfocusMainWindow = true, bool navigateBackOnClose = true)
         {
-            await ClosePopup();
+            await SilentlyClosePopup();
 
             _currentPopup = new PopupWindow(_navigator) {
-                DataContext = contents
+                DataContext = contents,
+                NavigateBackOnClose = navigateBackOnClose
             };
 
-            EventHandler windowClosed = null;
-            windowClosed = (sender, args) => {
-                FocusMainWindow();
-                _currentPopup.Closed -= windowClosed;
-            };
-
-            _currentPopup.Closed += windowClosed;
-
-            UnfocusMainWindow();
+            if (unfocusMainWindow) {
+                UnfocusMainWindow();
+                _currentPopup.Closed += _refocusMainWindow;
+            }
 
             _currentPopup.ShowModal(_mainWindow, _appHost.UserInputManager);
         }
@@ -481,16 +470,16 @@ namespace MediaBrowser.Theater.DefaultTheme
 
         public async Task ShowPage(IViewModel contents)
         {
-            await _windowManager.ClosePopup();
+            await _windowManager.SilentlyClosePopup();
 
             _currentPage = contents;
             await _showPageEvent.Publish(new ShowPageEvent { ViewModel = contents });
             await _pageLoadedEvent.Publish(new PageLoadedEvent { ViewModel = contents });
         }
 
-        public async Task ShowPopup(IViewModel contents)
+        public async Task ShowPopup(IViewModel contents, bool unfocusMainWindow = true, bool navigateBackOnClose = true)
         {
-            await _windowManager.ShowPopup(contents);
+            await _windowManager.ShowPopup(contents, unfocusMainWindow, navigateBackOnClose);
             await _pageLoadedEvent.Publish(new PageLoadedEvent { ViewModel = contents });
         }
 

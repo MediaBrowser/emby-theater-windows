@@ -12,9 +12,14 @@ using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Osd.ViewModels;
+using MediaBrowser.Theater.Presentation.Navigation;
 
 namespace MediaBrowser.Theater.DefaultTheme.Osd
 {
+    public class ChapterSelectionPath : NavigationPath<FullScreenPlaybackPath> { }
+    public class SubtitleSelectionPath : NavigationPath<FullScreenPlaybackPath> { }
+    public class AudioTrackSelectionPath : NavigationPath<FullScreenPlaybackPath> { }
+
     public class FullScreenPlaybackContext
         : NavigationContext
     {
@@ -35,6 +40,18 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd
             _presentationManager = presentationManager;
             _nav = nav;
             _events = events;
+
+            Binder.Bind<ChapterSelectionPath, PopupContext<OsdChaptersViewModel>>((path, context) => {
+                context.UnfocusMainWindow = false;
+            });
+
+            Binder.Bind<SubtitleSelectionPath, PopupContext<OsdSubtitleTracksViewModel>>((path, context) => {
+                context.UnfocusMainWindow = false;
+            });
+
+            Binder.Bind<AudioTrackSelectionPath, PopupContext<OsdAudioTracksViewModel>>((path, context) => {
+                context.UnfocusMainWindow = false;
+            });
         }
 
         public override async Task Activate()

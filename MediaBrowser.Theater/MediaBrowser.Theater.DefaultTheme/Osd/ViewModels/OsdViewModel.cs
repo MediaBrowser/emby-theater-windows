@@ -17,10 +17,16 @@ using MediaBrowser.Theater.Presentation.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
 {
+    public class OsdChaptersViewModel : BaseViewModel { }
+    public class OsdAudioTracksViewModel : BaseViewModel { }
+    public class OsdSubtitleTracksViewModel : BaseViewModel { }
+
     public class OsdViewModel : BaseViewModel, IDisposable, IHasRootPresentationOptions
     {
+        // reference these handlers so they are not GC'd until the osd view model is GC'd
         private readonly Action<PlaybackStopEventArgs> _playbackStopHandler;
         private readonly Action<PlaybackStartEventArgs> _playbackStartHandler;
+
         private bool _canPause;
         private bool _canPlay;
         private bool _canSeek;
@@ -55,6 +61,9 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
             PreviousChapterCommand = new RelayCommand(PreviousChapter);
             PlayCommand = new RelayCommand(Play);
             PlayPauseCommand = new RelayCommand(PlayPause);
+            SelectChapterCommand = new RelayCommand(ShowChapterSelection);
+            SelectSubtitleTrackCommand = new RelayCommand(ShowSubtitleSelection);
+            SelectAudioTrackCommand = new RelayCommand(ShowAudioSelection);
 
             _playbackStopHandler = args => {
                 NavigationService.Back();
@@ -128,6 +137,10 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
         public ICommand StopCommand { get; private set; }
         public ICommand PlayCommand { get; private set; }
         public ICommand PlayPauseCommand { get; private set; }
+        public ICommand SelectChapterCommand { get; private set; }
+        public ICommand SelectSubtitleTrackCommand { get; private set; }
+        public ICommand SelectAudioTrackCommand { get; private set; }
+
 
         public bool ShowOsd
         {
@@ -532,6 +545,21 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
             }
         }
 
+        public void ShowChapterSelection(object commandParameter)
+        {
+            NavigationService.Navigate(new ChapterSelectionPath());
+        }
+
+        public void ShowSubtitleSelection(object commandParameter)
+        {
+            NavigationService.Navigate(new SubtitleSelectionPath());
+        }
+
+        public void ShowAudioSelection(object commandParameter)
+        {
+            NavigationService.Navigate(new AudioTrackSelectionPath());
+        }
+        
         private void DisposeCurrentPositionTimer()
         {
             if (_currentPositionTimer != null) {

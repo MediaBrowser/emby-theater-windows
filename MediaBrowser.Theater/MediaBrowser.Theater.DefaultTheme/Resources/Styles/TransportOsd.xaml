@@ -5,16 +5,16 @@
         <Setter Property="Margin" Value="15 0 15 0"/>
         <Setter Property="Height" Value="36"/>
         <Setter Property="Cursor" Value="Hand"/>
-        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="Foreground" Value="{x:Null}"/>
         <Style.Triggers>
             <Trigger Property="IsKeyboardFocused" Value="true">
-                <Setter Property="Foreground" Value="{StaticResource InputHighlightBrush}" />
+                <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
             </Trigger>
             <Trigger Property="IsMouseOver" Value="true">
-                <Setter Property="Foreground" Value="{StaticResource InputHighlightBrush}" />
+                <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
             </Trigger>
             <Trigger Property="IsPressed" Value="true">
-                <Setter Property="Foreground" Value="{StaticResource InputHighlightBrush}" />
+                <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
             </Trigger>
             <Trigger Property="IsEnabled" Value="false">
                 <Setter Property="Opacity" Value=".2" />
@@ -28,7 +28,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
                     <Border Background="{TemplateBinding Background}">
-                        <Path Fill="{TemplateBinding Foreground}" Data="M48.166603,12.154001L55.979095,12.154001 55.979095,21.207295 65.0327,21.207295 65.034004,29.019703 55.979095,29.019703 55.980495,38.072998 48.167904,38.072998 48.166603,29.019003 39.114399,29.019703 39.112999,21.207295 48.167904,21.207295z M31.952999,0L31.952999,50.027001 15.98555,35.126191 0,35.126191 0,15.966104 15.98555,15.966104z" Stretch="Uniform" Width="36" Height="36" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5"/>
+                        <Path StrokeThickness="1"  Stroke="{StaticResource ForegroundBrush}" Fill="{TemplateBinding Foreground}" Data="M48.166603,12.154001L55.979095,12.154001 55.979095,21.207295 65.0327,21.207295 65.034004,29.019703 55.979095,29.019703 55.980495,38.072998 48.167904,38.072998 48.166603,29.019003 39.114399,29.019703 39.112999,21.207295 48.167904,21.207295z M31.952999,0L31.952999,50.027001 15.98555,35.126191 0,35.126191 0,15.966104 15.98555,15.966104z" Stretch="Uniform" Width="36" Height="36" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5"/>
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
@@ -41,7 +41,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
                     <Border Background="{TemplateBinding Background}">
-                        <Path Fill="{TemplateBinding Foreground}" Data="F1M1188.2,1715.23L1169.93,1728.57 1151.66,1741.9 1151.66,1715.23 1151.66,1688.57 1169.93,1701.9 1188.2,1715.23z" Stretch="Uniform" Width="20" Height="20" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5"/>
+                        <Path StrokeThickness="1" Stroke="{StaticResource ForegroundBrush}" Fill="{TemplateBinding Foreground}" Data="F1M1188.2,1715.23L1169.93,1728.57 1151.66,1741.9 1151.66,1715.23 1151.66,1688.57 1169.93,1701.9 1188.2,1715.23z" Stretch="Uniform" Width="20" Height="20" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5"/>
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
@@ -54,7 +54,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
                     <Border Background="{TemplateBinding Background}">
-                        <Path Fill="{TemplateBinding Foreground}" Data="M27.270001,0L44.310001,0 44.310001,48.643002 27.270001,48.643002z M0,0L17.040001,0 17.040001,48.643002 0,48.643002z" Stretch="Uniform" Width="20" Height="20" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5"/>
+                        <Path StrokeThickness="1"  Stroke="{StaticResource ForegroundBrush}" Fill="{TemplateBinding Foreground}" Data="M27.270001,0L44.310001,0 44.310001,48.643002 27.270001,48.643002z M0,0L17.040001,0 17.040001,48.643002 0,48.643002z" Stretch="Uniform" Width="20" Height="20" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5"/>
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
@@ -67,7 +67,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
                     <Border Background="{TemplateBinding Background}">
-                        <Path Fill="{TemplateBinding Foreground}" Data="M0,0L64,0 64,64 0,64z" Stretch="Uniform" Width="20" Height="20" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5"/>
+                        <Path StrokeThickness="1"  Stroke="{StaticResource ForegroundBrush}" Fill="{TemplateBinding Foreground}" Data="M0,0L64,0 64,64 0,64z" Stretch="Uniform" Width="20" Height="20" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5"/>
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
@@ -80,7 +80,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
                     <Border Background="{TemplateBinding Background}">
-                        <Path Fill="{TemplateBinding Foreground}" Data="M0,0L15.908,0 15.908,20.125872 28.130381,13.333224 52.118999,0 52.118999,26.66655 52.118999,53.333 28.130381,39.999775 15.908,33.20718 15.908,53.333 0,53.333z" Stretch="Uniform" Width="20" Height="20" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+                        <Path StrokeThickness="1"  Stroke="{StaticResource ForegroundBrush}" Fill="{TemplateBinding Foreground}" Data="M0,0L15.908,0 15.908,20.125872 28.130381,13.333224 52.118999,0 52.118999,26.66655 52.118999,53.333 28.130381,39.999775 15.908,33.20718 15.908,53.333 0,53.333z" Stretch="Uniform" Width="20" Height="20" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
                             <Path.RenderTransform>
                                 <TransformGroup>
                                     <TransformGroup.Children>
@@ -102,7 +102,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
                     <Border Background="{TemplateBinding Background}">
-                        <Path Fill="{TemplateBinding Foreground}" Data="M0,0L15.908,0 15.908,20.125872 28.130381,13.333224 52.118999,0 52.118999,26.66655 52.118999,53.333 28.130381,39.999775 15.908,33.20718 15.908,53.333 0,53.333z" Stretch="Uniform" Width="20" Height="20" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5"/>
+                        <Path StrokeThickness="1"  Stroke="{StaticResource ForegroundBrush}" Fill="{TemplateBinding Foreground}" Data="M0,0L15.908,0 15.908,20.125872 28.130381,13.333224 52.118999,0 52.118999,26.66655 52.118999,53.333 28.130381,39.999775 15.908,33.20718 15.908,53.333 0,53.333z" Stretch="Uniform" Width="20" Height="20" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5"/>
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
@@ -115,7 +115,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
                     <Border Background="{TemplateBinding Background}">
-                        <Path Fill="{TemplateBinding Foreground}" Data="M51.123999,0L63.451998,0 63.451998,53.695001 51.123999,53.695001 51.123999,31.916129 41.651199,37.180778 23.059999,47.514001 23.059999,34.696918 18.590899,37.180778 0,47.514001 0,26.847556 0,6.1810005 18.590899,16.514234 23.059999,18.998118 23.059999,6.1810005 41.651199,16.514234 51.123999,21.778933z" Stretch="Uniform" Width="18" Height="18" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5"/>
+                        <Path StrokeThickness="1"  Stroke="{StaticResource ForegroundBrush}" Fill="{TemplateBinding Foreground}" Data="M51.123999,0L63.451998,0 63.451998,53.695001 51.123999,53.695001 51.123999,31.916129 41.651199,37.180778 23.059999,47.514001 23.059999,34.696918 18.590899,37.180778 0,47.514001 0,26.847556 0,6.1810005 18.590899,16.514234 23.059999,18.998118 23.059999,6.1810005 41.651199,16.514234 51.123999,21.778933z" Stretch="Uniform" Width="18" Height="18" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5"/>
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
@@ -128,7 +128,46 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
                     <Border Background="{TemplateBinding Background}">
-                        <Path Fill="{TemplateBinding Foreground}" Data="F1M1914.87,1166.52L1914.87,1185.06 1923.04,1180.35 1937.85,1171.8 1937.85,1182.85 1942.18,1180.35 1956.99,1171.8 1956.99,1205.99 1942.18,1197.44 1937.85,1194.94 1937.85,1205.99 1923.04,1197.44 1914.87,1192.73 1914.87,1211.27 1903.62,1211.27 1903.62,1166.52 1914.87,1166.52z" Stretch="Uniform" Width="18" Height="18" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5"/>
+                        <Path StrokeThickness="1"  Stroke="{StaticResource ForegroundBrush}" Fill="{TemplateBinding Foreground}" Data="F1M1914.87,1166.52L1914.87,1185.06 1923.04,1180.35 1937.85,1171.8 1937.85,1182.85 1942.18,1180.35 1956.99,1171.8 1956.99,1205.99 1942.18,1197.44 1937.85,1194.94 1937.85,1205.99 1923.04,1197.44 1914.87,1192.73 1914.87,1211.27 1903.62,1211.27 1903.62,1166.52 1914.87,1166.52z" Stretch="Uniform" Width="18" Height="18" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="Button" x:Key="ChapterSelectButton" BasedOn="{StaticResource TransportButton}">
+        <Setter Property="ToolTip" Value="Select Chapter"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Border Background="{TemplateBinding Background}">
+                        <Path StrokeThickness="1" Stroke="{StaticResource ForegroundBrush}" Fill="{TemplateBinding Foreground}" Data="F1 M 19,19L 57,19L 57,57L 19,57L 19,19 Z M 26.9166,23.75L 26.9166,36.4167L 49.0833,36.4167L 49.0833,23.75L 26.9166,23.75 Z M 26.9166,39.5834L 26.9166,52.25L 49.0833,52.25L 49.0833,39.5834L 26.9166,39.5834 Z M 22.9583,22.1667C 21.6466,22.1667 20.5833,23.23 20.5833,24.5417C 20.5833,25.8534 21.6466,26.9167 22.9583,26.9167C 24.27,26.9167 25.3333,25.8534 25.3333,24.5417C 25.3333,23.23 24.27,22.1667 22.9583,22.1667 Z M 22.9583,49.0834C 21.6466,49.0834 20.5833,50.1467 20.5833,51.4584C 20.5833,52.77 21.6466,53.8334 22.9583,53.8334C 24.27,53.8334 25.3333,52.77 25.3333,51.4584C 25.3333,50.1467 24.27,49.0834 22.9583,49.0834 Z M 22.9583,42.3542C 21.6466,42.3542 20.5833,43.4175 20.5833,44.7292C 20.5833,46.0409 21.6466,47.1042 22.9583,47.1042C 24.27,47.1042 25.3333,46.0409 25.3333,44.7292C 25.3333,43.4175 24.27,42.3542 22.9583,42.3542 Z M 22.9583,35.625C 21.6466,35.625 20.5833,36.6884 20.5833,38C 20.5833,39.3117 21.6466,40.375 22.9583,40.375C 24.27,40.375 25.3333,39.3117 25.3333,38C 25.3333,36.6884 24.27,35.625 22.9583,35.625 Z M 22.9583,28.8959C 21.6466,28.8959 20.5833,29.9592 20.5833,31.2709C 20.5833,32.5826 21.6466,33.6459 22.9583,33.6459C 24.27,33.6459 25.3333,32.5826 25.3333,31.2709C 25.3333,29.9592 24.27,28.8959 22.9583,28.8959 Z M 53.0416,22.1667C 51.7299,22.1667 50.6666,23.23 50.6666,24.5417C 50.6666,25.8534 51.7299,26.9167 53.0416,26.9167C 54.3533,26.9167 55.4166,25.8534 55.4166,24.5417C 55.4166,23.23 54.3533,22.1667 53.0416,22.1667 Z M 53.0417,49.0833C 51.73,49.0833 50.6667,50.1467 50.6667,51.4583C 50.6667,52.77 51.73,53.8333 53.0417,53.8333C 54.3533,53.8333 55.4167,52.77 55.4167,51.4583C 55.4167,50.1467 54.3533,49.0833 53.0417,49.0833 Z M 53.0417,42.3542C 51.73,42.3542 50.6667,43.4175 50.6667,44.7292C 50.6667,46.0408 51.73,47.1042 53.0417,47.1042C 54.3533,47.1042 55.4167,46.0408 55.4167,44.7292C 55.4167,43.4175 54.3533,42.3542 53.0417,42.3542 Z M 53.0417,35.625C 51.73,35.625 50.6667,36.6883 50.6667,38C 50.6667,39.3117 51.73,40.375 53.0417,40.375C 54.3533,40.375 55.4167,39.3117 55.4167,38C 55.4167,36.6883 54.3533,35.625 53.0417,35.625 Z M 53.0417,28.8958C 51.73,28.8958 50.6667,29.9592 50.6667,31.2708C 50.6667,32.5825 51.73,33.6458 53.0417,33.6458C 54.3533,33.6458 55.4167,32.5825 55.4167,31.2708C 55.4167,29.9592 54.3533,28.8958 53.0417,28.8958 Z " Stretch="Uniform" Width="24" Height="24" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="Button" x:Key="AudioTrackButton" BasedOn="{StaticResource TransportButton}">
+        <Setter Property="ToolTip" Value="Select Chapter"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Border Background="{TemplateBinding Background}">
+                        <Path StrokeThickness="1" Stroke="{StaticResource ForegroundBrush}" Fill="{TemplateBinding Foreground}" Data="F1 M 20.5862,33.2547L 26.9204,33.2546L 36.4217,25.3369L 36.4217,52.2573L 26.9204,42.756L 20.5862,42.756C 18.8371,42.756 17.4191,41.338 17.4191,39.5889L 17.4191,36.4218C 17.4191,34.6726 18.8371,33.2547 20.5862,33.2547 Z M 50.6737,38.0053C 50.6737,41.4696 49.0845,44.5627 46.5954,46.5954L 44.3398,44.3399C 46.2628,42.8953 47.5066,40.5956 47.5066,38.0053C 47.5066,35.4151 46.2628,33.1153 44.3398,31.6708L 46.5954,29.4152C 49.0845,31.4479 50.6737,34.541 50.6737,38.0053 Z M 44.3395,38.0053C 44.3395,40.1167 42.9621,41.9064 41.0568,42.5248L 39.5889,39.5889C 40.4634,39.5889 41.1724,38.8799 41.1724,38.0053C 41.1724,37.1307 40.4634,36.4218 39.5889,36.4218L 41.0568,33.4858C 42.9621,34.1042 44.3395,35.8939 44.3395,38.0053 Z " Stretch="Uniform" Width="24" Height="24" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="Button" x:Key="SubtitleTrackButton" BasedOn="{StaticResource TransportButton}">
+        <Setter Property="ToolTip" Value="Select Chapter"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Border Background="{TemplateBinding Background}">
+                        <Path StrokeThickness="1" Stroke="{StaticResource ForegroundBrush}" Fill="{TemplateBinding Foreground}" Data="F1 M 29,58L 29,55.0833C 32.4978,55.0833 35,53.2083 35,49.25L 35,29C 35,25.9394 32.7481,25 29.6875,25C 26.6269,25 24.5,25.9394 24.5,29L 21,29L 21,20L 55,20L 55,29L 51.5,29C 51.5,25.9394 49.373,25 46.3125,25C 43.2519,25 41,25.9394 41,29L 41,49.25C 41,53.2083 43.5022,55.0833 47,55.0833L 47,58L 29,58 Z " Stretch="Uniform" Width="24" Height="24" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5"/>
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
@@ -142,7 +181,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
                     <Grid Background="{TemplateBinding Background}">
-                        <Path Fill="{TemplateBinding Foreground}" Data="F1M-224.553,1265L-246.174,1283.52 -267.792,1302.04 -267.792,1265 -267.792,1227.97 -246.174,1246.49 -224.553,1265z" Stretch="Uniform" Height="20" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+                        <Path StrokeThickness="1" Stroke="{StaticResource ForegroundBrush}" Fill="{TemplateBinding Foreground}" Data="F1M-224.553,1265L-246.174,1283.52 -267.792,1302.04 -267.792,1265 -267.792,1227.97 -246.174,1246.49 -224.553,1265z" Stretch="Uniform" Height="20" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
                             <Path.RenderTransform>
                                 <TransformGroup>
                                     <TransformGroup.Children>
@@ -152,7 +191,7 @@
                                 </TransformGroup>
                             </Path.RenderTransform>
                         </Path>
-                        <Path Fill="{TemplateBinding Foreground}" Data="F1M-224.553,1265L-246.174,1283.52 -267.792,1302.04 -267.792,1265 -267.792,1227.97 -246.174,1246.49 -224.553,1265z" Stretch="Uniform" Height="20" Margin="17,0,0,0" RenderTransformOrigin="0.5,0.5">
+                        <Path StrokeThickness="1" Stroke="{StaticResource ForegroundBrush}" Fill="{TemplateBinding Foreground}" Data="F1M-224.553,1265L-246.174,1283.52 -267.792,1302.04 -267.792,1265 -267.792,1227.97 -246.174,1246.49 -224.553,1265z" Stretch="Uniform" Height="20" Margin="17,0,0,0" RenderTransformOrigin="0.5,0.5">
                             <Path.RenderTransform>
                                 <TransformGroup>
                                     <TransformGroup.Children>
@@ -175,8 +214,8 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
                     <Grid Background="{TemplateBinding Background}">
-                        <Path Fill="{TemplateBinding Foreground}" Data="F1M-224.553,1265L-246.174,1283.52 -267.792,1302.04 -267.792,1265 -267.792,1227.97 -246.174,1246.49 -224.553,1265z" Stretch="Uniform" Height="20" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5"/>
-                        <Path Fill="{TemplateBinding Foreground}" Data="F1M-224.553,1265L-246.174,1283.52 -267.792,1302.04 -267.792,1265 -267.792,1227.97 -246.174,1246.49 -224.553,1265z" Stretch="Uniform" Height="20" Margin="17,0,0,0" RenderTransformOrigin="0.5,0.5"/>
+                        <Path StrokeThickness="1" Stroke="{StaticResource ForegroundBrush}" Fill="{TemplateBinding Foreground}" Data="F1M-224.553,1265L-246.174,1283.52 -267.792,1302.04 -267.792,1265 -267.792,1227.97 -246.174,1246.49 -224.553,1265z" Stretch="Uniform" Height="20" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5"/>
+                        <Path StrokeThickness="1" Stroke="{StaticResource ForegroundBrush}" Fill="{TemplateBinding Foreground}" Data="F1M-224.553,1265L-246.174,1283.52 -267.792,1302.04 -267.792,1265 -267.792,1227.97 -246.174,1246.49 -224.553,1265z" Stretch="Uniform" Height="20" Margin="17,0,0,0" RenderTransformOrigin="0.5,0.5"/>
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>

@@ -179,6 +179,18 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Osd\Views\OsdAudioTracksView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Osd\Views\OsdChaptersView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Osd\Views\OsdSubtitleTracksView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="SortModeMenu\Views\SortModeCommandView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -457,6 +469,15 @@
     </Compile>
     <Compile Include="Login\Views\WelcomePageView.xaml.cs">
       <DependentUpon>WelcomePageView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Osd\Views\OsdAudioTracksView.xaml.cs">
+      <DependentUpon>OsdAudioTracksView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Osd\Views\OsdChaptersView.xaml.cs">
+      <DependentUpon>OsdChaptersView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Osd\Views\OsdSubtitleTracksView.xaml.cs">
+      <DependentUpon>OsdSubtitleTracksView.xaml</DependentUpon>
     </Compile>
     <Compile Include="SortModeMenu\Commands\SortModeCommand.cs" />
     <Compile Include="Core\Commands\RestartMenuCommand.cs" />

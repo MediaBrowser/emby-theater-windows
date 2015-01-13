@@ -55,4 +55,60 @@ namespace MediaBrowser.Theater.Presentation.Navigation
             await _presenter.ShowPage(ViewModel);
         }
     }
+
+    public class PopupContext<T>
+        : NavigationContext where T : BaseViewModel
+    {
+        private readonly IApplicationHost _appHost;
+        private readonly IPresenter _presenter;
+
+        private T _viewModel;
+
+        public T ViewModel
+        {
+            get { return _viewModel; }
+            private set
+            {
+                _viewModel = value;
+
+                if (_viewModel != null)
+                {
+                    OnViewModelCreated(_viewModel);
+                }
+            }
+        }
+
+        public bool UnfocusMainWindow {get;set;}
+        public bool NavigateBackOnClose {get;set;}
+
+        public event Action<T> ViewModelCreated;
+
+        protected virtual void OnViewModelCreated(T obj)
+        {
+            Action<T> handler = ViewModelCreated;
+            if (handler != null)
+            {
+                handler(obj);
+            }
+        }
+
+        public PopupContext(IApplicationHost appHost, IPresenter presenter)
+            : base(appHost)
+        {
+            _appHost = appHost;
+            _presenter = presenter;
+
+            UnfocusMainWindow = true;
+            NavigateBackOnClose = true;
+        }
+
+        public override async Task Activate()
+        {
+            if (ViewModel == null || !ViewModel.IsActive) {
+                ViewModel = _appHost.TryResolve<T>();
+            }
+
+            await _presenter.ShowPopup(ViewModel, UnfocusMainWindow, NavigateBackOnClose);
+        }
+    }
 }

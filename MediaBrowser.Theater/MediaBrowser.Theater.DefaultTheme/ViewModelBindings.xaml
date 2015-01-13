@@ -259,4 +259,16 @@
         <views6:OsdView/>
     </DataTemplate>
     
+    <DataTemplate DataType="{x:Type viewModels6:OsdChaptersViewModel}">
+        <views6:OsdChaptersView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type viewModels6:OsdSubtitleTracksViewModel}">
+        <views6:OsdSubtitleTracksView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type viewModels6:OsdAudioTracksViewModel}">
+        <views6:OsdAudioTracksView/>
+    </DataTemplate>
+
 </ResourceDictionary>

@@ -73,6 +73,34 @@ namespace MediaBrowser.Theater.Api.UserInterface
         /// </summary>
         /// <param name="action">The action to execute.</param>
         /// <returns>A task representing the asychronous operation.</returns>
+        public static Task OnUiThreadAsync(this Func<Task> action)
+        {
+            if (Dispatcher == null || Dispatcher.CheckAccess()) {
+                action();
+                return Completed;
+            }
+
+            var completionSource = new TaskCompletionSource<object>();
+
+            Action wrapper = () =>
+            {
+                try {
+                    action().ContinueWith(t => completionSource.SetResult(null));
+                }
+                catch (Exception e) {
+                    completionSource.SetException(e);
+                }
+            };
+
+            Dispatcher.BeginInvoke(wrapper);
+            return completionSource.Task;
+        }
+
+        /// <summary>
+        ///     Asynchronously executes the specified action on the UI thread.
+        /// </summary>
+        /// <param name="action">The action to execute.</param>
+        /// <returns>A task representing the asychronous operation.</returns>
         public static Task<T> OnUiThreadAsync<T>(this Func<T> action)
         {
             if (Dispatcher == null || Dispatcher.CheckAccess()) {

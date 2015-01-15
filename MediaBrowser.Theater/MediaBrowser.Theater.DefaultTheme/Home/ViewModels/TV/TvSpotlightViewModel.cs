@@ -52,7 +52,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
 
             Title = SectionTitle = tvFolder.Name;
 
-            LowerSpotlightWidth = SpotlightWidth/3 - HomeViewModel.TileMargin*1.5;
+            LowerSpotlightWidth = SpotlightWidth/2 - HomeViewModel.TileMargin;
             LowerSpotlightHeight = HomeViewModel.TileHeight;
 
             AllShowsCommand = new RelayCommand(arg => {

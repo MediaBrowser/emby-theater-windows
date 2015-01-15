@@ -46,11 +46,11 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.Views
             if (e.IsDown && (e.Key == Key.Left || e.Key == Key.Right || e.Key == Key.Enter)) {
                 var vm = DataContext as OsdViewModel;
                 if (vm != null) {
-                    vm.TemporarilyShowOsd();
-
                     if (!vm.ShowOsd) {
                         e.Handled = true;
                     }
+
+                    vm.TemporarilyShowOsd();
                 }
             }
         }
@@ -132,6 +132,12 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.Views
             if (string.Equals(e.PropertyName, "PositionTicks") && vm != null) {
                 if (!_isPositionSliderUpdating) {
                     CurrentPositionSlider.Value = vm.PositionTicks;
+                }
+            }
+
+            if (string.Equals(e.PropertyName, "ShowOsd") || string.Equals(e.PropertyName, "IsPaused")) {
+                if (!Container.IsKeyboardFocusWithin) {
+                    Keyboard.Focus(PlayPauseButton);
                 }
             }
         }

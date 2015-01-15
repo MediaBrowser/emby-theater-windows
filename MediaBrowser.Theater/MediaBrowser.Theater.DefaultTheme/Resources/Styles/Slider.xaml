@@ -134,7 +134,8 @@
                 CornerRadius="0"
                 Height="4"
                 Grid.Row="1"
-                Background="#a6333333" />
+                Opacity="0.2"
+                Background="{StaticResource ForegroundBrush}" />
             <Track Grid.Row="1" Name="PART_Track">
                 <Track.DecreaseRepeatButton>
                     <RepeatButton

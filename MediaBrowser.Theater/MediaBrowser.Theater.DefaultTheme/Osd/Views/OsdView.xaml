@@ -5,6 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:lex="http://wpflocalizeextension.codeplex.com"
              xmlns:viewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.Osd.ViewModels"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
              lex:LocalizeDictionary.DesignCulture="en"
              lex:ResxLocalizationProvider.DefaultAssembly="MediaBrowser.Theater.DefaultTheme"
              lex:ResxLocalizationProvider.DefaultDictionary="Strings"
@@ -13,19 +15,77 @@
              IsHitTestVisible="True"
              d:DataContext="{d:DesignInstance viewModels:OsdViewModel}"
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid x:Name="Container" Visibility="{Binding ShowOsd, Converter={StaticResource BooleanToVisibility}}"
-          FocusManager.IsFocusScope="True">
-        <Grid VerticalAlignment="Top" HorizontalAlignment="Stretch">
+    <Grid x:Name="Container" FocusManager.IsFocusScope="True">
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+                <VisualState Name="Shown">
+                    <Storyboard>
+                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="TopBanner"
+                                                       Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)">
+                            <EasingDoubleKeyFrame Value="0" KeyTime="00:00:0.3">
+                                <EasingDoubleKeyFrame.EasingFunction>
+                                    <CubicEase EasingMode="EaseOut" />
+                                </EasingDoubleKeyFrame.EasingFunction>
+                            </EasingDoubleKeyFrame>
+                        </DoubleAnimationUsingKeyFrames>
+
+                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BottomBanner"
+                                                       Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)">
+                            <EasingDoubleKeyFrame Value="0" KeyTime="00:00:0.3">
+                                <EasingDoubleKeyFrame.EasingFunction>
+                                    <CubicEase EasingMode="EaseOut" />
+                                </EasingDoubleKeyFrame.EasingFunction>
+                            </EasingDoubleKeyFrame>
+                        </DoubleAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+
+                <VisualState Name="Hidden">
+                    <Storyboard>
+                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="TopBanner"
+                                                       Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)">
+                            <EasingDoubleKeyFrame Value="-300" KeyTime="00:00:0.3">
+                                <EasingDoubleKeyFrame.EasingFunction>
+                                    <CubicEase EasingMode="EaseIn" />
+                                </EasingDoubleKeyFrame.EasingFunction>
+                            </EasingDoubleKeyFrame>
+                        </DoubleAnimationUsingKeyFrames>
+
+                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BottomBanner"
+                                                       Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)">
+                            <EasingDoubleKeyFrame Value="300" KeyTime="00:00:0.3">
+                                <EasingDoubleKeyFrame.EasingFunction>
+                                    <CubicEase EasingMode="EaseIn" />
+                                </EasingDoubleKeyFrame.EasingFunction>
+                            </EasingDoubleKeyFrame>
+                        </DoubleAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
+        <i:Interaction.Behaviors>
+            <ei:DataStateBehavior
+                        Binding="{Binding ShowOsd}" Value="True"
+                        TrueState="Shown"
+                        FalseState="Hidden" />
+        </i:Interaction.Behaviors>
+
+        <Grid x:Name="TopBanner" VerticalAlignment="Top" HorizontalAlignment="Stretch">
+            <Grid.RenderTransform>
+                <TranslateTransform Y="-300"/>
+            </Grid.RenderTransform>
+
             <Border Background="{StaticResource BackgroundBrush}" Opacity="0.7"/>
             <Grid Margin="25 20 25 20">
-                <Image Name="ImgLogo" Stretch="Uniform" HorizontalAlignment="Left" VerticalAlignment="Center"
-                       Height="80" MaxWidth="550" />
+<!--                <Image Name="ImgLogo" Stretch="Uniform" HorizontalAlignment="Left" VerticalAlignment="Center"-->
+<!--                       Height="80" MaxWidth="550" />-->
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="Now Playing: "
-                               Foreground="{StaticResource AccentBrush}" Margin="0 0 10 0" />
+                               Foreground="{StaticResource AccentBrush}" Margin="0 0 10 0" FontSize="40" Style="{StaticResource TitleTextBlockStyle}" />
                     <TextBlock Text="{Binding DisplayName}" HorizontalAlignment="Center" VerticalAlignment="Center"
-                               MaxWidth="700" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" />
+                               TextTrimming="CharacterEllipsis" FontSize="40" Style="{StaticResource TitleTextBlockStyle}" />
                 </StackPanel>
 
 <!--                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Right"-->
@@ -33,7 +93,11 @@
             </Grid>
         </Grid>
 
-        <Grid VerticalAlignment="Bottom" HorizontalAlignment="Stretch">
+        <Grid x:Name="BottomBanner" VerticalAlignment="Bottom" HorizontalAlignment="Stretch">
+            <Grid.RenderTransform>
+                <TranslateTransform Y="300"/>
+            </Grid.RenderTransform>
+
             <Border Background="{StaticResource BackgroundBrush}" Opacity="0.7"/>
 
             <StackPanel Orientation="Vertical" Margin="0 15 0 0">
@@ -75,7 +139,7 @@
                                                       Stroke="{StaticResource ForegroundBrush}"
                                                       Fill="{TemplateBinding Foreground}"
                                                       Data="M27.270001,0L44.310001,0 44.310001,48.643002 27.270001,48.643002z M0,0L17.040001,0 17.040001,48.643002 0,48.643002z"
-                                                      Stretch="Uniform" Width="20" Height="20" Margin="0,0,0,0"
+                                                      Stretch="Fill" Width="24" Height="24" Margin="0,0,0,0"
                                                       RenderTransformOrigin="0.5,0.5" />
                                             </Border>
                                         </ControlTemplate>
@@ -91,7 +155,7 @@
                                                               Stroke="{StaticResource ForegroundBrush}"
                                                               Fill="{TemplateBinding Foreground}"
                                                               Data="F1M1188.2,1715.23L1169.93,1728.57 1151.66,1741.9 1151.66,1715.23 1151.66,1688.57 1169.93,1701.9 1188.2,1715.23z"
-                                                              Stretch="Uniform" Width="20" Height="20"
+                                                              Stretch="Fill" Width="24" Height="24"
                                                               Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5" />
                                                     </Border>
                                                 </ControlTemplate>

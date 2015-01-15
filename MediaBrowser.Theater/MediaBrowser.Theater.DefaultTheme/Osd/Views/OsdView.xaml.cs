@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -26,6 +27,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.Views
         /// </summary>
         private MouseButtonEventHandler _previewMouseDown;
 
+        private Point? _lastMousePosition;
+
         public OsdView()
         {
             InitializeComponent();
@@ -34,15 +37,34 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.Views
             Loaded += FullscreenVideoTransportOsd_Loaded;
             Unloaded += FullscreenVideoTransportOsd_Unloaded;
             PlayPauseButton.IsVisibleChanged += OsdView_IsVisibleChanged;
+            PreviewKeyDown += OsdView_KeyDown;
             //MouseMove += OsdView_MouseMove;
+        }
+
+        void OsdView_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.IsDown && (e.Key == Key.Left || e.Key == Key.Right || e.Key == Key.Enter)) {
+                var vm = DataContext as OsdViewModel;
+                if (vm != null) {
+                    vm.TemporarilyShowOsd();
+
+                    if (!vm.ShowOsd) {
+                        e.Handled = true;
+                    }
+                }
+            }
         }
 
         void OsdView_MouseMove(object sender, MouseEventArgs e)
         {
+            var mousePosition = Mouse.GetPosition(this);
+
             var viewModel = DataContext as OsdViewModel;
-            if (viewModel != null) {
+            if (viewModel != null && mousePosition != _lastMousePosition) {
                 viewModel.TemporarilyShowOsd();
             }
+
+            _lastMousePosition = mousePosition;
         }
 
         void OsdView_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)

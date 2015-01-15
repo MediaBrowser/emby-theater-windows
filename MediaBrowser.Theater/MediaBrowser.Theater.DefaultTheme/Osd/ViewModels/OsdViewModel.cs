@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Threading;
 using MediaBrowser.Model.ApiClient;
@@ -42,8 +43,6 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
         private long _positionTicks;
         private bool _supportsChapters;
         private bool _showOsd;
-
-        private System.Windows.Forms.Timer _timer;
         
         public OsdViewModel(IPlaybackManager playbackManager, IImageManager imageManager, IPresenter presentationManager, ILogger logger, INavigator nav, IEventAggregator events)
         {
@@ -89,36 +88,15 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
                 ShowMediaBrowserLogo = false,
                 PlaybackBackgroundOpacity = 0.0
             };
-            
-//            Action flipShowOsd = null;
-//            flipShowOsd = () => Delay(TimeSpan.FromSeconds(3), () => {
-//                ShowOsd = !ShowOsd;
-//                flipShowOsd();
-//            });
-//
-//            flipShowOsd();
         }
 
-        private void Delay(TimeSpan duration, Action action)
+        private int _delayCounter;
+        private async void Delay(TimeSpan duration, Action action)
         {
-            using (_timer) { }
-
-            if (duration == TimeSpan.Zero) {
+            var count = Interlocked.Increment(ref _delayCounter);
+            await Task.Delay(duration);
+            if (_delayCounter == count) {
                 action();
-            } else {
-                Action execute = () => {
-                    var timer = _timer = new System.Windows.Forms.Timer();
-                    _timer.Interval = (int) duration.TotalMilliseconds;
-                    _timer.Tick += (s, e) => {
-                        action();
-                        timer.Stop();
-                    };
-                    _timer.Enabled = true;
-
-                    _timer.Start();
-                };
-
-                execute.OnUiThread();
             }
         }
 
@@ -144,7 +122,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
 
         public bool ShowOsd
         {
-            get { return _showOsd; }
+            get { return _showOsd && NowPlayingItem != null; }
             set
             {
                 if (Equals(_showOsd, value)) {
@@ -216,6 +194,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
 
                 OnPropertyChanged();
                 OnPropertyChanged("DisplayName");
+                OnPropertyChanged("ShowOsd");
+                TemporarilyShowOsd();
             }
         }
 

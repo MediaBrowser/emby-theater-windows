@@ -55,8 +55,20 @@
         <views:NotificationView/>
     </DataTemplate>
 
+    <DataTemplate DataType="{x:Type viewModelsPresentation:ButtonNotificationViewModel}">
+        <views:ButtonNotificationView/>
+    </DataTemplate>
+
     <DataTemplate DataType="{x:Type viewModels:NotificationTrayViewModel}">
         <views:NotificationTrayView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels6:NowPlayingNotificationInfoViewModel}">
+        <views6:NowPlayingNotificationInfoView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type viewModels6:NowPlayingNotificationViewModel}">
+        <views:ButtonNotificationView/>
     </DataTemplate>
 
     <DataTemplate DataType="{x:Type viewModels:CommandBarViewModel}">

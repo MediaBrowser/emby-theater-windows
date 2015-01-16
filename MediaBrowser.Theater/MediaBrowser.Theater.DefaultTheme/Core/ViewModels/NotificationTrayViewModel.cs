@@ -25,6 +25,12 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
                 vm.Closed += closed;
 
                 Notifications.Add(vm);
+
+                var activity = vm as IHasActivityStatus;
+                if (activity != null) {
+                    activity.IsActive = true;
+                }
+
             }, false);
         }
 

@@ -53,6 +53,14 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.Views
                     vm.TemporarilyShowOsd();
                 }
             }
+
+            if (e.IsDown && e.Key == Key.Back) {
+                var vm = DataContext as OsdViewModel;
+                if (vm != null) {
+                    vm.Close();
+                    e.Handled = true;
+                }
+            }
         }
 
         void OsdView_MouseMove(object sender, MouseEventArgs e)

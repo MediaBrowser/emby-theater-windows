@@ -42,7 +42,7 @@
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
         
-        <controls:ExtendedContentControl Content="{Binding Icon}" IsTabStop="False" Width="99" Height="99" Margin="1,1,0,1" Visibility="{Binding HasIcon, Converter={StaticResource BooleanToVisibility}}" />
+        <controls:ExtendedContentControl Content="{Binding Icon}" IsTabStop="False" MaxWidth="99" Height="99" Margin="1,1,0,1" Visibility="{Binding HasIcon, Converter={StaticResource BooleanToVisibility}}" />
         <Grid Height="100" MinWidth="161" Visibility="{Binding HasContents, Converter={StaticResource BooleanToVisibility}}">
             <controls:ExtendedContentControl Content="{Binding Contents}" IsTabStop="False" Margin="4" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
         </Grid>

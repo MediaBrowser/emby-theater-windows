@@ -65,15 +65,19 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
             SelectAudioTrackCommand = new RelayCommand(ShowAudioSelection);
 
             _playbackStopHandler = args => {
+                MediaPlayer = null;
+                NowPlayingItem = null;
                 NavigationService.Back();
-                if (MediaPlayer != null) {
-                    RemovePlayerEvents(MediaPlayer);
-                }
             };
 
             _playbackStartHandler = args => {
                 MediaPlayer = args.Player;
                 NowPlayingItem = args.Player.CurrentMedia;
+            };
+
+            Closed += (s, e) => {
+                OnPropertyChanged("ShowOsd");
+                nav.Back();
             };
 
             events.Get<PlaybackStopEventArgs>().Subscribe(_playbackStopHandler, true);
@@ -122,7 +126,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
 
         public bool ShowOsd
         {
-            get { return _showOsd && NowPlayingItem != null; }
+            get { return _showOsd && NowPlayingItem != null && IsActive; }
             set
             {
                 if (Equals(_showOsd, value)) {

@@ -1,9 +1,32 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using MediaBrowser.Theater.Api.UserInterface;
 
 namespace MediaBrowser.Theater.Presentation.ViewModels
 {
+    public class ButtonNotificationViewModel
+        : NotificationViewModel
+    {
+        private ICommand _pressedCommand;
+
+        public ButtonNotificationViewModel(TimeSpan duration) : base(duration) { }
+
+        public ICommand PressedCommand
+        {
+            get { return _pressedCommand; }
+            set
+            {
+                if (Equals(value, _pressedCommand)) {
+                    return;
+                }
+                _pressedCommand = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+
     public class NotificationViewModel
         : BaseViewModel
     {
@@ -60,7 +83,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             protected set
             {
                 base.IsActive = value;
-                if (value) {
+                if (value && _duration != Timeout.InfiniteTimeSpan) {
                     Task.Run(async () => {
                         await Task.Delay(_duration);
                         await Close();

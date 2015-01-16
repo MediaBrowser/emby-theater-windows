@@ -91,6 +91,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Core\Views\ButtonNotificationView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Core\Views\ClockView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -176,6 +180,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Login\Views\WelcomePageView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Osd\Views\NowPlayingNotificationInfoView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -433,6 +441,9 @@
     <Compile Include="Controls\TileButton.cs" />
     <Compile Include="Core\Commands\ExitMenuCommand.cs" />
     <Compile Include="Core\Commands\HomeCommand.cs" />
+    <Compile Include="Core\Views\ButtonNotificationView.xaml.cs">
+      <DependentUpon>ButtonNotificationView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Home\ViewModels\Channels\ChannelsListViewModel.cs" />
     <Compile Include="Home\ViewModels\Channels\ChannelListHomePageGenerator.cs" />
     <Compile Include="Home\ViewModels\Generic\GenericFolderSpotlightViewModel.cs" />
@@ -469,6 +480,10 @@
     </Compile>
     <Compile Include="Login\Views\WelcomePageView.xaml.cs">
       <DependentUpon>WelcomePageView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Osd\ViewModels\NowPlayingNotificationViewModel.cs" />
+    <Compile Include="Osd\Views\NowPlayingNotificationInfoView.xaml.cs">
+      <DependentUpon>NowPlayingNotificationInfoView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Osd\Views\OsdAudioTracksView.xaml.cs">
       <DependentUpon>OsdAudioTracksView.xaml</DependentUpon>

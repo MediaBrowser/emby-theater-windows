@@ -1,21 +1,28 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.System;
 using MediaBrowser.Theater.Api;
+using MediaBrowser.Theater.Api.Events;
 using MediaBrowser.Theater.Api.Library;
 using MediaBrowser.Theater.Api.Navigation;
+using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.System;
+using MediaBrowser.Theater.Api.UserInterface;
+using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
 using MediaBrowser.Theater.DefaultTheme.Home;
 using MediaBrowser.Theater.DefaultTheme.ItemDetails;
 using MediaBrowser.Theater.DefaultTheme.ItemList;
 using MediaBrowser.Theater.DefaultTheme.Login;
 using MediaBrowser.Theater.DefaultTheme.Login.ViewModels;
 using MediaBrowser.Theater.DefaultTheme.Osd;
+using MediaBrowser.Theater.DefaultTheme.Osd.ViewModels;
 using MediaBrowser.Theater.DefaultTheme.SideMenu;
 using MediaBrowser.Theater.DefaultTheme.SideMenu.ViewModels;
 using MediaBrowser.Theater.Presentation.Navigation;
+using MediaBrowser.Theater.Presentation.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.Core
 {
@@ -25,7 +32,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Core
         private readonly ITheaterApplicationHost _appHost;
         private readonly IConnectionManager _connectionManager;
 
-        public RootContext(ITheaterApplicationHost appHost, ISessionManager sessionManager, IConnectionManager connectionManager) : base(appHost)
+        public RootContext(ITheaterApplicationHost appHost, ISessionManager sessionManager, IConnectionManager connectionManager, IPresenter presenter, IEventAggregator events) : base(appHost)
         {
             _appHost = appHost;
             _connectionManager = connectionManager;
@@ -63,6 +70,13 @@ namespace MediaBrowser.Theater.DefaultTheme.Core
 
                     return context;
                 }
+            });
+
+            events.Get<PlaybackStartEventArgs>().Subscribe(e => {
+                var notification = appHost.TryResolve<NowPlayingNotificationViewModel>();
+                notification.ActivePlayer = e.Player;
+                presenter.ShowNotification(notification);
+//                presenter.ShowNotification(new ItemArtworkViewModel(e.Player.CurrentMedia, connectionManager, appHost.TryResolve<IImageManager>()));
             });
         }
 

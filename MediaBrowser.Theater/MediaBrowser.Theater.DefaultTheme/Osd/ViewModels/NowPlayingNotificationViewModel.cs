@@ -21,10 +21,12 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
         {
             _item = player.CurrentMedia;
 
-            DurationTicks = player.CurrentDurationTicks.HasValue ? player.CurrentDurationTicks.Value : 0;
+            var duration = player.CurrentDurationTicks;
+            DurationTicks = duration.HasValue ? duration.Value : 0;
 
             _positionTimer = new Timer(arg => {
-                ProgressTicks = player.CurrentPositionTicks.HasValue ? player.CurrentPositionTicks.Value : 0;
+                var position = player.CurrentPositionTicks;
+                ProgressTicks = position.HasValue ? position.Value : 0;
             }, null, 0, 250);
         }
 
@@ -124,7 +126,10 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
                 if (_activePlayer != null) {
                     var item = _activePlayer.CurrentMedia;
 
-                    Icon = new ItemArtworkViewModel(item, _connectionManager, _imageManager);
+                    Icon = new ItemArtworkViewModel(item, _connectionManager, _imageManager) {
+                        DesiredImageHeight=100
+                    };
+
                     Contents = new NowPlayingNotificationInfoViewModel(_activePlayer);
 
                     EventHandler<PlaybackStopEventArgs> playbackStopped = null;

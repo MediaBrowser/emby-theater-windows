@@ -9,11 +9,15 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
     public class NotificationTrayViewModel
         : BaseViewModel
     {
-        public NotificationTrayViewModel(IEventAggregator events)
+        public NotificationTrayViewModel(IEventAggregator events, NotificationPriority priority)
         {
             Notifications = new ObservableCollection<IViewModel>();
 
             events.Get<ShowNotificationEvent>().Subscribe(e => {
+                if (e.Priority != priority) {
+                    return;
+                }
+
                 IViewModel vm = e.ViewModel;
 
                 EventHandler closed = null;

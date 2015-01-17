@@ -76,7 +76,7 @@
                 <TranslateTransform Y="-300"/>
             </Grid.RenderTransform>
 
-            <Border Background="{StaticResource BackgroundBrush}" Opacity="0.7"/>
+            <Border Background="{StaticResource BackgroundBrush}" Opacity="0.95"/>
             <Grid Margin="25 20 25 20">
 <!--                <Image Name="ImgLogo" Stretch="Uniform" HorizontalAlignment="Left" VerticalAlignment="Center"-->
 <!--                       Height="80" MaxWidth="550" />-->
@@ -98,7 +98,7 @@
                 <TranslateTransform Y="300"/>
             </Grid.RenderTransform>
 
-            <Border Background="{StaticResource BackgroundBrush}" Opacity="0.7"/>
+            <Border Background="{StaticResource BackgroundBrush}" Opacity="0.95"/>
 
             <StackPanel Orientation="Vertical" Margin="0 15 0 0">
 

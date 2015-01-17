@@ -29,6 +29,7 @@ namespace MediaBrowser.Theater.DefaultTheme
     public struct ShowNotificationEvent
     {
         public IViewModel ViewModel { get; set; }
+        public NotificationPriority Priority { get; set; }
     }
 
     public class WindowManager
@@ -483,9 +484,9 @@ namespace MediaBrowser.Theater.DefaultTheme
             await _pageLoadedEvent.Publish(new PageLoadedEvent { ViewModel = contents });
         }
 
-        public Task ShowNotification(IViewModel contents)
+        public Task ShowNotification(IViewModel contents, NotificationPriority priority = NotificationPriority.Normal)
         {
-            return _showNotificationEvent.Publish(new ShowNotificationEvent { ViewModel = contents });
+            return _showNotificationEvent.Publish(new ShowNotificationEvent { ViewModel = contents, Priority = priority });
         }
 
         public MessageBoxResult ShowMessage(MessageBoxInfo messageBoxInfo)

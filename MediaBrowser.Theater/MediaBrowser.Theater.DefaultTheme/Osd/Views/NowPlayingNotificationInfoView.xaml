@@ -6,6 +6,35 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
-            <TextBlock Text="{Binding DisplayName}"/>
+        <ProgressBar Grid.Row="0" Height="NaN" Minimum="0" Maximum="{Binding DurationTicks}" Value="{Binding ProgressTicks, Mode=OneWay}"
+                     Visibility="{Binding IsInProgress, Converter={StaticResource BooleanToVisibility}}"
+                     VerticalAlignment="Stretch"
+                     HorizontalAlignment="Stretch"
+                     Background="Transparent"
+                     Style="{StaticResource ResumeProgressBar}"/>
+        
+        <Grid Margin="10,4,10,6">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" Text="Now Playing" Style="{StaticResource LabelTextBlockStyle}"/>
+            <TextBlock Grid.Row="1" Text="{Binding ParentName}" Visibility="{Binding HasParentName, Converter={StaticResource BooleanToVisibility}}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" VerticalAlignment="Bottom"/>
+            <TextBlock Grid.Row="2" Text="{Binding DisplayName}" FontSize="26">
+                <TextBlock.Style>
+                    <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource NormalTextBlockStyle}">
+                        <Setter Property="TextWrapping" Value="NoWrap"/>
+                        
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding HasParentName}" Value="False">
+                                <Setter Property="TextWrapping" Value="WrapWithOverflow"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+        </Grid>
     </Grid>
 </UserControl>

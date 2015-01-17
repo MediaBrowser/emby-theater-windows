@@ -186,7 +186,11 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
             string name = item.Name;
 
             if (item.IndexNumber.HasValue && !item.IsType("season")) {
-                name = item.IndexNumber + " - " + name;
+                if (item.ParentIndexNumber.HasValue && item.IsType("episode")) {
+                    name = string.Format("S{0}, E{1} - {2}", item.ParentIndexNumber.Value, item.IndexNumber.Value, name);
+                } else {
+                    name = item.IndexNumber + " - " + name;
+                }
             }
 
             if (item.ParentIndexNumber.HasValue && item.IsAudio) {

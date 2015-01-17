@@ -73,7 +73,7 @@
 
         <controls:ExtendedContentControl Focusable="False" Content="{Binding FullScreenActivePage}" />
 
-        <Grid>
+        <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
@@ -188,8 +188,10 @@
                 </controls:ExtendedContentControl.TransitionType>
             </controls:ExtendedContentControl>
 
-            <controls:ExtendedContentControl Grid.Row="2" Content="{Binding Notifications}" IsTabStop="False"
-                                                 HorizontalAlignment="Right" VerticalAlignment="Top" />
+            <StackPanel Orientation="Horizontal" Grid.Row="2" Margin="0,0,50,30" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                <controls:ExtendedContentControl  Content="{Binding Notifications}" IsTabStop="False" Visibility="{Binding DisplayNotifications, Converter={StaticResource BooleanToVisibility}}"/>
+                <controls:ExtendedContentControl  Content="{Binding HighPriorityNotifications}" IsTabStop="False" Visibility="{Binding DisplayHighPriorityNotifications, Converter={StaticResource BooleanToVisibility}}"/>
+            </StackPanel>
         </Grid>
 
         <Rectangle x:Name="FadeOverlay" IsHitTestVisible="False" Visibility="Hidden" HorizontalAlignment="Stretch"

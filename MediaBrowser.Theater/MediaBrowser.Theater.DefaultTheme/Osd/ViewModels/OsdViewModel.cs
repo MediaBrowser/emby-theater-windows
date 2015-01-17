@@ -65,9 +65,13 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
             SelectAudioTrackCommand = new RelayCommand(ShowAudioSelection);
 
             _playbackStopHandler = args => {
+                if (!IsActive) {
+                    return;
+                }
+
                 MediaPlayer = null;
                 NowPlayingItem = null;
-                NavigationService.Back();
+                Close();
             };
 
             _playbackStartHandler = args => {
@@ -90,6 +94,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
                 ShowClock = false,
                 ShowCommandBar = false,
                 ShowMediaBrowserLogo = false,
+                ShowHighPriorityNotifications = true,
+                ShowNotifications = false,
                 PlaybackBackgroundOpacity = 0.0
             };
         }

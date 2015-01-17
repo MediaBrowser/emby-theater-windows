@@ -19,6 +19,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
         private IViewModel _backgroundMedia;
         private bool _isInFocus;
         private NotificationTrayViewModel _notifications;
+        private NotificationTrayViewModel _highPriorityNotifications;
         private CommandBarViewModel _commands;
         private ClockViewModel _clock;
         private bool _isInternalMediaPlaying;
@@ -27,7 +28,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
         {
             _navigator = navigator;
             _rootContext = rootContext;
-            Notifications = new NotificationTrayViewModel(events);
+            Notifications = new NotificationTrayViewModel(events, NotificationPriority.Normal);
+            HighPriorityNotifications = new NotificationTrayViewModel(events, NotificationPriority.High);
             Commands = new CommandBarViewModel(appHost, navigator);
             Clock = new ClockViewModel();
             IsInFocus = true;
@@ -97,6 +99,21 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
                     return;
                 }
                 _notifications = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public NotificationTrayViewModel HighPriorityNotifications
+        {
+            get { return _highPriorityNotifications; }
+            private set
+            {
+                if (Equals(value, _highPriorityNotifications))
+                {
+                    return;
+                }
+
+                _highPriorityNotifications = value;
                 OnPropertyChanged();
             }
         }
@@ -185,6 +202,16 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
             get { return GetPresentationOptions().PlaybackBackgroundOpacity; }
         }
 
+        public bool DisplayNotifications
+        {
+            get { return GetPresentationOptions().ShowNotifications; }
+        }
+
+        public bool DisplayHighPriorityNotifications
+        {
+            get { return GetPresentationOptions().ShowHighPriorityNotifications; }
+        }
+
         private RootPresentationOptions GetPresentationOptions()
         {
             var hasOptions = _activePage as IHasRootPresentationOptions;
@@ -209,6 +236,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
             OnPropertyChanged("DisplayCommandBar");
             OnPropertyChanged("DisplayClock");
             OnPropertyChanged("DisplayTitle");
+            OnPropertyChanged("DisplayNotifications");
+            OnPropertyChanged("DisplayHighPriorityNotifications");
             OnPropertyChanged("Title");
             OnPropertyChanged("PlaybackBackgroundOpacity");
         }

@@ -10,6 +10,7 @@ using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Api.Events;
+using MediaBrowser.Theater.Api.Library;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.UserInterface;
@@ -20,7 +21,14 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
 {
     public class OsdChaptersViewModel : BaseViewModel { }
     public class OsdAudioTracksViewModel : BaseViewModel { }
-    public class OsdSubtitleTracksViewModel : BaseViewModel { }
+
+    public class OsdSubtitleTracksViewModel : BaseViewModel
+    {
+        public OsdSubtitleTracksViewModel(BaseItemDto item, IMediaPlayer player)
+        {
+            
+        }
+    }
 
     public class OsdViewModel : BaseViewModel, IDisposable, IHasRootPresentationOptions
     {
@@ -211,7 +219,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
 
         public string DisplayName
         {
-            get { return ItemTileViewModel.GetDisplayNameWithAiredSpecial(_nowPlayingItem); }
+            get { return _nowPlayingItem.GetDisplayName(new DisplayNameFormat(true, false)); }
         }
 
         public string ClockShortTime

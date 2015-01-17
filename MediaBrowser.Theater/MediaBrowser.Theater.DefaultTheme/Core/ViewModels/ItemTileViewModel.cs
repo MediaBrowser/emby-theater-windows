@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using System.Windows;
 using System.Windows.Input;
 using MediaBrowser.Model.ApiClient;
@@ -7,9 +6,9 @@ using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Events;
 using MediaBrowser.Model.Session;
+using MediaBrowser.Theater.Api.Library;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Playback;
-using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Home.ViewModels;
 using MediaBrowser.Theater.Presentation.Controls;
@@ -39,11 +38,10 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
             Image.PropertyChanged += (senger, args) => {
                 if (args.PropertyName == "Size") {
                     OnPropertyChanged("Size");
-                    OnPropertyChanged("ShowDisplayName");
                 }
             };
 
-            DisplayNameGenerator = GetDisplayNameWithAiredSpecial;
+            DisplayNameGenerator = i => i.GetDisplayName(new DisplayNameFormat(true, true));
             GoToDetailsCommand = new RelayCommand(o => navigator.Navigate(Go.To.Item(Item)));
             PlayCommand = new RelayCommand(o => _playbackManager.Play(new PlayOptions(Item) { GoFullScreen = true, EnableCustomPlayers = true, Resume = true }));
         }
@@ -179,38 +177,6 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
         public Size Size
         {
             get { return new Size(Image.ActualWidth + 2*HomeViewModel.TileMargin, Image.ActualHeight + 2*HomeViewModel.TileMargin); }
-        }
-
-        public static string GetDisplayName(BaseItemDto item)
-        {
-            string name = item.Name;
-
-            if (item.IndexNumber.HasValue && !item.IsType("season")) {
-                if (item.ParentIndexNumber.HasValue && item.IsType("episode")) {
-                    name = string.Format("S{0}, E{1} - {2}", item.ParentIndexNumber.Value, item.IndexNumber.Value, name);
-                } else {
-                    name = item.IndexNumber + " - " + name;
-                }
-            }
-
-            if (item.ParentIndexNumber.HasValue && item.IsAudio) {
-                name = item.ParentIndexNumber + "." + name;
-            }
-
-            return name;
-        }
-
-        public static string GetDisplayNameWithAiredSpecial(BaseItemDto item)
-        {
-            if (item == null) {
-                return string.Empty;
-            }
-
-            if (item.IsType("episode") && item.ParentIndexNumber.HasValue && item.ParentIndexNumber.Value == 0) {
-                return "Special - " + item.Name;
-            }
-
-            return GetDisplayName(item);
         }
 
         private bool ShouldShowDisplayNameByImageType()

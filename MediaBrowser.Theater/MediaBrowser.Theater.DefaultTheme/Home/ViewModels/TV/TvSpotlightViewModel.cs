@@ -137,22 +137,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
                 _mainViewCancellationTokenSource = null;
             }
         }
-
-        public static string GetDisplayName(BaseItemDto item)
-        {
-            string name = item.Name;
-
-            if (item.IsType("Episode")) {
-                name = item.SeriesName;
-
-                if (item.IndexNumber.HasValue && item.ParentIndexNumber.HasValue) {
-                    name = name + " " + string.Format("S{0}, E{1}", item.ParentIndexNumber.Value, item.IndexNumber.Value);
-                }
-            }
-
-            return name;
-        }
-
+        
         private async void LoadViewModels(BaseItemDto tvFolder)
         {
             CancellationTokenSource cancellationSource = _mainViewCancellationTokenSource = new CancellationTokenSource();
@@ -193,7 +178,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
                 DesiredImageWidth = _miniSpotlightWidth,
                 DesiredImageHeight = HomeViewModel.TileHeight,
                 PreferredImageTypes = new[] { ImageType.Backdrop, ImageType.Thumb },
-                DisplayNameGenerator = GetDisplayName
+                DisplayNameGenerator = i => i.GetDisplayName(new DisplayNameFormat(true, true))
             };
         }
 

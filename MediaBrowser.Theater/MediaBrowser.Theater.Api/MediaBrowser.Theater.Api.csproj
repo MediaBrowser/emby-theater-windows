@@ -81,6 +81,7 @@
     <Compile Include="Events\IEventBus.cs" />
     <Compile Include="ITheaterApplicationHost.cs" />
     <Compile Include="Library\ItemChildrenEnumerator.cs" />
+    <Compile Include="Library\ItemDisplayName.cs" />
     <Compile Include="Playback\IConfigurableMediaPlayer.cs" />
     <Compile Include="Playback\IExternalMediaPlayer.cs" />
     <Compile Include="Playback\IInternalMediaPlayer.cs" />

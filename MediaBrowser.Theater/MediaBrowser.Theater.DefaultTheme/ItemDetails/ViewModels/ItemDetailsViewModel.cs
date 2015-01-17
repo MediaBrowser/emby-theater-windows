@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using MediaBrowser.Model.Dto;
+using MediaBrowser.Theater.Api.Library;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
 using MediaBrowser.Theater.Presentation.ViewModels;
@@ -25,7 +26,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
             PresentationOptions = new RootPresentationOptions {
                 ShowMediaBrowserLogo = false,
-                Title = ItemTileViewModel.GetDisplayNameWithAiredSpecial(item)
+                Title = item.GetDisplayName(new DisplayNameFormat(true, false))
             };
         }
 

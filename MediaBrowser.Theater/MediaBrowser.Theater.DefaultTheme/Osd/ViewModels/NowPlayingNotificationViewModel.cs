@@ -2,6 +2,7 @@
 using System.Threading;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
+using MediaBrowser.Theater.Api.Library;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.UserInterface;
@@ -32,7 +33,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
 
         public string DisplayName
         {
-            get { return ItemTileViewModel.GetDisplayNameWithAiredSpecial(_item); }
+            get { return _item.GetDisplayName(new DisplayNameFormat(false, false)); }
         }
 
         public string ParentName

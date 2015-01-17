@@ -27,7 +27,7 @@ namespace MediaBrowser.UI.Sync
 
         public Task AddOrUpdate(LocalItem item)
         {
-            var path = GetPath(item.UniqueId);
+            var path = GetPath(item.Id);
 
             Directory.CreateDirectory(Path.GetDirectoryName(path));
             _json.SerializeToFile(item, path);

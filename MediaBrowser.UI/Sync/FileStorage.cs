@@ -103,5 +103,11 @@ namespace MediaBrowser.UI.Sync
         {
             return Path.GetDirectoryName(path);
         }
+
+
+        public Task<Stream> GetFileStream(string path)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

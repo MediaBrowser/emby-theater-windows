@@ -16,62 +16,43 @@
              d:DataContext="{d:DesignInstance viewModels:OsdViewModel}"
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid x:Name="Container" FocusManager.IsFocusScope="True">
-        <VisualStateManager.VisualStateGroups>
-            <VisualStateGroup>
-                <VisualState Name="Shown">
-                    <Storyboard>
-                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="TopBanner"
-                                                       Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)">
-                            <EasingDoubleKeyFrame Value="0" KeyTime="00:00:0.3">
-                                <EasingDoubleKeyFrame.EasingFunction>
-                                    <CubicEase EasingMode="EaseOut" />
-                                </EasingDoubleKeyFrame.EasingFunction>
-                            </EasingDoubleKeyFrame>
-                        </DoubleAnimationUsingKeyFrames>
-
-                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BottomBanner"
-                                                       Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)">
-                            <EasingDoubleKeyFrame Value="0" KeyTime="00:00:0.3">
-                                <EasingDoubleKeyFrame.EasingFunction>
-                                    <CubicEase EasingMode="EaseOut" />
-                                </EasingDoubleKeyFrame.EasingFunction>
-                            </EasingDoubleKeyFrame>
-                        </DoubleAnimationUsingKeyFrames>
-                    </Storyboard>
-                </VisualState>
-
-                <VisualState Name="Hidden">
-                    <Storyboard>
-                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="TopBanner"
-                                                       Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)">
-                            <EasingDoubleKeyFrame Value="-300" KeyTime="00:00:0.3">
-                                <EasingDoubleKeyFrame.EasingFunction>
-                                    <CubicEase EasingMode="EaseIn" />
-                                </EasingDoubleKeyFrame.EasingFunction>
-                            </EasingDoubleKeyFrame>
-                        </DoubleAnimationUsingKeyFrames>
-
-                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BottomBanner"
-                                                       Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)">
-                            <EasingDoubleKeyFrame Value="300" KeyTime="00:00:0.3">
-                                <EasingDoubleKeyFrame.EasingFunction>
-                                    <CubicEase EasingMode="EaseIn" />
-                                </EasingDoubleKeyFrame.EasingFunction>
-                            </EasingDoubleKeyFrame>
-                        </DoubleAnimationUsingKeyFrames>
-                    </Storyboard>
-                </VisualState>
-            </VisualStateGroup>
-        </VisualStateManager.VisualStateGroups>
-
-        <i:Interaction.Behaviors>
-            <ei:DataStateBehavior
-                        Binding="{Binding ShowOsd}" Value="True"
-                        TrueState="Shown"
-                        FalseState="Hidden" />
-        </i:Interaction.Behaviors>
-
         <Grid x:Name="TopBanner" VerticalAlignment="Top" HorizontalAlignment="Stretch">
+            <Grid.Style>
+                <Style>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ShowOsd}" Value="True">
+                            <DataTrigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)">
+                                            <EasingDoubleKeyFrame Value="0" KeyTime="00:00:0.3">
+                                                <EasingDoubleKeyFrame.EasingFunction>
+                                                    <CubicEase EasingMode="EaseOut" />
+                                                </EasingDoubleKeyFrame.EasingFunction>
+                                            </EasingDoubleKeyFrame>
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.EnterActions>
+                            
+                            <DataTrigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)">
+                                            <EasingDoubleKeyFrame Value="-300" KeyTime="00:00:0.3">
+                                                <EasingDoubleKeyFrame.EasingFunction>
+                                                    <CubicEase EasingMode="EaseIn" />
+                                                </EasingDoubleKeyFrame.EasingFunction>
+                                            </EasingDoubleKeyFrame>
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.ExitActions>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+            
             <Grid.RenderTransform>
                 <TranslateTransform Y="-300"/>
             </Grid.RenderTransform>
@@ -94,6 +75,42 @@
         </Grid>
 
         <Grid x:Name="BottomBanner" VerticalAlignment="Bottom" HorizontalAlignment="Stretch">
+            <Grid.Style>
+                <Style>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ShowOsd}" Value="True">
+                            <DataTrigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)">
+                                            <EasingDoubleKeyFrame Value="0" KeyTime="00:00:0.3">
+                                                <EasingDoubleKeyFrame.EasingFunction>
+                                                    <CubicEase EasingMode="EaseOut" />
+                                                </EasingDoubleKeyFrame.EasingFunction>
+                                            </EasingDoubleKeyFrame>
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.EnterActions>
+
+                            <DataTrigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)">
+                                            <EasingDoubleKeyFrame Value="300" KeyTime="00:00:0.3">
+                                                <EasingDoubleKeyFrame.EasingFunction>
+                                                    <CubicEase EasingMode="EaseIn" />
+                                                </EasingDoubleKeyFrame.EasingFunction>
+                                            </EasingDoubleKeyFrame>
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.ExitActions>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+
             <Grid.RenderTransform>
                 <TranslateTransform Y="300"/>
             </Grid.RenderTransform>

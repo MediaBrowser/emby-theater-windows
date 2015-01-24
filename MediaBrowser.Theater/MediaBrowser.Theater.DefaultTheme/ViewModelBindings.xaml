@@ -282,5 +282,9 @@
     <DataTemplate DataType="{x:Type viewModels6:OsdAudioTracksViewModel}">
         <views6:OsdAudioTracksView/>
     </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels6:SubtitleViewModel}">
+        <views6:SubtitleView/>
+    </DataTemplate>
 
 </ResourceDictionary>

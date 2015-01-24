@@ -108,7 +108,8 @@ namespace MediaBrowser.Theater.DefaultTheme
 
             _currentPopup = new PopupWindow(_navigator) {
                 DataContext = contents,
-                NavigateBackOnClose = navigateBackOnClose
+                NavigateBackOnClose = navigateBackOnClose,
+                CloseOnBackCommand = !navigateBackOnClose
             };
 
             if (unfocusMainWindow) {

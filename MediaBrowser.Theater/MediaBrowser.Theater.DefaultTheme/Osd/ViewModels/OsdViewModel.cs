@@ -24,9 +24,71 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
 
     public class OsdSubtitleTracksViewModel : BaseViewModel
     {
-        public OsdSubtitleTracksViewModel(BaseItemDto item, IMediaPlayer player)
+        private IVideoPlayer _player;
+
+        public IEnumerable<SubtitleViewModel> SubtitleStreams { get; set; }
+
+        public OsdSubtitleTracksViewModel(IVideoPlayer player)
         {
-            
+            Player = player;
+
+            SubtitleStreams = _player.SelectableStreams
+                                     .Where(s => s.Type == MediaStreamType.Subtitle)
+                                     .Select(s => {
+                                         var vm = new SubtitleViewModel(s, _player);
+                                         vm.Selected += () => Close();
+                                         return vm;
+                                     });
+        }
+        
+        public IVideoPlayer Player
+        {
+            get { return _player; }
+            set
+            {
+                _player = value;
+                OnPropertyChanged();
+                OnPropertyChanged("SubtitleStreams");
+            }
+        }
+    }
+
+    public class SubtitleViewModel : BaseViewModel
+    {
+        private readonly SelectableMediaStream _stream;
+        private readonly IVideoPlayer _player;
+
+        public event Action Selected;
+
+        protected virtual void OnSelected()
+        {
+            Action handler = Selected;
+            if (handler != null) {
+                handler();
+            }
+        }
+
+        public SubtitleViewModel(SelectableMediaStream stream, IVideoPlayer player)
+        {
+            _stream = stream;
+            _player = player;
+
+            ChangeSubtitleCommand = new RelayCommand(arg => {
+                _player.SetSubtitleStreamIndex(stream.Index);
+                OnSelected();
+            });
+        }
+
+        public ICommand ChangeSubtitleCommand { get; private set; }
+
+        public bool IsPlaying
+        {
+            get { return _player.CurrentSubtitleStreamIndex == _stream.Index; } 
+        }
+
+        public string DisplayName
+        {
+            get { return _stream.Name; }
         }
     }
 
@@ -143,7 +205,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
             get { return _showOsd && NowPlayingItem != null && IsActive; }
             set
             {
-                if (Equals(_showOsd, value)) {
+                if (Equals(ShowOsd, value)) {
                     return;
                 }
 
@@ -550,7 +612,11 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
 
         public void ShowSubtitleSelection(object commandParameter)
         {
-            NavigationService.Navigate(new SubtitleSelectionPath());
+            var player = MediaPlayer as IVideoPlayer;
+            if (player != null) {
+                var vm = new OsdSubtitleTracksViewModel(player);
+                PresentationManager.ShowPopup(vm, false, false);
+            }
         }
 
         public void ShowAudioSelection(object commandParameter)

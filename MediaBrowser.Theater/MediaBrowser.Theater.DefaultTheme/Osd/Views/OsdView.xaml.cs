@@ -137,14 +137,18 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.Views
         private void vm_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             OsdViewModel vm = ViewModel;
-            if (string.Equals(e.PropertyName, "PositionTicks") && vm != null) {
+            if (vm == null) {
+                return;
+            }
+
+            if (string.Equals(e.PropertyName, "PositionTicks")) {
                 if (!_isPositionSliderUpdating) {
                     CurrentPositionSlider.Value = vm.PositionTicks;
                 }
             }
 
             if (string.Equals(e.PropertyName, "ShowOsd") || string.Equals(e.PropertyName, "IsPaused")) {
-                if (!Container.IsKeyboardFocusWithin) {
+                if (!Container.IsKeyboardFocusWithin && vm.ShowOsd) {
                     Keyboard.Focus(PlayPauseButton);
                 }
             }

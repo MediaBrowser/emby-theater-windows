@@ -17,7 +17,7 @@ using MediaBrowser.Theater.Presentation.Navigation;
 namespace MediaBrowser.Theater.DefaultTheme.Osd
 {
     public class ChapterSelectionPath : NavigationPath<FullScreenPlaybackPath> { }
-    public class SubtitleSelectionPath : NavigationPath<FullScreenPlaybackPath> { }
+//    public class SubtitleSelectionPath : NavigationPath<FullScreenPlaybackPath> { }
     public class AudioTrackSelectionPath : NavigationPath<FullScreenPlaybackPath> { }
 
     public class FullScreenPlaybackContext
@@ -45,9 +45,9 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd
                 context.UnfocusMainWindow = false;
             });
 
-            Binder.Bind<SubtitleSelectionPath, PopupContext<OsdSubtitleTracksViewModel>>((path, context) => {
-                context.UnfocusMainWindow = false;
-            });
+//            Binder.Bind<SubtitleSelectionPath, PopupContext<OsdSubtitleTracksViewModel>>((path, context) => {
+//                context.UnfocusMainWindow = false;
+//            });
 
             Binder.Bind<AudioTrackSelectionPath, PopupContext<OsdAudioTracksViewModel>>((path, context) => {
                 context.UnfocusMainWindow = false;

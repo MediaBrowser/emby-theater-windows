@@ -199,6 +199,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Osd\Views\SubtitleView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="SortModeMenu\Views\SortModeCommandView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -493,6 +497,9 @@
     </Compile>
     <Compile Include="Osd\Views\OsdSubtitleTracksView.xaml.cs">
       <DependentUpon>OsdSubtitleTracksView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Osd\Views\SubtitleView.xaml.cs">
+      <DependentUpon>SubtitleView.xaml</DependentUpon>
     </Compile>
     <Compile Include="SortModeMenu\Commands\SortModeCommand.cs" />
     <Compile Include="Core\Commands\RestartMenuCommand.cs" />

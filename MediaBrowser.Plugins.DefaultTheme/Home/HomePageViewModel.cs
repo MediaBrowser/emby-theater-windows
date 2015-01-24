@@ -50,7 +50,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
 
             var views = userViews.Items.Select(i =>
             {
-                var collectionType = string.IsNullOrEmpty(i.CollectionType)
+                var collectionType = string.IsNullOrEmpty(i.CollectionType) || string.Equals(i.CollectionType, CollectionType.BoxSets, StringComparison.OrdinalIgnoreCase)
                     ? "folders"
                     : i.CollectionType;
 
@@ -64,7 +64,8 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
                     CollectionType.Playlists,
                     CollectionType.LiveTv,
                     CollectionType.Photos,
-                    CollectionType.Music
+                    CollectionType.Music,
+                    CollectionType.BoxSets
                 };
 
                 if (!supportedViews.Contains(collectionType, StringComparer.OrdinalIgnoreCase))

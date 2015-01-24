@@ -167,6 +167,11 @@ namespace MediaBrowser.UI.Networking
                 return separator + separator;
             }
         }
+
+        public void GenerateSelfSignedSslCertificate(string certificatePath, string hostname)
+        {
+            throw new NotImplementedException();
+        }
     }
 
 }

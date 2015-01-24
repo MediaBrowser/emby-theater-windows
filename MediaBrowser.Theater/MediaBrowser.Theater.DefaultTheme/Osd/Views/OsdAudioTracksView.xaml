@@ -7,7 +7,7 @@
              Width="600"
              Height="400"
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid Background="Red">
-            
+    <Grid VerticalAlignment="Center" HorizontalAlignment="Center" Background="{StaticResource BackgroundBrush}">
+        <ItemsControl ItemsSource="{Binding Streams}" Margin="6" Focusable="False"/>
     </Grid>
 </UserControl>

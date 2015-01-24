@@ -10,6 +10,6 @@
              FocusManager.IsFocusScope="True"
              Focusable="False">
     <Grid VerticalAlignment="Center" HorizontalAlignment="Center" Background="{StaticResource BackgroundBrush}">
-        <ItemsControl ItemsSource="{Binding SubtitleStreams}" Margin="6" Focusable="False"/>
+        <ItemsControl ItemsSource="{Binding Streams}" Margin="6" Focusable="False"/>
     </Grid>
 </UserControl>

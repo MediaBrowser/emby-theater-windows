@@ -287,4 +287,8 @@
         <views6:SubtitleView/>
     </DataTemplate>
 
+    <DataTemplate DataType="{x:Type viewModels6:AudioTrackViewModel}">
+        <views6:AudioTrackView/>
+    </DataTemplate>
+
 </ResourceDictionary>

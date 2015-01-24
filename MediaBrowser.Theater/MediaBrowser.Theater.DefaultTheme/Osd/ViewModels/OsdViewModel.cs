@@ -20,36 +20,36 @@ using MediaBrowser.Theater.Presentation.ViewModels;
 namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
 {
     public class OsdChaptersViewModel : BaseViewModel { }
-    public class OsdAudioTracksViewModel : BaseViewModel { }
+
+    public class OsdAudioTracksViewModel : BaseViewModel
+    {
+        public IEnumerable<AudioTrackViewModel> Streams { get; set; }
+
+        public OsdAudioTracksViewModel(IVideoPlayer player)
+        {
+            Streams = player.SelectableStreams
+                            .Where(s => s.Type == MediaStreamType.Audio)
+                            .Select(s => {
+                                var vm = new AudioTrackViewModel(s, player);
+                                vm.Selected += () => Close();
+                                return vm;
+                            });
+        }
+    }
 
     public class OsdSubtitleTracksViewModel : BaseViewModel
     {
-        private IVideoPlayer _player;
-
-        public IEnumerable<SubtitleViewModel> SubtitleStreams { get; set; }
+        public IEnumerable<SubtitleViewModel> Streams { get; set; }
 
         public OsdSubtitleTracksViewModel(IVideoPlayer player)
         {
-            Player = player;
-
-            SubtitleStreams = _player.SelectableStreams
-                                     .Where(s => s.Type == MediaStreamType.Subtitle)
-                                     .Select(s => {
-                                         var vm = new SubtitleViewModel(s, _player);
-                                         vm.Selected += () => Close();
-                                         return vm;
-                                     });
-        }
-        
-        public IVideoPlayer Player
-        {
-            get { return _player; }
-            set
-            {
-                _player = value;
-                OnPropertyChanged();
-                OnPropertyChanged("SubtitleStreams");
-            }
+            Streams = player.SelectableStreams
+                            .Where(s => s.Type == MediaStreamType.Subtitle)
+                            .Select(s => {
+                                var vm = new SubtitleViewModel(s, player);
+                                vm.Selected += () => Close();
+                                return vm;
+                            });
         }
     }
 
@@ -73,17 +73,58 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
             _stream = stream;
             _player = player;
 
-            ChangeSubtitleCommand = new RelayCommand(arg => {
+            ChangeStreamommand = new RelayCommand(arg =>
+            {
                 _player.SetSubtitleStreamIndex(stream.Index);
                 OnSelected();
             });
         }
 
-        public ICommand ChangeSubtitleCommand { get; private set; }
+        public ICommand ChangeStreamommand { get; private set; }
 
         public bool IsPlaying
         {
             get { return _player.CurrentSubtitleStreamIndex == _stream.Index; } 
+        }
+
+        public string DisplayName
+        {
+            get { return _stream.Name; }
+        }
+    }
+
+    public class AudioTrackViewModel : BaseViewModel
+    {
+        private readonly SelectableMediaStream _stream;
+        private readonly IVideoPlayer _player;
+
+        public event Action Selected;
+
+        protected virtual void OnSelected()
+        {
+            Action handler = Selected;
+            if (handler != null) {
+                handler();
+            }
+        }
+
+        public AudioTrackViewModel(SelectableMediaStream stream, IVideoPlayer player)
+        {
+            _stream = stream;
+            _player = player;
+
+            ChangeStreamommand = new RelayCommand(arg =>
+            {
+                _player.SetAudioStreamIndex(stream.Index);
+                OnSelected();
+            });
+        }
+
+        public ICommand ChangeStreamommand { get; private set; }
+
+        public bool IsPlaying
+        {
+            get { return _player.CurrentAudioStreamIndex == _stream.Index; }
         }
 
         public string DisplayName
@@ -621,7 +662,11 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
 
         public void ShowAudioSelection(object commandParameter)
         {
-            NavigationService.Navigate(new AudioTrackSelectionPath());
+            var player = MediaPlayer as IVideoPlayer;
+            if (player != null) {
+                var vm = new OsdAudioTracksViewModel(player);
+                PresentationManager.ShowPopup(vm, false, false);
+            }
         }
         
         private void DisposeCurrentPositionTimer()

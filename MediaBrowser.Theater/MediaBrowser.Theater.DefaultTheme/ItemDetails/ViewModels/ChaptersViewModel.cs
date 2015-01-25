@@ -98,6 +98,16 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
         private Image _image;
         private CancellationTokenSource _imageCancellationTokenSource;
 
+        public event Action Selected;
+
+        protected virtual void OnSelected()
+        {
+            Action handler = Selected;
+            if (handler != null) {
+                handler();
+            }
+        }
+
         public ChapterViewModel(BaseItemDto item, ChapterInfoDto chapter, IConnectionManager connectionManager, IImageManager imageManager, IPlaybackManager playbackManager)
         {
             _item = item;
@@ -105,12 +115,29 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
             _connectionManager = connectionManager;
             _imageManager = imageManager;
 
-            PlayCommand = new RelayCommand(o => playbackManager.Play(new PlayOptions(item) {
-                GoFullScreen = true,
-                EnableCustomPlayers = true,
-                Resume = false,
-                StartPositionTicks = chapter.StartPositionTicks
-            }));
+            PlayCommand = new RelayCommand(o => {
+                playbackManager.Play(new PlayOptions(item) {
+                    GoFullScreen = true,
+                    EnableCustomPlayers = true,
+                    Resume = false,
+                    StartPositionTicks = chapter.StartPositionTicks
+                });
+
+                OnSelected();
+            });
+        }
+
+        public ChapterViewModel(BaseItemDto item, ChapterInfoDto chapter, IConnectionManager connectionManager, IImageManager imageManager, IVideoPlayer player)
+        {
+            _item = item;
+            _chapter = chapter;
+            _connectionManager = connectionManager;
+            _imageManager = imageManager;
+
+            PlayCommand = new RelayCommand(o => {
+                player.Seek(chapter.StartPositionTicks);
+                OnSelected();
+            });
         }
 
         public string Name

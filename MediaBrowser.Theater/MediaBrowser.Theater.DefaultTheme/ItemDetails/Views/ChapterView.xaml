@@ -16,7 +16,7 @@
              VerticalContentAlignment="Stretch"
              Height="200">
 
-    <controls1:TileButton Command="{Binding PlayCommand}" AutoHideHeading="False">
+    <controls1:TileButton x:Name="Button" Command="{Binding PlayCommand}" AutoHideHeading="False">
         <controls1:TileButton.Header>
             <StackPanel Margin="10,4,14,4">
                 <TextBlock Text="{Binding Name}" />

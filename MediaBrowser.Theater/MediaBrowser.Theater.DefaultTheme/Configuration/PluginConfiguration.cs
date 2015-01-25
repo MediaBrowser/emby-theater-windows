@@ -36,7 +36,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Configuration
         {
             Palette = new ColorPalette { Style = ThemeStyle.Light, Accent = AccentColors.MediaBrowserGreen };
             SortModes = new List<SortModePreference>();
-            ShowOnlyWatchedChapters = true;
+            ShowOnlyWatchedChapters = false;
         }
 
         public SortModePreference FindSortMode(string itemType)

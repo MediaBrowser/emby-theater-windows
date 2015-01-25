@@ -15,11 +15,38 @@ using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
+using MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels;
 using MediaBrowser.Theater.Presentation.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
 {
-    public class OsdChaptersViewModel : BaseViewModel { }
+    public class OsdChaptersViewModel : BaseViewModel
+    {
+        public List<OsdChapterViewModel> Chapters { get; set; }
+
+        public OsdChaptersViewModel(BaseItemDto item, IConnectionManager connectionManager, IImageManager imageManager, IVideoPlayer player)
+        {
+            Chapters = item.Chapters.Select(c => {
+                var vm = new OsdChapterViewModel(item, c, connectionManager, imageManager, player);
+                vm.Selected += () => Close();
+                return vm;
+            }).ToList();
+
+            for (int i = 0; i < Chapters.Count; i++) {
+                var current = Chapters[i];
+                var next = i < Chapters.Count - 1 ? item.Chapters[i + 1] : null;
+
+                if (next == null || next.StartPositionTicks > player.CurrentPositionTicks) {
+                    current.IsPlaying = true;
+                    break;
+                }
+            }
+
+            if (Chapters.Count > 0 && !Chapters.Any(c => c.IsPlaying)) {
+                Chapters.First().IsPlaying = true;
+            }
+        }
+    }
 
     public class OsdAudioTracksViewModel : BaseViewModel
     {
@@ -51,6 +78,14 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
                                 return vm;
                             });
         }
+    }
+
+    public class OsdChapterViewModel : ChapterViewModel
+    {
+        public bool IsPlaying { get; set; }
+
+        public OsdChapterViewModel(BaseItemDto item, ChapterInfoDto chapter, IConnectionManager connectionManager, IImageManager imageManager, IVideoPlayer player) 
+            : base(item, chapter, connectionManager, imageManager, player) { }
     }
 
     public class SubtitleViewModel : BaseViewModel
@@ -135,6 +170,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
 
     public class OsdViewModel : BaseViewModel, IDisposable, IHasRootPresentationOptions
     {
+        private readonly IConnectionManager _connectionManager;
         // reference these handlers so they are not GC'd until the osd view model is GC'd
         private readonly Action<PlaybackStopEventArgs> _playbackStopHandler;
         private readonly Action<PlaybackStartEventArgs> _playbackStartHandler;
@@ -155,8 +191,9 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
         private bool _supportsChapters;
         private bool _showOsd;
         
-        public OsdViewModel(IPlaybackManager playbackManager, IImageManager imageManager, IPresenter presentationManager, ILogger logger, INavigator nav, IEventAggregator events)
+        public OsdViewModel(IPlaybackManager playbackManager, IImageManager imageManager, IPresenter presentationManager, ILogger logger, INavigator nav, IEventAggregator events, IConnectionManager connectionManager)
         {
+            _connectionManager = connectionManager;
             Logger = logger;
             PresentationManager = presentationManager;
             ImageManager = imageManager;
@@ -569,8 +606,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
             List<SelectableMediaStream> audioStreams = selectableStreams.Where(i => i.Type == MediaStreamType.Audio).ToList();
             List<SelectableMediaStream> subtitleStreams = selectableStreams.Where(i => i.Type == MediaStreamType.Subtitle).ToList();
 
-            CanSelectAudioTrack = videoPlayer != null && videoPlayer.CanSelectAudioTrack && media != null && audioStreams.Count > 0;
-            CanSelectSubtitleTrack = videoPlayer != null && videoPlayer.CanSelectSubtitleTrack && media != null && subtitleStreams.Count > 0;
+            CanSelectAudioTrack = videoPlayer != null && videoPlayer.CanSelectAudioTrack && media != null && audioStreams.Count > 1;
+            CanSelectSubtitleTrack = videoPlayer != null && videoPlayer.CanSelectSubtitleTrack && media != null && subtitleStreams.Count > 1;
         }
 
         private void UpdatePauseValues(IMediaPlayer player)
@@ -648,7 +685,11 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
 
         public void ShowChapterSelection(object commandParameter)
         {
-            NavigationService.Navigate(new ChapterSelectionPath());
+            var player = MediaPlayer as IVideoPlayer;
+            if (player != null) {
+                var vm = new OsdChaptersViewModel(NowPlayingItem, _connectionManager, ImageManager, player);
+                PresentationManager.ShowPopup(vm, false, false);
+            }
         }
 
         public void ShowSubtitleSelection(object commandParameter)

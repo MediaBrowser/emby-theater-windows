@@ -16,6 +16,7 @@
 
                 <Path Grid.Column="0"
                       Visibility="{Binding IsPlaying, Converter={StaticResource BooleanToVisibility}}"
+                      HorizontalAlignment="Center"
                       StrokeThickness="1"
                       Stroke="{StaticResource ForegroundBrush}"
                       Fill="{StaticResource ForegroundBrush}"

@@ -223,7 +223,7 @@
                         </Button.Style>
                     </Button>
 
-                    <Button Command="{Binding SelectSubtitleTrackCommand}">
+                    <Button Command="{Binding SelectSubtitleTrackCommand}" Visibility="{Binding CanSelectSubtitleTrack, Converter={StaticResource BooleanToVisibility}}">
                         <Button.Style>
                             <Style TargetType="{x:Type Button}" BasedOn="{StaticResource SubtitleTrackButton}">
                                 <Style.Triggers>
@@ -235,7 +235,7 @@
                         </Button.Style>
                     </Button>
 
-                    <Button Command="{Binding SelectAudioTrackCommand}">
+                    <Button Command="{Binding SelectAudioTrackCommand}" Visibility="{Binding CanSelectAudioTrack, Converter={StaticResource BooleanToVisibility}}">
                         <Button.Style>
                             <Style TargetType="{x:Type Button}" BasedOn="{StaticResource AudioTrackButton}">
                                 <Style.Triggers>

@@ -199,6 +199,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Osd\Views\OsdChapterView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Osd\Views\OsdSubtitleTracksView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -501,6 +505,9 @@
     </Compile>
     <Compile Include="Osd\Views\OsdChaptersView.xaml.cs">
       <DependentUpon>OsdChaptersView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Osd\Views\OsdChapterView.xaml.cs">
+      <DependentUpon>OsdChapterView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Osd\Views\OsdSubtitleTracksView.xaml.cs">
       <DependentUpon>OsdSubtitleTracksView.xaml</DependentUpon>

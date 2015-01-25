@@ -16,6 +16,7 @@ namespace MediaBrowser.Theater.Api.UserInterface
         Task ShowPage(IViewModel contents);
         Task ShowPopup(IViewModel contents, bool unfocusMainWindow = true, bool navigateBackOnClose = true);
         Task ShowNotification(IViewModel contents, NotificationPriority priority = NotificationPriority.Normal);
+        //Task SilentlyClosePopup();
         MessageBoxResult ShowMessage(MessageBoxInfo messageBoxInfo);
         IViewModel CurrentPage { get; }
     }

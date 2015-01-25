@@ -290,5 +290,9 @@
     <DataTemplate DataType="{x:Type viewModels6:AudioTrackViewModel}">
         <views6:AudioTrackView/>
     </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels6:OsdChapterViewModel}">
+        <views6:OsdChapterView/>
+    </DataTemplate>
 
 </ResourceDictionary>

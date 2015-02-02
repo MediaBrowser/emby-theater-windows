@@ -111,7 +111,7 @@ namespace MediaBrowser.Theater.Api.Playback
 
             if (Interlocked.CompareExchange(ref _isStarting, 1, 0) == 0) // prevent race conditions, thread safe check we are not already starting to play an item
             {
-                try
+                try 
                 {
                     if (options.Shuffle)
                     {

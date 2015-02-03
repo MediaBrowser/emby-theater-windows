@@ -5,7 +5,7 @@ namespace MediaBrowser.Theater.Playback
 {
     public interface IPlaySequence : IDisposable
     {
-        BaseItemDto Current { get; }
+        Media Current { get; }
         bool Next();
         bool Previous();
     }

@@ -5,7 +5,7 @@ using MediaBrowser.Model.Dto;
 
 namespace MediaBrowser.Theater.Playback
 {
-    public interface IPlayQueue : INotifyCollectionChanged, IList<BaseItemDto>
+    public interface IPlayQueue : INotifyCollectionChanged, IList<Media>
     {
         event Action<RepeatMode> RepeatModeChanged;
         event Action<SortMode> SortModeChanged;

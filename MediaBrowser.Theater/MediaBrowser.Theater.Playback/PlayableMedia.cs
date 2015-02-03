@@ -10,6 +10,6 @@ namespace MediaBrowser.Theater.Playback
         public MediaSourceInfo Source { get; set; }
         public StreamInfo StreamInfo { get; set; }
         public IIsoMount IsoMount { get; set; }
-        public BaseItemDto Media { get; set; }
+        public Media Media { get; set; }
     }
 }

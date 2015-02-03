@@ -70,6 +70,7 @@
     <Compile Include="IPlaySequence.cs" />
     <Compile Include="ITransportControls.cs" />
     <Compile Include="LockedPlaybackSessionAccessor.cs" />
+    <Compile Include="Media.cs" />
     <Compile Include="PlayableMedia.cs" />
     <Compile Include="PlaybackCapabilities.cs" />
     <Compile Include="PlaybackManager.cs" />

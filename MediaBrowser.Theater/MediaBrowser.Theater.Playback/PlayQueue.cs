@@ -11,7 +11,7 @@ namespace MediaBrowser.Theater.Playback
     // public methods on this class are NOT thread safe
     public class PlayQueue : IPlayQueue
     {
-        private readonly IList<BaseItemDto> _items;
+        private readonly IList<Media> _items;
         private readonly object _lock;
 
         private RepeatMode _repeatMode;
@@ -22,7 +22,7 @@ namespace MediaBrowser.Theater.Playback
 
         public PlayQueue()
         {
-            _items = new List<BaseItemDto>();
+            _items = new List<Media>();
             _lock = new object();
         }
 
@@ -83,7 +83,7 @@ namespace MediaBrowser.Theater.Playback
             if (handler != null) handler(this, e);
         }
 
-        public IEnumerator<BaseItemDto> GetEnumerator()
+        public IEnumerator<Media> GetEnumerator()
         {
             return _items.GetEnumerator();
         }
@@ -93,7 +93,7 @@ namespace MediaBrowser.Theater.Playback
             return ((IEnumerable) _items).GetEnumerator();
         }
 
-        public void Add(BaseItemDto item)
+        public void Add(Media item)
         {
             lock (_items) {
                 _items.Add(item);
@@ -102,9 +102,9 @@ namespace MediaBrowser.Theater.Playback
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, _items.Count - 1));
         }
 
-        public void AddRange(IEnumerable<BaseItemDto> items)
+        public void AddRange(IEnumerable<Media> items)
         {
-            var itemsList = items as IList<BaseItemDto> ?? items.ToList();
+            var itemsList = items as IList<Media> ?? items.ToList();
             if (itemsList.Count == 0) {
                 return;
             }
@@ -127,19 +127,19 @@ namespace MediaBrowser.Theater.Playback
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
 
-        public bool Contains(BaseItemDto item)
+        public bool Contains(Media item)
         {
             return _items.Contains(item);
         }
 
-        public void CopyTo(BaseItemDto[] array, int arrayIndex)
+        public void CopyTo(Media[] array, int arrayIndex)
         {
             lock (_items) {
                 _items.CopyTo(array, arrayIndex);
             }
         }
 
-        public bool Remove(BaseItemDto item)
+        public bool Remove(Media item)
         {
             int index = IndexOf(item);
             if (index != -1) {
@@ -160,12 +160,12 @@ namespace MediaBrowser.Theater.Playback
             get { return _items.IsReadOnly; }
         }
 
-        public int IndexOf(BaseItemDto item)
+        public int IndexOf(Media item)
         {
             return _items.IndexOf(item);
         }
 
-        public void Insert(int index, BaseItemDto item)
+        public void Insert(int index, Media item)
         {
             lock (_items) {
                 _items.Insert(index, item);
@@ -181,7 +181,7 @@ namespace MediaBrowser.Theater.Playback
 
         public void RemoveAt(int index)
         {
-            BaseItemDto item = _items[index];
+            Media item = _items[index];
 
             lock (_items) {
                 _items.RemoveAt(index);
@@ -195,7 +195,7 @@ namespace MediaBrowser.Theater.Playback
             }
         }
 
-        public BaseItemDto this[int index]
+        public Media this[int index]
         {
             get { return _items[index]; }
             set { _items[index] = value; }

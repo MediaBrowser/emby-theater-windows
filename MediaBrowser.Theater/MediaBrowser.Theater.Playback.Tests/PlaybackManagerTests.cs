@@ -5,6 +5,7 @@ using System.Reactive.Subjects;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using MediaBrowser.Model.Dto;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
@@ -13,10 +14,10 @@ namespace MediaBrowser.Theater.Playback.Tests
     [TestClass]
     public class PlaybackManagerTests
     {
-        private IMediaPlayer CreateMockPlayer(Func<IMedia, bool> canPlayPredicate)
+        private IMediaPlayer CreateMockPlayer(Func<Media, bool> canPlayPredicate)
         {
             var player = new Mock<IMediaPlayer>();
-            player.Setup(p => p.CanPlay(It.IsAny<IMedia>())).Returns(canPlayPredicate);
+            player.Setup(p => p.CanPlay(It.IsAny<Media>())).Returns(canPlayPredicate);
 
             player.Setup(p => p.Prepare(It.IsAny<IPlaySequence>())).Returns((IPlaySequence sequence) =>
             {
@@ -62,10 +63,10 @@ namespace MediaBrowser.Theater.Playback.Tests
             var player = CreateMockPlayer(m => true);
             var playbackManager = new PlaybackManager(new[] {player}.ToList());
 
-            playbackManager.Queue.Add(new Mock<IMedia>().Object);
-            playbackManager.Queue.Add(new Mock<IMedia>().Object);
-            playbackManager.Queue.Add(new Mock<IMedia>().Object);
-            playbackManager.Queue.Add(new Mock<IMedia>().Object);
+            playbackManager.Queue.Add(new Mock<BaseItemDto>().Object);
+            playbackManager.Queue.Add(new Mock<BaseItemDto>().Object);
+            playbackManager.Queue.Add(new Mock<BaseItemDto>().Object);
+            playbackManager.Queue.Add(new Mock<BaseItemDto>().Object);
 
             var tcs = new TaskCompletionSource<object>();
             var events = new List<PlaybackStatus>();
@@ -93,22 +94,22 @@ namespace MediaBrowser.Theater.Playback.Tests
         [TestMethod]
         public async Task Play_SwitchPlayer()
         {
-            var media = new[] {
-                new Mock<IMedia>().Object,
-                new Mock<IMedia>().Object,
-                new Mock<IMedia>().Object,
-                new Mock<IMedia>().Object,
-                new Mock<IMedia>().Object,
+            var media = new Media[] {
+                new Mock<BaseItemDto>().Object,
+                new Mock<BaseItemDto>().Object,
+                new Mock<BaseItemDto>().Object,
+                new Mock<BaseItemDto>().Object,
+                new Mock<BaseItemDto>().Object,
             };
 
             var playerA = CreateMockPlayer(m => m == media[2]);
             var playerB = CreateMockPlayer(m => m != media[2]);
             var playbackManager = new PlaybackManager(new List<IMediaPlayer> {playerA, playerB});
 
-            playbackManager.Queue.Add(new Mock<IMedia>().Object);
-            playbackManager.Queue.Add(new Mock<IMedia>().Object);
-            playbackManager.Queue.Add(new Mock<IMedia>().Object);
-            playbackManager.Queue.Add(new Mock<IMedia>().Object);
+            playbackManager.Queue.Add(new Mock<BaseItemDto>().Object);
+            playbackManager.Queue.Add(new Mock<BaseItemDto>().Object);
+            playbackManager.Queue.Add(new Mock<BaseItemDto>().Object);
+            playbackManager.Queue.Add(new Mock<BaseItemDto>().Object);
 
             var tcs = new TaskCompletionSource<object>();
             var events = new List<PlaybackStatus>();

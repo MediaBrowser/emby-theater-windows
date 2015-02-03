@@ -8,7 +8,7 @@ namespace MediaBrowser.Theater.Playback
     {
         int Priority { get; }
         string Name { get; }
-        bool CanPlay(BaseItemDto media);
+        bool CanPlay(Media media);
         Task<IPreparedSessions> Prepare(IPlaySequence sequence);
     }
 

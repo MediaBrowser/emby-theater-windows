@@ -83,7 +83,7 @@ namespace MediaBrowser.Theater.Playback
             }
         }
 
-        private IMediaPlayer FindSuitablePlayer(MediaStreamType media)
+        private IMediaPlayer FindSuitablePlayer(Media media)
         {
             return _players.FirstOrDefault(p => p.CanPlay(media));
         }
@@ -104,7 +104,7 @@ namespace MediaBrowser.Theater.Playback
 
         private async Task BeginPlayback(IPlaySequence sequence)
         {
-            BaseItemDto media;
+            Media media;
             IMediaPlayer player;
             while (MoveToNextPlayableItem(sequence, out media, out player)) {
                 var subSequence = new PlayableFilteredPlaySequence(sequence, player, media);
@@ -144,9 +144,9 @@ namespace MediaBrowser.Theater.Playback
             return session.Status.StatusType == PlaybackStatusType.Stopped;
         }
 
-        private bool MoveToNextPlayableItem(IPlaySequence sequence, out BaseItemDto media, out IMediaPlayer player)
+        private bool MoveToNextPlayableItem(IPlaySequence sequence, out Media media, out IMediaPlayer player)
         {
-            var searched = new HashSet<BaseItemDto>();
+            var searched = new HashSet<Media>();
             do {
                 if (sequence.Current == null) {
                     continue;
@@ -243,9 +243,9 @@ namespace MediaBrowser.Theater.Playback
         private readonly IMediaPlayer _player;
         private readonly IPlaySequence _sequence;
 
-        private BaseItemDto _bootstrap;
+        private Media _bootstrap;
 
-        public PlayableFilteredPlaySequence(IPlaySequence sequence, IMediaPlayer player, BaseItemDto bootstrap = null)
+        public PlayableFilteredPlaySequence(IPlaySequence sequence, IMediaPlayer player, Media bootstrap = null)
         {
             _sequence = sequence;
             _player = player;
@@ -256,7 +256,7 @@ namespace MediaBrowser.Theater.Playback
         {
         }
 
-        public BaseItemDto Current { get; private set; }
+        public Media Current { get; private set; }
 
         public bool Next()
         {

@@ -43,8 +43,8 @@ namespace MediaBrowser.Theater.Playback
                 _currentIndex = _queue.IndexOf(Current);
             }
         }
-        
-        public BaseItemDto Current { get; private set; }
+
+        public Media Current { get; private set; }
 
         public bool Next()
         {
@@ -182,7 +182,7 @@ namespace MediaBrowser.Theater.Playback
             return true;
         }
 
-        private BaseItemDto GetCurrent()
+        private Media GetCurrent()
         {
             if (_queue.SortMode == SortMode.Shuffle) {
                 if (_indices == null) {

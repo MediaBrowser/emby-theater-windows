@@ -8,5 +8,6 @@ namespace MediaBrowser.Theater.Playback
         Media Current { get; }
         bool Next();
         bool Previous();
+        bool SkipTo(int index);
     }
 }

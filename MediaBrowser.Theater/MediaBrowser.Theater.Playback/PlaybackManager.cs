@@ -110,16 +110,15 @@ namespace MediaBrowser.Theater.Playback
                 var subSequence = new PlayableFilteredPlaySequence(sequence, player, media);
                 IPreparedSessions prepared = await player.Prepare(subSequence);
 
-                using (SubscribeToSessions(prepared.Sessions)) {
-                    using (SubscribeToEvents(prepared.Status)) {
-                        await prepared.Start();
+                using (SubscribeToSessions(prepared.Sessions))
+                using (SubscribeToEvents(prepared.Status)) {
+                    await prepared.Start();
 
-                        IPlaybackSession finalSession = await prepared.Sessions.DefaultIfEmpty();
-                        bool shouldContinue = !WasStopped(finalSession);
+                    IPlaybackSession finalSession = await prepared.Sessions.DefaultIfEmpty();
+                    bool shouldContinue = !WasStopped(finalSession);
 
-                        if (!shouldContinue) {
-                            break;
-                        }
+                    if (!shouldContinue) {
+                        break;
                     }
                 }
             }
@@ -208,6 +207,10 @@ namespace MediaBrowser.Theater.Playback
             {
             }
 
+            public void SkipTo(int itemIndex)
+            {
+            }
+
             public void SelectStream(MediaStreamType channel, int index)
             {
             }
@@ -284,6 +287,22 @@ namespace MediaBrowser.Theater.Playback
         {
             bool hasPrevious = _sequence.Previous();
             if (hasPrevious) {
+                bool canPlay = _player.CanPlay(_sequence.Current);
+
+                if (canPlay) {
+                    Current = _sequence.Current;
+                    return true;
+                }
+            }
+
+            Current = null;
+            return false;
+        }
+
+        public bool SkipTo(int index)
+        {
+            bool itemExists = _sequence.SkipTo(index);
+            if (itemExists) {
                 bool canPlay = _player.CanPlay(_sequence.Current);
 
                 if (canPlay) {

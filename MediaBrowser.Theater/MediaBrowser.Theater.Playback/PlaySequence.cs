@@ -154,6 +154,20 @@ namespace MediaBrowser.Theater.Playback
             }
         }
 
+        public bool SkipTo(int index)
+        {
+            lock (_lock) {
+                if (index < 0 || index >= _queue.Count) {
+                    Current = null;
+                    return false;
+                }
+
+                _currentIndex = index;
+                Current = GetCurrent();
+                return true;
+            }
+        }
+
         private bool DecrementIndex()
         {
             if (_queue.RepeatMode == RepeatMode.Single) {

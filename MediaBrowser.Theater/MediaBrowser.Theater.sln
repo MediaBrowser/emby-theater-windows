@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30501.0
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaBrowser.Theater", "MediaBrowser.Theater\MediaBrowser.Theater.csproj", "{316161E3-86EB-4D70-854E-608B879134CD}"
 EndProject
@@ -25,6 +25,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaBrowser.Theater.Playback", "MediaBrowser.Theater.Playback\MediaBrowser.Theater.Playback.csproj", "{FC6885C8-A8B5-42E4-981E-BE38F3A8BE3A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaBrowser.Theater.Playback.Tests", "MediaBrowser.Theater.Playback.Tests\MediaBrowser.Theater.Playback.Tests.csproj", "{75ACD3B3-5785-4F90-B25F-703B525C9148}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MediaPlayers", "MediaPlayers", "{5ADC4DEE-D6EE-46DD-BCB6-B134CBED95DC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaBrowser.Theater.MockPlayer", "MediaBrowser.Theater.MockPlayer\MediaBrowser.Theater.MockPlayer.csproj", "{073963C5-408E-4B9E-B9E3-EE2F79BD1FA8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -81,8 +85,18 @@ Global
 		{75ACD3B3-5785-4F90-B25F-703B525C9148}.Release|Any CPU.Build.0 = Release|Any CPU
 		{75ACD3B3-5785-4F90-B25F-703B525C9148}.StyleCheck|Any CPU.ActiveCfg = Release|Any CPU
 		{75ACD3B3-5785-4F90-B25F-703B525C9148}.StyleCheck|Any CPU.Build.0 = Release|Any CPU
+		{073963C5-408E-4B9E-B9E3-EE2F79BD1FA8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{073963C5-408E-4B9E-B9E3-EE2F79BD1FA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{073963C5-408E-4B9E-B9E3-EE2F79BD1FA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{073963C5-408E-4B9E-B9E3-EE2F79BD1FA8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{073963C5-408E-4B9E-B9E3-EE2F79BD1FA8}.StyleCheck|Any CPU.ActiveCfg = Release|Any CPU
+		{073963C5-408E-4B9E-B9E3-EE2F79BD1FA8}.StyleCheck|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{04781068-D0D2-47BA-8D1C-A96274655F63} = {5ADC4DEE-D6EE-46DD-BCB6-B134CBED95DC}
+		{073963C5-408E-4B9E-B9E3-EE2F79BD1FA8} = {5ADC4DEE-D6EE-46DD-BCB6-B134CBED95DC}
 	EndGlobalSection
 EndGlobal

@@ -27,7 +27,7 @@ namespace MediaBrowser.Theater.Playback.Tests
                 var prepared = new Mock<IPreparedSessions>();
                 prepared.Setup(p => p.Sessions).Returns(sessions);
                 prepared.Setup(p => p.Status).Returns(events);
-                prepared.Setup(p => p.Start()).Returns(() => Task.Run(() => {
+                prepared.Setup(p => p.Start()).Callback(() => Task.Run(() => {
                     while (sequence.Next()) {
                         var session = new Mock<IPlaybackSession>();
                         sessions.OnNext(session.Object);

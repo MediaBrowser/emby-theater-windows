@@ -13,7 +13,6 @@ namespace MediaBrowser.Theater.Playback
         void SkipPrevious();
         void SkipTo(int itemIndex);
         void SelectStream(MediaStreamType channel, int index);
-        void SetVolume(decimal volume);
-        void SetMuted(bool muted);
+        void SetPlaybackSpeed(double speedMultiplier);
     }
 }

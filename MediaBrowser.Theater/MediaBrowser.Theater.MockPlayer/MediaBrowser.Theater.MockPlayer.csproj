@@ -60,7 +60,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MockMediaPlayer.cs" />
+    <Compile Include="NavigationDirection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Session.cs" />
+    <Compile Include="SessionCompletionAction.cs" />
+    <Compile Include="SessionSequence.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MediaBrowser.Theater.Playback\MediaBrowser.Theater.Playback.csproj">

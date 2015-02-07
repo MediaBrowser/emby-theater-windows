@@ -1,5 +1,4 @@
 using System;
-using MediaBrowser.Model.Dto;
 
 namespace MediaBrowser.Theater.Playback
 {

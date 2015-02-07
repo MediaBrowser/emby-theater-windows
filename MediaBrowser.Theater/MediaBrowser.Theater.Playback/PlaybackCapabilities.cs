@@ -8,6 +8,6 @@ namespace MediaBrowser.Theater.Playback
         public bool CanSeek { get; set; }
         public bool CanSkip { get; set; }
         public bool CanChangeStreams { get; set; }
-        public bool CanChangeVolume { get; set; }
+        public bool CanChangeSpeed { get; set; }
     }
 }

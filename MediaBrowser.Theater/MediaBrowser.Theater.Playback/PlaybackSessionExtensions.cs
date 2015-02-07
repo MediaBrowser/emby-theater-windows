@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 
 namespace MediaBrowser.Theater.Playback
@@ -10,30 +12,28 @@ namespace MediaBrowser.Theater.Playback
         {
             if (session.Status.StatusType == PlaybackStatusType.Paused) {
                 session.Play();
-            }
-            else if (session.Status.StatusType == PlaybackStatusType.Playing) {
+            } else if (session.Status.StatusType == PlaybackStatusType.Playing) {
                 session.Pause();
             }
         }
 
         public static void NextStream(this IPlaybackSession session, MediaStreamType channel)
         {
-            var streams = session.Status.Media.Source.MediaStreams.Where(s => s.Type == channel).ToList();
+            List<MediaStream> streams = session.Status.Media.Source.MediaStreams.Where(s => s.Type == channel).ToList();
             if (streams.Count == 0) {
                 return;
             }
-            
-            var currentStream = session.Status.GetActiveStreamIndex(channel);
+
+            int? currentStream = session.Status.GetActiveStreamIndex(channel);
             if (currentStream == null) {
                 session.SelectStream(channel, streams.First().Index);
-            }
-            else {
-                var currentIndex = streams.Select((s, i) => new {s, i})
-                    .Where(item => item.s.Index == currentStream.Value)
-                    .Select(item => item.i)
-                    .First();
+            } else {
+                int currentIndex = streams.Select((s, i) => new { s, i })
+                                          .Where(item => item.s.Index == currentStream.Value)
+                                          .Select(item => item.i)
+                                          .First();
 
-                var nextIndex = (currentIndex + 1)%streams.Count;
+                int nextIndex = (currentIndex + 1)%streams.Count;
 
                 if (nextIndex != currentIndex) {
                     session.SelectStream(channel, streams[nextIndex].Index);
@@ -43,21 +43,21 @@ namespace MediaBrowser.Theater.Playback
 
         public static void PreviousStream(this IPlaybackSession session, MediaStreamType channel)
         {
-            var streams = session.Status.Media.Source.MediaStreams.Where(s => s.Type == channel).ToList();
+            List<MediaStream> streams = session.Status.Media.Source.MediaStreams.Where(s => s.Type == channel).ToList();
             if (streams.Count == 0) {
                 return;
             }
 
-            var currentStream = session.Status.GetActiveStreamIndex(channel);
+            int? currentStream = session.Status.GetActiveStreamIndex(channel);
             if (currentStream == null) {
                 session.SelectStream(channel, streams.First().Index);
             } else {
-                var currentIndex = streams.Select((s, i) => new { s, i })
-                    .Where(item => item.s.Index == currentStream.Value)
-                    .Select(item => item.i)
-                    .First();
+                int currentIndex = streams.Select((s, i) => new { s, i })
+                                          .Where(item => item.s.Index == currentStream.Value)
+                                          .Select(item => item.i)
+                                          .First();
 
-                var nextIndex = currentIndex - 1;
+                int nextIndex = currentIndex - 1;
                 if (nextIndex < 0) {
                     nextIndex += streams.Count;
                 }
@@ -68,31 +68,45 @@ namespace MediaBrowser.Theater.Playback
             }
         }
 
-        public static void StepUpVolume(this IPlaybackSession session)
+        public static void NextChapter(this IPlaybackSession session)
         {
-            if (session.Status.IsMuted) {
-                session.SetMuted(false);
+            PlaybackStatus state = session.Status;
+            ChapterInfoDto chapter = state.Media.Media.Item.Chapters.FirstOrDefault(c => c.StartPositionTicks > state.Progress);
+
+            if (chapter != null) {
+                session.Seek(chapter.StartPositionTicks);
             }
-
-            var volume = session.Status.Volume;
-            volume = Math.Min(Math.Max(volume + 0.02m, 0), 1);
-
-            session.SetVolume(volume);
         }
 
-        public static void StepDownVolume(this IPlaybackSession session)
+        public static void PreviousChapter(this IPlaybackSession session)
         {
-            if (session.Status.IsMuted)
-            {
-                session.SetMuted(false);
+            PlaybackStatus state = session.Status;
+            List<ChapterInfoDto> chapters = state.Media.Media.Item.Chapters;
+
+            for (int i = chapters.Count - 1; i >= 0; i--) {
+                ChapterInfoDto previous = chapters[Math.Max(0, i - 1)];
+                ChapterInfoDto current = chapters[i];
+
+                if (current.StartPositionTicks < state.Progress) {
+                    if (state.Progress - current.StartPositionTicks < TimeSpan.FromSeconds(10).Ticks) {
+                        session.Seek(current.StartPositionTicks);
+                    } else {
+                        session.Seek(previous.StartPositionTicks);
+                    }
+
+                    break;
+                }
             }
-
-            var volume = session.Status.Volume;
-            volume = Math.Min(Math.Max(volume - 0.02m, 0), 1);
-
-            session.SetVolume(volume);
         }
 
-        // todo session extension for seeking to chapter
+        public static void SkipForward(this IPlaybackSession session, double seconds = 10)
+        {
+            session.Seek(session.Status.Progress + TimeSpan.FromSeconds(seconds).Ticks);
+        }
+
+        public static void SkipBackward(this IPlaybackSession session, double seconds = 10)
+        {
+            session.Seek(session.Status.Progress - TimeSpan.FromSeconds(seconds).Ticks);
+        }
     }
 }

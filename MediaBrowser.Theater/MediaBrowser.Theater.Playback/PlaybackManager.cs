@@ -5,7 +5,6 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Async;
 using System.Threading.Tasks;
-using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 
 namespace MediaBrowser.Theater.Playback
@@ -15,6 +14,7 @@ namespace MediaBrowser.Theater.Playback
         private readonly ISubject<PlaybackStatus> _events;
         private readonly IList<IMediaPlayer> _players;
         private readonly IPlayQueue _queue;
+        private readonly GlobalPlaybackSettings _settings;
         private readonly AsyncSemaphore _sessionLock;
 
         private readonly ISubject<IPlaybackSession> _sessions;
@@ -22,12 +22,13 @@ namespace MediaBrowser.Theater.Playback
         private volatile bool _isPlaying;
         private volatile IPlaybackSession _latestSession;
 
-        public PlaybackManager(IList<IMediaPlayer> players)
+        public PlaybackManager(IEnumerable<IMediaPlayer> players)
         {
-            _players = players;
+            _players = new List<IMediaPlayer>(players ?? Enumerable.Empty<IMediaPlayer>());
             _sessions = new Subject<IPlaybackSession>();
             _events = new Subject<PlaybackStatus>();
             _queue = new PlayQueue();
+            _settings = new GlobalPlaybackSettings();
             _sessionLock = new AsyncSemaphore(1, 1);
 
             _sessions.Subscribe(s => _latestSession = s);
@@ -44,9 +45,19 @@ namespace MediaBrowser.Theater.Playback
             get { return _isPlaying; }
         }
 
+        public IList<IMediaPlayer> Players
+        {
+            get { return _players; }
+        }
+
         public IPlayQueue Queue
         {
             get { return _queue; }
+        }
+
+        public GlobalPlaybackSettings GlobalSettings
+        {
+            get { return _settings; }
         }
 
         public Task<IPlaybackSessionAccessor> GetSessionLock()
@@ -85,7 +96,7 @@ namespace MediaBrowser.Theater.Playback
 
         private IMediaPlayer FindSuitablePlayer(Media media)
         {
-            return _players.FirstOrDefault(p => p.CanPlay(media));
+            return _players.OrderBy(p => p.Priority).FirstOrDefault(p => p.CanPlay(media));
         }
 
         private async void Start()
@@ -112,7 +123,7 @@ namespace MediaBrowser.Theater.Playback
 
                 using (SubscribeToSessions(prepared.Sessions))
                 using (SubscribeToEvents(prepared.Status)) {
-                    await prepared.Start();
+                    prepared.Start();
 
                     IPlaybackSession finalSession = await prepared.Sessions.DefaultIfEmpty();
                     bool shouldContinue = !WasStopped(finalSession);
@@ -215,14 +226,6 @@ namespace MediaBrowser.Theater.Playback
             {
             }
 
-            public void SetVolume(decimal volume)
-            {
-            }
-
-            public void SetMuted(bool muted)
-            {
-            }
-
             public IObservable<PlaybackStatus> Events { get; private set; }
 
             public PlaybackCapabilities Capabilities
@@ -239,80 +242,5 @@ namespace MediaBrowser.Theater.Playback
         }
 
         #endregion
-    }
-
-    internal class PlayableFilteredPlaySequence : IPlaySequence
-    {
-        private readonly IMediaPlayer _player;
-        private readonly IPlaySequence _sequence;
-
-        private Media _bootstrap;
-
-        public PlayableFilteredPlaySequence(IPlaySequence sequence, IMediaPlayer player, Media bootstrap = null)
-        {
-            _sequence = sequence;
-            _player = player;
-            _bootstrap = bootstrap;
-        }
-
-        public void Dispose()
-        {
-        }
-
-        public Media Current { get; private set; }
-
-        public bool Next()
-        {
-            if (_bootstrap != null) {
-                Current = _bootstrap;
-                _bootstrap = null;
-                return true;
-            }
-
-            bool hasNext = _sequence.Next();
-            if (hasNext) {
-                bool canPlay = _player.CanPlay(_sequence.Current);
-
-                if (canPlay) {
-                    Current = _sequence.Current;
-                    return true;
-                }
-            }
-
-            Current = null;
-            return false;
-        }
-
-        public bool Previous()
-        {
-            bool hasPrevious = _sequence.Previous();
-            if (hasPrevious) {
-                bool canPlay = _player.CanPlay(_sequence.Current);
-
-                if (canPlay) {
-                    Current = _sequence.Current;
-                    return true;
-                }
-            }
-
-            Current = null;
-            return false;
-        }
-
-        public bool SkipTo(int index)
-        {
-            bool itemExists = _sequence.SkipTo(index);
-            if (itemExists) {
-                bool canPlay = _player.CanPlay(_sequence.Current);
-
-                if (canPlay) {
-                    Current = _sequence.Current;
-                    return true;
-                }
-            }
-
-            Current = null;
-            return false;
-        }
     }
 }

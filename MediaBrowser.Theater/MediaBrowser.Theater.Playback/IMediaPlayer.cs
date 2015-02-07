@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using MediaBrowser.Model.Dto;
 
@@ -10,12 +9,5 @@ namespace MediaBrowser.Theater.Playback
         string Name { get; }
         bool CanPlay(Media media);
         Task<IPreparedSessions> Prepare(IPlaySequence sequence);
-    }
-
-    public interface IPreparedSessions
-    {
-        Task Start();
-        IObservable<IPlaybackSession> Sessions { get; }
-        IObservable<PlaybackStatus> Status { get; }
     }
 }

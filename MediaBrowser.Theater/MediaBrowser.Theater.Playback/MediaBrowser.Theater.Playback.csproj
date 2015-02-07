@@ -62,15 +62,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AudioSettings.cs" />
+    <Compile Include="GlobalPlaybackSettings.cs" />
     <Compile Include="IMediaPlayer.cs" />
     <Compile Include="IPlaybackManager.cs" />
     <Compile Include="IPlaybackSession.cs" />
     <Compile Include="IPlaybackSessionAccessor.cs" />
     <Compile Include="IPlayQueue.cs" />
     <Compile Include="IPlaySequence.cs" />
+    <Compile Include="IPreparedSessions.cs" />
     <Compile Include="ITransportControls.cs" />
     <Compile Include="LockedPlaybackSessionAccessor.cs" />
     <Compile Include="Media.cs" />
+    <Compile Include="MediaPlaybackOptions.cs" />
+    <Compile Include="PlayableFilteredPlaySequence.cs" />
     <Compile Include="PlayableMedia.cs" />
     <Compile Include="PlaybackCapabilities.cs" />
     <Compile Include="PlaybackManager.cs" />
@@ -78,6 +83,7 @@
     <Compile Include="PlaybackStatus.cs" />
     <Compile Include="PlaybackStatusExtensions.cs" />
     <Compile Include="PlaybackStatusType.cs" />
+    <Compile Include="PlaybackStatusTypeExtensions.cs" />
     <Compile Include="PlayQueue.cs" />
     <Compile Include="PlaySequence.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

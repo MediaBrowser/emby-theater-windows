@@ -10,9 +10,9 @@ namespace MediaBrowser.Theater.Playback
 
         public long Progress { get; set; }
 
-        public decimal Volume { get; set; }
+        public long Duration { get; set; }
 
-        public bool IsMuted { get; set; }
+        public double Speed { get; set; }
 
         public MediaStream[] ActiveStreams { get; set; }
     }

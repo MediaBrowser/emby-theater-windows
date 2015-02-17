@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Playback;
 
 namespace MediaBrowser.Theater.MockPlayer
@@ -9,6 +11,8 @@ namespace MediaBrowser.Theater.MockPlayer
     /// </summary>
     public class MockMediaPlayer : IMediaPlayer
     {
+        private readonly ILogManager _logManager;
+
         public int Priority
         {
             get { return int.MaxValue; }
@@ -24,9 +28,14 @@ namespace MediaBrowser.Theater.MockPlayer
             return true;
         }
 
-        public Task<IPreparedSessions> Prepare(IPlaySequence sequence)
+        public MockMediaPlayer(ILogManager logManager)
         {
-            return Task.FromResult<IPreparedSessions>(new SessionSequence(sequence));
+            _logManager = logManager;
+        }
+
+        public Task<IPreparedSessions> Prepare(IPlaySequence sequence, CancellationToken cancellationToken)
+        {
+            return Task.FromResult<IPreparedSessions>(new SessionSequence(sequence, cancellationToken, _logManager));
         }
     }
 }

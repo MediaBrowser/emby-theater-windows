@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Reactive.Concurrency;
+using System.Reactive.Linq;
 using System.Threading;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
@@ -7,6 +9,7 @@ using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
+using MediaBrowser.Theater.Playback;
 using MediaBrowser.Theater.Presentation;
 using MediaBrowser.Theater.Presentation.ViewModels;
 
@@ -14,32 +17,39 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
 {
     public class NowPlayingNotificationInfoViewModel : BaseViewModel, IDisposable
     {
-        private readonly BaseItemDto _item;
-        private readonly Timer _positionTimer;
+        private readonly IDisposable _subscription;
+
+        private BaseItemDto _item;
         private long _progressTicks;
+        private long _durationTicks;
 
-        public NowPlayingNotificationInfoViewModel(IMediaPlayer player)
+        public NowPlayingNotificationInfoViewModel(IObservable<PlaybackStatus> status)
         {
-            _item = player.CurrentMedia;
+            _subscription = status.Subscribe(s => {
+                _item = s.PlayableMedia.Media.Item;
 
-            var duration = player.CurrentDurationTicks;
-            DurationTicks = duration.HasValue ? duration.Value : 0;
+                OnPropertyChanged("DisplayName");
+                OnPropertyChanged("ParentName");
+                OnPropertyChanged("HasParentName");
 
-            _positionTimer = new Timer(arg => {
-                var position = player.CurrentPositionTicks;
-                ProgressTicks = position.HasValue ? position.Value : 0;
-            }, null, 0, 250);
+                DurationTicks = s.Duration ?? 0;
+                ProgressTicks = s.Progress ?? 0;
+            });
         }
 
         public string DisplayName
         {
-            get { return _item.GetDisplayName(new DisplayNameFormat(false, false)); }
+            get { return _item != null ? _item.GetDisplayName(new DisplayNameFormat(false, false)) : null; }
         }
 
         public string ParentName
         {
             get
             {
+                if (_item == null) {
+                    return null;
+                }
+
                 switch (_item.Type)
                 {
                     case "Season":
@@ -69,7 +79,19 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
             }
         }
 
-        public long DurationTicks { get; set; }
+        public long DurationTicks
+        {
+            get { return _durationTicks; }
+            set
+            {
+                if (value == _durationTicks) {
+                    return;
+                }
+                _durationTicks = value;
+                OnPropertyChanged();
+                OnPropertyChanged("IsInProgress");
+            }
+        }
 
         public bool HasParentName
         {
@@ -87,7 +109,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
 
         public void Dispose()
         {
-            _positionTimer.Dispose();
+            _subscription.Dispose();
         }
     }
 
@@ -95,10 +117,10 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
     {
         private readonly IConnectionManager _connectionManager;
         private readonly IImageManager _imageManager;
-        private IMediaPlayer _activePlayer;
+        private IPlaybackSession _session;
 
         public NowPlayingNotificationViewModel(IConnectionManager connectionManager, IImageManager imageManager, INavigator nav)
-            : base(TimeSpan.MaxValue)
+            : base(Timeout.InfiniteTimeSpan)
         {
             _connectionManager = connectionManager;
             _imageManager = imageManager;
@@ -113,37 +135,47 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
             PressedCommand = new RelayCommand(arg => nav.Navigate(Go.To.FullScreenPlayback()));
         }
 
-        public IMediaPlayer ActivePlayer
+        public IPlaybackSession Session
         {
-            get { return _activePlayer; }
+            get { return _session; }
             set
             {
-                if (Equals(value, _activePlayer)) {
+                if (Equals(value, _session)) {
                     return;
                 }
                 
-                _activePlayer = value;
+                _session = value;
 
-                if (_activePlayer != null) {
-                    var item = _activePlayer.CurrentMedia;
-
-                    Icon = new ItemArtworkViewModel(item, _connectionManager, _imageManager) {
-                        DesiredImageHeight=100
-                    };
-
-                    Contents = new NowPlayingNotificationInfoViewModel(_activePlayer);
-
-                    EventHandler<PlaybackStopEventArgs> playbackStopped = null;
-                    playbackStopped = (s, e) => {
-                        Close();
-                        value.PlaybackCompleted -= playbackStopped;
-                    };
-
-                    _activePlayer.PlaybackCompleted += playbackStopped;
+                if (_session != null) {
+                    Contents = new NowPlayingNotificationInfoViewModel(_session.Events);
+                    LoadArtworkImage(_session);
+                    CloseOnCompletion(_session);
                 }
 
                 OnPropertyChanged();
             }
+        }
+
+        private async void LoadArtworkImage(IPlaybackSession session)
+        {
+            var item = await session.Events.Select(e => e.PlayableMedia.Media.Item).FirstOrDefaultAsync();
+            if (item != null) {
+                Action setIcon = () => {
+                    if (Icon == null) {
+                        Icon = new ItemArtworkViewModel(item, _connectionManager, _imageManager) {
+                            DesiredImageHeight = 100
+                        };
+                    }
+                };
+
+                setIcon.OnUiThread();
+            }
+        }
+
+        private async void CloseOnCompletion(IPlaybackSession session)
+        {
+            await session.Events;
+            await Close();
         }
     }
 }

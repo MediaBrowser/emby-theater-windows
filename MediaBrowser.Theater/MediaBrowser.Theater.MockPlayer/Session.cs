@@ -1,8 +1,10 @@
 using System;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Threading;
 using System.Threading.Tasks;
 using MediaBrowser.Model.Entities;
+using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Playback;
 
 namespace MediaBrowser.Theater.MockPlayer
@@ -13,10 +15,15 @@ namespace MediaBrowser.Theater.MockPlayer
     /// </summary>
     internal class Session : IPlaybackSession
     {
+        private static int _counter = 0;
+
+        private readonly int _id;
         private readonly object _lock;
         private readonly PlayableMedia _media;
+        private readonly CancellationToken _cancellationToken;
         private readonly ISubject<PlaybackStatus> _statusEvents;
         private readonly long _duration;
+        private readonly ILogger _log;
 
         private SessionCompletionAction _compeletionAction;
         private PlaybackStatus _latestStatus;
@@ -24,14 +31,17 @@ namespace MediaBrowser.Theater.MockPlayer
         private double _speed;
         private PlaybackStatusType _state;
 
-        public Session(PlayableMedia media)
+        public Session(PlayableMedia media, CancellationToken cancellationToken, ILogManager logManager)
         {
+            _id = Interlocked.Increment(ref _counter);
             _lock = new object();
             _media = media;
+            _cancellationToken = cancellationToken;
             _duration = media.Source.RunTimeTicks ?? TimeSpan.FromSeconds(30).Ticks;
             _statusEvents = new Subject<PlaybackStatus>();
             _compeletionAction = new SessionCompletionAction { Direction = NavigationDirection.Forward };
             _speed = 1;
+            _log = logManager.GetLogger("MockPlayer");
         }
 
         public void Play()
@@ -42,6 +52,7 @@ namespace MediaBrowser.Theater.MockPlayer
                 }
 
                 _state = PlaybackStatusType.Playing;
+                _speed = 1;
                 PublishState();
             }
         }
@@ -58,20 +69,20 @@ namespace MediaBrowser.Theater.MockPlayer
             }
         }
 
-        public async Task Stop()
-        {
-            lock (_lock) {
-                if (!_state.IsActiveState()) {
-                    return;
-                }
-
-                _state = PlaybackStatusType.Stopped;
-                PublishState();
-            }
-
-            // await for the status events to complete, which will mark the end of the session
-            await _statusEvents;
-        }
+//        public async Task Stop()
+//        {
+//            lock (_lock) {
+//                if (!_state.IsActiveState()) {
+//                    return;
+//                }
+//
+//                _state = PlaybackStatusType.Stopped;
+//                PublishState();
+//            }
+//
+//            // await for the status events to complete, which will mark the end of the session
+//            await _statusEvents.LastOrDefaultAsync();
+//        }
 
         public void Seek(long ticks)
         {
@@ -187,8 +198,15 @@ namespace MediaBrowser.Theater.MockPlayer
                 // some players may perform actual playback in this thread, and report status as they go
                 // others may play in another thread or process, and poll status periodically
                 await Task.Delay(TimeSpan.FromSeconds(1));
-
+                
                 lock (_lock) {
+                    // exit if playback has been cancelled
+                    if (_cancellationToken.IsCancellationRequested) {
+                        _compeletionAction = new SessionCompletionAction { Direction = NavigationDirection.Stop };
+                        _state = PlaybackStatusType.Stopped;
+                        PublishState();
+                    }
+
                     // don't do anything if playback is paused
                     if (_state == PlaybackStatusType.Paused) {
                         continue;
@@ -228,14 +246,16 @@ namespace MediaBrowser.Theater.MockPlayer
         private void PublishState()
         {
             _latestStatus = new PlaybackStatus {
-                Media = _media,
+                PlayableMedia = _media,
                 StatusType = _state,
                 Progress = _progress,
-                Duration = _media.Source.RunTimeTicks ?? TimeSpan.FromSeconds(40).Ticks,
+                Duration = _media.Source.RunTimeTicks ?? TimeSpan.FromSeconds(30).Ticks,
                 Speed = _speed
             };
 
-            _statusEvents.OnNext(_latestStatus);
+            _log.Debug("Session {3}, Status update for {0}, state={1}, progress={2}", _media.Media.Item.Name, _state, _progress, _id);
+
+            Task.Run(() => _statusEvents.OnNext(_latestStatus));
         }
     }
 }

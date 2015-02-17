@@ -6,10 +6,13 @@ namespace MediaBrowser.Theater.Playback
 {
     public interface IPlaybackManager
     {
-        IList<IMediaPlayer> Players { get; }
+        List<IMediaPlayer> Players { get; }
         IPlayQueue Queue { get; }
         GlobalPlaybackSettings GlobalSettings { get; }
         IObservable<PlaybackStatus> Events { get; }
-        Task<IPlaybackSessionAccessor> GetSessionLock();
+        IObservable<IPlaybackSession> Sessions { get; }
+        Task<bool> AccessSession(Func<IPlaybackSession, Task> action);
+        Task BeginPlayback(int startIndex = 0);
+        Task StopPlayback();
     }
 }

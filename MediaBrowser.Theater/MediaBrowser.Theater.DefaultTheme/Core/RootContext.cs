@@ -21,6 +21,7 @@ using MediaBrowser.Theater.DefaultTheme.Osd;
 using MediaBrowser.Theater.DefaultTheme.Osd.ViewModels;
 using MediaBrowser.Theater.DefaultTheme.SideMenu;
 using MediaBrowser.Theater.DefaultTheme.SideMenu.ViewModels;
+using MediaBrowser.Theater.Playback;
 using MediaBrowser.Theater.Presentation.Navigation;
 using MediaBrowser.Theater.Presentation.ViewModels;
 
@@ -32,7 +33,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Core
         private readonly ITheaterApplicationHost _appHost;
         private readonly IConnectionManager _connectionManager;
 
-        public RootContext(ITheaterApplicationHost appHost, ISessionManager sessionManager, IConnectionManager connectionManager, IPresenter presenter, IEventAggregator events) : base(appHost)
+        public RootContext(ITheaterApplicationHost appHost, ISessionManager sessionManager, IConnectionManager connectionManager, IPresenter presenter, IPlaybackManager playbackManager) : base(appHost)
         {
             _appHost = appHost;
             _connectionManager = connectionManager;
@@ -72,11 +73,10 @@ namespace MediaBrowser.Theater.DefaultTheme.Core
                 }
             });
 
-            events.Get<PlaybackStartEventArgs>().Subscribe(e => {
+            playbackManager.Sessions.Subscribe(s => {
                 var notification = appHost.TryResolve<NowPlayingNotificationViewModel>();
-                notification.ActivePlayer = e.Player;
+                notification.Session = s;
                 presenter.ShowNotification(notification);
-//                presenter.ShowNotification(new ItemArtworkViewModel(e.Player.CurrentMedia, connectionManager, appHost.TryResolve<IImageManager>()));
             });
         }
 

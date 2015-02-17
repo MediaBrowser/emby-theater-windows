@@ -32,17 +32,15 @@ using MediaBrowser.Theater.Api.Commands;
 using MediaBrowser.Theater.Api.Configuration;
 using MediaBrowser.Theater.Api.Events;
 using MediaBrowser.Theater.Api.Navigation;
-using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.System;
 using MediaBrowser.Theater.Api.UserInput;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme;
-using MediaBrowser.Theater.DirectShow;
+//using MediaBrowser.Theater.DirectShow;
+using MediaBrowser.Theater.MockPlayer;
 using MediaBrowser.Theater.Networking;
-using MediaBrowser.Theater.Presentation.Playback;
-using MediaBrowser.Theater.StartupWizard;
-using MediaBrowser.Theater.StartupWizard.ViewModels;
+using MediaBrowser.Theater.Playback;
 using Application = System.Windows.Application;
 
 namespace MediaBrowser.Theater
@@ -111,7 +109,7 @@ namespace MediaBrowser.Theater
             await base.Init(progress).ConfigureAwait(false);
             await RunStartupTasks().ConfigureAwait(false);
 
-            URCOMLoader.EnsureObjects(TheaterConfigurationManager, new ZipClient(), false);
+            //URCOMLoader.EnsureObjects(TheaterConfigurationManager, new ZipClient(), false);
 
             Action<Window> mainWindowLoaded = null;
             mainWindowLoaded = w => {
@@ -148,7 +146,7 @@ namespace MediaBrowser.Theater
             Container.RegisterSingle(typeof (IEventAggregator), typeof (EventAggregator));
             Container.RegisterSingle(typeof (ISessionManager), typeof (SessionManager));
             Container.RegisterSingle(typeof (IImageManager), typeof (ImageManager));
-            Container.RegisterSingle(typeof (IInternalPlayerWindowManager), typeof (InternalPlayerWindowManager));
+            //Container.RegisterSingle(typeof (IInternalPlayerWindowManager), typeof (InternalPlayerWindowManager));
             Container.RegisterSingle(typeof (IPlaybackManager), typeof (PlaybackManager));
             Container.RegisterSingle(typeof (IUserInputManager), typeof (UserInputManager));
             Container.RegisterSingle(typeof (ICommandManager), typeof (CommandManager));
@@ -158,13 +156,13 @@ namespace MediaBrowser.Theater
             Container.RegisterSingle(typeof (IPresenter), typeof (Presenter));
             Container.RegisterSingle(typeof (INavigator), typeof (Navigator));
             Container.RegisterSingle(typeof (WindowManager), typeof (WindowManager));
-        }
+        } 
 
         protected override void FindParts()
         {
             Theme = Resolve<ITheme>();
             Plugins = LoadPlugins();
-            Resolve<IPlaybackManager>().AddParts(GetExports<IMediaPlayer>());
+            Resolve<IPlaybackManager>().Players.AddRange(GetExports<IMediaPlayer>());
 
             Navigator = Resolve<INavigator>();
             Presenter = Resolve<IPresenter>();
@@ -174,14 +172,11 @@ namespace MediaBrowser.Theater
 
         public void StartEntryPoints()
         {
-            Parallel.ForEach(GetExports<IStartupEntryPoint>(), entryPoint =>
-            {
-                try
-                {
+            Parallel.ForEach(GetExports<IStartupEntryPoint>(), entryPoint => {
+                try {
                     entryPoint.Run();
                 }
-                catch (Exception ex)
-                {
+                catch (Exception ex) {
                     Logger.ErrorException("Error in {0}", ex, entryPoint.GetType().Name);
                 }
             });
@@ -331,11 +326,14 @@ namespace MediaBrowser.Theater
             // Common implementations
             yield return typeof (TaskManager).Assembly;
 
-            // DirectShow assembly
-            yield return typeof (InternalDirectShowPlayer).Assembly;
-            
-            // Presentation assembly
-            yield return typeof (GenericExternalPlayer).Assembly;
+//            // DirectShow assembly
+//            yield return typeof (InternalDirectShowPlayer).Assembly;
+//            
+//            // Presentation assembly
+//            yield return typeof (GenericExternalPlayer).Assembly;
+
+            // Mock player
+            yield return typeof (MockMediaPlayer).Assembly;
 
             // Default theme
             yield return typeof (Theme).Assembly;
@@ -444,30 +442,6 @@ namespace MediaBrowser.Theater
         public void SetSystemToSleep()
         {
             System.Windows.Forms.Application.SetSuspendState(PowerState.Suspend, false, false);
-        }
-
-        public bool RunStartupWizard()
-        {
-            var app = new StartupWizardApp();
-
-            var wizard = new WizardViewModel(new List<IWizardPage> {
-                Resolve<IntroductionViewModel>(),
-                Resolve<ServerDetailsViewModel>(),
-                //Resolve<PrerequisitesViewModel>(),
-            });
-
-            bool completed = false;
-            wizard.Completed += status => {
-                completed = status == WizardCompletionStatus.Finished;
-                app.Shutdown();
-            };
-
-            var window = new StartupWizardWindow {
-                DataContext = wizard
-            };
-
-            app.Run(window);
-            return completed;
         }
     }
 }

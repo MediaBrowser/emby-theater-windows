@@ -12,6 +12,7 @@ using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Osd.ViewModels;
+using MediaBrowser.Theater.Playback;
 using MediaBrowser.Theater.Presentation.Navigation;
 
 namespace MediaBrowser.Theater.DefaultTheme.Osd

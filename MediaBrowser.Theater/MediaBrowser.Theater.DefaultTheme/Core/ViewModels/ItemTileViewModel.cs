@@ -11,6 +11,7 @@ using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Home.ViewModels;
+using MediaBrowser.Theater.Playback;
 using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.ViewModels;
 
@@ -43,7 +44,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
 
             DisplayNameGenerator = i => i.GetDisplayName(new DisplayNameFormat(true, true));
             GoToDetailsCommand = new RelayCommand(o => navigator.Navigate(Go.To.Item(Item)));
-            PlayCommand = new RelayCommand(o => _playbackManager.Play(new PlayOptions(Item) { GoFullScreen = true, EnableCustomPlayers = true, Resume = true }));
+            PlayCommand = new RelayCommand(o => _playbackManager.Play(new Media { Item = item, Options = new MediaPlaybackOptions { Resume = true } }));
         }
 
         public BaseItemDto Item

@@ -8,6 +8,7 @@ using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels;
 using MediaBrowser.Theater.DefaultTheme.SortModeMenu;
 using MediaBrowser.Theater.DefaultTheme.SortModeMenu.ViewModels;
+using MediaBrowser.Theater.Playback;
 
 namespace MediaBrowser.Theater.DefaultTheme.ItemList
 {

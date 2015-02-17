@@ -10,6 +10,7 @@ using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies;
+using MediaBrowser.Theater.Playback;
 using MediaBrowser.Theater.Presentation;
 
 namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV

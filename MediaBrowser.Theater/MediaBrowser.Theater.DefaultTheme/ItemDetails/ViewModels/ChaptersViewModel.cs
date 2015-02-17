@@ -11,6 +11,7 @@ using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.UserInterface;
+using MediaBrowser.Theater.Playback;
 using MediaBrowser.Theater.Presentation;
 using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.ViewModels;
@@ -115,27 +116,25 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
             _connectionManager = connectionManager;
             _imageManager = imageManager;
 
-            PlayCommand = new RelayCommand(o => {
-                playbackManager.Play(new PlayOptions(item) {
-                    GoFullScreen = true,
-                    EnableCustomPlayers = true,
-                    Resume = false,
-                    StartPositionTicks = chapter.StartPositionTicks
+            PlayCommand = new RelayCommand(async o => {
+
+                bool playing = false;
+                await playbackManager.AccessSession(s => {
+                    if (s.Status.PlayableMedia.Media.Item == item) {
+                        s.Seek(chapter.StartPositionTicks);
+                        playing = true;
+                    }
                 });
 
-                OnSelected();
-            });
-        }
+                if (!playing) {
+                    await playbackManager.Play(new Media {
+                        Item = item,
+                        Options = new MediaPlaybackOptions {
+                            StartPositionTicks = chapter.StartPositionTicks
+                        }
+                    }, false);
+                }
 
-        public ChapterViewModel(BaseItemDto item, ChapterInfoDto chapter, IConnectionManager connectionManager, IImageManager imageManager, IVideoPlayer player)
-        {
-            _item = item;
-            _chapter = chapter;
-            _connectionManager = connectionManager;
-            _imageManager = imageManager;
-
-            PlayCommand = new RelayCommand(o => {
-                player.Seek(chapter.StartPositionTicks);
                 OnSelected();
             });
         }

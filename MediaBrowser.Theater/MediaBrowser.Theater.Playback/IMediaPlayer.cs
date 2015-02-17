@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 using MediaBrowser.Model.Dto;
 
@@ -8,6 +9,6 @@ namespace MediaBrowser.Theater.Playback
         int Priority { get; }
         string Name { get; }
         bool CanPlay(Media media);
-        Task<IPreparedSessions> Prepare(IPlaySequence sequence);
+        Task<IPreparedSessions> Prepare(IPlaySequence sequence, CancellationToken cancellationToken);
     }
 }

@@ -12,7 +12,7 @@
                      HorizontalAlignment="Stretch"
                      Background="Transparent"
                      Style="{StaticResource ResumeProgressBar}"/>
-        
+
         <Grid Margin="10,4,10,6">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>

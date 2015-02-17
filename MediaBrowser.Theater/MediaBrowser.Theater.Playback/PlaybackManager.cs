@@ -1,43 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Threading;
 using System.Threading.Async;
 using System.Threading.Tasks;
-using MediaBrowser.Model.Entities;
+using MediaBrowser.Model.Logging;
 
 namespace MediaBrowser.Theater.Playback
 {
     public class PlaybackManager : IPlaybackManager
     {
+        private static int _count;
         private readonly ISubject<PlaybackStatus> _events;
-        private readonly IList<IMediaPlayer> _players;
+        private readonly ILogger _log;
+
+        private readonly AsyncSemaphore _playbackLock;
+        private readonly AsyncSemaphore _playbackStartingLock;
+        private readonly List<IMediaPlayer> _players;
         private readonly IPlayQueue _queue;
-        private readonly GlobalPlaybackSettings _settings;
-        private readonly AsyncSemaphore _sessionLock;
 
         private readonly ISubject<IPlaybackSession> _sessions;
+        private readonly GlobalPlaybackSettings _settings;
+        private CancellationTokenSource _cancel;
 
         private volatile bool _isPlaying;
+
         private volatile IPlaybackSession _latestSession;
 
-        public PlaybackManager(IEnumerable<IMediaPlayer> players)
+        public PlaybackManager(IEnumerable<IMediaPlayer> players, ILogManager logManager)
         {
             _players = new List<IMediaPlayer>(players ?? Enumerable.Empty<IMediaPlayer>());
             _sessions = new Subject<IPlaybackSession>();
             _events = new Subject<PlaybackStatus>();
             _queue = new PlayQueue();
             _settings = new GlobalPlaybackSettings();
-            _sessionLock = new AsyncSemaphore(1, 1);
+            _playbackLock = new AsyncSemaphore(1, 1);
+            _playbackStartingLock = new AsyncSemaphore(1, 1);
+            _log = logManager.GetLogger(typeof (PlaybackManager).Name);
 
             _sessions.Subscribe(s => _latestSession = s);
-            _sessions.OnNext(new NullSession(this));
-        }
-
-        public IObservable<IPlaybackSession> Sessions
-        {
-            get { return _sessions; }
         }
 
         public bool IsPlaying
@@ -45,7 +47,12 @@ namespace MediaBrowser.Theater.Playback
             get { return _isPlaying; }
         }
 
-        public IList<IMediaPlayer> Players
+        public IObservable<IPlaybackSession> Sessions
+        {
+            get { return _sessions; }
+        }
+
+        public List<IMediaPlayer> Players
         {
             get { return _players; }
         }
@@ -60,14 +67,56 @@ namespace MediaBrowser.Theater.Playback
             get { return _settings; }
         }
 
-        public Task<IPlaybackSessionAccessor> GetSessionLock()
-        {
-            return LockedPlaybackSessionAccessor.Wrap(_latestSession, _sessionLock);
-        }
-
         public IObservable<PlaybackStatus> Events
         {
             get { return _events; }
+        }
+
+        public async Task StopPlayback()
+        {
+            using (await Lock(_playbackStartingLock)) {
+                if (_cancel != null) {
+                    _cancel.Cancel();
+                    _cancel = null;
+                }
+
+                using (await Lock(_playbackLock)) { }
+            }
+        }
+
+        public async Task<bool> AccessSession(Func<IPlaybackSession, Task> action)
+        {
+            IPlaybackSession session = _latestSession;
+            if (session != null) {
+                await action(session);
+                return true;
+            }
+
+            return false;
+        }
+
+        public async Task BeginPlayback(int startIndex = 0)
+        {
+            int id = Interlocked.Increment(ref _count);
+
+            _log.Info("[{1}] Beginning playback at {0}", startIndex, id);
+
+            using (PlayLock playbackLock = await CancelPlaybackAndLock(id)) {
+                using (IPlaySequence sequence = Queue.GetPlayOrder()) {
+                    try {
+                        sequence.SkipTo(startIndex);
+
+                        OnPlaybackStarting();
+                        await BeginPlayback(sequence, playbackLock.CancellationTokenSource.Token, id);
+                    }
+                    finally {
+                        _latestSession = null;
+                        OnPlaybackFinished();
+                    }
+                }
+            }
+
+            _log.Info("[{0}] Exiting playback", id);
         }
 
         public event Action PlaybackStarting;
@@ -99,37 +148,41 @@ namespace MediaBrowser.Theater.Playback
             return _players.OrderBy(p => p.Priority).FirstOrDefault(p => p.CanPlay(media));
         }
 
-        private async void Start()
+        private async Task<PlayLock> CancelPlaybackAndLock(int id)
         {
-            using (IPlaySequence sequence = Queue.GetPlayOrder()) {
-                try {
-                    OnPlaybackStarting();
-                    await BeginPlayback(sequence);
+            using (await Lock(_playbackStartingLock)) {
+                if (_cancel != null) {
+                    _cancel.Cancel();
+                    _cancel = null;
                 }
-                finally {
-                    _sessions.OnNext(new NullSession(this));
-                    OnPlaybackFinished();
-                }
+
+                await _playbackLock.Wait();
+
+                _cancel = new CancellationTokenSource();
+
+                return new PlayLock(_cancel, _playbackLock);
             }
         }
 
-        private async Task BeginPlayback(IPlaySequence sequence)
+        private async Task BeginPlayback(IPlaySequence sequence, CancellationToken cancellationToken, int id)
         {
             Media media;
             IMediaPlayer player;
             while (MoveToNextPlayableItem(sequence, out media, out player)) {
                 var subSequence = new PlayableFilteredPlaySequence(sequence, player, media);
-                IPreparedSessions prepared = await player.Prepare(subSequence);
 
-                using (SubscribeToSessions(prepared.Sessions))
-                using (SubscribeToEvents(prepared.Status)) {
-                    prepared.Start();
+                if (cancellationToken.IsCancellationRequested) {
+                    break;
+                }
 
-                    IPlaybackSession finalSession = await prepared.Sessions.DefaultIfEmpty();
-                    bool shouldContinue = !WasStopped(finalSession);
+                IPreparedSessions prepared = await player.Prepare(subSequence, cancellationToken);
 
-                    if (!shouldContinue) {
-                        break;
+                using (SubscribeToSessions(prepared.Sessions)) {
+                    using (SubscribeToEvents(prepared.Status)) {
+                        SessionCompletion status = await prepared.Start();
+                        if (status == SessionCompletion.Stopped || cancellationToken.IsCancellationRequested) {
+                            break;
+                        }
                     }
                 }
             }
@@ -143,15 +196,6 @@ namespace MediaBrowser.Theater.Playback
         private IDisposable SubscribeToEvents(IObservable<PlaybackStatus> status)
         {
             return status.Subscribe(e => _events.OnNext(e));
-        }
-
-        private bool WasStopped(IPlaybackSession session)
-        {
-            if (session == null) {
-                return false;
-            }
-
-            return session.Status.StatusType == PlaybackStatusType.Stopped;
         }
 
         private bool MoveToNextPlayableItem(IPlaySequence sequence, out Media media, out IMediaPlayer player)
@@ -179,68 +223,47 @@ namespace MediaBrowser.Theater.Playback
             return false;
         }
 
-        #region NullSession
-
-        private class NullSession : IPlaybackSession
+        private async Task<IDisposable> Lock(AsyncSemaphore semaphore)
         {
-            private readonly PlaybackManager _playbackManager;
-
-            public NullSession(PlaybackManager playbackManager)
-            {
-                _playbackManager = playbackManager;
-            }
-
-            public void Play()
-            {
-                if (Capabilities.CanPlay) {
-                    _playbackManager.Start();
-                }
-            }
-
-            public void Pause()
-            {
-            }
-
-            public Task Stop()
-            {
-                return Task.FromResult(0);
-            }
-
-            public void Seek(long ticks)
-            {
-            }
-
-            public void SkipNext()
-            {
-            }
-
-            public void SkipPrevious()
-            {
-            }
-
-            public void SkipTo(int itemIndex)
-            {
-            }
-
-            public void SelectStream(MediaStreamType channel, int index)
-            {
-            }
-
-            public IObservable<PlaybackStatus> Events { get; private set; }
-
-            public PlaybackCapabilities Capabilities
-            {
-                get
-                {
-                    return new PlaybackCapabilities {
-                        CanPlay = !_playbackManager.IsPlaying && _playbackManager.Queue.Count > 0
-                    };
-                }
-            }
-
-            public PlaybackStatus Status { get; private set; }
+            await semaphore.Wait();
+            return new Disposable(semaphore.Release);
         }
 
-        #endregion
+        private class PlayLock : IDisposable
+        {
+            private readonly CancellationTokenSource _cancellationTokenSource;
+            private readonly AsyncSemaphore _semaphore;
+
+            public PlayLock(CancellationTokenSource cancellationTokenSource, AsyncSemaphore semaphore)
+            {
+                _cancellationTokenSource = cancellationTokenSource;
+                _semaphore = semaphore;
+            }
+
+            public CancellationTokenSource CancellationTokenSource
+            {
+                get { return _cancellationTokenSource; }
+            }
+
+            public void Dispose()
+            {
+                _semaphore.Release();
+            }
+        }
+    }
+
+    public class Disposable : IDisposable
+    {
+        private readonly Action _action;
+
+        public Disposable(Action action)
+        {
+            _action = action;
+        }
+
+        public void Dispose()
+        {
+            _action();
+        }
     }
 }

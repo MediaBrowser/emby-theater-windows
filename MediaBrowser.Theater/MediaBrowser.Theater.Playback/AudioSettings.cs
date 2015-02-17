@@ -18,7 +18,7 @@ namespace MediaBrowser.Theater.Playback
             get { return _volume; }
             set
             {
-                value = Math.Max(0, Math.Min(value, 1));
+                value = Math.Max(0, Math.Min(value, 100));
                 if (Equals(_volume, value)) {
                     return;
                 }
@@ -55,13 +55,13 @@ namespace MediaBrowser.Theater.Playback
         public void StepVolumeUp()
         {
             IsMuted = false;
-            Volume += 0.02m;
+            Volume += 2;
         }
 
         public void StepVolumeDown()
         {
             IsMuted = false;
-            Volume -= 0.02m;
+            Volume -= 2m;
         }
     }
 }

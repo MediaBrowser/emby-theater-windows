@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using System.Windows.Threading;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
@@ -12,31 +11,29 @@ using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Api.Events;
 using MediaBrowser.Theater.Api.Library;
 using MediaBrowser.Theater.Api.Navigation;
-using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
 using MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels;
+using MediaBrowser.Theater.Playback;
 using MediaBrowser.Theater.Presentation.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
 {
     public class OsdChaptersViewModel : BaseViewModel
     {
-        public List<OsdChapterViewModel> Chapters { get; set; }
-
-        public OsdChaptersViewModel(BaseItemDto item, IConnectionManager connectionManager, IImageManager imageManager, IVideoPlayer player)
+        public OsdChaptersViewModel(BaseItemDto item, IConnectionManager connectionManager, IImageManager imageManager, IPlaybackManager playbackManager, PlaybackStatus latestStatus)
         {
             Chapters = item.Chapters.Select(c => {
-                var vm = new OsdChapterViewModel(item, c, connectionManager, imageManager, player);
+                var vm = new OsdChapterViewModel(item, c, connectionManager, imageManager, playbackManager);
                 vm.Selected += () => Close();
                 return vm;
             }).ToList();
 
             for (int i = 0; i < Chapters.Count; i++) {
-                var current = Chapters[i];
-                var next = i < Chapters.Count - 1 ? item.Chapters[i + 1] : null;
+                OsdChapterViewModel current = Chapters[i];
+                ChapterInfoDto next = i < Chapters.Count - 1 ? item.Chapters[i + 1] : null;
 
-                if (next == null || next.StartPositionTicks > player.CurrentPositionTicks) {
+                if (next == null || next.StartPositionTicks > latestStatus.Progress) {
                     current.IsPlaying = true;
                     break;
                 }
@@ -46,52 +43,85 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
                 Chapters.First().IsPlaying = true;
             }
         }
+
+        public List<OsdChapterViewModel> Chapters { get; set; }
     }
 
     public class OsdAudioTracksViewModel : BaseViewModel
     {
-        public IEnumerable<AudioTrackViewModel> Streams { get; set; }
-
-        public OsdAudioTracksViewModel(IVideoPlayer player)
+        public OsdAudioTracksViewModel(PlaybackStatus status, IPlaybackManager playbackManager)
         {
-            Streams = player.SelectableStreams
+            Streams = status.PlayableMedia.Source.MediaStreams
                             .Where(s => s.Type == MediaStreamType.Audio)
                             .Select(s => {
-                                var vm = new AudioTrackViewModel(s, player);
+                                var vm = new AudioTrackViewModel(s, status, playbackManager);
                                 vm.Selected += () => Close();
                                 return vm;
                             });
         }
+
+        public IEnumerable<AudioTrackViewModel> Streams { get; set; }
     }
 
     public class OsdSubtitleTracksViewModel : BaseViewModel
     {
-        public IEnumerable<SubtitleViewModel> Streams { get; set; }
-
-        public OsdSubtitleTracksViewModel(IVideoPlayer player)
+        public OsdSubtitleTracksViewModel(PlaybackStatus status, IPlaybackManager playbackManager)
         {
-            Streams = player.SelectableStreams
-                            .Where(s => s.Type == MediaStreamType.Subtitle)
+            Streams = status.PlayableMedia.Source.MediaStreams
+                            .Where(s => s.Type == MediaStreamType.Audio)
                             .Select(s => {
-                                var vm = new SubtitleViewModel(s, player);
+                                var vm = new SubtitleViewModel(s, status, playbackManager);
                                 vm.Selected += () => Close();
                                 return vm;
                             });
         }
+
+        public IEnumerable<SubtitleViewModel> Streams { get; set; }
     }
 
     public class OsdChapterViewModel : ChapterViewModel
     {
-        public bool IsPlaying { get; set; }
+        public OsdChapterViewModel(BaseItemDto item, ChapterInfoDto chapter, IConnectionManager connectionManager, IImageManager imageManager, IPlaybackManager playbackManager)
+            : base(item, chapter, connectionManager, imageManager, playbackManager) { }
 
-        public OsdChapterViewModel(BaseItemDto item, ChapterInfoDto chapter, IConnectionManager connectionManager, IImageManager imageManager, IVideoPlayer player) 
-            : base(item, chapter, connectionManager, imageManager, player) { }
+        public bool IsPlaying { get; set; }
     }
 
     public class SubtitleViewModel : BaseViewModel
     {
-        private readonly SelectableMediaStream _stream;
-        private readonly IVideoPlayer _player;
+        private readonly MediaStream _stream;
+
+        public SubtitleViewModel(MediaStream stream, PlaybackStatus status, IPlaybackManager playbackManager)
+        {
+            _stream = stream;
+            IsPlaying = status.ActiveStreams.Contains(stream);
+
+            ChangeStreamCommand = new RelayCommand(arg => {
+                playbackManager.AccessSession(s => s.SelectStream(MediaStreamType.Subtitle, stream.Index));
+                OnSelected();
+            });
+        }
+
+        public ICommand ChangeStreamCommand { get; private set; }
+
+        public bool IsPlaying { get; private set; }
+
+        public string DisplayName
+        {
+            get
+            {
+                string language = _stream.Language ?? "Unknown";
+                string tags = new[] { _stream.IsDefault ? "default" : null, _stream.IsExternal ? "external" : null, _stream.IsForced ? "forced" : null, _stream.Codec }
+                    .Where(t => !string.IsNullOrEmpty(t))
+                    .Aggregate((a, b) => a + ", " + b);
+
+                if (!string.IsNullOrEmpty(tags)) {
+                    return string.Format("{0} ({1})", language, tags);
+                }
+
+                return language;
+            }
+        }
 
         public event Action Selected;
 
@@ -101,37 +131,44 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
             if (handler != null) {
                 handler();
             }
-        }
-
-        public SubtitleViewModel(SelectableMediaStream stream, IVideoPlayer player)
-        {
-            _stream = stream;
-            _player = player;
-
-            ChangeStreamommand = new RelayCommand(arg =>
-            {
-                _player.SetSubtitleStreamIndex(stream.Index);
-                OnSelected();
-            });
-        }
-
-        public ICommand ChangeStreamommand { get; private set; }
-
-        public bool IsPlaying
-        {
-            get { return _player.CurrentSubtitleStreamIndex == _stream.Index; } 
-        }
-
-        public string DisplayName
-        {
-            get { return _stream.Name; }
         }
     }
 
     public class AudioTrackViewModel : BaseViewModel
     {
-        private readonly SelectableMediaStream _stream;
-        private readonly IVideoPlayer _player;
+        private readonly MediaStream _stream;
+
+        public AudioTrackViewModel(MediaStream stream, PlaybackStatus status, IPlaybackManager playback)
+        {
+            _stream = stream;
+            IsPlaying = status.ActiveStreams.Contains(stream);
+
+            ChangeStreamCommand = new RelayCommand(arg => {
+                playback.AccessSession(s => s.SelectStream(MediaStreamType.Audio, stream.Index));
+                OnSelected();
+            });
+        }
+
+        public ICommand ChangeStreamCommand { get; private set; }
+
+        public bool IsPlaying { get; private set; }
+
+        public string DisplayName
+        {
+            get
+            {
+                string language = _stream.Language ?? "Unknown";
+                string tags = new[] { _stream.IsDefault ? "default" : null, _stream.ChannelLayout, _stream.Codec }
+                    .Where(t => !string.IsNullOrEmpty(t))
+                    .Aggregate((a, b) => a + ", " + b);
+
+                if (!string.IsNullOrEmpty(tags)) {
+                    return string.Format("{0} ({1})", language, tags);
+                }
+
+                return language;
+            }
+        }
 
         public event Action Selected;
 
@@ -141,56 +178,33 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
             if (handler != null) {
                 handler();
             }
-        }
-
-        public AudioTrackViewModel(SelectableMediaStream stream, IVideoPlayer player)
-        {
-            _stream = stream;
-            _player = player;
-
-            ChangeStreamommand = new RelayCommand(arg =>
-            {
-                _player.SetAudioStreamIndex(stream.Index);
-                OnSelected();
-            });
-        }
-
-        public ICommand ChangeStreamommand { get; private set; }
-
-        public bool IsPlaying
-        {
-            get { return _player.CurrentAudioStreamIndex == _stream.Index; }
-        }
-
-        public string DisplayName
-        {
-            get { return _stream.Name; }
         }
     }
 
     public class OsdViewModel : BaseViewModel, IDisposable, IHasRootPresentationOptions
     {
         private readonly IConnectionManager _connectionManager;
-        // reference these handlers so they are not GC'd until the osd view model is GC'd
-        private readonly Action<PlaybackStopEventArgs> _playbackStopHandler;
-        private readonly Action<PlaybackStartEventArgs> _playbackStartHandler;
+        private readonly IDisposable _eventsSubscription;
+        private readonly IDisposable _sessionsSubscription;
 
         private bool _canPause;
         private bool _canPlay;
         private bool _canSeek;
         private bool _canSelectAudioTrack;
         private bool _canSelectSubtitleTrack;
-        private Timer _currentPositionTimer;
+        private Timer _clockTickTimer;
+        private int _delayCounter;
         private string _displayDuration;
         private string _displayPosition;
         private long _durationTicks;
         private bool _isPaused;
-        private IMediaPlayer _mediaPlayer;
         private BaseItemDto _nowPlayingItem;
         private long _positionTicks;
-        private bool _supportsChapters;
+        private IPlaybackSession _session;
         private bool _showOsd;
-        
+        private PlaybackStatus _status;
+        private bool _supportsChapters;
+
         public OsdViewModel(IPlaybackManager playbackManager, IImageManager imageManager, IPresenter presentationManager, ILogger logger, INavigator nav, IEventAggregator events, IConnectionManager connectionManager)
         {
             _connectionManager = connectionManager;
@@ -212,30 +226,37 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
             SelectSubtitleTrackCommand = new RelayCommand(ShowSubtitleSelection);
             SelectAudioTrackCommand = new RelayCommand(ShowAudioSelection);
 
-            _playbackStopHandler = args => {
-                if (!IsActive) {
-                    return;
+            _sessionsSubscription = playbackManager.Sessions.Subscribe(session => {
+                _session = session;
+                UpdatePlayerCapabilities(session);
+            });
+
+            _eventsSubscription = playbackManager.Events.Subscribe(playbackEvent => {
+                if (_status.StatusType != playbackEvent.StatusType) {
+                    if (_status.StatusType == PlaybackStatusType.Playing) {
+                        Delay(TimeSpan.FromSeconds(1), () => ShowOsd = false);
+                    }
+
+                    if (_status.StatusType == PlaybackStatusType.Paused) {
+                        Delay(TimeSpan.Zero, () => ShowOsd = true);
+                    }
                 }
 
-                MediaPlayer = null;
-                NowPlayingItem = null;
-                Close();
-            };
+                _status = playbackEvent;
 
-            _playbackStartHandler = args => {
-                MediaPlayer = args.Player;
-                NowPlayingItem = args.Player.CurrentMedia;
-            };
+                if (playbackEvent.StatusType.IsActiveState()) {
+                    NowPlayingItem = playbackEvent.PlayableMedia.Media.Item;
+                    UpdateStatus(playbackEvent);
+                } else if (IsActive) {
+                    NowPlayingItem = null;
+                    Close();
+                }
+            });
 
             Closed += (s, e) => {
                 OnPropertyChanged("ShowOsd");
                 nav.Back();
             };
-
-            events.Get<PlaybackStopEventArgs>().Subscribe(_playbackStopHandler, true);
-            events.Get<PlaybackStartEventArgs>().Subscribe(_playbackStartHandler, true);
-           
-            MediaPlayer = playbackManager.MediaPlayers.FirstOrDefault(i => i.PlayState != PlayState.Idle);
 
             PresentationOptions = new RootPresentationOptions {
                 IsFullScreenPage = true,
@@ -246,16 +267,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
                 ShowNotifications = false,
                 PlaybackBackgroundOpacity = 0.0
             };
-        }
 
-        private int _delayCounter;
-        private async void Delay(TimeSpan duration, Action action)
-        {
-            var count = Interlocked.Increment(ref _delayCounter);
-            await Task.Delay(duration);
-            if (_delayCounter == count) {
-                action();
-            }
+            _clockTickTimer = new Timer(arg => OnPropertyChanged("ClockShortTime"), null, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1));
         }
 
         public IApiClient ApiClient { get; private set; }
@@ -292,41 +305,6 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
             }
         }
 
-        public IMediaPlayer MediaPlayer
-        {
-            get { return _mediaPlayer; }
-            set
-            {
-                if (Equals(_mediaPlayer, value)) {
-                    return;
-                }
-                
-                if (_mediaPlayer != null) {
-                    RemovePlayerEvents(_mediaPlayer);
-                }
-
-                _mediaPlayer = value;
-
-                if (_mediaPlayer != null) {
-                    _mediaPlayer.MediaChanged += player_MediaChanged;
-                    _mediaPlayer.PlayStateChanged += player_PlayStateChanged;
-
-                    if (_currentPositionTimer == null) {
-                        var timer = new Timer(PositionTimerCallback, null, 0, 250);
-
-                        _currentPositionTimer = timer;
-                    }
-                } else {
-                    DisposeCurrentPositionTimer();
-                }
-
-                NowPlayingItem = _mediaPlayer == null ? null : _mediaPlayer.CurrentMedia;
-                UpdatePauseValues(_mediaPlayer);
-
-                OnPropertyChanged();
-            }
-        }
-
         public BaseItemDto NowPlayingItem
         {
             get { return _nowPlayingItem; }
@@ -337,18 +315,6 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
                 }
 
                 _nowPlayingItem = value;
-
-                IMediaPlayer player = MediaPlayer;
-
-                long? ticks = player != null ? player.CurrentDurationTicks : null;
-
-                DisplayDuration = ticks.HasValue ? GetTimeString(ticks.Value) : "--:--";
-                DurationTicks = ticks.HasValue ? ticks.Value : 0;
-
-                CanSeek = player != null && player.CanSeek;
-
-                UpdatePauseValues(player);
-                UpdatePlayerCapabilities(player, _nowPlayingItem);
 
                 OnPropertyChanged();
                 OnPropertyChanged("DisplayName");
@@ -520,34 +486,44 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
 
         public void Dispose()
         {
-            IMediaPlayer player = _mediaPlayer;
+            DisposeClockTickTimer();
 
-            if (player != null) {
-                RemovePlayerEvents(player);
+            _sessionsSubscription.Dispose();
+            _eventsSubscription.Dispose();
+        }
+
+        public RootPresentationOptions PresentationOptions { get; private set; }
+
+        private async void Delay(TimeSpan duration, Action action)
+        {
+            int count = Interlocked.Increment(ref _delayCounter);
+            await Task.Delay(duration);
+            if (_delayCounter == count) {
+                action();
             }
-
-            DisposeCurrentPositionTimer();
         }
 
-        private void RemovePlayerEvents(IMediaPlayer player)
+        private void UpdatePlayerCapabilities(IPlaybackSession session)
         {
-            player.MediaChanged -= player_MediaChanged;
-            player.PlayStateChanged -= player_PlayStateChanged;
+            CanPlay = session.Capabilities.CanPlay;
+            CanPause = session.Capabilities.CanPause;
+            CanSeek = session.Capabilities.CanSeek;
         }
 
-        private void player_MediaChanged(object sender, MediaChangeEventArgs e)
+        private void UpdateStatus(PlaybackStatus status)
         {
-            NowPlayingItem = e.NewMedia;
-        }
+            DisplayDuration = status.Duration.HasValue ? GetTimeString(status.Duration.Value) : "--:--";
+            DurationTicks = status.Duration.HasValue ? status.Duration.Value : 0;
 
-        private void UpdatePosition(IMediaPlayer player)
-        {
-            long? ticks = player != null ? player.CurrentPositionTicks : null;
+            DisplayPosition = status.Progress.HasValue ? GetTimeString(status.Progress.Value) : "--:--";
+            PositionTicks = status.Progress.HasValue ? status.Progress.Value : 0;
 
-            DisplayPosition = ticks.HasValue ? GetTimeString(ticks.Value) : "--:--";
-            PositionTicks = ticks.HasValue ? ticks.Value : 0;
+            IsPaused = status.StatusType == PlaybackStatusType.Paused;
 
-            OnPropertyChanged("ClockShortTime");
+            CanSelectAudioTrack = _session.Capabilities.CanChangeStreams && status.PlayableMedia.Source != null && status.PlayableMedia.Source.MediaStreams.Count(stream => stream.Type == MediaStreamType.Audio) > 1;
+            CanSelectSubtitleTrack = _session.Capabilities.CanChangeStreams && status.PlayableMedia.Source != null && status.PlayableMedia.Source.MediaStreams.Count(stream => stream.Type == MediaStreamType.Subtitle) > 1;
+
+            SupportsChapters = _session.Capabilities.CanSeek && status.PlayableMedia.Media.Item.Chapters != null && status.PlayableMedia.Media.Item.Chapters.Count > 1;
         }
 
         /// <summary>
@@ -560,24 +536,6 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
             TimeSpan timespan = TimeSpan.FromTicks(ticks);
 
             return timespan.TotalHours >= 1 ? timespan.ToString("hh':'mm':'ss") : timespan.ToString("mm':'ss");
-        }
-        
-        private void PositionTimerCallback(object state)
-        {
-            UpdatePosition(MediaPlayer);
-        }
-
-        private void player_PlayStateChanged(object sender, EventArgs e)
-        {
-            UpdatePauseValues(MediaPlayer);
-
-            if (MediaPlayer.PlayState == PlayState.Playing) {
-                Delay(TimeSpan.FromSeconds(1), () => ShowOsd = false);
-            }
-
-            if (MediaPlayer.PlayState == PlayState.Paused) {
-                Delay(TimeSpan.Zero, () => ShowOsd = true);
-            }
         }
 
         public void ToggleOsd()
@@ -593,131 +551,75 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
             });
         }
 
-        private void UpdatePlayerCapabilities(IMediaPlayer player, BaseItemDto media)
-        {
-            SupportsChapters = player != null && player.CanSeek && media != null && media.Chapters != null && media.Chapters.Count > 0;
-
-            var videoPlayer = player as IVideoPlayer;
-
-            IReadOnlyList<SelectableMediaStream> selectableStreams = videoPlayer == null
-                                                                         ? new List<SelectableMediaStream>()
-                                                                         : videoPlayer.SelectableStreams;
-
-            List<SelectableMediaStream> audioStreams = selectableStreams.Where(i => i.Type == MediaStreamType.Audio).ToList();
-            List<SelectableMediaStream> subtitleStreams = selectableStreams.Where(i => i.Type == MediaStreamType.Subtitle).ToList();
-
-            CanSelectAudioTrack = videoPlayer != null && videoPlayer.CanSelectAudioTrack && media != null && audioStreams.Count > 1;
-            CanSelectSubtitleTrack = videoPlayer != null && videoPlayer.CanSelectSubtitleTrack && media != null && subtitleStreams.Count > 1;
-        }
-
-        private void UpdatePauseValues(IMediaPlayer player)
-        {
-            CanPlay = IsPaused = player != null && player.PlayState == PlayState.Paused;
-            CanPause = player != null && player.CanPause && player.PlayState == PlayState.Playing;
-        }
-
         public void Pause(object commandParameter)
         {
-            if (_mediaPlayer != null) {
-                _mediaPlayer.Pause();
-            }
+            PlaybackManager.AccessSession(s => s.Pause());
         }
 
         public void Stop(object commandParameter)
         {
-            if (_mediaPlayer != null) {
-                _mediaPlayer.Stop();
-            }
+            PlaybackManager.StopPlayback();
         }
 
         public void SkipBackward(object commandParameter)
         {
-            if (_mediaPlayer != null) {
-                _mediaPlayer.SkipBackward();
-            }
+            PlaybackManager.AccessSession(s => s.SkipBackward());
         }
 
         public void SkipForward(object commandParameter)
         {
-            if (_mediaPlayer != null) {
-                _mediaPlayer.SkipForward();
-            }
+            PlaybackManager.AccessSession(s => s.SkipForward());
         }
 
         public void NextChapter(object commandParameter)
         {
-            if (_mediaPlayer != null) {
-                _mediaPlayer.GoToNextChapter();
-            }
+            PlaybackManager.AccessSession(s => s.NextChapter());
         }
 
         public void PreviousChapter(object commandParameter)
         {
-            if (_mediaPlayer != null) {
-                _mediaPlayer.GoToPreviousChapter();
-            }
+            PlaybackManager.AccessSession(s => s.PreviousChapter());
         }
 
         public void Play(object commandParameter)
         {
-            if (_mediaPlayer != null) {
-                if (_mediaPlayer.PlayState == PlayState.Paused) {
-                    _mediaPlayer.UnPause();
-                }
-            }
+            PlaybackManager.AccessSession(s => s.Play());
         }
 
         public void PlayPause(object commandParameter)
         {
-            if (IsPaused) {
-                Play(commandParameter);
-            } else {
-                Pause(commandParameter);
-            }
+            PlaybackManager.AccessSession(s => s.PlayPause());
         }
 
         public void Seek(long positionTicks)
         {
-            if (_mediaPlayer != null) {
-                _mediaPlayer.Seek(positionTicks);
-            }
+            PlaybackManager.AccessSession(s => s.Seek(positionTicks));
         }
 
         public void ShowChapterSelection(object commandParameter)
         {
-            var player = MediaPlayer as IVideoPlayer;
-            if (player != null) {
-                var vm = new OsdChaptersViewModel(NowPlayingItem, _connectionManager, ImageManager, player);
-                PresentationManager.ShowPopup(vm, false, false);
-            }
+            var vm = new OsdChaptersViewModel(NowPlayingItem, _connectionManager, ImageManager, PlaybackManager, _status);
+            PresentationManager.ShowPopup(vm, false, false);
         }
 
         public void ShowSubtitleSelection(object commandParameter)
         {
-            var player = MediaPlayer as IVideoPlayer;
-            if (player != null) {
-                var vm = new OsdSubtitleTracksViewModel(player);
-                PresentationManager.ShowPopup(vm, false, false);
-            }
+            var vm = new OsdSubtitleTracksViewModel(_status, PlaybackManager);
+            PresentationManager.ShowPopup(vm, false, false);
         }
 
         public void ShowAudioSelection(object commandParameter)
         {
-            var player = MediaPlayer as IVideoPlayer;
-            if (player != null) {
-                var vm = new OsdAudioTracksViewModel(player);
-                PresentationManager.ShowPopup(vm, false, false);
-            }
-        }
-        
-        private void DisposeCurrentPositionTimer()
-        {
-            if (_currentPositionTimer != null) {
-                _currentPositionTimer.Dispose();
-                _currentPositionTimer = null;
-            }
+            var vm = new OsdAudioTracksViewModel(_status, PlaybackManager);
+            PresentationManager.ShowPopup(vm, false, false);
         }
 
-        public RootPresentationOptions PresentationOptions { get; private set; }
+        private void DisposeClockTickTimer()
+        {
+            if (_clockTickTimer != null) {
+                _clockTickTimer.Dispose();
+                _clockTickTimer = null;
+            }
+        }
     }
 }

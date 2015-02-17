@@ -7,7 +7,7 @@ namespace MediaBrowser.Theater.Playback
     {
         void Play();
         void Pause();
-        Task Stop();
+        //Task Stop();
         void Seek(long ticks);
         void SkipNext();
         void SkipPrevious();

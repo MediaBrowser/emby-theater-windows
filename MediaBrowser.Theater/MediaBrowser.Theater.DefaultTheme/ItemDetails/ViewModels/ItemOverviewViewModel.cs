@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -13,6 +14,7 @@ using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
+using MediaBrowser.Theater.Playback;
 using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using MediaBrowser.Theater.DefaultTheme.ItemList;
@@ -75,8 +77,8 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
                 PreferredImageTypes = new[] { ImageType.Backdrop, ImageType.Art, ImageType.Banner, ImageType.Screenshot, ImageType.Primary }
             };
 
-            PlayCommand = new RelayCommand(o => playbackManager.Play(new PlayOptions(item) { GoFullScreen = true, EnableCustomPlayers = true, Resume = false }));
-            ResumeCommand = new RelayCommand(o => playbackManager.Play(new PlayOptions(item) { GoFullScreen = true, EnableCustomPlayers = true, Resume = true }));
+            PlayCommand = new RelayCommand(o => playbackManager.Play(item));
+            ResumeCommand = new RelayCommand(o => playbackManager.Play(new Media { Item = item, Options = new MediaPlaybackOptions { Resume = true }}));
             PlayAllCommand = new RelayCommand(async o => {
                 var items = await ItemChildren.Get(connectionManager, sessionManager, item, new ChildrenQueryParams {
                     Recursive = true,
@@ -84,7 +86,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
                 });
 
                 if (items.Items.Length > 0) {
-                    await playbackManager.Play(new PlayOptions(items.Items) { EnableCustomPlayers = true, GoFullScreen = true });
+                    await playbackManager.Play(items.Items.Select(i => (Media)i));
                 }
             });
 

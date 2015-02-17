@@ -19,7 +19,7 @@ namespace MediaBrowser.Theater.Playback.Tests
 
             var status = new PlaybackStatus {
                 ActiveStreams = new[] {streams[0]},
-                Media = new PlayableMedia {
+                PlayableMedia = new PlayableMedia {
                     Source = new Model.Dto.MediaSourceInfo { MediaStreams = streams }
                 }
             };
@@ -44,7 +44,7 @@ namespace MediaBrowser.Theater.Playback.Tests
 
             var status = new PlaybackStatus {
                 ActiveStreams = new MediaStream[0],
-                Media = new PlayableMedia {
+                PlayableMedia = new PlayableMedia {
                     Source = new Model.Dto.MediaSourceInfo { MediaStreams = streams }
                 }
             };
@@ -69,7 +69,7 @@ namespace MediaBrowser.Theater.Playback.Tests
 
             var status = new PlaybackStatus {
                 ActiveStreams = new[] {streams[2]},
-                Media = new PlayableMedia {
+                PlayableMedia = new PlayableMedia {
                     Source = new Model.Dto.MediaSourceInfo { MediaStreams = streams }
                 }
             };
@@ -95,7 +95,7 @@ namespace MediaBrowser.Theater.Playback.Tests
 
             var status = new PlaybackStatus {
                 ActiveStreams = new[] {streams[0], streams[1], streams[3]},
-                Media = new PlayableMedia {
+                PlayableMedia = new PlayableMedia {
                     Source = new Model.Dto.MediaSourceInfo { MediaStreams = streams }
                 }
             };
@@ -120,7 +120,7 @@ namespace MediaBrowser.Theater.Playback.Tests
 
             var status = new PlaybackStatus {
                 ActiveStreams = new[] {streams[1]},
-                Media = new PlayableMedia {
+                PlayableMedia = new PlayableMedia {
                     Source = new Model.Dto.MediaSourceInfo { MediaStreams = streams }
                 }
             };
@@ -145,7 +145,7 @@ namespace MediaBrowser.Theater.Playback.Tests
 
             var status = new PlaybackStatus {
                 ActiveStreams = new MediaStream[0],
-                Media = new PlayableMedia {
+                PlayableMedia = new PlayableMedia {
                     Source = new Model.Dto.MediaSourceInfo { MediaStreams = streams }
                 }
             };
@@ -170,7 +170,7 @@ namespace MediaBrowser.Theater.Playback.Tests
 
             var status = new PlaybackStatus {
                 ActiveStreams = new[] {streams[0]},
-                Media = new PlayableMedia {
+                PlayableMedia = new PlayableMedia {
                     Source = new Model.Dto.MediaSourceInfo { MediaStreams = streams }
                 }
             };
@@ -196,7 +196,7 @@ namespace MediaBrowser.Theater.Playback.Tests
 
             var status = new PlaybackStatus {
                 ActiveStreams = new[] {streams[0], streams[1], streams[3]},
-                Media = new PlayableMedia {
+                PlayableMedia = new PlayableMedia {
                     Source = new Model.Dto.MediaSourceInfo { MediaStreams = streams }
                 }
             };

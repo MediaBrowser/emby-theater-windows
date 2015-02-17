@@ -4,6 +4,7 @@ namespace MediaBrowser.Theater.MockPlayer
     {
         Forward,
         Backward,
-        Skip
+        Skip,
+        Stop
     }
 }

@@ -34,7 +34,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Configuration
 
         public PluginConfiguration()
         {
-            Palette = new ColorPalette { Style = ThemeStyle.Light, Accent = AccentColors.MediaBrowserGreen };
+            Palette = new ColorPalette { Style = ThemeStyle.Dark, Accent = AccentColors.MediaBrowserGreen };
             SortModes = new List<SortModePreference>();
             ShowOnlyWatchedChapters = false;
         }

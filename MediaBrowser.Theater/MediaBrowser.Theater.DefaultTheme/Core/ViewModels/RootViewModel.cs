@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using MediaBrowser.Theater.Api;
 using MediaBrowser.Theater.Api.Events;
@@ -6,7 +7,9 @@ using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.System;
 using MediaBrowser.Theater.Api.UserInterface;
+using MediaBrowser.Theater.Playback;
 using MediaBrowser.Theater.Presentation.ViewModels;
+using System.Reactive.Linq;
 
 namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
 {
@@ -40,14 +43,11 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
             events.Get<ShowPageEvent>().Subscribe(message => ActivePage = message.ViewModel);
 #endif
 
-            events.Get<PlaybackStopEventArgs>().Subscribe(message => IsInternalMediaPlaying = false);
-            events.Get<PlaybackStartEventArgs>().Subscribe(message => {
-                if (message.Player is IInternalMediaPlayer && message.Player is IVideoPlayer && message.Options.Items[0].IsVideo) {
-                    IsInternalMediaPlaying = true;
-                }
+            appHost.Resolve<IPlaybackManager>().Events.Subscribe(e => {
+                IsInternalMediaPlaying = e.StatusType.IsActiveState();
             });
         }
-
+        
         public bool IsInternalMediaPlaying
         {
             get { return _isInternalMediaPlaying; }

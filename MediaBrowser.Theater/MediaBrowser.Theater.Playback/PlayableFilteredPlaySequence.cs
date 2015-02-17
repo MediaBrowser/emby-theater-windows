@@ -6,12 +6,14 @@ namespace MediaBrowser.Theater.Playback
         private readonly IPlaySequence _sequence;
 
         private Media _bootstrap;
+        private int? _bootstrapIndex;
 
         public PlayableFilteredPlaySequence(IPlaySequence sequence, IMediaPlayer player, Media bootstrap = null)
         {
             _sequence = sequence;
             _player = player;
             _bootstrap = bootstrap;
+            _bootstrapIndex = bootstrap != null ? (int?)sequence.CurrentIndex : null;
         }
 
         public void Dispose()
@@ -20,11 +22,24 @@ namespace MediaBrowser.Theater.Playback
 
         public Media Current { get; private set; }
 
+        public int CurrentIndex
+        {
+            get
+            {
+                if (_bootstrapIndex != null) {
+                    return _bootstrapIndex.Value;
+                }
+
+                return _sequence.CurrentIndex;
+            }
+        }
+
         public bool Next()
         {
             if (_bootstrap != null) {
                 Current = _bootstrap;
                 _bootstrap = null;
+                _bootstrapIndex = null;
                 return true;
             }
 

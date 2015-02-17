@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using MediaBrowser.Model.Dto;
 
 namespace MediaBrowser.Theater.Playback
 {
@@ -12,5 +11,6 @@ namespace MediaBrowser.Theater.Playback
         RepeatMode RepeatMode { get; set; }
         SortMode SortMode { get; set; }
         IPlaySequence GetPlayOrder();
+        void AddRange(IEnumerable<Media> items);
     }
 }

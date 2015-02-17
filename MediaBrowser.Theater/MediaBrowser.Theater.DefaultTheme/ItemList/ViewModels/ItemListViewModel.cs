@@ -8,10 +8,9 @@ using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Querying;
 using MediaBrowser.Theater.Api.Navigation;
-using MediaBrowser.Theater.Api.Playback;
-using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
+using MediaBrowser.Theater.Playback;
 using MediaBrowser.Theater.Presentation;
 using MediaBrowser.Theater.Presentation.ViewModels;
 
@@ -93,20 +92,30 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
 
         public object GetSortKey(BaseItemDto item)
         {
-            if (item.PremiereDate != null) {
-                return item.PremiereDate.Value;
-            }
-
-            return DateTime.MaxValue;
+            return GetDate(item) ?? DateTime.MaxValue;
         }
 
         public object GetIndexKey(BaseItemDto item)
         {
-            if (item.PremiereDate != null) {
-                return (item.PremiereDate.Value.Year / 5) * 5;
+            var date = GetDate(item);
+            if (date != null) {
+                return (date.Value.Year/5)*5;
             }
 
             return "N/A";
+        }
+
+        private DateTime? GetDate(BaseItemDto item)
+        {
+            if (item.PremiereDate != null && item.IsType("episode")) {
+                return item.PremiereDate.Value;
+            }
+
+            if (item.ProductionYear != null) {
+                return new DateTime(item.ProductionYear.Value, 1, 1);
+            }
+
+            return null;
         }
     }
 

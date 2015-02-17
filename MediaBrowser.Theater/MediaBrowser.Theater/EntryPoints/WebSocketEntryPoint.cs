@@ -9,6 +9,7 @@ using System.Windows.Input;
 using MediaBrowser.Common;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
+using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Events;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Querying;
@@ -21,6 +22,7 @@ using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.System;
 using MediaBrowser.Theater.Api.UserInput;
 using MediaBrowser.Theater.Api.UserInterface;
+using MediaBrowser.Theater.Playback;
 
 namespace MediaBrowser.Theater.EntryPoints
 {
@@ -124,17 +126,17 @@ namespace MediaBrowser.Theater.EntryPoints
 
         void socket_SetVolumeCommand(object sender, GenericEventArgs<int> e)
         {
-            _playbackManager.SetVolume(e.Argument);
+            _playbackManager.GlobalSettings.Audio.Volume = e.Argument;
         }
 
         void socket_SetSubtitleStreamIndexCommand(object sender, GenericEventArgs<int> e)
         {
-            _playbackManager.SetSubtitleStreamIndex(e.Argument);
+            _playbackManager.AccessSession(s => s.SelectStream(MediaStreamType.Subtitle, e.Argument));
         }
 
         void socket_SetAudioStreamIndexCommand(object sender, GenericEventArgs<int> e)
         {
-            _playbackManager.SetAudioStreamIndex(e.Argument);
+            _playbackManager.AccessSession(s => s.SelectStream(MediaStreamType.Audio, e.Argument));
         }
 
         void socket_SendStringCommand(object sender, GenericEventArgs<string> e)
@@ -353,12 +355,12 @@ namespace MediaBrowser.Theater.EntryPoints
                     }
                 }, CancellationToken.None);
 
-                await _playbackManager.Play(new PlayOptions
-                {
-                    StartPositionTicks = e.Argument.StartPositionTicks ?? 0,
-                    GoFullScreen = true,
-                    Items = result.Items.ToList()
-                });
+                await _playbackManager.Play(result.Items.Select(i => new Media {
+                    Item = i,
+                    Options = new MediaPlaybackOptions {
+                        StartPositionTicks = e.Argument.StartPositionTicks ?? 0
+                    }
+                }));
             }
             catch (Exception ex)
             {
@@ -378,13 +380,6 @@ namespace MediaBrowser.Theater.EntryPoints
                 return;
             }
 
-            var player = _playbackManager.MediaPlayers.FirstOrDefault(i => i.PlayState != PlayState.Idle);
-
-            if (player == null)
-            {
-                return;
-            }
-
             switch (request.Command)
             {
                 case PlaystateCommand.Pause:
@@ -398,17 +393,13 @@ namespace MediaBrowser.Theater.EntryPoints
                     break;
                 case PlaystateCommand.Seek:
                     _commandManager.ExecuteCommand(Command.Seek, e.Argument.SeekPositionTicks ?? 0);
-
                     break;
-
                 case PlaystateCommand.PreviousTrack:
                     _commandManager.ExecuteCommand(Command.PreviousTrackOrChapter, null);
                     break;
-
                 case PlaystateCommand.NextTrack:
                     _commandManager.ExecuteCommand(Command.NextTrackOrChapter, null);
                     break;
-
             }
         }
 

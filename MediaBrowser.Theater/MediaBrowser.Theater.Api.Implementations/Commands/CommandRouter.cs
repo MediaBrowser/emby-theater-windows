@@ -6,6 +6,7 @@ using MediaBrowser.Theater.Api.Events;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.UserInterface;
+using MediaBrowser.Theater.Playback;
 
 namespace MediaBrowser.Theater.Api.Commands
 {

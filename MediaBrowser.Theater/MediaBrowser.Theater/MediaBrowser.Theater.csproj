@@ -136,44 +136,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Strings.resx</DependentUpon>
     </Compile>
-    <Compile Include="StartupWizard\StartupWizardApp.xaml.cs">
-      <DependentUpon>StartupWizardApp.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="StartupWizard\StartupWizardWindow.xaml.cs">
-      <DependentUpon>StartupWizardWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="StartupWizard\ViewModels\CompleteInstallationViewModel.cs" />
-    <Compile Include="StartupWizard\ViewModels\IntroductionViewModel.cs" />
-    <Compile Include="StartupWizard\Prerequisites\LavFiltersPrerequisite.cs" />
-    <Compile Include="StartupWizard\Prerequisites\MadVrPrerequisite.cs" />
-    <Compile Include="StartupWizard\Prerequisites\Prerequisite.cs" />
-    <Compile Include="StartupWizard\ViewModels\PrerequisitesInstallationViewModel.cs" />
-    <Compile Include="StartupWizard\ViewModels\PrerequisitesViewModel.cs" />
-    <Compile Include="StartupWizard\ViewModels\PrerequisiteViewModel.cs" />
-    <Compile Include="StartupWizard\Prerequisites\ReClockPrerequisite.cs" />
-    <Compile Include="StartupWizard\ViewModels\ServerDetailsViewModel.cs" />
-    <Compile Include="StartupWizard\ViewModels\WizardViewModel.cs" />
-    <Compile Include="StartupWizard\Prerequisites\XySubFilterPrerequisite.cs" />
-    <Compile Include="StartupWizard\Prerequisites\XyVsFilterPrerequisite.cs" />
-    <Compile Include="StartupWizard\Views\CompleteInstallationView.xaml.cs">
-      <DependentUpon>CompleteInstallationView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="StartupWizard\Views\HyperlinkExtensions.cs" />
-    <Compile Include="StartupWizard\Views\IntroductionView.xaml.cs">
-      <DependentUpon>IntroductionView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="StartupWizard\Views\PrerequisitesInstallationView.xaml.cs">
-      <DependentUpon>PrerequisitesInstallationView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="StartupWizard\Views\PrerequisitesView.xaml.cs">
-      <DependentUpon>PrerequisitesView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="StartupWizard\Views\ServerDetailsView.xaml.cs">
-      <DependentUpon>ServerDetailsView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="StartupWizard\Views\WizardView.xaml.cs">
-      <DependentUpon>WizardView.xaml</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MediaBrowser.Theater.Api.Implementations\MediaBrowser.Theater.Api.Implementations.csproj">
@@ -188,9 +150,13 @@
       <Project>{1b096484-b8cc-49d8-ad88-06b5ffb8f888}</Project>
       <Name>MediaBrowser.Theater.DefaultTheme</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MediaBrowser.Theater.DirectShow\MediaBrowser.Theater.DirectShow.csproj">
-      <Project>{04781068-d0d2-47ba-8d1c-a96274655f63}</Project>
-      <Name>MediaBrowser.Theater.DirectShow</Name>
+    <ProjectReference Include="..\MediaBrowser.Theater.MockPlayer\MediaBrowser.Theater.MockPlayer.csproj">
+      <Project>{073963c5-408e-4b9e-b9e3-ee2f79bd1fa8}</Project>
+      <Name>MediaBrowser.Theater.MockPlayer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MediaBrowser.Theater.Playback\MediaBrowser.Theater.Playback.csproj">
+      <Project>{fc6885c8-a8b5-42e4-981e-be38f3a8be3a}</Project>
+      <Name>MediaBrowser.Theater.Playback</Name>
     </ProjectReference>
     <ProjectReference Include="..\MediaBrowser.Theater.Presentation\MediaBrowser.Theater.Presentation.csproj">
       <Project>{c464ffc3-0fcd-49d5-a206-21f3bb586c53}</Project>
@@ -207,40 +173,6 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Strings.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="StartupWizard\StartupWizardApp.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="StartupWizard\StartupWizardWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="StartupWizard\Views\CompleteInstallationView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="StartupWizard\Views\IntroductionView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="StartupWizard\Views\PrerequisitesInstallationView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="StartupWizard\Views\PrerequisitesView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="StartupWizard\Views\ServerDetailsView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="StartupWizard\Views\WizardView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\mb-logo-txt-white-master-theater.png" />

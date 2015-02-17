@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Api.Events;
 using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.System;
 using MediaBrowser.Theater.Api.UserInterface;
+using MediaBrowser.Theater.Playback;
 
 namespace MediaBrowser.Theater.Api.Commands
 {
@@ -42,7 +44,6 @@ namespace MediaBrowser.Theater.Api.Commands
         private readonly ILogger _logger;
         private readonly CommandActionMapping _nullCommandActionMapping;
         private readonly CommandActionMap _globalCommandActionMap;
-        private double _currentPlaybackRate = 1.0; // Todo - move to reportable property of IPlaybackManager
 
         public DefaultCommandActionMap(ITheaterApplicationHost appHost, IPresenter presenation, IPlaybackManager playback, INavigator navigation, /*IScreensaverManager screensaverManager,*/ ILogManager logManager, IEventAggregator events)
         {
@@ -54,9 +55,6 @@ namespace MediaBrowser.Theater.Api.Commands
             _logger = logManager.GetLogger(GetType().Name);
             _globalCommandActionMap = CreateGlobalCommandActionMap();
             _nullCommandActionMapping = new CommandActionMapping(Command.Null, NullAction);
-
-            events.Get<PlaybackStartEventArgs>().Subscribe(arg => _currentPlaybackRate = 1.0);
-            events.Get<PlaybackStopEventArgs>().Subscribe(arg => _currentPlaybackRate = 1.0);
         }
 
         private CommandActionMap CreateGlobalCommandActionMap()
@@ -69,7 +67,7 @@ namespace MediaBrowser.Theater.Api.Commands
                 new CommandActionMapping( Command.Pause,           Pause),
                 new CommandActionMapping( Command.UnPause,         UnPause),
                 new CommandActionMapping( Command.Stop,            Stop),
-                new CommandActionMapping( Command.TogglePause,     TogglePause),
+                new CommandActionMapping( Command.TogglePause,     PlayPause),
                 new CommandActionMapping( Command.Queue,           NullAction),
                 new CommandActionMapping( Command.FastForward,     FastForward),
                 new CommandActionMapping( Command.Rewind,          Rewind),
@@ -112,15 +110,15 @@ namespace MediaBrowser.Theater.Api.Commands
                 new CommandActionMapping( Command.RestoreScreen,            RestoreScreen),
                 new CommandActionMapping( Command.ToggleFullScreen,         ToggleFullscreen),
                 new CommandActionMapping( Command.SetVolume,                SetVolume),
-                new CommandActionMapping( Command.VolumeUp,                 (s,e) => _playback.VolumeStepUp()),
-                new CommandActionMapping( Command.VolumeDown,               (s,e) => _playback.VolumeStepDown()),
-                new CommandActionMapping( Command.Mute,                     (s,e) => _playback.Mute()),
-                new CommandActionMapping( Command.UnMute,                   (s,e) => _playback.UnMute()),
-                new CommandActionMapping( Command.ToggleMute,               (s,e) => _playback.ToggleMute()),
+                new CommandActionMapping( Command.VolumeUp,                 (s,e) => _playback.GlobalSettings.Audio.StepVolumeUp()),
+                new CommandActionMapping( Command.VolumeDown,               (s,e) => _playback.GlobalSettings.Audio.StepVolumeDown()),
+                new CommandActionMapping( Command.Mute,                     (s,e) => _playback.GlobalSettings.Audio.IsMuted = true),
+                new CommandActionMapping( Command.UnMute,                   (s,e) => _playback.GlobalSettings.Audio.IsMuted = false),
+                new CommandActionMapping( Command.ToggleMute,               (s,e) => _playback.GlobalSettings.Audio.IsMuted = !_playback.GlobalSettings.Audio.IsMuted),
                 new CommandActionMapping( Command.SetSubtitleStreamIndex,   SetSubtitleStreamIndex),
-                new CommandActionMapping( Command.NextSubtitleStream,       (s, a) => _playback.NextSubtitleStream()),
+                new CommandActionMapping( Command.NextSubtitleStream,       (s, a) => _playback.AccessSession(session => session.NextStream(MediaStreamType.Subtitle))),
                 new CommandActionMapping( Command.SetAudioStreamIndex,      SetAudioStreamIndex),
-                new CommandActionMapping( Command.NextAudioStream,          (s, a) => _playback.NextAudioStream()),
+                new CommandActionMapping( Command.NextAudioStream,          (s, a) => _playback.AccessSession(session => session.NextStream(MediaStreamType.Audio))),
                 new CommandActionMapping( Command.AspectRatio,              NullAction), // ToDo
 //                new CommandActionMapping( Command.ShowOsd,                  ShowOsd),
 //                new CommandActionMapping( Command.HideOsd,                  HideOSd),
@@ -130,7 +128,7 @@ namespace MediaBrowser.Theater.Api.Commands
 //                new CommandActionMapping( Command.ToggleInfoPanel,          ToggleInfoPanel),
 //                new CommandActionMapping( Command.ShowScreensaver,          (s, a) => _screensaverManager.ShowScreensaver(true)),
                 new CommandActionMapping( Command.ScreenDump,               (s, a) => MBTScreenDump.GetAndSaveWindowsImage(_presenation.MainApplicationWindowHandle)),
-                new CommandActionMapping( Command.ToggleVideoScaling, ToggleVideoScaling)
+                new CommandActionMapping( Command.ToggleVideoScaling, NullAction)
 
             };
         }
@@ -185,106 +183,40 @@ namespace MediaBrowser.Theater.Api.Commands
             _navigation.Forward();
         }
 
-        private IInternalMediaPlayer GetActiveInternalMediaPlayer()
-        {
-            return _playback.MediaPlayers.OfType<IInternalMediaPlayer>().FirstOrDefault(i => i.PlayState != PlayState.Idle);
-        }
-
-        private void ToggleVideoScaling(Object sender, CommandEventArgs args)
-        {
-            var activePlayer = GetActiveInternalMediaPlayer();
-
-            if (activePlayer != null)
-            {
-                activePlayer.ToggleVideoScaling();
-
-                //ShowOsd(sender, args);
-            }
-            args.Handled = true;
-        }
-
+//        private IInternalMediaPlayer GetActiveInternalMediaPlayer()
+//        {
+//            return _playback.MediaPlayers.OfType<IInternalMediaPlayer>().FirstOrDefault(i => i.PlayState != PlayState.Idle);
+//        }
+        
         private void Play(Object sender, CommandEventArgs args)
         {
-            var activePlayer = GetActiveInternalMediaPlayer();
-
-            if (activePlayer != null)
-            {
-                if (activePlayer.PlayState == PlayState.Paused)
-                {
-                    activePlayer.UnPause();
-                }
-
-                //ShowFullscreenVideoOsd();
-            }
-
+            _playback.AccessSession(s => s.Play());
             args.Handled = true;
         }
 
         private void PlayPause(Object sender, CommandEventArgs args)
         {
-            var activePlayer = GetActiveInternalMediaPlayer();
-
-            if (activePlayer != null)
-            {
-                if (activePlayer.PlayState == PlayState.Paused)
-                {
-                    activePlayer.UnPause();
-                }
-                else
-                {
-                    activePlayer.Pause();
-                }
-
-                //ShowOsd(sender, args);
-            }
-           
+            _playback.AccessSession(s => s.PlayPause());
             args.Handled = true;
         }
 
         private void Pause(Object sender, CommandEventArgs args)
         {
-            var activePlayer = GetActiveInternalMediaPlayer();
-
-            if (activePlayer != null && activePlayer.PlayState != PlayState.Paused)
-            {
-                activePlayer.Pause();
-                //ShowOsd(sender, args);
-            }
+            _playback.AccessSession(s => s.Pause());
             args.Handled = true;
         }
 
         private void UnPause(Object sender, CommandEventArgs args)
         {
-            var activePlayer = GetActiveInternalMediaPlayer();
+            _playback.AccessSession(s => {
+                if (s.Status.StatusType == PlaybackStatusType.Paused) {
+                    s.Play();
+                }
+            });
 
-            if (activePlayer != null && activePlayer.PlayState == PlayState.Paused)
-            {
-                activePlayer.UnPause();
-                //ShowOsd(sender, args);
-            }
             args.Handled = true;
         }
-
-        private void TogglePause(Object sender, CommandEventArgs args)
-        {
-            var activePlayer = GetActiveInternalMediaPlayer();
-
-            if (activePlayer != null)
-            {
-                if (activePlayer.PlayState == PlayState.Paused)
-                {
-                    activePlayer.UnPause();
-                }
-                else
-                {
-                    activePlayer.Pause();
-                }
-
-                //ShowOsd(sender, args);
-            }
-            args.Handled = true;
-        }
-
+        
         private void Close()
         {
             _appHost.Shutdown();
@@ -292,38 +224,27 @@ namespace MediaBrowser.Theater.Api.Commands
 
         private void SkipBackward(Object sender, CommandEventArgs args)
         {
-            var activePlayer = GetActiveInternalMediaPlayer();
-            if (activePlayer != null)
-            {
-                if (args.Args != null)
-                {
-                    activePlayer.SkipBackward((int)args.Args);
+            _playback.AccessSession(s => {
+                if (args.Args != null) {
+                    s.SkipBackward((int) args.Args);
+                } else {
+                    s.SkipBackward();
                 }
-                else
-                {
-                    activePlayer.SkipBackward();
-                }
-                //ShowOsd(sender, args);
-            }
+            });
+
             args.Handled = true;
         }
 
         private void SkipForward(Object sender, CommandEventArgs args)
         {
-            var activePlayer = GetActiveInternalMediaPlayer();
+            _playback.AccessSession(s => {
+                if (args.Args != null) {
+                    s.SkipForward((int) args.Args);
+                } else {
+                    s.SkipForward();
+                }
+            });
 
-            if (activePlayer != null)
-            {
-                if (args.Args != null)
-                {
-                    activePlayer.SkipForward((int)args.Args);
-                }
-                else
-                {
-                    activePlayer.SkipForward();
-                }
-                //ShowOsd(sender, args);
-            }
             args.Handled = true;
         }
 
@@ -344,118 +265,70 @@ namespace MediaBrowser.Theater.Api.Commands
 
         private void Stop(Object sender, CommandEventArgs args)
         {
-            var activePlayer = GetActiveInternalMediaPlayer();
-
-            if (activePlayer != null)
-            {
-                activePlayer.Stop();
-            }
+            _playback.StopPlayback();
             args.Handled = true;
         }
 
         private void NextTrack(Object sender, CommandEventArgs args)
         {
-            var activePlayer = GetActiveInternalMediaPlayer();
-
-            if (activePlayer != null)
-            {
-                activePlayer.NextTrack();
-                //ShowOsd(sender, args);
-            }
+            _playback.AccessSession(s => s.SkipNext());
             args.Handled = true;
         }
 
         private void PreviousTrack(Object sender, CommandEventArgs args)
         {
-            var activePlayer = GetActiveInternalMediaPlayer();
-
-            if (activePlayer != null)
-            {
-                activePlayer.PreviousTrack();
-                //ShowOsd(sender, args);
-            }
+            _playback.AccessSession(s => s.SkipPrevious());
             args.Handled = true;
         }
 
         private void NextChapter(Object sender, CommandEventArgs args)
         {
-            var activePlayer = GetActiveInternalMediaPlayer();
-
-            if (activePlayer != null)
-            {
-                activePlayer.GoToNextChapter();
-                //ShowOsd(sender, args);
-            }
+            _playback.AccessSession(s => s.NextChapter());
             args.Handled = true;
         }
 
         private void PreviousChapter(Object sender, CommandEventArgs args)
         {
-            var activePlayer = GetActiveInternalMediaPlayer();
-
-            if (activePlayer != null)
-            {
-                activePlayer.GoToPreviousChapter();
-                //ShowOsd(sender, args);
-            }
+            _playback.AccessSession(s => s.PreviousChapter());
             args.Handled = true;
         }
 
         private void NextTrackOrChapter(Object sender, CommandEventArgs args)
         {
-            var activePlayer = GetActiveInternalMediaPlayer();
+            _playback.AccessSession(s => {
+                if (s.Status.PlayableMedia != null && s.Status.PlayableMedia.Media.Item.IsVideo) {
+                    s.NextChapter();
+                } else {
+                    s.SkipNext();
+                }
+            });
 
-            if (activePlayer != null && activePlayer.CurrentMedia != null && activePlayer.CurrentMedia.IsVideo)
-            {
-                NextChapter(sender, args);
-            }
-            else
-            {
-                NextTrack(sender, args);
-            }
             args.Handled = true;
         }
 
         private void PreviousTrackOrChapter(Object sender, CommandEventArgs args)
         {
-            var activePlayer = _playback.MediaPlayers
-                .OfType<IInternalMediaPlayer>()
-                .FirstOrDefault(i => i.PlayState != PlayState.Idle);
+            _playback.AccessSession(s => {
+                if (s.Status.PlayableMedia != null && s.Status.PlayableMedia.Media.Item.IsVideo) {
+                    s.PreviousChapter();
+                } else {
+                    s.SkipPrevious();
+                }
+            });
 
-            if (activePlayer != null && activePlayer.CurrentMedia != null && activePlayer.CurrentMedia.IsVideo)
-            {
-                PreviousChapter(sender, args);
-            }
-            else
-            {
-                PreviousTrack(sender, args);
-            }
             args.Handled = true;
         }
 
         // todo - fastforwad doubles the forward speed, also need an inc that increments it by 1
         private void FastForward(Object sender, CommandEventArgs args)
         {
-            var activePlayer = GetActiveInternalMediaPlayer();
-
-            if (activePlayer != null && activePlayer.CurrentMedia != null && activePlayer.CurrentMedia.IsVideo)
-            {
-                _currentPlaybackRate = _currentPlaybackRate * 2.0;
-                activePlayer.SetRate(_currentPlaybackRate);
-            }
+            _playback.AccessSession(s => s.FastForward());
             args.Handled = true;
         }
 
         private void Rewind(Object sender, CommandEventArgs args)
         {
-            var activePlayer = GetActiveInternalMediaPlayer();
-
-            if (activePlayer != null && activePlayer.CurrentMedia != null && activePlayer.CurrentMedia.IsVideo)
-            {
-                _currentPlaybackRate = _currentPlaybackRate/2.0;
-               activePlayer.SetRate(_currentPlaybackRate);
-            }
-
+            _playback.AccessSession(s => s.Rewind());
             args.Handled = true;
         }
 
@@ -477,14 +350,7 @@ namespace MediaBrowser.Theater.Api.Commands
                 throw new ArgumentException("Seek: Invalid format, expecting a single float 0..100 argurment for SetVolume");
             }
 
-
-            var player = GetActiveInternalMediaPlayer();
-
-            if (player != null)
-            {
-                player.Seek(position);
-            }
-
+            _playback.AccessSession(s => s.Seek(position));
         }
 
 //        private void OSD(Object sender, CommandEventArgs args)
@@ -562,26 +428,26 @@ namespace MediaBrowser.Theater.Api.Commands
         {
             _logger.Debug("SetVolume  {0}", args);
 
-            float volume;
+            decimal volume;
 
             if (args == null)
                 throw new ArgumentException("SetVolume: expecting a single float 0..100 argurment for SetVolume");
 
             try
             {
-                volume = (float)Convert.ToDouble(args);
+                volume = (decimal)Convert.ToDouble(args);
             }
             catch (FormatException)
             {
                 throw new ArgumentException("SetVolume: Invalid format, expecting a single float 0..100 argurment for SetVolume");
             }
 
-            if (volume < 0.0 || volume > 100.0)
+            if (volume < 0 || volume > 100)
             {
                 throw new ArgumentException(string.Format("SetVolume: Invalid Volume {0}. Volume range is 0..100", volume));
             }
-
-            _playback.SetVolume(volume);
+            
+            _playback.GlobalSettings.Audio.Volume = volume;
         }
 
         void SetAudioStreamIndex(Object sender, CommandEventArgs args)
@@ -602,8 +468,7 @@ namespace MediaBrowser.Theater.Api.Commands
                 throw new ArgumentException("SetAudioStreamIndex: Invalid format, expecting a single integer argurment for AudiostreamIndex");
             }
 
-
-            _playback.SetAudioStreamIndex(index);
+            _playback.AccessSession(s => s.SelectStream(MediaStreamType.Audio, index));
         }
 
         void SetSubtitleStreamIndex(object sender, CommandEventArgs args)
@@ -624,8 +489,7 @@ namespace MediaBrowser.Theater.Api.Commands
                 throw new ArgumentException("SetSubtitleStreamIndex: Invalid format, expecting a single integer argurment for SubtitleStreamIndex");
             }
 
-            _playback.SetSubtitleStreamIndex(index);
-
+            _playback.AccessSession(s => s.SelectStream(MediaStreamType.Subtitle, index));
         }
         
         // todo - move these to _presentation

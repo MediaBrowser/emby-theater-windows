@@ -46,6 +46,11 @@ namespace MediaBrowser.Theater.Playback
 
         public Media Current { get; private set; }
 
+        public int CurrentIndex
+        {
+            get { return _indices != null ? _indices[(int) _currentIndex] : (int) _currentIndex; }
+        }
+
         public bool Next()
         {
             lock (_lock) {

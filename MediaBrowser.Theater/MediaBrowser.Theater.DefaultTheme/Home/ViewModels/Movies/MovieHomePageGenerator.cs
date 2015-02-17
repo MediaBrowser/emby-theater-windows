@@ -9,6 +9,7 @@ using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
+using MediaBrowser.Theater.Playback;
 using MediaBrowser.Theater.Presentation;
 using MediaBrowser.Theater.Presentation.ViewModels;
 

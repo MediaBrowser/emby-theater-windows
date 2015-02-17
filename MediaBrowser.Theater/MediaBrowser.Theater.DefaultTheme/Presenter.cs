@@ -15,7 +15,7 @@ using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Configuration;
 using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
-using MediaBrowser.Theater.DirectShow;
+//using MediaBrowser.Theater.DirectShow;
 using Microsoft.Win32;
 using Application = System.Windows.Application;
 
@@ -35,7 +35,7 @@ namespace MediaBrowser.Theater.DefaultTheme
     public class WindowManager
     {
         private readonly ITheaterApplicationHost _appHost;
-        private readonly IInternalPlayerWindowManager _internalPlayerWindowManager;
+        //private readonly IInternalPlayerWindowManager _internalPlayerWindowManager;
         private readonly ILogger _logger;
         private readonly INavigator _navigator;
         private PopupWindow _currentPopup;
@@ -45,10 +45,10 @@ namespace MediaBrowser.Theater.DefaultTheme
 
         private readonly EventHandler _refocusMainWindow;
 
-        public WindowManager(INavigator navigator, IInternalPlayerWindowManager internalPlayerWindowManager, ILogManager logManager, ITheaterApplicationHost appHost)
+        public WindowManager(INavigator navigator, /*IInternalPlayerWindowManager internalPlayerWindowManager,*/ ILogManager logManager, ITheaterApplicationHost appHost)
         {
             _navigator = navigator;
-            _internalPlayerWindowManager = internalPlayerWindowManager;
+            //_internalPlayerWindowManager = internalPlayerWindowManager;
             _appHost = appHost;
             _logger = logManager.GetLogger("WindowManager");
 
@@ -185,46 +185,46 @@ namespace MediaBrowser.Theater.DefaultTheme
             _mainWindow = window;
             _mainWindowHandle = new WindowInteropHelper(_mainWindow).Handle;
 
-            CreateInternalPlayerWindow(startPosition);
+            //CreateInternalPlayerWindow(startPosition);
 
             OnMainWindowLoaded(window);
 
             return window;
         }
 
-        private void CreateInternalPlayerWindow(FormStartPosition? startPosition)
-        {
-            int? formWidth = null;
-            int? formHeight = null;
-            int? formLeft = null;
-            int? formTop = null;
-
-            try {
-                formWidth = Convert.ToInt32(_mainWindow.Width);
-                formHeight = Convert.ToInt32(_mainWindow.Height);
-            }
-            catch (OverflowException) {
-                formWidth = null;
-                formHeight = null;
-            }
-            try {
-                formTop = Convert.ToInt32(_mainWindow.Top);
-                formLeft = Convert.ToInt32(_mainWindow.Left);
-            }
-            catch (OverflowException) {
-                formLeft = null;
-                formTop = null;
-            }
-
-            FormWindowState state = GetWindowsFormState(_mainWindow.WindowState);
-            
-            var internalPlayerWindowThread = new Thread(() => ShowHiddenWindow(formWidth, formHeight, formTop, formLeft, startPosition, state));
-            internalPlayerWindowThread.Name = "Internal Player Window";
-            internalPlayerWindowThread.SetApartmentState(ApartmentState.MTA);
-            internalPlayerWindowThread.IsBackground = true;
-            internalPlayerWindowThread.Priority = ThreadPriority.AboveNormal;
-            internalPlayerWindowThread.Start();
-        }
+//        private void CreateInternalPlayerWindow(FormStartPosition? startPosition)
+//        {
+//            int? formWidth = null;
+//            int? formHeight = null;
+//            int? formLeft = null;
+//            int? formTop = null;
+//
+//            try {
+//                formWidth = Convert.ToInt32(_mainWindow.Width);
+//                formHeight = Convert.ToInt32(_mainWindow.Height);
+//            }
+//            catch (OverflowException) {
+//                formWidth = null;
+//                formHeight = null;
+//            }
+//            try {
+//                formTop = Convert.ToInt32(_mainWindow.Top);
+//                formLeft = Convert.ToInt32(_mainWindow.Left);
+//            }
+//            catch (OverflowException) {
+//                formLeft = null;
+//                formTop = null;
+//            }
+//
+//            FormWindowState state = GetWindowsFormState(_mainWindow.WindowState);
+//            
+//            var internalPlayerWindowThread = new Thread(() => ShowHiddenWindow(formWidth, formHeight, formTop, formLeft, startPosition, state));
+//            internalPlayerWindowThread.Name = "Internal Player Window";
+//            internalPlayerWindowThread.SetApartmentState(ApartmentState.MTA);
+//            internalPlayerWindowThread.IsBackground = true;
+//            internalPlayerWindowThread.Priority = ThreadPriority.AboveNormal;
+//            internalPlayerWindowThread.Start();
+//        }
 
         private FormWindowState GetWindowsFormState(WindowState state)
         {
@@ -238,50 +238,50 @@ namespace MediaBrowser.Theater.DefaultTheme
             return FormWindowState.Normal;
         }
 
-        private void ShowHiddenWindow(int? width, int? height, int? top, int? left, FormStartPosition? startPosition, FormWindowState windowState)
-        {
-            var playerWindow = new InternalPlayerWindow();
-            playerWindow.Load += HiddenWindow_Load;
-            playerWindow.Activated += HiddenWindow_Activated;
-
-            if (startPosition.HasValue) {
-                playerWindow.StartPosition = startPosition.Value;
-            }
-
-            var dpiScale = GetSystemDpiFactor();
-
-            if (width.HasValue) {
-                playerWindow.Width = (int)(width.Value * dpiScale);
-            }
-            if (height.HasValue) {
-                playerWindow.Height = (int)(height.Value * dpiScale);
-            }
-            if (top.HasValue) {
-                playerWindow.Top = (int)(top.Value * dpiScale);
-            }
-            if (left.HasValue) {
-                playerWindow.Left = (int)(left.Value * dpiScale);
-            }
-
-            playerWindow.WindowState = windowState;
-
-            _mainWindow.Loaded += (s, e) => {
-                MovePlayerWindow(playerWindow);
-                UpdatePlayerWindowSize(playerWindow);
-                UpdatePlayerWindowState(playerWindow);
-            };
-
-            _mainWindow.LocationChanged += (s, e) => MovePlayerWindow(playerWindow);
-            _mainWindow.StateChanged += (s, e) => UpdatePlayerWindowState(playerWindow);
-            _mainWindow.SizeChanged += (s, e) => UpdatePlayerWindowSize(playerWindow);
-            _mainWindow.Closing += (s, e) => ClosePlayerWindow(playerWindow);
-
-            _internalPlayerWindowManager.Window = playerWindow;
-
-            playerWindow.Show();
-
-            Dispatcher.Run();
-        }
+//        private void ShowHiddenWindow(int? width, int? height, int? top, int? left, FormStartPosition? startPosition, FormWindowState windowState)
+//        {
+//            var playerWindow = new InternalPlayerWindow();
+//            playerWindow.Load += HiddenWindow_Load;
+//            playerWindow.Activated += HiddenWindow_Activated;
+//
+//            if (startPosition.HasValue) {
+//                playerWindow.StartPosition = startPosition.Value;
+//            }
+//
+//            var dpiScale = GetSystemDpiFactor();
+//
+//            if (width.HasValue) {
+//                playerWindow.Width = (int)(width.Value * dpiScale);
+//            }
+//            if (height.HasValue) {
+//                playerWindow.Height = (int)(height.Value * dpiScale);
+//            }
+//            if (top.HasValue) {
+//                playerWindow.Top = (int)(top.Value * dpiScale);
+//            }
+//            if (left.HasValue) {
+//                playerWindow.Left = (int)(left.Value * dpiScale);
+//            }
+//
+//            playerWindow.WindowState = windowState;
+//
+//            _mainWindow.Loaded += (s, e) => {
+//                MovePlayerWindow(playerWindow);
+//                UpdatePlayerWindowSize(playerWindow);
+//                UpdatePlayerWindowState(playerWindow);
+//            };
+//
+//            _mainWindow.LocationChanged += (s, e) => MovePlayerWindow(playerWindow);
+//            _mainWindow.StateChanged += (s, e) => UpdatePlayerWindowState(playerWindow);
+//            _mainWindow.SizeChanged += (s, e) => UpdatePlayerWindowSize(playerWindow);
+//            _mainWindow.Closing += (s, e) => ClosePlayerWindow(playerWindow);
+//
+//            _internalPlayerWindowManager.Window = playerWindow;
+//
+//            playerWindow.Show();
+//
+//            Dispatcher.Run();
+//        }
 
         private static double GetSystemDpiFactor()
         {
@@ -290,60 +290,60 @@ namespace MediaBrowser.Theater.DefaultTheme
         }
 
 
-        private void MovePlayerWindow(InternalPlayerWindow playerWindow)
-        {
-            double top = _mainWindow.Top;
-            double left = _mainWindow.Left;
-
-            if (double.IsNaN(top) || double.IsNaN(left)) {
-                return;
-            }
-
-            var dpiScale = GetSystemDpiFactor();
-
-            InvokeOnWindow(playerWindow, () => {
-                playerWindow.Top = Convert.ToInt32(top * dpiScale);
-                playerWindow.Left = Convert.ToInt32(left * dpiScale);
-            });
-        }
-
-        private void UpdatePlayerWindowState(InternalPlayerWindow playerWindow)
-        {
-            FormWindowState state = GetWindowsFormState(_mainWindow.WindowState);
-
-            _mainWindow.ShowInTaskbar = state == FormWindowState.Minimized;
-
-            InvokeOnWindow(playerWindow, () => {
-                if (state == FormWindowState.Minimized) {
-                    playerWindow.Hide();
-                } else {
-                    playerWindow.Show();
-                    playerWindow.WindowState = state;
-                }
-            });
-        }
-
-        private void UpdatePlayerWindowSize(InternalPlayerWindow playerWindow)
-        {
-            double width = _mainWindow.Width;
-            double height = _mainWindow.Height;
-
-            if (double.IsNaN(width) || double.IsNaN(height)) {
-                return;
-            }
-
-            var dpiScale = GetSystemDpiFactor();
-
-            InvokeOnWindow(playerWindow, () => {
-                playerWindow.Width = Convert.ToInt32(width * dpiScale);
-                playerWindow.Height = Convert.ToInt32(height * dpiScale);
-            });
-        }
-
-        private void ClosePlayerWindow(InternalPlayerWindow playerWindow)
-        {
-            InvokeOnWindow(playerWindow, playerWindow.Close);
-        }
+//        private void MovePlayerWindow(InternalPlayerWindow playerWindow)
+//        {
+//            double top = _mainWindow.Top;
+//            double left = _mainWindow.Left;
+//
+//            if (double.IsNaN(top) || double.IsNaN(left)) {
+//                return;
+//            }
+//
+//            var dpiScale = GetSystemDpiFactor();
+//
+//            InvokeOnWindow(playerWindow, () => {
+//                playerWindow.Top = Convert.ToInt32(top * dpiScale);
+//                playerWindow.Left = Convert.ToInt32(left * dpiScale);
+//            });
+//        }
+//
+//        private void UpdatePlayerWindowState(InternalPlayerWindow playerWindow)
+//        {
+//            FormWindowState state = GetWindowsFormState(_mainWindow.WindowState);
+//
+//            _mainWindow.ShowInTaskbar = state == FormWindowState.Minimized;
+//
+//            InvokeOnWindow(playerWindow, () => {
+//                if (state == FormWindowState.Minimized) {
+//                    playerWindow.Hide();
+//                } else {
+//                    playerWindow.Show();
+//                    playerWindow.WindowState = state;
+//                }
+//            });
+//        }
+//
+//        private void UpdatePlayerWindowSize(InternalPlayerWindow playerWindow)
+//        {
+//            double width = _mainWindow.Width;
+//            double height = _mainWindow.Height;
+//
+//            if (double.IsNaN(width) || double.IsNaN(height)) {
+//                return;
+//            }
+//
+//            var dpiScale = GetSystemDpiFactor();
+//
+//            InvokeOnWindow(playerWindow, () => {
+//                playerWindow.Width = Convert.ToInt32(width * dpiScale);
+//                playerWindow.Height = Convert.ToInt32(height * dpiScale);
+//            });
+//        }
+//
+//        private void ClosePlayerWindow(InternalPlayerWindow playerWindow)
+//        {
+//            InvokeOnWindow(playerWindow, playerWindow.Close);
+//        }
 
         private void InvokeOnWindow(Form form, Action action)
         {

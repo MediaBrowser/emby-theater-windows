@@ -271,6 +271,12 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
             _clockTickTimer = new Timer(arg => OnPropertyChanged("ClockShortTime"), null, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1));
         }
 
+        public override async Task Initialize()
+        {
+            await PlaybackManager.AccessSession(s => UpdatePlayerCapabilities(s));
+            await base.Initialize();
+        }
+
         public IApiClient ApiClient { get; private set; }
         public IImageManager ImageManager { get; private set; }
         public IPlaybackManager PlaybackManager { get; set; }
@@ -289,8 +295,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
         public ICommand SelectChapterCommand { get; private set; }
         public ICommand SelectSubtitleTrackCommand { get; private set; }
         public ICommand SelectAudioTrackCommand { get; private set; }
-
-
+        
         public bool ShowOsd
         {
             get { return _showOsd && NowPlayingItem != null && IsActive; }

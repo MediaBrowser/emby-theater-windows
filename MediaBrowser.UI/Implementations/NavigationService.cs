@@ -142,21 +142,19 @@ namespace MediaBrowser.UI.Implementations
         /// Navigates to login page.
         /// </summary>
         /// <returns>DispatcherOperation.</returns>
-        public async Task NavigateToLoginPage()
+        public async Task NavigateToLoginPage(IApiClient apiClient)
         {
             try
             {
-                var apiClient = _sessionFactory().ActiveApiClient;
-
                 var users = await apiClient.GetPublicUsersAsync();
 
                 if (users.Length == 0)
                 {
-                    await NavigateToManualLoginPage();
+                    await NavigateToManualLoginPage(apiClient);
                 }
                 else
                 {
-                    await NavigateToVisualLoginPage();
+                    await NavigateToVisualLoginPage(apiClient);
                 }
 
                 return;
@@ -165,17 +163,17 @@ namespace MediaBrowser.UI.Implementations
             {
                 var b = true;
             }
-            await NavigateToManualLoginPage();
+            await NavigateToManualLoginPage(apiClient);
         }
 
-        private Task NavigateToVisualLoginPage()
+        private Task NavigateToVisualLoginPage(IApiClient apiClient)
         {
             var task = new TaskCompletionSource<bool>();
 
             App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(async () =>
             {
 
-                await Navigate(new LoginPage(_connectionManager, _imageManager, this, _sessionFactory(), _presentationManager, _config));
+                await Navigate(new LoginPage(_imageManager, this, _sessionFactory(), _presentationManager, _config, apiClient));
 
                 task.TrySetResult(true);
 
@@ -184,13 +182,13 @@ namespace MediaBrowser.UI.Implementations
             return task.Task;
         }
 
-        private Task NavigateToManualLoginPage()
+        private Task NavigateToManualLoginPage(IApiClient apiClient)
         {
             var task = new TaskCompletionSource<bool>();
 
             App.Instance.ApplicationWindow.Dispatcher.InvokeAsync(async () =>
             {
-                await Navigate(new ManualLoginPage(string.Empty, false, _sessionFactory(), _presentationManager));
+                await Navigate(new ManualLoginPage(string.Empty, false, _sessionFactory(), _presentationManager, apiClient));
 
                 task.TrySetResult(true);
             });
@@ -301,7 +299,7 @@ namespace MediaBrowser.UI.Implementations
 
                 try
                 {
-                    displayPreferences = await _presentationManager.GetDisplayPreferences(item.DisplayPreferencesId, CancellationToken.None);
+                    displayPreferences = await _presentationManager.GetDisplayPreferences(apiClient, item.DisplayPreferencesId, CancellationToken.None);
                 }
                 catch
                 {
@@ -418,7 +416,7 @@ namespace MediaBrowser.UI.Implementations
 
             var root = await apiClient.GetRootFolderAsync(apiClient.CurrentUserId);
 
-            var displayPreferences = await _presentationManager.GetDisplayPreferences(itemType + "Genres", CancellationToken.None);
+            var displayPreferences = await _presentationManager.GetDisplayPreferences(apiClient, itemType + "Genres", CancellationToken.None);
 
             var genres = await apiClient.GetGenresAsync(new ItemsByNameQuery
             {

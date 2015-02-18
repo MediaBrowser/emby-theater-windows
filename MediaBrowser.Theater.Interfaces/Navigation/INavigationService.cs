@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.Dto;
+﻿using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Dto;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.ViewModels;
 using System;
@@ -53,7 +54,7 @@ namespace MediaBrowser.Theater.Interfaces.Navigation
         /// <summary>
         /// Navigates to login page.
         /// </summary>
-        Task NavigateToLoginPage();
+        Task NavigateToLoginPage(IApiClient apiClient);
 
         /// <summary>
         /// Navigates to internal player page.

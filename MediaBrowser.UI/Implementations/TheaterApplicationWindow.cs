@@ -284,12 +284,12 @@ namespace MediaBrowser.UI.Implementations
             }
         }
 
-        public async Task<DisplayPreferences> GetDisplayPreferences(string displayPreferencesId, CancellationToken cancellationToken)
+        public async Task<DisplayPreferences> GetDisplayPreferences(IApiClient apiClient, string displayPreferencesId, CancellationToken cancellationToken)
         {
-            var apiClient = _sessionFactory().ActiveApiClient;
+            var userId = _sessionFactory().LocalUserId;
 
-            var displayPreferences = await apiClient.GetDisplayPreferencesAsync(displayPreferencesId, _sessionFactory().LocalUserId, "MBT-" + _themeManager.CurrentTheme.Name, cancellationToken);
-            var userConfig = _configurationManager.GetUserTheaterConfiguration(_sessionFactory().LocalUserId);
+            var displayPreferences = await apiClient.GetDisplayPreferencesAsync(displayPreferencesId, userId, "MBT-" + _themeManager.CurrentTheme.Name, cancellationToken);
+            var userConfig = _configurationManager.GetUserTheaterConfiguration(userId);
 
             //Reset to name ascending if config option is turned off
             if (!userConfig.RememberSortOrder)

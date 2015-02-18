@@ -132,7 +132,7 @@ namespace MediaBrowser.Theater.DirectShow
                 return new PlayableItem
                 {
                     OriginalItem = item,
-                    PlayablePath = info.ToUrl(apiClient.ServerAddress + "/mediabrowser"),
+                    PlayablePath = info.ToUrl(apiClient.ServerAddress + "/mediabrowser", apiClient.AccessToken),
                     MediaSource = info.MediaSource,
                     StreamInfo = info
                 };
@@ -151,7 +151,8 @@ namespace MediaBrowser.Theater.DirectShow
                     MaxBitrate = maxBitrate,
                     MediaSources = mediaSources,
 
-                    Profile = profile
+                    Profile = profile,
+                    SupportsDirectRemoteContent = true
                 };
 
                 info = new StreamBuilder().BuildVideoItem(options);
@@ -181,7 +182,7 @@ namespace MediaBrowser.Theater.DirectShow
                 var playable = new PlayableItem
                 {
                     OriginalItem = item,
-                    PlayablePath = info.ToUrl(apiClient.ServerAddress + "/mediabrowser"),
+                    PlayablePath = info.ToUrl(apiClient.ServerAddress + "/mediabrowser", apiClient.AccessToken),
                     MediaSource = info.MediaSource,
                     StreamInfo = info
                 };

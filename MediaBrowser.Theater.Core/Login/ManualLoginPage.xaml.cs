@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Theater.Interfaces.Presentation;
+﻿using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.Theming;
 using MediaBrowser.Theater.Presentation.Pages;
@@ -13,10 +14,12 @@ namespace MediaBrowser.Theater.Core.Login
     public partial class ManualLoginPage : BasePage, ILoginPage
     {
         protected ISessionManager SessionManager { get; private set; }
+        protected IApiClient ApiClient { get; private set; }
         protected IPresentationManager PresentationManager { get; private set; }      
 
-        public ManualLoginPage(string initialUsername, bool? isAutoLoginChecked, ISessionManager sessionManager, IPresentationManager presentationManager)
+        public ManualLoginPage(string initialUsername, bool? isAutoLoginChecked, ISessionManager sessionManager, IPresentationManager presentationManager, IApiClient apiClient)
         {
+            ApiClient = apiClient;
             PresentationManager = presentationManager;
             SessionManager = sessionManager;
             InitializeComponent();
@@ -52,7 +55,7 @@ namespace MediaBrowser.Theater.Core.Login
                 string password = TxtPassword.Text;
                 bool isRememberCredentials = (bool)ChkAutoLogin.IsChecked;
 
-                await SessionManager.LoginToServer(TxtUsername.Text, password, isRememberCredentials);
+                await SessionManager.LoginToServer(ApiClient, TxtUsername.Text, password, isRememberCredentials);
             }
             catch (Exception ex)
             {

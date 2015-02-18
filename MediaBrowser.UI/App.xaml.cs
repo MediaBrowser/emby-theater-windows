@@ -580,7 +580,7 @@ namespace MediaBrowser.UI
             else if (result.State == ConnectionState.ServerSignIn)
             {
                 //await Dispatcher.InvokeAsync(async () => await _appHost.NavigationService.Navigate(new ServerSelectionPage(_appHost.ConnectionManager, _appHost.PresentationManager, result.Servers, _appHost.NavigationService, _logger)));
-                await _appHost.NavigationService.NavigateToLoginPage();
+                await _appHost.NavigationService.NavigateToLoginPage(result.ApiClient);
             }
 
             else if (result.State == ConnectionState.SignedIn)

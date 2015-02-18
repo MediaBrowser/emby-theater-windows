@@ -323,7 +323,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         {
             var item = await GetRootFolder();
 
-            var displayPreferences = await PresentationManager.GetDisplayPreferences("MovieGenres", CancellationToken.None);
+            var displayPreferences = await PresentationManager.GetDisplayPreferences(ApiClient, "MovieGenres", CancellationToken.None);
 
             var genres = await ApiClient.GetGenresAsync(new ItemsByNameQuery
             {
@@ -362,7 +362,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         {
             var item = await GetRootFolder();
 
-            var displayPreferences = await PresentationManager.GetDisplayPreferences("MovieYears", CancellationToken.None);
+            var displayPreferences = await PresentationManager.GetDisplayPreferences(ApiClient, "MovieYears", CancellationToken.None);
 
             var yearIndex = await ApiClient.GetYearIndex(_sessionManager.LocalUserId, new[] { "Movie" }, CancellationToken.None);
 
@@ -413,7 +413,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         {
             var item = await GetRootFolder();
 
-            var displayPreferences = await PresentationManager.GetDisplayPreferences("Movies", CancellationToken.None);
+            var displayPreferences = await PresentationManager.GetDisplayPreferences(ApiClient, "Movies", CancellationToken.None);
 
             var view = _moviesView ?? await ApiClient.GetMovieView(_sessionManager.LocalUserId, ParentId, CancellationToken.None);
 

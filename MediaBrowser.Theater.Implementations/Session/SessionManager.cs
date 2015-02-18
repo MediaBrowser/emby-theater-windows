@@ -56,7 +56,7 @@ namespace MediaBrowser.Theater.Implementations.Session
         {
             get
             {
-                return _connectionManager.CurrentApiClient;
+                return _connectionManager.GetApiClient(CurrentUser);
             }
         }
 
@@ -67,6 +67,7 @@ namespace MediaBrowser.Theater.Implementations.Session
             await _connectionManager.Logout();
 
             var previous = CurrentUser;
+            var apiClient = _connectionManager.GetApiClient(previous);
 
             CurrentUser = null;
 
@@ -75,15 +76,13 @@ namespace MediaBrowser.Theater.Implementations.Session
                 EventHelper.FireEventIfNotNull(UserLoggedOut, this, EventArgs.Empty, _logger);
             }
 
-            await _navService.NavigateToLoginPage();
+            await _navService.NavigateToLoginPage(apiClient);
 
             _navService.ClearHistory();
         }
 
-        public async Task LoginToServer(string username, string password, bool rememberCredentials)
+        public async Task LoginToServer(IApiClient apiClient, string username, string password, bool rememberCredentials)
         {
-            var apiClient = ActiveApiClient;
-
             //Check just in case
             if (password == null)
             {
@@ -176,7 +175,7 @@ namespace MediaBrowser.Theater.Implementations.Session
         {
             if (CurrentUser != null && CurrentUser.HasPrimaryImage)
             {
-                return ActiveApiClient.GetUserImageUrl(CurrentUser, new ImageOptions
+                return _connectionManager.GetApiClient(CurrentUser).GetUserImageUrl(CurrentUser, new ImageOptions
                 {
                      
                 });

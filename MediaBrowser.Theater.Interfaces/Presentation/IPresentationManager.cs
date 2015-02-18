@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.Dto;
+﻿using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using System;
 using System.Collections.Generic;
@@ -136,10 +137,11 @@ namespace MediaBrowser.Theater.Interfaces.Presentation
         /// <summary>
         /// Gets the display preferences.
         /// </summary>
+        /// <param name="apiClient">The API client.</param>
         /// <param name="displayPreferencesId">The display preferences id.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Task{DisplayPreferences}.</returns>
-        Task<DisplayPreferences> GetDisplayPreferences(string displayPreferencesId, CancellationToken cancellationToken);
+        Task<DisplayPreferences> GetDisplayPreferences(IApiClient apiClient, string displayPreferencesId, CancellationToken cancellationToken);
 
         /// <summary>
         /// Updates the display preferences.

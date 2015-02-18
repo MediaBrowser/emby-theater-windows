@@ -179,13 +179,8 @@ namespace MediaBrowser.Theater.Interfaces.ViewModels
             if (SessionManager.CurrentUser != null)
             {
                 await NavigationService.NavigateToHomePage();
+                if (PageNavigated != null) { PageNavigated(this, new EventArgs()); }
             }
-            else
-            {
-                await NavigationService.NavigateToLoginPage();
-            }
-
-            if (PageNavigated != null) { PageNavigated(this, new EventArgs()); }
         }
 
         protected async virtual void GoSearch()

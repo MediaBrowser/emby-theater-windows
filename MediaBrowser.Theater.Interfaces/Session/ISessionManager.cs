@@ -65,11 +65,12 @@ namespace MediaBrowser.Theater.Interfaces.Session
         /// <summary>
         /// Logins the specified user.
         /// </summary>
+        /// <param name="apiClient">The API client.</param>
         /// <param name="username">The username.</param>
         /// <param name="password">The password.</param>
         /// <param name="rememberCredentials">if set to <c>true</c> [remember credentials].</param>
         /// <returns>Task.</returns>
-        Task LoginToServer(string username, string password, bool rememberCredentials);
+        Task LoginToServer(IApiClient apiClient, string username, string password, bool rememberCredentials);
 
         /// <summary>
         /// Validates the saved login.

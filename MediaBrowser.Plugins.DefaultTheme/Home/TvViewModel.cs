@@ -351,7 +351,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         {
             var item = await GetRootFolder();
 
-            var displayPreferences = await PresentationManager.GetDisplayPreferences("TVGenres", CancellationToken.None);
+            var displayPreferences = await PresentationManager.GetDisplayPreferences(ApiClient, "TVGenres", CancellationToken.None);
 
             var genres = await ApiClient.GetGenresAsync(new ItemsByNameQuery
             {
@@ -403,7 +403,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
         {
             var item = await GetRootFolder();
 
-            var displayPreferences = await PresentationManager.GetDisplayPreferences("Shows", CancellationToken.None);
+            var displayPreferences = await PresentationManager.GetDisplayPreferences(ApiClient, "Shows", CancellationToken.None);
 
             var options = new ListPageConfig
             {

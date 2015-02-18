@@ -51,7 +51,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using MediaBrowser.UI.Sync;
+using NLog;
 
 namespace MediaBrowser.UI
 {
@@ -102,20 +102,6 @@ namespace MediaBrowser.UI
             await RunStartupTasks().ConfigureAwait(false);
 
             Logger.Info("Core startup complete");
-            //await Sync().ConfigureAwait(false);
-        }
-
-        private async Task Sync()
-        {
-            try
-            {
-                await new SyncRunner(ConnectionManager, Logger, FileSystemManager, ApplicationPaths, JsonSerializer).Run(new Progress<double>(), CancellationToken.None);
-
-            }
-            catch (Exception ex)
-            {
-                Logger.ErrorException("Sync error", ex);
-            }
         }
 
         public void StartEntryPoints()

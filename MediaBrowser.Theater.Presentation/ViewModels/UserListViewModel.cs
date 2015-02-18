@@ -1,12 +1,11 @@
-﻿using System.Collections.Generic;
-using MediaBrowser.Model.ApiClient;
+﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dto;
-using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Reflection;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.ViewModels;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Data;
@@ -17,7 +16,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
     public class UserListViewModel : BaseViewModel, IDisposable
     {
         public IPresentationManager PresentationManager { get; private set; }
-        protected IConnectionManager ConnectionManager { get; private set; }
+        protected IApiClient ApiClient { get; private set; }
         public IImageManager ImageManager { get; private set; }
         public ISessionManager SessionManager { get; private set; }
 
@@ -72,11 +71,11 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
         public bool AddMediaBrowserConnectEntry { get; set; }
         public bool AddSwitchServerEntry { get; set; }
 
-        public UserListViewModel(IPresentationManager presentationManager, IConnectionManager connectionManager, IImageManager imageManager, ISessionManager sessionManager, INavigationService navigation)
+        public UserListViewModel(IPresentationManager presentationManager, IImageManager imageManager, ISessionManager sessionManager, IApiClient apiClient)
         {
+            ApiClient = apiClient;
             SessionManager = sessionManager;
             ImageManager = imageManager;
-            ConnectionManager = connectionManager;
             PresentationManager = presentationManager;
         }
 
@@ -85,7 +84,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
             // Record the current item
             var currentItem = _listCollectionView.CurrentItem as UserDtoViewModel;
 
-            var apiClient = SessionManager.ActiveApiClient;
+            var apiClient = ApiClient;
 
             try
             {
@@ -145,7 +144,7 @@ namespace MediaBrowser.Theater.Presentation.ViewModels
                 });
             }
 
-            _listItems.AddRange(list.Select(i => new UserDtoViewModel(SessionManager.ActiveApiClient, ImageManager, SessionManager) { User = i }));
+            _listItems.AddRange(list.Select(i => new UserDtoViewModel(ApiClient, ImageManager, SessionManager) { User = i }));
         }
 
         void ListCollectionViewCurrentChanged(object sender, EventArgs e)

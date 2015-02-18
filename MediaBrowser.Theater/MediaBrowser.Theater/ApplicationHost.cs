@@ -32,6 +32,7 @@ using MediaBrowser.Theater.Api.Commands;
 using MediaBrowser.Theater.Api.Configuration;
 using MediaBrowser.Theater.Api.Events;
 using MediaBrowser.Theater.Api.Navigation;
+using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.System;
 using MediaBrowser.Theater.Api.UserInput;
@@ -168,6 +169,8 @@ namespace MediaBrowser.Theater
             Presenter = Resolve<IPresenter>();
             UserInputManager = Resolve<IUserInputManager>();
             SessionManager = Resolve<ISessionManager>();
+
+            Resolve<PlaybackProgressReporter>();
         }
 
         public void StartEntryPoints()

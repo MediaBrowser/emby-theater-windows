@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
@@ -250,7 +251,8 @@ namespace MediaBrowser.Theater.MockPlayer
                 StatusType = _state,
                 Progress = _progress,
                 Duration = _media.Source.RunTimeTicks ?? TimeSpan.FromSeconds(30).Ticks,
-                Speed = _speed
+                Speed = _speed,
+                ActiveStreams = new[] { _media.Source.MediaStreams.FirstOrDefault(s => s.Type == MediaStreamType.Video) }.Where(s => s != null).ToArray()
             };
 
             _log.Debug("Session {3}, Status update for {0}, state={1}, progress={2}", _media.Media.Item.Name, _state, _progress, _id);

@@ -271,13 +271,13 @@ namespace MediaBrowser.Theater.Api.Commands
 
         private void NextTrack(Object sender, CommandEventArgs args)
         {
-            _playback.AccessSession(s => s.SkipNext());
+            _playback.AccessSession(s => s.SkipToNext());
             args.Handled = true;
         }
 
         private void PreviousTrack(Object sender, CommandEventArgs args)
         {
-            _playback.AccessSession(s => s.SkipPrevious());
+            _playback.AccessSession(s => s.SkipToPrevious());
             args.Handled = true;
         }
 
@@ -299,7 +299,7 @@ namespace MediaBrowser.Theater.Api.Commands
                 if (s.Status.PlayableMedia != null && s.Status.PlayableMedia.Media.Item.IsVideo) {
                     s.NextChapter();
                 } else {
-                    s.SkipNext();
+                    s.SkipToNext();
                 }
             });
 
@@ -312,7 +312,7 @@ namespace MediaBrowser.Theater.Api.Commands
                 if (s.Status.PlayableMedia != null && s.Status.PlayableMedia.Media.Item.IsVideo) {
                     s.PreviousChapter();
                 } else {
-                    s.SkipPrevious();
+                    s.SkipToPrevious();
                 }
             });
 

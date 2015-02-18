@@ -9,6 +9,7 @@ namespace MediaBrowser.Theater.Playback
         int Priority { get; }
         string Name { get; }
         bool CanPlay(Media media);
+        bool PrefersBackgroundPlayback { get; }
         Task<IPreparedSessions> Prepare(IPlaySequence sequence, CancellationToken cancellationToken);
     }
 }

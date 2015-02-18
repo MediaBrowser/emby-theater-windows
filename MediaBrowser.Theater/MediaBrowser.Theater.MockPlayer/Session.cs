@@ -93,7 +93,7 @@ namespace MediaBrowser.Theater.MockPlayer
             }
         }
 
-        public void SkipNext()
+        public void SkipToNext()
         {
             lock (_lock) {
                 if (!_state.IsActiveState()) {
@@ -109,7 +109,7 @@ namespace MediaBrowser.Theater.MockPlayer
             }
         }
 
-        public void SkipPrevious()
+        public void SkipToPrevious()
         {
             lock (_lock) {
                 if (!_state.IsActiveState()) {

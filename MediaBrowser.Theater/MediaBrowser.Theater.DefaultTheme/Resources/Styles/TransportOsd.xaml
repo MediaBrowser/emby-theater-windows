@@ -74,8 +74,8 @@
         </Setter>
     </Style>
 
-    <Style TargetType="Button" x:Key="NextChapterButton" BasedOn="{StaticResource TransportButton}">
-        <Setter Property="ToolTip" Value="Next Chapter"/>
+    <Style TargetType="Button" x:Key="NextTrackButton" BasedOn="{StaticResource TransportButton}">
+        <Setter Property="ToolTip" Value="Next"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
@@ -96,8 +96,8 @@
         </Setter>
     </Style>
 
-    <Style TargetType="Button" x:Key="PreviousChapterButton" BasedOn="{StaticResource TransportButton}">
-        <Setter Property="ToolTip" Value="Previous Chapter"/>
+    <Style TargetType="Button" x:Key="PreviousTrackButton" BasedOn="{StaticResource TransportButton}">
+        <Setter Property="ToolTip" Value="Previous"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
@@ -109,31 +109,31 @@
         </Setter>
     </Style>
 
-    <Style TargetType="Button" x:Key="NextTrackButton" BasedOn="{StaticResource TransportButton}">
-        <Setter Property="ToolTip" Value="Next Track"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type Button}">
-                    <Border Background="{TemplateBinding Background}">
-                        <Path StrokeThickness="1"  Stroke="{StaticResource ForegroundBrush}" Fill="{TemplateBinding Foreground}" Data="M51.123999,0L63.451998,0 63.451998,53.695001 51.123999,53.695001 51.123999,31.916129 41.651199,37.180778 23.059999,47.514001 23.059999,34.696918 18.590899,37.180778 0,47.514001 0,26.847556 0,6.1810005 18.590899,16.514234 23.059999,18.998118 23.059999,6.1810005 41.651199,16.514234 51.123999,21.778933z" Stretch="Fill" Width="18" Height="18" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5"/>
-                    </Border>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <Style TargetType="Button" x:Key="PreviousTrackButton" BasedOn="{StaticResource TransportButton}">
-        <Setter Property="ToolTip" Value="Previous Track"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type Button}">
-                    <Border Background="{TemplateBinding Background}">
-                        <Path StrokeThickness="1"  Stroke="{StaticResource ForegroundBrush}" Fill="{TemplateBinding Foreground}" Data="F1M1914.87,1166.52L1914.87,1185.06 1923.04,1180.35 1937.85,1171.8 1937.85,1182.85 1942.18,1180.35 1956.99,1171.8 1956.99,1205.99 1942.18,1197.44 1937.85,1194.94 1937.85,1205.99 1923.04,1197.44 1914.87,1192.73 1914.87,1211.27 1903.62,1211.27 1903.62,1166.52 1914.87,1166.52z" Stretch="Fill" Width="18" Height="18" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5"/>
-                    </Border>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
+<!--    <Style TargetType="Button" x:Key="NextTrackButton" BasedOn="{StaticResource TransportButton}">-->
+<!--        <Setter Property="ToolTip" Value="Next Track"/>-->
+<!--        <Setter Property="Template">-->
+<!--            <Setter.Value>-->
+<!--                <ControlTemplate TargetType="{x:Type Button}">-->
+<!--                    <Border Background="{TemplateBinding Background}">-->
+<!--                        <Path StrokeThickness="1"  Stroke="{StaticResource ForegroundBrush}" Fill="{TemplateBinding Foreground}" Data="M51.123999,0L63.451998,0 63.451998,53.695001 51.123999,53.695001 51.123999,31.916129 41.651199,37.180778 23.059999,47.514001 23.059999,34.696918 18.590899,37.180778 0,47.514001 0,26.847556 0,6.1810005 18.590899,16.514234 23.059999,18.998118 23.059999,6.1810005 41.651199,16.514234 51.123999,21.778933z" Stretch="Fill" Width="18" Height="18" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5"/>-->
+<!--                    </Border>-->
+<!--                </ControlTemplate>-->
+<!--            </Setter.Value>-->
+<!--        </Setter>-->
+<!--    </Style>-->
+<!---->
+<!--    <Style TargetType="Button" x:Key="PreviousTrackButton" BasedOn="{StaticResource TransportButton}">-->
+<!--        <Setter Property="ToolTip" Value="Previous Track"/>-->
+<!--        <Setter Property="Template">-->
+<!--            <Setter.Value>-->
+<!--                <ControlTemplate TargetType="{x:Type Button}">-->
+<!--                    <Border Background="{TemplateBinding Background}">-->
+<!--                        <Path StrokeThickness="1"  Stroke="{StaticResource ForegroundBrush}" Fill="{TemplateBinding Foreground}" Data="F1M1914.87,1166.52L1914.87,1185.06 1923.04,1180.35 1937.85,1171.8 1937.85,1182.85 1942.18,1180.35 1956.99,1171.8 1956.99,1205.99 1942.18,1197.44 1937.85,1194.94 1937.85,1205.99 1923.04,1197.44 1914.87,1192.73 1914.87,1211.27 1903.62,1211.27 1903.62,1166.52 1914.87,1166.52z" Stretch="Fill" Width="18" Height="18" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5"/>-->
+<!--                    </Border>-->
+<!--                </ControlTemplate>-->
+<!--            </Setter.Value>-->
+<!--        </Setter>-->
+<!--    </Style>-->
 
     <Style TargetType="Button" x:Key="ChapterSelectButton" BasedOn="{StaticResource TransportButton}">
         <Setter Property="ToolTip" Value="Select Chapter"/>
@@ -149,7 +149,7 @@
     </Style>
 
     <Style TargetType="Button" x:Key="AudioTrackButton" BasedOn="{StaticResource TransportButton}">
-        <Setter Property="ToolTip" Value="Select Chapter"/>
+        <Setter Property="ToolTip" Value="Select Audio Track"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
@@ -162,7 +162,7 @@
     </Style>
 
     <Style TargetType="Button" x:Key="SubtitleTrackButton" BasedOn="{StaticResource TransportButton}">
-        <Setter Property="ToolTip" Value="Select Chapter"/>
+        <Setter Property="ToolTip" Value="Select Subtitles"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
@@ -174,8 +174,8 @@
         </Setter>
     </Style>
 
-    <Style TargetType="Button" x:Key="SkipBackwardButton" BasedOn="{StaticResource TransportButton}">
-        <Setter Property="ToolTip" Value="Skip back"/>
+    <Style TargetType="Button" x:Key="SeekBackwardButton" BasedOn="{StaticResource TransportButton}">
+        <Setter Property="ToolTip" Value="Skip Back"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
@@ -187,8 +187,8 @@
         </Setter>
     </Style>
 
-    <Style TargetType="Button" x:Key="SkipForwardButton" BasedOn="{StaticResource TransportButton}">
-        <Setter Property="ToolTip" Value="Skip forward"/>
+    <Style TargetType="Button" x:Key="SeekForwardButton" BasedOn="{StaticResource TransportButton}">
+        <Setter Property="ToolTip" Value="Skip Forward"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">

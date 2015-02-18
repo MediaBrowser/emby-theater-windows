@@ -121,11 +121,11 @@
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 5 0 0">
 
-                    <Button x:Name="PreviousChapterButton" Command="{Binding PreviousChapterCommand}">
+                    <Button x:Name="PreviousTrackButton" Command="{Binding PreviousTrackCommand}">
                         <Button.Style>
-                            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource PreviousChapterButton}">
+                            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource PreviousTrackButton}">
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding SupportsChapters}" Value="False">
+                                    <DataTrigger Binding="{Binding CanSkip}" Value="False">
                                         <Setter Property="Visibility" Value="Collapsed" />
                                     </DataTrigger>
                                 </Style.Triggers>
@@ -133,9 +133,9 @@
                         </Button.Style>
                     </Button>
 
-                    <Button x:Name="SkipBackwardButton" Command="{Binding SkipBackwardCommand}">
+                    <Button x:Name="SeekBackwardButton" Command="{Binding PreviousChapterCommand}">
                         <Button.Style>
-                            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource SkipBackwardButton}">
+                            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource SeekBackwardButton}">
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding CanSeek}" Value="False">
                                         <Setter Property="Visibility" Value="Collapsed" />
@@ -187,9 +187,9 @@
                     <Button x:Name="StopButton" Style="{DynamicResource StopButton}"
                             Command="{Binding StopCommand}" />
 
-                    <Button x:Name="SkipForwardButton" Command="{Binding SkipForwardCommand}">
+                    <Button x:Name="SeekForewardButton" Command="{Binding NextChapterCommand}">
                         <Button.Style>
-                            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource SkipForwardButton}">
+                            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource SeekForwardButton}">
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding CanSeek}" Value="False">
                                         <Setter Property="Visibility" Value="Collapsed" />
@@ -199,11 +199,11 @@
                         </Button.Style>
                     </Button>
 
-                    <Button x:Name="NextChapterButton" Command="{Binding NextChapterCommand}">
+                    <Button x:Name="NextTrackButton" Command="{Binding NextTrackCommand}">
                         <Button.Style>
-                            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource NextChapterButton}">
+                            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource NextTrackButton}">
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding SupportsChapters}" Value="False">
+                                    <DataTrigger Binding="{Binding CanSkip}" Value="False">
                                         <Setter Property="Visibility" Value="Collapsed" />
                                     </DataTrigger>
                                 </Style.Triggers>

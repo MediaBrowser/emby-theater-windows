@@ -17,7 +17,7 @@ namespace MediaBrowser.Theater.MockPlayer
         {
             get { return int.MaxValue; }
         }
-
+        
         public string Name
         {
             get { return "Mock Player"; }
@@ -26,6 +26,11 @@ namespace MediaBrowser.Theater.MockPlayer
         public bool CanPlay(Media media)
         {
             return true;
+        }
+
+        public bool PrefersBackgroundPlayback
+        {
+            get { return false; }
         }
 
         public MockMediaPlayer(ILogManager logManager)

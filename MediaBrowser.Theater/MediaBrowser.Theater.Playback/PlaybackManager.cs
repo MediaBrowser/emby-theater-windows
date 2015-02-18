@@ -6,12 +6,15 @@ using System.Threading;
 using System.Threading.Async;
 using System.Threading.Tasks;
 using MediaBrowser.Model.Logging;
+using MediaBrowser.Theater.Api.Navigation;
 
 namespace MediaBrowser.Theater.Playback
 {
     public class PlaybackManager : IPlaybackManager
     {
         private static int _count;
+
+        private readonly INavigator _navigator;
         private readonly ISubject<PlaybackStatus> _events;
         private readonly ILogger _log;
 
@@ -22,14 +25,14 @@ namespace MediaBrowser.Theater.Playback
 
         private readonly ISubject<IPlaybackSession> _sessions;
         private readonly GlobalPlaybackSettings _settings;
+        
+        private volatile bool _isPlaying;
+        private volatile IPlaybackSession _latestSession;
         private CancellationTokenSource _cancel;
 
-        private volatile bool _isPlaying;
-
-        private volatile IPlaybackSession _latestSession;
-
-        public PlaybackManager(IEnumerable<IMediaPlayer> players, ILogManager logManager)
+        public PlaybackManager(IEnumerable<IMediaPlayer> players, ILogManager logManager, INavigator navigator)
         {
+            _navigator = navigator;
             _players = new List<IMediaPlayer>(players ?? Enumerable.Empty<IMediaPlayer>());
             _sessions = new Subject<IPlaybackSession>();
             _events = new Subject<PlaybackStatus>();
@@ -101,13 +104,13 @@ namespace MediaBrowser.Theater.Playback
 
             _log.Info("[{1}] Beginning playback at {0}", startIndex, id);
 
-            using (PlayLock playbackLock = await CancelPlaybackAndLock(id)) {
+            using (PlayLock playbackLock = await CancelPlaybackAndLock()) {
                 using (IPlaySequence sequence = Queue.GetPlayOrder()) {
                     try {
                         sequence.SkipTo(startIndex);
 
                         OnPlaybackStarting();
-                        await BeginPlayback(sequence, playbackLock.CancellationTokenSource.Token, id);
+                        await BeginPlayback(sequence, playbackLock.CancellationTokenSource.Token);
                     }
                     finally {
                         _latestSession = null;
@@ -148,7 +151,7 @@ namespace MediaBrowser.Theater.Playback
             return _players.OrderBy(p => p.Priority).FirstOrDefault(p => p.CanPlay(media));
         }
 
-        private async Task<PlayLock> CancelPlaybackAndLock(int id)
+        private async Task<PlayLock> CancelPlaybackAndLock()
         {
             using (await Lock(_playbackStartingLock)) {
                 if (_cancel != null) {
@@ -159,16 +162,22 @@ namespace MediaBrowser.Theater.Playback
                 await _playbackLock.Wait();
 
                 _cancel = new CancellationTokenSource();
-
                 return new PlayLock(_cancel, _playbackLock);
             }
         }
 
-        private async Task BeginPlayback(IPlaySequence sequence, CancellationToken cancellationToken, int id)
+        private async Task BeginPlayback(IPlaySequence sequence, CancellationToken cancellationToken)
         {
+            var firstItem = true;
+
             Media media;
             IMediaPlayer player;
             while (MoveToNextPlayableItem(sequence, out media, out player)) {
+                if (firstItem && !player.PrefersBackgroundPlayback) {
+                    firstItem = false;
+                    await _navigator.Navigate(Go.To.FullScreenPlayback());
+                }
+
                 var subSequence = new PlayableFilteredPlaySequence(sequence, player, media);
 
                 if (cancellationToken.IsCancellationRequested) {
@@ -177,12 +186,11 @@ namespace MediaBrowser.Theater.Playback
 
                 IPreparedSessions prepared = await player.Prepare(subSequence, cancellationToken);
 
-                using (SubscribeToSessions(prepared.Sessions)) {
-                    using (SubscribeToEvents(prepared.Status)) {
-                        SessionCompletion status = await prepared.Start();
-                        if (status == SessionCompletion.Stopped || cancellationToken.IsCancellationRequested) {
-                            break;
-                        }
+                using (SubscribeToSessions(prepared.Sessions))
+                using (SubscribeToEvents(prepared.Status)) {
+                    SessionCompletion status = await prepared.Start();
+                    if (status == SessionCompletion.Stopped || cancellationToken.IsCancellationRequested) {
+                        break;
                     }
                 }
             }

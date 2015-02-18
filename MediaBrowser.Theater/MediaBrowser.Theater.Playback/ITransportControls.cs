@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using MediaBrowser.Model.Entities;
 
 namespace MediaBrowser.Theater.Playback
@@ -7,10 +6,9 @@ namespace MediaBrowser.Theater.Playback
     {
         void Play();
         void Pause();
-        //Task Stop();
         void Seek(long ticks);
-        void SkipNext();
-        void SkipPrevious();
+        void SkipToNext();
+        void SkipToPrevious();
         void SkipTo(int itemIndex);
         void SelectStream(MediaStreamType channel, int index);
         void SetPlaybackSpeed(double speedMultiplier);

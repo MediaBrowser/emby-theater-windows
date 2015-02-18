@@ -204,6 +204,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
         private bool _showOsd;
         private PlaybackStatus _status;
         private bool _supportsChapters;
+        private bool _canSkip;
 
         public OsdViewModel(IPlaybackManager playbackManager, IImageManager imageManager, IPresenter presentationManager, ILogger logger, INavigator nav, IEventAggregator events, IConnectionManager connectionManager)
         {
@@ -489,6 +490,19 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
             }
         }
 
+        public bool CanSkip
+        {
+            get { return _canSkip; }
+            private set
+            {
+                if (value.Equals(_canSkip)) {
+                    return;
+                }
+                _canSkip = value;
+                OnPropertyChanged();
+            }
+        }
+
         public void Dispose()
         {
             DisposeClockTickTimer();
@@ -529,6 +543,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
             CanSelectSubtitleTrack = _session.Capabilities.CanChangeStreams && status.PlayableMedia.Source != null && status.PlayableMedia.Source.MediaStreams.Count(stream => stream.Type == MediaStreamType.Subtitle) > 1;
 
             SupportsChapters = _session.Capabilities.CanSeek && status.PlayableMedia.Media.Item.Chapters != null && status.PlayableMedia.Media.Item.Chapters.Count > 1;
+            CanSkip = PlaybackManager.Queue.Count > 1;
         }
 
         /// <summary>
@@ -568,12 +583,12 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
 
         public void SkipBackward(object commandParameter)
         {
-            PlaybackManager.AccessSession(s => s.SkipBackward());
+            PlaybackManager.AccessSession(s => s.SkipToPrevious());
         }
 
         public void SkipForward(object commandParameter)
         {
-            PlaybackManager.AccessSession(s => s.SkipForward());
+            PlaybackManager.AccessSession(s => s.SkipToNext());
         }
 
         public void NextChapter(object commandParameter)

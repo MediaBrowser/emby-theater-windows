@@ -75,20 +75,28 @@ namespace MediaBrowser.Theater.Playback
 
             if (chapter != null) {
                 session.Seek(chapter.StartPositionTicks);
+            } else {
+                var status = session.Status;
+                var skip = SkipDuration(status);
+                session.Seek(status.Progress ?? 0 + skip.Ticks);
             }
         }
-
+        
         public static void PreviousChapter(this IPlaybackSession session)
         {
             PlaybackStatus state = session.Status;
             List<ChapterInfoDto> chapters = state.PlayableMedia.Media.Item.Chapters;
 
-            for (int i = chapters.Count - 1; i >= 0; i--) {
-                ChapterInfoDto previous = chapters[Math.Max(0, i - 1)];
-                ChapterInfoDto current = chapters[i];
+            if (chapters.Count > 0) {
+                for (int i = chapters.Count - 1; i >= 0; i--) {
+                    ChapterInfoDto previous = chapters[Math.Max(0, i - 1)];
+                    ChapterInfoDto current = chapters[i];
 
-                if (current.StartPositionTicks < state.Progress) {
-                    if (state.Progress - current.StartPositionTicks < TimeSpan.FromSeconds(10).Ticks) {
+                    if (current.StartPositionTicks >= state.Progress) {
+                        continue;
+                    }
+
+                    if (state.Progress - current.StartPositionTicks > TimeSpan.FromSeconds(10).Ticks) {
                         session.Seek(current.StartPositionTicks);
                     } else {
                         session.Seek(previous.StartPositionTicks);
@@ -96,7 +104,28 @@ namespace MediaBrowser.Theater.Playback
 
                     break;
                 }
+            } else {
+                var status = session.Status;
+                var skip = SkipDuration(status);
+                session.Seek(status.Progress ?? 0 - skip.Ticks);
             }
+        }
+
+        private static TimeSpan SkipDuration(PlaybackStatus status)
+        {
+            if (status.Duration > TimeSpan.FromMinutes(20).Ticks) {
+                return TimeSpan.FromMinutes(5);
+            } 
+            
+            if (status.Duration > TimeSpan.FromMinutes(10).Ticks) {
+                return TimeSpan.FromMinutes(2);
+            } 
+            
+            if (status.Duration > TimeSpan.FromMinutes(2).Ticks) {
+                return TimeSpan.FromSeconds(30);
+            }
+
+            return TimeSpan.FromSeconds(5);
         }
 
         public static void SkipForward(this IPlaybackSession session, double seconds = 10)

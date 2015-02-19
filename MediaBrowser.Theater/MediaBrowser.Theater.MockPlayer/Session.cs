@@ -38,6 +38,7 @@ namespace MediaBrowser.Theater.MockPlayer
             _lock = new object();
             _media = media;
             _cancellationToken = cancellationToken;
+            _progress = media.Media.Options.StartPositionTicks ?? 0;
             _duration = media.Source.RunTimeTicks ?? TimeSpan.FromSeconds(30).Ticks;
             _statusEvents = new Subject<PlaybackStatus>();
             _compeletionAction = new SessionCompletionAction { Direction = NavigationDirection.Forward };
@@ -69,21 +70,6 @@ namespace MediaBrowser.Theater.MockPlayer
                 PublishState();
             }
         }
-
-//        public async Task Stop()
-//        {
-//            lock (_lock) {
-//                if (!_state.IsActiveState()) {
-//                    return;
-//                }
-//
-//                _state = PlaybackStatusType.Stopped;
-//                PublishState();
-//            }
-//
-//            // await for the status events to complete, which will mark the end of the session
-//            await _statusEvents.LastOrDefaultAsync();
-//        }
 
         public void Seek(long ticks)
         {

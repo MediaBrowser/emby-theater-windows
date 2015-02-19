@@ -10,6 +10,7 @@ using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.System;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.Playback;
+using WindowState = System.Windows.WindowState;
 
 namespace MediaBrowser.Theater.Api.Commands
 {

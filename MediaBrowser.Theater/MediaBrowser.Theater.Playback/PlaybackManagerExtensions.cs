@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace MediaBrowser.Theater.Playback
@@ -22,9 +23,20 @@ namespace MediaBrowser.Theater.Playback
             }
         }
 
-        public static Task Play(this IPlaybackManager playbackManager, Media media, bool enqueueIfAlreadyPlaying = false)
+        public static async Task Play(this IPlaybackManager playbackManager, Media media, bool enqueueIfAlreadyPlaying = false, bool? enqueueIntros = null)
         {
-            return playbackManager.Play(new[] { media }, enqueueIfAlreadyPlaying);
+            if (enqueueIntros ?? (!enqueueIfAlreadyPlaying && ShouldPlayIntros(media))) {
+                var intros = await playbackManager.GetIntros(media.Item);
+                await playbackManager.Play(new[] { media }.Concat(intros.Select(i => Media.Create(i))));
+            } else {
+                await playbackManager.Play(new[] { media }, enqueueIfAlreadyPlaying);
+            }
+        }
+
+        private static bool ShouldPlayIntros(Media media)
+        {
+            return (media.Options.StartPositionTicks ?? 0) == 0 &&
+                   media.Item.IsVideo;
         }
 
         public static Task<bool> AccessSession(this IPlaybackManager playbackManager, Action<IPlaybackSession> action)

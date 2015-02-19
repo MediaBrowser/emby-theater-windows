@@ -78,7 +78,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
             };
 
             PlayCommand = new RelayCommand(o => playbackManager.Play(item));
-            ResumeCommand = new RelayCommand(o => playbackManager.Play(new Media { Item = item, Options = new MediaPlaybackOptions { Resume = true }}));
+            ResumeCommand = new RelayCommand(o => playbackManager.Play(Media.Resume(item)));
             PlayAllCommand = new RelayCommand(async o => {
                 var items = await ItemChildren.Get(connectionManager, sessionManager, item, new ChildrenQueryParams {
                     Recursive = true,

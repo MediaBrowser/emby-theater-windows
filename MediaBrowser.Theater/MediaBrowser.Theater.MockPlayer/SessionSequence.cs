@@ -1,11 +1,15 @@
 using System;
 using System.Linq;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using System.Windows.Threading;
 using MediaBrowser.Model.Logging;
+using MediaBrowser.Theater.Api.Events;
+using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.Playback;
 
 namespace MediaBrowser.Theater.MockPlayer
@@ -22,27 +26,75 @@ namespace MediaBrowser.Theater.MockPlayer
         private readonly IPlaySequence _sequence;
         private readonly CancellationToken _cancellationToken;
         private readonly ILogManager _logManager;
+        private readonly IWindowManager _windowManager;
+        private readonly IEventAggregator _events;
         private readonly ILogger _log;
         private readonly Subject<IPlaybackSession> _sessions;
         private readonly Subject<PlaybackStatus> _status;
 
         private volatile Session _session;
 
-        public SessionSequence(IPlaySequence sequence, CancellationToken cancellationToken, ILogManager logManager)
+        public SessionSequence(IPlaySequence sequence, CancellationToken cancellationToken, ILogManager logManager, IWindowManager windowManager, IEventAggregator events)
         {
             _id = Interlocked.Increment(ref _counter);
             _sequence = sequence;
             _cancellationToken = cancellationToken;
             _logManager = logManager;
+            _windowManager = windowManager;
+            _events = events;
             _log = logManager.GetLogger("MockPlayer");
             _sessions = new Subject<IPlaybackSession>();
             _status = new Subject<PlaybackStatus>();
         }
 
-        public Task<SessionCompletion> Start()
+        public async Task<SessionCompletion> Start()
         {
             _log.Debug("Starting session sequence {0} task", _id);
 
+            var state = _windowManager.MainWindowState;
+            var window = new MockPlayerWindow {
+                Left = (int) (state.Left*state.DpiScale),
+                Top = (int) (state.Top*state.DpiScale),
+                Width = (int) (state.Width*state.DpiScale),
+                Height = (int) (state.Height*state.DpiScale)
+            };
+
+            window.GotFocus += (s, e) => _windowManager.FocusMainWindow();
+
+            Action<MainWindowState> updateWindow = s => {
+                window.Left = (int) (s.Left*s.DpiScale);
+                window.Top = (int) (s.Top*s.DpiScale);
+                window.Width = (int) (s.Width*s.DpiScale);
+                window.Height = (int) (s.Height*s.DpiScale);
+                window.WindowState = GetWindowsFormState(s.State);
+            };
+            
+            window.Show();
+
+            using (Disposable.Create(window.Close))
+            using (_windowManager.UseBackgroundWindow(window.Handle))
+            using (_events.Get<MainWindowState>().Subscribe(updateWindow)) {
+                window.WindowState = GetWindowsFormState(state.State);
+                
+                var completionState = await RunSessions();
+                return completionState;
+            }
+        }
+
+        private FormWindowState GetWindowsFormState(WindowState state)
+        {
+            switch (state) {
+                case WindowState.Maximized:
+                    return FormWindowState.Maximized;
+                case WindowState.Minimized:
+                    return FormWindowState.Minimized;
+            }
+
+            return FormWindowState.Normal;
+        }
+
+        private Task<SessionCompletion> RunSessions()
+        {
             // run all playback in another task
             return Task.Run(async () => {
                 var nextAction = new SessionCompletionAction {

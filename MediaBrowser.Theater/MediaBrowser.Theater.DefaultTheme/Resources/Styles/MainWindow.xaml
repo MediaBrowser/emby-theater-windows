@@ -7,6 +7,7 @@
         <Setter Property="FontWeight" Value="{StaticResource DefaultFontWeight}"/>
         <Setter Property="Foreground" Value="{StaticResource DefaultFontForeground}"/>
         <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Opacity" Value="1"/>
         <Setter Property="BorderBrush" Value="#000000"/>
         <Setter Property="BorderThickness" Value="0"/>
 

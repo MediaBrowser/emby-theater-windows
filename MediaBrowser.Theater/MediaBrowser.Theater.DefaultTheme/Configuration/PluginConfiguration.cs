@@ -18,7 +18,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Configuration
     {
         public ColorPalette Palette { get; set; }
 
-        public WindowState? WindowState { get; set; }
+        public System.Windows.WindowState? WindowState { get; set; }
 
         public double? WindowTop { get; set; }
 

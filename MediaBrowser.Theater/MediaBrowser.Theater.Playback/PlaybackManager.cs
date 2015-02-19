@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Disposables;
 using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Async;
 using System.Threading.Tasks;
+using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Api.Navigation;
 
@@ -15,6 +18,7 @@ namespace MediaBrowser.Theater.Playback
         private static int _count;
 
         private readonly INavigator _navigator;
+        private readonly IConnectionManager _connectionManager;
         private readonly ISubject<PlaybackStatus> _events;
         private readonly ILogger _log;
 
@@ -30,9 +34,10 @@ namespace MediaBrowser.Theater.Playback
         private volatile IPlaybackSession _latestSession;
         private CancellationTokenSource _cancel;
 
-        public PlaybackManager(IEnumerable<IMediaPlayer> players, ILogManager logManager, INavigator navigator)
+        public PlaybackManager(IEnumerable<IMediaPlayer> players, ILogManager logManager, INavigator navigator, IConnectionManager connectionManager)
         {
             _navigator = navigator;
+            _connectionManager = connectionManager;
             _players = new List<IMediaPlayer>(players ?? Enumerable.Empty<IMediaPlayer>());
             _sessions = new Subject<IPlaybackSession>();
             _events = new Subject<PlaybackStatus>();
@@ -85,6 +90,13 @@ namespace MediaBrowser.Theater.Playback
 
                 using (await Lock(_playbackLock)) { }
             }
+        }
+
+        public async Task<IEnumerable<BaseItemDto>> GetIntros(BaseItemDto item)
+        {
+            var apiClient = _connectionManager.GetApiClient(item);
+            var intros = await apiClient.GetIntrosAsync(item.Id, apiClient.CurrentUserId);
+            return intros.Items;
         }
 
         public async Task<bool> AccessSession(Func<IPlaybackSession, Task> action)
@@ -234,7 +246,7 @@ namespace MediaBrowser.Theater.Playback
         private async Task<IDisposable> Lock(AsyncSemaphore semaphore)
         {
             await semaphore.Wait();
-            return new Disposable(semaphore.Release);
+            return Disposable.Create(semaphore.Release);
         }
 
         private class PlayLock : IDisposable
@@ -257,21 +269,6 @@ namespace MediaBrowser.Theater.Playback
             {
                 _semaphore.Release();
             }
-        }
-    }
-
-    public class Disposable : IDisposable
-    {
-        private readonly Action _action;
-
-        public Disposable(Action action)
-        {
-            _action = action;
-        }
-
-        public void Dispose()
-        {
-            _action();
         }
     }
 }

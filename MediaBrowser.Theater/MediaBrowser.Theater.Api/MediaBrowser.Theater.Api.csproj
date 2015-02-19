@@ -114,6 +114,7 @@
     <Compile Include="UserInterface\IHasItemSortModes.cs" />
     <Compile Include="UserInterface\IImageManager.cs" />
     <Compile Include="UserInterface\IItemDetailsViewModel.cs" />
+    <Compile Include="UserInterface\IWindowManager.cs" />
     <Compile Include="UserInterface\MessageBoxIcon.cs" />
     <Compile Include="UserInterface\MessageBoxInfo.cs" />
     <Compile Include="UserInterface\UIDispatchExtensions.cs" />

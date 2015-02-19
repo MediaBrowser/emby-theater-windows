@@ -12,7 +12,7 @@ namespace MediaBrowser.Theater.Api.Events
         private readonly object _lock = new object();
         private readonly List<WeakReference<Action<T>>> _weakHandlers = new List<WeakReference<Action<T>>>();
 
-        public void Subscribe(Action<T> handler, bool weak = true)
+        public IDisposable Subscribe(Action<T> handler, bool weak = true)
         {
             lock (_lock) {
                 if (weak) {
@@ -20,6 +20,8 @@ namespace MediaBrowser.Theater.Api.Events
                 } else {
                     _handlers.Add(handler);
                 }
+
+                return new Disposer(this, handler);
             }
         }
 
@@ -45,6 +47,30 @@ namespace MediaBrowser.Theater.Api.Events
             };
 
             return publishAction.OnUiThreadAsync();
+        }
+
+        class Disposer : IDisposable
+        {
+            private readonly EventBus<T> _bus;
+            private readonly Action<T> _handler;
+
+            public Disposer(EventBus<T> bus, Action<T> handler)
+            {
+                _bus = bus;
+                _handler = handler;
+            }
+
+            public void Dispose()
+            {
+                lock (_bus._lock) {
+                    if (!_bus._handlers.Remove(_handler)) {
+                        _bus._weakHandlers.RemoveAll(w => {
+                            Action<T> h;
+                            return w.TryGetTarget(out h) && h == _handler;
+                        });
+                    }
+                }
+            }
         }
     }
 }

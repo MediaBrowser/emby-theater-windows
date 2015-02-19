@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reactive.Disposables;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,7 +18,7 @@ using MediaBrowser.Theater.DefaultTheme.Configuration;
 using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
 //using MediaBrowser.Theater.DirectShow;
 using Microsoft.Win32;
-using Application = System.Windows.Application;
+using WindowState = MediaBrowser.Theater.Api.UserInterface.WindowState;
 
 namespace MediaBrowser.Theater.DefaultTheme
 {
@@ -32,9 +33,10 @@ namespace MediaBrowser.Theater.DefaultTheme
         public NotificationPriority Priority { get; set; }
     }
 
-    public class WindowManager
+    public class WindowManager : IWindowManager
     {
         private readonly ITheaterApplicationHost _appHost;
+        private readonly IEventAggregator _events;
         //private readonly IInternalPlayerWindowManager _internalPlayerWindowManager;
         private readonly ILogger _logger;
         private readonly INavigator _navigator;
@@ -45,11 +47,12 @@ namespace MediaBrowser.Theater.DefaultTheme
 
         private readonly EventHandler _refocusMainWindow;
 
-        public WindowManager(INavigator navigator, /*IInternalPlayerWindowManager internalPlayerWindowManager,*/ ILogManager logManager, ITheaterApplicationHost appHost)
+        public WindowManager(INavigator navigator, /*IInternalPlayerWindowManager internalPlayerWindowManager,*/ ILogManager logManager, ITheaterApplicationHost appHost, IEventAggregator events)
         {
             _navigator = navigator;
             //_internalPlayerWindowManager = internalPlayerWindowManager;
             _appHost = appHost;
+            _events = events;
             _logger = logManager.GetLogger("WindowManager");
 
             _refocusMainWindow = (s, e) => FocusMainWindow();
@@ -74,8 +77,8 @@ namespace MediaBrowser.Theater.DefaultTheme
                 handler(obj);
             }
         }
-
-        private void FocusMainWindow()
+        
+        public void FocusMainWindow()
         {
             var rootVm = _mainWindow.DataContext as RootViewModel;
             if (rootVm != null) {
@@ -177,10 +180,10 @@ namespace MediaBrowser.Theater.DefaultTheme
                     window.Left = 0;
                 }
 
-                window.WindowState = WindowState.Normal;
+                window.WindowState = System.Windows.WindowState.Normal;
             }
 
-            window.ShowInTaskbar = window.WindowState == WindowState.Minimized;
+            //window.ShowInTaskbar = window.WindowState == System.Windows.WindowState.Minimized;
 
             _mainWindow = window;
             _mainWindowHandle = new WindowInteropHelper(_mainWindow).Handle;
@@ -188,6 +191,10 @@ namespace MediaBrowser.Theater.DefaultTheme
             //CreateInternalPlayerWindow(startPosition);
 
             OnMainWindowLoaded(window);
+
+            _mainWindow.LocationChanged += (s, e) => SendWindowState();
+            _mainWindow.StateChanged += (s, e) => SendWindowState();
+            _mainWindow.SizeChanged += (s, e) => SendWindowState();
 
             return window;
         }
@@ -226,12 +233,12 @@ namespace MediaBrowser.Theater.DefaultTheme
 //            internalPlayerWindowThread.Start();
 //        }
 
-        private FormWindowState GetWindowsFormState(WindowState state)
+        private FormWindowState GetWindowsFormState(System.Windows.WindowState state)
         {
             switch (state) {
-                case WindowState.Maximized:
+                case System.Windows.WindowState.Maximized:
                     return FormWindowState.Maximized;
-                case WindowState.Minimized:
+                case System.Windows.WindowState.Minimized:
                     return FormWindowState.Minimized;
             }
 
@@ -409,6 +416,59 @@ namespace MediaBrowser.Theater.DefaultTheme
 
             [DllImport("user32.dll")]
             public static extern IntPtr GetForegroundWindow();
+        }
+
+        public MainWindowState MainWindowState
+        {
+            get
+            {
+                return new MainWindowState {
+                    Left = _mainWindow.Left,
+                    Top = _mainWindow.Top,
+                    Width = _mainWindow.Width,
+                    Height = _mainWindow.Height,
+                    State = ConvertWindowState(_mainWindow.WindowState),
+                    DpiScale = GetSystemDpiFactor()
+                };
+            }
+        }
+
+        private WindowState ConvertWindowState(System.Windows.WindowState state)
+        {
+            switch (state) {
+                case System.Windows.WindowState.Normal:
+                    return WindowState.Windowed;
+                case System.Windows.WindowState.Minimized:
+                    return WindowState.Minimized;
+                case System.Windows.WindowState.Maximized:
+                    return WindowState.Maximized;
+                default:
+                    throw new ArgumentOutOfRangeException("state");
+            }
+        }
+
+        private void SendWindowState()
+        {
+            _events.Get<MainWindowState>().Publish(MainWindowState);
+        }
+
+        public IDisposable UseBackgroundWindow(IntPtr hwnd)
+        {
+            new WindowInteropHelper(_mainWindow).Owner = hwnd;
+            _mainWindow.ShowInTaskbar = false;
+
+            // todo route input events from background media window to main window
+            // todo make window transparent based upon presense of a background window, rather than media playing
+
+            return Disposable.Create(() => {
+                new WindowInteropHelper(_mainWindow).Owner = IntPtr.Zero;
+                _mainWindow.ShowInTaskbar = true;
+            });
+        }
+
+        void IWindowManager.FocusMainWindow()
+        {
+            _mainWindow.Focus();
         }
     }
 

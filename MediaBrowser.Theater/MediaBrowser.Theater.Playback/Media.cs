@@ -1,4 +1,5 @@
 ﻿using MediaBrowser.Model.Dto;
+using MediaBrowser.Model.Entities;
 
 namespace MediaBrowser.Theater.Playback
 {
@@ -9,12 +10,22 @@ namespace MediaBrowser.Theater.Playback
 
         public static implicit operator Media(BaseItemDto item)
         {
+            return Create(item);
+        }
+
+        public static Media Create(BaseItemDto item, MediaPlaybackOptions? options = null)
+        {
             return new Media {
                 Item = item,
-                Options = new MediaPlaybackOptions {
-                    Resume = false
-                }
+                Options = options ?? new MediaPlaybackOptions()
             };
+        }
+
+        public static Media Resume(BaseItemDto item)
+        {
+            return Create(item, new MediaPlaybackOptions {
+                StartPositionTicks = item.UserData.PlaybackPositionTicks
+            });
         }
     }
 }

@@ -234,11 +234,11 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
 
             _eventsSubscription = playbackManager.Events.Subscribe(playbackEvent => {
                 if (_status.StatusType != playbackEvent.StatusType) {
-                    if (_status.StatusType == PlaybackStatusType.Playing) {
+                    if (playbackEvent.StatusType == PlaybackStatusType.Playing) {
                         Delay(TimeSpan.FromSeconds(1), () => ShowOsd = false);
                     }
 
-                    if (_status.StatusType == PlaybackStatusType.Paused) {
+                    if (playbackEvent.StatusType == PlaybackStatusType.Paused) {
                         Delay(TimeSpan.Zero, () => ShowOsd = true);
                     }
                 }
@@ -248,16 +248,17 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
                 if (playbackEvent.StatusType.IsActiveState()) {
                     NowPlayingItem = playbackEvent.PlayableMedia.Media.Item;
                     UpdateStatus(playbackEvent);
-                } else if (IsActive) {
-                    NowPlayingItem = null;
-                    Close();
                 }
             });
-
+            
             Closed += (s, e) => {
+                playbackManager.PlaybackFinished -= Exit;
+
                 OnPropertyChanged("ShowOsd");
                 nav.Back();
             };
+
+            playbackManager.PlaybackFinished += Exit;
 
             PresentationOptions = new RootPresentationOptions {
                 IsFullScreenPage = true,
@@ -270,6 +271,14 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
             };
 
             _clockTickTimer = new Timer(arg => OnPropertyChanged("ClockShortTime"), null, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1));
+        }
+
+        private void Exit()
+        {
+            if (IsActive) {
+                NowPlayingItem = null;
+                Close();
+            }
         }
 
         public override async Task Initialize()

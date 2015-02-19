@@ -1,6 +1,8 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using MediaBrowser.Model.Logging;
+using MediaBrowser.Theater.Api.Events;
+using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.Playback;
 
 namespace MediaBrowser.Theater.MockPlayer
@@ -12,6 +14,8 @@ namespace MediaBrowser.Theater.MockPlayer
     public class MockMediaPlayer : IMediaPlayer
     {
         private readonly ILogManager _logManager;
+        private readonly IWindowManager _windowManager;
+        private readonly IEventAggregator _events;
 
         public int Priority
         {
@@ -33,14 +37,16 @@ namespace MediaBrowser.Theater.MockPlayer
             get { return false; }
         }
 
-        public MockMediaPlayer(ILogManager logManager)
+        public MockMediaPlayer(ILogManager logManager, IWindowManager windowManager, IEventAggregator events)
         {
             _logManager = logManager;
+            _windowManager = windowManager;
+            _events = events;
         }
 
         public Task<IPreparedSessions> Prepare(IPlaySequence sequence, CancellationToken cancellationToken)
         {
-            return Task.FromResult<IPreparedSessions>(new SessionSequence(sequence, cancellationToken, _logManager));
+            return Task.FromResult<IPreparedSessions>(new SessionSequence(sequence, cancellationToken, _logManager, _windowManager, _events));
         }
     }
 }

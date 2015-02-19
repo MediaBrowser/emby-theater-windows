@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Logging;
+using MediaBrowser.Theater.Api.Events;
+using MediaBrowser.Theater.Api.Navigation;
+using MediaBrowser.Theater.Api.UserInterface;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
@@ -65,12 +68,12 @@ namespace MediaBrowser.Theater.Playback.Tests
             logManager.Setup(m => m.GetLogger(It.IsAny<string>())).Returns(new Mock<ILogger>().Object);
             return logManager.Object;
         }
-
+        
         [TestMethod]
         public async Task Play()
         {
             var player = CreateMockPlayer(m => true);
-            var playbackManager = new PlaybackManager(new[] { player }.ToList(), CreateMockLog());
+            var playbackManager = new PlaybackManager(new[] { player }.ToList(), CreateMockLog(), new Mock<INavigator>().Object);
 
             playbackManager.Queue.Add(new Mock<BaseItemDto>().Object);
             playbackManager.Queue.Add(new Mock<BaseItemDto>().Object);
@@ -111,7 +114,7 @@ namespace MediaBrowser.Theater.Playback.Tests
 
             var playerA = CreateMockPlayer(m => m == media[2]);
             var playerB = CreateMockPlayer(m => m != media[2]);
-            var playbackManager = new PlaybackManager(new List<IMediaPlayer> { playerA, playerB }, CreateMockLog());
+            var playbackManager = new PlaybackManager(new List<IMediaPlayer> { playerA, playerB }, CreateMockLog(), new Mock<INavigator>().Object);
 
             playbackManager.Queue.Add(new Mock<BaseItemDto>().Object);
             playbackManager.Queue.Add(new Mock<BaseItemDto>().Object);

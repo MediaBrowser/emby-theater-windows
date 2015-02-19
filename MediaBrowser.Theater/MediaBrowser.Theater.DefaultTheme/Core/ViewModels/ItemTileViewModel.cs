@@ -44,7 +44,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
 
             DisplayNameGenerator = i => i.GetDisplayName(new DisplayNameFormat(true, true));
             GoToDetailsCommand = new RelayCommand(o => navigator.Navigate(Go.To.Item(Item)));
-            PlayCommand = new RelayCommand(o => _playbackManager.Play(new Media { Item = item, Options = new MediaPlaybackOptions { Resume = true } }));
+            PlayCommand = new RelayCommand(o => _playbackManager.Play(Media.Resume(item)));
         }
 
         public BaseItemDto Item

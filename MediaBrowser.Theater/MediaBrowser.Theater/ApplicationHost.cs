@@ -157,6 +157,7 @@ namespace MediaBrowser.Theater
             Container.RegisterSingle(typeof (IPresenter), typeof (Presenter));
             Container.RegisterSingle(typeof (INavigator), typeof (Navigator));
             Container.RegisterSingle(typeof (WindowManager), typeof (WindowManager));
+            Container.RegisterSingle(typeof (IWindowManager), () => Container.GetInstance<WindowManager>());
         } 
 
         protected override void FindParts()

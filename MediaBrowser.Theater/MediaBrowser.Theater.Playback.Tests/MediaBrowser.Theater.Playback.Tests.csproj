@@ -91,6 +91,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\MediaBrowser.Theater.Api\MediaBrowser.Theater.Api.csproj">
+      <Project>{76a1834d-1be3-4361-bac2-711cdd74eb3f}</Project>
+      <Name>MediaBrowser.Theater.Api</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MediaBrowser.Theater.Playback\MediaBrowser.Theater.Playback.csproj">
       <Project>{fc6885c8-a8b5-42e4-981e-be38f3a8be3a}</Project>
       <Name>MediaBrowser.Theater.Playback</Name>

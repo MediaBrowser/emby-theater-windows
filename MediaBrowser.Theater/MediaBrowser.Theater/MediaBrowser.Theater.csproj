@@ -154,6 +154,10 @@
       <Project>{073963c5-408e-4b9e-b9e3-ee2f79bd1fa8}</Project>
       <Name>MediaBrowser.Theater.MockPlayer</Name>
     </ProjectReference>
+    <ProjectReference Include="..\MediaBrowser.Theater.Mpdn\MediaBrowser.Theater.Mpdn.csproj">
+      <Project>{ffdea2f6-1e10-487a-9e5c-2b5c9bfc130c}</Project>
+      <Name>MediaBrowser.Theater.Mpdn</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MediaBrowser.Theater.Playback\MediaBrowser.Theater.Playback.csproj">
       <Project>{fc6885c8-a8b5-42e4-981e-be38f3a8be3a}</Project>
       <Name>MediaBrowser.Theater.Playback</Name>

@@ -40,6 +40,7 @@ using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme;
 //using MediaBrowser.Theater.DirectShow;
 using MediaBrowser.Theater.MockPlayer;
+using MediaBrowser.Theater.Mpdn;
 using MediaBrowser.Theater.Networking;
 using MediaBrowser.Theater.Playback;
 using Application = System.Windows.Application;
@@ -338,6 +339,9 @@ namespace MediaBrowser.Theater
 
             // Mock player
             yield return typeof (MockMediaPlayer).Assembly;
+
+            // MPDN
+            yield return typeof (MpdnMediaPlayer).Assembly;
 
             // Default theme
             yield return typeof (Theme).Assembly;

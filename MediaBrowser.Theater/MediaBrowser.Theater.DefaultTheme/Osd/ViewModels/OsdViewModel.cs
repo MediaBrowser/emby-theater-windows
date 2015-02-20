@@ -283,7 +283,10 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
 
         public override async Task Initialize()
         {
-            await PlaybackManager.AccessSession(s => UpdatePlayerCapabilities(s));
+            await PlaybackManager.AccessSession(s => {
+                _session = s;
+                UpdatePlayerCapabilities(s);
+            });
             await base.Initialize();
         }
 
@@ -548,10 +551,10 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
 
             IsPaused = status.StatusType == PlaybackStatusType.Paused;
 
-            CanSelectAudioTrack = _session.Capabilities.CanChangeStreams && status.PlayableMedia.Source != null && status.PlayableMedia.Source.MediaStreams.Count(stream => stream.Type == MediaStreamType.Audio) > 1;
-            CanSelectSubtitleTrack = _session.Capabilities.CanChangeStreams && status.PlayableMedia.Source != null && status.PlayableMedia.Source.MediaStreams.Count(stream => stream.Type == MediaStreamType.Subtitle) > 1;
+            CanSelectAudioTrack = _session != null && _session.Capabilities.CanChangeStreams && status.PlayableMedia.Source != null && status.PlayableMedia.Source.MediaStreams.Count(stream => stream.Type == MediaStreamType.Audio) > 1;
+            CanSelectSubtitleTrack = _session != null && _session.Capabilities.CanChangeStreams && status.PlayableMedia.Source != null && status.PlayableMedia.Source.MediaStreams.Count(stream => stream.Type == MediaStreamType.Subtitle) > 1;
 
-            SupportsChapters = _session.Capabilities.CanSeek && status.PlayableMedia.Media.Item.Chapters != null && status.PlayableMedia.Media.Item.Chapters.Count > 1;
+            SupportsChapters = _session != null && _session.Capabilities.CanSeek && status.PlayableMedia.Media.Item.Chapters != null && status.PlayableMedia.Media.Item.Chapters.Count > 1;
             CanSkip = PlaybackManager.Queue.Count > 1;
         }
 

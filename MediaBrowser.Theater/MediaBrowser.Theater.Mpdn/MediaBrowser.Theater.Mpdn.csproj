@@ -63,6 +63,7 @@
     <Compile Include="MpdnMediaPlayer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RemoteClient.cs" />
+    <Compile Include="Session.cs" />
     <Compile Include="SessionSequence.cs" />
   </ItemGroup>
   <ItemGroup>

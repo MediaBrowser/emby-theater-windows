@@ -1,6 +1,6 @@
-namespace MediaBrowser.Theater.MockPlayer
+namespace MediaBrowser.Theater.Playback
 {
-    internal struct SessionCompletionAction
+    public struct SessionCompletionAction
     {
         public NavigationDirection Direction { get; set; }
         public int Index { get; set; }

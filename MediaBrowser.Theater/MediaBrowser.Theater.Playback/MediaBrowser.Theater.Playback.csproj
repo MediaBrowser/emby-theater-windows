@@ -74,6 +74,7 @@
     <Compile Include="ITransportControls.cs" />
     <Compile Include="Media.cs" />
     <Compile Include="MediaPlaybackOptions.cs" />
+    <Compile Include="NavigationDirection.cs" />
     <Compile Include="PlayableFilteredPlaySequence.cs" />
     <Compile Include="PlayableMedia.cs" />
     <Compile Include="PlaybackCapabilities.cs" />
@@ -88,6 +89,7 @@
     <Compile Include="PlaySequence.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RepeatMode.cs" />
+    <Compile Include="SessionCompletionAction.cs" />
     <Compile Include="SortMode.cs" />
   </ItemGroup>
   <ItemGroup>

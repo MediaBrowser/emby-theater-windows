@@ -69,10 +69,8 @@
     <Compile Include="MockPlayerWindow.Designer.cs">
       <DependentUpon>MockPlayerWindow.cs</DependentUpon>
     </Compile>
-    <Compile Include="NavigationDirection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Session.cs" />
-    <Compile Include="SessionCompletionAction.cs" />
     <Compile Include="SessionSequence.cs" />
   </ItemGroup>
   <ItemGroup>

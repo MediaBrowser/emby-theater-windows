@@ -4,8 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace MediaBrowser.Theater.Mpdn
@@ -25,12 +23,15 @@ namespace MediaBrowser.Theater.Mpdn
             _running = true;
         }
 
-        public Task Conect(IPEndPoint endPoint)
+        public static async  Task<RemoteClient> Connect(IPEndPoint endPoint)
         {
+            var client = new RemoteClient();
             var tcs = new TaskCompletionSource<object>();
-            Task.Run(() => Connect(endPoint, tcs));
 
-            return tcs.Task;
+            Task.Run(() => client.Connect(endPoint, tcs));
+
+            await tcs.Task;
+            return client;
         }
 
         private async Task Connect(IPEndPoint endPoint, TaskCompletionSource<object> connectedTask)
@@ -57,44 +58,49 @@ namespace MediaBrowser.Theater.Mpdn
 
         #region Sending
 
-        public Task Play(string path)
+        public Task Open(string path)
         {
-            return _writer.WriteLineAsync("Play|" + path);
+            return _writer.WriteLineAsync("Open|" + path);
         }
 
-        public void Pause()
+        public Task Play()
         {
-            throw new NotImplementedException();
+            return _writer.WriteLineAsync("Play|false");
         }
 
-        public void Stop()
+        public Task Pause()
         {
-            throw new NotImplementedException();
+            return _writer.WriteLineAsync("Pause|false");
         }
 
-        public void Seek(long position)
+        public Task Stop()
         {
-            throw new NotImplementedException();
+            return _writer.WriteLineAsync("Stop|unused");
         }
 
-        public void ChangeAudioTrack(string description)
+        public Task Seek(long position)
         {
-            throw new NotImplementedException();
+            return _writer.WriteLineAsync("Seek|" + position);
         }
 
-        public void ChangeSubtitleTrack(string description)
+        public Task ChangeAudioTrack(string description)
         {
-            throw new NotImplementedException();
+            return _writer.WriteLineAsync("ActiveAudioTrack|" + description);
         }
 
-        public void Mute(bool muted)
+        public Task ChangeSubtitleTrack(string description)
         {
-            throw new NotImplementedException();
+            return _writer.WriteLineAsync("ActiveSubtitleTrack|" + description);
         }
 
-        public void ChangeVolume(double volume)
+        public Task Mute(bool muted)
         {
-            throw new NotImplementedException();
+            return _writer.WriteLineAsync("Mute|" + muted);
+        }
+
+        public Task ChangeVolume(decimal volume)
+        {
+            return _writer.WriteLineAsync("Volume|" + (int) volume);
         }
 
         #endregion
@@ -150,8 +156,8 @@ namespace MediaBrowser.Theater.Mpdn
                     }
                     break;
                 case "Volume":
-                    double volume;
-                    if (double.TryParse(cmd[1], out volume)) {
+                    int volume;
+                    if (int.TryParse(cmd[1], out volume)) {
                         OnVolumeChanged(volume);
                     }
                     break;
@@ -259,11 +265,11 @@ namespace MediaBrowser.Theater.Mpdn
             }
         }
 
-        public event Action<double> VolumeChanged;
+        public event Action<decimal> VolumeChanged;
 
-        protected virtual void OnVolumeChanged(double obj)
+        protected virtual void OnVolumeChanged(decimal obj)
         {
-            Action<double> handler = VolumeChanged;
+            Action<decimal> handler = VolumeChanged;
             if (handler != null) {
                 handler(obj);
             }

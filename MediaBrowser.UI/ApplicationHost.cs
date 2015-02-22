@@ -221,11 +221,7 @@ namespace MediaBrowser.UI
                 // MBT should be able to implement them all
                 SupportedCommands = Enum.GetNames(typeof(GeneralCommandType)).ToList(),
 
-                //SupportsSync = true,
-
                 SupportsMediaControl = true,
-                SupportsUniqueIdentifier = true,
-                //SupportsContentUploading = true,
                 DeviceProfile = new MediaBrowserTheaterProfile()
             };
 

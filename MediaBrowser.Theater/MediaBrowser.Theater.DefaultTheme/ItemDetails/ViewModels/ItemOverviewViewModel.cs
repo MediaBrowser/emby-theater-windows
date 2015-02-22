@@ -82,9 +82,11 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
             PlayAllCommand = new RelayCommand(async o => {
                 var items = await ItemChildren.Get(connectionManager, sessionManager, item, new ChildrenQueryParams {
                     Recursive = true,
-                    IncludeItemTypes = new[] { "Movie", "Episode", "Audio" }
+                    IncludeItemTypes = new[] { "Movie", "Episode", "Audio" },
+                    SortOrder = MediaBrowser.Model.Entities.SortOrder.Ascending,
+                    SortBy = new[] { "SortName" }
                 });
-
+                
                 if (items.Items.Length > 0) {
                     await playbackManager.Play(items.Items.Select(i => (Media)i));
                 }

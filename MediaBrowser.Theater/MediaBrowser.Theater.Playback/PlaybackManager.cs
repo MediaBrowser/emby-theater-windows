@@ -94,6 +94,10 @@ namespace MediaBrowser.Theater.Playback
 
         public async Task<IEnumerable<BaseItemDto>> GetIntros(BaseItemDto item)
         {
+            if (_connectionManager == null) {
+                return Enumerable.Empty<BaseItemDto>();
+            }
+
             var apiClient = _connectionManager.GetApiClient(item);
             var intros = await apiClient.GetIntrosAsync(item.Id, apiClient.CurrentUserId);
             return intros.Items;
@@ -116,13 +120,13 @@ namespace MediaBrowser.Theater.Playback
 
             _log.Info("[{1}] Beginning playback at {0}", startIndex, id);
 
-            using (PlayLock playbackLock = await CancelPlaybackAndLock()) {
+            using (PlayLock playbackLock = await CancelPlaybackAndLock().ConfigureAwait(false)) {
                 using (IPlaySequence sequence = Queue.GetPlayOrder()) {
                     try {
                         sequence.SkipTo(startIndex);
 
                         OnPlaybackStarting();
-                        await BeginPlayback(sequence, playbackLock.CancellationTokenSource.Token);
+                        await BeginPlayback(sequence, playbackLock.CancellationTokenSource.Token).ConfigureAwait(false);
                     }
                     finally {
                         _latestSession = null;
@@ -178,34 +182,36 @@ namespace MediaBrowser.Theater.Playback
             }
         }
 
-        private async Task BeginPlayback(IPlaySequence sequence, CancellationToken cancellationToken)
+        private Task BeginPlayback(IPlaySequence sequence, CancellationToken cancellationToken)
         {
-            var firstItem = true;
+            return Task.Run(async () => {
+                var firstItem = true;
 
-            Media media;
-            IMediaPlayer player;
-            while (MoveToNextPlayableItem(sequence, out media, out player)) {
-                if (firstItem && !player.PrefersBackgroundPlayback) {
-                    firstItem = false;
-                    await _navigator.Navigate(Go.To.FullScreenPlayback());
-                }
+                Media media;
+                IMediaPlayer player;
+                while (MoveToNextPlayableItem(sequence, out media, out player)) {
+                    if (firstItem && !player.PrefersBackgroundPlayback) {
+                        firstItem = false;
+                        await _navigator.Navigate(Go.To.FullScreenPlayback()).ConfigureAwait(false);
+                    }
 
-                var subSequence = new PlayableFilteredPlaySequence(sequence, player, media);
+                    var subSequence = new PlayableFilteredPlaySequence(sequence, player, media);
 
-                if (cancellationToken.IsCancellationRequested) {
-                    break;
-                }
-
-                IPreparedSessions prepared = await player.Prepare(subSequence, cancellationToken);
-
-                using (SubscribeToSessions(prepared.Sessions))
-                using (SubscribeToEvents(prepared.Status)) {
-                    SessionCompletion status = await prepared.Start();
-                    if (status == SessionCompletion.Stopped || cancellationToken.IsCancellationRequested) {
+                    if (cancellationToken.IsCancellationRequested) {
                         break;
                     }
+
+                    IPreparedSessions prepared = await player.Prepare(subSequence, cancellationToken);
+
+                    using (SubscribeToSessions(prepared.Sessions))
+                    using (SubscribeToEvents(prepared.Status)) {
+                        SessionCompletion status = await prepared.Start().ConfigureAwait(false);
+                        if (status == SessionCompletion.Stopped || cancellationToken.IsCancellationRequested) {
+                            break;
+                        }
+                    }
                 }
-            }
+            });
         }
 
         private IDisposable SubscribeToSessions(IObservable<IPlaybackSession> sessions)

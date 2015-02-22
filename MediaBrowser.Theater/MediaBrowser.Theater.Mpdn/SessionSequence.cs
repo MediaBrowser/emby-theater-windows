@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Mime;
+using System.Net.Sockets;
 using System.Reactive.Disposables;
 using System.Reactive.Subjects;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using MediaBrowser.Model.Logging;
@@ -25,22 +24,22 @@ namespace MediaBrowser.Theater.Mpdn
         private readonly int _id;
         private readonly IPlaySequence _sequence;
         private readonly CancellationToken _cancellationToken;
-        private readonly ILogManager _logManager;
         private readonly IWindowManager _windowManager;
         private readonly IEventAggregator _events;
         private readonly ILogger _log;
+        private readonly IPlaybackManager _playbackManager;
         private readonly Subject<IPlaybackSession> _sessions;
         private readonly Subject<PlaybackStatus> _status;
         
-        public SessionSequence(IPlaySequence sequence, CancellationToken cancellationToken, ILogManager logManager, IWindowManager windowManager, IEventAggregator events, ILogger log)
+        public SessionSequence(IPlaySequence sequence, CancellationToken cancellationToken, IWindowManager windowManager, IEventAggregator events, ILogger log, IPlaybackManager playbackManager)
         {
             _id = Interlocked.Increment(ref _counter);
             _sequence = sequence;
             _cancellationToken = cancellationToken;
-            _logManager = logManager;
             _windowManager = windowManager;
             _events = events;
             _log = log;
+            _playbackManager = playbackManager;
             _sessions = new Subject<IPlaybackSession>();
             _status = new Subject<PlaybackStatus>();
         }
@@ -48,16 +47,54 @@ namespace MediaBrowser.Theater.Mpdn
         public async Task<SessionCompletion> Start()
         {
             _log.Debug("Starting session sequence");
-            
-            var process = await StartMpdn();
+
+            var handshake = Task.Run(() => Handshake());
+            var process = await StartMpdn().ConfigureAwait(false);
+
+            // wait for startup confirmation from MBT-MPDN extension
+            await handshake;
+            process.WaitForInputIdle();
 
             using (Disposable.Create(() => process.CloseMainWindow()))
-            using (var api = await RemoteClient.Connect(new IPEndPoint(IPAddress.Loopback, ApiPort)))
+            using (var api = await RemoteClient.Connect(new IPEndPoint(IPAddress.Loopback, ApiPort)).ConfigureAwait(false))
             using (_windowManager.UseBackgroundWindow(process.MainWindowHandle)) {
 
-                // todo position mpdn window, set volume/mute on setting change
+                api.Muted += m => _playbackManager.GlobalSettings.Audio.IsMuted = m;
+                api.VolumeChanged += v => _playbackManager.GlobalSettings.Audio.Volume = v;
+                
+                var window = _windowManager.MainWindowState;
+                await MoveWindow(api, window).ConfigureAwait(false);
 
-                return await RunSessions(api);
+                using (_events.Get<MainWindowState>().Subscribe(s => MoveWindow(api, s))) {
+                    var result = await RunSessions(api).ConfigureAwait(false);
+                    _log.Debug("Completed sessions");
+                    return result;
+                }
+            }
+        }
+
+        private static async Task MoveWindow(RemoteClient api, MainWindowState window)
+        {
+            await api.MoveWindow((int) (window.Left*window.DpiScale),
+                                 (int) (window.Top*window.DpiScale),
+                                 (int) (window.Width*window.DpiScale),
+                                 (int) (window.Height*window.DpiScale),
+                                 window.State);
+        }
+
+        private async Task Handshake()
+        {
+            var endPoint = new IPEndPoint(IPAddress.Any, 6546);
+            var serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            serverSocket.Bind(endPoint);
+            serverSocket.Listen(2);
+
+            var clientSocket = serverSocket.Accept();
+            using (var stream = new NetworkStream(clientSocket))
+            using (var writer = new StreamWriter(stream) { AutoFlush = true })
+            using (var reader = new StreamReader(stream)) {
+                await reader.ReadLineAsync().ConfigureAwait(false);
+                await writer.WriteLineAsync("OK").ConfigureAwait(false);
             }
         }
 
@@ -67,8 +104,8 @@ namespace MediaBrowser.Theater.Mpdn
                 var process = Process.Start(new ProcessStartInfo {
                     FileName = @"D:\Projects\MPDN\MediaPlayerDotNet.exe"
                 });
-
-                process.WaitForInputIdle();
+                
+                //process.WaitForInputIdle();
                 return process;
             });
         }
@@ -92,28 +129,40 @@ namespace MediaBrowser.Theater.Mpdn
                             break;
                         }
 
+                        _log.Debug("Moving to next item: {0}", _sequence.Current.Item.Path);
+
                         // create a session for the media
                         PlayableMedia item = GetPlayableMedia(_sequence.Current);
-                        var session = new Session(item, api, _cancellationToken, _logManager);
+                        var session = new Session(item, api, _cancellationToken, _log, _playbackManager);
 
                         // forward playback events to our own event observable
                         using (session.Events.Subscribe(status => _status.OnNext(status))) {
                             // notify the playback manager of a new session
-                            _sessions.OnNext(session);
+                            try {
+                                _sessions.OnNext(session);
+                            }
+                            catch (Exception e) {
+                                _log.ErrorException("Error posting next playback session.", e);
+                            }
 
                             // run the session. the session reports which direction to move in to get to the next item
-                            nextAction = await session.Run();
+                            nextAction = await session.Run().ConfigureAwait(false);
                         }
                     }
 
                     _log.Debug("Exiting session sequence {0} playback", _id);
-                    
-                    return _cancellationToken.IsCancellationRequested ? SessionCompletion.Stopped : SessionCompletion.Complete;
                 }
                 finally {
                     // notify the playback manager that we have finished, and that there are no more sessions
-                    _sessions.OnCompleted();
+                    try {
+                        _sessions.OnCompleted();
+                    }
+                    catch (Exception e) {
+                        _log.ErrorException("Error closing session observable.", e);
+                    }
                 }
+
+                return _cancellationToken.IsCancellationRequested ? SessionCompletion.Stopped : SessionCompletion.Complete;
             });
         }
 
@@ -144,7 +193,7 @@ namespace MediaBrowser.Theater.Mpdn
 
         private PlayableMedia GetPlayableMedia(Media media)
         {
-            var source = media.Item.MediaSources.First(s => s.Protocol == Model.MediaInfo.MediaProtocol.File && File.Exists(s.Path));
+            var source = media.Item.MediaSources.FirstOrDefault(s => s.Protocol == Model.MediaInfo.MediaProtocol.File && File.Exists(s.Path));
             if (source == null) {
                 throw new InvalidOperationException(string.Format("MPDN cannot play {0}, as it has no file accessible source.", media.Item.Name));
             }

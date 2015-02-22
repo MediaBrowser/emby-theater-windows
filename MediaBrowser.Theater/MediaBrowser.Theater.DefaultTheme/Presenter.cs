@@ -422,14 +422,22 @@ namespace MediaBrowser.Theater.DefaultTheme
         {
             get
             {
-                return new MainWindowState {
-                    Left = _mainWindow.Left,
-                    Top = _mainWindow.Top,
-                    Width = _mainWindow.Width,
-                    Height = _mainWindow.Height,
-                    State = ConvertWindowState(_mainWindow.WindowState),
-                    DpiScale = GetSystemDpiFactor()
+                var state = new MainWindowState();
+                Action action = () => {
+
+                    state =  new MainWindowState {
+                        Left = _mainWindow.Left,
+                        Top = _mainWindow.Top,
+                        Width = _mainWindow.Width,
+                        Height = _mainWindow.Height,
+                        State = ConvertWindowState(_mainWindow.WindowState),
+                        DpiScale = GetSystemDpiFactor()
+                    };
                 };
+
+                action.OnUiThread();
+
+                return state;
             }
         }
 
@@ -454,15 +462,24 @@ namespace MediaBrowser.Theater.DefaultTheme
 
         public IDisposable UseBackgroundWindow(IntPtr hwnd)
         {
-            new WindowInteropHelper(_mainWindow).Owner = hwnd;
-            _mainWindow.ShowInTaskbar = false;
+            Action action = () => {
+                new WindowInteropHelper(_mainWindow).Owner = hwnd;
+                _mainWindow.ShowInTaskbar = false;
+                _mainWindow.Focus();
+            };
+
+            action.OnUiThread();
 
             // todo route input events from background media window to main window
             // todo make window transparent based upon presense of a background window, rather than media playing
 
             return Disposable.Create(() => {
-                new WindowInteropHelper(_mainWindow).Owner = IntPtr.Zero;
-                _mainWindow.ShowInTaskbar = true;
+                Action disposeAction = () => {
+                    new WindowInteropHelper(_mainWindow).Owner = IntPtr.Zero;
+                    _mainWindow.ShowInTaskbar = true;
+                };
+
+                disposeAction.OnUiThread();
             });
         }
 

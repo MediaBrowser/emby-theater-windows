@@ -71,23 +71,24 @@ namespace MediaBrowser.Theater.Playback
         public static void NextChapter(this IPlaybackSession session)
         {
             PlaybackStatus state = session.Status;
-            ChapterInfoDto chapter = state.PlayableMedia.Media.Item.Chapters.FirstOrDefault(c => c.StartPositionTicks > state.Progress);
+            List<ChapterInfoDto> chapters = state.PlayableMedia.Media.Item.Chapters;
+            ChapterInfoDto chapter = chapters != null ? chapters.FirstOrDefault(c => c.StartPositionTicks > state.Progress) : null;
 
             if (chapter != null) {
                 session.Seek(chapter.StartPositionTicks);
             } else {
-                var status = session.Status;
-                var skip = SkipDuration(status);
-                session.Seek(status.Progress ?? 0 + skip.Ticks);
+                PlaybackStatus status = session.Status;
+                TimeSpan skip = SkipDuration(status);
+                session.Seek((status.Progress ?? 0) + skip.Ticks);
             }
         }
-        
+
         public static void PreviousChapter(this IPlaybackSession session)
         {
             PlaybackStatus state = session.Status;
             List<ChapterInfoDto> chapters = state.PlayableMedia.Media.Item.Chapters;
 
-            if (chapters.Count > 0) {
+            if (chapters != null && chapters.Count > 0) {
                 for (int i = chapters.Count - 1; i >= 0; i--) {
                     ChapterInfoDto previous = chapters[Math.Max(0, i - 1)];
                     ChapterInfoDto current = chapters[i];
@@ -105,9 +106,9 @@ namespace MediaBrowser.Theater.Playback
                     break;
                 }
             } else {
-                var status = session.Status;
-                var skip = SkipDuration(status);
-                session.Seek(status.Progress ?? 0 - skip.Ticks);
+                PlaybackStatus status = session.Status;
+                TimeSpan skip = SkipDuration(status);
+                session.Seek((status.Progress ?? 0) - skip.Ticks);
             }
         }
 
@@ -115,12 +116,12 @@ namespace MediaBrowser.Theater.Playback
         {
             if (status.Duration > TimeSpan.FromMinutes(20).Ticks) {
                 return TimeSpan.FromMinutes(5);
-            } 
-            
+            }
+
             if (status.Duration > TimeSpan.FromMinutes(10).Ticks) {
                 return TimeSpan.FromMinutes(2);
-            } 
-            
+            }
+
             if (status.Duration > TimeSpan.FromMinutes(2).Ticks) {
                 return TimeSpan.FromSeconds(30);
             }
@@ -140,7 +141,7 @@ namespace MediaBrowser.Theater.Playback
 
         public static void FastForward(this IPlaybackSession session)
         {
-            var currentSpeed = session.Status.Speed;
+            double currentSpeed = session.Status.Speed;
 
             if (currentSpeed > 0) {
                 session.SetPlaybackSpeed(Math.Max(currentSpeed*2, 16));
@@ -155,7 +156,7 @@ namespace MediaBrowser.Theater.Playback
 
         public static void Rewind(this IPlaybackSession session)
         {
-            var currentSpeed = session.Status.Speed;
+            double currentSpeed = session.Status.Speed;
 
             if (currentSpeed < 0) {
                 session.SetPlaybackSpeed(Math.Max(currentSpeed*2, 16));

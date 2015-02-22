@@ -219,7 +219,13 @@ namespace MediaBrowser.Theater
 
         public void RunUserInterface()
         {
+            var playbackManager = TryResolve<IPlaybackManager>();
+
             Theme.Run();
+
+            if (playbackManager != null) {
+                playbackManager.StopPlayback().Wait();
+            }
         }
 
         protected override INetworkManager CreateNetworkManager(ILogger logger)

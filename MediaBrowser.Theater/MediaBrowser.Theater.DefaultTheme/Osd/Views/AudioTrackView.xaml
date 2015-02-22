@@ -6,7 +6,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
-        <Button Command="{Binding ChangeStreamommand}" x:Name="Button">
+        <Button Command="{Binding ChangeStreamCommand}" x:Name="Button">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="20" />

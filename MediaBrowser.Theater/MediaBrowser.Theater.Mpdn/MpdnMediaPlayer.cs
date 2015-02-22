@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using MediaBrowser.Model.Logging;
@@ -16,6 +14,7 @@ namespace MediaBrowser.Theater.Mpdn
         private readonly ILogManager _logManager;
         private readonly IWindowManager _windowManager;
         private readonly IEventAggregator _events;
+        private readonly IPlaybackManager _playbackManager;
 
         public int Priority
         {
@@ -30,7 +29,7 @@ namespace MediaBrowser.Theater.Mpdn
         public bool CanPlay(Media media)
         {
             return (media.Item.IsAudio || media.Item.IsVideo) &&
-                   media.Item.MediaSources.Any(s => s.Protocol == Model.MediaInfo.MediaProtocol.File);
+                   media.Item.MediaSources.Any(s => s.Protocol == Model.MediaInfo.MediaProtocol.File && File.Exists(s.Path));
         }
 
         public bool PrefersBackgroundPlayback
@@ -38,16 +37,17 @@ namespace MediaBrowser.Theater.Mpdn
             get { return false; }
         }
 
-        public MpdnMediaPlayer(ILogManager logManager, IWindowManager windowManager, IEventAggregator events)
+        public MpdnMediaPlayer(ILogManager logManager, IWindowManager windowManager, IEventAggregator events, IPlaybackManager playbackManager)
         {
             _logManager = logManager;
             _windowManager = windowManager;
             _events = events;
+            _playbackManager = playbackManager;
         }
 
         public Task<IPreparedSessions> Prepare(IPlaySequence sequence, CancellationToken cancellationToken)
         {
-            var sessions = new SessionSequence(sequence, cancellationToken, _logManager, _windowManager, _events, _logManager.GetLogger("MPDN"));
+            var sessions = new SessionSequence(sequence, cancellationToken, _windowManager, _events, _logManager.GetLogger("MPDN"), _playbackManager);
             return Task.FromResult<IPreparedSessions>(sessions);
         }
     }

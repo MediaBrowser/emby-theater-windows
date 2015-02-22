@@ -92,17 +92,22 @@ namespace MediaBrowser.Theater.Api.UserInterface
         /// <returns>Task{Image}.</returns>
         public async Task<Image> GetRemoteImageAsync(string url, CancellationToken cancellationToken)
         {
-            BitmapImage bitmap = await GetRemoteBitmapAsync(url, cancellationToken);
+            try {
+                BitmapImage bitmap = await GetRemoteBitmapAsync(url, cancellationToken);
 
-            var image = new Image { Source = bitmap };
+                var image = new Image { Source = bitmap };
 
-            BitmapScalingMode scalingMode = _config.Configuration.EnableHighQualityImageScaling
-                                                ? BitmapScalingMode.Fant
-                                                : BitmapScalingMode.LowQuality;
+                BitmapScalingMode scalingMode = _config.Configuration.EnableHighQualityImageScaling
+                                                    ? BitmapScalingMode.Fant
+                                                    : BitmapScalingMode.LowQuality;
 
-            RenderOptions.SetBitmapScalingMode(image, scalingMode);
+                RenderOptions.SetBitmapScalingMode(image, scalingMode);
 
-            return image;
+                return image;
+            }
+            catch {
+                return null;
+            }
         }
 
         /// <summary>

@@ -174,7 +174,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
 
         private async void CloseOnCompletion(IPlaybackSession session)
         {
-            await session.Events;
+            await session.Events.LastOrDefaultAsync();
             await Close();
         }
     }

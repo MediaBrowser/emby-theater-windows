@@ -121,7 +121,7 @@
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 5 0 0">
 
-                    <Button x:Name="PreviousTrackButton" Command="{Binding PreviousTrackCommand}">
+                    <Button x:Name="PreviousTrackButton" Command="{Binding SkipBackwardCommand}">
                         <Button.Style>
                             <Style TargetType="{x:Type Button}" BasedOn="{StaticResource PreviousTrackButton}">
                                 <Style.Triggers>
@@ -199,7 +199,7 @@
                         </Button.Style>
                     </Button>
 
-                    <Button x:Name="NextTrackButton" Command="{Binding NextTrackCommand}">
+                    <Button x:Name="NextTrackButton" Command="{Binding SkipForwardCommand}">
                         <Button.Style>
                             <Style TargetType="{x:Type Button}" BasedOn="{StaticResource NextTrackButton}">
                                 <Style.Triggers>

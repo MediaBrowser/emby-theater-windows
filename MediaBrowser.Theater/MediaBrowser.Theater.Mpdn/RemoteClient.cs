@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using MediaBrowser.Theater.Api.UserInterface;
 
 namespace MediaBrowser.Theater.Mpdn
 {
@@ -42,14 +44,17 @@ namespace MediaBrowser.Theater.Mpdn
                 var stream = new NetworkStream(_socket);
 
                 using (var reader = new StreamReader(stream))
-                using (_writer = new StreamWriter(stream)) {
+                using (_writer = new StreamWriter(stream) { AutoFlush = true }) {
                     await _writer.WriteLineAsync(_guid);
-                    
+
                     while (_running) {
                         var data = await reader.ReadLineAsync();
                         HandleMessage(data, connectedTask);
                     }
                 }
+            }
+            catch (Exception e) {
+                Debug.WriteLine(e);
             }
             finally {
                 _socket.Close();
@@ -60,47 +65,71 @@ namespace MediaBrowser.Theater.Mpdn
 
         public Task Open(string path)
         {
-            return _writer.WriteLineAsync("Open|" + path);
+            return Write("Open|" + path);
         }
 
         public Task Play()
         {
-            return _writer.WriteLineAsync("Play|false");
+            return Write("Play|false");
         }
 
         public Task Pause()
         {
-            return _writer.WriteLineAsync("Pause|false");
+            return Write("Pause|false");
         }
 
         public Task Stop()
         {
-            return _writer.WriteLineAsync("Stop|unused");
+            return Write("Stop|unused");
         }
 
         public Task Seek(long position)
         {
-            return _writer.WriteLineAsync("Seek|" + position);
+            return Write("Seek|" + (position / 10));
         }
 
         public Task ChangeAudioTrack(string description)
         {
-            return _writer.WriteLineAsync("ActiveAudioTrack|" + description);
+            return Write("ActiveAudioTrack|" + description);
         }
 
         public Task ChangeSubtitleTrack(string description)
         {
-            return _writer.WriteLineAsync("ActiveSubtitleTrack|" + description);
+            return Write("ActiveSubtitleTrack|" + description);
         }
 
         public Task Mute(bool muted)
         {
-            return _writer.WriteLineAsync("Mute|" + muted);
+            return Write("Mute|" + muted);
         }
 
         public Task ChangeVolume(decimal volume)
         {
-            return _writer.WriteLineAsync("Volume|" + (int) volume);
+            return Write("Volume|" + (int)volume);
+        }
+
+        public Task MoveWindow(int left, int top, int width, int height, WindowState state)
+        {
+            string stateString = null;
+            switch (state) {
+                case WindowState.Windowed:
+                    stateString = "Normal";
+                    break;
+                case WindowState.Maximized:
+                    stateString = "Maximized";
+                    break;
+                case WindowState.Minimized:
+                    stateString = "Minimized";
+                    break;
+            }
+
+            return Write(string.Format("MoveWindow|{0}|{1}|{2}|{3}|{4}", left, top, width, height, stateString));
+        }
+
+        private Task Write(string line)
+        {
+            Debug.WriteLine(line);
+            return _writer.WriteLineAsync(line);
         }
 
         #endregion
@@ -139,7 +168,7 @@ namespace MediaBrowser.Theater.Mpdn
                 case "Position":
                     long progress;
                     if (long.TryParse(cmd[1], out progress)) {
-                        OnProgressChanged(progress);
+                        OnProgressChanged(progress * 10);
                     }
                     break;
                 case "FullLength":
@@ -162,41 +191,47 @@ namespace MediaBrowser.Theater.Mpdn
                     }
                     break;
                 case "Chapters":
-                    var chapters = cmd[1].Split(new[] { "]]" }, StringSplitOptions.None).Select(s => {
-                        var parts = s.Split(new[] { ">>" }, StringSplitOptions.None);
-                        return new Chapter {
-                            Index = int.Parse(parts[0]),
-                            Name = parts[1],
-                            StartPosition = long.Parse(cmd[2])
-                        };
-                    });
+                    var chapters = cmd[1].Split(new[] { "]]" }, StringSplitOptions.None)
+                                         .Where(s => !string.IsNullOrEmpty(s))
+                                         .Select(s => {
+                                             var parts = s.Split(new[] { ">>" }, StringSplitOptions.None);
+                                             return new Chapter {
+                                                 Index = int.Parse(parts[0]),
+                                                 Name = parts[1],
+                                                 StartPosition = long.Parse(cmd[2])
+                                             };
+                                         });
                     OnChaptersChanged(chapters);
                     break;
                 case "Subtitles":
-                    var subtitles = cmd[1].Split(new[] { "]]" }, StringSplitOptions.None).Select(s => {
-                        var parts = s.Split(new[] { ">>" }, StringSplitOptions.None);
-                        return new SubtileTrack {
-                            Index = int.Parse(parts[0]),
-                            Description = parts[1],
-                            Type = parts[2],
-                            IsActive = bool.Parse(parts[3])
-                        };
-                    });
+                    var subtitles = cmd[1].Split(new[] { "]]" }, StringSplitOptions.None)
+                                          .Where(s => !string.IsNullOrEmpty(s))
+                                          .Select(s => {
+                                              var parts = s.Split(new[] { ">>" }, StringSplitOptions.None);
+                                              return new SubtileTrack {
+                                                  Index = int.Parse(parts[0]),
+                                                  Description = parts[1],
+                                                  Type = parts[2],
+                                                  IsActive = bool.Parse(parts[3])
+                                              };
+                                          });
                     OnSubtitlesChanged(subtitles);
                     break;
                 case "SubChanged":
                     OnActiveSubtitleChanged(cmd[1]);
                     break;
                 case "AudioTracks":
-                    var audioTracks = cmd[1].Split(new[] { "]]" }, StringSplitOptions.None).Select(s => {
-                        var parts = s.Split(new[] { ">>" }, StringSplitOptions.None);
-                        return new AudioTrack {
-                            Index = int.Parse(parts[0]),
-                            Description = parts[1],
-                            Type = parts[2],
-                            IsActive = bool.Parse(parts[3])
-                        };
-                    });
+                    var audioTracks = cmd[1].Split(new[] { "]]" }, StringSplitOptions.None)
+                                            .Where(s => !string.IsNullOrEmpty(s))
+                                            .Select(s => {
+                                                var parts = s.Split(new[] { ">>" }, StringSplitOptions.None);
+                                                return new AudioTrack {
+                                                    Index = int.Parse(parts[0]),
+                                                    Description = parts[1],
+                                                    Type = parts[2],
+                                                    IsActive = bool.Parse(parts[3])
+                                                };
+                                            });
                     OnAudioTracksChanged(audioTracks);
                     break;
                 case "AudioChanged":
@@ -351,6 +386,34 @@ namespace MediaBrowser.Theater.Mpdn
             public string Description { get; set; }
             public string Type { get; set; }
             public bool IsActive { get; set; }
+
+            public override string ToString()
+            {
+                return string.Format("Index: {0}, Description: \"{1}\", Type: {2}, IsActive: {3}", Index, Description, Type, IsActive);
+            }
+
+            public bool Equals(SubtileTrack other)
+            {
+                return Index == other.Index && string.Equals(Description, other.Description) && string.Equals(Type, other.Type);
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (ReferenceEquals(null, obj)) {
+                    return false;
+                }
+                return obj is SubtileTrack && Equals((SubtileTrack) obj);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked {
+                    int hashCode = Index;
+                    hashCode = (hashCode*397) ^ (Description != null ? Description.GetHashCode() : 0);
+                    hashCode = (hashCode*397) ^ (Type != null ? Type.GetHashCode() : 0);
+                    return hashCode;
+                }
+            }
         }
 
         public struct AudioTrack
@@ -359,8 +422,36 @@ namespace MediaBrowser.Theater.Mpdn
             public string Description { get; set; }
             public string Type { get; set; }
             public bool IsActive { get; set; }
-        }
 
+            public override string ToString()
+            {
+                return string.Format("Index: {0}, Description: \"{1}\", Type: {2}, IsActive: {3}", Index, Description, Type, IsActive);
+            }
+
+            public bool Equals(AudioTrack other)
+            {
+                return Index == other.Index && string.Equals(Description, other.Description) && string.Equals(Type, other.Type);
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (ReferenceEquals(null, obj)) {
+                    return false;
+                }
+                return obj is AudioTrack && Equals((AudioTrack) obj);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked {
+                    int hashCode = Index;
+                    hashCode = (hashCode*397) ^ (Description != null ? Description.GetHashCode() : 0);
+                    hashCode = (hashCode*397) ^ (Type != null ? Type.GetHashCode() : 0);
+                    return hashCode;
+                }
+            }
+        }
+        
         public struct Chapter
         {
             public int Index { get; set; }

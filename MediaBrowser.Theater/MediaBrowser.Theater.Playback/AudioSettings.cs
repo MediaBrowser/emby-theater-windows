@@ -10,7 +10,7 @@ namespace MediaBrowser.Theater.Playback
         public AudioSettings()
         {
             _isMuted = false;
-            _volume = 1;
+            _volume = 100;
         }
 
         public decimal Volume

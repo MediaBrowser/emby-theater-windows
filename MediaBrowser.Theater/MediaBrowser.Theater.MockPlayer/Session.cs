@@ -103,7 +103,7 @@ namespace MediaBrowser.Theater.MockPlayer
                 }
 
                 var threshold = TimeSpan.FromSeconds(30).Ticks;
-                if (_progress < threshold && _duration > threshold) {
+                if (_progress > threshold) {
                     _progress = 0;
                 } else {
                     _state = PlaybackStatusType.Skipped;

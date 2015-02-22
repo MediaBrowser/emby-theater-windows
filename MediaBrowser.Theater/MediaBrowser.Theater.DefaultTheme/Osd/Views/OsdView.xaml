@@ -211,7 +211,7 @@
                         </Button.Style>
                     </Button>
 
-                    <Button Command="{Binding SelectChapterCommand}" Margin="50, 0, 15, 0">
+                    <Button Command="{Binding SelectChapterCommand}" Margin="50, 0, 15, 0" Visibility="{Binding SupportsChapters, Converter={StaticResource BooleanToVisibility}}">
                         <Button.Style>
                             <Style TargetType="{x:Type Button}" BasedOn="{StaticResource ChapterSelectButton}">
                                 <Style.Triggers>

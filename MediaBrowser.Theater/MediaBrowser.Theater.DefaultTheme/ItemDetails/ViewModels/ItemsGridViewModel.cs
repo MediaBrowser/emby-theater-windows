@@ -32,6 +32,8 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
         public int SortOrder { get { return 2; } }
 
+        public string SectionTitle { get; private set; }
+
         public RangeObservableCollection<ItemTileViewModel> Items { get; private set; }
 
         public ItemsGridViewModel(ItemsResult itemsResult, IConnectionManager connectionManager, IImageManager imageManager, INavigator navigator, IPlaybackManager playbackManager)
@@ -50,7 +52,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
                 _preferredImageTypes = new[] { ImageType.Primary, ImageType.Backdrop, ImageType.Thumb };
             }
 
-            Title = ItemsListViewModel.SelectHeader(itemType);
+            SectionTitle = Title = ItemsListViewModel.SelectHeader(itemType);
             Items = new RangeObservableCollection<ItemTileViewModel>();
 
             LoadItems();

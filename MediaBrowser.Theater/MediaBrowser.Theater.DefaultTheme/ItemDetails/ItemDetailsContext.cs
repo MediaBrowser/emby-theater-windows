@@ -66,5 +66,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails
         : IViewModel
     {
         int SortOrder { get; }
+
+        string Title { get; }
     }
 }

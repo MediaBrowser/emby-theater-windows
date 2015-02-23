@@ -14,6 +14,7 @@ using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Home.ViewModels;
+using MediaBrowser.Theater.Presentation;
 using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.ViewModels;
 
@@ -45,6 +46,11 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
         public int SortOrder
         {
             get { return 2; }
+        }
+
+        public string Title
+        {
+            get { return "MediaBrowser.Theater.DefaultTheme:Strings:DetailSection_PeopleHeader".Localize(); }
         }
 
         public Size Size

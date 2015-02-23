@@ -437,4 +437,12 @@
     <value>@Login_ChangeServer</value>
     <comment>Button text for the button to change server</comment>
   </data>
+  <data name="DetailSection_OverviewHeader" xml:space="preserve">
+    <value>@DetailSection_OverviewHeader</value>
+    <comment>Details section header</comment>
+  </data>
+  <data name="DetailSection_PeopleHeader" xml:space="preserve">
+    <value>@DetailSection_PeopleHeader</value>
+    <comment>Cast section header</comment>
+  </data>
 </root>

@@ -15,6 +15,7 @@ using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
 using MediaBrowser.Theater.Playback;
+using MediaBrowser.Theater.Presentation;
 using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using MediaBrowser.Theater.DefaultTheme.ItemList;
@@ -45,6 +46,11 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
         public int SortOrder
         {
             get { return 0; }
+        }
+
+        public string Title
+        {
+            get { return "MediaBrowser.Theater.DefaultTheme:Strings:DetailSection_OverviewHeader".Localize(); }
         }
 
         public bool ShowInfo

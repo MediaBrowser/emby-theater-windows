@@ -7,8 +7,61 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
-        <controls:IndexedItemsControl x:Name="Items" Margin="0,80,0,0" 
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <controls:ExtendedListBox Grid.Row="0"
+                                  Margin="0,50,0,0"
+                                  Background="{x:Null}"
+                                  BorderBrush="{x:Null}"
+                                  BorderThickness="0"
+                                  ItemsSource="{Binding Path=Indices, ElementName=Panorama}"
+                                  SelectedItem="{Binding Path=SelectedIndex, ElementName=Panorama, Mode=TwoWay}"
+                                  ItemTemplate="{StaticResource PanoramaTitleTemplate}"
+                                  IsSynchronizedWithCurrentItem="True"
+                                  ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+                                  ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                  Focusable="False">
+            <controls:ExtendedListBox.Style>
+                <Style TargetType="{x:Type controls:ExtendedListBox}">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type controls:ExtendedListBox}">
+                                <controls:ExtendedScrollViewer IgnoreAllDirectionKeys="True"
+                                                               IsTabStop="False"
+                                                               Focusable="False"
+                                                               CanContentScroll="True"
+                                                               VerticalAlignment="Top">
+                                    <controls:ScrollingPanel CanHorizontallyScroll="True"
+                                                             CanVerticallyScroll="False">
+                                        <StackPanel Orientation="Horizontal" IsItemsHost="True" />
+                                    </controls:ScrollingPanel>
+                                </controls:ExtendedScrollViewer>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </controls:ExtendedListBox.Style>
+
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                <ContentPresenter />
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </ListBox.ItemContainerStyle>
+        </controls:ExtendedListBox>
+
+        <controls:IndexedItemsControl x:Name="Panorama" Margin="0,20,0,0" Grid.Row="1"
                                       ItemsSource="{Binding Sections}" 
+                                      IndexSelector="{Binding TitleSelector}" FocusVisualStyle="{x:Null}"
                                       VirtualizingPanel.VirtualizationMode="Recycling">
             <controls:IndexedItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>

@@ -357,4 +357,10 @@
   <data name="Login_ChangeServer" xml:space="preserve">
     <value>Change Server</value>
   </data>
+  <data name="DetailSection_OverviewHeader" xml:space="preserve">
+    <value>Details</value>
+  </data>
+  <data name="DetailSection_PeopleHeader" xml:space="preserve">
+    <value>Cast</value>
+  </data>
 </root>

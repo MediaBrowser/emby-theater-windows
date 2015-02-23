@@ -53,9 +53,10 @@ namespace MediaBrowser.UI.EntryPoints
         {
             _navigationService.Navigated += NavigationServiceNavigated;
 
-            var client = _sessionManager.ActiveApiClient;
-            if (client != null)
+            var user = _sessionManager.CurrentUser;
+            if (user != null)
             {
+                var client = _connectionManager.GetApiClient(user);
                 BindEvents(client);
             }
 

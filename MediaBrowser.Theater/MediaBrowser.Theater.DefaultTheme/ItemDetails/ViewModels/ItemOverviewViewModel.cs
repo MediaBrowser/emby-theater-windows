@@ -63,8 +63,8 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
             _item = item;
 
             Info = new ItemInfoViewModel(item) {
-                ShowDisplayName = false,
-                ShowParentText = false
+                ShowDisplayName = true,
+                ShowParentText = item.IsType("Season") || item.IsType("Episode") || item.IsType("Album") || item.IsType("Track")
             };
 
             PosterArtwork = new ItemArtworkViewModel(item, connectionManager, imageManager) { DesiredImageHeight = 700 };

@@ -167,7 +167,7 @@
                                               FalseState="TitleHidden" />
                 </i:Interaction.Behaviors>
 
-                <TextBlock Text="{Binding Title}" Style="{StaticResource TitleTextBlockStyle}" FontSize="60" />
+                <TextBlock Text="{Binding Title}" Style="{StaticResource TitleTextBlockStyle}" Visibility="{Binding DisplayTitle, Converter={StaticResource BooleanToVisibility}}" FontSize="33" />
             </StackPanel>
 
             <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,0,30,0" HorizontalAlignment="Right" >
@@ -188,7 +188,7 @@
                 </controls:ExtendedContentControl.TransitionType>
             </controls:ExtendedContentControl>
 
-            <StackPanel Orientation="Horizontal" Grid.Row="2" Margin="0,0,50,30" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+            <StackPanel Orientation="Horizontal" Grid.Row="2" Margin="0,20,50,30" HorizontalAlignment="Right" VerticalAlignment="Bottom">
                 <controls:ExtendedContentControl  Content="{Binding Notifications}" IsTabStop="False" Visibility="{Binding DisplayNotifications, Converter={StaticResource BooleanToVisibility}}"/>
                 <controls:ExtendedContentControl  Content="{Binding HighPriorityNotifications}" IsTabStop="False" Visibility="{Binding DisplayHighPriorityNotifications, Converter={StaticResource BooleanToVisibility}}"/>
             </StackPanel>

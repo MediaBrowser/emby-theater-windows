@@ -28,7 +28,7 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
             PresentationOptions = new RootPresentationOptions {
                 ShowMediaBrowserLogo = false,
-                Title = item.GetDisplayName(new DisplayNameFormat(true, false))
+                //Title = item.GetDisplayName(new DisplayNameFormat(true, false))
             };
         }
 

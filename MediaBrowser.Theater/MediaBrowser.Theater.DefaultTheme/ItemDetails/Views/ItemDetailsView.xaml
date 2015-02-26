@@ -59,7 +59,7 @@
             </ListBox.ItemContainerStyle>
         </controls:ExtendedListBox>
 
-        <controls:IndexedItemsControl x:Name="Panorama" Margin="0,20,0,0" Grid.Row="1"
+        <controls:IndexedItemsControl x:Name="Panorama" Margin="0,0,0,0" Grid.Row="1"
                                       ItemsSource="{Binding Sections}" 
                                       IndexSelector="{Binding TitleSelector}" FocusVisualStyle="{x:Null}"
                                       VirtualizingPanel.VirtualizationMode="Recycling">

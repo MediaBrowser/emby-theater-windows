@@ -80,29 +80,41 @@ namespace MediaBrowser.Theater.DefaultTheme
         
         public void FocusMainWindow()
         {
-            var rootVm = _mainWindow.DataContext as RootViewModel;
-            if (rootVm != null) {
-                rootVm.IsInFocus = true;
-            }
+            Action action = () => {
+                var rootVm = _mainWindow.DataContext as RootViewModel;
+                if (rootVm != null) {
+                    rootVm.IsInFocus = true;
+                }
+            };
+
+            action.OnUiThread();
         }
 
         private void UnfocusMainWindow()
         {
-            var rootVm = _mainWindow.DataContext as RootViewModel;
-            if (rootVm != null) {
-                rootVm.IsInFocus = false;
-            }
+            Action action = () => {
+                var rootVm = _mainWindow.DataContext as RootViewModel;
+                if (rootVm != null) {
+                    rootVm.IsInFocus = false;
+                }
+            };
+
+            action.OnUiThread();
         }
 
         public async Task SilentlyClosePopup()
         {
-            if (_currentPopup != null) {
-                _currentPopup.Closed -= _refocusMainWindow;
-                _currentPopup.NavigateBackOnClose = false;
+            Func<Task> action = async () => {
+                if (_currentPopup != null) {
+                    _currentPopup.Closed -= _refocusMainWindow;
+                    _currentPopup.NavigateBackOnClose = false;
 
-                await _currentPopup.ClosePopup();
-                FocusMainWindow();
-            }
+                    await _currentPopup.ClosePopup();
+                    FocusMainWindow();
+                }
+            };
+
+            await action.OnUiThreadAsync();
         }
 
         public async Task ShowPopup(IViewModel contents, bool unfocusMainWindow = true, bool navigateBackOnClose = true)
@@ -477,6 +489,7 @@ namespace MediaBrowser.Theater.DefaultTheme
                 Action disposeAction = () => {
                     new WindowInteropHelper(_mainWindow).Owner = IntPtr.Zero;
                     _mainWindow.ShowInTaskbar = true;
+                    _mainWindow.Activate();
                 };
 
                 disposeAction.OnUiThread();
@@ -485,7 +498,12 @@ namespace MediaBrowser.Theater.DefaultTheme
 
         void IWindowManager.FocusMainWindow()
         {
-            _mainWindow.Focus();
+            Action action = () => {
+                if (!_mainWindow.IsKeyboardFocusWithin) {
+                    _mainWindow.Activate();
+                }
+            };
+            action.OnUiThread();
         }
     }
 

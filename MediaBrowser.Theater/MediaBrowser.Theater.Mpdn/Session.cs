@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
+using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.Playback;
 
 namespace MediaBrowser.Theater.Mpdn
@@ -19,6 +20,7 @@ namespace MediaBrowser.Theater.Mpdn
         private readonly RemoteClient _api;
         private readonly ILogger _log;
         private readonly IPlaybackManager _playbackManager;
+        private readonly IWindowManager _windowManager;
         private readonly Subject<PlaybackStatus> _statusEvents;
         private readonly TaskCompletionSource<SessionCompletionAction> _completed;
         private readonly object _lock;
@@ -33,12 +35,13 @@ namespace MediaBrowser.Theater.Mpdn
         private PlaybackStatusType _statusType;
         private SessionCompletionAction? _completionAction;
 
-        public Session(PlayableMedia item, RemoteClient api, CancellationToken cancellationToken, ILogger log, IPlaybackManager playbackManager)
+        public Session(PlayableMedia item, RemoteClient api, CancellationToken cancellationToken, ILogger log, IPlaybackManager playbackManager, IWindowManager windowManager)
         {
             _item = item;
             _api = api;
             _log = log;
             _playbackManager = playbackManager;
+            _windowManager = windowManager;
             _statusEvents = new Subject<PlaybackStatus>();
             _progress = item.Media.Options.StartPositionTicks ?? 0;
             _duration = item.Source.RunTimeTicks ?? 0;
@@ -289,6 +292,8 @@ namespace MediaBrowser.Theater.Mpdn
 
                     _statusType = PlaybackStatusType.Playing;
                     PublishStatus();
+
+                    _windowManager.FocusMainWindow();
                 }
             };
 

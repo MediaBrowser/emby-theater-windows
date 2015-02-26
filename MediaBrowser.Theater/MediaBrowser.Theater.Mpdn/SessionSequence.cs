@@ -7,6 +7,7 @@ using System.Net.Mime;
 using System.Net.Sockets;
 using System.Reactive.Disposables;
 using System.Reactive.Subjects;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using MediaBrowser.Model.Logging;
@@ -100,9 +101,18 @@ namespace MediaBrowser.Theater.Mpdn
 
         private Task<Process> StartMpdn()
         {
+            var directory = Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath);
+
+            var configLocation = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                                              @"MediaPlayerDotNet\Application.AnyCPU.config");
+
+            if (!File.Exists(configLocation)) {
+                File.Copy(Path.Combine(directory ?? "", @"MPDN\Application.AnyCPU.config"), configLocation);
+            }
+            
             return Task.Run(() => {
                 var process = Process.Start(new ProcessStartInfo {
-                    FileName = @"D:\Projects\MPDN\MediaPlayerDotNet.exe"
+                    FileName = Path.Combine(directory ?? "", @"MPDN\MediaPlayerDotNet.exe")
                 });
                 
                 //process.WaitForInputIdle();
@@ -133,7 +143,7 @@ namespace MediaBrowser.Theater.Mpdn
 
                         // create a session for the media
                         PlayableMedia item = GetPlayableMedia(_sequence.Current);
-                        var session = new Session(item, api, _cancellationToken, _log, _playbackManager);
+                        var session = new Session(item, api, _cancellationToken, _log, _playbackManager, _windowManager);
 
                         // forward playback events to our own event observable
                         using (session.Events.Subscribe(status => _status.OnNext(status))) {

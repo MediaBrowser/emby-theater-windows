@@ -48,5 +48,15 @@ namespace MediaBrowser.Theater.MockPlayer
         {
             return Task.FromResult<IPreparedSessions>(new SessionSequence(sequence, cancellationToken, _logManager, _windowManager, _events));
         }
+
+        public Task Startup()
+        {
+            return Task.FromResult(0);
+        }
+
+        public Task Shutdown()
+        {
+            return Task.FromResult(0);
+        }
     }
 }

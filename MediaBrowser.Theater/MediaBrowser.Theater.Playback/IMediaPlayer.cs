@@ -11,5 +11,7 @@ namespace MediaBrowser.Theater.Playback
         bool CanPlay(Media media);
         bool PrefersBackgroundPlayback { get; }
         Task<IPreparedSessions> Prepare(IPlaySequence sequence, CancellationToken cancellationToken);
+        Task Startup();
+        Task Shutdown();
     }
 }

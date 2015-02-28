@@ -12,6 +12,8 @@ namespace MediaBrowser.Theater.Playback
         GlobalPlaybackSettings GlobalSettings { get; }
         IObservable<PlaybackStatus> Events { get; }
         IObservable<IPlaybackSession> Sessions { get; }
+        Task Initialize();
+        Task Shutdown();
         Task<bool> AccessSession(Func<IPlaybackSession, Task> action);
         Task BeginPlayback(int startIndex = 0);
         Task StopPlayback();

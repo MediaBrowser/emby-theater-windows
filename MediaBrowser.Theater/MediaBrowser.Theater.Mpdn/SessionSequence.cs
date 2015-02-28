@@ -24,6 +24,7 @@ namespace MediaBrowser.Theater.Mpdn
 
         private readonly int _id;
         private readonly IPlaySequence _sequence;
+        private readonly RemoteClient _api;
         private readonly CancellationToken _cancellationToken;
         private readonly IWindowManager _windowManager;
         private readonly IEventAggregator _events;
@@ -32,10 +33,11 @@ namespace MediaBrowser.Theater.Mpdn
         private readonly Subject<IPlaybackSession> _sessions;
         private readonly Subject<PlaybackStatus> _status;
         
-        public SessionSequence(IPlaySequence sequence, CancellationToken cancellationToken, IWindowManager windowManager, IEventAggregator events, ILogger log, IPlaybackManager playbackManager)
+        public SessionSequence(IPlaySequence sequence, RemoteClient api, CancellationToken cancellationToken, IWindowManager windowManager, IEventAggregator events, ILogger log, IPlaybackManager playbackManager)
         {
             _id = Interlocked.Increment(ref _counter);
             _sequence = sequence;
+            _api = api;
             _cancellationToken = cancellationToken;
             _windowManager = windowManager;
             _events = events;
@@ -49,29 +51,33 @@ namespace MediaBrowser.Theater.Mpdn
         {
             _log.Debug("Starting session sequence");
 
-            var handshake = Task.Run(() => Handshake());
-            var process = await StartMpdn().ConfigureAwait(false);
+//            var handshake = Task.Run(() => Handshake());
+//            var process = await StartMpdn().ConfigureAwait(false);
+//
+//            // wait for startup confirmation from MBT-MPDN extension
+//            await handshake;
+//            process.WaitForInputIdle();
+//
+//            using (Disposable.Create(() => process.CloseMainWindow()))
+//            using (var api = await RemoteClient.Connect(new IPEndPoint(IPAddress.Loopback, ApiPort)).ConfigureAwait(false))
+//            using (_windowManager.UseBackgroundWindow(process.MainWindowHandle)) {
+//
+//                api.Muted += m => _playbackManager.GlobalSettings.Audio.IsMuted = m;
+//                api.VolumeChanged += v => _playbackManager.GlobalSettings.Audio.Volume = v;
+//                
+//                var window = _windowManager.MainWindowState;
+//                await MoveWindow(api, window).ConfigureAwait(false);
+//
+//                using (_events.Get<MainWindowState>().Subscribe(s => MoveWindow(api, s))) {
+//                    var result = await RunSessions(api).ConfigureAwait(false);
+//                    _log.Debug("Completed sessions");
+//                    return result;
+//                }
+//            }
 
-            // wait for startup confirmation from MBT-MPDN extension
-            await handshake;
-            process.WaitForInputIdle();
-
-            using (Disposable.Create(() => process.CloseMainWindow()))
-            using (var api = await RemoteClient.Connect(new IPEndPoint(IPAddress.Loopback, ApiPort)).ConfigureAwait(false))
-            using (_windowManager.UseBackgroundWindow(process.MainWindowHandle)) {
-
-                api.Muted += m => _playbackManager.GlobalSettings.Audio.IsMuted = m;
-                api.VolumeChanged += v => _playbackManager.GlobalSettings.Audio.Volume = v;
-                
-                var window = _windowManager.MainWindowState;
-                await MoveWindow(api, window).ConfigureAwait(false);
-
-                using (_events.Get<MainWindowState>().Subscribe(s => MoveWindow(api, s))) {
-                    var result = await RunSessions(api).ConfigureAwait(false);
-                    _log.Debug("Completed sessions");
-                    return result;
-                }
-            }
+            var result = await RunSessions(_api).ConfigureAwait(false);
+            _log.Debug("Completed sessions");
+            return result;
         }
 
         private static async Task MoveWindow(RemoteClient api, MainWindowState window)
@@ -112,7 +118,8 @@ namespace MediaBrowser.Theater.Mpdn
             
             return Task.Run(() => {
                 var process = Process.Start(new ProcessStartInfo {
-                    FileName = Path.Combine(directory ?? "", @"MPDN\MediaPlayerDotNet.exe")
+                    FileName = Path.Combine(directory ?? "", @"MPDN\MediaPlayerDotNet.exe"),
+                    UseShellExecute = false
                 });
                 
                 //process.WaitForInputIdle();

@@ -1,5 +1,11 @@
-﻿using System.IO;
+﻿using System;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
+using System.Reactive.Disposables;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using MediaBrowser.Model.Logging;
@@ -11,10 +17,15 @@ namespace MediaBrowser.Theater.Mpdn
 {
     public class MpdnMediaPlayer : IMediaPlayer
     {
+        private const int ApiPort = 6545;
+
         private readonly ILogManager _logManager;
         private readonly IWindowManager _windowManager;
         private readonly IEventAggregator _events;
         private readonly IPlaybackManager _playbackManager;
+
+        private IDisposable _player;
+        private RemoteClient _api;
 
         public int Priority
         {
@@ -47,8 +58,93 @@ namespace MediaBrowser.Theater.Mpdn
 
         public Task<IPreparedSessions> Prepare(IPlaySequence sequence, CancellationToken cancellationToken)
         {
-            var sessions = new SessionSequence(sequence, cancellationToken, _windowManager, _events, _logManager.GetLogger("MPDN"), _playbackManager);
+            var sessions = new SessionSequence(sequence, _api, cancellationToken, _windowManager, _events, _logManager.GetLogger("MPDN"), _playbackManager);
             return Task.FromResult<IPreparedSessions>(sessions);
+        }
+
+        public async Task Startup()
+        {
+            var handshake = Task.Run(() => Handshake());
+            var process = await StartMpdn().ConfigureAwait(false);
+
+            // wait for startup confirmation from MBT-MPDN extension
+            await handshake.ConfigureAwait(false);
+            process.WaitForInputIdle();
+
+            var api = await RemoteClient.Connect(new IPEndPoint(IPAddress.Loopback, ApiPort)).ConfigureAwait(false);
+            api.Muted += m => _playbackManager.GlobalSettings.Audio.IsMuted = m;
+            api.VolumeChanged += v => _playbackManager.GlobalSettings.Audio.Volume = v;
+
+            var background = _windowManager.UseBackgroundWindow(process.MainWindowHandle);
+
+            var window = _windowManager.MainWindowState;
+            await MoveWindow(api, window).ConfigureAwait(false);
+            var windowMove = _events.Get<MainWindowState>().Subscribe(s => MoveWindow(api, s));
+
+            _api = api;
+            _player = Disposable.Create(() => {
+                background.Dispose();
+                windowMove.Dispose();
+                api.Dispose();
+                process.CloseMainWindow();
+            });
+        }
+
+        private static async Task MoveWindow(RemoteClient api, MainWindowState window)
+        {
+            await api.MoveWindow((int)(window.Left * window.DpiScale),
+                                 (int)(window.Top * window.DpiScale),
+                                 (int)(window.Width * window.DpiScale),
+                                 (int)(window.Height * window.DpiScale),
+                                 window.State);
+        }
+
+        private async Task Handshake()
+        {
+            var endPoint = new IPEndPoint(IPAddress.Any, 6546);
+            var serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            serverSocket.Bind(endPoint);
+            serverSocket.Listen(2);
+
+            var clientSocket = serverSocket.Accept();
+            using (var stream = new NetworkStream(clientSocket))
+            using (var writer = new StreamWriter(stream) { AutoFlush = true })
+            using (var reader = new StreamReader(stream)) {
+                await reader.ReadLineAsync().ConfigureAwait(false);
+                await writer.WriteLineAsync("OK").ConfigureAwait(false);
+            }
+        }
+
+        private Task<Process> StartMpdn()
+        {
+            var directory = Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath);
+
+            var configLocation = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                                              @"MediaPlayerDotNet\Application.AnyCPU.config");
+
+            if (!File.Exists(configLocation)) {
+                File.Copy(Path.Combine(directory ?? "", @"MPDN\Application.AnyCPU.config"), configLocation);
+            }
+            
+            return Task.Run(() => {
+                var process = Process.Start(new ProcessStartInfo {
+                    FileName = Path.Combine(directory ?? "", @"MPDN\MediaPlayerDotNet.exe"),
+                    UseShellExecute = false
+                });
+                
+                //process.WaitForInputIdle();
+                return process;
+            });
+        }
+
+        public Task Shutdown()
+        {
+            if (_player != null) {
+                _player.Dispose();
+                _player = null;
+            }
+
+            return Task.FromResult(0);
         }
     }
 }

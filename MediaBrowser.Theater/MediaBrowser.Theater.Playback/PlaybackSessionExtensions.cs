@@ -144,7 +144,7 @@ namespace MediaBrowser.Theater.Playback
             double currentSpeed = session.Status.Speed;
 
             if (currentSpeed > 0) {
-                session.SetPlaybackSpeed(Math.Max(currentSpeed*2, 16));
+                session.SetPlaybackSpeed(Math.Min(currentSpeed*2, 16));
             } else {
                 if (currentSpeed >= -1.5) {
                     session.SetPlaybackSpeed(1);
@@ -159,7 +159,7 @@ namespace MediaBrowser.Theater.Playback
             double currentSpeed = session.Status.Speed;
 
             if (currentSpeed < 0) {
-                session.SetPlaybackSpeed(Math.Max(currentSpeed*2, 16));
+                session.SetPlaybackSpeed(Math.Max(currentSpeed*2, -16));
             } else {
                 if (currentSpeed <= 1.5) {
                     session.SetPlaybackSpeed(-1);

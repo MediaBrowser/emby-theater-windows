@@ -165,7 +165,8 @@ namespace MediaBrowser.Theater
         {
             Theme = Resolve<ITheme>();
             Plugins = LoadPlugins();
-            Resolve<IPlaybackManager>().Players.AddRange(GetExports<IMediaPlayer>());
+            var playbackManager = Resolve<IPlaybackManager>();
+            playbackManager.Players.AddRange(GetExports<IMediaPlayer>());
 
             Navigator = Resolve<INavigator>();
             Presenter = Resolve<IPresenter>();
@@ -173,6 +174,8 @@ namespace MediaBrowser.Theater
             SessionManager = Resolve<ISessionManager>();
 
             Resolve<PlaybackProgressReporter>();
+
+            playbackManager.Initialize();
         }
 
         public void StartEntryPoints()
@@ -225,6 +228,7 @@ namespace MediaBrowser.Theater
 
             if (playbackManager != null) {
                 playbackManager.StopPlayback().Wait();
+                playbackManager.Shutdown().Wait();
             }
         }
 

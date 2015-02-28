@@ -32,6 +32,7 @@ namespace MediaBrowser.Theater.Playback
         
         private volatile bool _isPlaying;
         private volatile IPlaybackSession _latestSession;
+        private volatile IMediaPlayer _activePlayer;
         private CancellationTokenSource _cancel;
 
         public PlaybackManager(IEnumerable<IMediaPlayer> players, ILogManager logManager, INavigator navigator, IConnectionManager connectionManager)
@@ -101,6 +102,33 @@ namespace MediaBrowser.Theater.Playback
             var apiClient = _connectionManager.GetApiClient(item);
             var intros = await apiClient.GetIntrosAsync(item.Id, apiClient.CurrentUserId);
             return intros.Items;
+        }
+
+        public async Task Initialize()
+        {
+            await StartInitialPlayer().ConfigureAwait(false);
+        }
+
+        public async Task Shutdown()
+        {
+            await ShutdownActivePlayer().ConfigureAwait(false);
+        }
+
+        private async Task StartInitialPlayer()
+        {
+            using (await Lock(_playbackStartingLock)) {
+                var initialPlayer = Players.OrderBy(p => p.Priority).FirstOrDefault();
+                if (_activePlayer == null && initialPlayer != null) {
+                    await ChangePlayer(initialPlayer);
+                }
+            }
+        }
+
+        private async Task ShutdownActivePlayer()
+        {
+            using (await Lock(_playbackStartingLock)) {
+                await ChangePlayer(null);
+            }
         }
 
         public async Task<bool> AccessSession(Func<IPlaybackSession, Task> action)
@@ -195,6 +223,10 @@ namespace MediaBrowser.Theater.Playback
                         await _navigator.Navigate(Go.To.FullScreenPlayback()).ConfigureAwait(false);
                     }
 
+                    if (_activePlayer != player) {
+                        await ChangePlayer(player).ConfigureAwait(false);
+                    }
+
                     var subSequence = new PlayableFilteredPlaySequence(sequence, player, media);
 
                     if (cancellationToken.IsCancellationRequested) {
@@ -212,6 +244,19 @@ namespace MediaBrowser.Theater.Playback
                     }
                 }
             });
+        }
+
+        private async Task ChangePlayer(IMediaPlayer player)
+        {
+            if (_activePlayer != null) {
+                await _activePlayer.Shutdown().ConfigureAwait(false);
+            }
+            
+            _activePlayer = player;
+
+            if (_activePlayer != null) {
+                await player.Startup().ConfigureAwait(false);
+            }
         }
 
         private IDisposable SubscribeToSessions(IObservable<IPlaybackSession> sessions)

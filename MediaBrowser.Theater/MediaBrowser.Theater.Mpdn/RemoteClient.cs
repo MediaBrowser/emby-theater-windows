@@ -12,8 +12,9 @@ namespace MediaBrowser.Theater.Mpdn
 {
     public class RemoteClient : IDisposable
     {
+        public const string Guid = "0A235600-68B5-4C75-B73B-C2D5C463945D";
+
         private readonly Socket _socket;
-        private readonly string _guid;
 
         private StreamWriter _writer;
         private bool _running;
@@ -21,7 +22,6 @@ namespace MediaBrowser.Theater.Mpdn
         public RemoteClient()
         {
             _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            _guid = Guid.NewGuid().ToString();
             _running = true;
         }
 
@@ -45,7 +45,7 @@ namespace MediaBrowser.Theater.Mpdn
 
                 using (var reader = new StreamReader(stream))
                 using (_writer = new StreamWriter(stream) { AutoFlush = true }) {
-                    await _writer.WriteLineAsync(_guid);
+                    await _writer.WriteLineAsync(Guid);
 
                     while (_running) {
                         var data = await reader.ReadLineAsync();
@@ -123,7 +123,7 @@ namespace MediaBrowser.Theater.Mpdn
                     break;
             }
 
-            return Write(string.Format("MoveWindow|{0}|{1}|{2}|{3}|{4}", left, top, width, height, stateString));
+            return Write(string.Format("MoveWindow|{0}>>{1}>>{2}>>{3}>>{4}", left, top, width, height, stateString));
         }
 
         private Task Write(string line)

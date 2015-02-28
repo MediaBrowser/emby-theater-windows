@@ -58,7 +58,7 @@ namespace MediaBrowser.Theater.Mpdn
 
         public Task<IPreparedSessions> Prepare(IPlaySequence sequence, CancellationToken cancellationToken)
         {
-            var sessions = new SessionSequence(sequence, _api, cancellationToken, _windowManager, _events, _logManager.GetLogger("MPDN"), _playbackManager);
+            var sessions = new SessionSequence(sequence, _api, cancellationToken, _windowManager, _logManager.GetLogger("MPDN"), _playbackManager);
             return Task.FromResult<IPreparedSessions>(sessions);
         }
 
@@ -119,13 +119,18 @@ namespace MediaBrowser.Theater.Mpdn
         {
             var directory = Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath);
 
-            var configLocation = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                                              @"MediaPlayerDotNet\Application.AnyCPU.config");
+            var configDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                                              @"MediaPlayerDotNet");
 
-            if (!File.Exists(configLocation)) {
-                File.Copy(Path.Combine(directory ?? "", @"MPDN\Application.AnyCPU.config"), configLocation);
+            if (!Directory.Exists(configDirectory)) {
+                Directory.CreateDirectory(configDirectory);
             }
+
+            var configLocation = Path.Combine(configDirectory, "Application.AnyCPU.config");
             
+            File.Copy(Path.Combine(directory ?? "", @"MPDN\Application.AnyCPU.config"), configLocation, true);
+            EnsureRemoteClientAuthentication();
+
             return Task.Run(() => {
                 var process = Process.Start(new ProcessStartInfo {
                     FileName = Path.Combine(directory ?? "", @"MPDN\MediaPlayerDotNet.exe"),
@@ -135,6 +140,28 @@ namespace MediaBrowser.Theater.Mpdn
                 //process.WaitForInputIdle();
                 return process;
             });
+        }
+
+        private void EnsureRemoteClientAuthentication()
+        {
+            var directory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                                              @"MediaPlayerDotNet\RemoteControl");
+
+            if (!Directory.Exists(directory)) {
+                Directory.CreateDirectory(directory);
+            }
+
+            var configLocation = Path.Combine(directory, "accessGUID.conf");
+
+            var guidExistsInFile = File.Exists(configLocation) && File.ReadAllLines(configLocation)
+                                                                      .Any(guid => string.Equals(guid.Trim(), RemoteClient.Guid, StringComparison.InvariantCulture));
+            
+            if (!guidExistsInFile) {
+                using (var file = File.Open(configLocation, FileMode.Append))
+                using (var writer = new StreamWriter(file)) {
+                    writer.WriteLine(RemoteClient.Guid);
+                }
+            }
         }
 
         public Task Shutdown()

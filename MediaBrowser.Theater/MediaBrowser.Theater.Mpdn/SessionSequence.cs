@@ -19,7 +19,6 @@ namespace MediaBrowser.Theater.Mpdn
 {
     public class SessionSequence : IPreparedSessions
     {
-        private const int ApiPort = 6545;
         private static int _counter = 0;
 
         private readonly int _id;
@@ -27,20 +26,18 @@ namespace MediaBrowser.Theater.Mpdn
         private readonly RemoteClient _api;
         private readonly CancellationToken _cancellationToken;
         private readonly IWindowManager _windowManager;
-        private readonly IEventAggregator _events;
         private readonly ILogger _log;
         private readonly IPlaybackManager _playbackManager;
         private readonly Subject<IPlaybackSession> _sessions;
         private readonly Subject<PlaybackStatus> _status;
         
-        public SessionSequence(IPlaySequence sequence, RemoteClient api, CancellationToken cancellationToken, IWindowManager windowManager, IEventAggregator events, ILogger log, IPlaybackManager playbackManager)
+        public SessionSequence(IPlaySequence sequence, RemoteClient api, CancellationToken cancellationToken, IWindowManager windowManager, ILogger log, IPlaybackManager playbackManager)
         {
             _id = Interlocked.Increment(ref _counter);
             _sequence = sequence;
             _api = api;
             _cancellationToken = cancellationToken;
             _windowManager = windowManager;
-            _events = events;
             _log = log;
             _playbackManager = playbackManager;
             _sessions = new Subject<IPlaybackSession>();
@@ -51,80 +48,10 @@ namespace MediaBrowser.Theater.Mpdn
         {
             _log.Debug("Starting session sequence");
 
-//            var handshake = Task.Run(() => Handshake());
-//            var process = await StartMpdn().ConfigureAwait(false);
-//
-//            // wait for startup confirmation from MBT-MPDN extension
-//            await handshake;
-//            process.WaitForInputIdle();
-//
-//            using (Disposable.Create(() => process.CloseMainWindow()))
-//            using (var api = await RemoteClient.Connect(new IPEndPoint(IPAddress.Loopback, ApiPort)).ConfigureAwait(false))
-//            using (_windowManager.UseBackgroundWindow(process.MainWindowHandle)) {
-//
-//                api.Muted += m => _playbackManager.GlobalSettings.Audio.IsMuted = m;
-//                api.VolumeChanged += v => _playbackManager.GlobalSettings.Audio.Volume = v;
-//                
-//                var window = _windowManager.MainWindowState;
-//                await MoveWindow(api, window).ConfigureAwait(false);
-//
-//                using (_events.Get<MainWindowState>().Subscribe(s => MoveWindow(api, s))) {
-//                    var result = await RunSessions(api).ConfigureAwait(false);
-//                    _log.Debug("Completed sessions");
-//                    return result;
-//                }
-//            }
-
             var result = await RunSessions(_api).ConfigureAwait(false);
             _log.Debug("Completed sessions");
+
             return result;
-        }
-
-        private static async Task MoveWindow(RemoteClient api, MainWindowState window)
-        {
-            await api.MoveWindow((int) (window.Left*window.DpiScale),
-                                 (int) (window.Top*window.DpiScale),
-                                 (int) (window.Width*window.DpiScale),
-                                 (int) (window.Height*window.DpiScale),
-                                 window.State);
-        }
-
-        private async Task Handshake()
-        {
-            var endPoint = new IPEndPoint(IPAddress.Any, 6546);
-            var serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            serverSocket.Bind(endPoint);
-            serverSocket.Listen(2);
-
-            var clientSocket = serverSocket.Accept();
-            using (var stream = new NetworkStream(clientSocket))
-            using (var writer = new StreamWriter(stream) { AutoFlush = true })
-            using (var reader = new StreamReader(stream)) {
-                await reader.ReadLineAsync().ConfigureAwait(false);
-                await writer.WriteLineAsync("OK").ConfigureAwait(false);
-            }
-        }
-
-        private Task<Process> StartMpdn()
-        {
-            var directory = Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath);
-
-            var configLocation = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                                              @"MediaPlayerDotNet\Application.AnyCPU.config");
-
-            if (!File.Exists(configLocation)) {
-                File.Copy(Path.Combine(directory ?? "", @"MPDN\Application.AnyCPU.config"), configLocation);
-            }
-            
-            return Task.Run(() => {
-                var process = Process.Start(new ProcessStartInfo {
-                    FileName = Path.Combine(directory ?? "", @"MPDN\MediaPlayerDotNet.exe"),
-                    UseShellExecute = false
-                });
-                
-                //process.WaitForInputIdle();
-                return process;
-            });
         }
 
         private Task<SessionCompletion> RunSessions(RemoteClient api)

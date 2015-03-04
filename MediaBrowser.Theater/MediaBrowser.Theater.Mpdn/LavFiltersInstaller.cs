@@ -2,10 +2,10 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ICSharpCode.SharpZipLib.Zip;
 using MediaBrowser.Common.Net;
+using MediaBrowser.Theater.Api.System;
 using Microsoft.Win32;
 using Octokit;
 
@@ -13,15 +13,15 @@ namespace MediaBrowser.Theater.Mpdn
 {
     public class LavFiltersInstaller
     {
-        private static readonly Regex VersionRegex = new Regex(@"^(?<major>\d+)\.(?<minor>\d+)(\.(?<build>\d+))?.*$");
+//        private static readonly Regex VersionRegex = new Regex(@"^(?<major>\d+)\.(?<minor>\d+)(\.(?<build>\d+))?.*$");
         private const string Clsid = "{171252A0-8820-4AFE-9DF8-5C92B2D66B04}";
         private const string CodecsRegistryKey = @"HKEY_LOCAL_MACHINE\SOFTWARE\Classes\Wow6432Node\CLSID\{083863F1-70DE-11D0-BD40-00A0C911CE86}\Instance\";
 
         private async Task<Release> GetLatestRelease()
         {
-            var github = new GitHubClient(new ProductHeaderValue("Media Browser Theater"));
+            var github = new GitHubClient(new ProductHeaderValue("MediaBrowserTheater"));
             var releases = await github.Release.GetAll("Nevcairiel", "LAVFilters").ConfigureAwait(false);
-            var versionedReleases = releases.Select(r => new { Version = ParseVersion(r.TagName), Release = r }).ToList();
+            var versionedReleases = releases.Select(r => new { Version = IgnoreTime(r.CreatedAt), Release = r }).ToList();
             var latest = versionedReleases
                 .Where(r => r.Version != null)
                 .OrderByDescending(r => r.Version)
@@ -32,24 +32,11 @@ namespace MediaBrowser.Theater.Mpdn
             }
 
             var assets = await github.Release.GetAssets("Nevcairiel", "LAVFilters", latest.Release.Id).ConfigureAwait(false);
-            var installer = assets.FirstOrDefault(a => a.ContentType == "application/x-msdownload");
-            var zip = assets.FirstOrDefault(a => a.Name.Contains("x86") && a.ContentType == "application/x-zip-compressed");
+            var installer = assets.Where(a => a.ContentType == "application/x-msdownload").Select(a => a.BrowserDownloadUrl).FirstOrDefault();
+            var x86Zip = assets.Where(a => a.Name.Contains("x86") && a.ContentType == "application/x-zip-compressed").Select(a => a.BrowserDownloadUrl).FirstOrDefault();
+            var x64Zip = assets.Where(a => a.Name.Contains("x64") && a.ContentType == "application/x-zip-compressed").Select(a => a.BrowserDownloadUrl).FirstOrDefault();
 
-            return new Release(latest.Version,
-                               installer != null ? installer.BrowserDownloadUrl : null,
-                               zip != null ? zip.BrowserDownloadUrl : null);
-        }
-
-        private Version ParseVersion(string tagName)
-        {
-            var match = VersionRegex.Match(tagName);
-            if (match.Success) {
-                return new Version(int.Parse(match.Groups["major"].Value),
-                                   int.Parse(match.Groups["minor"].Value),
-                                   match.Groups["build"].Success ? int.Parse(match.Groups["build"].Value) : 0);
-            }
-
-            return null;
+            return new Release(latest.Version, installer, x86Zip, x64Zip);
         }
 
         private Install GetCurrentInstall()
@@ -59,8 +46,31 @@ namespace MediaBrowser.Theater.Mpdn
             }
 
             var path = GetInstalledPath();
+            if (string.IsNullOrEmpty(path)) {
+                return null;
+            }
 
-            return null;
+            string x86, x64;
+            SearchForBinaryPaths(Directory.GetParent(path).FullName, out x86, out x64);
+            var date = FindSplitterFileDate(x86 ?? x64);
+
+            return new Install(date, x86, x64);
+        }
+
+        private DateTimeOffset FindSplitterFileDate(string path)
+        {
+            var file = Directory.GetFiles(path, "LAVSplitter.ax", SearchOption.AllDirectories).First();
+            var created = File.GetCreationTimeUtc(file);
+            var modified = File.GetLastWriteTimeUtc(file);
+
+            var oldest = created < modified ? created : modified;
+            return  IgnoreTime(oldest);
+        }
+
+        private DateTimeOffset IgnoreTime(DateTimeOffset date)
+        {
+            date = date.ToUniversalTime();
+            return new DateTimeOffset(date.Year, date.Month, date.Day, 0, 0, 0, date.Offset);
         }
 
         private static string GetInstalledPath()
@@ -72,12 +82,22 @@ namespace MediaBrowser.Theater.Mpdn
 
         private static string GetRegistryLocation()
         {
-            var path = Registry.GetValue(string.Format(@"HKEY_LOCAL_MACHINE\CLSID\{0}\InprocServer32", Clsid), null, null) as string;
+            var path = Registry.GetValue(string.Format(@"HKEY_CLASSES_ROOT\CLSID\{0}\InprocServer32", Clsid), null, null) as string;
             if (path != null) {
                 return Path.GetDirectoryName(path);
             }
 
             return null;
+        }
+
+        private void SearchForBinaryPaths(string root, out string x86, out string x64)
+        {
+            var directories = Directory.GetFiles(root, "LAVSplitter.ax", SearchOption.AllDirectories)
+                                       .Select(Path.GetDirectoryName)
+                                       .ToList();
+
+            x64 = directories.FirstOrDefault(path => path.Substring(root.Length).Contains("64"));
+            x86 = directories.FirstOrDefault(path => path.Substring(root.Length).Contains("86")) ?? directories.First();
         }
 
         private static string FindProgramFiles(string path)
@@ -114,29 +134,41 @@ namespace MediaBrowser.Theater.Mpdn
 
         public async Task InstallOrUpdate(IProgress<double> progress, IHttpClient httpClient)
         {
-            var latestRelease = await GetLatestRelease().ConfigureAwait(false);
-            var currentInstall = GetCurrentInstall();
-
-            if (latestRelease == null) {
-                return;
+            if (!UacHelper.IsProcessElevated) {
+                throw new InvalidOperationException("LAV Filters installation or updates requires elevated privileges.");
             }
 
-            if (currentInstall == null) {
-                await latestRelease.NewInstall(progress, httpClient).ConfigureAwait(false);
+            try {
+                progress.Report(0);
+
+                var latestRelease = await GetLatestRelease().ConfigureAwait(false);
+                var currentInstall = GetCurrentInstall();
+
+                if (latestRelease == null) {
+                    return;
+                }
+
+                progress.Report(0.25);
+
+                if (currentInstall == null) {
+                    await latestRelease.NewInstall(progress.Slice(0.25, 1), httpClient).ConfigureAwait(false);
+                } else if (currentInstall.Version < latestRelease.Version) {
+                    await latestRelease.Update(progress.Slice(0.25, 1), httpClient, currentInstall.X86Location, currentInstall.X64Location).ConfigureAwait(false);
+                }
             }
-            else if (currentInstall.Version < latestRelease.Version) {
-                await latestRelease.Update(progress, httpClient, currentInstall.X86Location, currentInstall.X64Location).ConfigureAwait(false);
+            finally {
+                progress.Report(1);
             }
         }
         
         private class Release
         {
-            private readonly Version _version;
+            private readonly DateTimeOffset _version;
             private readonly string _installerUrl;
             private readonly string _zipUrlx86;
             private readonly string _zipUrlx64;
 
-            public Release(Version version, string installerUrl, string zipUrlx86, string zipUrlx64)
+            public Release(DateTimeOffset version, string installerUrl, string zipUrlx86, string zipUrlx64)
             {
                 _version = version;
                 _installerUrl = installerUrl;
@@ -144,7 +176,7 @@ namespace MediaBrowser.Theater.Mpdn
                 _zipUrlx64 = zipUrlx64;
             }
 
-            public Version Version
+            public DateTimeOffset Version
             {
                 get { return _version; }
             }
@@ -155,7 +187,7 @@ namespace MediaBrowser.Theater.Mpdn
 
                 string tempFile = await httpClient.GetTempFile(new HttpRequestOptions {
                     Url = _installerUrl,
-                    Progress = progress
+                    Progress = progress.Slice(0, 0.75),
                 }).ConfigureAwait(false);
 
                 string exePath = Path.ChangeExtension(tempFile, ".exe");
@@ -164,8 +196,7 @@ namespace MediaBrowser.Theater.Mpdn
                 try {
                     using (Process process = Process.Start(new ProcessStartInfo {
                         FileName = exePath,
-                        Arguments = "/VERYSILENT",
-                        UseShellExecute = false
+                        Arguments = "/VERYSILENT"
                     })) {
                         process.WaitForExit();
                     }
@@ -176,6 +207,8 @@ namespace MediaBrowser.Theater.Mpdn
                         //_logger.ErrorException("Error deleting {0}", ex, exePath);
                     }
                 }
+
+                progress.Report(1);
             }
 
             public async Task Update(IProgress<double> progress, IHttpClient httpClient, string x86Directory, string x64Directory)
@@ -190,11 +223,11 @@ namespace MediaBrowser.Theater.Mpdn
 
                 // unzip x86 and x64 versions of LAV Filters into their installed locations
                 if (x86Directory != null && Directory.Exists(x86Directory)) {
-                    await Extract(_zipUrlx86, x86Directory, progress, httpClient).ConfigureAwait(false);
+                    await Extract(_zipUrlx86, x86Directory, progress.Slice(0, 0.5), httpClient).ConfigureAwait(false);
                 }
 
                 if (x64Directory != null && Directory.Exists(x64Directory)) {
-                    await Extract(_zipUrlx64, x64Directory, progress, httpClient).ConfigureAwait(false);
+                    await Extract(_zipUrlx64, x64Directory, progress.Slice(0.5, 1), httpClient).ConfigureAwait(false);
                 }
             }
 
@@ -202,7 +235,7 @@ namespace MediaBrowser.Theater.Mpdn
             {
                 string tempFile = await httpClient.GetTempFile(new HttpRequestOptions {
                     Url = zipUrl,
-                    Progress = progress
+                    Progress = progress.Slice(0, 0.5)
                 }).ConfigureAwait(false);
 
                 string zipPath = Path.ChangeExtension(tempFile, ".zip");
@@ -220,6 +253,8 @@ namespace MediaBrowser.Theater.Mpdn
                         // todo log
                     }
                 }
+
+                progress.Report(1);
             }
         }
 
@@ -227,9 +262,9 @@ namespace MediaBrowser.Theater.Mpdn
         {
             private readonly string _x86Location;
             private readonly string _x64Location;
-            private readonly Version _version;
+            private readonly DateTimeOffset _version;
 
-            public Install(string x86Location, Version version, string x64Location)
+            public Install(DateTimeOffset version, string x86Location, string x64Location)
             {
                 _x86Location = x86Location;
                 _version = version;
@@ -241,7 +276,7 @@ namespace MediaBrowser.Theater.Mpdn
                 get { return _x86Location; }
             }
 
-            public Version Version
+            public DateTimeOffset Version
             {
                 get { return _version; }
             }

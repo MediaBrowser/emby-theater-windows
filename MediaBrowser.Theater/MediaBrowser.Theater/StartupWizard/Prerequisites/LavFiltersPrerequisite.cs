@@ -30,7 +30,11 @@ namespace MediaBrowser.Theater.StartupWizard.Prerequisites
 
         public override async Task Install(IProgress<double> progress, CancellationToken cancellationToken)
         {
-            await _installer.InstallOrUpdate(progress, _httpClient).ConfigureAwait(false);
+            var update = await _installer.FindUpdate().ConfigureAwait(false);
+            if (update.Type != UpdateType.Unavailable) {
+                await update.Install(progress, _httpClient).ConfigureAwait(false);
+            }
+
             await base.Install(progress, cancellationToken).ConfigureAwait(false);
         }
     }

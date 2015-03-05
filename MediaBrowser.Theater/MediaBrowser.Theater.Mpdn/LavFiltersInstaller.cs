@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ICSharpCode.SharpZipLib.Zip;
 using MediaBrowser.Common.Net;
@@ -12,11 +13,26 @@ using Octokit;
 
 namespace MediaBrowser.Theater.Mpdn
 {
+    public interface IUpdate
+    {
+        Version Version { get; }
+        UpdateType Type { get; }
+        Task Install(IProgress<double> progress, IHttpClient httpClient);
+    }
+
+    public enum UpdateType
+    {
+        NewInstall,
+        NewRelease,
+        UpToDate,
+        Unavailable
+    }
+
     public class LavFiltersInstaller
     {
-//        private static readonly Regex VersionRegex = new Regex(@"^(?<major>\d+)\.(?<minor>\d+)(\.(?<build>\d+))?.*$");
         private const string Clsid = "{171252A0-8820-4AFE-9DF8-5C92B2D66B04}";
         private const string CodecsRegistryKey = @"HKEY_LOCAL_MACHINE\SOFTWARE\Classes\Wow6432Node\CLSID\{083863F1-70DE-11D0-BD40-00A0C911CE86}\Instance\";
+        private static readonly Regex VersionRegex = new Regex(@"^(?<major>\d+)\.(?<minor>\d+)(\.(?<build>\d+))?.*$");
 
         public bool IsInstalled
         {
@@ -32,10 +48,10 @@ namespace MediaBrowser.Theater.Mpdn
         {
             var github = new GitHubClient(new ProductHeaderValue("MediaBrowserTheater"));
             IReadOnlyList<Octokit.Release> releases = await github.Release.GetAll("Nevcairiel", "LAVFilters").ConfigureAwait(false);
-            var versionedReleases = releases.Select(r => new { Version = IgnoreTime(r.CreatedAt), Release = r }).ToList();
+            var versionedReleases = releases.Select(r => new { Version = ParseVersion(r.TagName), ReleaseDate = IgnoreTime(r.CreatedAt), Release = r }).ToList();
             var latest = versionedReleases
-                .Where(r => r.Version != null)
-                .OrderByDescending(r => r.Version)
+                .Where(r => r.ReleaseDate != null)
+                .OrderByDescending(r => r.ReleaseDate)
                 .FirstOrDefault();
 
             if (latest == null) {
@@ -47,10 +63,22 @@ namespace MediaBrowser.Theater.Mpdn
             string x86Zip = assets.Where(a => a.Name.Contains("x86") && a.ContentType == "application/x-zip-compressed").Select(a => a.BrowserDownloadUrl).FirstOrDefault();
             string x64Zip = assets.Where(a => a.Name.Contains("x64") && a.ContentType == "application/x-zip-compressed").Select(a => a.BrowserDownloadUrl).FirstOrDefault();
 
-            return new Release(latest.Version, installer, x86Zip, x64Zip);
+            return new Release(latest.Version, latest.ReleaseDate, installer, x86Zip, x64Zip);
         }
 
-        private Install GetCurrentInstall()
+        private Version ParseVersion(string tagName)
+        {
+            Match match = VersionRegex.Match(tagName);
+            if (match.Success) {
+                return new Version(int.Parse(match.Groups["major"].Value),
+                                   int.Parse(match.Groups["minor"].Value),
+                                   match.Groups["build"].Success ? int.Parse(match.Groups["build"].Value) : 0);
+            }
+
+            return null;
+        }
+
+        private ExistingInstall GetCurrentInstall()
         {
             if (!IsLavSplitterInstalled() || !IsLavAudioInstalled() || !IsLavVideoInstalled()) {
                 return null;
@@ -65,7 +93,7 @@ namespace MediaBrowser.Theater.Mpdn
             SearchForBinaryPaths(Directory.GetParent(path).FullName, out x86, out x64);
             DateTimeOffset date = FindSplitterFileDate(x86 ?? x64);
 
-            return new Install(date, x86, x64);
+            return new ExistingInstall(date, x86, x64);
         }
 
         private DateTimeOffset FindSplitterFileDate(string path)
@@ -143,45 +171,32 @@ namespace MediaBrowser.Theater.Mpdn
             return id != null;
         }
 
-        public async Task InstallOrUpdate(IProgress<double> progress, IHttpClient httpClient)
+        public async Task<IUpdate> FindUpdate()
         {
             if (!UacHelper.IsProcessElevated) {
                 throw new InvalidOperationException("LAV Filters installation or updates requires elevated privileges.");
             }
 
-            try {
-                progress.Report(0);
+            Release latestRelease = await GetLatestRelease().ConfigureAwait(false);
+            ExistingInstall currentInstall = GetCurrentInstall();
 
-                Release latestRelease = await GetLatestRelease().ConfigureAwait(false);
-                Install currentInstall = GetCurrentInstall();
-
-                if (latestRelease == null) {
-                    return;
-                }
-
-                progress.Report(0.25);
-
-                if (currentInstall == null) {
-                    await latestRelease.NewInstall(progress.Slice(0.25, 1), httpClient).ConfigureAwait(false);
-                } else if (currentInstall.Version < latestRelease.Version) {
-                    await latestRelease.Update(progress.Slice(0.25, 1), httpClient, currentInstall.X86Location, currentInstall.X64Location).ConfigureAwait(false);
-                }
+            if (latestRelease == null) {
+                return Update.Unavailable;
             }
-            finally {
-                progress.Report(1);
-            }
+
+            return new Update(currentInstall, latestRelease);
         }
 
-        private class Install
+        private class ExistingInstall
         {
-            private readonly DateTimeOffset _version;
+            private readonly DateTimeOffset _releaseDate;
             private readonly string _x64Location;
             private readonly string _x86Location;
 
-            public Install(DateTimeOffset version, string x86Location, string x64Location)
+            public ExistingInstall(DateTimeOffset releaseDate, string x86Location, string x64Location)
             {
                 _x86Location = x86Location;
-                _version = version;
+                _releaseDate = releaseDate;
                 _x64Location = x64Location;
             }
 
@@ -190,9 +205,9 @@ namespace MediaBrowser.Theater.Mpdn
                 get { return _x86Location; }
             }
 
-            public DateTimeOffset Version
+            public DateTimeOffset ReleaseDate
             {
-                get { return _version; }
+                get { return _releaseDate; }
             }
 
             public string X64Location
@@ -204,21 +219,28 @@ namespace MediaBrowser.Theater.Mpdn
         private class Release
         {
             private readonly string _installerUrl;
-            private readonly DateTimeOffset _version;
+            private readonly DateTimeOffset _releaseDate;
+            private readonly Version _version;
             private readonly string _zipUrlx64;
             private readonly string _zipUrlx86;
 
-            public Release(DateTimeOffset version, string installerUrl, string zipUrlx86, string zipUrlx64)
+            public Release(Version version, DateTimeOffset releaseDate, string installerUrl, string zipUrlx86, string zipUrlx64)
             {
                 _version = version;
+                _releaseDate = releaseDate;
                 _installerUrl = installerUrl;
                 _zipUrlx86 = zipUrlx86;
                 _zipUrlx64 = zipUrlx64;
             }
 
-            public DateTimeOffset Version
+            public Version Version
             {
                 get { return _version; }
+            }
+
+            public DateTimeOffset ReleaseDate
+            {
+                get { return _releaseDate; }
             }
 
             public async Task NewInstall(IProgress<double> progress, IHttpClient httpClient)
@@ -238,7 +260,9 @@ namespace MediaBrowser.Theater.Mpdn
                         FileName = exePath,
                         Arguments = "/VERYSILENT"
                     })) {
-                        process.WaitForExit();
+                        if (process != null) {
+                            process.WaitForExit();
+                        }
                     }
                 }
                 finally {
@@ -253,7 +277,7 @@ namespace MediaBrowser.Theater.Mpdn
                 progress.Report(1);
             }
 
-            public async Task Update(IProgress<double> progress, IHttpClient httpClient, string x86Directory, string x64Directory)
+            public async Task InstallUpdate(IProgress<double> progress, IHttpClient httpClient, string x86Directory, string x64Directory)
             {
                 string defaultInstallLocation = FindProgramFiles(@"LAV Filters");
                 string dir = x86Directory ?? x64Directory;
@@ -297,6 +321,61 @@ namespace MediaBrowser.Theater.Mpdn
                 }
 
                 progress.Report(1);
+            }
+        }
+
+        private class Update : IUpdate
+        {
+            private readonly ExistingInstall _installed;
+            private readonly Release _newRelease;
+
+            public static readonly Update Unavailable = new Update();
+
+            private Update()
+            {
+            }
+            
+            public Update(ExistingInstall installed, Release newRelease)
+            {
+                _installed = installed;
+                _newRelease = newRelease;
+            }
+
+            public Version Version
+            {
+                get { return _newRelease != null ? _newRelease.Version : new Version(0, 0, 0); }
+            }
+
+            public UpdateType Type
+            {
+                get
+                {
+                    if (_newRelease == null) {
+                        return UpdateType.Unavailable;
+                    }
+
+                    if (_installed == null) {
+                        return UpdateType.NewInstall;
+                    }
+
+                    return (_installed.ReleaseDate < _newRelease.ReleaseDate) ? UpdateType.NewRelease : UpdateType.UpToDate;
+                }
+            }
+
+            public async Task Install(IProgress<double> progress, IHttpClient httpClient)
+            {
+                switch (Type) {
+                    case UpdateType.NewInstall:
+                        await _newRelease.NewInstall(progress, httpClient).ConfigureAwait(false);
+                        break;
+                    case UpdateType.NewRelease:
+                        await _newRelease.InstallUpdate(progress, httpClient, _installed.X86Location, _installed.X64Location).ConfigureAwait(false);
+                        break;
+                    case UpdateType.UpToDate:
+                    case UpdateType.Unavailable:
+                        progress.Report(1);
+                        break;
+                }
             }
         }
     }

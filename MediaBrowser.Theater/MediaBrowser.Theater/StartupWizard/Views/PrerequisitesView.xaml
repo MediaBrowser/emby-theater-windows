@@ -36,11 +36,12 @@
                         <Grid Grid.Column="1" Visibility="{Binding IsRequired, Converter={StaticResource BooleanToVisibility}}">
                             <TextBlock Visibility="{Binding IsInstalled, Converter={StaticResource BooleanToVisibility}}" Foreground="#27a436" Text="{lex:Loc SetupWizard_Prerequisites_AlreadyInstalled}"/>
                             <TextBlock Visibility="{Binding IsNotInstalled, Converter={StaticResource BooleanToVisibility}}" Text="{lex:Loc SetupWizard_Prerequisites_Install}"/>
+                            <TextBlock Visibility="{Binding IsUpdateAvailable, Converter={StaticResource BooleanToVisibility}}" Text="{lex:Loc SetupWizard_Prerequisites_InstallUpdate}"/>
                         </Grid>
 
                         <Grid Grid.Column="1" Visibility="{Binding IsOptional, Converter={StaticResource BooleanToVisibility}}">
-                                <TextBlock Visibility="{Binding IsInstalled, Converter={StaticResource BooleanToVisibility}}" Foreground="#27a436" Text="{lex:Loc SetupWizard_Prerequisites_AlreadyInstalled}"/>
-                            <ComboBox Visibility="{Binding IsNotInstalled, Converter={StaticResource BooleanToVisibility}}" ItemsSource="{Binding InstallActions}" SelectedItem="{Binding InstallAction}">
+                            <TextBlock Visibility="{Binding IsInstalled, Converter={StaticResource BooleanToVisibility}}" Foreground="#27a436" Text="{lex:Loc SetupWizard_Prerequisites_AlreadyInstalled}"/>
+                            <ComboBox Visibility="{Binding IsInstallAvailable, Converter={StaticResource BooleanToVisibility}}" ItemsSource="{Binding InstallActions}" SelectedItem="{Binding InstallAction}">
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate DataType="{x:Type viewModels:InstallAction}">
                                         <Grid>

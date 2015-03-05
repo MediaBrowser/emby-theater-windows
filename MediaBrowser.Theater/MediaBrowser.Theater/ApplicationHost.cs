@@ -43,6 +43,8 @@ using MediaBrowser.Theater.MockPlayer;
 using MediaBrowser.Theater.Mpdn;
 using MediaBrowser.Theater.Networking;
 using MediaBrowser.Theater.Playback;
+using MediaBrowser.Theater.StartupWizard;
+using MediaBrowser.Theater.StartupWizard.ViewModels;
 using Application = System.Windows.Application;
 
 namespace MediaBrowser.Theater
@@ -70,6 +72,7 @@ namespace MediaBrowser.Theater
         public IPresenter Presenter { get; private set; }
         public IUserInputManager UserInputManager { get; private set; }
         public ISessionManager SessionManager { get; private set; }
+        public IPlaybackManager PlaybackManager { get; private set; }
 
         public override bool CanSelfRestart
         {
@@ -165,8 +168,8 @@ namespace MediaBrowser.Theater
         {
             Theme = Resolve<ITheme>();
             Plugins = LoadPlugins();
-            var playbackManager = Resolve<IPlaybackManager>();
-            playbackManager.Players.AddRange(GetExports<IMediaPlayer>());
+            PlaybackManager = Resolve<IPlaybackManager>();
+            PlaybackManager.Players.AddRange(GetExports<IMediaPlayer>());
 
             Navigator = Resolve<INavigator>();
             Presenter = Resolve<IPresenter>();
@@ -174,8 +177,6 @@ namespace MediaBrowser.Theater
             SessionManager = Resolve<ISessionManager>();
 
             Resolve<PlaybackProgressReporter>();
-
-            playbackManager.Initialize();
         }
 
         public void StartEntryPoints()
@@ -223,6 +224,7 @@ namespace MediaBrowser.Theater
         public void RunUserInterface()
         {
             var playbackManager = TryResolve<IPlaybackManager>();
+            playbackManager.Initialize();
 
             Theme.Run();
 
@@ -412,7 +414,7 @@ namespace MediaBrowser.Theater
             // With the idea of multiple servers there's no point in making server version a part of this
             var serverVersion = new Version(10, 0, 0, 0);
 
-            var version = InstallationManager.GetLatestCompatibleVersion(availablePackages, Program.PackageName, null, serverVersion, ConfigurationManager.CommonConfiguration.SystemUpdateLevel);
+            var version = InstallationManager.GetLatestCompatibleVersion(availablePackages, Launcher.PackageName, null, serverVersion, ConfigurationManager.CommonConfiguration.SystemUpdateLevel);
 
             var versionObject = version == null || string.IsNullOrWhiteSpace(version.versionStr) ? null : new Version(version.versionStr);
 
@@ -460,6 +462,30 @@ namespace MediaBrowser.Theater
         public void SetSystemToSleep()
         {
             System.Windows.Forms.Application.SetSuspendState(PowerState.Suspend, false, false);
+        }
+
+        public bool RunStartupWizard()
+        {
+            var app = new StartupWizardApp();
+
+            var wizard = new WizardViewModel(new List<IWizardPage> {
+                Resolve<IntroductionViewModel>(),
+                //Resolve<ServerDetailsViewModel>(),
+                Resolve<PrerequisitesViewModel>(),
+            });
+
+            bool completed = false;
+            wizard.Completed += status => {
+                completed = status == WizardCompletionStatus.Finished;
+                app.Shutdown();
+            };
+
+            var window = new StartupWizardWindow {
+                DataContext = wizard
+            };
+
+            app.Run(window);
+            return completed;
         }
     }
 }

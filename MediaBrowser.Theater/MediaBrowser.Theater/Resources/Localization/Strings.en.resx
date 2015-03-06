@@ -123,6 +123,9 @@
   <data name="InstallAction_Install" xml:space="preserve">
     <value>Install</value>
   </data>
+  <data name="InstallAction_Update" xml:space="preserve">
+    <value>Install Update</value>
+  </data>
   <data name="NextActionType_Finish" xml:space="preserve">
     <value>Finish</value>
   </data>

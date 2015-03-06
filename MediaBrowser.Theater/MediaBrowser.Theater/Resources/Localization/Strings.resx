@@ -125,6 +125,10 @@
     <value>@InstallAction_Install</value>
     <comment>Setup wizard prerequisite will be installed status</comment>
   </data>
+  <data name="InstallAction_Update" xml:space="preserve">
+    <value>@InstallAction_Update</value>
+    <comment>Setup wizard prerequisite will install an update</comment>
+  </data>
   <data name="NextActionType_Finish" xml:space="preserve">
     <value>@NextActionType_Finish</value>
     <comment>Finish wizard button text</comment>

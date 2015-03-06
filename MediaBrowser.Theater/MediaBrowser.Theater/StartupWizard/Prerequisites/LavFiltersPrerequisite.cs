@@ -1,7 +1,4 @@
-using System;
-using System.Threading;
 using System.Threading.Tasks;
-using MediaBrowser.Common.Net;
 using MediaBrowser.Theater.Mpdn;
 
 namespace MediaBrowser.Theater.StartupWizard.Prerequisites
@@ -9,12 +6,10 @@ namespace MediaBrowser.Theater.StartupWizard.Prerequisites
     public class LavFiltersPrerequisite
         : Prerequisite
     {
-        private readonly IHttpClient _httpClient;
         private readonly LavFiltersInstaller _installer;
-
-        public LavFiltersPrerequisite(IHttpClient httpClient)
+        
+        public LavFiltersPrerequisite()
         {
-            _httpClient = httpClient;
             _installer = new LavFiltersInstaller();
 
             Name = "LAV Filters";
@@ -23,19 +18,14 @@ namespace MediaBrowser.Theater.StartupWizard.Prerequisites
             RequiresManualInstallation = !_installer.CanInstall;
         }
 
-        protected override bool CheckInstallStatus()
+        public override Task<IUpdate> GetInstaller()
         {
-            return _installer.IsInstalled;
+            return _installer.FindUpdate();
         }
 
-        public override async Task Install(IProgress<double> progress, CancellationToken cancellationToken)
+        public override bool CheckInstallStatus()
         {
-            var update = await _installer.FindUpdate().ConfigureAwait(false);
-            if (update.Type != UpdateType.Unavailable) {
-                await update.Install(progress, _httpClient).ConfigureAwait(false);
-            }
-
-            await base.Install(progress, cancellationToken).ConfigureAwait(false);
+            return _installer.IsInstalled;
         }
     }
 }

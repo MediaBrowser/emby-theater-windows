@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using MediaBrowser.Common.Net;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using MediaBrowser.Theater.StartupWizard.Prerequisites;
 
@@ -11,29 +12,17 @@ namespace MediaBrowser.Theater.StartupWizard.ViewModels
     public class PrerequisiteInstallationViewModel
         : BaseViewModel
     {
-        private readonly Prerequisite _prerequisite;
+        private readonly PrerequisiteViewModel _prerequisite;
+        private readonly IHttpClient _httpClient;
         private bool _isInstalling;
         private double _installationProgress;
         private bool _installationFailed;
+        private bool _isInstalled;
 
-        public PrerequisiteInstallationViewModel(Prerequisite prerequisite)
+        public PrerequisiteInstallationViewModel(PrerequisiteViewModel prerequisite, IHttpClient httpClient)
         {
             _prerequisite = prerequisite;
-
-            _prerequisite.PropertyChanged += (sender, args) => {
-                if (args.PropertyName == "Name") {
-                    OnPropertyChanged("Name");
-                }
-
-                if (args.PropertyName == "IsInstalled") {
-                    OnPropertyChanged("IsInstalled");
-
-                    if (prerequisite.IsInstalled) {
-                        IsInstalling = false;
-                        InstallationFailed = false;
-                    }
-                }
-            };
+            _httpClient = httpClient;
         }
 
         public string Name
@@ -43,17 +32,30 @@ namespace MediaBrowser.Theater.StartupWizard.ViewModels
 
         public string DownloadUrl
         {
-            get { return _prerequisite.DownloadUrl; }
+            get { return _prerequisite.Prerequisite.DownloadUrl; }
         }
 
         public bool RequiresManualInstallation
         {
-            get { return _prerequisite.RequiresManualInstallation; }
+            get { return _prerequisite.Prerequisite.RequiresManualInstallation; }
         }
 
         public bool IsInstalled
         {
-            get { return _prerequisite.IsInstalled; }
+            get { return _isInstalled; }
+            private set
+            {
+                if (value.Equals(_isInstalled)) {
+                    return;
+                }
+
+                _isInstalled = value;
+                OnPropertyChanged();
+
+                if (_isInstalled) {
+                    InstallationFailed = false;
+                }
+            }
         }
 
         public bool IsInstalling
@@ -106,39 +108,45 @@ namespace MediaBrowser.Theater.StartupWizard.ViewModels
 
             try {
                 IsInstalling = true;
-                await _prerequisite.Install(progress, new CancellationToken());
+                await _prerequisite.Update.Install(progress, _httpClient).ConfigureAwait(false);
+
+                UpdateInstallStatus();
+                if (!IsInstalled) {
+                    InstallationFailed = true;
+                }
             }
-            catch (Exception e) {
+            catch (Exception) {
                 InstallationFailed = true;
             }
             finally {
                 IsInstalling = false;
             }
         }
+
+        public void UpdateInstallStatus()
+        {
+            IsInstalled = _prerequisite.Prerequisite.CheckInstallStatus();
+        }
     }
 
     public class PrerequisitesInstallationViewModel
         : BaseWizardPage
     {
-        private readonly IEnumerable<Prerequisite> _prerequisites;
-
         public bool IsComplete
         {
-            get { return _prerequisites.All(p => p.IsInstalled); }
+            get { return Prerequisites.All(p => p.IsInstalled); }
         }
 
-        public PrerequisitesInstallationViewModel(IEnumerable<Prerequisite> prerequisites)
+        public PrerequisitesInstallationViewModel(IEnumerable<PrerequisiteViewModel> prerequisites, IHttpClient httpClient)
         {
-            _prerequisites = prerequisites.ToList();
-            Prerequisites = _prerequisites.Select(p => new PrerequisiteInstallationViewModel(p)).ToList();
-
+            Prerequisites = prerequisites.Select(p => new PrerequisiteInstallationViewModel(p, httpClient)).ToList();
             StartInstallation();
         }
 
         private async void StartInstallation()
         {
             foreach (var item in Prerequisites.Where(p => !p.RequiresManualInstallation)) {
-                await item.Install();
+                await item.Install().ConfigureAwait(false);
             }
 
             if (!IsComplete) {
@@ -147,7 +155,7 @@ namespace MediaBrowser.Theater.StartupWizard.ViewModels
                     while (!IsComplete) {
                         await Task.Delay(TimeSpan.FromSeconds(2)).ConfigureAwait(false);
 
-                        foreach (var item in _prerequisites.Where(p => !p.IsInstalled)) {
+                        foreach (var item in Prerequisites.Where(p => !p.IsInstalled)) {
                             item.UpdateInstallStatus();
                         }
                     }
@@ -165,7 +173,7 @@ namespace MediaBrowser.Theater.StartupWizard.ViewModels
 
         public override async Task<bool> Validate()
         {
-            if (!await base.Validate()) {
+            if (!await base.Validate().ConfigureAwait(false)) {
                 return false;
             }
 

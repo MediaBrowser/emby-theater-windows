@@ -28,6 +28,30 @@ namespace MediaBrowser.Theater.Mpdn
         Unavailable
     }
 
+    public class Update : IUpdate
+    {
+        public static readonly IUpdate Unavailable = new Update(UpdateType.Unavailable);
+        public static readonly IUpdate UpToDate = new Update(UpdateType.UpToDate);
+
+        public Version Version
+        {
+            get { return new Version(0, 0, 0); }
+        }
+
+        public UpdateType Type { get; private set; }
+
+        public Task Install(IProgress<double> progress, IHttpClient httpClient)
+        {
+            progress.Report(0);
+            return Task.FromResult(0);
+        }
+
+        public Update(UpdateType type)
+        {
+            Type = type;
+        }
+    }
+
     public class LavFiltersInstaller
     {
         private const string Clsid = "{171252A0-8820-4AFE-9DF8-5C92B2D66B04}";
@@ -129,7 +153,7 @@ namespace MediaBrowser.Theater.Mpdn
             return null;
         }
 
-        private void SearchForBinaryPaths(string root, out string x86, out string x64)
+        private static void SearchForBinaryPaths(string root, out string x86, out string x64)
         {
             List<string> directories = Directory.GetFiles(root, "LAVSplitter.ax", SearchOption.AllDirectories)
                                                 .Select(Path.GetDirectoryName)
@@ -174,17 +198,17 @@ namespace MediaBrowser.Theater.Mpdn
         public async Task<IUpdate> FindUpdate()
         {
             if (!UacHelper.IsProcessElevated) {
-                throw new InvalidOperationException("LAV Filters installation or updates requires elevated privileges.");
+                throw new InvalidOperationException("LAV Filters installation or update requires elevated privileges.");
             }
 
             Release latestRelease = await GetLatestRelease().ConfigureAwait(false);
             ExistingInstall currentInstall = GetCurrentInstall();
 
             if (latestRelease == null) {
-                return Update.Unavailable;
+                return currentInstall == null ? Update.Unavailable : Update.UpToDate;
             }
 
-            return new Update(currentInstall, latestRelease);
+            return new UpdateInstaller(currentInstall, latestRelease);
         }
 
         private class ExistingInstall
@@ -246,7 +270,7 @@ namespace MediaBrowser.Theater.Mpdn
             public async Task NewInstall(IProgress<double> progress, IHttpClient httpClient)
             {
                 // todo log error cases
-
+                
                 string tempFile = await httpClient.GetTempFile(new HttpRequestOptions {
                     Url = _installerUrl,
                     Progress = progress.Slice(0, 0.75),
@@ -299,17 +323,20 @@ namespace MediaBrowser.Theater.Mpdn
 
             private async Task Extract(string zipUrl, string directory, IProgress<double> progress, IHttpClient httpClient)
             {
-                string tempFile = await httpClient.GetTempFile(new HttpRequestOptions {
-                    Url = zipUrl,
-                    Progress = progress.Slice(0, 0.5)
-                }).ConfigureAwait(false);
+                string tempFile;
+                using (var downloadProgress = progress.Slice(0, 0.75).Clamp()) {
+                    tempFile = await httpClient.GetTempFile(new HttpRequestOptions {
+                        Url = zipUrl,
+                        Progress = downloadProgress
+                    }).ConfigureAwait(false);
+                }
 
                 string zipPath = Path.ChangeExtension(tempFile, ".zip");
                 File.Move(tempFile, zipPath);
 
                 try {
                     var zip = new FastZip();
-                    zip.ExtractZip(zipPath, directory, @"-\.bat$");
+                    zip.ExtractZip(zipPath, directory, @"-\.bat$;-developer_info;-CHANGELOG.txt$;-COPYING$;-README.txt$");
                 }
                 finally {
                     try {
@@ -318,24 +345,18 @@ namespace MediaBrowser.Theater.Mpdn
                     catch (Exception e) {
                         // todo log
                     }
-                }
 
-                progress.Report(1);
+                    progress.Report(1);
+                }
             }
         }
 
-        private class Update : IUpdate
+        private class UpdateInstaller : IUpdate
         {
             private readonly ExistingInstall _installed;
             private readonly Release _newRelease;
-
-            public static readonly Update Unavailable = new Update();
-
-            private Update()
-            {
-            }
             
-            public Update(ExistingInstall installed, Release newRelease)
+            public UpdateInstaller(ExistingInstall installed, Release newRelease)
             {
                 _installed = installed;
                 _newRelease = newRelease;
@@ -350,8 +371,12 @@ namespace MediaBrowser.Theater.Mpdn
             {
                 get
                 {
-                    if (_newRelease == null) {
+                    if (_newRelease == null && _installed == null) {
                         return UpdateType.Unavailable;
+                    }
+
+                    if (_newRelease == null) {
+                        return UpdateType.UpToDate;
                     }
 
                     if (_installed == null) {
@@ -364,17 +389,44 @@ namespace MediaBrowser.Theater.Mpdn
 
             public async Task Install(IProgress<double> progress, IHttpClient httpClient)
             {
+                var shim = new ProgressValidator(progress);
+
                 switch (Type) {
                     case UpdateType.NewInstall:
-                        await _newRelease.NewInstall(progress, httpClient).ConfigureAwait(false);
+                        await _newRelease.NewInstall(shim, httpClient).ConfigureAwait(false);
                         break;
                     case UpdateType.NewRelease:
-                        await _newRelease.InstallUpdate(progress, httpClient, _installed.X86Location, _installed.X64Location).ConfigureAwait(false);
+                        await _newRelease.InstallUpdate(shim, httpClient, _installed.X86Location, _installed.X64Location).ConfigureAwait(false);
                         break;
                     case UpdateType.UpToDate:
                     case UpdateType.Unavailable:
                         progress.Report(1);
                         break;
+                }
+            }
+
+            private class ProgressValidator : IProgress<double>
+            {
+                private readonly IProgress<double> _parent;
+                private double _lastProgress = 0;
+
+                public ProgressValidator(IProgress<double> parent)
+                {
+                    _parent = parent;
+                }
+
+                public void Report(double value)
+                {
+                    if (value < _lastProgress) {
+                        throw new Exception();
+                    }
+
+                    if (value > 1) {
+                        throw new Exception();
+                    }
+
+                    _lastProgress = value;
+                    _parent.Report(value);
                 }
             }
         }

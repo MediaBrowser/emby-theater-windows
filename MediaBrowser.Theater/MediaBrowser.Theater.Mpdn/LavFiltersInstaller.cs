@@ -13,51 +13,11 @@ using Octokit;
 
 namespace MediaBrowser.Theater.Mpdn
 {
-    public interface IUpdate
-    {
-        Version Version { get; }
-        UpdateType Type { get; }
-        Task Install(IProgress<double> progress, IHttpClient httpClient);
-    }
-
-    public enum UpdateType
-    {
-        NewInstall,
-        NewRelease,
-        UpToDate,
-        Unavailable
-    }
-
-    public class Update : IUpdate
-    {
-        public static readonly IUpdate Unavailable = new Update(UpdateType.Unavailable);
-        public static readonly IUpdate UpToDate = new Update(UpdateType.UpToDate);
-
-        public Version Version
-        {
-            get { return new Version(0, 0, 0); }
-        }
-
-        public UpdateType Type { get; private set; }
-
-        public Task Install(IProgress<double> progress, IHttpClient httpClient)
-        {
-            progress.Report(0);
-            return Task.FromResult(0);
-        }
-
-        public Update(UpdateType type)
-        {
-            Type = type;
-        }
-    }
-
     public class LavFiltersInstaller
     {
         private const string Clsid = "{171252A0-8820-4AFE-9DF8-5C92B2D66B04}";
         private const string CodecsRegistryKey = @"HKEY_LOCAL_MACHINE\SOFTWARE\Classes\Wow6432Node\CLSID\{083863F1-70DE-11D0-BD40-00A0C911CE86}\Instance\";
-        private static readonly Regex VersionRegex = new Regex(@"^(?<major>\d+)\.(?<minor>\d+)(\.(?<build>\d+))?.*$");
-
+        
         public bool IsInstalled
         {
             get { return IsLavSplitterInstalled() && IsLavAudioInstalled() && IsLavVideoInstalled(); }
@@ -72,7 +32,7 @@ namespace MediaBrowser.Theater.Mpdn
         {
             var github = new GitHubClient(new ProductHeaderValue("MediaBrowserTheater"));
             IReadOnlyList<Octokit.Release> releases = await github.Release.GetAll("Nevcairiel", "LAVFilters").ConfigureAwait(false);
-            var versionedReleases = releases.Select(r => new { Version = ParseVersion(r.TagName), ReleaseDate = IgnoreTime(r.CreatedAt), Release = r }).ToList();
+            var versionedReleases = releases.Select(r => new { Version = FilterInstallation.ParseVersion(r.TagName), ReleaseDate = IgnoreTime(r.CreatedAt), Release = r }).ToList();
             var latest = versionedReleases
                 .Where(r => r.ReleaseDate != null)
                 .OrderByDescending(r => r.ReleaseDate)
@@ -89,19 +49,7 @@ namespace MediaBrowser.Theater.Mpdn
 
             return new Release(latest.Version, latest.ReleaseDate, installer, x86Zip, x64Zip);
         }
-
-        private Version ParseVersion(string tagName)
-        {
-            Match match = VersionRegex.Match(tagName);
-            if (match.Success) {
-                return new Version(int.Parse(match.Groups["major"].Value),
-                                   int.Parse(match.Groups["minor"].Value),
-                                   match.Groups["build"].Success ? int.Parse(match.Groups["build"].Value) : 0);
-            }
-
-            return null;
-        }
-
+        
         private ExistingInstall GetCurrentInstall()
         {
             if (!IsLavSplitterInstalled() || !IsLavAudioInstalled() || !IsLavVideoInstalled()) {
@@ -114,7 +62,7 @@ namespace MediaBrowser.Theater.Mpdn
             }
 
             string x86, x64;
-            SearchForBinaryPaths(Directory.GetParent(path).FullName, out x86, out x64);
+            FilterInstallation.SearchForBinaryPaths(Directory.GetParent(path).FullName, "LAVSplitter.ax", out x86, out x64);
             DateTimeOffset date = FindSplitterFileDate(x86 ?? x64);
 
             return new ExistingInstall(date, x86, x64);
@@ -138,8 +86,9 @@ namespace MediaBrowser.Theater.Mpdn
 
         private static string GetInstalledPath()
         {
-            return FindProgramFiles(@"K-Lite Codec Pack\Filters\LAV") ??
-                   FindProgramFiles(@"KCP\LAV Filters") ??
+            return FilterInstallation.FindProgramFiles(@"K-Lite Codec Pack\Filters\LAV") ??
+                   FilterInstallation.FindProgramFiles(@"KCP\LAV Filters") ??
+                   FilterInstallation.FindProgramFiles(@"Combined Community Codec Pack\Filters\LAVFilters") ??
                    GetRegistryLocation();
         }
 
@@ -152,28 +101,7 @@ namespace MediaBrowser.Theater.Mpdn
 
             return null;
         }
-
-        private static void SearchForBinaryPaths(string root, out string x86, out string x64)
-        {
-            List<string> directories = Directory.GetFiles(root, "LAVSplitter.ax", SearchOption.AllDirectories)
-                                                .Select(Path.GetDirectoryName)
-                                                .ToList();
-
-            x64 = directories.FirstOrDefault(path => path.Substring(root.Length).Contains("64"));
-            x86 = directories.FirstOrDefault(path => path.Substring(root.Length).Contains("86")) ?? directories.First();
-        }
-
-        private static string FindProgramFiles(string path)
-        {
-            string programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
-            string directory = Path.Combine(programFiles, path);
-            if (Directory.Exists(directory)) {
-                return directory;
-            }
-
-            return null;
-        }
-
+        
         private static bool IsLavSplitterInstalled()
         {
             // Returns true if 32-bit splitter is installed
@@ -303,7 +231,7 @@ namespace MediaBrowser.Theater.Mpdn
 
             public async Task InstallUpdate(IProgress<double> progress, IHttpClient httpClient, string x86Directory, string x64Directory)
             {
-                string defaultInstallLocation = FindProgramFiles(@"LAV Filters");
+                string defaultInstallLocation = FilterInstallation.FindProgramFiles(@"LAV Filters");
                 string dir = x86Directory ?? x64Directory;
                 if (dir != null && defaultInstallLocation != null && dir.StartsWith(defaultInstallLocation + @"\")) {
                     // if LAV is installed in its default standalone location, then just re-run the installer

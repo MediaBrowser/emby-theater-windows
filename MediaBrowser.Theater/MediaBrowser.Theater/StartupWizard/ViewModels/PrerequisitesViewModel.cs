@@ -20,7 +20,7 @@ namespace MediaBrowser.Theater.StartupWizard.ViewModels
             _httpClient = httpClient;
             var prerequisites = new List<Prerequisite> {
                 new LavFiltersPrerequisite(),
-                new XySubFilterPrerequisite(mediaFilters),
+                new XySubFilterPrerequisite(),
                 new ReClockPrerequisite(mediaFilters)
             };
             

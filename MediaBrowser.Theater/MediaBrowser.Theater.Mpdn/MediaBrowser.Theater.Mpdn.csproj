@@ -67,12 +67,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FilterInstallation.cs" />
+    <Compile Include="IUpdate.cs" />
     <Compile Include="LavFiltersInstaller.cs" />
     <Compile Include="MpdnMediaPlayer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RemoteClient.cs" />
     <Compile Include="Session.cs" />
     <Compile Include="SessionSequence.cs" />
+    <Compile Include="Update.cs" />
+    <Compile Include="UpdateType.cs" />
+    <Compile Include="XySubFilterInstaller.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MediaBrowser.Theater.Api\MediaBrowser.Theater.Api.csproj">

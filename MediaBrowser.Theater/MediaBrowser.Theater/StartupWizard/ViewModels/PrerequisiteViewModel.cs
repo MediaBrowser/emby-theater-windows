@@ -113,17 +113,17 @@ namespace MediaBrowser.Theater.StartupWizard.ViewModels
 
         public bool IsInstalled
         {
-            get { return Update.Type == UpdateType.UpToDate; }
+            get { return Update != null && Update.Type == UpdateType.UpToDate; }
         }
 
         public bool IsUpdateAvailable
         {
-            get { return Update.Type == UpdateType.NewRelease; }
+            get { return Update != null && Update.Type == UpdateType.NewRelease; }
         }
 
         public bool IsNewInstallAvailable
         {
-            get { return Update.Type == UpdateType.NewInstall; }
+            get { return Update != null && Update.Type == UpdateType.NewInstall; }
         }
 
 //        public bool IsInstallOrUpdateAvailable

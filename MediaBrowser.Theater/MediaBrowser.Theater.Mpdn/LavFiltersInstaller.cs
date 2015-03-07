@@ -273,7 +273,7 @@ namespace MediaBrowser.Theater.Mpdn
                 
                 string tempFile = await httpClient.GetTempFile(new HttpRequestOptions {
                     Url = _installerUrl,
-                    Progress = progress.Slice(0, 0.75),
+                    Progress = progress.SlicePercent(0, 75),
                 }).ConfigureAwait(false);
 
                 string exePath = Path.ChangeExtension(tempFile, ".exe");
@@ -298,7 +298,7 @@ namespace MediaBrowser.Theater.Mpdn
                     }
                 }
 
-                progress.Report(1);
+                progress.Report(100);
             }
 
             public async Task InstallUpdate(IProgress<double> progress, IHttpClient httpClient, string x86Directory, string x64Directory)
@@ -313,23 +313,20 @@ namespace MediaBrowser.Theater.Mpdn
 
                 // unzip x86 and x64 versions of LAV Filters into their installed locations
                 if (x86Directory != null && Directory.Exists(x86Directory)) {
-                    await Extract(_zipUrlx86, x86Directory, progress.Slice(0, 0.5), httpClient).ConfigureAwait(false);
+                    await Extract(_zipUrlx86, x86Directory, progress.SlicePercent(0, 50), httpClient).ConfigureAwait(false);
                 }
 
                 if (x64Directory != null && Directory.Exists(x64Directory)) {
-                    await Extract(_zipUrlx64, x64Directory, progress.Slice(0.5, 1), httpClient).ConfigureAwait(false);
+                    await Extract(_zipUrlx64, x64Directory, progress.SlicePercent(50, 100), httpClient).ConfigureAwait(false);
                 }
             }
 
             private async Task Extract(string zipUrl, string directory, IProgress<double> progress, IHttpClient httpClient)
             {
-                string tempFile;
-                using (var downloadProgress = progress.Slice(0, 0.75).Clamp()) {
-                    tempFile = await httpClient.GetTempFile(new HttpRequestOptions {
-                        Url = zipUrl,
-                        Progress = downloadProgress
-                    }).ConfigureAwait(false);
-                }
+                string tempFile = await httpClient.GetTempFile(new HttpRequestOptions {
+                    Url = zipUrl,
+                    Progress = progress.SlicePercent(0, 75)
+                }).ConfigureAwait(false);
 
                 string zipPath = Path.ChangeExtension(tempFile, ".zip");
                 File.Move(tempFile, zipPath);
@@ -346,7 +343,7 @@ namespace MediaBrowser.Theater.Mpdn
                         // todo log
                     }
 
-                    progress.Report(1);
+                    progress.Report(100);
                 }
             }
         }
@@ -389,44 +386,17 @@ namespace MediaBrowser.Theater.Mpdn
 
             public async Task Install(IProgress<double> progress, IHttpClient httpClient)
             {
-                var shim = new ProgressValidator(progress);
-
                 switch (Type) {
                     case UpdateType.NewInstall:
-                        await _newRelease.NewInstall(shim, httpClient).ConfigureAwait(false);
+                        await _newRelease.NewInstall(progress, httpClient).ConfigureAwait(false);
                         break;
                     case UpdateType.NewRelease:
-                        await _newRelease.InstallUpdate(shim, httpClient, _installed.X86Location, _installed.X64Location).ConfigureAwait(false);
+                        await _newRelease.InstallUpdate(progress, httpClient, _installed.X86Location, _installed.X64Location).ConfigureAwait(false);
                         break;
                     case UpdateType.UpToDate:
                     case UpdateType.Unavailable:
-                        progress.Report(1);
+                        progress.Report(100);
                         break;
-                }
-            }
-
-            private class ProgressValidator : IProgress<double>
-            {
-                private readonly IProgress<double> _parent;
-                private double _lastProgress = 0;
-
-                public ProgressValidator(IProgress<double> parent)
-                {
-                    _parent = parent;
-                }
-
-                public void Report(double value)
-                {
-                    if (value < _lastProgress) {
-                        throw new Exception();
-                    }
-
-                    if (value > 1) {
-                        throw new Exception();
-                    }
-
-                    _lastProgress = value;
-                    _parent.Report(value);
                 }
             }
         }

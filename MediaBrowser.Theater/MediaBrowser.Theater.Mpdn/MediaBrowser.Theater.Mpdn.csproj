@@ -90,9 +90,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="MPDN\Application.AnyCPU.config">
+    <Content Include="MPDN\Application.32.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    </Content>
     <None Include="MPDN\MediaPlayerDotNet.exe.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -121,6 +121,189 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="MPDN\Extensions\MPDN_Extensions.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\ChromaScaler\Chroma.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\Deband\Deband.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\Deband\DebandEx.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\ImageProcessingShaders\ConvertToGammaLight.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\ImageProcessingShaders\ConvertToLinearLight.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\ImageProcessingShaders\MPC-HC\0-255 to 16-235.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\ImageProcessingShaders\MPC-HC\16-235 to 0-255 [SD].hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\ImageProcessingShaders\MPC-HC\16-235 to 0-255 [SD][HD].hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\ImageProcessingShaders\MPC-HC\BT.601 to BT.709.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\ImageProcessingShaders\MPC-HC\Contour.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\ImageProcessingShaders\MPC-HC\Deinterlace %28blend%29.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\ImageProcessingShaders\MPC-HC\Denoise.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\ImageProcessingShaders\MPC-HC\Edge sharpen.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\ImageProcessingShaders\MPC-HC\Emboss.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\ImageProcessingShaders\MPC-HC\Grayscale.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\ImageProcessingShaders\MPC-HC\Invert.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\ImageProcessingShaders\MPC-HC\LCD angle correction.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\ImageProcessingShaders\MPC-HC\Letterbox.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\ImageProcessingShaders\MPC-HC\Nightvision.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\ImageProcessingShaders\MPC-HC\Procamp.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\ImageProcessingShaders\MPC-HC\Sharpen complex 2.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\ImageProcessingShaders\MPC-HC\Sharpen complex.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\ImageProcessingShaders\MPC-HC\Sharpen.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\ImageProcessingShaders\MPC-HC\Sphere.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\ImageProcessingShaders\MPC-HC\Spotlight.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\ImageProcessingShaders\MPC-HC\Wave.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\ImageProcessingShaders\MPC-HC\YV12 chroma upsampling.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\ImageProcessingShaders\SweetFX\AdvancedCRT.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\ImageProcessingShaders\SweetFX\Bloom.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\ImageProcessingShaders\SweetFX\Border.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\ImageProcessingShaders\SweetFX\Cartoon.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\ImageProcessingShaders\SweetFX\Curves.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\ImageProcessingShaders\SweetFX\DPX.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\ImageProcessingShaders\SweetFX\Explosion.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\ImageProcessingShaders\SweetFX\HDR.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\ImageProcessingShaders\SweetFX\Levels.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\ImageProcessingShaders\SweetFX\LiftGammaGain.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\ImageProcessingShaders\SweetFX\LumaSharpen.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\ImageProcessingShaders\SweetFX\Monochrome.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\ImageProcessingShaders\SweetFX\Sepia.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\ImageProcessingShaders\SweetFX\Technicolor.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\ImageProcessingShaders\SweetFX\Tonemap.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\ImageProcessingShaders\SweetFX\Vibrance.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\ImageProcessingShaders\SweetFX\Vignette.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\Lut3D\Lut3D.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\NEDI\NEDI-HInterleave.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\NEDI\NEDI-I.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\NEDI\NEDI-II.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\NEDI\NEDI-VInterleave.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\SuperRes\Diff.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\SuperRes\GammaToLab.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\SuperRes\GammaToLinear.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\SuperRes\LabToGamma.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\SuperRes\LabToLinear.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\SuperRes\LinearToGamma.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\SuperRes\LinearToLab.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\SuperRes\SuperChromaRes\CopyChroma.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\SuperRes\SuperChromaRes\CopyLuma.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\SuperRes\SuperChromaRes\Diff.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\SuperRes\SuperChromaRes\SuperRes.hlsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\SuperRes\SuperRes.hlsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="MPDN\MediaInfoDotNet.dll">

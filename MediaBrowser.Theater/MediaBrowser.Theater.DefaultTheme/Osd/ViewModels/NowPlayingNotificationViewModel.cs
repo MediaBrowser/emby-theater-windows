@@ -39,7 +39,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
 
         public string DisplayName
         {
-            get { return _item != null ? _item.GetDisplayName(new DisplayNameFormat(false, false)) : null; }
+            get { return _item != null ? _item.GetDisplayName(new DisplayNameFormat(true, true)) : null; }
         }
 
         public string ParentName
@@ -148,7 +148,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
 
                 if (_session != null) {
                     Contents = new NowPlayingNotificationInfoViewModel(_session.Events);
-                    LoadArtworkImage(_session);
+                    //LoadArtworkImage(_session);
                     CloseOnCompletion(_session);
                 }
 
@@ -156,21 +156,21 @@ namespace MediaBrowser.Theater.DefaultTheme.Osd.ViewModels
             }
         }
 
-        private async void LoadArtworkImage(IPlaybackSession session)
-        {
-            var item = await session.Events.Select(e => e.PlayableMedia.Media.Item).FirstOrDefaultAsync();
-            if (item != null) {
-                Action setIcon = () => {
-                    if (Icon == null) {
-                        Icon = new ItemArtworkViewModel(item, _connectionManager, _imageManager) {
-                            DesiredImageHeight = 100
-                        };
-                    }
-                };
-
-                setIcon.OnUiThread();
-            }
-        }
+//        private async void LoadArtworkImage(IPlaybackSession session)
+//        {
+//            var item = await session.Events.Select(e => e.PlayableMedia.Media.Item).FirstOrDefaultAsync();
+//            if (item != null) {
+//                Action setIcon = () => {
+//                    if (Icon == null) {
+//                        Icon = new ItemArtworkViewModel(item, _connectionManager, _imageManager) {
+//                            DesiredImageHeight = 100
+//                        };
+//                    }
+//                };
+//
+//                setIcon.OnUiThread();
+//            }
+//        }
 
         private async void CloseOnCompletion(IPlaybackSession session)
         {

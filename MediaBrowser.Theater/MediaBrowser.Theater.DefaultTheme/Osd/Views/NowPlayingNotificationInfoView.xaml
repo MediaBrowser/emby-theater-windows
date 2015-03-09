@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="38" d:DesignWidth="200">
     <Grid>
         <ProgressBar Grid.Row="0" Height="NaN" Minimum="0" Maximum="{Binding DurationTicks}" Value="{Binding ProgressTicks, Mode=OneWay}"
                      Visibility="{Binding IsInProgress, Converter={StaticResource BooleanToVisibility}}"
@@ -13,28 +13,6 @@
                      Background="Transparent"
                      Style="{StaticResource ResumeProgressBar}"/>
 
-        <Grid Margin="10,4,10,6">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="auto"/>
-            </Grid.RowDefinitions>
-
-            <TextBlock Grid.Row="0" Text="Now Playing" Style="{StaticResource LabelTextBlockStyle}"/>
-            <TextBlock Grid.Row="1" Text="{Binding ParentName}" Visibility="{Binding HasParentName, Converter={StaticResource BooleanToVisibility}}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" VerticalAlignment="Bottom"/>
-            <TextBlock Grid.Row="2" Text="{Binding DisplayName}" FontSize="26">
-                <TextBlock.Style>
-                    <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource NormalTextBlockStyle}">
-                        <Setter Property="TextWrapping" Value="NoWrap"/>
-                        
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding HasParentName}" Value="False">
-                                <Setter Property="TextWrapping" Value="WrapWithOverflow"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </TextBlock.Style>
-            </TextBlock>
-        </Grid>
+        <TextBlock Text="Series Name S01E01" FontSize="26" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" MaxWidth="300" Margin="4"/>
     </Grid>
 </UserControl>

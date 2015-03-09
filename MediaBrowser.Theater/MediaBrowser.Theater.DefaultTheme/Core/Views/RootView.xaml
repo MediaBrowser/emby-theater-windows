@@ -76,7 +76,7 @@
         <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto" />
-                <RowDefinition Height="auto" />
+                <RowDefinition Height="38" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
@@ -170,7 +170,9 @@
                 <TextBlock Text="{Binding Title}" Style="{StaticResource TitleTextBlockStyle}" Visibility="{Binding DisplayTitle, Converter={StaticResource BooleanToVisibility}}" FontSize="33" />
             </StackPanel>
 
-            <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,0,30,0" HorizontalAlignment="Right" >
+            <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,0,30,0" HorizontalAlignment="Right">
+                <controls:ExtendedContentControl Content="{Binding Notifications}" IsTabStop="False" Visibility="{Binding DisplayNotifications, Converter={StaticResource BooleanToVisibility}}"/>
+                <controls:ExtendedContentControl Content="{Binding HighPriorityNotifications}" IsTabStop="False" Visibility="{Binding DisplayHighPriorityNotifications, Converter={StaticResource BooleanToVisibility}}" Margin="0,0,20,0"/>
                 <controls:ExtendedContentControl x:Name="CommandBar" Margin="0,0,20,0" VerticalAlignment="Center" Content="{Binding Commands}" IsTabStop="False" Visibility="{Binding DisplayCommandBar, Converter={StaticResource BooleanToVisibility}}"/>
                 <controls:ExtendedContentControl x:Name="Clock" VerticalAlignment="Center" Content="{Binding Clock}" IsTabStop="False" Visibility="{Binding DisplayClock, Converter={StaticResource BooleanToVisibility}}"/>
             </StackPanel>
@@ -187,11 +189,6 @@
                     <ee:SlideInTransitionEffect SlideDirection="RightToLeft"/>
                 </controls:ExtendedContentControl.TransitionType>
             </controls:ExtendedContentControl>
-
-            <StackPanel Orientation="Horizontal" Grid.Row="2" Margin="0,20,50,30" HorizontalAlignment="Right" VerticalAlignment="Bottom">
-                <controls:ExtendedContentControl  Content="{Binding Notifications}" IsTabStop="False" Visibility="{Binding DisplayNotifications, Converter={StaticResource BooleanToVisibility}}"/>
-                <controls:ExtendedContentControl  Content="{Binding HighPriorityNotifications}" IsTabStop="False" Visibility="{Binding DisplayHighPriorityNotifications, Converter={StaticResource BooleanToVisibility}}"/>
-            </StackPanel>
         </Grid>
 
         <Rectangle x:Name="FadeOverlay" IsHitTestVisible="False" Visibility="Hidden" HorizontalAlignment="Stretch"

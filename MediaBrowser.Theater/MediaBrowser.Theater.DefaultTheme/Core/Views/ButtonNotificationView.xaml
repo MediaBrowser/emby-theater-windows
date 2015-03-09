@@ -6,10 +6,9 @@
              xmlns:controls="clr-namespace:MediaBrowser.Theater.DefaultTheme.Controls"
              xmlns:views="clr-namespace:MediaBrowser.Theater.DefaultTheme.Core.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300"
-             Margin="0,0,50,0">
+             d:DesignHeight="38" d:DesignWidth="200"
+             Margin="20,0,0,0">
     <controls:TileButton Command="{Binding PressedCommand}">
         <views:NotificationView Margin="0"/>
     </controls:TileButton>
-    <!--    <Border Background="Pink" Width="300" Height="100"/>-->
 </UserControl>

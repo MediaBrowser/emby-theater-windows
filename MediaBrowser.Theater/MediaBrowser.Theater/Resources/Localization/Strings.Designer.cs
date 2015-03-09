@@ -277,6 +277,15 @@ namespace MediaBrowser.Theater.Resources.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to @StartupWizard_Prerequisites_Searching.
+        /// </summary>
+        public static string StartupWizard_Prerequisites_Searching {
+            get {
+                return ResourceManager.GetString("StartupWizard_Prerequisites_Searching", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to @StartupWizard_Title.
         /// </summary>
         public static string StartupWizard_Title {

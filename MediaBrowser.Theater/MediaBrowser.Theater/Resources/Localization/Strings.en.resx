@@ -193,6 +193,9 @@ Click next to proceed.</value>
   <data name="SetupWizard_ServerDetails_Title" xml:space="preserve">
     <value>Media Browser Server Details</value>
   </data>
+  <data name="StartupWizard_Prerequisites_Searching" xml:space="preserve">
+    <value>Searching for install...</value>
+  </data>
   <data name="StartupWizard_Title" xml:space="preserve">
     <value>Startup Wizard</value>
   </data>

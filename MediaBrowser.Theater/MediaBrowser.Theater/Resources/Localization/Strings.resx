@@ -213,6 +213,10 @@
     <value>@SetupWizard_ServerDetails_Title</value>
     <comment>Setup wizard server details page title</comment>
   </data>
+  <data name="StartupWizard_Prerequisites_Searching" xml:space="preserve">
+    <value>@StartupWizard_Prerequisites_Searching</value>
+    <comment>Searching for prerequisite installation</comment>
+  </data>
   <data name="StartupWizard_Title" xml:space="preserve">
     <value>@StartupWizard_Title</value>
     <comment>Setup wizard window title</comment>

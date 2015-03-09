@@ -37,8 +37,8 @@
                         </Grid.ColumnDefinitions>
                         
                         <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
-                        
-                        <TextBlock Grid.Column="1" Visibility="{Binding IsSearching, Converter={StaticResource BooleanToVisibility}}" Text="Searching for install.."/>
+
+                        <TextBlock Grid.Column="1" Visibility="{Binding IsSearching, Converter={StaticResource BooleanToVisibility}}" Text="{lex:Loc StartupWizard_Prerequisites_Searching}"/>
 
                         <Grid Grid.Column="1" Visibility="{Binding IsSearching, Converter={StaticResource InverseBooleanToVisibility}}">
                             

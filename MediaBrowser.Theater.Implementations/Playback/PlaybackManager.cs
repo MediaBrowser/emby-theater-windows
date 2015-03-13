@@ -107,7 +107,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
                     {
                         SortBy = new[] { ItemSortBy.SortName },
                         IncludeItemTypes = new[] { "Audio" },
-                        Artists = new[] { item.Name }
+                        ArtistIds = new[] { item.Id }
                     };
                 }
                 else if (item.IsType("musicgenre"))

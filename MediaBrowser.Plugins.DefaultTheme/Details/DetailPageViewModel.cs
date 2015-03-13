@@ -709,7 +709,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             }
             else if (item.IsArtist)
             {
-                query.Artists = new[] { item.Name };
+                query.ArtistIds = new[] { item.Id };
             }
 
             return _apiClient.GetItemsAsync(query, CancellationToken.None);

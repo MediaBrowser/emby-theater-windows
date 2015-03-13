@@ -115,7 +115,7 @@ namespace MediaBrowser.Theater.DirectShow
                     Profile = profile
                 };
 
-                info = new StreamBuilder().BuildAudioItem(options);
+                info = new StreamBuilder(new LocalPlayer()).BuildAudioItem(options);
                 info.StartPositionTicks = startTimeTicks ?? 0;
 
                 if (info.MediaSource.Protocol == MediaProtocol.File && File.Exists(info.MediaSource.Path))
@@ -151,11 +151,10 @@ namespace MediaBrowser.Theater.DirectShow
                     MaxBitrate = maxBitrate,
                     MediaSources = mediaSources,
 
-                    Profile = profile,
-                    SupportsDirectRemoteContent = true
+                    Profile = profile
                 };
 
-                info = new StreamBuilder().BuildVideoItem(options);
+                info = new StreamBuilder(new LocalPlayer()).BuildVideoItem(options);
                 info.StartPositionTicks = startTimeTicks ?? 0;
 
                 if (info.MediaSource.Protocol == MediaProtocol.File && File.Exists(info.MediaSource.Path))

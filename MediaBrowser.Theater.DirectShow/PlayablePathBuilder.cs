@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.ApiClient;
+﻿using MediaBrowser.ApiInteraction.Playback;
+using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dlna;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
@@ -26,7 +27,7 @@ namespace MediaBrowser.Theater.DirectShow
         /// <param name="apiClient">The API client.</param>
         /// <param name="startTimeTicks">The start time ticks.</param>
         /// <returns>System.String.</returns>
-        public static PlayableItem GetPlayableItem(BaseItemDto item, List<MediaSourceInfo> mediaSources, IIsoMount isoMount, IApiClient apiClient, long? startTimeTicks, int? maxBitrate)
+        public static PlayableItem GetPlayableItem(BaseItemDto item, List<MediaSourceInfo> mediaSources, IIsoMount isoMount, IApiClient apiClient, StreamBuilder streamBuilder, long? startTimeTicks, int? maxBitrate)
         {
             // Check the mounted path first
             if (isoMount != null)
@@ -89,10 +90,10 @@ namespace MediaBrowser.Theater.DirectShow
                 }
             }
 
-            return GetStreamedItem(item, mediaSources, apiClient, startTimeTicks, maxBitrate);
+            return GetStreamedItem(item, mediaSources, apiClient, streamBuilder, startTimeTicks, maxBitrate);
         }
 
-        private static PlayableItem GetStreamedItem(BaseItemDto item, List<MediaSourceInfo> mediaSources, IApiClient apiClient, long? startTimeTicks, int? maxBitrate)
+        private static PlayableItem GetStreamedItem(BaseItemDto item, List<MediaSourceInfo> mediaSources, IApiClient apiClient, StreamBuilder streamBuilder, long? startTimeTicks, int? maxBitrate)
         {
             var profile = new MediaBrowserTheaterProfile();
 
@@ -115,7 +116,7 @@ namespace MediaBrowser.Theater.DirectShow
                     Profile = profile
                 };
 
-                info = new StreamBuilder(new LocalPlayer()).BuildAudioItem(options);
+                info = streamBuilder.BuildAudioItem(options);
                 info.StartPositionTicks = startTimeTicks ?? 0;
 
                 if (info.MediaSource.Protocol == MediaProtocol.File && File.Exists(info.MediaSource.Path))
@@ -154,7 +155,7 @@ namespace MediaBrowser.Theater.DirectShow
                     Profile = profile
                 };
 
-                info = new StreamBuilder(new LocalPlayer()).BuildVideoItem(options);
+                info = streamBuilder.BuildVideoItem(options);
                 info.StartPositionTicks = startTimeTicks ?? 0;
 
                 if (info.MediaSource.Protocol == MediaProtocol.File && File.Exists(info.MediaSource.Path))

@@ -1,6 +1,9 @@
-﻿using MediaBrowser.Common.Events;
+﻿using MediaBrowser.ApiInteraction.Net;
+using MediaBrowser.ApiInteraction.Playback;
+using MediaBrowser.Common.Events;
 using MediaBrowser.Common.Net;
 using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Dlna;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.IO;
@@ -16,6 +19,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using IPlaybackManager = MediaBrowser.Theater.Interfaces.Playback.IPlaybackManager;
 
 namespace MediaBrowser.Theater.DirectShow
 {
@@ -35,6 +39,7 @@ namespace MediaBrowser.Theater.DirectShow
         private readonly IZipClient _zipClient;
         private URCOMLoader _privateCom = null;
         private readonly IConnectionManager _connectionManager;
+        private readonly StreamBuilder _streamBuilder;
 
         public event EventHandler<MediaChangeEventArgs> MediaChanged;
 
@@ -63,6 +68,8 @@ namespace MediaBrowser.Theater.DirectShow
             _isoManager = isoManager;
             _inputManager = inputManager;
             _zipClient = zipClient;
+
+            _streamBuilder = new StreamBuilder(new LocalPlayer(new NetworkConnection(_logger), new HttpWebRequestClient(_logger, new HttpWebRequestFactory())));
 
             _config.Configuration.InternalPlayerConfiguration.VideoConfig.SetDefaults();
             _config.Configuration.InternalPlayerConfiguration.AudioConfig.SetDefaults();
@@ -392,7 +399,7 @@ namespace MediaBrowser.Theater.DirectShow
                 }
             }
 
-            return PlayablePathBuilder.GetPlayableItem(item, mediaSources, mountedIso, apiClient, startTimeTicks, _config.Configuration.MaxStreamingBitrate);
+            return PlayablePathBuilder.GetPlayableItem(item, mediaSources, mountedIso, apiClient, _streamBuilder, startTimeTicks, _config.Configuration.MaxStreamingBitrate);
         }
 
         /// <summary>

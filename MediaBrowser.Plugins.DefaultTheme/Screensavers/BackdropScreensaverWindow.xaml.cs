@@ -1,15 +1,14 @@
-﻿using System.Threading;
-using MediaBrowser.Common;
-using MediaBrowser.Model.ApiClient;
+﻿using MediaBrowser.Common;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Querying;
+using MediaBrowser.Plugins.DefaultTheme.Controls;
 using MediaBrowser.Theater.Interfaces.Presentation;
 using MediaBrowser.Theater.Interfaces.Session;
 using MediaBrowser.Theater.Interfaces.ViewModels;
-using MediaBrowser.Plugins.DefaultTheme.Controls;
 using System.Linq;
+using System.Threading;
 using System.Windows.Media;
 
 namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
@@ -20,7 +19,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
     public class BackdropScreensaverFactory : IScreensaverFactory
     {
         private readonly IApplicationHost _applicationHost;
-      
+
         public BackdropScreensaverFactory(IApplicationHost applicationHost)
         {
             _applicationHost = applicationHost;
@@ -33,7 +32,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
             return (IScreensaver)_applicationHost.CreateInstance(typeof(BackdropScreensaverWindow));
         }
     }
-   
+
     /// <summary>
     /// Interaction logic for ScreensaverWindow.xaml
     /// </summary>
@@ -45,7 +44,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
         public BackdropScreensaverWindow(ISessionManager session, IPresentationManager presentationManager, IScreensaverManager screensaverManager, IImageManager imageManager, ILogger logger)
             : base(presentationManager, screensaverManager, logger)
         {
-            
+
             _session = session;
             _imageManager = imageManager;
             InitializeComponent();
@@ -54,22 +53,31 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
 
             LoadScreensaver();
         }
-        
-        private  async void LoadScreensaver()
+
+        private async void LoadScreensaver()
         {
             MainGrid.Children.Clear();
 
             var apiClient = _session.ActiveApiClient;
+            ItemsResult items;
 
-            var items = await apiClient.GetItemsAsync(new ItemQuery
+            try
             {
-                UserId = _session.LocalUserId,
-                ImageTypes = new[] { ImageType.Backdrop },
-                IncludeItemTypes = new[] { "Movie", "Boxset", "Trailer", "Game", "Series", "MusicArtist" },
-                Limit = 1000,
-                SortBy = new[] { ItemSortBy.Random },
-                Recursive = true
-            }, CancellationToken.None);
+                items = await apiClient.GetItemsAsync(new ItemQuery
+               {
+                   UserId = _session.LocalUserId,
+                   ImageTypes = new[] { ImageType.Backdrop },
+                   IncludeItemTypes = new[] { "Movie", "Boxset", "Trailer", "Game", "Series", "MusicArtist" },
+                   Limit = 1000,
+                   SortBy = new[] { ItemSortBy.Random },
+                   Recursive = true
+               }, CancellationToken.None);
+            }
+            catch
+            {
+                _screensaverManager.ShowScreensaver(true, "Logo");
+                return;
+            }
 
             if (items.Items.Length == 0)
             {
@@ -93,7 +101,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Screensavers
                     ImageStretch = Stretch.UniformToFill
                 }
             });
-            
+
         }
-   }
+    }
 }

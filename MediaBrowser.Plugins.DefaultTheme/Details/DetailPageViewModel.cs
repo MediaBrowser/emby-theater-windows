@@ -701,7 +701,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
             }
             else if (item.IsStudio)
             {
-                query.Studios = new[] { item.Name };
+                query.StudioIds = new[] { item.Id };
             }
             else if (item.IsGenre || item.IsMusicGenre || item.IsGameGenre)
             {

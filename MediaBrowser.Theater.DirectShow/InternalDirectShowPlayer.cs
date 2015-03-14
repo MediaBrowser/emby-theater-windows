@@ -383,7 +383,7 @@ namespace MediaBrowser.Theater.DirectShow
             {
                 try
                 {
-                    var result = await apiClient.GetLiveMediaInfo(item.Id, apiClient.CurrentUserId);
+                    var result = await apiClient.GetPlaybackInfo(item.Id, apiClient.CurrentUserId);
                     mediaSources = result.MediaSources;
                 }
                 catch

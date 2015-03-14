@@ -605,7 +605,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Home
             }
             else if (indexOption.StartsWith("Studio:"))
             {
-                query.Studios = new[] { indexOption.Split(':').Last() };
+                query.StudioIds = new[] { indexOption.Split(':').Last() };
 
                 query.SortBy = new[] { ItemSortBy.SortName };
                 query.SortOrder = SortOrder.Ascending;

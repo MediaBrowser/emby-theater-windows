@@ -142,6 +142,7 @@ namespace MediaBrowser.Theater
             await base.RegisterResources(progress).ConfigureAwait(false);
 
             RegisterSingleInstance(ApplicationPaths);
+            RegisterSingleInstance<ITheaterApplicationPaths>(ApplicationPaths);
             RegisterSingleInstance(TheaterConfigurationManager);
             RegisterSingleInstance(ConnectionManager);
             RegisterSingleInstance<ITheaterApplicationHost>(this);

@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using MediaBrowser.Model.Logging;
+using MediaBrowser.Theater.Api.Configuration;
 using MediaBrowser.Theater.Api.Events;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.Playback;
@@ -23,6 +24,7 @@ namespace MediaBrowser.Theater.Mpdn
         private readonly IWindowManager _windowManager;
         private readonly IEventAggregator _events;
         private readonly IPlaybackManager _playbackManager;
+        private readonly ITheaterApplicationPaths _appPaths;
 
         private IDisposable _player;
         private RemoteClient _api;
@@ -48,12 +50,13 @@ namespace MediaBrowser.Theater.Mpdn
             get { return false; }
         }
 
-        public MpdnMediaPlayer(ILogManager logManager, IWindowManager windowManager, IEventAggregator events, IPlaybackManager playbackManager)
+        public MpdnMediaPlayer(ILogManager logManager, IWindowManager windowManager, IEventAggregator events, IPlaybackManager playbackManager, ITheaterApplicationPaths appPaths)
         {
             _logManager = logManager;
             _windowManager = windowManager;
             _events = events;
             _playbackManager = playbackManager;
+            _appPaths = appPaths;
         }
 
         public Task<IPreparedSessions> Prepare(IPlaySequence sequence, CancellationToken cancellationToken)
@@ -117,10 +120,8 @@ namespace MediaBrowser.Theater.Mpdn
 
         private Task<Process> StartMpdn()
         {
-            var directory = Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath);
-
-            var configDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                                              @"MediaPlayerDotNet");
+            var programDirectory = Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath);
+            var configDirectory = Path.Combine(_appPaths.PluginsPath, @"MediaPlayerDotNet");
 
             if (!Directory.Exists(configDirectory)) {
                 Directory.CreateDirectory(configDirectory);
@@ -128,12 +129,13 @@ namespace MediaBrowser.Theater.Mpdn
 
             var configLocation = Path.Combine(configDirectory, "Application.32.config");
             
-            File.Copy(Path.Combine(directory ?? "", @"MPDN\Application.32.config"), configLocation, true);
+            File.Copy(Path.Combine(programDirectory ?? "", @"MPDN\Application.32.config"), configLocation, true);
             EnsureRemoteClientAuthentication();
 
             return Task.Run(() => {
                 var process = Process.Start(new ProcessStartInfo {
-                    FileName = Path.Combine(directory ?? "", @"MPDN\MediaPlayerDotNet.exe"),
+                    FileName = Path.Combine(programDirectory ?? "", @"MPDN\MediaPlayerDotNet.exe"),
+                    Arguments = string.Format("--configfolder \"{0}\"", configDirectory),
                     UseShellExecute = false
                 });
                 

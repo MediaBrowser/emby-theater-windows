@@ -71,6 +71,246 @@
     <Compile Include="IUpdate.cs" />
     <Compile Include="LavFiltersInstaller.cs" />
     <Compile Include="MpdnMediaPlayer.cs" />
+    <Content Include="MPDN\Extensions\CustomLinearScalers\Gaussian.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\CustomLinearScalers\Sinc.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\CustomLinearScalers\SincBlackman.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\CustomLinearScalers\SincCosine.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\CustomLinearScalers\SincHamming.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\CustomLinearScalers\SincHann.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\Framework\ExtensionsUi.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\Framework\Filter.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\Framework\Helpers.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\Framework\PlayerExtension.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\Framework\RenderChain.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\Framework\RenderChainScript.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\Framework\RenderChainUi.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\Framework\RenderScript.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\PlayerExtensions\DisplayChanger.ConfigDialog.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\PlayerExtensions\DisplayChanger.ConfigDialog.Designer.cs">
+      <DependentUpon>DisplayChanger.ConfigDialog.cs</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\PlayerExtensions\DisplayChanger.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\PlayerExtensions\DisplayChanger.NativeMethods.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\PlayerExtensions\DynamicHotkeys.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\PlayerExtensions\FullScreenTextPainter.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\PlayerExtensions\GoToTime.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\PlayerExtensions\GoToTimeForm.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\PlayerExtensions\GoToTimeForm.Designer.cs">
+      <DependentUpon>GoToTimeForm.cs</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\PlayerExtensions\KeyBindings.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\PlayerExtensions\MbtBridge.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\PlayerExtensions\MouseControl.ConfigDialog.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\PlayerExtensions\MouseControl.ConfigDialog.Designer.cs">
+      <DependentUpon>MouseControl.ConfigDialog.cs</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\PlayerExtensions\MouseControl.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\PlayerExtensions\Navigation.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\PlayerExtensions\Playlist.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\PlayerExtensions\PlaylistConfigDialog.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\PlayerExtensions\PlaylistConfigDialog.Designer.cs">
+      <DependentUpon>PlaylistConfigDialog.cs</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\PlayerExtensions\PlaylistForm.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\PlayerExtensions\PlaylistForm.Designer.cs">
+      <DependentUpon>PlaylistForm.cs</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\PlayerExtensions\RemoteClients.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\PlayerExtensions\RemoteClients.Designer.cs">
+      <DependentUpon>RemoteClients.cs</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\PlayerExtensions\RemoteControl.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\PlayerExtensions\RemoteControlConfig.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\PlayerExtensions\RemoteControlConfig.Designer.cs">
+      <DependentUpon>RemoteControlConfig.cs</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\PlayerExtensions\RemoteControl_AuthHandler.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\PlayerExtensions\ViewMediaInfo.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\PlayerExtensions\ViewMediaInfoForm.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\PlayerExtensions\ViewMediaInfoForm.Designer.cs">
+      <DependentUpon>ViewMediaInfoForm.cs</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\Custom.MyRenderScript.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\Mpdn.ImageProcessor.ConfigDialog.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\Mpdn.ImageProcessor.ConfigDialog.Designer.cs">
+      <DependentUpon>Mpdn.ImageProcessor.ConfigDialog.cs</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\Mpdn.ImageProcessor.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\Mpdn.Lut3D.ConfigDialog.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\Mpdn.Lut3D.ConfigDialog.Designer.cs">
+      <DependentUpon>Mpdn.Lut3D.ConfigDialog.cs</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\Mpdn.Lut3D.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\Mpdn.Presets.ConfigDialog.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\Mpdn.Presets.ConfigDialog.Designer.cs">
+      <DependentUpon>Mpdn.Presets.ConfigDialog.cs</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\Mpdn.Presets.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\Mpdn.Resizer.ConfigDialog.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\Mpdn.Resizer.ConfigDialog.Designer.cs">
+      <DependentUpon>Mpdn.Resizer.ConfigDialog.cs</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\Mpdn.Resizer.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\Mpdn.ScriptChain.ConfigDialog.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\Mpdn.ScriptChain.ConfigDialog.Designer.cs">
+      <DependentUpon>Mpdn.ScriptChain.ConfigDialog.cs</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\Mpdn.ScriptChain.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\Shiandow.Chroma.ChromaScaler.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\Shiandow.Chroma.ConfigDialog.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\Shiandow.Chroma.ConfigDialog.Designer.cs">
+      <DependentUpon>Shiandow.Chroma.ConfigDialog.cs</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\Shiandow.Deband.ConfigDialog.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\Shiandow.Deband.ConfigDialog.Designer.cs">
+      <DependentUpon>Shiandow.Deband.ConfigDialog.cs</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\Shiandow.Deband.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\Shiandow.Nedi.ConfigDialog.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\Shiandow.Nedi.ConfigDialog.Designer.cs">
+      <DependentUpon>Shiandow.Nedi.ConfigDialog.cs</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\Shiandow.Nedi.NediScaler.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\Shiandow.SuperChromaRes.ConfigDialog.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\Shiandow.SuperChromaRes.ConfigDialog.Designer.cs">
+      <DependentUpon>Shiandow.SuperChromaRes.ConfigDialog.cs</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\Shiandow.SuperChromaRes.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\Shiandow.SuperRes.ConfigDialog.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\Shiandow.SuperRes.ConfigDialog.Designer.cs">
+      <DependentUpon>Shiandow.SuperRes.ConfigDialog.cs</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MPDN\Extensions\RenderScripts\Shiandow.SuperRes.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RemoteClient.cs" />
     <Compile Include="Session.cs" />
@@ -90,27 +330,34 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="MPDN\Application.32.config">
+    <Content Include="MPDN\MediaPlayerDotNet.exe.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="MPDN\MediaPlayerDotNet.exe.config">
+    <Content Include="MPDN\MediaPlayerDotNet_2.22.1.2987.nrmap">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="MPDN\MediaPlayerDotNet_2.21.4.2975.nrmap">
+    </Content>
+    <Content Include="MPDN\Mpdn.Shaders.dat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="MPDN\Mpdn.Shaders.dat">
+    </Content>
+    <Content Include="MPDN\Native\x86\CallbackFilter.ax">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="MPDN\Native\x64\CallbackFilter.ax">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="MPDN\Native\x86\CallbackFilter.ax">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    </Content>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="MPDN\Extensions\PlayerExtensions\PlaylistForm.resx" />
+    <EmbeddedResource Include="MPDN\Extensions\PlayerExtensions\RemoteControlConfig.resx">
+      <DependentUpon>RemoteControlConfig.cs</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <Content Include="MPDN\Extensions\PlayerExtensions\Resources\Mpdn.PlayerExtensions.Playlist.PlaylistForm.resx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="MPDN\Application.32.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="MPDN\CommandLine.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -118,9 +365,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="MPDN\DirectShowLib-2005.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MPDN\Extensions\MPDN_Extensions.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="MPDN\Extensions\RenderScripts\ChromaScaler\Chroma.hlsl">
@@ -321,30 +565,6 @@
     <Content Include="MPDN\Mpdn.RenderScript.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="MPDN\Native\x64\D3D9NativeServices.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MPDN\Native\x64\D3DCompiler_43.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MPDN\Native\x64\D3DX9_43.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MPDN\Native\x64\Dx11Font.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MPDN\Native\x64\FW1FontWrapper.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MPDN\Native\x64\MediaInfo.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MPDN\Native\x64\sharpdx_direct3d11_effects_x64.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MPDN\Native\x64\VideoFrameServicesNative.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="MPDN\Native\x86\D3D9NativeServices.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -393,11 +613,6 @@
     <Content Include="MPDN\YAXLib.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="MPDN\Extensions\PlayerExtensions\PlaylistForm.resx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

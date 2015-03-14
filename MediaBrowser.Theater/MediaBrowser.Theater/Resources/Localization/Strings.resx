@@ -125,6 +125,10 @@
     <value>@InstallAction_Install</value>
     <comment>Setup wizard prerequisite will be installed status</comment>
   </data>
+  <data name="InstallAction_Update" xml:space="preserve">
+    <value>@InstallAction_Update</value>
+    <comment>Setup wizard prerequisite will install an update</comment>
+  </data>
   <data name="NextActionType_Finish" xml:space="preserve">
     <value>@NextActionType_Finish</value>
     <comment>Finish wizard button text</comment>
@@ -208,6 +212,10 @@
   <data name="SetupWizard_ServerDetails_Title" xml:space="preserve">
     <value>@SetupWizard_ServerDetails_Title</value>
     <comment>Setup wizard server details page title</comment>
+  </data>
+  <data name="StartupWizard_Prerequisites_Searching" xml:space="preserve">
+    <value>@StartupWizard_Prerequisites_Searching</value>
+    <comment>Searching for prerequisite installation</comment>
   </data>
   <data name="StartupWizard_Title" xml:space="preserve">
     <value>@StartupWizard_Title</value>

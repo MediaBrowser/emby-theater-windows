@@ -109,7 +109,9 @@
     <Compile Include="Navigation\PathResolution.cs" />
     <Compile Include="Commands\IGlobalMenuCommand.cs" />
     <Compile Include="System\IStartupEntryPoint.cs" />
+    <Compile Include="System\ProgressExtensions.cs" />
     <Compile Include="System\ScreenDump.cs" />
+    <Compile Include="System\UacHelper.cs" />
     <Compile Include="UserInput\IUserInputManager.cs" />
     <Compile Include="UserInterface\IHasItemSortModes.cs" />
     <Compile Include="UserInterface\IImageManager.cs" />

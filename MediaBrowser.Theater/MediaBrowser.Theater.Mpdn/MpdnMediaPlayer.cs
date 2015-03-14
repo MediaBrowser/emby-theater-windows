@@ -126,9 +126,9 @@ namespace MediaBrowser.Theater.Mpdn
                 Directory.CreateDirectory(configDirectory);
             }
 
-            var configLocation = Path.Combine(configDirectory, "Application.AnyCPU.config");
+            var configLocation = Path.Combine(configDirectory, "Application.32.config");
             
-            File.Copy(Path.Combine(directory ?? "", @"MPDN\Application.AnyCPU.config"), configLocation, true);
+            File.Copy(Path.Combine(directory ?? "", @"MPDN\Application.32.config"), configLocation, true);
             EnsureRemoteClientAuthentication();
 
             return Task.Run(() => {

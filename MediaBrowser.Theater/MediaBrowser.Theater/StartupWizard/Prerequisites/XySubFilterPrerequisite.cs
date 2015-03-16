@@ -1,32 +1,30 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using MediaBrowser.Theater.Api.System;
+﻿using System.Threading.Tasks;
+using MediaBrowser.Theater.Mpdn;
 
 namespace MediaBrowser.Theater.StartupWizard.Prerequisites
 {
     public class XySubFilterPrerequisite
         : Prerequisite
     {
-        private readonly IMediaFilters _mediaFilters;
+        private readonly XySubFilterInstaller _installer;
 
-        public XySubFilterPrerequisite(IMediaFilters mediaFilters)
+        public XySubFilterPrerequisite()
         {
-            _mediaFilters = mediaFilters;
+            _installer = new XySubFilterInstaller();
             Name = "XySubFilter";
-            IsOptional = true;
+            IsOptional = false;
             DownloadUrl = "https://code.google.com/p/xy-vsfilter/wiki/Downloads";
+            RequiresManualInstallation = !_installer.CanInstall;
         }
 
-        protected override bool CheckInstallStatus()
+        public override Task<IUpdate> GetInstaller()
         {
-            return _mediaFilters.IsXySubFilterInstalled();
+            return _installer.FindUpdate();
         }
 
-        public override async Task Install(IProgress<double> progress, CancellationToken cancellationToken)
+        public override bool CheckInstallStatus()
         {
-            await _mediaFilters.InstallXySubFilter(progress, cancellationToken).ConfigureAwait(false);
-            await base.Install(progress, cancellationToken);
+            return _installer.IsInstalled;
         }
     }
 }

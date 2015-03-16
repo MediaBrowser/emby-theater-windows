@@ -5,12 +5,17 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:viewModels="clr-namespace:MediaBrowser.Theater.StartupWizard.ViewModels"
              xmlns:lex="http://wpflocalizeextension.codeplex.com"
+             xmlns:converters="clr-namespace:MediaBrowser.Theater.Presentation.Converters;assembly=MediaBrowser.Theater.Presentation"
              lex:LocalizeDictionary.DesignCulture="en"
              lex:ResxLocalizationProvider.DefaultAssembly="MediaBrowser.Theater"
              lex:ResxLocalizationProvider.DefaultDictionary="Strings"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModels:PrerequisitesViewModel}"
              d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibility"/>
+    </UserControl.Resources>
+    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
@@ -33,23 +38,29 @@
                         
                         <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
 
-                        <Grid Grid.Column="1" Visibility="{Binding IsRequired, Converter={StaticResource BooleanToVisibility}}">
-                            <TextBlock Visibility="{Binding IsInstalled, Converter={StaticResource BooleanToVisibility}}" Foreground="#27a436" Text="{lex:Loc SetupWizard_Prerequisites_AlreadyInstalled}"/>
-                            <TextBlock Visibility="{Binding IsNotInstalled, Converter={StaticResource BooleanToVisibility}}" Text="{lex:Loc SetupWizard_Prerequisites_Install}"/>
-                        </Grid>
+                        <TextBlock Grid.Column="1" Visibility="{Binding IsSearching, Converter={StaticResource BooleanToVisibility}}" Text="{lex:Loc StartupWizard_Prerequisites_Searching}"/>
 
-                        <Grid Grid.Column="1" Visibility="{Binding IsOptional, Converter={StaticResource BooleanToVisibility}}">
+                        <Grid Grid.Column="1" Visibility="{Binding IsSearching, Converter={StaticResource InverseBooleanToVisibility}}">
+                            
+                            <Grid Visibility="{Binding IsOptional, Converter={StaticResource InverseBooleanToVisibility}}">
                                 <TextBlock Visibility="{Binding IsInstalled, Converter={StaticResource BooleanToVisibility}}" Foreground="#27a436" Text="{lex:Loc SetupWizard_Prerequisites_AlreadyInstalled}"/>
-                            <ComboBox Visibility="{Binding IsNotInstalled, Converter={StaticResource BooleanToVisibility}}" ItemsSource="{Binding InstallActions}" SelectedItem="{Binding InstallAction}">
-                                <ComboBox.ItemTemplate>
-                                    <DataTemplate DataType="{x:Type viewModels:InstallAction}">
-                                        <Grid>
-                                            <lex:LocProxy Source="{Binding}" x:Name="Proxy" PrependType="True" Separator="_"/>
-                                            <TextBlock Text="{Binding Result, ElementName=Proxy}"/>
-                                        </Grid>
-                                    </DataTemplate>
-                                </ComboBox.ItemTemplate>
-                            </ComboBox>
+                                <TextBlock Visibility="{Binding IsInstalled, Converter={StaticResource InverseBooleanToVisibility}}" Text="{lex:Loc SetupWizard_Prerequisites_Install}"/>
+                            </Grid>
+                            
+                            <Grid Visibility="{Binding IsOptional, Converter={StaticResource BooleanToVisibility}}">
+                                <TextBlock Visibility="{Binding IsInstalled, Converter={StaticResource BooleanToVisibility}}" Foreground="#27a436" Text="{lex:Loc SetupWizard_Prerequisites_AlreadyInstalled}"/>
+                                <ComboBox Visibility="{Binding IsInstalled, Converter={StaticResource InverseBooleanToVisibility}}" ItemsSource="{Binding InstallActions}" SelectedItem="{Binding InstallAction}">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate DataType="{x:Type viewModels:InstallAction}">
+                                            <Grid>
+                                                <lex:LocProxy Source="{Binding}" x:Name="Proxy" PrependType="True" Separator="_"/>
+                                                <TextBlock Text="{Binding Result, ElementName=Proxy}"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                            </Grid>
+                            
                         </Grid>
                     </Grid>
                 </DataTemplate>

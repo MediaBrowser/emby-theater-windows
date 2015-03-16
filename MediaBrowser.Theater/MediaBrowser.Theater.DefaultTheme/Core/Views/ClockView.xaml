@@ -7,8 +7,8 @@
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance viewModels:ClockViewModel}"
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid>
+    <StackPanel Orientation="Horizontal">
         <TextBlock Text="{Binding TimeLeft}" FontSize="33"/>
         <TextBlock Text="{Binding TimeRight}" Foreground="{StaticResource AccentBrush}" FontSize="33"/>
-    </Grid>
+    </StackPanel>
 </UserControl>

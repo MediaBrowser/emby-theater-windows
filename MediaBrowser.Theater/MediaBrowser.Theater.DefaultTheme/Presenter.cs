@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reactive.Disposables;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,9 +16,9 @@ using MediaBrowser.Theater.Api.Navigation;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Configuration;
 using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
-using MediaBrowser.Theater.DirectShow;
+//using MediaBrowser.Theater.DirectShow;
 using Microsoft.Win32;
-using Application = System.Windows.Application;
+using WindowState = MediaBrowser.Theater.Api.UserInterface.WindowState;
 
 namespace MediaBrowser.Theater.DefaultTheme
 {
@@ -29,12 +30,14 @@ namespace MediaBrowser.Theater.DefaultTheme
     public struct ShowNotificationEvent
     {
         public IViewModel ViewModel { get; set; }
+        public NotificationPriority Priority { get; set; }
     }
 
-    public class WindowManager
+    public class WindowManager : IWindowManager
     {
         private readonly ITheaterApplicationHost _appHost;
-        private readonly IInternalPlayerWindowManager _internalPlayerWindowManager;
+        private readonly IEventAggregator _events;
+        //private readonly IInternalPlayerWindowManager _internalPlayerWindowManager;
         private readonly ILogger _logger;
         private readonly INavigator _navigator;
         private PopupWindow _currentPopup;
@@ -42,12 +45,17 @@ namespace MediaBrowser.Theater.DefaultTheme
         private MainWindow _mainWindow;
         private IntPtr _mainWindowHandle;
 
-        public WindowManager(INavigator navigator, IInternalPlayerWindowManager internalPlayerWindowManager, ILogManager logManager, ITheaterApplicationHost appHost)
+        private readonly EventHandler _refocusMainWindow;
+
+        public WindowManager(INavigator navigator, /*IInternalPlayerWindowManager internalPlayerWindowManager,*/ ILogManager logManager, ITheaterApplicationHost appHost, IEventAggregator events)
         {
             _navigator = navigator;
-            _internalPlayerWindowManager = internalPlayerWindowManager;
+            //_internalPlayerWindowManager = internalPlayerWindowManager;
             _appHost = appHost;
+            _events = events;
             _logger = logManager.GetLogger("WindowManager");
+
+            _refocusMainWindow = (s, e) => FocusMainWindow();
         }
 
         public MainWindow MainWindow
@@ -69,62 +77,60 @@ namespace MediaBrowser.Theater.DefaultTheme
                 handler(obj);
             }
         }
-
-        private void FocusMainWindow()
+        
+        public void FocusMainWindow()
         {
-            var rootVm = _mainWindow.DataContext as RootViewModel;
-            if (rootVm != null) {
-                rootVm.IsInFocus = true;
-            }
+            Action action = () => {
+                var rootVm = _mainWindow.DataContext as RootViewModel;
+                if (rootVm != null) {
+                    rootVm.IsInFocus = true;
+                }
+            };
+
+            action.OnUiThread();
         }
 
         private void UnfocusMainWindow()
         {
-            var rootVm = _mainWindow.DataContext as RootViewModel;
-            if (rootVm != null) {
-                rootVm.IsInFocus = false;
-            }
+            Action action = () => {
+                var rootVm = _mainWindow.DataContext as RootViewModel;
+                if (rootVm != null) {
+                    rootVm.IsInFocus = false;
+                }
+            };
+
+            action.OnUiThread();
         }
 
-        public async Task ClosePopup()
+        public async Task SilentlyClosePopup()
         {
-            var tcs = new TaskCompletionSource<object>();
+            Func<Task> action = async () => {
+                if (_currentPopup != null) {
+                    _currentPopup.Closed -= _refocusMainWindow;
+                    _currentPopup.NavigateBackOnClose = false;
 
-            if (_currentPopup != null) {
-                Action action = async () => {
-                    var context = _currentPopup.DataContext as IViewModel;
-                    if (context != null) {
-                        await context.Close();
-                    }
+                    await _currentPopup.ClosePopup();
+                    FocusMainWindow();
+                }
+            };
 
-                    _currentPopup.Close();
-                    _currentPopup = null;
-
-                    tcs.SetResult(null);
-                };
-
-                await action.OnUiThreadAsync();
-                await tcs.Task;
-            }
+            await action.OnUiThreadAsync();
         }
 
-        public async Task ShowPopup(IViewModel contents)
+        public async Task ShowPopup(IViewModel contents, bool unfocusMainWindow = true, bool navigateBackOnClose = true)
         {
-            await ClosePopup();
+            await SilentlyClosePopup();
 
             _currentPopup = new PopupWindow(_navigator) {
-                DataContext = contents
+                DataContext = contents,
+                NavigateBackOnClose = navigateBackOnClose,
+                CloseOnBackCommand = !navigateBackOnClose
             };
 
-            EventHandler windowClosed = null;
-            windowClosed = (sender, args) => {
-                FocusMainWindow();
-                _currentPopup.Closed -= windowClosed;
-            };
-
-            _currentPopup.Closed += windowClosed;
-
-            UnfocusMainWindow();
+            if (unfocusMainWindow) {
+                UnfocusMainWindow();
+                _currentPopup.Closed += _refocusMainWindow;
+            }
 
             _currentPopup.ShowModal(_mainWindow, _appHost.UserInputManager);
         }
@@ -171,11 +177,11 @@ namespace MediaBrowser.Theater.DefaultTheme
             } else {
                 // set first startup size and state
                 if (double.IsNaN(window.Width)) {
-                    window.Width = SystemParameters.VirtualScreenWidth*0.75;
+                    window.Width = SystemParameters.PrimaryScreenWidth*0.75;
                 }
 
                 if (double.IsNaN(window.Height)) {
-                    window.Height = SystemParameters.VirtualScreenHeight*0.75;
+                    window.Height = SystemParameters.PrimaryScreenHeight*0.75;
                 }
 
                 if (double.IsNaN(window.Top)) {
@@ -186,111 +192,115 @@ namespace MediaBrowser.Theater.DefaultTheme
                     window.Left = 0;
                 }
 
-                window.WindowState = WindowState.Normal;
+                window.WindowState = System.Windows.WindowState.Normal;
             }
 
-            window.ShowInTaskbar = window.WindowState == WindowState.Minimized;
+            //window.ShowInTaskbar = window.WindowState == System.Windows.WindowState.Minimized;
 
             _mainWindow = window;
             _mainWindowHandle = new WindowInteropHelper(_mainWindow).Handle;
 
-            CreateInternalPlayerWindow(startPosition);
+            //CreateInternalPlayerWindow(startPosition);
 
             OnMainWindowLoaded(window);
+
+            _mainWindow.LocationChanged += (s, e) => SendWindowState();
+            _mainWindow.StateChanged += (s, e) => SendWindowState();
+            _mainWindow.SizeChanged += (s, e) => SendWindowState();
 
             return window;
         }
 
-        private void CreateInternalPlayerWindow(FormStartPosition? startPosition)
-        {
-            int? formWidth = null;
-            int? formHeight = null;
-            int? formLeft = null;
-            int? formTop = null;
+//        private void CreateInternalPlayerWindow(FormStartPosition? startPosition)
+//        {
+//            int? formWidth = null;
+//            int? formHeight = null;
+//            int? formLeft = null;
+//            int? formTop = null;
+//
+//            try {
+//                formWidth = Convert.ToInt32(_mainWindow.Width);
+//                formHeight = Convert.ToInt32(_mainWindow.Height);
+//            }
+//            catch (OverflowException) {
+//                formWidth = null;
+//                formHeight = null;
+//            }
+//            try {
+//                formTop = Convert.ToInt32(_mainWindow.Top);
+//                formLeft = Convert.ToInt32(_mainWindow.Left);
+//            }
+//            catch (OverflowException) {
+//                formLeft = null;
+//                formTop = null;
+//            }
+//
+//            FormWindowState state = GetWindowsFormState(_mainWindow.WindowState);
+//            
+//            var internalPlayerWindowThread = new Thread(() => ShowHiddenWindow(formWidth, formHeight, formTop, formLeft, startPosition, state));
+//            internalPlayerWindowThread.Name = "Internal Player Window";
+//            internalPlayerWindowThread.SetApartmentState(ApartmentState.MTA);
+//            internalPlayerWindowThread.IsBackground = true;
+//            internalPlayerWindowThread.Priority = ThreadPriority.AboveNormal;
+//            internalPlayerWindowThread.Start();
+//        }
 
-            try {
-                formWidth = Convert.ToInt32(_mainWindow.Width);
-                formHeight = Convert.ToInt32(_mainWindow.Height);
-            }
-            catch (OverflowException) {
-                formWidth = null;
-                formHeight = null;
-            }
-            try {
-                formTop = Convert.ToInt32(_mainWindow.Top);
-                formLeft = Convert.ToInt32(_mainWindow.Left);
-            }
-            catch (OverflowException) {
-                formLeft = null;
-                formTop = null;
-            }
-
-            FormWindowState state = GetWindowsFormState(_mainWindow.WindowState);
-            
-            var internalPlayerWindowThread = new Thread(() => ShowHiddenWindow(formWidth, formHeight, formTop, formLeft, startPosition, state));
-            internalPlayerWindowThread.Name = "Internal Player Window";
-            internalPlayerWindowThread.SetApartmentState(ApartmentState.MTA);
-            internalPlayerWindowThread.IsBackground = true;
-            internalPlayerWindowThread.Priority = ThreadPriority.AboveNormal;
-            internalPlayerWindowThread.Start();
-        }
-
-        private FormWindowState GetWindowsFormState(WindowState state)
+        private FormWindowState GetWindowsFormState(System.Windows.WindowState state)
         {
             switch (state) {
-                case WindowState.Maximized:
+                case System.Windows.WindowState.Maximized:
                     return FormWindowState.Maximized;
-                case WindowState.Minimized:
+                case System.Windows.WindowState.Minimized:
                     return FormWindowState.Minimized;
             }
 
             return FormWindowState.Normal;
         }
 
-        private void ShowHiddenWindow(int? width, int? height, int? top, int? left, FormStartPosition? startPosition, FormWindowState windowState)
-        {
-            var playerWindow = new InternalPlayerWindow();
-            playerWindow.Load += HiddenWindow_Load;
-            playerWindow.Activated += HiddenWindow_Activated;
-
-            if (startPosition.HasValue) {
-                playerWindow.StartPosition = startPosition.Value;
-            }
-
-            var dpiScale = GetSystemDpiFactor();
-
-            if (width.HasValue) {
-                playerWindow.Width = (int)(width.Value * dpiScale);
-            }
-            if (height.HasValue) {
-                playerWindow.Height = (int)(height.Value * dpiScale);
-            }
-            if (top.HasValue) {
-                playerWindow.Top = (int)(top.Value * dpiScale);
-            }
-            if (left.HasValue) {
-                playerWindow.Left = (int)(left.Value * dpiScale);
-            }
-
-            playerWindow.WindowState = windowState;
-
-            _mainWindow.Loaded += (s, e) => {
-                MovePlayerWindow(playerWindow);
-                UpdatePlayerWindowSize(playerWindow);
-                UpdatePlayerWindowState(playerWindow);
-            };
-
-            _mainWindow.LocationChanged += (s, e) => MovePlayerWindow(playerWindow);
-            _mainWindow.StateChanged += (s, e) => UpdatePlayerWindowState(playerWindow);
-            _mainWindow.SizeChanged += (s, e) => UpdatePlayerWindowSize(playerWindow);
-            _mainWindow.Closing += (s, e) => ClosePlayerWindow(playerWindow);
-
-            _internalPlayerWindowManager.Window = playerWindow;
-
-            playerWindow.Show();
-
-            Dispatcher.Run();
-        }
+//        private void ShowHiddenWindow(int? width, int? height, int? top, int? left, FormStartPosition? startPosition, FormWindowState windowState)
+//        {
+//            var playerWindow = new InternalPlayerWindow();
+//            playerWindow.Load += HiddenWindow_Load;
+//            playerWindow.Activated += HiddenWindow_Activated;
+//
+//            if (startPosition.HasValue) {
+//                playerWindow.StartPosition = startPosition.Value;
+//            }
+//
+//            var dpiScale = GetSystemDpiFactor();
+//
+//            if (width.HasValue) {
+//                playerWindow.Width = (int)(width.Value * dpiScale);
+//            }
+//            if (height.HasValue) {
+//                playerWindow.Height = (int)(height.Value * dpiScale);
+//            }
+//            if (top.HasValue) {
+//                playerWindow.Top = (int)(top.Value * dpiScale);
+//            }
+//            if (left.HasValue) {
+//                playerWindow.Left = (int)(left.Value * dpiScale);
+//            }
+//
+//            playerWindow.WindowState = windowState;
+//
+//            _mainWindow.Loaded += (s, e) => {
+//                MovePlayerWindow(playerWindow);
+//                UpdatePlayerWindowSize(playerWindow);
+//                UpdatePlayerWindowState(playerWindow);
+//            };
+//
+//            _mainWindow.LocationChanged += (s, e) => MovePlayerWindow(playerWindow);
+//            _mainWindow.StateChanged += (s, e) => UpdatePlayerWindowState(playerWindow);
+//            _mainWindow.SizeChanged += (s, e) => UpdatePlayerWindowSize(playerWindow);
+//            _mainWindow.Closing += (s, e) => ClosePlayerWindow(playerWindow);
+//
+//            _internalPlayerWindowManager.Window = playerWindow;
+//
+//            playerWindow.Show();
+//
+//            Dispatcher.Run();
+//        }
 
         private static double GetSystemDpiFactor()
         {
@@ -299,60 +309,60 @@ namespace MediaBrowser.Theater.DefaultTheme
         }
 
 
-        private void MovePlayerWindow(InternalPlayerWindow playerWindow)
-        {
-            double top = _mainWindow.Top;
-            double left = _mainWindow.Left;
-
-            if (double.IsNaN(top) || double.IsNaN(left)) {
-                return;
-            }
-
-            var dpiScale = GetSystemDpiFactor();
-
-            InvokeOnWindow(playerWindow, () => {
-                playerWindow.Top = Convert.ToInt32(top * dpiScale);
-                playerWindow.Left = Convert.ToInt32(left * dpiScale);
-            });
-        }
-
-        private void UpdatePlayerWindowState(InternalPlayerWindow playerWindow)
-        {
-            FormWindowState state = GetWindowsFormState(_mainWindow.WindowState);
-
-            _mainWindow.ShowInTaskbar = state == FormWindowState.Minimized;
-
-            InvokeOnWindow(playerWindow, () => {
-                if (state == FormWindowState.Minimized) {
-                    playerWindow.Hide();
-                } else {
-                    playerWindow.Show();
-                    playerWindow.WindowState = state;
-                }
-            });
-        }
-
-        private void UpdatePlayerWindowSize(InternalPlayerWindow playerWindow)
-        {
-            double width = _mainWindow.Width;
-            double height = _mainWindow.Height;
-
-            if (double.IsNaN(width) || double.IsNaN(height)) {
-                return;
-            }
-
-            var dpiScale = GetSystemDpiFactor();
-
-            InvokeOnWindow(playerWindow, () => {
-                playerWindow.Width = Convert.ToInt32(width * dpiScale);
-                playerWindow.Height = Convert.ToInt32(height * dpiScale);
-            });
-        }
-
-        private void ClosePlayerWindow(InternalPlayerWindow playerWindow)
-        {
-            InvokeOnWindow(playerWindow, playerWindow.Close);
-        }
+//        private void MovePlayerWindow(InternalPlayerWindow playerWindow)
+//        {
+//            double top = _mainWindow.Top;
+//            double left = _mainWindow.Left;
+//
+//            if (double.IsNaN(top) || double.IsNaN(left)) {
+//                return;
+//            }
+//
+//            var dpiScale = GetSystemDpiFactor();
+//
+//            InvokeOnWindow(playerWindow, () => {
+//                playerWindow.Top = Convert.ToInt32(top * dpiScale);
+//                playerWindow.Left = Convert.ToInt32(left * dpiScale);
+//            });
+//        }
+//
+//        private void UpdatePlayerWindowState(InternalPlayerWindow playerWindow)
+//        {
+//            FormWindowState state = GetWindowsFormState(_mainWindow.WindowState);
+//
+//            _mainWindow.ShowInTaskbar = state == FormWindowState.Minimized;
+//
+//            InvokeOnWindow(playerWindow, () => {
+//                if (state == FormWindowState.Minimized) {
+//                    playerWindow.Hide();
+//                } else {
+//                    playerWindow.Show();
+//                    playerWindow.WindowState = state;
+//                }
+//            });
+//        }
+//
+//        private void UpdatePlayerWindowSize(InternalPlayerWindow playerWindow)
+//        {
+//            double width = _mainWindow.Width;
+//            double height = _mainWindow.Height;
+//
+//            if (double.IsNaN(width) || double.IsNaN(height)) {
+//                return;
+//            }
+//
+//            var dpiScale = GetSystemDpiFactor();
+//
+//            InvokeOnWindow(playerWindow, () => {
+//                playerWindow.Width = Convert.ToInt32(width * dpiScale);
+//                playerWindow.Height = Convert.ToInt32(height * dpiScale);
+//            });
+//        }
+//
+//        private void ClosePlayerWindow(InternalPlayerWindow playerWindow)
+//        {
+//            InvokeOnWindow(playerWindow, playerWindow.Close);
+//        }
 
         private void InvokeOnWindow(Form form, Action action)
         {
@@ -419,6 +429,82 @@ namespace MediaBrowser.Theater.DefaultTheme
             [DllImport("user32.dll")]
             public static extern IntPtr GetForegroundWindow();
         }
+
+        public MainWindowState MainWindowState
+        {
+            get
+            {
+                var state = new MainWindowState();
+                Action action = () => {
+
+                    state =  new MainWindowState {
+                        Left = _mainWindow.Left,
+                        Top = _mainWindow.Top,
+                        Width = _mainWindow.Width,
+                        Height = _mainWindow.Height,
+                        State = ConvertWindowState(_mainWindow.WindowState),
+                        DpiScale = GetSystemDpiFactor()
+                    };
+                };
+
+                action.OnUiThread();
+
+                return state;
+            }
+        }
+
+        private WindowState ConvertWindowState(System.Windows.WindowState state)
+        {
+            switch (state) {
+                case System.Windows.WindowState.Normal:
+                    return WindowState.Windowed;
+                case System.Windows.WindowState.Minimized:
+                    return WindowState.Minimized;
+                case System.Windows.WindowState.Maximized:
+                    return WindowState.Maximized;
+                default:
+                    throw new ArgumentOutOfRangeException("state");
+            }
+        }
+
+        private void SendWindowState()
+        {
+            _events.Get<MainWindowState>().Publish(MainWindowState);
+        }
+
+        public IDisposable UseBackgroundWindow(IntPtr hwnd)
+        {
+            Action action = () => {
+                new WindowInteropHelper(_mainWindow).Owner = hwnd;
+                _mainWindow.ShowInTaskbar = false;
+                _mainWindow.Focus();
+            };
+
+            action.OnUiThread();
+
+            // todo route input events from background media window to main window
+            // todo make window transparent based upon presense of a background window, rather than media playing
+
+            return Disposable.Create(() => {
+                Action disposeAction = () => {
+                    new WindowInteropHelper(_mainWindow).Owner = IntPtr.Zero;
+                    _mainWindow.ShowInTaskbar = true;
+                    _mainWindow.Activate();
+                };
+
+                disposeAction.OnUiThread();
+            });
+        }
+
+        void IWindowManager.FocusMainWindow()
+        {
+            Action action = () => {
+                if (!_mainWindow.IsKeyboardFocusWithin) {
+                    _mainWindow.Activate();
+                }
+            };
+            action.OnUiThread();
+        }
     }
 
     public class Presenter
@@ -481,22 +567,22 @@ namespace MediaBrowser.Theater.DefaultTheme
 
         public async Task ShowPage(IViewModel contents)
         {
-            await _windowManager.ClosePopup();
+            await _windowManager.SilentlyClosePopup();
 
             _currentPage = contents;
             await _showPageEvent.Publish(new ShowPageEvent { ViewModel = contents });
             await _pageLoadedEvent.Publish(new PageLoadedEvent { ViewModel = contents });
         }
 
-        public async Task ShowPopup(IViewModel contents)
+        public async Task ShowPopup(IViewModel contents, bool unfocusMainWindow = true, bool navigateBackOnClose = true)
         {
-            await _windowManager.ShowPopup(contents);
+            await _windowManager.ShowPopup(contents, unfocusMainWindow, navigateBackOnClose);
             await _pageLoadedEvent.Publish(new PageLoadedEvent { ViewModel = contents });
         }
 
-        public Task ShowNotification(IViewModel contents)
+        public Task ShowNotification(IViewModel contents, NotificationPriority priority = NotificationPriority.Normal)
         {
-            return _showNotificationEvent.Publish(new ShowNotificationEvent { ViewModel = contents });
+            return _showNotificationEvent.Publish(new ShowNotificationEvent { ViewModel = contents, Priority = priority });
         }
 
         public MessageBoxResult ShowMessage(MessageBoxInfo messageBoxInfo)

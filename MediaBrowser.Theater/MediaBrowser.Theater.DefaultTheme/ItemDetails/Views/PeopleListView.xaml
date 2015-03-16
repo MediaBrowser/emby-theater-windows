@@ -20,7 +20,7 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <TextBlock Text="CAST" Margin="2,0,0,0" Style="{StaticResource PanoramaTitleTextBlockStyle}" Height="20"/>
+        <TextBlock Text="{Binding Title, Converter={StaticResource UppercaseConverter}}" Margin="2,0,0,0" Style="{StaticResource PanoramaTitleTextBlockStyle}" Height="20"/>
 
         <Border Grid.Row="1" Background="{StaticResource BackgroundBrush2}">
             <controls:ExtendedListBox

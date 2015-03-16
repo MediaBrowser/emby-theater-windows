@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
+using MediaBrowser.Theater.Api.Library;
 using MediaBrowser.Theater.Presentation;
 using MediaBrowser.Theater.Presentation.ViewModels;
 
@@ -31,7 +32,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
             }
 
             _item = item;
-            DisplayNameGenerator = ItemTileViewModel.GetDisplayNameWithAiredSpecial;
+            DisplayNameGenerator = i => i.GetDisplayName(new DisplayNameFormat(false, false));
         }
 
         public string DisplayName

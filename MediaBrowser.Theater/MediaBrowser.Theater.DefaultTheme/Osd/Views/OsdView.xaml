@@ -5,6 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:lex="http://wpflocalizeextension.codeplex.com"
              xmlns:viewModels="clr-namespace:MediaBrowser.Theater.DefaultTheme.Osd.ViewModels"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
              lex:LocalizeDictionary.DesignCulture="en"
              lex:ResxLocalizationProvider.DefaultAssembly="MediaBrowser.Theater.DefaultTheme"
              lex:ResxLocalizationProvider.DefaultDictionary="Strings"
@@ -13,36 +15,117 @@
              IsHitTestVisible="True"
              d:DataContext="{d:DesignInstance viewModels:OsdViewModel}"
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid x:Name="Container" Visibility="{Binding ShowOsd, Converter={StaticResource BooleanToVisibility}}"
-          FocusManager.IsFocusScope="True">
-        <Grid Background="#86000000" VerticalAlignment="Top" HorizontalAlignment="Stretch">
+    <Grid x:Name="Container" FocusManager.IsFocusScope="True">
+        <Grid x:Name="TopBanner" VerticalAlignment="Top" HorizontalAlignment="Stretch">
+            <Grid.Style>
+                <Style>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ShowOsd}" Value="True">
+                            <DataTrigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)">
+                                            <EasingDoubleKeyFrame Value="0" KeyTime="00:00:0.3">
+                                                <EasingDoubleKeyFrame.EasingFunction>
+                                                    <CubicEase EasingMode="EaseOut" />
+                                                </EasingDoubleKeyFrame.EasingFunction>
+                                            </EasingDoubleKeyFrame>
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.EnterActions>
+                            
+                            <DataTrigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)">
+                                            <EasingDoubleKeyFrame Value="-300" KeyTime="00:00:0.3">
+                                                <EasingDoubleKeyFrame.EasingFunction>
+                                                    <CubicEase EasingMode="EaseIn" />
+                                                </EasingDoubleKeyFrame.EasingFunction>
+                                            </EasingDoubleKeyFrame>
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.ExitActions>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+            
+            <Grid.RenderTransform>
+                <TranslateTransform Y="-300"/>
+            </Grid.RenderTransform>
+
+            <Border Background="{StaticResource BackgroundBrush}" Opacity="0.95"/>
             <Grid Margin="25 20 25 20">
-                <Image Name="ImgLogo" Stretch="Uniform" HorizontalAlignment="Left" VerticalAlignment="Center"
-                       Height="80" MaxWidth="550" />
+<!--                <Image Name="ImgLogo" Stretch="Uniform" HorizontalAlignment="Left" VerticalAlignment="Center"-->
+<!--                       Height="80" MaxWidth="550" />-->
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="Now Playing: "
-                               Foreground="{StaticResource AccentBrush}" Margin="0 0 10 0" />
+                               Foreground="{StaticResource AccentBrush}" Margin="0 0 10 0" FontSize="40" Style="{StaticResource TitleTextBlockStyle}" />
                     <TextBlock Text="{Binding DisplayName}" HorizontalAlignment="Center" VerticalAlignment="Center"
-                               MaxWidth="700" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" Foreground="White" />
+                               TextTrimming="CharacterEllipsis" FontSize="40" Style="{StaticResource TitleTextBlockStyle}" />
                 </StackPanel>
 
-                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Right"
-                           Text="{Binding ClockShortTime, Converter={StaticResource LowercaseConverter}}" />
+<!--                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Right"-->
+<!--                           Text="{Binding ClockShortTime, Converter={StaticResource LowercaseConverter}}" />-->
             </Grid>
         </Grid>
 
-        <Grid Background="#86000000" VerticalAlignment="Bottom" HorizontalAlignment="Stretch">
+        <Grid x:Name="BottomBanner" VerticalAlignment="Bottom" HorizontalAlignment="Stretch">
+            <Grid.Style>
+                <Style>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ShowOsd}" Value="True">
+                            <DataTrigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)">
+                                            <EasingDoubleKeyFrame Value="0" KeyTime="00:00:0.3">
+                                                <EasingDoubleKeyFrame.EasingFunction>
+                                                    <CubicEase EasingMode="EaseOut" />
+                                                </EasingDoubleKeyFrame.EasingFunction>
+                                            </EasingDoubleKeyFrame>
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.EnterActions>
+
+                            <DataTrigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)">
+                                            <EasingDoubleKeyFrame Value="300" KeyTime="00:00:0.3">
+                                                <EasingDoubleKeyFrame.EasingFunction>
+                                                    <CubicEase EasingMode="EaseIn" />
+                                                </EasingDoubleKeyFrame.EasingFunction>
+                                            </EasingDoubleKeyFrame>
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.ExitActions>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+
+            <Grid.RenderTransform>
+                <TranslateTransform Y="300"/>
+            </Grid.RenderTransform>
+
+            <Border Background="{StaticResource BackgroundBrush}" Opacity="0.95"/>
 
             <StackPanel Orientation="Vertical" Margin="0 15 0 0">
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 5 0 0">
 
-                    <Button x:Name="PreviousChapterButton" Command="{Binding PreviousChapterCommand}">
+                    <Button x:Name="PreviousTrackButton" Command="{Binding SkipBackwardCommand}">
                         <Button.Style>
-                            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource PreviousChapterButton}">
+                            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource PreviousTrackButton}">
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding SupportsChapters}" Value="False">
+                                    <DataTrigger Binding="{Binding CanSkip}" Value="False">
                                         <Setter Property="Visibility" Value="Collapsed" />
                                     </DataTrigger>
                                 </Style.Triggers>
@@ -50,9 +133,9 @@
                         </Button.Style>
                     </Button>
 
-                    <Button x:Name="SkipBackwardButton" Command="{Binding SkipBackwardCommand}">
+                    <Button x:Name="SeekBackwardButton" Command="{Binding PreviousChapterCommand}">
                         <Button.Style>
-                            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource SkipBackwardButton}">
+                            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource SeekBackwardButton}">
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding CanSeek}" Value="False">
                                         <Setter Property="Visibility" Value="Collapsed" />
@@ -69,9 +152,11 @@
                                     <Setter.Value>
                                         <ControlTemplate TargetType="{x:Type Button}">
                                             <Border Background="{TemplateBinding Background}">
-                                                <Path Fill="{TemplateBinding Foreground}"
+                                                <Path StrokeThickness="1"
+                                                      Stroke="{StaticResource ForegroundBrush}"
+                                                      Fill="{TemplateBinding Foreground}"
                                                       Data="M27.270001,0L44.310001,0 44.310001,48.643002 27.270001,48.643002z M0,0L17.040001,0 17.040001,48.643002 0,48.643002z"
-                                                      Stretch="Uniform" Width="20" Height="20" Margin="0,0,0,0"
+                                                      Stretch="Fill" Width="24" Height="24" Margin="0,0,0,0"
                                                       RenderTransformOrigin="0.5,0.5" />
                                             </Border>
                                         </ControlTemplate>
@@ -83,9 +168,11 @@
                                             <Setter.Value>
                                                 <ControlTemplate TargetType="{x:Type Button}">
                                                     <Border Background="{TemplateBinding Background}">
-                                                        <Path Fill="{TemplateBinding Foreground}"
+                                                        <Path StrokeThickness="1"
+                                                              Stroke="{StaticResource ForegroundBrush}"
+                                                              Fill="{TemplateBinding Foreground}"
                                                               Data="F1M1188.2,1715.23L1169.93,1728.57 1151.66,1741.9 1151.66,1715.23 1151.66,1688.57 1169.93,1701.9 1188.2,1715.23z"
-                                                              Stretch="Uniform" Width="20" Height="20"
+                                                              Stretch="Fill" Width="24" Height="24"
                                                               Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5" />
                                                     </Border>
                                                 </ControlTemplate>
@@ -100,9 +187,9 @@
                     <Button x:Name="StopButton" Style="{DynamicResource StopButton}"
                             Command="{Binding StopCommand}" />
 
-                    <Button x:Name="SkipForwardButton" Command="{Binding SkipForwardCommand}">
+                    <Button x:Name="SeekForewardButton" Command="{Binding NextChapterCommand}">
                         <Button.Style>
-                            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource SkipForwardButton}">
+                            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource SeekForwardButton}">
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding CanSeek}" Value="False">
                                         <Setter Property="Visibility" Value="Collapsed" />
@@ -112,9 +199,45 @@
                         </Button.Style>
                     </Button>
 
-                    <Button x:Name="NextChapterButton" Command="{Binding NextChapterCommand}">
+                    <Button x:Name="NextTrackButton" Command="{Binding SkipForwardCommand}">
                         <Button.Style>
-                            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource NextChapterButton}">
+                            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource NextTrackButton}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding CanSkip}" Value="False">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+
+                    <Button Command="{Binding SelectChapterCommand}" Margin="50, 0, 15, 0" Visibility="{Binding SupportsChapters, Converter={StaticResource BooleanToVisibility}}">
+                        <Button.Style>
+                            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource ChapterSelectButton}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding CanSeek}" Value="False">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+
+                    <Button Command="{Binding SelectSubtitleTrackCommand}" Visibility="{Binding CanSelectSubtitleTrack, Converter={StaticResource BooleanToVisibility}}">
+                        <Button.Style>
+                            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource SubtitleTrackButton}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SupportsChapters}" Value="False">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+
+                    <Button Command="{Binding SelectAudioTrackCommand}" Visibility="{Binding CanSelectAudioTrack, Converter={StaticResource BooleanToVisibility}}">
+                        <Button.Style>
+                            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource AudioTrackButton}">
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding SupportsChapters}" Value="False">
                                         <Setter Property="Visibility" Value="Collapsed" />
@@ -129,24 +252,21 @@
                 <Grid x:Name="SeekGrid" Margin="400 10 300 20">
 
                     <Grid.ColumnDefinitions>
+                        <ColumnDefinition MinWidth="100" Width="auto" />
                         <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition MinWidth="100" Width="auto" />
                     </Grid.ColumnDefinitions>
 
-                    <Slider x:Name="CurrentPositionSlider" Grid.Column="0" VerticalAlignment="Center" Minimum="0"
+                    <TextBlock Grid.Column="0" x:Name="TxtCurrentPosition" Style="{StaticResource AccentedTextBlockStyle}"
+                                   Margin="0 0 20 0" VerticalAlignment="Center" HorizontalAlignment="Right" Text="{Binding DisplayPosition}" />
+
+                    <Slider Grid.Column="1" x:Name="CurrentPositionSlider" VerticalAlignment="Center" Minimum="0"
                             IsMoveToPointEnabled="True" Maximum="{Binding DurationTicks}"
                             Thumb.DragStarted="CurrentPositionSlider_DragStarted"
                             Thumb.DragCompleted="CurrentPositionSlider_DragCompleted" Focusable="False" />
 
-                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right"
-                                Margin="0 0 0 3">
-                        <TextBlock x:Name="TxtCurrentPosition" Style="{StaticResource AccentedTextBlockStyle}"
-                                   Margin="20 0 0 0" VerticalAlignment="Center" Text="{Binding DisplayPosition}" />
-                        <TextBlock Margin="5 0 0 0" VerticalAlignment="Center" Text=" / " />
-                        <TextBlock x:Name="TxtDuration" Margin="5 0 0 0" VerticalAlignment="Center"
+                    <TextBlock Grid.Column="2" x:Name="TxtDuration" Margin="20 0 0 0" VerticalAlignment="Center" HorizontalAlignment="Left"
                                    Text="{Binding DisplayDuration}" />
-                    </StackPanel>
-
                 </Grid>
             </StackPanel>
 

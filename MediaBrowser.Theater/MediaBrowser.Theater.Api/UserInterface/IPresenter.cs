@@ -14,8 +14,9 @@ namespace MediaBrowser.Theater.Api.UserInterface
         FrameworkElement GetFocusedElement();
 
         Task ShowPage(IViewModel contents);
-        Task ShowPopup(IViewModel contents);
-        Task ShowNotification(IViewModel contents);
+        Task ShowPopup(IViewModel contents, bool unfocusMainWindow = true, bool navigateBackOnClose = true);
+        Task ShowNotification(IViewModel contents, NotificationPriority priority = NotificationPriority.Normal);
+        //Task SilentlyClosePopup();
         MessageBoxResult ShowMessage(MessageBoxInfo messageBoxInfo);
         IViewModel CurrentPage { get; }
     }
@@ -23,5 +24,11 @@ namespace MediaBrowser.Theater.Api.UserInterface
     public class PageLoadedEvent
     {
         public IViewModel ViewModel { get; set; }
+    }
+
+    public enum NotificationPriority
+    {
+        Normal,
+        High
     }
 }

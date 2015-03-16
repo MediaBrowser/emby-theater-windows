@@ -38,9 +38,11 @@ using MediaBrowser.Theater.Api.System;
 using MediaBrowser.Theater.Api.UserInput;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme;
-using MediaBrowser.Theater.DirectShow;
+//using MediaBrowser.Theater.DirectShow;
+using MediaBrowser.Theater.MockPlayer;
+using MediaBrowser.Theater.Mpdn;
 using MediaBrowser.Theater.Networking;
-using MediaBrowser.Theater.Presentation.Playback;
+using MediaBrowser.Theater.Playback;
 using MediaBrowser.Theater.StartupWizard;
 using MediaBrowser.Theater.StartupWizard.ViewModels;
 using Application = System.Windows.Application;
@@ -70,6 +72,7 @@ namespace MediaBrowser.Theater
         public IPresenter Presenter { get; private set; }
         public IUserInputManager UserInputManager { get; private set; }
         public ISessionManager SessionManager { get; private set; }
+        public IPlaybackManager PlaybackManager { get; private set; }
 
         public override bool CanSelfRestart
         {
@@ -111,7 +114,7 @@ namespace MediaBrowser.Theater
             await base.Init(progress).ConfigureAwait(false);
             await RunStartupTasks().ConfigureAwait(false);
 
-            URCOMLoader.EnsureObjects(TheaterConfigurationManager, new ZipClient(), false);
+            //URCOMLoader.EnsureObjects(TheaterConfigurationManager, new ZipClient(), false);
 
             Action<Window> mainWindowLoaded = null;
             mainWindowLoaded = w => {
@@ -139,6 +142,7 @@ namespace MediaBrowser.Theater
             await base.RegisterResources(progress).ConfigureAwait(false);
 
             RegisterSingleInstance(ApplicationPaths);
+            RegisterSingleInstance<ITheaterApplicationPaths>(ApplicationPaths);
             RegisterSingleInstance(TheaterConfigurationManager);
             RegisterSingleInstance(ConnectionManager);
             RegisterSingleInstance<ITheaterApplicationHost>(this);
@@ -148,7 +152,7 @@ namespace MediaBrowser.Theater
             Container.RegisterSingle(typeof (IEventAggregator), typeof (EventAggregator));
             Container.RegisterSingle(typeof (ISessionManager), typeof (SessionManager));
             Container.RegisterSingle(typeof (IImageManager), typeof (ImageManager));
-            Container.RegisterSingle(typeof (IInternalPlayerWindowManager), typeof (InternalPlayerWindowManager));
+            //Container.RegisterSingle(typeof (IInternalPlayerWindowManager), typeof (InternalPlayerWindowManager));
             Container.RegisterSingle(typeof (IPlaybackManager), typeof (PlaybackManager));
             Container.RegisterSingle(typeof (IUserInputManager), typeof (UserInputManager));
             Container.RegisterSingle(typeof (ICommandManager), typeof (CommandManager));
@@ -158,30 +162,31 @@ namespace MediaBrowser.Theater
             Container.RegisterSingle(typeof (IPresenter), typeof (Presenter));
             Container.RegisterSingle(typeof (INavigator), typeof (Navigator));
             Container.RegisterSingle(typeof (WindowManager), typeof (WindowManager));
-        }
+            Container.RegisterSingle(typeof (IWindowManager), () => Container.GetInstance<WindowManager>());
+        } 
 
         protected override void FindParts()
         {
             Theme = Resolve<ITheme>();
             Plugins = LoadPlugins();
-            Resolve<IPlaybackManager>().AddParts(GetExports<IMediaPlayer>());
+            PlaybackManager = Resolve<IPlaybackManager>();
+            PlaybackManager.Players.AddRange(GetExports<IMediaPlayer>());
 
             Navigator = Resolve<INavigator>();
             Presenter = Resolve<IPresenter>();
             UserInputManager = Resolve<IUserInputManager>();
             SessionManager = Resolve<ISessionManager>();
+
+            Resolve<PlaybackProgressReporter>();
         }
 
         public void StartEntryPoints()
         {
-            Parallel.ForEach(GetExports<IStartupEntryPoint>(), entryPoint =>
-            {
-                try
-                {
+            Parallel.ForEach(GetExports<IStartupEntryPoint>(), entryPoint => {
+                try {
                     entryPoint.Run();
                 }
-                catch (Exception ex)
-                {
+                catch (Exception ex) {
                     Logger.ErrorException("Error in {0}", ex, entryPoint.GetType().Name);
                 }
             });
@@ -219,7 +224,15 @@ namespace MediaBrowser.Theater
 
         public void RunUserInterface()
         {
+            var playbackManager = TryResolve<IPlaybackManager>();
+            playbackManager.Initialize();
+
             Theme.Run();
+
+            if (playbackManager != null) {
+                playbackManager.StopPlayback().Wait();
+                playbackManager.Shutdown().Wait();
+            }
         }
 
         protected override INetworkManager CreateNetworkManager(ILogger logger)
@@ -331,11 +344,17 @@ namespace MediaBrowser.Theater
             // Common implementations
             yield return typeof (TaskManager).Assembly;
 
-            // DirectShow assembly
-            yield return typeof (InternalDirectShowPlayer).Assembly;
-            
-            // Presentation assembly
-            yield return typeof (GenericExternalPlayer).Assembly;
+//            // DirectShow assembly
+//            yield return typeof (InternalDirectShowPlayer).Assembly;
+//            
+//            // Presentation assembly
+//            yield return typeof (GenericExternalPlayer).Assembly;
+
+            // Mock player
+            yield return typeof (MockMediaPlayer).Assembly;
+
+            // MPDN
+            yield return typeof (MpdnMediaPlayer).Assembly;
 
             // Default theme
             yield return typeof (Theme).Assembly;
@@ -396,7 +415,7 @@ namespace MediaBrowser.Theater
             // With the idea of multiple servers there's no point in making server version a part of this
             var serverVersion = new Version(10, 0, 0, 0);
 
-            var version = InstallationManager.GetLatestCompatibleVersion(availablePackages, Program.PackageName, null, serverVersion, ConfigurationManager.CommonConfiguration.SystemUpdateLevel);
+            var version = InstallationManager.GetLatestCompatibleVersion(availablePackages, Launcher.PackageName, null, serverVersion, ConfigurationManager.CommonConfiguration.SystemUpdateLevel);
 
             var versionObject = version == null || string.IsNullOrWhiteSpace(version.versionStr) ? null : new Version(version.versionStr);
 
@@ -452,8 +471,8 @@ namespace MediaBrowser.Theater
 
             var wizard = new WizardViewModel(new List<IWizardPage> {
                 Resolve<IntroductionViewModel>(),
-                Resolve<ServerDetailsViewModel>(),
-                //Resolve<PrerequisitesViewModel>(),
+                //Resolve<ServerDetailsViewModel>(),
+                Resolve<PrerequisitesViewModel>(),
             });
 
             bool completed = false;

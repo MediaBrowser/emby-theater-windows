@@ -10,7 +10,7 @@ using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Net;
 using MediaBrowser.Theater.Api.Configuration;
 using MediaBrowser.Theater.Api.Navigation;
-using MediaBrowser.Theater.Api.Playback;
+using MediaBrowser.Theater.Playback;
 
 namespace MediaBrowser.Theater.Api.Session
 {
@@ -39,7 +39,7 @@ namespace MediaBrowser.Theater.Api.Session
             _connectionManager.LocalUserSignOut += (s, e) => CurrentUser = null;
             _connectionManager.ConnectUserSignIn += (s, e) => ConnectUser = e.Argument;
             _connectionManager.ConnectUserSignOut += (s, e) => ConnectUser = null;
-            _connectionManager.RemoteLoggedOut += (s, e) => playback.StopAllPlayback();
+            _connectionManager.RemoteLoggedOut += (s, e) => playback.StopPlayback();
         }
         
         public UserDto CurrentUser
@@ -76,7 +76,7 @@ namespace MediaBrowser.Theater.Api.Session
 
         public async Task Logout()
         {
-            _playback.StopAllPlayback();
+            await _playback.StopPlayback();
             await _connectionManager.Logout();
         }
 

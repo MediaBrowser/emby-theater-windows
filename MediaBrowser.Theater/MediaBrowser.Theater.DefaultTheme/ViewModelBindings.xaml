@@ -55,8 +55,20 @@
         <views:NotificationView/>
     </DataTemplate>
 
+    <DataTemplate DataType="{x:Type viewModelsPresentation:ButtonNotificationViewModel}">
+        <views:ButtonNotificationView/>
+    </DataTemplate>
+
     <DataTemplate DataType="{x:Type viewModels:NotificationTrayViewModel}">
         <views:NotificationTrayView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels6:NowPlayingNotificationInfoViewModel}">
+        <views6:NowPlayingNotificationInfoView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type viewModels6:NowPlayingNotificationViewModel}">
+        <views:ButtonNotificationView/>
     </DataTemplate>
 
     <DataTemplate DataType="{x:Type viewModels:CommandBarViewModel}">
@@ -259,4 +271,28 @@
         <views6:OsdView/>
     </DataTemplate>
     
+    <DataTemplate DataType="{x:Type viewModels6:OsdChaptersViewModel}">
+        <views6:OsdChaptersView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type viewModels6:OsdSubtitleTracksViewModel}">
+        <views6:OsdSubtitleTracksView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type viewModels6:OsdAudioTracksViewModel}">
+        <views6:OsdAudioTracksView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels6:SubtitleViewModel}">
+        <views6:SubtitleView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type viewModels6:AudioTrackViewModel}">
+        <views6:AudioTrackView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels6:OsdChapterViewModel}">
+        <views6:OsdChapterView/>
+    </DataTemplate>
+
 </ResourceDictionary>

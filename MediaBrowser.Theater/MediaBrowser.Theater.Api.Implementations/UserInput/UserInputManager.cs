@@ -7,7 +7,7 @@ using MediaBrowser.Model.Logging;
 using MediaBrowser.Theater.Api.Navigation;
 using System.Runtime.InteropServices;
 using MediaBrowser.Theater.Api.UserInterface;
-using MediaBrowser.Theater.DirectShow;
+//using MediaBrowser.Theater.DirectShow;
 using WindowsForms = System.Windows.Forms;
 using WindowsInput = System.Windows.Input;
 
@@ -132,15 +132,15 @@ namespace MediaBrowser.Theater.Api.UserInput
         private readonly IPresenter _presentationManager;
         private readonly ILogger _logger;
         private readonly INavigator _navigationService;
-        private IInternalPlayerWindow _hiddenWindow;
+//        private IInternalPlayerWindow _hiddenWindow;
 
-        public UserInputManager(IPresenter presentationManager, INavigator navigationService, IInternalPlayerWindowManager internalPlayerWindowManager, ILogManager logManager)
+        public UserInputManager(IPresenter presentationManager, INavigator navigationService, /*IInternalPlayerWindowManager internalPlayerWindowManager,*/ ILogManager logManager)
         {
             _presentationManager = presentationManager;
             _navigationService = navigationService;
-            _hiddenWindow = internalPlayerWindowManager.Window;
+            //_hiddenWindow = internalPlayerWindowManager.Window;
 
-            internalPlayerWindowManager.WindowLoaded += window => _hiddenWindow = window;
+            //internalPlayerWindowManager.WindowLoaded += window => _hiddenWindow = window;
 
             _presentationManager.MainWindowLoaded += MainWindowLoaded;
             _logger = logManager.GetLogger(GetType().Name);
@@ -193,21 +193,21 @@ namespace MediaBrowser.Theater.Api.UserInput
 //            }
 //        }
 
-        private void AddirectPlayWindowHook()
-        {
-            // can't subscribe directly to Windw_Keydow - have to map a form event to a wpf window event
-           _hiddenWindow.KeyDown -= directPlayWindow_KeyDown; // 
-           _hiddenWindow.KeyDown += directPlayWindow_KeyDown;
-
-           _hiddenWindow.MouseMove -= directPlayWindow_MouseMove;
-           _hiddenWindow.MouseMove += directPlayWindow_MouseMove;
-        }
-        
-        private void RemoveDirectPlayWindowHook()
-        {
-            _hiddenWindow.KeyDown -= directPlayWindow_KeyDown;
-            _hiddenWindow.MouseMove -= directPlayWindow_MouseMove;
-        }
+//        private void AddirectPlayWindowHook()
+//        {
+//            // can't subscribe directly to Windw_Keydow - have to map a form event to a wpf window event
+//           _hiddenWindow.KeyDown -= directPlayWindow_KeyDown; // 
+//           _hiddenWindow.KeyDown += directPlayWindow_KeyDown;
+//
+//           _hiddenWindow.MouseMove -= directPlayWindow_MouseMove;
+//           _hiddenWindow.MouseMove += directPlayWindow_MouseMove;
+//        }
+//        
+//        private void RemoveDirectPlayWindowHook()
+//        {
+//            _hiddenWindow.KeyDown -= directPlayWindow_KeyDown;
+//            _hiddenWindow.MouseMove -= directPlayWindow_MouseMove;
+//        }
 
         /// <summary>
         /// Responds to key presses inside a wpf window

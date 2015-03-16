@@ -1,32 +1,31 @@
-using System;
-using System.Threading;
 using System.Threading.Tasks;
-using MediaBrowser.Theater.Api.System;
+using MediaBrowser.Theater.Mpdn;
 
 namespace MediaBrowser.Theater.StartupWizard.Prerequisites
 {
     public class LavFiltersPrerequisite
         : Prerequisite
     {
-        private readonly IMediaFilters _mediaFilters;
-
-        public LavFiltersPrerequisite(IMediaFilters mediaFilters)
+        private readonly LavFiltersInstaller _installer;
+        
+        public LavFiltersPrerequisite()
         {
-            _mediaFilters = mediaFilters;
+            _installer = new LavFiltersInstaller();
+
             Name = "LAV Filters";
             IsOptional = false;
-            DownloadUrl = "https://code.google.com/p/lavfilters/";
+            DownloadUrl = "https://github.com/Nevcairiel/LAVFilters/releases";
+            RequiresManualInstallation = !_installer.CanInstall;
         }
 
-        protected override bool CheckInstallStatus()
+        public override Task<IUpdate> GetInstaller()
         {
-            return _mediaFilters.IsLavSplitterInstalled() && _mediaFilters.IsLavVideoInstalled() && _mediaFilters.IsLavAudioInstalled();
+            return _installer.FindUpdate();
         }
 
-        public override async Task Install(IProgress<double> progress, CancellationToken cancellationToken)
+        public override bool CheckInstallStatus()
         {
-            await _mediaFilters.InstallLavFilters(progress, cancellationToken).ConfigureAwait(false);
-            await base.Install(progress, cancellationToken);
+            return _installer.IsInstalled;
         }
     }
 }

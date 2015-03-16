@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using MediaBrowser.Model.Dto;
+using MediaBrowser.Theater.Api.Library;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
+using MediaBrowser.Theater.DefaultTheme.Home.ViewModels;
 using MediaBrowser.Theater.Presentation.ViewModels;
 
 namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
@@ -25,8 +28,13 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
             PresentationOptions = new RootPresentationOptions {
                 ShowMediaBrowserLogo = false,
-                Title = ItemTileViewModel.GetDisplayNameWithAiredSpecial(item)
+                //Title = item.GetDisplayName(new DisplayNameFormat(true, false))
             };
+        }
+
+        public Func<object, object> TitleSelector
+        {
+            get { return item => ((IItemDetailSection)item).Title; }
         }
 
         public IEnumerable<IItemDetailSection> Sections

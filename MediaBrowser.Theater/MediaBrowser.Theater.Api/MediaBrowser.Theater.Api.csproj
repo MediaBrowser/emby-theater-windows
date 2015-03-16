@@ -81,6 +81,7 @@
     <Compile Include="Events\IEventBus.cs" />
     <Compile Include="ITheaterApplicationHost.cs" />
     <Compile Include="Library\ItemChildrenEnumerator.cs" />
+    <Compile Include="Library\ItemDisplayName.cs" />
     <Compile Include="Playback\IConfigurableMediaPlayer.cs" />
     <Compile Include="Playback\IExternalMediaPlayer.cs" />
     <Compile Include="Playback\IInternalMediaPlayer.cs" />
@@ -108,11 +109,14 @@
     <Compile Include="Navigation\PathResolution.cs" />
     <Compile Include="Commands\IGlobalMenuCommand.cs" />
     <Compile Include="System\IStartupEntryPoint.cs" />
+    <Compile Include="System\ProgressExtensions.cs" />
     <Compile Include="System\ScreenDump.cs" />
+    <Compile Include="System\UacHelper.cs" />
     <Compile Include="UserInput\IUserInputManager.cs" />
     <Compile Include="UserInterface\IHasItemSortModes.cs" />
     <Compile Include="UserInterface\IImageManager.cs" />
     <Compile Include="UserInterface\IItemDetailsViewModel.cs" />
+    <Compile Include="UserInterface\IWindowManager.cs" />
     <Compile Include="UserInterface\MessageBoxIcon.cs" />
     <Compile Include="UserInterface\MessageBoxInfo.cs" />
     <Compile Include="UserInterface\UIDispatchExtensions.cs" />

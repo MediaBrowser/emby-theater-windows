@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -13,6 +14,8 @@ using MediaBrowser.Theater.Api.Playback;
 using MediaBrowser.Theater.Api.Session;
 using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
+using MediaBrowser.Theater.Playback;
+using MediaBrowser.Theater.Presentation;
 using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.ViewModels;
 using MediaBrowser.Theater.DefaultTheme.ItemList;
@@ -45,6 +48,11 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
             get { return 0; }
         }
 
+        public string Title
+        {
+            get { return "MediaBrowser.Theater.DefaultTheme:Strings:DetailSection_OverviewHeader".Localize(); }
+        }
+
         public bool ShowInfo
         {
             get { return (!_item.IsFolder && _item.Type != "Person") || !string.IsNullOrEmpty(_item.Overview); }
@@ -55,8 +63,8 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
             _item = item;
 
             Info = new ItemInfoViewModel(item) {
-                ShowDisplayName = false,
-                ShowParentText = false
+                ShowDisplayName = true,
+                ShowParentText = item.IsType("Season") || item.IsType("Episode") || item.IsType("Album") || item.IsType("Track")
             };
 
             PosterArtwork = new ItemArtworkViewModel(item, connectionManager, imageManager) { DesiredImageHeight = 700 };
@@ -75,16 +83,18 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
                 PreferredImageTypes = new[] { ImageType.Backdrop, ImageType.Art, ImageType.Banner, ImageType.Screenshot, ImageType.Primary }
             };
 
-            PlayCommand = new RelayCommand(o => playbackManager.Play(new PlayOptions(item) { GoFullScreen = true, EnableCustomPlayers = true, Resume = false }));
-            ResumeCommand = new RelayCommand(o => playbackManager.Play(new PlayOptions(item) { GoFullScreen = true, EnableCustomPlayers = true, Resume = true }));
+            PlayCommand = new RelayCommand(o => playbackManager.Play(item));
+            ResumeCommand = new RelayCommand(o => playbackManager.Play(Media.Resume(item)));
             PlayAllCommand = new RelayCommand(async o => {
                 var items = await ItemChildren.Get(connectionManager, sessionManager, item, new ChildrenQueryParams {
                     Recursive = true,
-                    IncludeItemTypes = new[] { "Movie", "Episode", "Audio" }
+                    IncludeItemTypes = new[] { "Movie", "Episode", "Audio" },
+                    SortOrder = MediaBrowser.Model.Entities.SortOrder.Ascending,
+                    SortBy = new[] { "SortName" }
                 });
-
+                
                 if (items.Items.Length > 0) {
-                    await playbackManager.Play(new PlayOptions(items.Items) { EnableCustomPlayers = true, GoFullScreen = true });
+                    await playbackManager.Play(items.Items.Select(i => (Media)i));
                 }
             });
 

@@ -18,6 +18,8 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
         private string _title;
         private bool _isFullScreenPage;
         private double _playbackBackgroundOpacity;
+        private bool _showNotifications;
+        private bool _showHighPriorityNotifications;
 
         public bool IsFullScreenPage
         {
@@ -103,13 +105,41 @@ namespace MediaBrowser.Theater.DefaultTheme.Core.ViewModels
             }
         }
 
+        public bool ShowNotifications
+        {
+            get { return _showNotifications; }
+            set
+            {
+                if (value.Equals(_showNotifications)) {
+                    return;
+                }
+                _showNotifications = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool ShowHighPriorityNotifications
+        {
+            get { return _showHighPriorityNotifications; }
+            set
+            {
+                if (value.Equals(_showHighPriorityNotifications)) {
+                    return;
+                }
+                _showHighPriorityNotifications = value;
+                OnPropertyChanged();
+            }
+        }
+
         public RootPresentationOptions()
         {
             ShowMediaBrowserLogo = true;
             ShowCommandBar = true;
+            ShowNotifications = true;
+            ShowHighPriorityNotifications = true;
             ShowClock = true;
             Title = null;
-            PlaybackBackgroundOpacity = 0.7;
+            PlaybackBackgroundOpacity = 0.9;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

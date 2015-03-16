@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using MediaBrowser.Theater.Api.Properties;
+using MediaBrowser.Theater.Mpdn;
 
 namespace MediaBrowser.Theater.StartupWizard.Prerequisites
 {
@@ -11,7 +12,6 @@ namespace MediaBrowser.Theater.StartupWizard.Prerequisites
         : INotifyPropertyChanged
     {
         private string _name;
-        private bool _isInstalled;
         private bool _isOptional;
         private bool _requiresManualInstallation;
         public event PropertyChangedEventHandler PropertyChanged;
@@ -37,20 +37,7 @@ namespace MediaBrowser.Theater.StartupWizard.Prerequisites
                 OnPropertyChanged();
             }
         }
-
-        public bool IsInstalled
-        {
-            get { return _isInstalled; }
-            private set
-            {
-                if (value.Equals(_isInstalled)) {
-                    return;
-                }
-                _isInstalled = value;
-                OnPropertyChanged();
-            }
-        }
-
+        
         public bool IsOptional
         {
             get { return _isOptional; }
@@ -78,23 +65,9 @@ namespace MediaBrowser.Theater.StartupWizard.Prerequisites
         }
 
         public string DownloadUrl { get; protected set; }
+        
+        public abstract Task<IUpdate> GetInstaller();
 
-        public virtual Task Install(IProgress<double> progress, CancellationToken cancellationToken)
-        {
-            UpdateInstallStatus();
-
-            if (!IsInstalled) {
-                throw new Exception("Failed to install " + Name);
-            }
-
-            return Task.FromResult(true);
-        }
-
-        protected abstract bool CheckInstallStatus();
-
-        public void UpdateInstallStatus()
-        {
-            IsInstalled = CheckInstallStatus();
-        }
+        public abstract bool CheckInstallStatus();
     }
 }

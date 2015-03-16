@@ -18,7 +18,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Configuration
     {
         public ColorPalette Palette { get; set; }
 
-        public WindowState? WindowState { get; set; }
+        public System.Windows.WindowState? WindowState { get; set; }
 
         public double? WindowTop { get; set; }
 
@@ -34,9 +34,9 @@ namespace MediaBrowser.Theater.DefaultTheme.Configuration
 
         public PluginConfiguration()
         {
-            Palette = new ColorPalette { Style = ThemeStyle.Light, Accent = AccentColors.MediaBrowserGreen };
+            Palette = new ColorPalette { Style = ThemeStyle.Dark, Accent = AccentColors.MediaBrowserGreen };
             SortModes = new List<SortModePreference>();
-            ShowOnlyWatchedChapters = true;
+            ShowOnlyWatchedChapters = false;
         }
 
         public SortModePreference FindSortMode(string itemType)

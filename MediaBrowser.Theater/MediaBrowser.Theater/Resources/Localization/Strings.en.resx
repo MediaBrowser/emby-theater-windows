@@ -123,6 +123,9 @@
   <data name="InstallAction_Install" xml:space="preserve">
     <value>Install</value>
   </data>
+  <data name="InstallAction_Update" xml:space="preserve">
+    <value>Install Update</value>
+  </data>
   <data name="NextActionType_Finish" xml:space="preserve">
     <value>Finish</value>
   </data>
@@ -189,6 +192,9 @@ Click next to proceed.</value>
   </data>
   <data name="SetupWizard_ServerDetails_Title" xml:space="preserve">
     <value>Media Browser Server Details</value>
+  </data>
+  <data name="StartupWizard_Prerequisites_Searching" xml:space="preserve">
+    <value>Searching for install...</value>
   </data>
   <data name="StartupWizard_Title" xml:space="preserve">
     <value>Startup Wizard</value>

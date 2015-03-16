@@ -20,6 +20,7 @@ using MediaBrowser.Theater.Api.UserInterface;
 using MediaBrowser.Theater.DefaultTheme.Core.ViewModels;
 using MediaBrowser.Theater.DefaultTheme.Home.ViewModels.Movies;
 using MediaBrowser.Theater.DefaultTheme.ItemList;
+using MediaBrowser.Theater.Playback;
 using MediaBrowser.Theater.Presentation;
 using MediaBrowser.Theater.Presentation.Controls;
 using MediaBrowser.Theater.Presentation.ViewModels;
@@ -52,7 +53,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
 
             Title = SectionTitle = tvFolder.Name;
 
-            LowerSpotlightWidth = SpotlightWidth/3 - HomeViewModel.TileMargin*1.5;
+            LowerSpotlightWidth = SpotlightWidth/2 - HomeViewModel.TileMargin;
             LowerSpotlightHeight = HomeViewModel.TileHeight;
 
             AllShowsCommand = new RelayCommand(arg => {
@@ -137,22 +138,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
                 _mainViewCancellationTokenSource = null;
             }
         }
-
-        public static string GetDisplayName(BaseItemDto item)
-        {
-            string name = item.Name;
-
-            if (item.IsType("Episode")) {
-                name = item.SeriesName;
-
-                if (item.IndexNumber.HasValue && item.ParentIndexNumber.HasValue) {
-                    name = name + " " + string.Format("S{0}, E{1}", item.ParentIndexNumber.Value, item.IndexNumber.Value);
-                }
-            }
-
-            return name;
-        }
-
+        
         private async void LoadViewModels(BaseItemDto tvFolder)
         {
             CancellationTokenSource cancellationSource = _mainViewCancellationTokenSource = new CancellationTokenSource();
@@ -193,7 +179,7 @@ namespace MediaBrowser.Theater.DefaultTheme.Home.ViewModels.TV
                 DesiredImageWidth = _miniSpotlightWidth,
                 DesiredImageHeight = HomeViewModel.TileHeight,
                 PreferredImageTypes = new[] { ImageType.Backdrop, ImageType.Thumb },
-                DisplayNameGenerator = GetDisplayName
+                DisplayNameGenerator = i => i.GetDisplayName(new DisplayNameFormat(true, true))
             };
         }
 

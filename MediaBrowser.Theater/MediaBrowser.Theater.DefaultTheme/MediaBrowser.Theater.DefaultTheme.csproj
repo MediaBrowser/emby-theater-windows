@@ -62,6 +62,22 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Reactive.Core">
+      <HintPath>..\packages\Rx-Core.2.2.5\lib\net45\System.Reactive.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Interfaces">
+      <HintPath>..\packages\Rx-Interfaces.2.2.5\lib\net45\System.Reactive.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Linq">
+      <HintPath>..\packages\Rx-Linq.2.2.5\lib\net45\System.Reactive.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.PlatformServices">
+      <HintPath>..\packages\Rx-PlatformServices.2.2.5\lib\net45\System.Reactive.PlatformServices.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Reactive.Windows.Threading">
+      <HintPath>..\packages\Rx-XAML.2.2.5\lib\net45\System.Reactive.Windows.Threading.dll</HintPath>
+    </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -88,6 +104,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="App.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Core\Views\ButtonNotificationView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -176,6 +196,34 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Login\Views\WelcomePageView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Osd\Views\AudioTrackView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Osd\Views\NowPlayingNotificationInfoView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Osd\Views\OsdAudioTracksView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Osd\Views\OsdChaptersView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Osd\Views\OsdChapterView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Osd\Views\OsdSubtitleTracksView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Osd\Views\SubtitleView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -421,6 +469,9 @@
     <Compile Include="Controls\TileButton.cs" />
     <Compile Include="Core\Commands\ExitMenuCommand.cs" />
     <Compile Include="Core\Commands\HomeCommand.cs" />
+    <Compile Include="Core\Views\ButtonNotificationView.xaml.cs">
+      <DependentUpon>ButtonNotificationView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Home\ViewModels\Channels\ChannelsListViewModel.cs" />
     <Compile Include="Home\ViewModels\Channels\ChannelListHomePageGenerator.cs" />
     <Compile Include="Home\ViewModels\Generic\GenericFolderSpotlightViewModel.cs" />
@@ -457,6 +508,28 @@
     </Compile>
     <Compile Include="Login\Views\WelcomePageView.xaml.cs">
       <DependentUpon>WelcomePageView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Osd\ViewModels\NowPlayingNotificationViewModel.cs" />
+    <Compile Include="Osd\Views\AudioTrackView.xaml.cs">
+      <DependentUpon>AudioTrackView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Osd\Views\NowPlayingNotificationInfoView.xaml.cs">
+      <DependentUpon>NowPlayingNotificationInfoView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Osd\Views\OsdAudioTracksView.xaml.cs">
+      <DependentUpon>OsdAudioTracksView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Osd\Views\OsdChaptersView.xaml.cs">
+      <DependentUpon>OsdChaptersView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Osd\Views\OsdChapterView.xaml.cs">
+      <DependentUpon>OsdChapterView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Osd\Views\OsdSubtitleTracksView.xaml.cs">
+      <DependentUpon>OsdSubtitleTracksView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Osd\Views\SubtitleView.xaml.cs">
+      <DependentUpon>SubtitleView.xaml</DependentUpon>
     </Compile>
     <Compile Include="SortModeMenu\Commands\SortModeCommand.cs" />
     <Compile Include="Core\Commands\RestartMenuCommand.cs" />
@@ -731,9 +804,9 @@
       <Project>{76a1834d-1be3-4361-bac2-711cdd74eb3f}</Project>
       <Name>MediaBrowser.Theater.Api</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MediaBrowser.Theater.DirectShow\MediaBrowser.Theater.DirectShow.csproj">
-      <Project>{04781068-D0D2-47BA-8D1C-A96274655F63}</Project>
-      <Name>MediaBrowser.Theater.DirectShow</Name>
+    <ProjectReference Include="..\MediaBrowser.Theater.Playback\MediaBrowser.Theater.Playback.csproj">
+      <Project>{fc6885c8-a8b5-42e4-981e-be38f3a8be3a}</Project>
+      <Name>MediaBrowser.Theater.Playback</Name>
     </ProjectReference>
     <ProjectReference Include="..\MediaBrowser.Theater.Presentation\MediaBrowser.Theater.Presentation.csproj">
       <Project>{c464ffc3-0fcd-49d5-a206-21f3bb586c53}</Project>

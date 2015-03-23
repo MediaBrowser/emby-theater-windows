@@ -697,7 +697,7 @@ namespace MediaBrowser.Plugins.DefaultTheme.Details
 
             if (item.IsPerson)
             {
-                query.Person = item.Name;
+                query.PersonIds = new[] { item.Id };
             }
             else if (item.IsStudio)
             {

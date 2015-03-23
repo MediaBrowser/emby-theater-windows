@@ -1,11 +1,16 @@
 ﻿using CoreAudioApi;
+using MediaBrowser.ApiInteraction.Data;
+using MediaBrowser.ApiInteraction.Net;
+using MediaBrowser.ApiInteraction.Playback;
 using MediaBrowser.Common.Events;
 using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Dlna;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Library;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Querying;
+using MediaBrowser.Model.Session;
 using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Navigation;
 using MediaBrowser.Theater.Interfaces.Playback;
@@ -18,6 +23,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using IPlaybackManager = MediaBrowser.Theater.Interfaces.Playback.IPlaybackManager;
 
 namespace MediaBrowser.Theater.Implementations.Playback
 {
@@ -29,6 +35,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
         private readonly INavigationService _nav;
         private readonly IPresentationManager _presentationManager;
         private int _isStarting;
+        private readonly ApiInteraction.Playback.IPlaybackManager _apiPlaybackManager;
 
         private PlaybackProgressReporter _reporter;
 
@@ -50,6 +57,9 @@ namespace MediaBrowser.Theater.Implementations.Playback
             _connectionManager = connectionManager;
             _nav = nav;
             _presentationManager = presentationManager;
+
+            var localPlayer = new LocalPlayer(new NetworkConnection(_logger), new HttpWebRequestClient(_logger, new HttpWebRequestFactory()));
+            _apiPlaybackManager = new ApiInteraction.Playback.PlaybackManager(new NullAssetManager(), _connectionManager.Device, _logger, localPlayer);
         }
 
         public IEnumerable<IMediaPlayer> MediaPlayers
@@ -62,7 +72,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
         /// </summary>
         /// <param name="options">The options.</param>
         /// <returns>Task.</returns>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         /// options
         /// or
         /// options
@@ -244,28 +254,8 @@ namespace MediaBrowser.Theater.Implementations.Playback
                 }
             }
 
-            _reporter = new PlaybackProgressReporter(_connectionManager, player, _logger, this);
+            _reporter = new PlaybackProgressReporter(_connectionManager, player, _logger, this, _apiPlaybackManager);
             await _reporter.Start().ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Reports the playback completed.
-        /// </summary>
-        /// <param name="eventArgs">The <see cref="PlaybackStopEventArgs"/> instance containing the event data.</param>
-        public async void ReportPlaybackCompleted(PlaybackStopEventArgs eventArgs)
-        {
-            lock (_reporterLock)
-            {
-                if (_reporter != null)
-                {
-                    _reporter.Dispose();
-                    _reporter = null;
-                }
-            }
-
-            await _presentationManager.Window.Dispatcher.InvokeAsync(() => _presentationManager.WindowOverlay.SetResourceReference(FrameworkElement.StyleProperty, "WindowBackgroundContent"));
-
-            EventHelper.QueueEventIfNotNull(PlaybackCompleted, this, eventArgs, _logger);
         }
 
         /// <summary>
@@ -791,6 +781,42 @@ namespace MediaBrowser.Theater.Implementations.Playback
         public bool CanPlayEmbeddedUrl(string url)
         {
             return true;
+        }
+
+        public Task<StreamInfo> GetAudioStreamInfo(string serverId, AudioOptions options)
+        {
+            var apiClient = _connectionManager.GetApiClient(serverId);
+            options.DeviceId = _connectionManager.Device.DeviceId;
+
+            return _apiPlaybackManager.GetAudioStreamInfo(serverId, options, false, apiClient);
+        }
+
+        public Task<StreamInfo> GetVideoStreamInfo(string serverId, VideoOptions options)
+        {
+            var apiClient = _connectionManager.GetApiClient(serverId);
+            options.DeviceId = _connectionManager.Device.DeviceId;
+
+            return _apiPlaybackManager.GetVideoStreamInfo(serverId, options, false, apiClient);
+        }
+
+        /// <summary>
+        /// Reports the playback completed.
+        /// </summary>
+        /// <param name="eventArgs">The <see cref="PlaybackStopEventArgs"/> instance containing the event data.</param>
+        public async Task ReportPlaybackCompleted(PlaybackStopEventArgs eventArgs)
+        {
+            lock (_reporterLock)
+            {
+                if (_reporter != null)
+                {
+                    _reporter.Dispose();
+                    _reporter = null;
+                }
+            }
+
+            await _presentationManager.Window.Dispatcher.InvokeAsync(() => _presentationManager.WindowOverlay.SetResourceReference(FrameworkElement.StyleProperty, "WindowBackgroundContent"));
+
+            EventHelper.QueueEventIfNotNull(PlaybackCompleted, this, eventArgs, _logger);
         }
     }
 }

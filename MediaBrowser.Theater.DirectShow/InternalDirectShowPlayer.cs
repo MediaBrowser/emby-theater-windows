@@ -1,6 +1,4 @@
-﻿using MediaBrowser.ApiInteraction.Net;
-using MediaBrowser.ApiInteraction.Playback;
-using MediaBrowser.Common.Events;
+﻿using MediaBrowser.Common.Events;
 using MediaBrowser.Common.Net;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Dlna;
@@ -8,6 +6,7 @@ using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.IO;
 using MediaBrowser.Model.Logging;
+using MediaBrowser.Theater.DirectShow.Streaming;
 using MediaBrowser.Theater.Interfaces.Configuration;
 using MediaBrowser.Theater.Interfaces.Playback;
 using MediaBrowser.Theater.Interfaces.Presentation;
@@ -16,6 +15,7 @@ using MediaBrowser.Theater.Interfaces.UserInput;
 using MediaBrowser.Theater.Presentation.Playback;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -39,7 +39,6 @@ namespace MediaBrowser.Theater.DirectShow
         private readonly IZipClient _zipClient;
         private URCOMLoader _privateCom = null;
         private readonly IConnectionManager _connectionManager;
-        private readonly StreamBuilder _streamBuilder;
 
         public event EventHandler<MediaChangeEventArgs> MediaChanged;
 
@@ -68,8 +67,6 @@ namespace MediaBrowser.Theater.DirectShow
             _isoManager = isoManager;
             _inputManager = inputManager;
             _zipClient = zipClient;
-
-            _streamBuilder = new StreamBuilder(new LocalPlayer(new NetworkConnection(_logger), new HttpWebRequestClient(_logger, new HttpWebRequestFactory())));
 
             _config.Configuration.InternalPlayerConfiguration.VideoConfig.SetDefaults();
             _config.Configuration.InternalPlayerConfiguration.AudioConfig.SetDefaults();
@@ -282,7 +279,7 @@ namespace MediaBrowser.Theater.DirectShow
 
             try
             {
-                await PlayTrack(0, options.StartPositionTicks);
+                await PlayTrack(0, options.StartPositionTicks, null);
             }
             catch (Exception ex)
             {
@@ -294,7 +291,7 @@ namespace MediaBrowser.Theater.DirectShow
             }
         }
 
-        private async Task PlayTrack(int index, long? startPositionTicks)
+        private async Task PlayTrack(int index, long? startPositionTicks, StreamInfo previousStreamInfo)
         {
             var previousMedia = CurrentMedia;
             var previousIndex = CurrentPlaylistIndex;
@@ -356,7 +353,8 @@ namespace MediaBrowser.Theater.DirectShow
                     NewMedia = CurrentMedia,
                     PreviousMedia = previousMedia,
                     PreviousPlaylistIndex = previousIndex,
-                    EndingPositionTicks = endingTicks
+                    EndingPositionTicks = endingTicks,
+                    PreviousStreamInfo = previousStreamInfo
                 };
 
                 _presentation.Window.Dispatcher.Invoke
@@ -368,8 +366,9 @@ namespace MediaBrowser.Theater.DirectShow
 
         private async Task<PlayableItem> GetPlayableItem(BaseItemDto item, long? startTimeTicks, CancellationToken cancellationToken)
         {
-            IIsoMount mountedIso = null;
+            // Handle iso mounting, since StreamBuilder does not support this on it's own
 
+            IIsoMount mountedIso = null;
             if (item.VideoType.HasValue && item.VideoType.Value == VideoType.Iso && item.IsoType.HasValue && _isoManager.CanMount(item.Path))
             {
                 try
@@ -382,24 +381,113 @@ namespace MediaBrowser.Theater.DirectShow
                 }
             }
 
-            var apiClient = _connectionManager.GetApiClient(item);
-            var mediaSources = item.MediaSources;
-
-            // If it's a server item
-            if (!string.IsNullOrWhiteSpace(item.Id))
+            // Check the mounted path first
+            if (mountedIso != null)
             {
-                try
+                if (item.IsoType.HasValue && item.IsoType.Value == IsoType.BluRay)
                 {
-                    var result = await apiClient.GetPlaybackInfo(item.Id, apiClient.CurrentUserId);
-                    mediaSources = result.MediaSources;
+                    return new PlayableItem
+                    {
+                        OriginalItem = item,
+                        PlayablePath = GetBlurayPath(mountedIso.MountedPath),
+                        IsoMount = mountedIso,
+                        MediaSource = item.MediaSources.First()
+                    };
                 }
-                catch
-                {
 
+                return new PlayableItem
+                {
+                    OriginalItem = item,
+                    PlayablePath = mountedIso.MountedPath,
+                    IsoMount = mountedIso,
+                    MediaSource = item.MediaSources.First()
+                };
+            }
+
+            // Handle direct play of folder rips, since StreamBuilder doesn't support this on it's own
+            if (item.LocationType == LocationType.FileSystem && item.VideoType.HasValue)
+            {
+                if (item.VideoType.Value == VideoType.BluRay || item.VideoType.Value == VideoType.Dvd || item.VideoType.Value == VideoType.HdDvd)
+                {
+                    if (Directory.Exists(item.Path))
+                    {
+                        return new PlayableItem
+                        {
+                            OriginalItem = item,
+                            PlayablePath = GetFolderRipPath(item.VideoType.Value, item.Path),
+                            MediaSource = item.MediaSources.First()
+                        };
+                    }
                 }
             }
 
-            return PlayablePathBuilder.GetPlayableItem(item, mediaSources, mountedIso, apiClient, _streamBuilder, startTimeTicks, _config.Configuration.MaxStreamingBitrate);
+            return await GetPlaybackInfoInternal(item, startTimeTicks, cancellationToken);
+        }
+
+        private async Task<PlayableItem> GetPlaybackInfoInternal(BaseItemDto item, long? startTimeTicks, CancellationToken cancellationToken)
+        {
+            var profile = new MediaBrowserTheaterProfile();
+
+            var options = new VideoOptions
+            {
+                Context = EncodingContext.Streaming,
+                ItemId = item.Id,
+
+                // TODO: Set to 2 if user only has stereo speakers
+                MaxAudioChannels = 6,
+
+                MaxBitrate = _config.Configuration.MaxStreamingBitrate,
+                MediaSources = item.MediaSources,
+
+                Profile = profile
+            };
+
+            var streamInfo = item.IsAudio ?
+                await _playbackManager.GetAudioStreamInfo(item.ServerId, options) :
+                await _playbackManager.GetVideoStreamInfo(item.ServerId, options);
+
+            streamInfo.StartPositionTicks = startTimeTicks ?? 0;
+
+            var apiClient = _connectionManager.GetApiClient(item);
+
+            return new PlayableItem
+            {
+                OriginalItem = item,
+                PlayablePath = streamInfo.ToUrl(apiClient.ServerAddress + "/mediabrowser", apiClient.AccessToken),
+                MediaSource = streamInfo.MediaSource,
+                StreamInfo = streamInfo
+            };
+        }
+
+        private static string GetFolderRipPath(VideoType videoType, string root)
+        {
+            if (videoType == VideoType.BluRay)
+            {
+                return GetBlurayPath(root);
+            }
+
+            return root;
+        }
+
+        private static string GetBlurayPath(string root)
+        {
+            var file = new DirectoryInfo(root)
+                .EnumerateFiles("index.bdmv", SearchOption.AllDirectories)
+                .FirstOrDefault();
+
+            if (file != null)
+            {
+                Uri uri;
+
+                if (Uri.TryCreate(file.FullName, UriKind.RelativeOrAbsolute, out uri))
+                {
+                    return uri.OriginalString;
+                }
+
+                return file.FullName;
+            }
+
+            return root;
         }
 
         /// <summary>
@@ -571,45 +659,25 @@ namespace MediaBrowser.Theater.DirectShow
 
                 if (nextIndex < CurrentPlayOptions.Items.Count)
                 {
-                    await PlayTrack(nextIndex, null);
+                    await PlayTrack(nextIndex, null, media.StreamInfo);
                     return;
                 }
             }
 
             DisposePlayer();
 
-            StopTranscoding(media);
-
             var args = new PlaybackStopEventArgs
             {
                 Player = this,
                 Playlist = _playlist,
                 EndingMedia = media.OriginalItem,
-                EndingPositionTicks = positionTicks
-
+                EndingPositionTicks = positionTicks,
+                StreamInfo = media.StreamInfo
             };
 
             EventHelper.FireEventIfNotNull(PlaybackCompleted, this, args, _logger);
 
-            _playbackManager.ReportPlaybackCompleted(args);
-        }
-
-        private async void StopTranscoding(PlayableItem media)
-        {
-            // If streaming video, stop the transcoder
-            if (media.IsVideo && media.PlayablePath.IndexOf("://", StringComparison.OrdinalIgnoreCase) != -1)
-            {
-                var apiClient = _connectionManager.GetApiClient(media.OriginalItem);
-
-                try
-                {
-                    await apiClient.StopTranscodingProcesses(apiClient.DeviceId);
-                }
-                catch
-                {
-
-                }
-            }
+            await _playbackManager.ReportPlaybackCompleted(args);
         }
 
         public void ChangeTrack(int newIndex)

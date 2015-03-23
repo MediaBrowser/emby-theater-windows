@@ -11,7 +11,7 @@ namespace MediaBrowser.Theater.DirectShow.Streaming
             Name = "Media Browser Theater";
 
             MaxStreamingBitrate = 8000000;
-            MaxStaticBitrate = 8000000;
+            MaxStaticBitrate = 80000000;
 
             TranscodingProfiles = new[]
             {
@@ -64,92 +64,13 @@ namespace MediaBrowser.Theater.DirectShow.Streaming
             {
                 new DirectPlayProfile
                 {
-                    Container = "avi",
-                    Type = DlnaProfileType.Video,
-                    VideoCodec = "mpeg1video,mpeg2video,mpeg4,h264,vc1",
-                    AudioCodec = "ac3,dca,mp2,mp3,pcm"
+                    Container = "avi,mkv,ts,mp4,mov,m4v,asf,wmv,mpg,mpeg,flv,3gp",
+                    Type = DlnaProfileType.Video
                 },
 
                 new DirectPlayProfile
                 {
-                    Container = "mpeg",
-                    Type = DlnaProfileType.Video,
-                    VideoCodec = "mpeg1video,mpeg2video",
-                    AudioCodec = "ac3,dca,mp2,mp3,pcm"
-                },
-
-                new DirectPlayProfile
-                {
-                    Container = "mkv",
-                    Type = DlnaProfileType.Video,
-                    VideoCodec = "mpeg1video,mpeg2video,mpeg4,h264,vc1",
-                    AudioCodec = "ac3,dca,aac,mp2,mp3,pcm"
-                },
-
-                new DirectPlayProfile
-                {
-                    Container = "ts",
-                    Type = DlnaProfileType.Video,
-                    VideoCodec = "mpeg1video,mpeg2video,h264,vc1",
-                    AudioCodec = "ac3,dca,mp2,mp3,aac"
-                },
-
-                new DirectPlayProfile
-                {
-                    Container = "mp4,mov",
-                    Type = DlnaProfileType.Video,
-                    VideoCodec = "h264,mpeg4",
-                    AudioCodec = "ac3,aac,mp2,mp3"
-                },
-
-                new DirectPlayProfile
-                {
-                    Container = "asf",
-                    Type = DlnaProfileType.Video,
-                    VideoCodec = "vc1",
-                    AudioCodec = "wmav2,wmapro"
-                },
-
-                new DirectPlayProfile
-                {
-                    Container = "asf",
-                    Type = DlnaProfileType.Video,
-                    VideoCodec = "mpeg2video",
-                    AudioCodec = "mp2,ac3"
-                },
-
-                new DirectPlayProfile
-                {
-                    Container = "mp3",
-                    AudioCodec = "mp2,mp3",
-                    Type = DlnaProfileType.Audio
-                },
-
-                new DirectPlayProfile
-                {
-                    Container = "mp4",
-                    AudioCodec = "mp4",
-                    Type = DlnaProfileType.Audio
-                },
-
-                new DirectPlayProfile
-                {
-                    Container = "flac",
-                    AudioCodec = "flac",
-                    Type = DlnaProfileType.Audio
-                },
-
-                new DirectPlayProfile
-                {
-                    Container = "asf",
-                    AudioCodec = "wmav2,wmapro,wmavoice",
-                    Type = DlnaProfileType.Audio
-                },
-
-                new DirectPlayProfile
-                {
-                    Container = "ogg",
-                    AudioCodec = "vorbis",
+                    Container = "mp3,mp4,flac,wma,asf,ogg,m4a,aac,wav,oga",
                     Type = DlnaProfileType.Audio
                 },
 

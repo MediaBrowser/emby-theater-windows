@@ -1,4 +1,5 @@
 ﻿using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Dlna;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Session;
 using MediaBrowser.Theater.Interfaces.Playback;
@@ -15,16 +16,18 @@ namespace MediaBrowser.Theater.Implementations.Playback
         private readonly IConnectionManager _connectionManager;
         private readonly IMediaPlayer _mediaPlayer;
         private readonly ILogger _logger;
-        private readonly IPlaybackManager _playback;
+        private readonly IPlaybackManager _internalPlaybackManager;
+        private readonly ApiInteraction.Playback.IPlaybackManager _apiPlaybackManager;
 
         private Timer _timer;
 
-        public PlaybackProgressReporter(IConnectionManager connectionManager, IMediaPlayer mediaPlayer, ILogger logger, IPlaybackManager playback)
+        public PlaybackProgressReporter(IConnectionManager connectionManager, IMediaPlayer mediaPlayer, ILogger logger, IPlaybackManager internalPlaybackManager, ApiInteraction.Playback.IPlaybackManager apiPlaybackManager)
         {
             _connectionManager = connectionManager;
             _mediaPlayer = mediaPlayer;
             _logger = logger;
-            _playback = playback;
+            _internalPlaybackManager = internalPlaybackManager;
+            _apiPlaybackManager = apiPlaybackManager;
         }
 
         /// <summary>
@@ -77,7 +80,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
             }
             catch (Exception ex)
             {
-                _logger.ErrorException("Error sending playback start checking for {0}", ex, item.Name);
+                _logger.ErrorException("Error sending internalPlaybackManager start checking for {0}", ex, item.Name);
 
                 throw;
             }
@@ -87,36 +90,40 @@ namespace MediaBrowser.Theater.Implementations.Playback
         /// Handles the PlaybackCompleted event of the _mediaPlayer control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="PlaybackStopEventArgs"/> instance containing the event data.</param>
-        async void _mediaPlayer_PlaybackCompleted(object sender, PlaybackStopEventArgs e)
+        /// <param name="eventArgs">The <see cref="PlaybackStopEventArgs"/> instance containing the event data.</param>
+        async void _mediaPlayer_PlaybackCompleted(object sender, PlaybackStopEventArgs eventArgs)
         {
             _mediaPlayer.MediaChanged -= _mediaPlayer_MediaChanged;
             _mediaPlayer.PlaybackCompleted -= _mediaPlayer_PlaybackCompleted;
 
+            var item = eventArgs.EndingMedia;
+            if (item != null)
+            {
+                var apiClient = _connectionManager.GetApiClient(item);
+
+                var stopInfo = new PlaybackStopInfo
+                {
+                    ItemId = item.Id,
+                    PositionTicks = eventArgs.EndingPositionTicks
+                };
+
+                // Have to test this for null because external players are currently not supplying this
+                // Also some players will play in contexts not currently supported by common playback managers, e.g. direct play of folder rips, and iso-mounted media
+                // Remove when implemented
+                if (eventArgs.StreamInfo != null)
+                {
+                    await _apiPlaybackManager.ReportPlaybackStopped(stopInfo, eventArgs.StreamInfo, item.ServerId, apiClient.CurrentUserId, false, apiClient);
+                }
+                else
+                {
+                    await apiClient.ReportPlaybackStoppedAsync(stopInfo);
+                }
+            }
+            
             if (_timer != null)
             {
                 _timer.Dispose();
                 _timer = null;
-            }
-
-            if (e.EndingMedia != null)
-            {
-                var info = new PlaybackStopInfo
-                {
-                    ItemId = e.EndingMedia.Id,
-                    PositionTicks = e.EndingPositionTicks
-                };
-
-                var apiClient = _connectionManager.GetApiClient(e.EndingMedia);
-
-                try
-                {
-                    await apiClient.ReportPlaybackStoppedAsync(info);
-                }
-                catch (Exception ex)
-                {
-                    _logger.ErrorException("Error sending playback stopped checking for {0}", ex, e.EndingMedia.Name);
-                }
             }
         }
 
@@ -124,40 +131,43 @@ namespace MediaBrowser.Theater.Implementations.Playback
         /// Handles the MediaChanged event of the _mediaPlayer control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="MediaChangeEventArgs"/> instance containing the event data.</param>
-        async void _mediaPlayer_MediaChanged(object sender, MediaChangeEventArgs e)
+        /// <param name="eventArgs">The <see cref="MediaChangeEventArgs"/> instance containing the event data.</param>
+        async void _mediaPlayer_MediaChanged(object sender, MediaChangeEventArgs eventArgs)
         {
-            if (e.PreviousMedia != null)
+            if (eventArgs.PreviousMedia != null)
             {
-                var info = new PlaybackStopInfo
+                var apiClient = _connectionManager.GetApiClient(eventArgs.PreviousMedia);
+
+                var stopInfo = new PlaybackStopInfo
                 {
-                    ItemId = e.PreviousMedia.Id,
-                    PositionTicks = e.EndingPositionTicks
+                    ItemId = eventArgs.PreviousMedia.Id,
+                    PositionTicks = eventArgs.EndingPositionTicks
                 };
 
-                var apiClient = _connectionManager.GetApiClient(e.PreviousMedia);
-
-                try
+                // Have to test this for null because external players are currently not supplying this
+                // Also some players will play in contexts not currently supported by common playback managers, e.g. direct play of folder rips, and iso-mounted media
+                // Remove when implemented
+                if (eventArgs.PreviousStreamInfo != null)
                 {
-                    await apiClient.ReportPlaybackStoppedAsync(info);
+                    await _apiPlaybackManager.ReportPlaybackStopped(stopInfo, eventArgs.PreviousStreamInfo, eventArgs.PreviousMedia.ServerId, apiClient.CurrentUserId, false, apiClient);
                 }
-                catch (Exception ex)
+                else
                 {
-                    _logger.ErrorException("Error sending playback stopped checking for {0}", ex, e.PreviousMedia.Name);
+                    await apiClient.ReportPlaybackStoppedAsync(stopInfo);
                 }
             }
 
-            if (e.NewMedia != null)
+            if (eventArgs.NewMedia != null)
             {
                 try
                 {
                     var queueTypes = _mediaPlayer.CanQueue
-                                ? new List<string> { e.NewMedia.MediaType }
+                                ? new List<string> { eventArgs.NewMedia.MediaType }
                                 : new List<string> { };
 
                     var info = new PlaybackStartInfo
                     {
-                        ItemId = e.NewMedia.Id,
+                        ItemId = eventArgs.NewMedia.Id,
 
                         CanSeek = _mediaPlayer.CanSeek,
                         QueueableMediaTypes = queueTypes.ToList(),
@@ -166,13 +176,13 @@ namespace MediaBrowser.Theater.Implementations.Playback
                         PlayMethod = PlayMethod.DirectPlay
                     };
 
-                    var apiClient = _connectionManager.GetApiClient(e.NewMedia);
+                    var apiClient = _connectionManager.GetApiClient(eventArgs.NewMedia);
 
                     await apiClient.ReportPlaybackStartAsync(info);
                 }
                 catch (Exception ex)
                 {
-                    _logger.ErrorException("Error sending playback start checking for {0}", ex, e.NewMedia.Name);
+                    _logger.ErrorException("Error sending internalPlaybackManager start checking for {0}", ex, eventArgs.NewMedia.Name);
                 }
             }
         }
@@ -196,13 +206,13 @@ namespace MediaBrowser.Theater.Implementations.Playback
                 //Item = item,
                 ItemId = item.Id,
                 //MediaSourceId = string.Empty,
-                IsMuted = _playback.IsMuted,
+                IsMuted = _internalPlaybackManager.IsMuted,
                 IsPaused = _mediaPlayer.PlayState == PlayState.Paused,
                 PositionTicks = _mediaPlayer.CurrentPositionTicks,
                 CanSeek = _mediaPlayer.CanSeek,
                 AudioStreamIndex = _mediaPlayer.CurrentAudioStreamIndex,
                 SubtitleStreamIndex = _mediaPlayer.CurrentSubtitleStreamIndex,
-                VolumeLevel = (_mediaPlayer.PlayState != PlayState.Idle) ? (int?) _playback.Volume : null,
+                VolumeLevel = (_mediaPlayer.PlayState != PlayState.Idle) ? (int?) _internalPlaybackManager.Volume : null,
                 PlayMethod = PlayMethod.DirectPlay, // todo remove hard coding
             };
 
@@ -214,7 +224,7 @@ namespace MediaBrowser.Theater.Implementations.Playback
             }
             catch (Exception ex)
             {
-                _logger.ErrorException("Error sending playback progress checking for {0}", ex, item.Name);
+                _logger.ErrorException("Error sending internalPlaybackManager progress checking for {0}", ex, item.Name);
             }
         }
 

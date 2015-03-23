@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Model.Dto;
+﻿using MediaBrowser.Model.Dlna;
+using MediaBrowser.Model.Dto;
 using System;
 using System.Collections.Generic;
 
@@ -38,5 +39,11 @@ namespace MediaBrowser.Theater.Interfaces.Playback
         /// </summary>
         /// <value>The ending position ticks.</value>
         public long? EndingPositionTicks { get; set; }
+
+        /// <summary>
+        /// Gets or sets the stream information.
+        /// </summary>
+        /// <value>The stream information.</value>
+        public StreamInfo StreamInfo { get; set; }
     }
 }

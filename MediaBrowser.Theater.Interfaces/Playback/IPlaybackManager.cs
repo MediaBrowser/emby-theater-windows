@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using MediaBrowser.Model.Dlna;
 using MediaBrowser.Model.Dto;
 
 namespace MediaBrowser.Theater.Interfaces.Playback
@@ -147,6 +148,22 @@ namespace MediaBrowser.Theater.Interfaces.Playback
         /// Reports the playback completed.
         /// </summary>
         /// <param name="eventArgs">The <see cref="PlaybackStopEventArgs" /> instance containing the event data.</param>
-        void ReportPlaybackCompleted(PlaybackStopEventArgs eventArgs);
+        Task ReportPlaybackCompleted(PlaybackStopEventArgs eventArgs);
+
+        /// <summary>
+        /// Gets the audio stream information.
+        /// </summary>
+        /// <param name="serverId">The server identifier.</param>
+        /// <param name="options">The options.</param>
+        /// <returns>Task&lt;StreamInfo&gt;.</returns>
+        Task<StreamInfo> GetAudioStreamInfo(string serverId, AudioOptions options);
+
+        /// <summary>
+        /// Gets the video stream information.
+        /// </summary>
+        /// <param name="serverId">The server identifier.</param>
+        /// <param name="options">The options.</param>
+        /// <returns>Task&lt;StreamInfo&gt;.</returns>
+        Task<StreamInfo> GetVideoStreamInfo(string serverId, VideoOptions options);
     }
 }

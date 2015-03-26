@@ -53,7 +53,7 @@ namespace MediaBrowser.UI.StartupWizard
         {
             if (ValidateInput())
             {
-                var serverAddress = string.Format("http://{0}", TxtHost.Text);
+                var serverAddress = TxtHost.Text;
                 if (!string.IsNullOrEmpty(TxtPort.Text))
                 {
                     serverAddress += ":" + TxtPort.Text;

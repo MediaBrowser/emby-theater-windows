@@ -40,14 +40,14 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemDetails.ViewModels
 
         private async Task<IItemDetailSection> GetMovies(BaseItemDto person)
         {
-            var query = new ItemQuery { Person = person.Name, IncludeItemTypes = new[] { "Movie" }, UserId = _sessionManager.CurrentUser.Id, Recursive = true };
+            var query = new ItemQuery { PersonIds = new[] { person.Id }, IncludeItemTypes = new[] { "Movie" }, UserId = _sessionManager.CurrentUser.Id, Recursive = true };
             var apiClient = _connectionManager.GetApiClient(person);
             return await GetItemsSection(await apiClient.GetItemsAsync(query));
         }
 
         private async Task<IItemDetailSection> GetSeries(BaseItemDto person)
         {
-            var query = new ItemQuery { Person = person.Name, IncludeItemTypes = new[] { "Series" }, UserId = _sessionManager.CurrentUser.Id, Recursive = true };
+            var query = new ItemQuery { PersonIds = new[] { person.Id }, IncludeItemTypes = new[] { "Series" }, UserId = _sessionManager.CurrentUser.Id, Recursive = true };
             var apiClient = _connectionManager.GetApiClient(person);
             return await GetItemsSection(await apiClient.GetItemsAsync(query));
         }

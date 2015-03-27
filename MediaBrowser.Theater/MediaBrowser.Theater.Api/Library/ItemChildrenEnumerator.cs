@@ -84,7 +84,7 @@ namespace MediaBrowser.Theater.Api.Library
 
             return await apiClient.GetItemsAsync(new ItemQuery {
                 ParentId = item.IsType("Person") ? null : item.Id,
-                Person = item.IsType("Person") ? item.Name : null,
+                PersonIds = item.IsType("Person") ? new[] { item.Id } : null,
                 UserId = sessionManager.CurrentUser.Id,
                 Recursive = parameters.Recursive,
                 Filters = parameters.Filters,

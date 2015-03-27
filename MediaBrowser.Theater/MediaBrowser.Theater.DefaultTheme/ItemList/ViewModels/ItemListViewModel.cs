@@ -174,12 +174,14 @@ namespace MediaBrowser.Theater.DefaultTheme.ItemList.ViewModels
             _availableSortModes = new IItemListSortMode[] { new IndexSortMode(), new ItemNameSortMode(), new ItemYearSortMode(), new ItemCommunityReviewSortMode() };
 
             Items = new RangeObservableCollection<ItemTileViewModel>();
+            Title = parameters.Title;
 
             PresentationOptions = new RootPresentationOptions {
-                ShowMediaBrowserLogo = false,
-                Title = parameters.Title
+                ShowMediaBrowserLogo = false
             };
         }
+
+        public string Title { get; private set; }
 
         public SortDirection SortDirection
         {

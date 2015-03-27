@@ -99,7 +99,7 @@ namespace MediaBrowser.Theater.Mpdn
                                  (int)(window.Top * window.DpiScale),
                                  (int)(window.Width * window.DpiScale),
                                  (int)(window.Height * window.DpiScale),
-                                 window.State);
+                                 window.State).ConfigureAwait(false);
         }
 
         private async Task Handshake()

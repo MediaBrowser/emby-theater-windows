@@ -104,7 +104,7 @@ namespace MediaBrowser.Theater.MockPlayer
                 _log.Debug("Starting session sequence {0} playback", _id);
 
                 // keep moving to the next media until the sequence is complete
-                while (MoveNext(nextAction)) {
+                while (_sequence.MoveNext(nextAction)) {
 
                     // don't start a new item if cancellation has been requested
                     if (_cancellationToken.IsCancellationRequested) {
@@ -142,20 +142,6 @@ namespace MediaBrowser.Theater.MockPlayer
         public IObservable<PlaybackStatus> Status
         {
             get { return _status; }
-        }
-
-        private bool MoveNext(SessionCompletionAction action)
-        {
-            switch (action.Direction) {
-                case NavigationDirection.Forward:
-                    return _sequence.Next();
-                case NavigationDirection.Backward:
-                    return _sequence.Previous();
-                case NavigationDirection.Skip:
-                    return _sequence.SkipTo(action.Index);
-            }
-
-            return false;
         }
 
         private PlayableMedia GetPlayableMedia(Media media)
